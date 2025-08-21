@@ -1,4 +1,13 @@
-import { Contract, ethers, JsonRpcProvider, JsonRpcSigner, Signer, ZeroAddress } from "ethers";
+import {
+  BrowserProvider,
+  Contract,
+  Eip1193Provider,
+  ethers,
+  JsonRpcProvider,
+  JsonRpcSigner,
+  Signer,
+  ZeroAddress
+} from "ethers";
 import { Address } from "@/utils/address";
 import { ChainId } from "@/config/chain";
 import { getChainInfo } from "@/config/chains";
@@ -38,45 +47,32 @@ export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
   }
 };
 
-// export const getWalletProvider = async (chainId?: ChainId) => {
-//   try {
-//     // 检查是否有钱包连接
-//     if (!window.ethereum) {
-//       console.log("No wallet installed; using read-only defaults")
-//       return ethers.getDefaultProvider("mainnet") as BrowserProvider
-//     }
+export const getWalletProvider = async (chainId?: ChainId) => {
+  try {
+    // 检查是否有钱包连接
+    if (!window.ethereum) {
+      console.log("No wallet installed; using read-only defaults")
+      return ethers.getDefaultProvider("mainnet") as BrowserProvider
+    }
 
-//     // 创建 ethers provider
-//     const provider = new ethers.BrowserProvider(window.ethereum)
+    // 创建 ethers provider
+    const provider = new ethers.BrowserProvider(window.ethereum as Eip1193Provider)
 
-//     // 如果指定了 chainId，可以验证当前链是否匹配
-//     if (chainId) {
-//       const network = await provider.getNetwork()
-//       console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
-//     }
+    // 如果指定了 chainId，可以验证当前链是否匹配
+    if (chainId) {
+      const network = await provider.getNetwork()
+      console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
+    }
 
-//     return provider
-//   } catch (error) {
-//     console.error("Error getting wallet provider:", error)
-//     // 如果获取失败，返回默认的只读 provider
-//     return ethers.getDefaultProvider("mainnet") as BrowserProvider
-//   }
-// };
+    return provider
+  } catch (error) {
+    console.error("Error getting wallet provider:", error)
+    // 如果获取失败，返回默认的只读 provider
+    return ethers.getDefaultProvider("mainnet") as BrowserProvider
+  }
+};
 
 export const getSignerProvider = async (chainId?: ChainId) => {
-  // @ts-ignore
-  const walletClient = await getWalletClient(config, {
-    chainId: chainId as ChainId
-  })
-  
-  if(!walletClient) {
-    // toast.error({
-    //   title: t`missing provider`,
-    // })
-    return {} as JsonRpcSigner
-  }
-  
-  const provider = new ethers.BrowserProvider(walletClient)
-  
-  return await provider.getSigner()
+  const provider = await getWalletProvider (chainId);
+  return provider?.getSigner?. ();
 };
