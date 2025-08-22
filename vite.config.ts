@@ -5,6 +5,11 @@ import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react(), dts({ insertTypesEntry: true, outDir: "dist/types" })],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
+  },
   build: {
     lib: {
       entry: {
