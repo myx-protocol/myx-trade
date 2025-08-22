@@ -1,5 +1,6 @@
 import { ContractAddress } from "@/config/chain.ts";
 import { ZeroAddress } from "ethers";
+import { getLiquidityRouterContract } from "@/utils/web3/providers";
 
 export const LINEA_TEST_SEPOLIA: ContractAddress = {
   USDC_ADDRESS: '0x635eC74A4A39A27177310F0d605515D9df4bDe43',
@@ -18,5 +19,6 @@ export const LINEA_TEST_SEPOLIA: ContractAddress = {
   PYTH_ADDRESS: ZeroAddress,
   MYX_ADDRESS: ZeroAddress,
   ERC20_ADDRESS: '0x635eC74A4A39A27177310F0d605515D9df4bDe43',
-
+  
+  LIQUIDITY_ROUTER_ADDRESS:''
 }
