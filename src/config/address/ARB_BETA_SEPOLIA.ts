@@ -19,4 +19,5 @@ export const ARB_BETA_SEPOLIA: ContractAddress = {
   PYTH_ADDRESS: ZeroAddress,
   MYX_ADDRESS: ZeroAddress,
   ERC20_ADDRESS: '0x3E4422686BD85e4b8a8F236F142866a34f66D966',
+  Liquidity_Router_ADDRESS:''
 }

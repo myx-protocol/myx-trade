@@ -141,6 +141,7 @@ export interface ContractAddress {
   readonly PYTH_ADDRESS:Address,
   readonly MYX_ADDRESS:Address,
   readonly ERC20_ADDRESS:Address,
+  readonly LIQUIDITY_ROUTER_ADDRESS:Address,
 }
 
 export interface ChainInfo {
