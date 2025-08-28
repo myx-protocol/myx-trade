@@ -1,0 +1,32 @@
+{
+  "name": "@mx-trade/sdk",
+  "version": "1.0.0",
+  "description": "MX Trade SDK for trading operations",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
+  },
+  "keywords": ["trading", "sdk", "mx", "finance"],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "tsup": "^8.0.0"
+  }
+}
