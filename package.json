@@ -1,7 +1,7 @@
 {
-  "name": "@mx-trade/sdk",
+  "name": "@myx-trade/sdk",
   "version": "1.0.0",
-  "description": "MX Trade SDK for trading operations",
+  "description": "MYX Trade SDK for trading operations",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
     "clean": "rm -rf dist",
     "prebuild": "npm run clean"
   },
-  "keywords": ["trading", "sdk", "mx", "finance"],
+  "keywords": ["trading", "sdk", "myx", "finance"],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.12.4",
