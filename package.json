@@ -1,7 +1,7 @@
 {
-  "name": "mx-trade-sdk",
+  "name": "myx-trade-sdk",
   "version": "1.0.0",
-  "description": "MX Trade SDK monorepo",
+  "description": "MYX Trade SDK monorepo",
   "private": true,
   "scripts": {
     "build": "pnpm -r build",
@@ -11,7 +11,7 @@
     "dev:playground": "cd packages/playground && pnpm dev",
     "build:playground": "cd packages/playground && pnpm build"
   },
-  "keywords": ["trading", "sdk", "mx", "finance"],
+  "keywords": ["trading", "sdk", "myx", "finance"],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.12.4"

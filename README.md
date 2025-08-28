@@ -1,11 +1,11 @@
-# MX Trade SDK
+# MYX Trade SDK
 
 这是一个包含 SDK 和前端 playground 的 monorepo 项目。
 
 ## 项目结构
 
 ```
-mx-trade-sdk/
+myx-trade-sdk/
 ├── packages/
 │   ├── sdk/          # 交易 SDK 包
 │   └── playground/   # 前端测试应用
@@ -57,8 +57,8 @@ pnpm clean
 
 ## 包管理
 
-- **SDK**: `@mx-trade/sdk` - 提供交易相关的功能
-- **Playground**: `@mx-trade/playground` - 用于测试 SDK 的前端应用
+- **SDK**: `@myx-trade/sdk` - 提供交易相关的功能
+- **Playground**: `@myx-trade/playground` - 用于测试 SDK 的前端应用
 
 ## 技术栈
 
