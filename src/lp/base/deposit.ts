@@ -1,7 +1,7 @@
-import { getAccount, getLiquidityRouterContract } from "@/utils/web3/providers";
-import { type AddressLike, type BigNumberish, type BytesLike, hexlify, parseEther } from "ethers/lib.esm";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
+import { type AddressLike, type BigNumberish, type BytesLike, hexlify, parseEther } from "ethers";
 import { ChainId } from "@/config/chain";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/utils/common/tradingGas";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains";
 
 interface Deposit {

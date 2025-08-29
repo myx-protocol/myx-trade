@@ -1,7 +1,5 @@
 import { $fetch } from "@/api/request";
-import { getAppEnvConfig } from "@/utils/env";
 
-const { VITE_API_URL } = getAppEnvConfig();
 const baseUrl= "https://api-test.myx.cash"
 
 
