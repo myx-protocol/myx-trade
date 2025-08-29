@@ -1,0 +1,600 @@
+[
+  {
+    "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientOutputAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PoolDeactivated",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PoolNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "QuotePoolProfitDistributed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "genesisAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "exchangeRate",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "EXCHANGE_RATE_PRECISION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "POOL_TOKEN_DECIMALS",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint8"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "deposit",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "amountIn"
+      },
+      {
+        "type": "uint256",
+        "name": "minAmountOut"
+      },
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "amountOut"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "distribute",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "genesisAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyIdentifier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "contractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getExchangeRate",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getImplementation",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolTokenPrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "pendingUserRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "previewLpAmountOut",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "amountIn"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "previewPoolTokenPrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "previewQuoteAmountOut",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "amountIn"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "previewUserWithdrawData",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "lpAmountIn"
+      },
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "quoteAmountOut"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "registerDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "unregisterDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeTo",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdraw",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "amountIn"
+      },
+      {
+        "type": "uint256",
+        "name": "minAmountOut"
+      },
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "amountOut"
+      }
+    ]
+  }
+]
