@@ -1,5 +1,5 @@
-import { getERC20Contract } from "@/utils/web3/providers";
-import { getAllowanceApproved } from "@/utils/common/allowance";
+import { getERC20Contract } from "@/web3/providers";
+import { getAllowanceApproved } from "@/common/allowance";
 import { ChainId } from "@/config/chain";
 import { ErrorCode, Errors } from "@/config/error";
 

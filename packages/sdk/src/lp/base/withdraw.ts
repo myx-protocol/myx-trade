@@ -1,4 +1,4 @@
-import { getLiquidityRouterContract } from "@/utils/web3/providers";
+import { getLiquidityRouterContract } from "@/web3/providers";
 import { ChainId } from "@/config/chain";
 import type { AddressLike } from "ethers";
 import { parseEther, parseUnits, hexlify } from "ethers";

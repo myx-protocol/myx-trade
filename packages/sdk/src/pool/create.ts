@@ -1,7 +1,7 @@
-import { CreatePoolRequest } from "@/utils/pool/type";
+import { CreatePoolRequest } from "@/pool/type";
 import { getPoolManagerContract } from "../web3/providers";
 import { ChainId, isSupportedChainFn } from "@/config/chain";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/utils/common/tradingGas";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { Market } from "@/config/market";
 import { getPools } from "@/api";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";

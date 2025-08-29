@@ -1,7 +1,7 @@
 import LiquidityRouter_ABI from '@/abi/LiquidityRouter.json'
 import { ChainId } from "@/config/chain";
 import Address from "@/config/address";
-import { getContract, getJSONProvider, getSignerProvider, getWalletProvider } from "@/utils/web3/index";
+import { getContract, getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3/index";
 import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata} from '@/abi/types'
 import  PoolConfigurator_ABI from '@/abi/PoolConfigurator.json'
 import  PoolManager_ABI from '@/abi/PoolManager.json'

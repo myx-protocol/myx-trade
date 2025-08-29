@@ -1,5 +1,5 @@
 import { ChainId } from "@/config/chain";
-import { getJSONProvider } from "@/utils/web3";
+import { getJSONProvider } from "@/web3";
 import { ethers } from "ethers";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json";
 
