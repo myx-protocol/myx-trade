@@ -8,10 +8,10 @@ import {
   Signer,
   ZeroAddress
 } from "ethers";
-import { Address } from "@/utils/address";
+import { Address } from "@/address";
 import { ChainId } from "@/config/chain";
 import { getChainInfo } from "@/config/chains";
-import { RotationProvider } from "@/utils/web3/rotationProvider";
+import { RotationProvider } from "@/web3/rotationProvider";
 
 export function getContract(
   address: string,

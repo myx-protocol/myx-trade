@@ -1,13 +1,13 @@
-import { getAccount, getLiquidityRouterContract } from "@/utils/web3/providers";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
 import { type AddressLike, type BytesLike, MaxUint256, parseUnits } from "ethers";
 import { ChainId } from "@/config/chain";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/utils/common/tradingGas";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains";
-import { getBalanceOf } from "@/utils/common/balanceOf";
+import { getBalanceOf } from "@/common/balanceOf";
 import { Market } from "@/config/market";
 import Address from "@/config/address";
-import { approve } from "@/utils/common/approve";
-import { getAllowanceApproved } from "@/utils/common/allowance";
+import { approve } from "@/common/approve";
+import { getAllowanceApproved } from "@/common/allowance";
 import { ErrorCode, Errors } from "@/config/error";
 
 interface Deposit {

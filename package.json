@@ -9,7 +9,8 @@
     "clean": "pnpm -r clean",
     "build:sdk": "cd packages/sdk && pnpm build",
     "dev:playground": "cd packages/playground && pnpm dev",
-    "build:playground": "cd packages/playground && pnpm build"
+    "build:playground": "cd packages/playground && pnpm build",
+    "gen:abi": "cd packages/sdk && pnpm run gen:abi"
   },
   "keywords": ["trading", "sdk", "myx", "finance"],
   "author": "",
