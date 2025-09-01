@@ -8,6 +8,7 @@ export enum ErrorCode {
   Insufficient_Amount_Of_Approved,
   USER_REJECTED_REQUEST = 4001,
   
+  Invalid_Base
 }
 
 export const Errors = {
@@ -16,6 +17,7 @@ export const Errors = {
   [ErrorCode.USER_REJECTED_REQUEST]: `User Rejected`,
   [ErrorCode.Insufficient_Balance]: `Insufficient Balance`,
   [ErrorCode.Insufficient_Amount_Of_Approved]: `Insufficient Amount Of Approved`,
+  [ErrorCode.Invalid_Base]: `Invalid Base Token`,
 }
 
 export function didUserReject(error: any): boolean {
