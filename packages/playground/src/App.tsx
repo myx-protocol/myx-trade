@@ -1,23 +1,30 @@
-import { tradeHello } from '@myx-trade/sdk';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { WalletProvider } from './providers/WagmiProvider';
+import Navigation from './components/Navigation';
+import HomePage from './pages/HomePage';
+import TradePage from './pages/TradePage';
+import LPPage from './pages/LPPage';
+import PoolPage from './pages/PoolPage';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <section className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6 pb-4 border-b-2 border-blue-500">
-          SDK 测试
-        </h2>
-        <div className="text-center p-8 bg-blue-50 rounded-lg">
-          <p className="text-lg text-gray-700">
-            Trade 模块:
-            <span className="font-bold text-blue-600 ml-2">
-              {tradeHello()}
-            </span>
-          </p>
+    <WalletProvider>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Navigation />
+          <main>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/trade" element={<TradePage />} />
+              <Route path="/lp" element={<LPPage />} />
+              <Route path="/pool" element={<PoolPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
         </div>
-      </section>
-    </div>
+      </Router>
+    </WalletProvider>
   );
-}
+};
 
 export default App;
