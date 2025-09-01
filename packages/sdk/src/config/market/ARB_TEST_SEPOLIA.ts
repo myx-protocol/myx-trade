@@ -7,5 +7,6 @@ export const ARB_TEST_SEPOLIA: MarketInfo = {
   oracleRefundFeeUsd: 300000000n,
   baseReserveRatio: 100,
   quoteReserveRatio: 100,
-  poolPrimeThreshold: 20000n
+  poolPrimeThreshold: 20000n,
+  decimals: 6
 }
