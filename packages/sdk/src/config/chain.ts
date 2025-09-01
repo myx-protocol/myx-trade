@@ -49,34 +49,34 @@ export const DEV_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
-export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
-  if (isTestMode()) {
-    return TEST_ENV_CHAIN_IDS
-  } else if (isProdMode()) {
-    return PROD_ENV_CHAIN_IDS
-  } else if (isBetaMode()) {
-    return BETA_ENV_CHAIN_IDS
-  } else {
-    return TEST_ENV_CHAIN_IDS
-    // throw new Error('Unsupported environment, unable to obtain `SupportedChainIds`')
-  }
-}
+// export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
+//   if (isTestMode()) {
+//     return TEST_ENV_CHAIN_IDS
+//   } else if (isProdMode()) {
+//     return PROD_ENV_CHAIN_IDS
+//   } else if (isBetaMode()) {
+//     return BETA_ENV_CHAIN_IDS
+//   } else {
+//     return TEST_ENV_CHAIN_IDS
+//     // throw new Error('Unsupported environment, unable to obtain `SupportedChainIds`')
+//   }
+// }
 
-export function getAsSupportedChainIdFn(chainId?: number | null | ChainId) {
-  const supportedChainIds = getSupportedChainIdsByEnv()
-  const { VITE_GLOB_CHAIN_ID } = getAppEnvConfig()
+// export function getAsSupportedChainIdFn(chainId?: number | null | ChainId) {
+//   const supportedChainIds = getSupportedChainIdsByEnv()
+//   const { VITE_GLOB_CHAIN_ID } = getAppEnvConfig()
 
-  return isSupportedChainFn(chainId)
-    ? chainId
-    : isSupportedChainFn(VITE_GLOB_CHAIN_ID)
-      ? VITE_GLOB_CHAIN_ID
-      : supportedChainIds[0]
-}
+//   return isSupportedChainFn(chainId)
+//     ? chainId
+//     : isSupportedChainFn(VITE_GLOB_CHAIN_ID)
+//       ? VITE_GLOB_CHAIN_ID
+//       : supportedChainIds[0]
+// }
 
-export function isSupportedChainFn(chainId?: number | null | ChainId): chainId is ChainId {
-  const supportedChainIds = getSupportedChainIdsByEnv()
-  return !!chainId && supportedChainIds.includes(chainId)
-}
+// export function isSupportedChainFn(chainId?: number | null | ChainId): chainId is ChainId {
+//   const supportedChainIds = getSupportedChainIdsByEnv()
+//   return !!chainId && supportedChainIds.includes(chainId)
+// }
 
 export function isSupportedSeamlessAccountChain(chainId?: number | null | ChainId) {
   return (
@@ -144,6 +144,7 @@ export interface ContractAddress {
   readonly LIQUIDITY_ROUTER:Address,
   readonly BASE_POOL:Address,
   readonly QUOTE_POOL:Address,
+  readonly BROKER:Address,
 }
 
 export interface ChainInfo {
