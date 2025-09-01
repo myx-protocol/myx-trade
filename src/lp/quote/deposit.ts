@@ -9,16 +9,10 @@ import Address from "@/config/address";
 import { approve } from "@/common/approve";
 import { getAllowanceApproved } from "@/common/allowance";
 import { ErrorCode, Errors } from "@/config/error";
+import { Deposit } from "@/lp/type";
 
-interface Deposit {
-  chainId: ChainId,
-  poolId: string;
-  decimals?: number;
-  // address: AddressLike;
-  amount: number;
-}
 
-export const deposit = async ({poolId, chainId, amount, decimals = 6}: Deposit) => {
+export const deposit = async ({poolId, chainId, amount}: Deposit) => {
   try {
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
@@ -28,6 +22,7 @@ export const deposit = async ({poolId, chainId, amount, decimals = 6}: Deposit) 
     const contractAddress = addresses.QUOTE_POOL;
     
     const tokenAddress = Market[chainId].quoteToken;
+    const decimals = Market[chainId].decimals;
     
     const balance = await getBalanceOf(chainId, account, tokenAddress)
     console.log("quote balance", balance, tokenAddress);
@@ -39,10 +34,8 @@ export const deposit = async ({poolId, chainId, amount, decimals = 6}: Deposit) 
       await approve (chainId, account, tokenAddress, contractAddress, MaxUint256);
     }
     
-    
-    
     if (!balance || balance < amountIn) {
-      throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);
+      throw new Error(Errors[ErrorCode.Insufficient_Balance]);
     }
     
     const tpslParams = []
