@@ -33,6 +33,16 @@ const _abi = [
   },
   {
     type: "error",
+    name: "ExceedMaxProfit",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ExceedMinOutputAmount",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "FailedCall",
     inputs: [],
   },
@@ -77,13 +87,33 @@ const _abi = [
   },
   {
     type: "error",
-    name: "PoolDeactivated",
-    inputs: [],
+    name: "PoolNotActive",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
   },
   {
     type: "error",
-    name: "PoolNotFound",
-    inputs: [],
+    name: "PoolNotCompoundable",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "PoolNotExist",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
   },
   {
     type: "error",
@@ -172,6 +202,65 @@ const _abi = [
   {
     type: "event",
     anonymous: false,
+    name: "PoolProfitExchanged",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+        indexed: true,
+      },
+      {
+        type: "uint256",
+        name: "baseIn",
+        indexed: false,
+      },
+      {
+        type: "uint256",
+        name: "quoteOut",
+        indexed: false,
+      },
+      {
+        type: "uint256",
+        name: "price",
+        indexed: false,
+      },
+      {
+        type: "address",
+        name: "recipient",
+        indexed: false,
+      },
+    ],
+  },
+  {
+    type: "event",
+    anonymous: false,
+    name: "PoolRebateIndexUpdated",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+        indexed: true,
+      },
+      {
+        type: "uint256",
+        name: "remainingProfits",
+        indexed: false,
+      },
+      {
+        type: "uint256",
+        name: "oldIndex",
+        indexed: false,
+      },
+      {
+        type: "uint256",
+        name: "newIndex",
+        indexed: false,
+      },
+    ],
+  },
+  {
+    type: "event",
+    anonymous: false,
     name: "Upgraded",
     inputs: [
       {
@@ -217,6 +306,58 @@ const _abi = [
     outputs: [
       {
         type: "string",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "claimUserRebate",
+    constant: false,
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "address",
+        name: "user",
+      },
+      {
+        type: "address",
+        name: "recipient",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+        name: "rebateOut",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "claimUserRebates",
+    constant: false,
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32[]",
+        name: "poolIds",
+      },
+      {
+        type: "address",
+        name: "user",
+      },
+      {
+        type: "address",
+        name: "recipient",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256[]",
+        name: "rebateOut",
       },
     ],
   },
@@ -282,6 +423,36 @@ const _abi = [
       },
     ],
     outputs: [],
+  },
+  {
+    type: "function",
+    name: "exchangeProfit",
+    constant: false,
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "uint256",
+        name: "baseIn",
+      },
+      {
+        type: "uint256",
+        name: "minQuoteOut",
+      },
+      {
+        type: "address",
+        name: "recipient",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+        name: "quoteOut",
+      },
+    ],
   },
   {
     type: "function",
@@ -352,6 +523,55 @@ const _abi = [
   },
   {
     type: "function",
+    name: "getExchangeRate",
+    constant: true,
+    stateMutability: "view",
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "uint256",
+        name: "price",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getExchangeableProfit",
+    constant: true,
+    stateMutability: "view",
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "uint256",
+        name: "price",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+        name: "baseIn",
+      },
+      {
+        type: "uint256",
+        name: "quoteOut",
+      },
+    ],
+  },
+  {
+    type: "function",
     name: "getImplementation",
     constant: true,
     stateMutability: "view",
@@ -413,6 +633,10 @@ const _abi = [
         type: "address",
         name: "user",
       },
+      {
+        type: "uint256",
+        name: "price",
+      },
     ],
     outputs: [
       {
@@ -435,10 +659,37 @@ const _abi = [
         type: "uint256",
         name: "lpAmountIn",
       },
+      {
+        type: "uint256",
+        name: "price",
+      },
     ],
     outputs: [
       {
         type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "previewExchangeableProfit",
+    constant: true,
+    stateMutability: "view",
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+        name: "baseIn",
+      },
+      {
+        type: "uint256",
+        name: "quoteOut",
       },
     ],
   },
@@ -456,6 +707,10 @@ const _abi = [
       {
         type: "uint256",
         name: "baseAmountIn",
+      },
+      {
+        type: "uint256",
+        name: "price",
       },
     ],
     outputs: [
@@ -500,6 +755,10 @@ const _abi = [
       {
         type: "address",
         name: "user",
+      },
+      {
+        type: "uint256",
+        name: "price",
       },
     ],
     outputs: [

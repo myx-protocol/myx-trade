@@ -7,6 +7,11 @@ import type { PoolManager, PoolManagerInterface } from "../PoolManager";
 
 const _abi = [
   {
+    type: "constructor",
+    payable: false,
+    inputs: [],
+  },
+  {
     type: "error",
     name: "AddressEmptyCode",
     inputs: [
@@ -15,6 +20,11 @@ const _abi = [
         name: "target",
       },
     ],
+  },
+  {
+    type: "error",
+    name: "BaseFeeNotSoldOut",
+    inputs: [],
   },
   {
     type: "error",
@@ -38,6 +48,11 @@ const _abi = [
   },
   {
     type: "error",
+    name: "InvalidBaseAssetAddress",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "InvalidInitialization",
     inputs: [],
   },
@@ -48,7 +63,7 @@ const _abi = [
   },
   {
     type: "error",
-    name: "MarketNotExisted",
+    name: "MarketNotExist",
     inputs: [
       {
         type: "bytes32",
@@ -74,11 +89,20 @@ const _abi = [
   {
     type: "error",
     name: "PermissionDenied",
-    inputs: [],
+    inputs: [
+      {
+        type: "address",
+        name: "caller",
+      },
+      {
+        type: "address",
+        name: "target",
+      },
+    ],
   },
   {
     type: "error",
-    name: "PoolNotExisted",
+    name: "PoolNotExist",
     inputs: [
       {
         type: "bytes32",
@@ -355,10 +379,6 @@ const _abi = [
           },
           {
             type: "uint8",
-            name: "assetClass",
-          },
-          {
-            type: "uint8",
             name: "oracleType",
           },
           {
@@ -443,10 +463,6 @@ const _abi = [
           },
           {
             type: "uint8",
-            name: "assetClass",
-          },
-          {
-            type: "uint8",
             name: "oracleType",
           },
           {
@@ -522,6 +538,20 @@ const _abi = [
             name: "poolPrimeThreshold",
           },
         ],
+      },
+    ],
+  },
+  {
+    type: "function",
+    name: "getPools",
+    constant: true,
+    stateMutability: "view",
+    payable: false,
+    inputs: [],
+    outputs: [
+      {
+        type: "bytes32[]",
+        name: "pools",
       },
     ],
   },
