@@ -7,4 +7,5 @@ export { IERC20Metadata__factory } from "./IERC20Metadata__factory";
 export { LiquidityRouter__factory } from "./LiquidityRouter__factory";
 export { PoolConfigurator__factory } from "./PoolConfigurator__factory";
 export { PoolManager__factory } from "./PoolManager__factory";
+export { PoolToken__factory } from "./PoolToken__factory";
 export { QuotePool__factory } from "./QuotePool__factory";
