@@ -129,11 +129,6 @@ const _abi = [
   },
   {
     type: "error",
-    name: "NotContractConfigurator",
-    inputs: [],
-  },
-  {
-    type: "error",
     name: "NotDependencyManager",
     inputs: [],
   },
@@ -309,6 +304,40 @@ const _abi = [
       {
         type: "uint256",
         name: "orderId",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "claimRebate",
+    constant: false,
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "address",
+        name: "recipient",
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "claimRebates",
+    constant: false,
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32[]",
+        name: "poolIds",
+      },
+      {
+        type: "address",
+        name: "recipient",
       },
     ],
     outputs: [],

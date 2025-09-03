@@ -77,13 +77,23 @@ const _abi = [
   },
   {
     type: "error",
-    name: "PoolDeactivated",
-    inputs: [],
+    name: "PoolNotActive",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
   },
   {
     type: "error",
-    name: "PoolNotFound",
-    inputs: [],
+    name: "PoolNotExist",
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+    ],
   },
   {
     type: "error",
@@ -338,6 +348,28 @@ const _abi = [
   },
   {
     type: "function",
+    name: "getExchangeRate",
+    constant: true,
+    stateMutability: "view",
+    payable: false,
+    inputs: [
+      {
+        type: "bytes32",
+        name: "poolId",
+      },
+      {
+        type: "uint256",
+        name: "price",
+      },
+    ],
+    outputs: [
+      {
+        type: "uint256",
+      },
+    ],
+  },
+  {
+    type: "function",
     name: "getImplementation",
     constant: true,
     stateMutability: "view",
@@ -399,6 +431,10 @@ const _abi = [
         type: "address",
         name: "user",
       },
+      {
+        type: "uint256",
+        name: "price",
+      },
     ],
     outputs: [
       {
@@ -420,6 +456,10 @@ const _abi = [
       {
         type: "uint256",
         name: "amountIn",
+      },
+      {
+        type: "uint256",
+        name: "price",
       },
     ],
     outputs: [
@@ -461,6 +501,10 @@ const _abi = [
         type: "uint256",
         name: "amountIn",
       },
+      {
+        type: "uint256",
+        name: "price",
+      },
     ],
     outputs: [
       {
@@ -486,6 +530,10 @@ const _abi = [
       {
         type: "address",
         name: "user",
+      },
+      {
+        type: "uint256",
+        name: "price",
       },
     ],
     outputs: [
