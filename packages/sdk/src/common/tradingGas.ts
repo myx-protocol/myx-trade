@@ -30,3 +30,10 @@ export const bigintTradingGasPriceWithRatio = async (chainId:ChainId) => {
   }
   
 }
+
+
+// slipper < 1 && > 0
+export const bigintAmountSlipperCalculator = (amount: bigint, slipper: Number = 0.01) => {
+  const radio = parseUnits('1', COMMON_CONFIG_DECIMALS) - parseUnits(slipper.toString(), COMMON_CONFIG_DECIMALS)
+  return amount * radio  / BigInt(10 ** (COMMON_CONFIG_DECIMALS) )
+}

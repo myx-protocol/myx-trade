@@ -9,57 +9,58 @@ import {
   parseUnits
 } from "ethers";
 import { ChainId } from "@/config/chain";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
+import {
+  bigintAmountSlipperCalculator,
+  bigintTradingGasPriceWithRatio,
+  bigintTradingGasToRatioCalculator
+} from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains";
 import Address from "@/config/address";
-import { Market } from "@/config/market";
-import { getBalanceOf } from "@/common/balanceOf";
-import { getAllowanceApproved } from "@/common/allowance";
-import { approve } from "@/common/approve";
-import { ErrorCode, Errors } from "@/config/error";
+
 import { Deposit } from "@/lp/type";
+import { checkParams } from "@/common/checkParams";
+import { previewLpAmountOut } from "@/lp/base/preview";
+import { getPoolInfo } from "@/lp/getPoolInfo";
 
 
 
-export const deposit = async ({poolId, chainId, amount, decimals, tokenAddress}: Deposit & {tokenAddress: string}) => {
+export const deposit = async (params: Deposit) => {
   try {
+    const {poolId, chainId, amount, slippage = 0.01}= params;
+    await checkParams(params)
+    
+    const pool = await getPoolInfo(poolId);
+    const decimals = pool?.baseDecimals
+    const tokenAddress = pool?.baseToken
+    
+    
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
-    const slipper = 0.01
     
     const addresses = Address[chainId as keyof typeof Address];
     const contractAddress = addresses.BASE_POOL;
     
-    debugger
-    console.log("tokenAddress", tokenAddress);
-    const balance = await getBalanceOf(chainId, account, tokenAddress)
-    console.log("base balance", balance, tokenAddress);
+    await checkParams ({
+      tokenAddress,
+      contractAddress,
+      decimals,
+      account,
+      chainId,
+      amount,
+    })
     
     const amountIn = parseUnits(amount.toString(), decimals)
-    const isApproved = await getAllowanceApproved (chainId, account,tokenAddress,contractAddress ,amountIn)
-    
-    if (!isApproved) {
-      await approve (chainId, account, tokenAddress, contractAddress, MaxUint256);
-    }
-    
-    if (!balance || balance < amountIn) {
-      throw new Error(Errors[ErrorCode.Insufficient_Balance]);
-    }
-    
-    const tpslParams = []
-    // poolId: BytesLike;
-    // amountIn: BigNumberish;
-    // minAmountOut: BigNumberish;
-    // recipient: AddressLike;
+    const amountOut = await previewLpAmountOut({chainId, poolId, amountIn})
     
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
-      minAmountOut: parseUnits((amount * (1- slipper)).toString(), decimals),// todo  调合约获取
+      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
       recipient: account,
       tpslParams: []
     }
     
+    console.log("deposit base", data);
     const contract = await getLiquidityRouterContract(chainId)
     //estimateGas
     const _gasLimit =  await contract.depositBase.estimateGas(data)

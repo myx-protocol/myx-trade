@@ -8,13 +8,14 @@ export const getAllowanceApproved = async(chainId: ChainId, account: string,toke
     const provider = getJSONProvider(chainId);
     const contractInterface = new ethers.Interface(TOKEN_ABI)
     const data = contractInterface.encodeFunctionData('allowance', [account, approveAddress])
+    console.log("approve token ", tokenAddress)
+    console.log("approve address ", approveAddress)
     
     const callData = {
       to: tokenAddress,
       data,
     }
     const result = await provider.call(callData)
-    console.log(result)
     const allowance = BigInt(result)
     // 输出授权额度（结果是一个大整数，通常是以 wei 为单位）
     console.log('Allowance:', allowance.toString())

@@ -1,4 +1,5 @@
 import { ChainId } from "@/config/chain";
+import type { AddressLike } from "ethers/lib.esm";
 
 export interface Deposit {
   chainId: ChainId,
@@ -6,4 +7,23 @@ export interface Deposit {
   decimals?: number;
   // address: AddressLike;
   amount: number;
+  slippage: number;
+}
+
+
+export interface WithdrawParams {
+  chainId: ChainId;
+  poolId: string;
+  // lpAddress: string;
+  // account?: AddressLike;
+  amount:  number;
+  // minAmount ?: string | number;
+  slippage: number;
+}
+
+export interface previewAmountOutParams {
+  chainId: ChainId;
+  poolId: string;
+  amountIn: bigint;
+  price?: bigint;
 }
