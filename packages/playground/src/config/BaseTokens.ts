@@ -1,0 +1,8 @@
+export const BaseTokens = {
+  MYX :'0x542817d08cc89ef1922d3b4a5cf6bbf76a45592c',
+  ATH: '0x1428444eacdc0fd115dd4318fce65b61cd1ef399',
+  BTC: '0x0d5307e4ba49b82a580f7e9aefe6cdfc4e472056',
+  VIRTUAL: '0xff27d611ab162d7827bbba59f140c1e7ae56e95c',
+  WBTC: '0x31daefcddccf32b990d479402d477cd711fb6c41',
+  MYXX: '0x0eab2b2685870b0fa892386906f5df621067f798'
+}

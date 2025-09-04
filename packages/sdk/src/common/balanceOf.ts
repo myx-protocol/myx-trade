@@ -1,11 +1,11 @@
-import { getJSONProvider } from "@/utils/web3";
+import { getJSONProvider } from "@/web3";
 import { ethers, parseUnits } from "ethers";
 import { ChainId } from "@/config/chain";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json"
 // import PoolToken_ABI from "@/abi/PoolToken.json"
 
 
-export const getBalanceOf = async (chainId: ChainId, account: string, tokenAddress: string, isPoolToken = false) => {
+export const getBalanceOf = async (chainId: ChainId, account: string, tokenAddress: string) => {
   try {
     const provider = getJSONProvider(chainId);
     const contractInterface = new ethers.Interface( TOKEN_ABI)
