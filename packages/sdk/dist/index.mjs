@@ -2,12 +2,12 @@
 import { ZeroAddress } from "ethers";
 var ARB_TEST_SEPOLIA = {
   USDC: "",
-  POOL_MANAGER: "0xBA10850ECfe805842F67A54C57a72f06b101B47f",
+  POOL_MANAGER: "0xfe3eC818ADd1a2259c0e0cf7A1Ff8780124E5bEA",
   POOL_VIEW: "",
   HYPER_VAULT: ZeroAddress,
   FEE_COLLECTOR: "",
   POSITION_MANAGER: "",
-  ORDER_MANAGER: "",
+  ORDER_MANAGER: "0x598B5C8243E477616fAD4d4838b26ceE3330EEdf",
   TRUSTED_FORWARDER: "",
   FRONT_FACET: "",
   // router address
@@ -19,10 +19,10 @@ var ARB_TEST_SEPOLIA = {
   PYTH: "",
   MYX: ZeroAddress,
   ERC20: "",
-  LIQUIDITY_ROUTER: "0x743232Da0B1Ab57923D82c850FDB00E0A0A2B5b8",
-  BASE_POOL: "0x456C057395EB271b24bC7Be81e9890e4Aa76476B",
-  QUOTE_POOL: "0xe8824Ae9c9518d45790C0354C211738229085fB0",
-  BROKER: "0xe963b90A380c24c3447c8fE1A10C1E18d813f43d"
+  LIQUIDITY_ROUTER: "0xC2A4c4Ac0017153895642821504c51850E3A251A",
+  BASE_POOL: "0x2096B83c8c268E8a4C4C82bd03fc310A9C41c4b2",
+  QUOTE_POOL: "0x9219ca5761F71357cb3164a9B5FF073065bafF79",
+  BROKER: "0x06415215fCEC29A84EdBDa3c5BF5dfB4Bd6F0F07"
 };
 
 // src/config/address.ts
@@ -1405,7 +1405,10 @@ var getBrokerSingerContract = async (chainId, singer) => {
 };
 
 // src/config/con.ts
-var TIME_IN_FORCE = 0 /* IOC */;
+var TimeInForce = {
+  IOC: 0
+};
+var TIME_IN_FORCE = TimeInForce.IOC;
 
 // src/trade/index.ts
 var getUserFeeRate = async ({ address, poolId, chainId }, singer) => {
@@ -1414,7 +1417,33 @@ var getUserFeeRate = async ({ address, poolId, chainId }, singer) => {
   return userFeeRate;
 };
 var placeOrder = async (params, singer) => {
+  console.log("params--->", JSON.stringify(params));
   const brokerContract = await getBrokerSingerContract(params.chainId, singer);
+  const gasLimit = await brokerContract.placeOrder.estimateGas(
+    {
+      user: params.address,
+      poolId: params.poolId,
+      positionId: params.positionId,
+      orderType: params.orderType,
+      triggerType: params.triggerType,
+      operation: params.operation,
+      direction: params.direction,
+      collateralAmount: params.collateralAmount,
+      size: params.size,
+      orderPrice: params.orderPrice,
+      triggerPrice: params.triggerPrice,
+      timeInForce: TIME_IN_FORCE,
+      postOnly: params.postOnly,
+      slippagePct: params.slippagePct,
+      executionFeeToken: params.executionFeeToken,
+      leverage: params.leverage,
+      tpSize: params.tpSize,
+      tpPrice: params.tpPrice,
+      slSize: params.slSize,
+      slPrice: params.slPrice
+    }
+  );
+  console.log("gasLimit--->", gasLimit);
   const response = await brokerContract.placeOrder(
     {
       user: params.address,
