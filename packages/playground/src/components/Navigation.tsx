@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ConnectWallet } from './ConnectWallet';
+import { ConnectWallet } from '@components/ConnectWallet';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/trade', label: '交易' },
+    { path: '/', label: '交易' },
     { path: '/lp', label: 'lp' },
     { path: '/pool', label: '池子' },
   ];

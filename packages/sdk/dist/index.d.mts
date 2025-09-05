@@ -13,28 +13,33 @@ declare enum ChainId {
     BSC_MAINNET = 56
 }
 
-declare enum OrderType {
-    MARKET = 0,
-    LIMIT = 1,
-    STOP = 2,// TPSL
-    CONDITIONAL = 3
-}
-declare enum TriggerType {
-    NONE = 0,
-    GTE = 1,
-    LTE = 2
-}
-declare enum OperationType {
-    INCREASE = 0,
-    DECREASE = 1
-}
-declare enum Direction {
-    LONG = 0,
-    SHORT = 1
-}
-declare enum TimeInForce {
-    IOC = 0
-}
+declare const OrderType: {
+    readonly MARKET: 0;
+    readonly LIMIT: 1;
+    readonly STOP: 2;
+    readonly CONDITIONAL: 3;
+};
+type OrderType = typeof OrderType[keyof typeof OrderType];
+declare const TriggerType: {
+    readonly NONE: 0;
+    readonly GTE: 1;
+    readonly LTE: 2;
+};
+type TriggerType = typeof TriggerType[keyof typeof TriggerType];
+declare const OperationType: {
+    readonly INCREASE: 0;
+    readonly DECREASE: 1;
+};
+type OperationType = typeof OperationType[keyof typeof OperationType];
+declare const Direction: {
+    readonly LONG: 0;
+    readonly SHORT: 1;
+};
+type Direction = typeof Direction[keyof typeof Direction];
+declare const TimeInForce: {
+    readonly IOC: 0;
+};
+type TimeInForce = typeof TimeInForce[keyof typeof TimeInForce];
 
 type UserFeeRateParams = {
     address: AddressLike;

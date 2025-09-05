@@ -12,8 +12,17 @@
     "build:playground": "cd packages/playground && pnpm build",
     "gen:abi": "cd packages/sdk && pnpm run gen:abi"
   },
-  "keywords": ["trading", "sdk", "myx", "finance"],
+  "keywords": [
+    "trading",
+    "sdk",
+    "myx",
+    "finance"
+  ],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "@wagmi/core": "^2.20.3",
+    "swr": "^2.3.6"
+  }
 }
