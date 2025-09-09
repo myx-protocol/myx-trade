@@ -87,3 +87,4 @@ jspm_packages/
 tmp/
 temp/
 /packages/sdk/src/abi/types/
+/packages/sdk/dist/
