@@ -27,7 +27,7 @@ export const placeOrder = async (params: PlaceOrderParams, singer: Signer) => {
   
   // gas
   
-  console.log('params--->', JSON.stringify(params))
+  console.log('params--->', params, JSON.stringify(params))
   // 执行订单
   const brokerContract = await getBrokerSingerContract(params.chainId, singer);
 

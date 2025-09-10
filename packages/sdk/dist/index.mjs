@@ -1417,7 +1417,7 @@ var getUserFeeRate = async ({ address, poolId, chainId }, singer) => {
   return userFeeRate;
 };
 var placeOrder = async (params, singer) => {
-  console.log("params--->", JSON.stringify(params));
+  console.log("params--->", params, JSON.stringify(params));
   const brokerContract = await getBrokerSingerContract(params.chainId, singer);
   const gasLimit = await brokerContract.placeOrder.estimateGas(
     {

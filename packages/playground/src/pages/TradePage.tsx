@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { getPools, getPoolLevel, getOraclePrice } from '../api';
-import { placeOrder } from '@myx-trade/sdk';
+import { placeOrder, cancelOrder, cancelOrders } from '@myx-trade/sdk';
 import { useAccount, useWalletClient, useChainId } from 'wagmi';
 import { BrowserProvider, ethers } from 'ethers';
 import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '../config/con';
 import { ChainId } from '../config/chain';
 import { BigNumber } from 'bignumber.js';
+import useSWR from 'swr'
 import {
   Form,
   Select,
@@ -18,7 +19,9 @@ import {
   Space,
   Tag,
   Typography,
-  Divider
+  Divider,
+  Tooltip,
+  Input
 } from 'antd';
 
 const { Text } = Typography;
@@ -48,29 +51,28 @@ const TradePage: React.FC = () => {
   const { address } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
-  const [pool, setPool] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(false);
+  const [orderId, setOrderId] = useState<string>('');
+  const [orderIds, setOrderIds] = useState<string>('');
   const [form] = Form.useForm<TradeFormValues>();
-
-  
-
-  useEffect(() => {
-    getPools().then((rs) => {
-      console.log('poolData--->', rs.data)
-      const pool = rs.data.find((item: any) => item.poolId === '0x68115810b63fcf5e2c4ce8b7947075760814bc7ae8d54a018bf73685388cd312');
-      setPool(pool);
-      getOraclePrice(pool.poolId, ChainId.ARB_TESTNET).then((rs: any) => {
-        const _price = rs.data[0].price;
-        form.setFieldsValue({
-          orderPrice: _price,
-        })
-      })
-      getPoolLevel(pool.poolId, ChainId.ARB_TESTNET).then((rs) => {
-        console.log('poolLevel--->', rs.data)
-      })
+  const { data: pool } = useSWR('getPoolList', async () => {
+    const rs = await getPools()
+    const poolList = rs?.data ?? []
+    const pool = rs.data.find((item: any) => item.poolId === "0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d");
+    console.log('poolList-->', poolList)
+    console.log('pool-->', pool)
+    const oraclePriceRes = await getOraclePrice(pool.poolId, ChainId.ARB_TESTNET)
+    console.log('oraclePrice-->', oraclePriceRes?.data)
+    const _price = oraclePriceRes.data[0].price;
+    form.setFieldsValue({
+      orderPrice: _price,
     })
-  }, []);
+
+    const getPoolLevelRes = await getPoolLevel(pool.poolId, ChainId.ARB_TESTNET)
+    console.log('getPoolLevelRes-->', getPoolLevelRes?.data)
+    return pool
+  })
 
   // 设置表单默认值
   useEffect(() => {
@@ -80,7 +82,7 @@ const TradePage: React.FC = () => {
         triggerType: TriggerType.NONE,
         operation: OperationType.INCREASE,
         direction: Direction.LONG,
-        collateralAmount: 10000000,
+        collateralAmount: 1000,
         size: 10,
         orderPrice: 0,
         triggerPrice: 0,
@@ -99,41 +101,28 @@ const TradePage: React.FC = () => {
   // USDC 授权功能
   const handleApproval = async () => {
     if (!walletClient || !pool) return;
-    
+
     setApproving(true);
     try {
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
-      
+
       // USDC 合约地址（你提到的地址）
       const usdcAddress = pool.quoteToken; // USDC 合约地址
       const spenderAddress = '0x598B5C8243E477616fAD4d4838b26ceE3330EEdf'; // 要授权的合约地址
-      
+
       // ERC20 ABI 中的 approve 函数
       const erc20Abi = [
         "function approve(address spender, uint256 amount) external returns (bool)"
       ];
-      
-      // 创建合约实例
+
       const usdcContract = new ethers.Contract(usdcAddress, erc20Abi, signer);
-      
-      // 授权最大金额（或者你可以设置具体金额）
       const maxAmount = ethers.MaxUint256;
-      
-      console.log('Approving USDC...', {
-        usdcAddress,
-        spenderAddress,
-        amount: maxAmount.toString()
-      });
-      
       const tx = await usdcContract.approve(spenderAddress, maxAmount);
-      console.log('Approval transaction:', tx.hash);
-      
-      // 等待交易确认
       const receipt = await tx.wait();
+
       console.log('Approval confirmed:', receipt);
-      
-      alert('USDC 授权成功！');
+      console.log('USDC 授权成功！');
     } catch (error) {
       console.error('Approval error:', error);
       alert('授权失败: ' + (error as any).message);
@@ -147,15 +136,12 @@ const TradePage: React.FC = () => {
 
     setLoading(true);
     try {
-      console.log('Form values:', values);
-
       // 将 wagmi walletClient 转换为 ethers.js 兼容的 signer
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
 
-      console.log(values.orderPrice)
-
-      const rs = await placeOrder({
+      console.log(pool.baseDecimals)
+      const orderData = {
         chainId: ChainId.ARB_TESTNET,
         address: address as `0x${string}`,
         poolId: pool.poolId,
@@ -173,13 +159,16 @@ const TradePage: React.FC = () => {
         slippagePct: new BigNumber(values.slippagePct).multipliedBy(10 ** 4).toString(), // 转换为精度4位
         executionFeeToken: pool.quoteToken,
         leverage: values.leverage,
-        tpSize: '0',//new BigNumber(values.tpSize).multipliedBy(10 ** pool.baseDecimals).toString(),
-        tpPrice:  '0',//values.tpPrice ? new BigNumber(values.tpPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
-        slSize: '0',//new BigNumber(values.slSize).multipliedBy(10 ** pool.baseDecimals).toString(),
-        slPrice: '0',//values.slPrice ? new BigNumber(values.slPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
-      }, signer);
+        tpSize: '0',// new BigNumber(values.tpSize).multipliedBy(10 ** pool.baseDecimals).toString(),
+        tpPrice: '0',// values.tpPrice ? new BigNumber(values.tpPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
+        slSize: '0',// new BigNumber(values.slSize).multipliedBy(10 ** pool.baseDecimals).toString(),
+        slPrice: '0',// values.slPrice ? new BigNumber(values.slPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
+      }
 
-      console.log('rs--->', rs)
+      console.log('orderData')
+
+      const rs = await placeOrder(orderData, signer);
+
 
       console.log('Order placed:', rs);
     } catch (error) {
@@ -188,6 +177,8 @@ const TradePage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // orderId: 1 2 
 
   const isNetworkCorrect = currentChainId === ChainId.ARB_TESTNET;
   const canTrade = pool && address && walletClient && isNetworkCorrect;
@@ -235,7 +226,9 @@ const TradePage: React.FC = () => {
                   <Col span={8}>
                     <Text type="secondary">Pool ID:</Text>
                     <br />
-                    <Text code>{pool.poolId.slice(0, 10)}...</Text>
+                    <Tooltip title={pool.poolId}>
+                      <Text code>{pool.poolId.slice(0, 10)}...</Text>
+                    </Tooltip>
                   </Col>
                   <Col span={8}>
                     <Text type="secondary">精度:</Text>
@@ -373,7 +366,7 @@ const TradePage: React.FC = () => {
               <Form.Item>
                 <Space>
                   <Button
-                    type="default"
+                    type="primary"
                     onClick={handleApproval}
                     loading={approving}
                     disabled={!pool || !walletClient || !isNetworkCorrect}
@@ -392,7 +385,7 @@ const TradePage: React.FC = () => {
                     提交订单
                   </Button>
 
-                  <Button onClick={() => form.resetFields()}>
+                  <Button size="large" onClick={() => form.resetFields()}>
                     重置表单
                   </Button>
 
@@ -407,8 +400,48 @@ const TradePage: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      <Divider />
+
+      <Row gutter={[16, 8]}>
+        <Col span={12} className='flex gap-[20px]'>
+          <Form.Item label={`订单ID`}>
+            <Input style={{ width: '100%' }} value={orderId} onChange={(e) => setOrderId(e.target.value)} />
+          </Form.Item>
+          <Button type="primary" onClick={async () => {
+            console.log(orderId)
+            if (!walletClient || !orderId) return;
+            const provider = new BrowserProvider(walletClient.transport);
+            const signer = await provider.getSigner();
+            const rs = await cancelOrder(ChainId.ARB_TESTNET, orderId as string, signer);
+
+            console.log('rs--->', rs);
+          }}>取消订单</Button>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 8]}>
+        <Col span={12} className='flex gap-[20px]'>
+          <Form.Item label={`订单ID(逗号隔开)`}>
+            <Input style={{ width: '100%' }} value={orderIds} onChange={(e) => setOrderIds(e.target.value)} />
+          </Form.Item>
+          <Button type="primary" onClick={async () => {
+            const ids = orderIds.split(',')
+
+            if (!walletClient || !ids.length) return;
+            const provider = new BrowserProvider(walletClient.transport);
+            const signer = await provider.getSigner();
+            const rs = await cancelOrders(ChainId.ARB_TESTNET, ids, signer);
+
+            console.log('rs--->', rs);
+          }}>批量取消订单</Button>
+        </Col>
+      </Row>
     </div>
   );
 };
+
+
+
 
 export default TradePage;
