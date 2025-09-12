@@ -2,6 +2,8 @@
 node_modules/
 packages/*/node_modules/
 
+packages/*/dist/
+
 # Build outputs
 dist/
 build/

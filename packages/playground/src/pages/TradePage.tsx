@@ -88,8 +88,8 @@ const TradePage: React.FC = () => {
         triggerPrice: 0,
         timeInForce: TimeInForce.IOC,
         postOnly: false,
-        slippagePct: 0.3, // 0.5%
-        leverage: 2,
+        slippagePct: 0.01, // 0.5%
+        leverage: 10,
         tpSize: 0,
         tpPrice: 0,
         slSize: 0,
