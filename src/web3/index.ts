@@ -10,7 +10,7 @@ import {
 } from "ethers";
 import { Address } from "@/address";
 import { ChainId } from "@/config/chain";
-import { getChainInfo } from "@/config/chains";
+import { getChainInfo } from "@/config/chains/index";
 import { RotationProvider } from "@/web3/rotationProvider";
 
 export function getContract(
