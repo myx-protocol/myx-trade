@@ -20,9 +20,14 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  ErrorCode: () => ErrorCode,
+  MarketPoolState: () => MarketPoolState,
+  OracleType: () => OracleType,
   adjustCollateral: () => adjustCollateral,
   cancelOrder: () => cancelOrder,
   cancelOrders: () => cancelOrders,
+  getPools: () => getPools,
+  getPrice: () => getPrice,
   getUserFeeRate: () => getUserFeeRate,
   placeOrder: () => placeOrder
 });
@@ -1341,11 +1346,113 @@ var adjustCollateral = async (chainId, positionId, adjustAmount, singer) => {
   const receipt = await response?.wait();
   return receipt;
 };
+
+// src/api/type.ts
+var ErrorCode = /* @__PURE__ */ ((ErrorCode2) => {
+  ErrorCode2[ErrorCode2["SUCCESS"] = 9200] = "SUCCESS";
+  ErrorCode2[ErrorCode2["SUCCESS_ORIGIN"] = 0] = "SUCCESS_ORIGIN";
+  ErrorCode2[ErrorCode2["IDENTITY_VERIFICATION_FAILED"] = 9401] = "IDENTITY_VERIFICATION_FAILED";
+  ErrorCode2[ErrorCode2["PERMISSION_DENIED"] = 9403] = "PERMISSION_DENIED";
+  ErrorCode2[ErrorCode2["NOT_EXIST"] = 9404] = "NOT_EXIST";
+  ErrorCode2[ErrorCode2["REQUEST_LIMIT"] = 9429] = "REQUEST_LIMIT";
+  ErrorCode2[ErrorCode2["SERVICE_ERROR"] = 9500] = "SERVICE_ERROR";
+  ErrorCode2[ErrorCode2["MISS_REQUESTED_PARAMETER"] = 9900] = "MISS_REQUESTED_PARAMETER";
+  ErrorCode2[ErrorCode2["INVALID_PARAMETER"] = 9901] = "INVALID_PARAMETER";
+  ErrorCode2["NETWORK_ERROR"] = "ERR_NETWORK";
+  return ErrorCode2;
+})(ErrorCode || {});
+var MarketPoolState = /* @__PURE__ */ ((MarketPoolState2) => {
+  MarketPoolState2[MarketPoolState2["Cook"] = 0] = "Cook";
+  MarketPoolState2[MarketPoolState2["Primed"] = 1] = "Primed";
+  MarketPoolState2[MarketPoolState2["Trench"] = 2] = "Trench";
+  MarketPoolState2[MarketPoolState2["PreBench"] = 3] = "PreBench";
+  MarketPoolState2[MarketPoolState2["Bench"] = 4] = "Bench";
+  return MarketPoolState2;
+})(MarketPoolState || {});
+var OracleType = /* @__PURE__ */ ((OracleType2) => {
+  OracleType2[OracleType2["Pyth"] = 0] = "Pyth";
+  OracleType2[OracleType2["Chainlink"] = 1] = "Chainlink";
+  return OracleType2;
+})(OracleType || {});
+
+// src/api/request.ts
+function $fetch(method, url, data) {
+  return fetch(url, {
+    method,
+    headers: {
+      Accept: "application/json,text/plain,*/*",
+      "Content-Type": "application/json",
+      "Access-Control-Allow-credentials": "true"
+      // "Accept-Language": getActiveLocale(),
+      // "myx-signature-account":
+      //   store.getState().account?.account?.address ?? undefined,
+    },
+    body: method === "GET" || !data ? void 0 : JSON.stringify(data)
+  }).then((res) => {
+    if (res.status === 200) {
+      return res.json();
+    } else {
+      return Promise.reject(res);
+    }
+  }).then((data2) => {
+    console.log(data2);
+    if (data2.code === 9200 /* SUCCESS */ || data2.code === 0 /* SUCCESS_ORIGIN */) {
+      return Promise.resolve(data2);
+    } else {
+      return Promise.reject(data2);
+    }
+  }).catch((e) => {
+    console.error(e.message);
+    return Promise.reject(e);
+  });
+}
+
+// src/api/utils.ts
+function encodeQueryParam(key, value) {
+  const encodedKey = encodeURIComponent(key);
+  return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
+}
+function addQueryParam(query, key) {
+  return encodeQueryParam(key, query[key]);
+}
+function addArrayQueryParam(query, key) {
+  const value = query[key];
+  return value.map((v) => encodeQueryParam(key, v)).join("&");
+}
+function toQueryString(rawQuery) {
+  const query = rawQuery || {};
+  const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
+  return keys.map((key) => Array.isArray(query[key]) ? addArrayQueryParam(query, key) : addQueryParam(query, key)).join("&");
+}
+function addQueryParams(rawQuery) {
+  const queryString = toQueryString(rawQuery);
+  return queryString ? `?${queryString}` : "";
+}
+
+// src/api/index.ts
+var baseUrl = "https://api-test.myx.cash";
+var getPools = async () => {
+  return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
+};
+var getPrice = async (chainId, poolIds = []) => {
+  if (!!poolIds.length) {
+    return await $fetch("GET", `${baseUrl}/v2/mx-gateway/quote/price/oracles${addQueryParams({
+      chainId,
+      poolIds: poolIds.join(",")
+    })}`);
+  }
+  return Promise.reject(new Error("Invalid pool id"));
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ErrorCode,
+  MarketPoolState,
+  OracleType,
   adjustCollateral,
   cancelOrder,
   cancelOrders,
+  getPools,
+  getPrice,
   getUserFeeRate,
   placeOrder
 });
