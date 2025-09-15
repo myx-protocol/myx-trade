@@ -1,11 +1,11 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
 import { getPoolManagerContract } from "../../web3/providers";
-import { ChainId, isSupportedChainFn } from "@/config/chain";
+import { ChainId } from "@/config/chain";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { Market } from "@/config/market";
 import { getPools } from "@/api";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 import { deposit } from "@/lp/quote/deposit";
 import {  getMarketPoolId } from "@/lp/pool/get";
 
@@ -14,9 +14,9 @@ const marketId = Market[chainId].marketId;
 
 export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
   try {
-    if (!isSupportedChainFn(chainId)) {
-      throw new Error(Errors[ ErrorCode.Invalid_Chain_ID]);
-    }
+    // if (!isSupportedChainFn(chainId)) {
+    //   throw new Error(Errors[ ErrorCode.Invalid_Chain_ID]);
+    // }
     
     if (!baseToken) {
       throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);

@@ -1,6 +1,6 @@
 import { ChainId } from "@/config/chain";
 import { getJSONProvider } from "@/web3";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 import { parseUnits } from "ethers";
 import { COMMON_CONFIG_DECIMALS } from "@/config/decimals";
 
