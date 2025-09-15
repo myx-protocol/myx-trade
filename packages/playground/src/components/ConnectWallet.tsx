@@ -8,6 +8,9 @@ export const ConnectWallet: React.FC = () => {
   const { disconnect } = useDisconnect();
   const [showConnectors, setShowConnectors] = useState(false);
 
+  // 调试信息
+  console.log('Wallet state:', { address, isConnected, connectorsLength: connectors.length, isPending });
+
   // USDC地址 0x7E248Ec1721639413A280d9E82e2862Cae2E6E28
   const USDC_ADDRESS = '0x7E248Ec1721639413A280d9E82e2862Cae2E6E28';
   
@@ -118,9 +121,13 @@ export const ConnectWallet: React.FC = () => {
   return (
     <button
       onClick={() => {
+        console.log('Available connectors:', connectors);
         const metaMaskConnector = connectors.find(c => c.name === 'MetaMask');
+        console.log('MetaMask connector:', metaMaskConnector);
         if (metaMaskConnector) {
           connect({ connector: metaMaskConnector });
+        } else {
+          console.error('MetaMask connector not found');
         }
       }}
       disabled={isPending}
