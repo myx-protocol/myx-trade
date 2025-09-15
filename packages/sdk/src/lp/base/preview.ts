@@ -4,7 +4,7 @@ import { previewAmountOutParams } from "@/lp/type";
 import { BytesLike } from "ethers";
 import { QuotePool } from "@/abi/types/QuotePool";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {

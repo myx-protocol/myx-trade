@@ -9,4 +9,5 @@ export const ARB_TEST_SEPOLIA: MarketInfo = {
   quoteReserveRatio: 100,
   poolPrimeThreshold: 20000n,
   decimals: 6,
+  lpDecimals: 18
 }

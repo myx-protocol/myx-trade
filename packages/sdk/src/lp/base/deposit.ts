@@ -14,7 +14,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 import Address from "@/config/address";
 
 import { Deposit } from "@/lp/type";
