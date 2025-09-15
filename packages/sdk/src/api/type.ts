@@ -39,3 +39,52 @@ export type DashboardType = {
 export interface StatDashBoardResponse extends BaseResponse {
   data: DashboardType;
 }
+
+export enum MarketPoolState {
+  Cook = 0, // 市场建立
+  Primed = 1, // 扣款手续费，等待准备oracle
+  Trench = 2, // 上架交易
+  PreBench = 3, // 预下架
+  Bench = 4 // 下架
+}
+
+export type MarketPool = {
+
+  "chainId": number,
+  "marketId": string,
+  "poolId": string,
+  "oracleId": number,
+  "globalId": number,
+  "state": MarketPoolState,
+  "baseSymbol": string,
+  "quoteSymbol": string,
+  "baseDecimals": number,
+  "quoteDecimals": number,
+  "baseToken": string,
+  "quoteToken": string,
+  "basePoolToken": string,
+  "quotePoolToken": string,
+  "oracleType": number,
+  "feedId": number,
+  "activeTime": number
+}
+export interface MarketPoolResponse extends BaseResponse {
+  data: MarketPool[];
+}
+
+export enum OracleType {
+  Pyth,
+  Chainlink,
+}
+export type PriceType = {
+  oracleId: number
+  price: string
+  vaa: string
+  publishTime: number
+  oracleType?: OracleType
+  nativeFee?: number | string
+}
+
+export interface PriceResponse extends BaseResponse {
+  data: PriceType[];
+}

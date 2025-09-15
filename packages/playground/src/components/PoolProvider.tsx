@@ -1,18 +1,8 @@
-import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { ChainId } from "@/config/chain";
 import { useQuery } from "@tanstack/react-query";
 import { getPools } from "@/api";
-import type { MarketPool } from "@/api/type";
-export interface PoolContextValue {
-  poolId?: string;
-  chainId: ChainId;
-  account?: string;
-  pools?: MarketPool[];
-  setPoolId: (poolId: string) => void;
-  refetch: () => void;
-  isLoading: boolean;
-}
-export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue);
+import { PoolContext } from "./PoolContext";
 
 
 export const PoolProvider = ({ children }: { children?: ReactNode }) => {
