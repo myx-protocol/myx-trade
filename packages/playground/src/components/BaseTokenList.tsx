@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { PoolContext } from "./PoolProvider";
+import { PoolContext } from "./PoolContext";
 import { BaseTokens } from "../config/BaseTokens.ts";
 
 export const BaseTokenList = () => {
