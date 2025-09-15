@@ -1,5 +1,5 @@
-import { CreatePoolRequest } from "@/pool/type";
-import { getPoolManagerContract } from "../web3/providers";
+import { CreatePoolRequest } from "@/lp/pool/type";
+import { getPoolManagerContract } from "../../web3/providers";
 import { ChainId, isSupportedChainFn } from "@/config/chain";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { Market } from "@/config/market";

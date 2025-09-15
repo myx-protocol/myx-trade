@@ -1,5 +1,5 @@
 import { useContext, useMemo } from "react";
-import { PoolContext } from "./PoolProvider";
+import { PoolContext } from "./PoolContext";
 
 export const PoolInfo = () => {
   const { pools , poolId} = useContext(PoolContext);
