@@ -20,7 +20,6 @@ import {
   Tag,
   Typography,
   Divider,
-  Tooltip,
   Input
 } from 'antd';
 
@@ -48,7 +47,7 @@ interface TradeFormValues {
 }
 
 const TradePage: React.FC = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
   const [loading, setLoading] = useState(false);
@@ -56,27 +55,60 @@ const TradePage: React.FC = () => {
   const [orderId, setOrderId] = useState<string>('');
   const [orderIds, setOrderIds] = useState<string>('');
   const [form] = Form.useForm<TradeFormValues>();
-  const { data: pool } = useSWR('getPoolList', async () => {
+  const { data: poolList } = useSWR('getPoolList', async () => {
     const rs = await getPools()
     const poolList = rs?.data ?? []
-    const pool = rs.data.find((item: any) => item.poolId === "0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d");
     console.log('poolList-->', poolList)
-    console.log('pool-->', pool)
-    const oraclePriceRes = await getOraclePrice(pool.poolId, ChainId.ARB_TESTNET)
-    console.log('oraclePrice-->', oraclePriceRes?.data)
-    const _price = oraclePriceRes.data[0].price;
-    form.setFieldsValue({
-      orderPrice: _price,
-    })
-
-    const getPoolLevelRes = await getPoolLevel(pool.poolId, ChainId.ARB_TESTNET)
-    console.log('getPoolLevelRes-->', getPoolLevelRes?.data)
-    return pool
+    
+    // 为每个池子获取 level 配置
+    const poolsWithLevel = await Promise.all(
+      poolList.map(async (pool: any) => {
+        try {
+          const levelRes = await getPoolLevel(pool.poolId, ChainId.ARB_TESTNET);
+          return { ...pool, levelData: levelRes.data };
+        } catch (error) {
+          console.error(`Failed to get level data for pool ${pool.poolId}:`, error);
+          return { ...pool, levelData: null };
+        }
+      })
+    );
+    
+    return poolsWithLevel;
   })
+
+  const [selectedPoolId, setSelectedPoolId] = useState<string>("0x5cd0bc68073c63064c9820d395a8c4c1225bc43eca47e39903b5193f9585a2ec");
+  const selectedPool = poolList?.find((item: any) => item.poolId === selectedPoolId);
+  
+  // 获取选中池子的 level 配置
+  const { data: poolLevelData } = useSWR(
+    selectedPool ? `poolLevel-${selectedPool.poolId}` : null,
+    async () => {
+      if (!selectedPool) return null;
+      const res = await getPoolLevel(selectedPool.poolId, ChainId.ARB_TESTNET);
+      console.log('poolLevelData-->', res.data);
+      return res.data;
+    }
+  );
+
+  // 当选择的池子变化时，获取价格信息
+  useEffect(() => {
+    if (selectedPool) {
+      getOraclePrice(selectedPool.poolId, ChainId.ARB_TESTNET).then((oraclePriceRes) => {
+        const _price = oraclePriceRes.data[0].price;
+        form.setFieldsValue({
+          orderPrice: _price,
+        })
+      }).catch(console.error);
+
+      getPoolLevel(selectedPool.poolId, ChainId.ARB_TESTNET).then((getPoolLevelRes) => {
+        console.log('getPoolLevelRes-->', getPoolLevelRes?.data)
+      }).catch(console.error);
+    }
+  }, [selectedPool, form]);
 
   // 设置表单默认值
   useEffect(() => {
-    if (pool) {
+    if (selectedPool) {
       form.setFieldsValue({
         orderType: OrderType.MARKET,
         triggerType: TriggerType.NONE,
@@ -88,7 +120,7 @@ const TradePage: React.FC = () => {
         triggerPrice: 0,
         timeInForce: TimeInForce.IOC,
         postOnly: false,
-        slippagePct: 0.01, // 0.5%
+        slippagePct: 0.001, // 0.5%
         leverage: 10,
         tpSize: 0,
         tpPrice: 0,
@@ -96,11 +128,20 @@ const TradePage: React.FC = () => {
         slPrice: 0,
       });
     }
-  }, [pool, form]);
+  }, [selectedPool, form]);
 
   // USDC 授权功能
   const handleApproval = async () => {
-    if (!walletClient || !pool) return;
+    if (!selectedPool) {
+      console.error('Pool data not available');
+      return;
+    }
+
+    if (!walletClient) {
+      console.error('WalletClient is null or undefined');
+      alert('钱包客户端未准备好，请重新连接钱包');
+      return;
+    }
 
     setApproving(true);
     try {
@@ -108,8 +149,8 @@ const TradePage: React.FC = () => {
       const signer = await provider.getSigner();
 
       // USDC 合约地址（你提到的地址）
-      const usdcAddress = pool.quoteToken; // USDC 合约地址
-      const spenderAddress = '0x598B5C8243E477616fAD4d4838b26ceE3330EEdf'; // 要授权的合约地址
+      const usdcAddress = selectedPool.quoteToken; // USDC 合约地址
+      const spenderAddress = '0x17b72e6713233EA5C16c952AFA7742F71B20ea8c'; // 要授权的合约地址
 
       // ERC20 ABI 中的 approve 函数
       const erc20Abi = [
@@ -132,32 +173,43 @@ const TradePage: React.FC = () => {
   };
 
   const onFinish = async (values: TradeFormValues) => {
-    if (!pool || !address || !walletClient) return;
+    if (!selectedPool || !address || !isConnected) {
+      console.log('Missing required data:', { selectedPool: !!selectedPool, address: !!address, isConnected });
+      return;
+    }
+
+    if (!walletClient) {
+      console.error('WalletClient is null or undefined');
+      alert('钱包客户端未准备好，请重新连接钱包');
+      return;
+    }
 
     setLoading(true);
     try {
+      console.log('address-->', address)
+      console.log('walletClient-->', walletClient)
       // 将 wagmi walletClient 转换为 ethers.js 兼容的 signer
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
 
-      console.log(pool.baseDecimals)
+      console.log(selectedPool.baseDecimals)
       const orderData = {
         chainId: ChainId.ARB_TESTNET,
         address: address as `0x${string}`,
-        poolId: pool.poolId,
+        poolId: selectedPool.poolId,
         positionId: 0,
         orderType: values.orderType as OrderType,
         triggerType: values.triggerType as TriggerType,
         operation: values.operation as OperationType,
         direction: values.direction as Direction,
-        collateralAmount: new BigNumber(values.collateralAmount).multipliedBy(10 ** pool.quoteDecimals).toString(),
-        size: new BigNumber(values.size).multipliedBy(10 ** pool.baseDecimals).toString(),
+        collateralAmount: new BigNumber(values.collateralAmount).multipliedBy(10 ** selectedPool.quoteDecimals).toString(),
+        size: new BigNumber(values.size).multipliedBy(10 ** selectedPool.baseDecimals).toString(),
         orderPrice: values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
         triggerPrice: values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',//values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
         timeInForce: values.timeInForce as TimeInForce,
         postOnly: values.postOnly,
         slippagePct: new BigNumber(values.slippagePct).multipliedBy(10 ** 4).toString(), // 转换为精度4位
-        executionFeeToken: pool.quoteToken,
+        executionFeeToken: selectedPool.quoteToken,
         leverage: values.leverage,
         tpSize: '0',// new BigNumber(values.tpSize).multipliedBy(10 ** pool.baseDecimals).toString(),
         tpPrice: '0',// values.tpPrice ? new BigNumber(values.tpPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
@@ -181,7 +233,8 @@ const TradePage: React.FC = () => {
   // orderId: 1 2 
 
   const isNetworkCorrect = currentChainId === ChainId.ARB_TESTNET;
-  const canTrade = pool && address && walletClient && isNetworkCorrect;
+
+  const canTrade = selectedPool && address && isConnected && isNetworkCorrect;
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px' }}>
@@ -214,48 +267,269 @@ const TradePage: React.FC = () => {
                 </Tag>
               </Col>
             </Row>
-            {pool && (
+            {selectedPool && (
               <>
                 <Divider />
                 <Row gutter={[16, 8]}>
-                  <Col span={8}>
+                  <Col span={6}>
                     <Text type="secondary">交易对:</Text>
                     <br />
-                    <Text strong>{pool.baseSymbol}/{pool.quoteSymbol}</Text>
+                    <Text strong style={{ fontSize: '16px' }}>{selectedPool.baseSymbol}/{selectedPool.quoteSymbol}</Text>
                   </Col>
-                  <Col span={8}>
+                  <Col span={6}>
                     <Text type="secondary">Pool ID:</Text>
                     <br />
-                    <Tooltip title={pool.poolId}>
-                      <Text code>{pool.poolId.slice(0, 10)}...</Text>
-                    </Tooltip>
+                    <Text code style={{ fontSize: '10px', wordBreak: 'break-all' }}>{selectedPool.poolId}</Text>
                   </Col>
-                  <Col span={8}>
+                  <Col span={6}>
                     <Text type="secondary">精度:</Text>
                     <br />
-                    <Text>Base: {pool.baseDecimals}, Quote: {pool.quoteDecimals}</Text>
+                    <Text>Base: {selectedPool.baseDecimals}, Quote: {selectedPool.quoteDecimals}</Text>
+                  </Col>
+                  <Col span={6}>
+                    <Text type="secondary">状态:</Text>
+                    <br />
+                    <Tag color={selectedPool.state === 2 ? 'green' : 'red'}>
+                      {selectedPool.state === 2 ? '可交易' : '不可交易'}
+                    </Tag>
                   </Col>
                 </Row>
                 <Divider />
                 <Row gutter={[16, 8]}>
-                  <Col span={12}>
-                    <Text type="secondary">USDC 合约:</Text>
+                  <Col span={8}>
+                    <Text type="secondary">基础代币合约:</Text>
                     <br />
-                    <Text code>{pool.quoteToken}</Text>
+                    <Text code style={{ fontSize: '12px', wordBreak: 'break-all' }}>{selectedPool.baseToken}</Text>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
+                    <Text type="secondary">计价代币合约:</Text>
+                    <br />
+                    <Text code style={{ fontSize: '12px', wordBreak: 'break-all' }}>{selectedPool.quoteToken}</Text>
+                  </Col>
+                  <Col span={8}>
                     <Text type="secondary">授权给合约:</Text>
                     <br />
-                    <Text code>0x598B5C8243E477616fAD4d4838b26ceE3330EEdf</Text>
+                    <Text code style={{ fontSize: '12px', wordBreak: 'break-all' }}>0x17b72e6713233EA5C16c952AFA7742F71B20ea8c</Text>
                   </Col>
                 </Row>
+                {selectedPool.maxLeverage && (
+                  <>
+                    <Divider />
+                    <Row gutter={[16, 8]}>
+                      <Col span={8}>
+                        <Text type="secondary">最大杠杆:</Text>
+                        <br />
+                        <Text strong style={{ color: '#ff7300', fontSize: '16px' }}>{selectedPool.maxLeverage}x</Text>
+                      </Col>
+                      <Col span={8}>
+                        <Text type="secondary">基础资产符号:</Text>
+                        <br />
+                        <Text strong>{selectedPool.baseSymbol}</Text>
+                      </Col>
+                      <Col span={8}>
+                        <Text type="secondary">计价资产符号:</Text>
+                        <br />
+                        <Text strong>{selectedPool.quoteSymbol}</Text>
+                      </Col>
+                    </Row>
+                  </>
+                )}
+                {poolLevelData && poolLevelData.levelConfig && (
+                  <>
+                    <Divider />
+                    <div style={{ marginBottom: '16px' }}>
+                      <Text strong style={{ fontSize: '14px' }}>
+                        池子配置 - {poolLevelData.levelName} (Level {poolLevelData.level})
+                      </Text>
+                    </div>
+                    <Row gutter={[16, 8]}>
+                      <Col span={6}>
+                        <Text type="secondary">杠杆倍数:</Text>
+                        <br />
+                        <Text strong style={{ color: '#1890ff' }}>{poolLevelData.levelConfig.leverage}x</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">维持保证金率:</Text>
+                        <br />
+                        <Text strong>{(poolLevelData.levelConfig.maintainCollateralRate * 100).toFixed(2)}%</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">最小订单(USD):</Text>
+                        <br />
+                        <Text strong>${poolLevelData.levelConfig.minOrderSizeInUsd}</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">滑点:</Text>
+                        <br />
+                        <Text strong>{(poolLevelData.levelConfig.slip * 100).toFixed(3)}%</Text>
+                      </Col>
+                    </Row>
+                    <Row gutter={[16, 8]} style={{ marginTop: '12px' }}>
+                      <Col span={6}>
+                        <Text type="secondary">资金费率1:</Text>
+                        <br />
+                        <Text>{(poolLevelData.levelConfig.fundingFeeRate1 * 100).toFixed(4)}%</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">资金费率1最大:</Text>
+                        <br />
+                        <Text>{(poolLevelData.levelConfig.fundingFeeRate1Max * 100).toFixed(3)}%</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">资金费率2:</Text>
+                        <br />
+                        <Text>{(poolLevelData.levelConfig.fundingFeeRate2 * 100).toFixed(3)}%</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">资金费用周期:</Text>
+                        <br />
+                        <Text>{poolLevelData.levelConfig.fundingFeeSeconds / 3600}小时</Text>
+                      </Col>
+                    </Row>
+                    <Row gutter={[16, 8]} style={{ marginTop: '12px' }}>
+                      <Col span={6}>
+                        <Text type="secondary">锁定流动性:</Text>
+                        <br />
+                        <Text>${poolLevelData.levelConfig.lockLiquidity.toLocaleString()}</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">锁定价格比率:</Text>
+                        <br />
+                        <Text>{(poolLevelData.levelConfig.lockPriceRate * 100).toFixed(2)}%</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">锁定时间:</Text>
+                        <br />
+                        <Text>{poolLevelData.levelConfig.lockSeconds / 3600}小时</Text>
+                      </Col>
+                      <Col span={6}>
+                        <Text type="secondary">配置名称:</Text>
+                        <br />
+                        <Tag color="blue">{poolLevelData.levelName}</Tag>
+                      </Col>
+                    </Row>
+                  </>
+                )}
               </>
             )}
           </Card>
         </Col>
 
         <Col span={24}>
-          <Card title="交易参数" loading={!pool}>
+          <Card title="选择交易池" loading={!poolList}>
+            <Row gutter={[16, 16]}>
+              {poolList?.map((pool: any) => (
+                <Col span={12} key={pool.poolId}>
+                  <Card 
+                    hoverable
+                    className={selectedPoolId === pool.poolId ? 'border-blue-500 bg-blue-50' : ''}
+                    onClick={() => setSelectedPoolId(pool.poolId)}
+                    size="small"
+                  >
+                    <div className="space-y-3">
+                      {/* 交易对名称 */}
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-gray-800 mb-1">
+                          {pool.baseSymbol}/{pool.quoteSymbol}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {selectedPoolId === pool.poolId && <span className="text-blue-600">✓ 已选择</span>}
+                        </div>
+                      </div>
+
+                      {/* 基本信息 */}
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-500">基础资产:</span>
+                          <div className="font-mono">{pool.baseSymbol}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价资产:</span>
+                          <div className="font-mono">{pool.quoteSymbol}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">基础精度:</span>
+                          <div className="font-mono">{pool.baseDecimals}位</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价精度:</span>
+                          <div className="font-mono">{pool.quoteDecimals}位</div>
+                        </div>
+                      </div>
+
+                      {/* 合约地址 */}
+                      <div className="space-y-1 text-xs">
+                        <div>
+                          <span className="text-gray-500">基础代币:</span>
+                          <div className="font-mono text-blue-600 break-all">{pool.baseToken}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价代币:</span>
+                          <div className="font-mono text-blue-600 break-all">{pool.quoteToken}</div>
+                        </div>
+                      </div>
+
+                      {/* Pool ID */}
+                      <div className="text-xs">
+                        <span className="text-gray-500">Pool ID:</span>
+                        <div className="font-mono text-gray-600 break-all">
+                          {pool.poolId}
+                        </div>
+                      </div>
+
+                      {/* Level 配置信息 */}
+                      {pool.levelData && pool.levelData.levelConfig && (
+                        <div className="space-y-1 text-xs bg-gray-50 p-2 rounded">
+                          <div className="font-semibold text-gray-700 mb-1">
+                            配置 {pool.levelData.levelName} (Level {pool.levelData.level})
+                          </div>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div>
+                              <span className="text-gray-500">杠杆:</span>
+                              <span className="font-bold text-blue-600"> {pool.levelData.levelConfig.leverage}x</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">最小订单:</span>
+                              <span className="font-semibold"> ${pool.levelData.levelConfig.minOrderSizeInUsd}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">维持保证金:</span>
+                              <span className="font-semibold"> {(pool.levelData.levelConfig.maintainCollateralRate * 100).toFixed(1)}%</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">滑点:</span>
+                              <span className="font-semibold"> {(pool.levelData.levelConfig.slip * 100).toFixed(2)}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 其他参数 */}
+                      {pool.maxLeverage && (
+                        <div className="text-xs">
+                          <span className="text-gray-500">最大杠杆:</span>
+                          <span className="font-bold text-orange-600"> {pool.maxLeverage}x</span>
+                        </div>
+                      )}
+                      
+                      {pool.state !== undefined && (
+                        <div className="text-xs">
+                          <span className="text-gray-500">状态:</span>
+                          <span className={`ml-1 px-2 py-1 rounded text-white text-xs ${pool.state === 2 ? 'bg-green-500' : 'bg-red-500'}`}>
+                            {pool.state === 2 ? '可交易' : '不可交易'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        </Col>
+
+        <Col span={24}>
+          <Card title="交易参数" loading={!selectedPool}>
             <Form
               form={form}
               layout="vertical"
@@ -300,19 +574,19 @@ const TradePage: React.FC = () => {
 
                 <Col span={12}>
                   <Card title="数量和价格" size="small" style={{ height: '100%' }}>
-                    <Form.Item label={`保证金数量 (${pool?.quoteSymbol || 'USDT'})`} name="collateralAmount">
+                    <Form.Item label={`保证金数量 (${selectedPool?.quoteSymbol || 'USDT'})`} name="collateralAmount">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`交易数量 (${pool?.baseSymbol || 'Token'})`} name="size">
+                    <Form.Item label={`交易数量 (${selectedPool?.baseSymbol || 'Token'})`} name="size">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`订单价格 (${pool?.quoteSymbol || 'USDT'})`} name="orderPrice">
+                    <Form.Item label={`订单价格 (${selectedPool?.quoteSymbol || 'USDT'})`} name="orderPrice">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`触发价格 (${pool?.quoteSymbol || 'USDT'})`} name="triggerPrice">
+                    <Form.Item label={`触发价格 (${selectedPool?.quoteSymbol || 'USDT'})`} name="triggerPrice">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
                   </Card>
@@ -330,7 +604,7 @@ const TradePage: React.FC = () => {
                       <Switch />
                     </Form.Item>
 
-                    <Form.Item label="滑点 (%)" name="slippagePct">
+                    <Form.Item label="滑点" name="slippagePct">
                       <InputNumber style={{ width: '100%' }} min={0} max={100} step={0.1} />
                     </Form.Item>
 
@@ -342,19 +616,19 @@ const TradePage: React.FC = () => {
 
                 <Col span={12}>
                   <Card title="止盈止损" size="small" style={{ height: '100%' }}>
-                    <Form.Item label={`止盈数量 (${pool?.baseSymbol || 'Token'})`} name="tpSize">
+                    <Form.Item label={`止盈数量 (${selectedPool?.baseSymbol || 'Token'})`} name="tpSize">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`止盈价格 (${pool?.quoteSymbol || 'USDT'})`} name="tpPrice">
+                    <Form.Item label={`止盈价格 (${selectedPool?.quoteSymbol || 'USDT'})`} name="tpPrice">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`止损数量 (${pool?.baseSymbol || 'Token'})`} name="slSize">
+                    <Form.Item label={`止损数量 (${selectedPool?.baseSymbol || 'Token'})`} name="slSize">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
 
-                    <Form.Item label={`止损价格 (${pool?.quoteSymbol || 'USDT'})`} name="slPrice">
+                    <Form.Item label={`止损价格 (${selectedPool?.quoteSymbol || 'USDT'})`} name="slPrice">
                       <InputNumber style={{ width: '100%' }} min={0} />
                     </Form.Item>
                   </Card>
@@ -369,7 +643,7 @@ const TradePage: React.FC = () => {
                     type="primary"
                     onClick={handleApproval}
                     loading={approving}
-                    disabled={!pool || !walletClient || !isNetworkCorrect}
+                            disabled={!selectedPool || !walletClient || !isNetworkCorrect}
                     size="large"
                   >
                     授权 USDC

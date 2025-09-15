@@ -32,12 +32,12 @@ module.exports = __toCommonJS(index_exports);
 var import_ethers = require("ethers");
 var ARB_TEST_SEPOLIA = {
   USDC: "",
-  POOL_MANAGER: "0xfe3eC818ADd1a2259c0e0cf7A1Ff8780124E5bEA",
+  POOL_MANAGER: "0x121Ab2186CC7f86A174A64AACB3bB3765260b3f3",
   POOL_VIEW: "",
   HYPER_VAULT: import_ethers.ZeroAddress,
   FEE_COLLECTOR: "",
   POSITION_MANAGER: "",
-  ORDER_MANAGER: "0x598B5C8243E477616fAD4d4838b26ceE3330EEdf",
+  ORDER_MANAGER: "0x17b72e6713233EA5C16c952AFA7742F71B20ea8c",
   TRUSTED_FORWARDER: "",
   FRONT_FACET: "",
   // router address
@@ -49,10 +49,10 @@ var ARB_TEST_SEPOLIA = {
   PYTH: "",
   MYX: import_ethers.ZeroAddress,
   ERC20: "",
-  LIQUIDITY_ROUTER: "0xC2A4c4Ac0017153895642821504c51850E3A251A",
-  BASE_POOL: "0x2096B83c8c268E8a4C4C82bd03fc310A9C41c4b2",
-  QUOTE_POOL: "0x9219ca5761F71357cb3164a9B5FF073065bafF79",
-  BROKER: "0x06415215fCEC29A84EdBDa3c5BF5dfB4Bd6F0F07"
+  LIQUIDITY_ROUTER: "0x25fbCa7A3aD9cAbA323227841Bd32Db0B82D6BdF",
+  BASE_POOL: "0xc62e323AA83A871C1a6b2C1e44a6302b8344B061",
+  QUOTE_POOL: "0xA5ecF0643eC18D5d21178aB8aB9Ef516306EBFb2",
+  BROKER: "0xa70245309631Ce97425532466F24ef86FE630311"
 };
 
 // src/config/address.ts
@@ -97,179 +97,6 @@ var formatHex = (hex, mask = true) => {
     return `${hex.slice(0, 6).toLowerCase()}...${hex.slice(-4).toLowerCase()}`;
   }
   return hex.toLowerCase();
-};
-
-// src/assets/icons/chain/logo/linea.png
-var linea_default = "./linea-ZTA3FOH3.png";
-
-// src/config/fee.ts
-var GAS_FEE_RESERVED_RATIO = 10;
-
-// src/config/chains/LINEA_SEPOLIA.ts
-var LINEA_SEPOLIA_default = {
-  chainId: 59141 /* LINEA_SEPOLIA */,
-  chainInfo: {
-    explorer: "https://sepolia.lineascan.build/",
-    explorerOfTX: "https://sepolia.lineascan.build/tx/",
-    publicJsonRPCUrl: [
-      "https://rpc.sepolia.linea.build",
-      "https://linea-sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-    ],
-    label: "Linea Sepolia",
-    logoUrl: linea_default,
-    faucetUrl: "",
-    chainSymbol: "Linea",
-    gasPriceRatio: 1.3,
-    gasLimitRatio: 1.2,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.525 + 1) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "Ether",
-      symbol: "ETH",
-      decimals: 18
-    }
-  }
-};
-
-// src/assets/icons/chain/logo/arbitrum.png
-var arbitrum_default = "./arbitrum-MLVIRDTQ.png";
-
-// src/config/chains/ARB_SEPOLIA.ts
-var ARB_SEPOLIA_default = {
-  chainId: 421614 /* ARB_TESTNET */,
-  chainInfo: {
-    privateJsonRPCUrl: "",
-    publicJsonRPCUrl: [
-      "https://sepolia-rollup.arbitrum.io/rpc"
-      // 'https://arbitrum-sepolia.blockpi.network/v1/rpc/public',
-    ],
-    label: " Arbitrum Sepolia",
-    chainSymbol: "Arb Sepolia",
-    explorer: "https://sepolia.arbiscan.io/",
-    explorerOfTX: "https://sepolia.arbiscan.io/tx/",
-    faucetUrl: "https://bwarelabs.com/faucets/arbitrum-sepolia",
-    logoUrl: arbitrum_default,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.055 + 1) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "Ether",
-      symbol: "ETH",
-      decimals: 18
-    }
-  }
-};
-
-// src/assets/icons/chain/logo/opbnb.png
-var opbnb_default = "./opbnb-5K2AGQHT.png";
-
-// src/config/chains/BSC_TESTNET.ts
-var BSC_TESTNET_default = {
-  chainId: 97 /* BSC_TESTNET */,
-  chainInfo: {
-    privateJsonRPCUrl: "",
-    publicJsonRPCUrl: ["https://bsc-testnet-dataseed.bnbchain.org"],
-    label: "BNB Chain Testnet",
-    chainSymbol: "BNB Chain Testnet",
-    explorer: "https://testnet.bscscan.com/",
-    explorerOfTX: "https://testnet.bscscan.com/tx/",
-    faucetUrl: "https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/",
-    logoUrl: opbnb_default,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (5e-4 + 1) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "BNB",
-      symbol: "BNB",
-      decimals: 18
-    }
-  }
-};
-
-// src/config/chains/LINEA_MAINNET.ts
-var LINEA_MAINNET_default = {
-  chainId: 59144 /* LINEA_MAINNET */,
-  chainInfo: {
-    label: "Linea Mainnet",
-    explorer: "https://lineascan.build/",
-    logoUrl: linea_default,
-    explorerOfTX: "https://lineascan.build/tx/",
-    publicJsonRPCUrl: [
-      "https://rpc.linea.build/",
-      "https://linea.blockpi.network/v1/rpc/public",
-      "https://1rpc.io/linea",
-      "https://rpc.linea.build"
-    ],
-    chainSymbol: "Linea",
-    gasPriceRatio: 1.3,
-    gasLimitRatio: 1.2,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.525 + 0.35) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "Ether",
-      symbol: "ETH",
-      decimals: 18
-    }
-  }
-};
-
-// src/config/chains/ARB_MAINNET.ts
-var ARB_MAINNET_default = {
-  chainId: 42161 /* ARB_MAINNET */,
-  chainInfo: {
-    privateJsonRPCUrl: "",
-    publicJsonRPCUrl: ["https://arb1.arbitrum.io/rpc"],
-    label: " Arbitrum One",
-    chainSymbol: "Arbitrum One",
-    explorer: "https://arbiscan.io/",
-    explorerOfTX: "https://arbiscan.io/tx/",
-    logoUrl: arbitrum_default,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.055 + 0.175) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "Ether",
-      symbol: "ETH",
-      decimals: 18
-    }
-  }
-};
-
-// src/config/chains/BSC_MAINNET.ts
-var BSC_MAINNET_default = {
-  chainId: 56 /* BSC_MAINNET */,
-  chainInfo: {
-    privateJsonRPCUrl: "",
-    publicJsonRPCUrl: ["https://bsc-dataseed.bnbchain.org"],
-    label: "BNB Chain",
-    chainSymbol: "BNB Chain",
-    explorer: "https://bscscan.com/",
-    explorerOfTX: "https://bscscan.com/tx/",
-    faucetUrl: "https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/",
-    logoUrl: opbnb_default,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (5e-4 + 1) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: "BNB",
-      symbol: "BNB",
-      decimals: 18
-    }
-  }
-};
-
-// src/config/chains/index.ts
-var CHAIN_INFO = {
-  [59141 /* LINEA_SEPOLIA */]: LINEA_SEPOLIA_default.chainInfo,
-  [421614 /* ARB_TESTNET */]: ARB_SEPOLIA_default.chainInfo,
-  [97 /* BSC_TESTNET */]: BSC_TESTNET_default.chainInfo,
-  [59144 /* LINEA_MAINNET */]: LINEA_MAINNET_default.chainInfo,
-  [42161 /* ARB_MAINNET */]: ARB_MAINNET_default.chainInfo,
-  [56 /* BSC_MAINNET */]: BSC_MAINNET_default.chainInfo
 };
 
 // src/web3/rotationProvider.ts
