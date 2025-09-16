@@ -13,7 +13,7 @@ export const DepositBase = () => {
   const onHandleDeposit = useCallback(async () => {
     if (!poolId || !amount || !slippage) return
     await base.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
-  },[])
+  },[poolId, amount, slippage])
   return <div className={'flex flex-col gap-[10px]'}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>

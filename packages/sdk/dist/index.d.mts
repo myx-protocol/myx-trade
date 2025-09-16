@@ -1,5 +1,5 @@
 import * as ethers from 'ethers';
-import { ZeroAddress, AddressLike, Signer } from 'ethers';
+import { ZeroAddress, AddressLike, Signer, BrowserProvider } from 'ethers';
 
 type Address$1 = `0x${string}` | typeof ZeroAddress;
 declare enum ChainId {
@@ -252,4 +252,14 @@ declare const bigintTradingGasPriceWithRatio: (chainId: ChainId) => Promise<{
 }>;
 declare const bigintAmountSlipperCalculator: (amount: bigint, slipper?: Number) => bigint;
 
-export { type Address, type BaseResponse, type DashboardType, ErrorCode, Market, type MarketInfoMap, type MarketPool, type MarketPoolResponse, MarketPoolState, type NetWorkFee, type ObjectType, OracleType, type PriceResponse, type PriceType, type StatDashBoardResponse, adjustCollateral, approve, index$2 as base, bigintAmountSlipperCalculator, bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator, cancelOrder, cancelOrders, getAllowanceApproved, getBalanceOf, getPools, getPrice, getUserFeeRate, placeOrder, index as pool, index$1 as quote };
+declare class MxSDK {
+    version: string;
+    provider: BrowserProvider | undefined;
+    constructor();
+    private static _instance;
+    setProvider(provider: BrowserProvider): void;
+    getProvider(): BrowserProvider | undefined;
+    static getInstance(): MxSDK;
+}
+
+export { type Address, type BaseResponse, type DashboardType, ErrorCode, Market, type MarketInfoMap, type MarketPool, type MarketPoolResponse, MarketPoolState, MxSDK, type NetWorkFee, type ObjectType, OracleType, type PriceResponse, type PriceType, type StatDashBoardResponse, adjustCollateral, approve, index$2 as base, bigintAmountSlipperCalculator, bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator, cancelOrder, cancelOrders, getAllowanceApproved, getBalanceOf, getPools, getPrice, getUserFeeRate, placeOrder, index as pool, index$1 as quote };
