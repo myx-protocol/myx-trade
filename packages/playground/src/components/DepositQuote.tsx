@@ -11,9 +11,11 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
   const [slippage] = useState<string>('0.01')
   
   const onHandleDepositQuote = useCallback(async () => {
+    console.log("depositQuote", poolId, amount, slippage)
     if (!poolId || !amount || !slippage) return
+    console.log("depositQuote", poolId, amount)
     await quote.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
-  },[])
+  },[poolId, amount, slippage])
   return <div className={`flex flex-col gap-[10px] ${className}`}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>
