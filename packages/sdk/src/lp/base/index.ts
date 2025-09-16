@@ -1,12 +1,4 @@
 // import { claim } from "./claim";
-import { deposit } from "./deposit";
-import {withdraw} from "./withdraw";
+export { deposit } from "./deposit";
+export {withdraw} from "./withdraw";
 // import {getRewards} from "./rewards";
-
-
-export default {
-  // claim,
-  deposit,
-  withdraw,
-  // getRewards,
-}

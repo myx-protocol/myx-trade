@@ -1,16 +1,9 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
-import type { AddressLike, BytesLike } from "ethers";
-import { parseEther, parseUnits, hexlify } from "ethers";
+import type { BytesLike } from "ethers";
+import { parseUnits } from "ethers";
 import { WithdrawParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains";
-import Address from "@/config/address";
+import { CHAIN_INFO } from "@/config/chains/index";
 import { Market } from "@/config/market";
-import { getBalanceOf } from "@/common/balanceOf";
-import { getAllowanceApproved } from "@/common/allowance";
-import { approve } from "@/common/approve";
-import { MaxUint256 } from "ethers";
-import { ErrorCode, Errors } from "@/config/error";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,

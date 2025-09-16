@@ -8,5 +8,6 @@ export interface MarketInfo {
   readonly baseReserveRatio:number,
   readonly quoteReserveRatio:number,
   readonly poolPrimeThreshold: bigint,
-  readonly decimals: number
+  readonly decimals: number,
+  readonly lpDecimals:number,
 }

@@ -9,7 +9,8 @@ export enum ErrorCode {
   USER_REJECTED_REQUEST = 4001,
   Invalid_Base,
   Invalid_slippage,
-  Invalid_Amount
+  Invalid_Amount,
+  Invalid_Pool_State
 }
 
 export const Errors = {
@@ -21,6 +22,7 @@ export const Errors = {
   [ErrorCode.Invalid_Base]: `Invalid Base Token Address`,
   [ErrorCode.Invalid_slippage]: `Invalid Slippage`,
   [ErrorCode.Invalid_Amount]: `Invalid Amount`,
+  [ErrorCode.Invalid_Pool_State]: `Invalid Pool State`,
 }
 
 export function didUserReject(error: any): boolean {

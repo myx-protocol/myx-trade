@@ -1,6 +1,7 @@
 import * as ethers from 'ethers';
-import { AddressLike, Signer } from 'ethers';
+import { ZeroAddress, AddressLike, Signer } from 'ethers';
 
+type Address$1 = `0x${string}` | typeof ZeroAddress;
 declare enum ChainId {
     LINEA_SEPOLIA = 59141,
     LINEA_MAINNET = 59144,
@@ -81,6 +82,59 @@ declare const placeOrder: (params: PlaceOrderParams, singer: Signer) => Promise<
 declare const cancelOrder: (chainId: ChainId, orderId: string, singer: Signer) => Promise<ethers.ContractTransactionReceipt | null>;
 declare const cancelOrders: (chainId: ChainId, orderIds: string[], singer: Signer) => Promise<ethers.ContractTransactionReceipt | null>;
 declare const adjustCollateral: (chainId: ChainId, positionId: string, adjustAmount: string, singer: Signer) => Promise<ethers.ContractTransactionReceipt | null>;
+
+interface Deposit {
+    chainId: ChainId;
+    poolId: string;
+    decimals?: number;
+    amount: number;
+    slippage: number;
+}
+interface WithdrawParams {
+    chainId: ChainId;
+    poolId: string;
+    amount: number;
+    slippage: number;
+}
+
+declare const deposit$1: (params: Deposit) => Promise<void>;
+
+declare const withdraw$1: (params: WithdrawParams) => Promise<ethers.ContractTransactionResponse>;
+
+declare namespace index$2 {
+  export { deposit$1 as deposit, withdraw$1 as withdraw };
+}
+
+declare const deposit: (params: Deposit) => Promise<void>;
+
+declare const withdraw: (params: WithdrawParams) => Promise<ethers.ContractTransactionResponse>;
+
+declare const transfer: (chainId: ChainId, fromPoolId: string, toPoolId: string, amount: number) => Promise<ethers.ContractTransactionResponse | null | undefined>;
+
+declare const index$1_deposit: typeof deposit;
+declare const index$1_transfer: typeof transfer;
+declare const index$1_withdraw: typeof withdraw;
+declare namespace index$1 {
+  export { index$1_deposit as deposit, index$1_transfer as transfer, index$1_withdraw as withdraw };
+}
+
+interface CreatePoolRequest {
+    chainId: ChainId;
+    marketId?: string;
+    baseToken: AddressLike;
+}
+
+declare const createPool: ({ chainId, baseToken }: CreatePoolRequest) => Promise<void>;
+
+declare const getMarketPoolId: ({ chainId, baseToken }: CreatePoolRequest) => Promise<string | undefined>;
+declare const getMarketPools: (chainId: ChainId) => Promise<string[]>;
+
+declare const index_createPool: typeof createPool;
+declare const index_getMarketPoolId: typeof getMarketPoolId;
+declare const index_getMarketPools: typeof getMarketPools;
+declare namespace index {
+  export { index_createPool as createPool, index_getMarketPoolId as getMarketPoolId, index_getMarketPools as getMarketPools };
+}
 
 interface ObjectType<T> {
     [key: string]: T;
@@ -169,4 +223,33 @@ interface PriceResponse extends BaseResponse {
 declare const getPools: () => Promise<MarketPoolResponse>;
 declare const getPrice: (chainId: ChainId, poolIds?: string[]) => Promise<PriceResponse>;
 
-export { type Address, type BaseResponse, type DashboardType, ErrorCode, type MarketPool, type MarketPoolResponse, MarketPoolState, type NetWorkFee, type ObjectType, OracleType, type PriceResponse, type PriceType, type StatDashBoardResponse, adjustCollateral, cancelOrder, cancelOrders, getPools, getPrice, getUserFeeRate, placeOrder };
+interface MarketInfo {
+    readonly marketId: string;
+    readonly quoteToken: Address$1;
+    readonly oracleFeeUsd: bigint;
+    readonly oracleRefundFeeUsd: bigint;
+    readonly baseReserveRatio: number;
+    readonly quoteReserveRatio: number;
+    readonly poolPrimeThreshold: bigint;
+    readonly decimals: number;
+    readonly lpDecimals: number;
+}
+
+type MarketInfoMap = {
+    readonly [chainId: number]: MarketInfo;
+};
+declare const Market: MarketInfoMap;
+
+declare const approve: (chainId: ChainId, account: string, tokenAddress: string, approveAddress: string, amount: bigint) => Promise<void>;
+
+declare const getAllowanceApproved: (chainId: ChainId, account: string, tokenAddress: string, approveAddress: string, approveAmount: bigint) => Promise<boolean>;
+
+declare const getBalanceOf: (chainId: ChainId, account: string, tokenAddress: string) => Promise<bigint>;
+
+declare const bigintTradingGasToRatioCalculator: (gas: bigint, ratio: Number) => bigint;
+declare const bigintTradingGasPriceWithRatio: (chainId: ChainId) => Promise<{
+    gasPrice: bigint;
+}>;
+declare const bigintAmountSlipperCalculator: (amount: bigint, slipper?: Number) => bigint;
+
+export { type Address, type BaseResponse, type DashboardType, ErrorCode, Market, type MarketInfoMap, type MarketPool, type MarketPoolResponse, MarketPoolState, type NetWorkFee, type ObjectType, OracleType, type PriceResponse, type PriceType, type StatDashBoardResponse, adjustCollateral, approve, index$2 as base, bigintAmountSlipperCalculator, bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator, cancelOrder, cancelOrders, getAllowanceApproved, getBalanceOf, getPools, getPrice, getUserFeeRate, placeOrder, index as pool, index$1 as quote };

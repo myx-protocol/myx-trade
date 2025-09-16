@@ -1,4 +1,4 @@
-import { ChainId, getSupportedChainIdsByEnv } from "@/config/chain";
+import { ChainId, isSupportedChainFn } from "@/config/chain";
 import { ErrorCode, Errors } from "@/config/error";
 import { getBalanceOf } from "@/common/balanceOf";
 import { MaxUint256, parseUnits } from "ethers";
@@ -19,7 +19,7 @@ type OptionalParams = Partial<Optional>;
 export  const checkParams = async (params: OptionalParams) => {
   
   if ('chainId' in params) {
-    const valid =   getSupportedChainIdsByEnv().includes(params.chainId as ChainId);
+    const valid =   isSupportedChainFn(params.chainId as ChainId);
     if (!valid) {
       throw new Error(Errors[ErrorCode.Invalid_Chain_ID]);
     }
