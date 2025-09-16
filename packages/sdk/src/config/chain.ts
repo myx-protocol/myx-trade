@@ -41,6 +41,7 @@ export type SupportedTestEnvChainId = [typeof TEST_ENV_CHAIN_IDS][number]
 
 export const OKX_BRIDGE_CHAIN_IDS = [ChainId.LINEA_MAINNET, ChainId.ARB_MAINNET] as const
 
+
 export const DEV_ENV_CHAIN_IDS = [
   ChainId.LINEA_SEPOLIA,
   ChainId.ARB_TESTNET,
@@ -49,6 +50,7 @@ export const DEV_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
+export const SupportedChainIds = [ChainId.ARB_TESTNET]
 // export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
 //   if (isTestMode()) {
 //     return TEST_ENV_CHAIN_IDS
@@ -73,10 +75,9 @@ export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 //       : supportedChainIds[0]
 // }
 
-// export function isSupportedChainFn(chainId?: number | null | ChainId): chainId is ChainId {
-//   const supportedChainIds = getSupportedChainIdsByEnv()
-//   return !!chainId && supportedChainIds.includes(chainId)
-// }
+export function isSupportedChainFn(chainId?: number | null | ChainId): chainId is ChainId {
+  return !!chainId && SupportedChainIds.includes(chainId)
+}
 
 export function isSupportedSeamlessAccountChain(chainId?: number | null | ChainId) {
   return (

@@ -1,9 +1,7 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
-import type { AddressLike } from "ethers";
-import { parseEther, parseUnits, hexlify } from "ethers";
+import {parseUnits } from "ethers";
 import { WithdrawParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
 import { getPoolInfo } from "@/lp/getPoolInfo";

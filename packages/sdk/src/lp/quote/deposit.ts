@@ -6,7 +6,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains";
+import { CHAIN_INFO } from "@/config/chains/index";
 import { getBalanceOf } from "@/common/balanceOf";
 import { Market } from "@/config/market";
 import Address from "@/config/address";
