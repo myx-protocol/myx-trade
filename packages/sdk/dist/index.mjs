@@ -1148,6 +1148,54 @@ var RotationProvider = class extends BaseProvider {
   }
 };
 
+// package.json
+var package_default = {
+  name: "@myx-trade/sdk",
+  version: "1.0.0",
+  description: "MYX Trade SDK for trading operations",
+  main: "dist/index.js",
+  module: "dist/index.mjs",
+  types: "dist/index.d.ts",
+  exports: {
+    ".": {
+      import: "./dist/index.mjs",
+      require: "./dist/index.js",
+      types: "./dist/index.d.ts"
+    }
+  },
+  files: [
+    "dist"
+  ],
+  scripts: {
+    build: "tsup src/index.ts --format cjs,esm --dts",
+    dev: "tsup src/index.ts --format cjs,esm --dts --watch",
+    clean: "rm -rf dist",
+    prebuild: "npm run clean",
+    "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'"
+  },
+  keywords: ["trading", "sdk", "myx", "finance"],
+  author: "",
+  license: "ISC",
+  packageManager: "pnpm@10.12.4",
+  devDependencies: {
+    "@typechain/ethers-v6": "^0.5.1",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^24.3.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    typechain: "^8.3.2",
+    typescript: "^5.3.0",
+    tsup: "^8.0.0"
+  },
+  dependencies: {
+    "@ethersproject/providers": "^5.8.0",
+    ethers: "^6.15.0",
+    "ethers-decode-error": "^2.1.3",
+    "lodash-es": "^4.17.21"
+  }
+};
+
 // src/web3/index.ts
 function getContract(address, ABI, provider) {
   if (Address.from(address).isEqualTo(ZeroAddress2)) {
@@ -1175,13 +1223,36 @@ var getJSONProvider = (chainId3) => {
     return new RotationProvider(chainProviders, chainId3);
   }
 };
+var MxSDK = class _MxSDK {
+  constructor() {
+    this.version = package_default.version;
+    console.log(this.version);
+  }
+  setProvider(provider) {
+    this.provider = provider;
+  }
+  getProvider() {
+    return this.provider;
+  }
+  static getInstance() {
+    if (!this._instance) {
+      this._instance = new _MxSDK();
+    }
+    return this._instance;
+  }
+};
+var sdk = MxSDK.getInstance();
+if (typeof window !== "undefined") {
+  window.MxSDK = sdk;
+} else if (typeof globalThis !== "undefined") {
+  globalThis.MxSDK = sdk;
+}
 var getWalletProvider = async (chainId3) => {
   try {
-    if (!window?.ethereum) {
-      console.log("No wallet installed; using read-only defaults");
-      return ethers.getDefaultProvider("mainnet");
+    const provider = sdk.provider;
+    if (!provider) {
+      throw new Error("Provider missing in provider");
     }
-    const provider = new ethers.BrowserProvider(window.ethereum);
     if (chainId3) {
       const network = await provider.getNetwork();
       console.log(provider);
@@ -1198,6 +1269,7 @@ var getWalletProvider = async (chainId3) => {
 };
 var getSignerProvider = async (chainId3) => {
   const provider = await getWalletProvider(chainId3);
+  console.log(provider);
   return provider?.getSigner?.();
 };
 
@@ -6062,6 +6134,7 @@ export {
   ErrorCode2 as ErrorCode,
   Market,
   MarketPoolState,
+  MxSDK,
   OracleType,
   adjustCollateral,
   approve,
