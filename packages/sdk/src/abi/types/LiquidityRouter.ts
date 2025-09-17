@@ -32,8 +32,10 @@ export interface LiquidityRouterInterface extends Interface {
       | "claimRebate"
       | "claimRebates"
       | "currentOrderId"
-      | "depositBase"
-      | "depositQuote"
+      | "depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
+      | "depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
+      | "depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
+      | "depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
       | "executeTpsl"
       | "getAddressManager"
       | "getDependencyAddress"
@@ -48,8 +50,10 @@ export interface LiquidityRouterInterface extends Interface {
       | "unregisterDependencies"
       | "upgradeTo"
       | "upgradeToAndCall"
-      | "withdrawBase"
-      | "withdrawQuote"
+      | "withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"
+      | "withdrawBase((bytes32,uint256,uint256,address))"
+      | "withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"
+      | "withdrawQuote((bytes32,uint256,uint256,address))"
   ): FunctionFragment;
 
   getEvent(nameOrSignatureOrTopic: "Initialized" | "Upgraded"): EventFragment;
@@ -90,7 +94,7 @@ export interface LiquidityRouterInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "depositBase",
+    functionFragment: "depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
     values: [
       {
         poolId: BytesLike;
@@ -107,7 +111,53 @@ export interface LiquidityRouterInterface extends Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositQuote",
+    functionFragment: "depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
+    values: [
+      {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
+    values: [
+      {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
     values: [
       {
         poolId: BytesLike;
@@ -187,7 +237,24 @@ export interface LiquidityRouterInterface extends Interface {
     values: [AddressLike, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "withdrawBase",
+    functionFragment: "withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))",
+    values: [
+      {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawBase((bytes32,uint256,uint256,address))",
     values: [
       {
         poolId: BytesLike;
@@ -198,7 +265,24 @@ export interface LiquidityRouterInterface extends Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "withdrawQuote",
+    functionFragment: "withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))",
+    values: [
+      {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawQuote((bytes32,uint256,uint256,address))",
     values: [
       {
         poolId: BytesLike;
@@ -228,11 +312,19 @@ export interface LiquidityRouterInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositBase",
+    functionFragment: "depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositQuote",
+    functionFragment: "depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -286,11 +378,19 @@ export interface LiquidityRouterInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "withdrawBase",
+    functionFragment: "withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "withdrawQuote",
+    functionFragment: "withdrawBase((bytes32,uint256,uint256,address))",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawQuote((bytes32,uint256,uint256,address))",
     data: BytesLike
   ): Result;
 }
@@ -401,7 +501,7 @@ export interface LiquidityRouter extends BaseContract {
 
   currentOrderId: TypedContractMethod<[], [bigint], "view">;
 
-  depositBase: TypedContractMethod<
+  "depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))": TypedContractMethod<
     [
       params: {
         poolId: BytesLike;
@@ -420,7 +520,57 @@ export interface LiquidityRouter extends BaseContract {
     "nonpayable"
   >;
 
-  depositQuote: TypedContractMethod<
+  "depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))": TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ],
+    [void],
+    "payable"
+  >;
+
+  "depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))": TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ],
+    [void],
+    "payable"
+  >;
+
+  "depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))": TypedContractMethod<
     [
       params: {
         poolId: BytesLike;
@@ -528,7 +678,26 @@ export interface LiquidityRouter extends BaseContract {
     "payable"
   >;
 
-  withdrawBase: TypedContractMethod<
+  "withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))": TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ],
+    [void],
+    "payable"
+  >;
+
+  "withdrawBase((bytes32,uint256,uint256,address))": TypedContractMethod<
     [
       params: {
         poolId: BytesLike;
@@ -541,7 +710,26 @@ export interface LiquidityRouter extends BaseContract {
     "nonpayable"
   >;
 
-  withdrawQuote: TypedContractMethod<
+  "withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))": TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ],
+    [void],
+    "payable"
+  >;
+
+  "withdrawQuote((bytes32,uint256,uint256,address))": TypedContractMethod<
     [
       params: {
         poolId: BytesLike;
@@ -600,7 +788,7 @@ export interface LiquidityRouter extends BaseContract {
     nameOrSignature: "currentOrderId"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "depositBase"
+    nameOrSignature: "depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
   ): TypedContractMethod<
     [
       params: {
@@ -620,7 +808,59 @@ export interface LiquidityRouter extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "depositQuote"
+    nameOrSignature: "depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
+  ): TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
+  ): TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+        tpslParams: {
+          amount: BigNumberish;
+          triggerPrice: BigNumberish;
+          triggerType: BigNumberish;
+          minQuoteOut: BigNumberish;
+        }[];
+      }
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"
   ): TypedContractMethod<
     [
       params: {
@@ -719,7 +959,27 @@ export interface LiquidityRouter extends BaseContract {
     "payable"
   >;
   getFunction(
-    nameOrSignature: "withdrawBase"
+    nameOrSignature: "withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"
+  ): TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "withdrawBase((bytes32,uint256,uint256,address))"
   ): TypedContractMethod<
     [
       params: {
@@ -733,7 +993,27 @@ export interface LiquidityRouter extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "withdrawQuote"
+    nameOrSignature: "withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"
+  ): TypedContractMethod<
+    [
+      prices: {
+        poolId: BytesLike;
+        referencePrice: BigNumberish;
+        oracleUpdateData: BytesLike;
+        publishTime: BigNumberish;
+      }[],
+      params: {
+        poolId: BytesLike;
+        amountIn: BigNumberish;
+        minAmountOut: BigNumberish;
+        recipient: AddressLike;
+      }
+    ],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "withdrawQuote((bytes32,uint256,uint256,address))"
   ): TypedContractMethod<
     [
       params: {
