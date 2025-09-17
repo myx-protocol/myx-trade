@@ -27,3 +27,15 @@ export interface previewAmountOutParams {
   amountIn: bigint;
   price?: bigint;
 }
+
+export interface RewardsParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+}
+
+
+export interface ClaimParams {
+  chainId: ChainId;
+  poolId: string;
+}
