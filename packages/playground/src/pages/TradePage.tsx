@@ -6,6 +6,8 @@ import { BrowserProvider, ethers } from 'ethers';
 import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '../config/con';
 import { ChainId } from '../config/chain';
 import { BigNumber } from 'bignumber.js';
+import { MyxClient } from '@myx-trade/sdk';
+
 import useSWR from 'swr'
 import {
   Form,
@@ -55,6 +57,25 @@ const TradePage: React.FC = () => {
   const [orderId, setOrderId] = useState<string>('');
   const [orderIds, setOrderIds] = useState<string>('');
   const [form] = Form.useForm<TradeFormValues>();
+  const [myxClient, setMyxClient] = useState<MyxClient | null>(null);
+
+  const initClient = async () => {
+    if (walletClient?.transport) {
+      const provider = new BrowserProvider(walletClient.transport);
+      const signer = await provider.getSigner();
+      console.log(selectedPool)
+      const client = new MyxClient({ signer: signer, chainId: ChainId.ARB_TESTNET, brokerAddress: '0xa70245309631Ce97425532466F24ef86FE630311' });
+      
+      setMyxClient(client);
+      console.log('client->', client)
+    }
+  }
+
+  useEffect(() => {
+    if (walletClient?.transport) {
+      initClient()
+    }
+  }, [walletClient]);
   const { data: poolList } = useSWR('getPoolList', async () => {
     const rs = await getPools()
     const poolList = rs?.data ?? []
@@ -178,7 +199,7 @@ const TradePage: React.FC = () => {
       return;
     }
 
-    if (!walletClient) {
+    if (!walletClient || !myxClient) {
       console.error('WalletClient is null or undefined');
       alert('钱包客户端未准备好，请重新连接钱包');
       return;
@@ -219,7 +240,7 @@ const TradePage: React.FC = () => {
 
       console.log('orderData')
 
-      const rs = await placeOrder(orderData, signer);
+      const rs = await myxClient.placeOrder(orderData);
 
 
       console.log('Order placed:', rs);

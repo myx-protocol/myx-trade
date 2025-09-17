@@ -78,22 +78,65 @@ export class MyxTrading extends MyxBase {
 
     let orderId: string | null = null;
     
+    console.log('Receipt logs count:', receipt?.logs?.length);
+    // 0xf6b9bfc100eeb47bf64644320e71b858b32880d5028e935db0e717302fa5b564
+    
     if (receipt && receipt.logs) {
-      for (const log of receipt.logs) {
+      for (let i = 0; i < receipt.logs.length; i++) {
+        const log = receipt.logs[i];
+        console.log(`Log ${i}:`, {
+          address: log.address,
+          topics: log.topics,
+          data: log.data
+        });
+        
         try {
           const parsedLog = brokerContract.interface.parseLog({
             topics: log.topics,
             data: log.data
           });
 
+          console.log(`Parsed log ${i}:`, parsedLog);
+
           if (parsedLog && parsedLog.name === 'OrderPlaced') {
             orderId = parsedLog.args.orderId || parsedLog.args[0];
             console.log('Order ID found:', orderId);
+            console.log('All args:', parsedLog.args);
             break;
           }
         } catch (error) {
+          console.log(`Failed to parse log ${i}:`, error);
           continue;
         }
+      }
+    }
+    
+    if (!orderId) {
+      console.warn('No OrderPlaced event found in transaction logs');
+      
+      // 备用方案：尝试通过不同的方式获取 orderId
+      try {
+        // 检查是否有任何包含数字ID的事件
+        for (const log of receipt?.logs || []) {
+          if (log.topics && log.topics.length > 0) {
+            // 尝试解析为数字（orderId 通常是数字）
+            for (let j = 1; j < log.topics.length; j++) {
+              try {
+                const potentialOrderId = parseInt(log.topics[j], 16);
+                if (potentialOrderId > 0 && potentialOrderId < Number.MAX_SAFE_INTEGER) {
+                  console.log('Potential orderId from topics:', potentialOrderId);
+                  orderId = potentialOrderId.toString();
+                  break;
+                }
+              } catch (e) {
+                continue;
+              }
+            }
+            if (orderId) break;
+          }
+        }
+      } catch (error) {
+        console.log('Backup orderId extraction failed:', error);
       }
     }
 
