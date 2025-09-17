@@ -213,7 +213,6 @@ const TradePage: React.FC = () => {
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
 
-      console.log(selectedPool.baseDecimals)
       const orderData = {
         chainId: ChainId.ARB_TESTNET,
         address: address as `0x${string}`,
