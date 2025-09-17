@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPools } from "@/api";
 import { PoolContext } from "./PoolContext";
 import { useAccount, useWalletClient } from "wagmi";
-import { BrowserProvider, type Eip1193Provider } from "ethers";
+import { BrowserProvider } from "ethers";
 import {MxSDK} from "@myx-trade/sdk";
 
 
@@ -28,7 +28,7 @@ export const PoolProvider = ({ children }: { children?: ReactNode }) => {
       const provider = new BrowserProvider(walletClient.transport);
       // const signer = await provider.getSigner();
       if (provider){
-        MxSDK.getInstance().setProvider(provider as unknown as Eip1193Provider)
+        MxSDK.getInstance().setProvider(provider)
       }
     }
    
