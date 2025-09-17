@@ -410,6 +410,158 @@ const _abi = [
   },
   {
     type: "function",
+    name: "depositBase",
+    constant: false,
+    stateMutability: "payable",
+    payable: true,
+    inputs: [
+      {
+        type: "tuple[]",
+        name: "prices",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "referencePrice",
+          },
+          {
+            type: "bytes",
+            name: "oracleUpdateData",
+          },
+          {
+            type: "uint64",
+            name: "publishTime",
+          },
+        ],
+      },
+      {
+        type: "tuple",
+        name: "params",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "amountIn",
+          },
+          {
+            type: "uint256",
+            name: "minAmountOut",
+          },
+          {
+            type: "address",
+            name: "recipient",
+          },
+          {
+            type: "tuple[]",
+            name: "tpslParams",
+            components: [
+              {
+                type: "uint256",
+                name: "amount",
+              },
+              {
+                type: "uint256",
+                name: "triggerPrice",
+              },
+              {
+                type: "uint8",
+                name: "triggerType",
+              },
+              {
+                type: "uint256",
+                name: "minQuoteOut",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "depositQuote",
+    constant: false,
+    stateMutability: "payable",
+    payable: true,
+    inputs: [
+      {
+        type: "tuple[]",
+        name: "prices",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "referencePrice",
+          },
+          {
+            type: "bytes",
+            name: "oracleUpdateData",
+          },
+          {
+            type: "uint64",
+            name: "publishTime",
+          },
+        ],
+      },
+      {
+        type: "tuple",
+        name: "params",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "amountIn",
+          },
+          {
+            type: "uint256",
+            name: "minAmountOut",
+          },
+          {
+            type: "address",
+            name: "recipient",
+          },
+          {
+            type: "tuple[]",
+            name: "tpslParams",
+            components: [
+              {
+                type: "uint256",
+                name: "amount",
+              },
+              {
+                type: "uint256",
+                name: "triggerPrice",
+              },
+              {
+                type: "uint8",
+                name: "triggerType",
+              },
+              {
+                type: "uint256",
+                name: "minQuoteOut",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "depositQuote",
     constant: false,
     payable: false,
@@ -729,8 +881,116 @@ const _abi = [
     type: "function",
     name: "withdrawBase",
     constant: false,
+    stateMutability: "payable",
+    payable: true,
+    inputs: [
+      {
+        type: "tuple[]",
+        name: "prices",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "referencePrice",
+          },
+          {
+            type: "bytes",
+            name: "oracleUpdateData",
+          },
+          {
+            type: "uint64",
+            name: "publishTime",
+          },
+        ],
+      },
+      {
+        type: "tuple",
+        name: "params",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "amountIn",
+          },
+          {
+            type: "uint256",
+            name: "minAmountOut",
+          },
+          {
+            type: "address",
+            name: "recipient",
+          },
+        ],
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "withdrawBase",
+    constant: false,
     payable: false,
     inputs: [
+      {
+        type: "tuple",
+        name: "params",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "amountIn",
+          },
+          {
+            type: "uint256",
+            name: "minAmountOut",
+          },
+          {
+            type: "address",
+            name: "recipient",
+          },
+        ],
+      },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "withdrawQuote",
+    constant: false,
+    stateMutability: "payable",
+    payable: true,
+    inputs: [
+      {
+        type: "tuple[]",
+        name: "prices",
+        components: [
+          {
+            type: "bytes32",
+            name: "poolId",
+          },
+          {
+            type: "uint256",
+            name: "referencePrice",
+          },
+          {
+            type: "bytes",
+            name: "oracleUpdateData",
+          },
+          {
+            type: "uint64",
+            name: "publishTime",
+          },
+        ],
+      },
       {
         type: "tuple",
         name: "params",
