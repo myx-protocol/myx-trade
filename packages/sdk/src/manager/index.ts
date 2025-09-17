@@ -13,7 +13,7 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
           derivedCtor.prototype,
           name,
           Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
-            Object.create(null)
+          Object.create(null)
         );
       }
     });
@@ -21,7 +21,7 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
 }
 
 // Mixin types
-interface MyxClient extends MyxMarkets, MyxTrading, MyxLP {}
+interface MyxClient extends MyxMarkets, MyxTrading, MyxLP { }
 class MyxClient extends MyxBase {
   constructor(options: MyxClientConfig) {
     super();
@@ -31,3 +31,5 @@ class MyxClient extends MyxBase {
 
 // apply Mixin
 applyMixins(MyxClient, [MyxMarkets, MyxTrading, MyxLP]);
+
+export { MyxClient };
