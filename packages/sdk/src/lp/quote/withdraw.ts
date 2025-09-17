@@ -12,6 +12,7 @@ import {
 import { checkParams } from "@/common/checkParams";
 import { previewQuoteAmountOut } from "@/lp/quote/preview";
 import { getPoolInfo } from "@/lp/getPoolInfo";
+import { MarketPoolState } from "@/api";
 
 
 export const withdraw = async (params: WithdrawParams) => {
@@ -52,18 +53,31 @@ export const withdraw = async (params: WithdrawParams) => {
     console.log("withdraw", data);
     
     const contract = await getLiquidityRouterContract(chainId)
-    
-    // estimateGas
-    const _gasLimit = await contract.withdrawQuote.estimateGas(data)
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract.withdrawQuote (data, {
-      gasLimit,
-      gasPrice
-    })
-    
-    console.log("withdraw quote", request)
-    return request
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    if (isNeedPrice) {
+      const _gasLimit = await contract["withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas ([], data)
+      const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+      const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
+      const request = await contract["withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"]([], data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log ("withdraw quote with price", request)
+      return request
+    } else {
+      // estimateGas
+      const _gasLimit = await contract["withdrawQuote((bytes32,uint256,uint256,address))"].estimateGas (data)
+      const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+      const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
+      const request = await contract["withdrawQuote((bytes32,uint256,uint256,address))"] (data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log ("withdraw quote", request)
+      return request
+    }
   } catch (error) {
     console.error(error);
     throw error;
