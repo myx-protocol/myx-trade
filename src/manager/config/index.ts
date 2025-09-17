@@ -4,11 +4,11 @@ export interface MyxClientConfig {
   chainId: number;
   signer: Signer;
   brokerAddress: string;
-  isTestnet: boolean;
-  poolingInterval: number;
-  seamlessMode: boolean;
-  seamlessKeyPath: string;
-  seamlessKeyPassword: string;
+  isTestnet?: boolean;
+  poolingInterval?: number;
+  seamlessMode?: boolean;
+  seamlessKeyPath?: string;
+  seamlessKeyPassword?: string;
 }
 
 export class ConfigManager {
