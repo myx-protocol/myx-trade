@@ -59,7 +59,7 @@ const TradePage: React.FC = () => {
     const rs = await getPools()
     const poolList = rs?.data ?? []
     console.log('poolList-->', poolList)
-    
+
     // 为每个池子获取 level 配置
     const poolsWithLevel = await Promise.all(
       poolList.map(async (pool: any) => {
@@ -72,13 +72,13 @@ const TradePage: React.FC = () => {
         }
       })
     );
-    
+
     return poolsWithLevel;
   })
 
   const [selectedPoolId, setSelectedPoolId] = useState<string>("0x5cd0bc68073c63064c9820d395a8c4c1225bc43eca47e39903b5193f9585a2ec");
   const selectedPool = poolList?.find((item: any) => item.poolId === selectedPoolId);
-  
+
   // 获取选中池子的 level 配置
   const { data: poolLevelData } = useSWR(
     selectedPool ? `poolLevel-${selectedPool.poolId}` : null,
@@ -211,10 +211,10 @@ const TradePage: React.FC = () => {
         slippagePct: new BigNumber(values.slippagePct).multipliedBy(10 ** 4).toString(), // 转换为精度4位
         executionFeeToken: selectedPool.quoteToken,
         leverage: values.leverage,
-        tpSize: '0',// new BigNumber(values.tpSize).multipliedBy(10 ** pool.baseDecimals).toString(),
-        tpPrice: '0',// values.tpPrice ? new BigNumber(values.tpPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
-        slSize: '0',// new BigNumber(values.slSize).multipliedBy(10 ** pool.baseDecimals).toString(),
-        slPrice: '0',// values.slPrice ? new BigNumber(values.slPrice).multipliedBy(10 ** pool.quoteDecimals).toString() : '0',
+        tpSize: values.tpSize ? new BigNumber(values.tpSize).multipliedBy(10 ** selectedPool.baseDecimals).toString() : '0',
+        tpPrice: values.tpPrice ? new BigNumber(values.tpPrice).multipliedBy(10 ** selectedPool.quoteDecimals).toString() : '0',
+        slSize: values.slSize ? new BigNumber(values.slSize).multipliedBy(10 ** selectedPool.baseDecimals).toString() : '0' ,
+        slPrice: values.slPrice ? new BigNumber(values.slPrice).multipliedBy(10 ** selectedPool.quoteDecimals).toString() : '0',
       }
 
       console.log('orderData')
@@ -420,7 +420,7 @@ const TradePage: React.FC = () => {
             <Row gutter={[16, 16]}>
               {poolList?.map((pool: any) => (
                 <Col span={12} key={pool.poolId}>
-                  <Card 
+                  <Card
                     hoverable
                     className={selectedPoolId === pool.poolId ? 'border-blue-500 bg-blue-50' : ''}
                     onClick={() => setSelectedPoolId(pool.poolId)}
@@ -503,7 +503,7 @@ const TradePage: React.FC = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* 其他参数 */}
                       {pool.maxLeverage && (
                         <div className="text-xs">
@@ -511,7 +511,7 @@ const TradePage: React.FC = () => {
                           <span className="font-bold text-orange-600"> {pool.maxLeverage}x</span>
                         </div>
                       )}
-                      
+
                       {pool.state !== undefined && (
                         <div className="text-xs">
                           <span className="text-gray-500">状态:</span>
@@ -643,7 +643,7 @@ const TradePage: React.FC = () => {
                     type="primary"
                     onClick={handleApproval}
                     loading={approving}
-                            disabled={!selectedPool || !walletClient || !isNetworkCorrect}
+                    disabled={!selectedPool || !walletClient || !isNetworkCorrect}
                     size="large"
                   >
                     授权 USDC

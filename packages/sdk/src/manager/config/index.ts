@@ -1,8 +1,14 @@
+import { Signer } from "ethers";
+
 export interface MyxClientConfig {
   chainId: number;
-  rpcUrl: string;
-  apiBaseUrl: string;
-  debug: boolean;
+  signer: Signer;
+  brokerAddress: string;
+  isTestnet: boolean;
+  poolingInterval: number;
+  seamlessMode: boolean;
+  seamlessKeyPath: string;
+  seamlessKeyPassword: string;
 }
 
 export class ConfigManager {
