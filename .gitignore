@@ -88,6 +88,52 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# SDK specific
 /packages/sdk/src/abi/types/
 /packages/sdk/dist/
+packages/sdk/dist/
+packages/*/dist/
+
+# Playground specific  
 /packages/playground/node_modules/
+packages/playground/node_modules/
+
+# Vite cache
+packages/playground/node_modules/.vite/
+.vite/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log*
+
+# Lock files (可选，取决于团队策略)
+# pnpm-lock.yaml
+# package-lock.json
+# yarn.lock
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# Mac specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
