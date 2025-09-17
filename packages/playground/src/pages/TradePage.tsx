@@ -75,6 +75,7 @@ const TradePage: React.FC = () => {
       initClient()
     }
   }, [walletClient]);
+
   const { data: poolList } = useSWR('getPoolList', async () => {
     const rs = await getPools()
     const poolList = rs?.data ?? []
@@ -188,12 +189,6 @@ const TradePage: React.FC = () => {
 
     setLoading(true);
     try {
-      console.log('address-->', address)
-      console.log('walletClient-->', walletClient)
-      // 将 wagmi walletClient 转换为 ethers.js 兼容的 signer
-      const provider = new BrowserProvider(walletClient.transport);
-      const signer = await provider.getSigner();
-
       const orderData = {
         chainId: ChainId.ARB_TESTNET,
         address: address as `0x${string}`,
