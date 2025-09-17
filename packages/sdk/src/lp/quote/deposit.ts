@@ -1,6 +1,5 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { type AddressLike, type BytesLike, MaxUint256, parseUnits } from "ethers";
-import { ChainId } from "@/config/chain";
+import {  type BytesLike, MaxUint256, parseUnits } from "ethers";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -16,12 +15,15 @@ import { ErrorCode, Errors } from "@/config/error";
 import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
 import { previewLpAmountOut } from "@/lp/quote/preview";
+import { MarketPoolState } from "@/api";
+import { getPoolInfo } from "@/lp/getPoolInfo";
 
 
 export const deposit = async (params: Deposit) => {
   try {
     const {poolId, chainId, amount, slippage = 0.01} = params;
     await checkParams(params)
+    const pool = await getPoolInfo(poolId);
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
@@ -52,7 +54,6 @@ export const deposit = async (params: Deposit) => {
     // minAmountOut: BigNumberish;
     // recipient: AddressLike;
    console.log((amount * (1- slippage)))
-    debugger
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
@@ -63,18 +64,37 @@ export const deposit = async (params: Deposit) => {
     
     console.log("deposit", data);
     
-    const contract = await getLiquidityRouterContract(chainId)
-    //estimateGas
-    const _gasLimit =  await contract.depositQuote.estimateGas(data)
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
     
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.depositQuote(data, {
-      gasLimit,
-      gasPrice
-    })
-    
-    console.log("deposit", result)
+    if (isNeedPrice) {
+      const contract = await getLiquidityRouterContract(chainId)
+      //estimateGas
+      const _gasLimit =  await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas([],data)
+      
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+      const result = await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"]([],data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log("deposit", result)
+      return result
+    } else{
+      const contract = await getLiquidityRouterContract(chainId)
+      //estimateGas
+      const _gasLimit =  await contract["depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(data)
+      
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+      const result = await contract["depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log("deposit", result)
+      return result
+    }
   } catch (e) {
     console.error(e)
     throw e

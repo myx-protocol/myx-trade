@@ -11,6 +11,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
+import { MarketPoolState } from "@/api";
 
 export const withdraw = async (
   params: WithdrawParams
@@ -48,18 +49,32 @@ export const withdraw = async (
     }
     
     const contract = await getLiquidityRouterContract(chainId)
-    
-    // estimateGas
-    const _gasLimit = await contract.withdrawBase.estimateGas(data)
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract.withdrawBase (data, {
-      gasLimit,
-      gasPrice
-    })
-    
-    console.log('base withdraw',response)
-    return response
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    if (isNeedPrice) {
+      // estimateGas
+      const _gasLimit = await contract["withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas([], data)
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+      const response = await contract["withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"] ([], data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log('base withdraw',response)
+      return response
+    }else {
+      // estimateGas
+      const _gasLimit = await contract["withdrawBase((bytes32,uint256,uint256,address))"].estimateGas(data)
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+      const response = await contract["withdrawBase((bytes32,uint256,uint256,address))"] (data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log('base withdraw',response)
+      return response
+    }
     
   } catch (error) {
     console.error(error);
