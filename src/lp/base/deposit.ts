@@ -1,14 +1,5 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import {
-  type AddressLike,
-  type BigNumberish,
-  type BytesLike,
-  hexlify,
-  MaxUint256,
-  parseEther,
-  parseUnits
-} from "ethers";
-import { ChainId } from "@/config/chain";
+import { BigNumberish, type BytesLike, parseUnits, Typed } from "ethers";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -21,20 +12,20 @@ import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
 import { previewLpAmountOut } from "@/lp/base/preview";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-
+import { MarketPoolState } from "@/api";
 
 
 export const deposit = async (params: Deposit) => {
   try {
-    const {poolId, chainId, amount, slippage = 0.01}= params;
-    await checkParams(params)
+    const { poolId, chainId, amount, slippage = 0.01 } = params;
+    await checkParams (params)
     
-    const pool = await getPoolInfo(poolId);
+    const pool = await getPoolInfo (poolId);
     const decimals = pool?.baseDecimals
     const tokenAddress = pool?.baseToken
     
     
-    const chainInfo =  CHAIN_INFO[chainId];
+    const chainInfo = CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
     const addresses = Address[chainId as keyof typeof Address];
@@ -49,9 +40,10 @@ export const deposit = async (params: Deposit) => {
       amount,
     })
     
-    const amountIn = parseUnits(amount.toString(), decimals)
-    const amountOut = await previewLpAmountOut({chainId, poolId, amountIn})
+    const amountIn = parseUnits (amount.toString (), decimals)
+    const amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn })
     
+    const price: Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; }[] = []
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
@@ -61,18 +53,39 @@ export const deposit = async (params: Deposit) => {
     }
     
     console.log("deposit base", data);
-    const contract = await getLiquidityRouterContract(chainId)
-    //estimateGas
-    const _gasLimit =  await contract.depositBase.estimateGas(data)
+    const  contract = await getLiquidityRouterContract(chainId)
     
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.depositBase(data, {
-      gasLimit,
-      gasPrice
-    })
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
     
-    console.log("deposit", result)
+    if (isNeedPrice) {
+      //estimateGas
+      const _gasLimit = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data)
+      
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+      const result = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price, data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log("deposit", result)
+      return result
+    } else {
+      //estimateGas
+      const _gasLimit = await contract["depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(data)
+      
+      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+      const result =  await contract["depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](data, {
+        gasLimit,
+        gasPrice
+      })
+      
+      console.log("deposit", result)
+      return result
+    }
+    
+    
   } catch (e) {
     throw e
   }
