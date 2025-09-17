@@ -5465,44 +5465,28 @@ var adjustCollateral = async (chainId3, positionId, adjustAmount, singer) => {
 // src/lp/base/index.ts
 var base_exports = {};
 __export(base_exports, {
+  claim: () => claim,
   deposit: () => deposit,
+  getRewards: () => getRewards,
   withdraw: () => withdraw
 });
 
-// src/lp/base/deposit.ts
-var import_ethers8 = require("ethers");
-
-// src/common/tradingGas.ts
-var import_ethers4 = require("ethers");
-
-// src/config/decimals.ts
-var COMMON_CONFIG_DECIMALS = 8;
-
-// src/common/tradingGas.ts
-var bigintTradingGasToRatioCalculator = (gas, ratio) => {
-  return gas * (0, import_ethers4.parseUnits)(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** COMMON_CONFIG_DECIMALS);
+// src/config/market/ARB_TEST_SEPOLIA.ts
+var ARB_TEST_SEPOLIA2 = {
+  marketId: "0x1ddd0797c40b61b1437e0c455a78470e7c0659ed497d94222425736210f9d08c",
+  quoteToken: "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28",
+  oracleFeeUsd: 400000000n,
+  oracleRefundFeeUsd: 300000000n,
+  baseReserveRatio: 100,
+  quoteReserveRatio: 100,
+  poolPrimeThreshold: 20000n,
+  decimals: 6,
+  lpDecimals: 18
 };
-var bigintTradingGasPriceWithRatio = async (chainId3) => {
-  try {
-    const chainInfo = CHAIN_INFO[chainId3];
-    const provider = getJSONProvider(chainId3);
-    const { gasPrice } = await provider.getFeeData();
-    if (!gasPrice) {
-      throw new Error("Network Error");
-    }
-    console.log("gasPrice", gasPrice);
-    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio);
-    console.log("gasPriceWithRatio--->", gasPriceWithRatio);
-    return {
-      gasPrice: gasPriceWithRatio
-    };
-  } catch (e) {
-    throw e;
-  }
-};
-var bigintAmountSlipperCalculator = (amount, slipper = 0.01) => {
-  const radio = (0, import_ethers4.parseUnits)("1", COMMON_CONFIG_DECIMALS) - (0, import_ethers4.parseUnits)(slipper.toString(), COMMON_CONFIG_DECIMALS);
-  return amount * radio / BigInt(10 ** COMMON_CONFIG_DECIMALS);
+
+// src/config/market/index.ts
+var Market = {
+  [421614 /* ARB_TESTNET */]: ARB_TEST_SEPOLIA2
 };
 
 // src/config/error.ts
@@ -5541,11 +5525,11 @@ async function getErrorTextFormError(error) {
 }
 
 // src/common/balanceOf.ts
-var import_ethers5 = require("ethers");
+var import_ethers4 = require("ethers");
 var getBalanceOf = async (chainId3, account, tokenAddress) => {
   try {
     const provider = getJSONProvider(chainId3);
-    const contractInterface = new import_ethers5.ethers.Interface(IERC20Metadata_default);
+    const contractInterface = new import_ethers4.ethers.Interface(IERC20Metadata_default);
     const data = contractInterface.encodeFunctionData("balanceOf", [account]);
     const callData = {
       to: tokenAddress,
@@ -5561,14 +5545,14 @@ var getBalanceOf = async (chainId3, account, tokenAddress) => {
 };
 
 // src/common/checkParams.ts
-var import_ethers7 = require("ethers");
+var import_ethers6 = require("ethers");
 
 // src/common/allowance.ts
-var import_ethers6 = require("ethers");
+var import_ethers5 = require("ethers");
 var getAllowanceApproved = async (chainId3, account, tokenAddress, approveAddress, approveAmount) => {
   try {
     const provider = getJSONProvider(chainId3);
-    const contractInterface = new import_ethers6.ethers.Interface(IERC20Metadata_default);
+    const contractInterface = new import_ethers5.ethers.Interface(IERC20Metadata_default);
     const data = contractInterface.encodeFunctionData("allowance", [account, approveAddress]);
     console.log("approve token ", tokenAddress);
     console.log("approve address ", approveAddress);
@@ -5629,7 +5613,7 @@ var checkParams = async (params) => {
   console.log("checkbalance");
   const { tokenAddress, contractAddress, chainId: chainId3, amount, decimals, account } = params;
   if (amount && chainId3 && decimals && account) {
-    const amountIn = (0, import_ethers7.parseUnits)(amount.toString(), decimals);
+    const amountIn = (0, import_ethers6.parseUnits)(amount.toString(), decimals);
     if (tokenAddress) {
       const balance = await getBalanceOf(chainId3, account, tokenAddress);
       console.log("balance", balance, tokenAddress);
@@ -5640,11 +5624,80 @@ var checkParams = async (params) => {
     if (contractAddress && tokenAddress) {
       const isApproved = await getAllowanceApproved(chainId3, account, tokenAddress, contractAddress, amountIn);
       if (!isApproved) {
-        await approve(chainId3, account, tokenAddress, contractAddress, import_ethers7.MaxUint256);
+        await approve(chainId3, account, tokenAddress, contractAddress, import_ethers6.MaxUint256);
       }
     }
   }
 };
+
+// src/common/tradingGas.ts
+var import_ethers7 = require("ethers");
+
+// src/config/decimals.ts
+var COMMON_CONFIG_DECIMALS = 8;
+var COMMON_PRICE_DECIMALS = 30;
+
+// src/common/tradingGas.ts
+var bigintTradingGasToRatioCalculator = (gas, ratio) => {
+  return gas * (0, import_ethers7.parseUnits)(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** COMMON_CONFIG_DECIMALS);
+};
+var bigintTradingGasPriceWithRatio = async (chainId3) => {
+  try {
+    const chainInfo = CHAIN_INFO[chainId3];
+    const provider = getJSONProvider(chainId3);
+    const { gasPrice } = await provider.getFeeData();
+    if (!gasPrice) {
+      throw new Error("Network Error");
+    }
+    console.log("gasPrice", gasPrice);
+    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio);
+    console.log("gasPriceWithRatio--->", gasPriceWithRatio);
+    return {
+      gasPrice: gasPriceWithRatio
+    };
+  } catch (e) {
+    throw e;
+  }
+};
+var bigintAmountSlipperCalculator = (amount, slipper = 0.01) => {
+  const radio = (0, import_ethers7.parseUnits)("1", COMMON_CONFIG_DECIMALS) - (0, import_ethers7.parseUnits)(slipper.toString(), COMMON_CONFIG_DECIMALS);
+  return amount * radio / BigInt(10 ** COMMON_CONFIG_DECIMALS);
+};
+
+// src/lp/base/claim.ts
+var claim = async (params) => {
+  try {
+    const { chainId: chainId3, poolId } = params;
+    const chainInfo = CHAIN_INFO[chainId3];
+    const account = await getAccount(chainId3);
+    const decimals = Market[chainId3].lpDecimals;
+    await checkParams({
+      account,
+      chainId: chainId3
+    });
+    const data = {
+      poolId,
+      user: account,
+      recipient: account
+    };
+    const contract = await getBasePoolContract(chainId3);
+    const _gasLimit = await contract.claimUserRebate.estimateGas(poolId, account, account);
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio);
+    const { gasPrice } = await bigintTradingGasPriceWithRatio(chainId3);
+    const response = await contract.claimUserRebate(poolId, account, account, {
+      gasLimit,
+      gasPrice
+    });
+    console.log("base claim", response);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// src/lp/base/deposit.ts
+var import_ethers8 = require("ethers");
 
 // src/lp/base/preview.ts
 var previewLpAmountOut = async ({ chainId: chainId3, amountIn, poolId, price = 0n }) => {
@@ -5843,26 +5896,6 @@ var deposit = async (params) => {
 
 // src/lp/base/withdraw.ts
 var import_ethers9 = require("ethers");
-
-// src/config/market/ARB_TEST_SEPOLIA.ts
-var ARB_TEST_SEPOLIA2 = {
-  marketId: "0x1ddd0797c40b61b1437e0c455a78470e7c0659ed497d94222425736210f9d08c",
-  quoteToken: "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28",
-  oracleFeeUsd: 400000000n,
-  oracleRefundFeeUsd: 300000000n,
-  baseReserveRatio: 100,
-  quoteReserveRatio: 100,
-  poolPrimeThreshold: 20000n,
-  decimals: 6,
-  lpDecimals: 18
-};
-
-// src/config/market/index.ts
-var Market = {
-  [421614 /* ARB_TESTNET */]: ARB_TEST_SEPOLIA2
-};
-
-// src/lp/base/withdraw.ts
 var withdraw = async (params) => {
   try {
     const { chainId: chainId3, poolId, amount, slippage = 0.01 } = params;
@@ -5906,6 +5939,39 @@ var withdraw = async (params) => {
   }
 };
 
+// src/lp/base/rewards.ts
+var import_ethers10 = require("ethers");
+var getRewards = async (params) => {
+  try {
+    const { chainId: chainId3, account, poolId } = params;
+    const chainInfo = CHAIN_INFO[chainId3];
+    const lpAmountIn = 0n;
+    const priceResponse = await getPrice(chainId3, [poolId]);
+    const _price = priceResponse.data?.[0]?.price;
+    if (!_price) {
+      return;
+    }
+    const price = (0, import_ethers10.parseUnits)(_price, COMMON_PRICE_DECIMALS);
+    console.log("previewUserWithdrawData data", [poolId, lpAmountIn, account, price]);
+    const basePoolContract = await getBasePoolContract(chainId3);
+    const _gasLimit = await basePoolContract.previewUserWithdrawData.estimateGas(poolId, lpAmountIn, account, price);
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio);
+    const { gasPrice } = await bigintTradingGasPriceWithRatio(chainId3);
+    const request = await basePoolContract.previewUserWithdrawData(poolId, lpAmountIn, account, price, {
+      gasLimit,
+      gasPrice
+    });
+    const { baseAmountOut, rebateAmount } = request;
+    return {
+      baseAmountOut,
+      rebateAmount
+    };
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+};
+
 // src/lp/quote/index.ts
 var quote_exports = {};
 __export(quote_exports, {
@@ -5915,7 +5981,7 @@ __export(quote_exports, {
 });
 
 // src/lp/quote/deposit.ts
-var import_ethers10 = require("ethers");
+var import_ethers11 = require("ethers");
 
 // src/lp/quote/preview.ts
 var previewLpAmountOut2 = async ({ chainId: chainId3, amountIn, poolId, price = 0n }) => {
@@ -5976,7 +6042,7 @@ var deposit2 = async (params) => {
       chainId: chainId3,
       amount
     });
-    const amountIn = (0, import_ethers10.parseUnits)(amount.toString(), decimals);
+    const amountIn = (0, import_ethers11.parseUnits)(amount.toString(), decimals);
     const amountOut = await previewLpAmountOut2({ chainId: chainId3, poolId, amountIn });
     console.log(amountOut);
     const tpslParams = [];
@@ -6007,7 +6073,7 @@ var deposit2 = async (params) => {
 };
 
 // src/lp/quote/withdraw.ts
-var import_ethers11 = require("ethers");
+var import_ethers12 = require("ethers");
 var withdraw2 = async (params) => {
   try {
     const { chainId: chainId3, poolId, amount, slippage = 0.01 } = params;
@@ -6023,7 +6089,7 @@ var withdraw2 = async (params) => {
       chainId: chainId3,
       amount
     });
-    const amountIn = (0, import_ethers11.parseUnits)(amount.toString(), decimals);
+    const amountIn = (0, import_ethers12.parseUnits)(amount.toString(), decimals);
     const amountOut = await previewQuoteAmountOut({ chainId: chainId3, poolId, amountIn });
     const data = {
       poolId,
@@ -6050,7 +6116,7 @@ var withdraw2 = async (params) => {
 };
 
 // src/lp/quote/transfer.ts
-var import_ethers12 = require("ethers");
+var import_ethers13 = require("ethers");
 var transfer = async (chainId3, fromPoolId, toPoolId, amount) => {
   try {
     const fromPool = await getPoolInfo(fromPoolId);
@@ -6067,7 +6133,7 @@ var transfer = async (chainId3, fromPoolId, toPoolId, amount) => {
       fromPoolId,
       toPoolId,
       minLpOut: 0n,
-      amount: (0, import_ethers12.parseUnits)(amount.toString(), decimals)
+      amount: (0, import_ethers13.parseUnits)(amount.toString(), decimals)
     };
     console.log("migrateLiquiditydata", data);
     const contract = await getLiquidityRouterContract(chainId3);
@@ -6094,7 +6160,7 @@ __export(pool_exports, {
 });
 
 // src/lp/pool/get.ts
-var import_ethers13 = require("ethers");
+var import_ethers14 = require("ethers");
 var chainId = 421614 /* ARB_TESTNET */;
 var marketId = Market[chainId].marketId;
 var getMarketPoolId = async ({ chainId: chainId3, baseToken }) => {
@@ -6108,7 +6174,7 @@ var getMarketPoolId = async ({ chainId: chainId3, baseToken }) => {
     const contract = await getPoolManagerContract(chainId3);
     const data = [marketId, baseToken];
     const request = await contract.getMarketPool(marketId, baseToken);
-    return request.poolId === import_ethers13.ZeroAddress || !request.poolId ? void 0 : request.poolId;
+    return request.poolId === import_ethers14.ZeroAddress || !request.poolId ? void 0 : request.poolId;
   } catch (error) {
     console.error(error);
     throw typeof error === "string" ? error : await getErrorTextFormError(error);

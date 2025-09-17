@@ -91,3 +91,5 @@ temp/
 /packages/sdk/src/abi/types/
 /packages/sdk/dist/
 /packages/playground/node_modules/
+/packages/sdk/dist/
+/packages/sdk/node_modules/

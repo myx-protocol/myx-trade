@@ -96,13 +96,31 @@ interface WithdrawParams {
     amount: number;
     slippage: number;
 }
+interface RewardsParams {
+    chainId: ChainId;
+    poolId: string;
+    account: string;
+}
+interface ClaimParams {
+    chainId: ChainId;
+    poolId: string;
+}
+
+declare const claim: (params: ClaimParams) => Promise<ethers.ContractTransactionResponse>;
 
 declare const deposit$1: (params: Deposit) => Promise<void>;
 
 declare const withdraw$1: (params: WithdrawParams) => Promise<ethers.ContractTransactionResponse>;
 
+declare const getRewards: (params: RewardsParams) => Promise<{
+    baseAmountOut: bigint;
+    rebateAmount: bigint;
+} | undefined>;
+
+declare const index$2_claim: typeof claim;
+declare const index$2_getRewards: typeof getRewards;
 declare namespace index$2 {
-  export { deposit$1 as deposit, withdraw$1 as withdraw };
+  export { index$2_claim as claim, deposit$1 as deposit, index$2_getRewards as getRewards, withdraw$1 as withdraw };
 }
 
 declare const deposit: (params: Deposit) => Promise<void>;
