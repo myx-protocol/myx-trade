@@ -1,4 +1,4 @@
-// import { claim } from "./claim";
+export { claim } from "./claim";
 export { deposit } from "./deposit";
 export {withdraw} from "./withdraw";
-// import {getRewards} from "./rewards";
+export {getRewards} from "./rewards";

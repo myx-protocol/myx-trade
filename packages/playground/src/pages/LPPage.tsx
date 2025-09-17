@@ -6,6 +6,7 @@ import { BaseTokenList } from "../components/BaseTokenList.tsx";
 import { Deploy } from "../components/Deploy.tsx";
 import { DepositQuote } from "@components/DepositQuote.tsx";
 import { DepositBase } from "@components/DepositBase.tsx";
+import { BaseRewards } from "@components/BaseRewards.tsx";
 
 const LPPage: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const LPPage: React.FC = () => {
         <Deploy/>
         <DepositQuote/>
         <DepositBase/>
+        <BaseRewards/>
       </PoolProvider>
     </div>
   );
