@@ -6,9 +6,9 @@ const Navigation: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '交易' },
-    { path: '/lp', label: 'lp' },
-    { path: '/pool', label: '池子' },
+    { path: '/', label: 'Trade' },
+    { path: '/lp', label: 'LP' },
+    { path: '/pool', label: 'Pool' },
   ];
 
   return (

@@ -20,11 +20,11 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
 }
 
 // 定义 Mixin 接口
-interface MyxClient extends MyxMarkets, MyxTrading, MyxLP {}
+interface MyxClient extends MyxMarkets, MyxTrading, MyxLP { }
 
 // 使用 Mixin 模式实现多继承
 class MyxClient extends MyxBase {
-    constructor (options: MyxClientConfig) {
+    constructor(options: MyxClientConfig) {
         super();
         this.setConfig(options);
     }
