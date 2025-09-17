@@ -2,7 +2,7 @@ import LiquidityRouter_ABI from '@/abi/LiquidityRouter.json'
 import { ChainId } from "@/config/chain";
 import Address from "@/config/address";
 import { getContract, getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3/index";
-import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker} from '@/abi/types'
+import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker, OrderManager} from '@/abi/types'
 import  PoolConfigurator_ABI from '@/abi/PoolConfigurator.json'
 import  PoolManager_ABI from '@/abi/PoolManager.json'
 import IERC20Metadata_ABI from "@/abi/IERC20Metadata.json"
@@ -10,6 +10,7 @@ import QuotePool_ABI from "@/abi/QuotePool.json"
 import BasePool_ABI from "@/abi/BasePool.json"
 import { Signer } from 'ethers';
 import Broker_ABI from '@/abi/Broker.json'
+import OrderManager_ABI from '@/abi/OrderManager.json'
 
 export enum ProviderType {
   JSON,
@@ -83,4 +84,12 @@ export const getBrokerSingerContract = async (chainId: ChainId, singer: Signer) 
   const address = addresses.BROKER;
 
   return getContract(address, Broker_ABI, singer) as unknown as Broker;
+}
+
+
+export const getOrderManagerSingerContract = async (chainId: ChainId, singer: Signer) => {
+  const addresses = Address[chainId as keyof typeof Address];
+  const address = addresses.ORDER_MANAGER;
+
+  return getContract(address, OrderManager_ABI, singer) as unknown as OrderManager;
 }
