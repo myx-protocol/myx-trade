@@ -11,6 +11,61 @@ export class MyxTrading extends MyxBase {
     this.getConfig();
   }
 
+  /**
+   * 从交易回执中解析 orderId
+   * @param receipt 交易回执
+   * @returns orderId 字符串，如果未找到则返回 null
+   */
+  private getOrderIdFromTransaction(receipt: any): string | null {
+    const ORDER_PLACED_TOPIC = '0xf6b9bfc100eeb47bf64644320e71b858b32880d5028e935db0e717302fa5b564';
+    
+    if (!receipt || !receipt.logs) {
+      console.warn('No receipt or logs provided');
+      return null;
+    }
+
+    console.log('Searching for OrderPlaced event with topic:', ORDER_PLACED_TOPIC);
+    console.log('Total logs to examine:', receipt.logs.length);
+
+    for (let i = 0; i < receipt.logs.length; i++) {
+      const log = receipt.logs[i];
+      
+      // 检查是否有匹配的 topic
+      if (log.topics && log.topics.length > 0 && log.topics[0] === ORDER_PLACED_TOPIC) {
+        console.log(`Found matching topic in log ${i}:`, log);
+        
+        try {
+          // 尝试从 topics[1] 解析 orderId (通常 indexed 参数在 topics 中)
+          if (log.topics.length > 1) {
+            const orderIdHex = log.topics[1];
+            const orderId = parseInt(orderIdHex, 16).toString();
+            console.log('Extracted orderId from topics[1]:', orderId);
+            return orderId;
+          }
+          
+          // 如果 topics 中没有，尝试从 data 中解析
+          if (log.data && log.data !== '0x') {
+            // data 通常是 ABI 编码的非 indexed 参数
+            // 假设 orderId 是第一个参数 (32 bytes)
+            const dataWithoutPrefix = log.data.slice(2); // 移除 '0x'
+            if (dataWithoutPrefix.length >= 64) {
+              const orderIdHex = '0x' + dataWithoutPrefix.slice(0, 64);
+              const orderId = parseInt(orderIdHex, 16).toString();
+              console.log('Extracted orderId from data:', orderId);
+              return orderId;
+            }
+          }
+        } catch (error) {
+          console.error(`Error parsing orderId from log ${i}:`, error);
+          continue;
+        }
+      }
+    }
+
+    console.warn('No OrderPlaced event found with the specified topic');
+    return null;
+  }
+
   async placeOrder(params: PlaceOrderParams) {
     const config: MyxClientConfig = this.getConfig() as MyxClientConfig;
 
@@ -76,69 +131,8 @@ export class MyxTrading extends MyxBase {
     const receipt = await transaction.wait();
     console.log('Transaction confirmed in block:', receipt?.blockNumber);
 
-    let orderId: string | null = null;
-    
-    console.log('Receipt logs count:', receipt?.logs?.length);
-    // 0xf6b9bfc100eeb47bf64644320e71b858b32880d5028e935db0e717302fa5b564
-    
-    if (receipt && receipt.logs) {
-      for (let i = 0; i < receipt.logs.length; i++) {
-        const log = receipt.logs[i];
-        console.log(`Log ${i}:`, {
-          address: log.address,
-          topics: log.topics,
-          data: log.data
-        });
-        
-        try {
-          const parsedLog = brokerContract.interface.parseLog({
-            topics: log.topics,
-            data: log.data
-          });
-
-          console.log(`Parsed log ${i}:`, parsedLog);
-
-          if (parsedLog && parsedLog.name === 'OrderPlaced') {
-            orderId = parsedLog.args.orderId || parsedLog.args[0];
-            console.log('Order ID found:', orderId);
-            console.log('All args:', parsedLog.args);
-            break;
-          }
-        } catch (error) {
-          console.log(`Failed to parse log ${i}:`, error);
-          continue;
-        }
-      }
-    }
-    
-    if (!orderId) {
-      console.warn('No OrderPlaced event found in transaction logs');
-      
-      // 备用方案：尝试通过不同的方式获取 orderId
-      try {
-        // 检查是否有任何包含数字ID的事件
-        for (const log of receipt?.logs || []) {
-          if (log.topics && log.topics.length > 0) {
-            // 尝试解析为数字（orderId 通常是数字）
-            for (let j = 1; j < log.topics.length; j++) {
-              try {
-                const potentialOrderId = parseInt(log.topics[j], 16);
-                if (potentialOrderId > 0 && potentialOrderId < Number.MAX_SAFE_INTEGER) {
-                  console.log('Potential orderId from topics:', potentialOrderId);
-                  orderId = potentialOrderId.toString();
-                  break;
-                }
-              } catch (e) {
-                continue;
-              }
-            }
-            if (orderId) break;
-          }
-        }
-      } catch (error) {
-        console.log('Backup orderId extraction failed:', error);
-      }
-    }
+    // 使用新的方法解析 orderId
+    const orderId = this.getOrderIdFromTransaction(receipt);
 
     const result = {
       success: true,
