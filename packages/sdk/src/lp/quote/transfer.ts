@@ -23,11 +23,11 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     }
     
     const account = await getAccount (chainId);
-    
-    await checkParams({chainId, amount,account, tokenAddress: fromPool.quotePoolToken})
-    
     const chainInfo =  CHAIN_INFO[chainId];
     const decimals = Market[chainId].lpDecimals
+    
+    await checkParams({chainId, amount,account, decimals, tokenAddress: fromPool.quotePoolToken})
+    
     const data = {
       fromPoolId,
       toPoolId,
