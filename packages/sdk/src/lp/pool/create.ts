@@ -44,15 +44,7 @@ export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
     const receipt = await request?.wait()
     if (receipt?.hash) {
       const poolId = await getMarketPoolId({chainId, baseToken})
-      if(poolId) {
-        // deposite $26000
-        await deposit({
-          poolId,
-          amount: Number(Market[chainId].poolPrimeThreshold),
-          chainId,
-          slippage: 0.01
-        })
-      }
+      return poolId
     }
     // console.log(request)
   } catch (error) {

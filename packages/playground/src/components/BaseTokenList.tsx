@@ -1,6 +1,7 @@
 import { useContext, useMemo } from "react";
 import { PoolContext } from "./PoolContext";
 import { BaseTokens } from "../config/BaseTokens.ts";
+import { Copy } from "@components/Copy.tsx";
 
 export const BaseTokenList = () => {
   const {pools} = useContext(PoolContext);
@@ -8,10 +9,10 @@ export const BaseTokenList = () => {
   return <ul className={'flex flex-col'}>
     {
       Object.entries(BaseTokens).map(([key, value]) => {
-        return <li key={key} className={`flex gap-[10px] ${tokens.includes(value.toLowerCase()) ? 'line-through' : ''} `}>
+        return <li key={key} className={`flex items-center gap-[10px] ${tokens.includes(value.toLowerCase()) ? 'line-through' : ''} `}>
           <span>{key}</span>
           <span>{value}</span>
-          <span></span>
+          <Copy content={value} />
         </li>
       })
     }
