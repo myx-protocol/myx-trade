@@ -1,7 +1,7 @@
 import {  useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
-import { Market, getBalanceOf } from "@myx-trade/sdk";
+import { Market, getBalanceOf, MarketPoolState } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -63,10 +63,10 @@ export const BalanceInfo = () => {
     }
   }
   useEffect(() => {
-    getBaseBalance()
+    getBaseBalance ().then ()
     getQuoteBalance ().then ()
-    getBasePoolBalance()
-    getQuotePoolBalance()
+    getBasePoolBalance ().then ()
+    getQuotePoolBalance ().then ()
   }, [chainId, account, poolId, pool])
   
   return <div className={'flex flex-col gap-[10px] '}>
@@ -107,7 +107,7 @@ export const PoolInfo = () => {
  const { pool, poolId } = usePoolInfo()
   
   return <header className={'border-1 p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff]'}>
-    <div>当前Pool：</div>
+    <div>当前Pool：<span>{pool ? MarketPoolState[pool.state] : '--'}</span></div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
       <span>{poolId || '--'}</span>
