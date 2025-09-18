@@ -11,10 +11,11 @@ export const BaseRewards = () => {
   const {chainId, account} = useContext(PoolContext);
   const {pool,poolId} = usePoolInfo()
   
-  const {data} = useQuery({
+  const {data = null} = useQuery({
     queryKey: [{key: 'rewards'},poolId, account],
+    enabled: !!poolId && !!account,
     queryFn: async () => {
-      if (!poolId || !account) return undefined
+      if (!poolId || !account) return null
       const result = await base.getRewards({
         poolId,
         chainId,
