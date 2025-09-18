@@ -3,6 +3,7 @@ import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
 import { Market, getBalanceOf, MarketPoolState } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
+import { Tag } from "antd";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
@@ -74,12 +75,12 @@ export const BalanceInfo = () => {
       <div className={'flex items-center gap-[10px]'}>
         <span>Base Balance</span>
         <span>{baseBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getBaseBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getBaseBalance()} />
       </div>
       <div className={'flex items-center gap-[10px]'}>
         <span>Quote Balance</span>
         <span>{quoteBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getQuoteBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getQuoteBalance()} />
       </div>
     </div>
     
@@ -87,14 +88,14 @@ export const BalanceInfo = () => {
       <div className={'flex items-center gap-[10px]'}>
         <span>Base Pool Balance</span>
         <span>{basePoolBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getBasePoolBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getBasePoolBalance()} />
       </div>
       
       
       <div className={'flex items-center gap-[10px]'}>
         <span>Quote Pool Balance</span>
         <span>{quotePoolBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getQuotePoolBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getQuotePoolBalance()} />
       </div>
     </div>
   
@@ -107,7 +108,7 @@ export const PoolInfo = () => {
  const { pool, poolId } = usePoolInfo()
   
   return <header className={'border-1 p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff]'}>
-    <div>当前Pool：<span>{pool ? MarketPoolState[pool.state] : '--'}</span></div>
+    <div className={'flex items-center gap-[4px]'}>当前Pool：<span>{pool?.baseSymbol}{pool?.quoteSymbol}</span><Tag>{pool ? MarketPoolState[pool.state] : '--'}</Tag></div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
       <span>{poolId || '--'}</span>
