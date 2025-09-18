@@ -2,7 +2,7 @@ import LiquidityRouter_ABI from '@/abi/LiquidityRouter.json'
 import { ChainId } from "@/config/chain";
 import Address from "@/config/address";
 import { getContract, getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3/index";
-import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker, OrderManager} from '@/abi/types'
+import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker, OrderManager, IPyth} from '@/abi/types'
 import  PoolConfigurator_ABI from '@/abi/PoolConfigurator.json'
 import  PoolManager_ABI from '@/abi/PoolManager.json'
 import IERC20Metadata_ABI from "@/abi/IERC20Metadata.json"
@@ -11,6 +11,7 @@ import BasePool_ABI from "@/abi/BasePool.json"
 import { Signer } from 'ethers';
 import Broker_ABI from '@/abi/Broker.json'
 import OrderManager_ABI from '@/abi/OrderManager.json'
+import Pyth_ABI from '@/abi/IPyth.json'
 
 export enum ProviderType {
   JSON,
@@ -92,4 +93,12 @@ export const getOrderManagerSingerContract = async (chainId: ChainId, singer: Si
   const address = addresses.ORDER_MANAGER;
 
   return getContract(address, OrderManager_ABI, singer) as unknown as OrderManager;
+}
+
+export const getPythContract =async (chainId: ChainId, type:ProviderType = ProviderType.JSON) => {
+  const addresses = Address[chainId as keyof typeof Address];
+  const address = addresses.PYTH;
+  const provider = type === ProviderType.JSON ? getJSONProvider (chainId as number) : (await getSignerProvider (chainId as number));
+  
+  return getContract(address, Pyth_ABI, provider) as unknown as IPyth
 }
