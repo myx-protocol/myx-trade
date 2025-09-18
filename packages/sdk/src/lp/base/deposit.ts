@@ -12,7 +12,9 @@ import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
 import { previewLpAmountOut } from "@/lp/base/preview";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-import { MarketPoolState } from "@/api";
+import {  MarketPoolState } from "@/api";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { getPriceData } from "@/common/price";
 
 
 export const deposit = async (params: Deposit) => {
@@ -40,51 +42,54 @@ export const deposit = async (params: Deposit) => {
       amount,
     })
     
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const price : Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; }[] =[]
     const amountIn = parseUnits (amount.toString (), decimals)
-    const amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn })
+    let value = 0n;
+    let amountOut;
+    if (isNeedPrice) {
+      // todo  getprice
+      const priceData = await  getPriceData(chainId, poolId)
+      if (!priceData) return
+      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
+      price.push({
+        poolId,
+        referencePrice ,
+        oracleUpdateData: priceData.vaa,
+        publishTime: priceData.publishTime,
+      })
+      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
+      value = priceData.value
+    } else {
+      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
+    }
     
-    const price: Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; }[] = []
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
       recipient: account,
-      tpslParams: []
+      tpslParams: [] // todo lp price
     }
     
-    console.log("deposit base", data);
+    console.log("deposit base", price, data, value);
     const  contract = await getLiquidityRouterContract(chainId)
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
     
-    if (isNeedPrice) {
-      //estimateGas
-      const _gasLimit = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data)
-      
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-      const result = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price, data, {
-        gasLimit,
-        gasPrice
-      })
-      
-      console.log("deposit", result)
-      return result
-    } else {
-      //estimateGas
-      const _gasLimit = await contract["depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(data)
-      
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-      const result =  await contract["depositBase((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](data, {
-        gasLimit,
-        gasPrice
-      })
-      
-      console.log("deposit", result)
-      return result
-    }
     
+    //estimateGas
+    const _gasLimit = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, {value})
+    
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+    const result = await contract["depositBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price, data, {
+      gasLimit,
+      gasPrice,
+      value
+    })
+    
+    console.log("deposit", result)
+    return result
     
   } catch (e) {
     throw e

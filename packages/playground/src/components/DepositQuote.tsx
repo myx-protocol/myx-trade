@@ -16,12 +16,21 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
     console.log("depositQuote", poolId, amount)
     await quote.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
   },[poolId, amount, slippage])
+  
+  const onHandleWithdraw = useCallback(async () => {
+    console.log("WithdrawQuote", poolId, amount, slippage)
+    if (!poolId || !amount || !slippage) return
+    console.log("WithdrawQuote", poolId, amount)
+    await quote.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  },[poolId, amount, slippage])
+  
   return <div className={`flex flex-col gap-[10px] ${className}`}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>
       <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1'} readOnly={true} value={slippage} /></div>
       <div className={'flex items-center gap-[5px]'}><label>Amount: </label><input type="number" className={'border-1'}  onChange={e => setAmount(e.target.value)} value={amount} placeholder={'Amount'} /></div>
       <Button label={'DepositQuote'} onClick={onHandleDepositQuote}/>
+      <Button label={'WithdrawQuote'} onClick={onHandleWithdraw}/>
     </div>
   </div>
 }

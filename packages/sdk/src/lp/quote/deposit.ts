@@ -6,17 +6,16 @@ import {
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { getBalanceOf } from "@/common/balanceOf";
 import { Market } from "@/config/market";
 import Address from "@/config/address";
-import { approve } from "@/common/approve";
-import { getAllowanceApproved } from "@/common/allowance";
-import { ErrorCode, Errors } from "@/config/error";
 import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
 import { previewLpAmountOut } from "@/lp/quote/preview";
 import { MarketPoolState } from "@/api";
 import { getPoolInfo } from "@/lp/getPoolInfo";
+import { BigNumberish, Typed } from "ethers/lib.esm";
+import { getPriceData } from "@/common/price";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 
 
 export const deposit = async (params: Deposit) => {
@@ -45,14 +44,33 @@ export const deposit = async (params: Deposit) => {
     
     const amountIn = parseUnits(amount.toString(), decimals)
     
-    const amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
+    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    
+    const price : Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; }[] =[]
+    
+    let value = 0n
+    let amountOut;
+    
+    if (isNeedPrice) {
+      // todo  getprice
+      const priceData = await getPriceData(chainId, poolId)
+      if (!priceData) return
+      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
+      price.push({
+        poolId,
+        referencePrice ,
+        oracleUpdateData: priceData.vaa,
+        publishTime: priceData.publishTime,
+      })
+      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
+      value = priceData.value
+    } else {
+      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
+    }
    
     console.log(amountOut)
     const tpslParams = []
-    // poolId: BytesLike;
-    // amountIn: BigNumberish;
-    // minAmountOut: BigNumberish;
-    // recipient: AddressLike;
+   
    console.log((amount * (1- slippage)))
     const data = {
       poolId: poolId as unknown as BytesLike,
@@ -62,39 +80,22 @@ export const deposit = async (params: Deposit) => {
       tpslParams: []
     }
     
-    console.log("deposit", data);
+    console.log("deposit params: price, data, value :",price, data, value);
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const contract = await getLiquidityRouterContract(chainId)
+    //estimateGas
+    const _gasLimit =  await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, { value })
     
-    if (isNeedPrice) {
-      const contract = await getLiquidityRouterContract(chainId)
-      //estimateGas
-      const _gasLimit =  await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas([],data)
-      
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-      const result = await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"]([],data, {
-        gasLimit,
-        gasPrice
-      })
-      
-      console.log("deposit", result)
-      return result
-    } else{
-      const contract = await getLiquidityRouterContract(chainId)
-      //estimateGas
-      const _gasLimit =  await contract["depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(data)
-      
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-      const result = await contract["depositQuote((bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](data, {
-        gasLimit,
-        gasPrice
-      })
-      
-      console.log("deposit", result)
-      return result
-    }
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+    const result = await contract["depositQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price,data, {
+      gasLimit,
+      gasPrice,
+      value
+    })
+    
+    console.log("deposit", result)
+    return result
   } catch (e) {
     console.error(e)
     throw e
