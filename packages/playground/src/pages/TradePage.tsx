@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getPools, getPoolLevel, getOraclePrice } from '../api';
+import { getOraclePrice } from '../api';
 import { useAccount, useWalletClient, useChainId } from 'wagmi';
 import { BrowserProvider, ethers } from 'ethers';
 import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '../config/con';
