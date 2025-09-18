@@ -2,16 +2,17 @@ import { RewardsParams } from "@/lp/type";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { getBasePoolContract } from "@/web3/providers";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { getPrice } from "@/api";
+import { getOraclePrice } from "@/api";
 import { parseUnits } from "ethers";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 
 export const getRewards = async (params: RewardsParams) => {
   try {
     const {chainId, account, poolId} = params;
+    if (!chainId || !account || !poolId) return
     const chainInfo =  CHAIN_INFO[chainId];
     const lpAmountIn = 0n
-    const priceResponse = await getPrice(chainId, [poolId]);
+    const priceResponse = await getOraclePrice(chainId, [poolId]);
     const _price = priceResponse.data?.[0]?.price;
     if(!_price){
       return
