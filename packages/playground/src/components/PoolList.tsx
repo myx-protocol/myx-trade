@@ -2,8 +2,9 @@ import { useCallback, useContext } from "react";
 import { PoolContext } from "./PoolContext";
 import type { MarketPool } from "@myx-trade/sdk";
 import { Button } from "@/components";
-import { CopyIcon, Radio, RadioChecked } from "./Icon";
+import { Radio, RadioChecked } from "./Icon";
 import { pool } from "@myx-trade/sdk";
+import { Copy } from "@components/Copy.tsx";
 
 export const PoolList = () => {
   const {pools, refetch, poolId, setPoolId, isLoading, chainId} = useContext(PoolContext);
@@ -39,9 +40,7 @@ export const PoolList = () => {
           <div className="flex items-center gap-[10px]">
             <span>{pool.baseSymbol}{pool.quoteSymbol}</span>
             {/*<span>{pool.poolId}</span>*/}
-            <span>
-              <CopyIcon size={16}/>
-            </span>
+            <Copy content={pool.poolId} />
           </div>
         </li>
       })

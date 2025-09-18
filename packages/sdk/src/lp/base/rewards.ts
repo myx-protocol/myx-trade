@@ -13,10 +13,8 @@ export const getRewards = async (params: RewardsParams) => {
     const chainInfo =  CHAIN_INFO[chainId];
     const lpAmountIn = 0n
     const priceResponse = await getOraclePrice(chainId, [poolId]);
-    const _price = priceResponse.data?.[0]?.price;
-    if(!_price){
-      return
-    }
+    const _price = priceResponse.data?.[0]?.price || '0';
+    
     const price = parseUnits(_price, COMMON_PRICE_DECIMALS)
     
     console.log("previewUserWithdrawData data", [poolId, lpAmountIn,account, price]);
@@ -30,7 +28,7 @@ export const getRewards = async (params: RewardsParams) => {
     })
     
     const {baseAmountOut, rebateAmount} = request
-    
+    console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
     return {
       baseAmountOut,
       rebateAmount,
