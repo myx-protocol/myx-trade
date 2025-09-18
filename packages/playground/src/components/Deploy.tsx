@@ -29,15 +29,16 @@ export const Deploy = () => {
         slippage: 0.01
       })
       refetch()
-      message.success("Deploy successfully")
+      message.success("Create Pool successfully")
     } finally {
       setIsLoading(false)
     }
    
   }, [refetch, address]);
   
-  return <div className="flex gap-[20px] px-[10px] py-[20px]">
-    <input className={'w-[420px] border-1'} onChange={e => setAddress(e.target.value)} value={address} placeholder={'Base Token Address'}/>
-    <Button label={'Deploy'} isLoading={isLoading} onClick={onHandleDeploy } />
+  return <div className="flex items-center gap-[20px] ">
+    <label>Base Token Address:</label>
+    <input className={'w-[420px] border-1 p-[8px]'} onChange={e => setAddress(e.target.value)} value={address} placeholder={'Base Token Address'}/>
+    <Button label={'Create Pool'} isLoading={isLoading} onClick={onHandleDeploy } />
   </div>
 }
