@@ -62,11 +62,11 @@ const TradePage: React.FC = () => {
     if (walletClient?.transport) {
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
-      console.log(selectedPool)
+
       const client = new MyxClient({ signer: signer, chainId: ChainId.ARB_TESTNET, brokerAddress: '0xa70245309631Ce97425532466F24ef86FE630311' });
 
       setMyxClient(client);
-      console.log('client->', client)
+
     }
   }
 
@@ -77,15 +77,13 @@ const TradePage: React.FC = () => {
   }, [walletClient]);
 
   const { data: poolList } = useSWR('getPoolList', async () => {
-    const rs = await getPools()
-    const poolList = rs?.data ?? []
+    const poolList = await myxClient?.listPools()
     console.log('poolList-->', poolList)
 
-    // 为每个池子获取 level 配置
     const poolsWithLevel = await Promise.all(
       poolList.map(async (pool: any) => {
         try {
-          const levelRes = await getPoolLevel(pool.poolId, ChainId.ARB_TESTNET);
+          const levelRes = await myxClient?.getPoolLevelConfig(pool.poolId);
           return { ...pool, levelData: levelRes.data };
         } catch (error) {
           console.error(`Failed to get level data for pool ${pool.poolId}:`, error);
@@ -105,7 +103,7 @@ const TradePage: React.FC = () => {
     selectedPool ? `poolLevel-${selectedPool.poolId}` : null,
     async () => {
       if (!selectedPool) return null;
-      const res = await getPoolLevel(selectedPool.poolId, ChainId.ARB_TESTNET);
+      const res = await myxClient?.getPoolLevelConfig(selectedPool.poolId);
       return res.data;
     }
   );
@@ -120,9 +118,9 @@ const TradePage: React.FC = () => {
         })
       }).catch(console.error);
 
-      getPoolLevel(selectedPool.poolId, ChainId.ARB_TESTNET).then((getPoolLevelRes) => {
-        console.log('getPoolLevelRes-->', getPoolLevelRes?.data)
-      }).catch(console.error);
+      // getPoolLevel(selectedPool.poolId, ChainId.ARB_TESTNET).then((getPoolLevelRes) => {
+      //   console.log('getPoolLevelRes-->', getPoolLevelRes?.data)
+      // }).catch(console.error);
     }
   }, [selectedPool, form]);
 
@@ -159,7 +157,6 @@ const TradePage: React.FC = () => {
 
     if (!walletClient) {
       console.error('WalletClient is null or undefined');
-      alert('钱包客户端未准备好，请重新连接钱包');
       return;
     }
 
@@ -169,7 +166,6 @@ const TradePage: React.FC = () => {
       console.log('rs-->', rs)
     } catch (error) {
       console.error('Approval error:', error);
-      alert('授权失败: ' + (error as any).message);
     } finally {
       setApproving(false);
     }
@@ -183,7 +179,6 @@ const TradePage: React.FC = () => {
 
     if (!walletClient || !myxClient) {
       console.error('WalletClient is null or undefined');
-      alert('钱包客户端未准备好，请重新连接钱包');
       return;
     }
 
