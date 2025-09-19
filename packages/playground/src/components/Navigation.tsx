@@ -9,6 +9,8 @@ const Navigation: React.FC = () => {
     { path: '/', label: 'Trade' },
     { path: '/lp', label: 'LP' },
     { path: '/pool', label: 'Pool' },
+    { path: '/subscription', label: 'Subscription' },
+
   ];
 
   return (

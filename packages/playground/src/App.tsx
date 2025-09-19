@@ -4,6 +4,7 @@ import Navigation from '@components/Navigation';
 import TradePage from '@pages/TradePage';
 import LPPage from '@pages/LPPage';
 import PoolPage from '@pages/PoolPage';
+import SubscriptionPage from './pages/Subscription';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
               <Route path="/" element={<TradePage />} />
               <Route path="/lp" element={<LPPage />} />
               <Route path="/pool" element={<PoolPage />} />
+              <Route path="/subscription" element={<SubscriptionPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
