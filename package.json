@@ -24,6 +24,8 @@
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
     "@wagmi/core": "^2.20.3",
+    "crypto-js": "^4.2.0",
+    "mitt": "^3.0.1",
     "swr": "^2.3.6"
   }
 }
