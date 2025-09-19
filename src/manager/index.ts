@@ -1,35 +1,43 @@
-import { MyxBase } from "./base";
+import { SubScription } from "@/subscription";
+import { ConfigManager } from "./config/index";
 import { type MyxClientConfig } from "./config/index";
-import { MyxMarkets } from "./markets";
-import { MyxTrading } from "./trading";
-import { MyxLP } from "./lp";
+import { Logger } from "@/logger";
+import { Trading } from "./trading";
+import { Markets } from "./markets";
 
-// Mixin  core
-function applyMixins(derivedCtor: any, constructors: any[]) {
-  constructors.forEach((baseCtor) => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
-      if (name !== "constructor") {
-        Object.defineProperty(
-          derivedCtor.prototype,
-          name,
-          Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
-          Object.create(null)
-        );
-      }
-    });
-  });
-}
+export class MyxClient {
+  /**
+   * private properties
+   */
+  private configManager: ConfigManager;
+  private logger: Logger;
 
-// Mixin types
-interface MyxClient extends MyxMarkets, MyxTrading, MyxLP { }
-class MyxClient extends MyxBase {
+  /**
+   * public properties
+   */
+  public subscription: SubScription;
+  public trading: Trading;
+  public markets: Markets;
+
   constructor(options: MyxClientConfig) {
-    super();
-    this.setConfig(options);
+    this.configManager = new ConfigManager(options);
+    this.logger = new Logger({
+      logLevel: options.logLevel,
+    });
+
+    /**
+     * initialize trading
+     */
+    this.trading = new Trading(this.configManager);
+
+    /**
+     * initialize markets
+     */
+    this.markets = new Markets(this.configManager);
+
+    /**
+     * initialize subscription
+     */
+    this.subscription = new SubScription(this.configManager, this.logger);
   }
 }
-
-// apply Mixin
-applyMixins(MyxClient, [MyxMarkets, MyxTrading, MyxLP]);
-
-export { MyxClient };
