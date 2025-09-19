@@ -1,4 +1,8 @@
 import { Signer } from "ethers";
+import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { LogLevel } from "@/logger";
+import { WebSocketConfig } from "@/subscription/websocket/types";
 
 export interface MyxClientConfig {
   chainId: number;
@@ -9,28 +13,43 @@ export interface MyxClientConfig {
   seamlessMode?: boolean;
   seamlessKeyPath?: string;
   seamlessKeyPassword?: string;
+  socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
+  logLevel?: LogLevel;
 }
 
 export class ConfigManager {
-  private config: MyxClientConfig | undefined;
-  private constructor() {}
-
-  static privateInstance: ConfigManager | null = null;
-
-  static getInstance() {
-    if (!ConfigManager.privateInstance) {
-      ConfigManager.privateInstance = new ConfigManager();
-    }
-    return ConfigManager.privateInstance;
+  private config: MyxClientConfig;
+  constructor(config: MyxClientConfig) {
+    const mergedConfig: MyxClientConfig = {
+      isTestnet: false,
+      ...config,
+    };
+    this.validateConfig(mergedConfig);
+    this.config = mergedConfig;
   }
 
-  setConfig(config: MyxClientConfig) {
-    this.config = config;
+  private validateConfig(config: MyxClientConfig) {
+    const { isTestnet, chainId } = config;
+
+    /**
+     * chainId must be in the range of TESTNET_CHAIN_IDS or MAINNET_CHAIN_IDS
+     */
+    if (isTestnet) {
+      if (!TESTNET_CHAIN_IDS.includes(chainId))
+        throw new MyxSDKError(
+          MyxErrorCode.InvalidChainId,
+          `chainId ${chainId} is not in the range of TESTNET_CHAIN_IDS`
+        );
+    } else {
+      if (!MAINNET_CHAIN_IDS.includes(chainId))
+        throw new MyxSDKError(
+          MyxErrorCode.InvalidChainId,
+          `chainId ${chainId} is not in the range of MAINNET_CHAIN_IDS`
+        );
+    }
   }
 
   getConfig() {
     return this.config;
   }
-  
 }
-
