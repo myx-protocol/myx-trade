@@ -1,7 +1,7 @@
 import { $fetch } from "@/api/request";
-import { ConfigManager, MyxClientConfig } from "@/manager/config";
+import { ConfigManager } from "@/manager/config";
 
-const baseUrl = "https://api-test.myx.cash";
+import { BASE_URL } from "@/config/url";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -14,16 +14,16 @@ export class Markets {
   }
 
   async listPools() {
-    const rs = await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
+    const rs = await $fetch("GET", `${BASE_URL}/v2/mx-scan/market/list`);
 
     return rs.data || [];
   }
 
   async getPoolLevelConfig(poolId: string) {
-    const chainId = this.configManager.getConfig()?.chainId;
+    const config = this.configManager.getConfig();
     const rs = await $fetch(
       "GET",
-      `${baseUrl}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`
+      `${BASE_URL}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${config?.chainId}`
     );
 
     return rs.data;

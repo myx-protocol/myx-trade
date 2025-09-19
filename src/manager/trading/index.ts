@@ -4,98 +4,83 @@ import { ConfigManager, MyxClientConfig } from "../config";
 import { TIME_IN_FORCE } from "@/config/con";
 import { ethers } from "ethers";
 import { getContractAddressByChainId } from "@/config/address/index";
-import Broker_ABI from "@/abi/Broker.json";
+import Emiter_ABI from "@/abi/Emiter.json";
+import { Logger } from "@/logger";
 
 export class Trading {
   private configManager: ConfigManager;
-  constructor(configManager: ConfigManager) {
+  private logger: Logger;
+  constructor(configManager: ConfigManager, logger: Logger) {
     this.configManager = configManager;
+    this.logger = logger;
   }
 
   private getOrderIdFromTransaction(receipt: any): string | null {
-    const ORDER_PLACED_TOPIC =
-      "0xf6b9bfc100eeb47bf64644320e71b858b32880d5028e935db0e717302fa5b564";
-
     if (!receipt || !receipt.logs) {
       return null;
     }
 
-    const iface = new ethers.Interface(Broker_ABI);
+    // 创建 Emiter 合约的接口来解析事件
+    const emiterInterface = new ethers.Interface(Emiter_ABI);
+
+    // 查找 OrderPlaced 事件定义
+    const orderPlacedEvent = Emiter_ABI.find(
+      (item: any) => item.type === "event" && item.name === "OrderPlaced"
+    );
+
+    if (!orderPlacedEvent) {
+      this.logger.error("OrderPlaced event not found in Emiter ABI");
+      return null;
+    }
+
+    // 计算 OrderPlaced 事件的 topic hash
+    const eventTopic = ethers.id(
+      "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
+    );
+
+    this.logger.info("Looking for OrderPlaced events with topic:", eventTopic);
 
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
 
-      if (
-        log.topics &&
-        log.topics.length > 0 &&
-        log.topics[0] === ORDER_PLACED_TOPIC
-      ) {
+      this.logger.info(`Log ${i}:`, {
+        address: log.address,
+        topics: log.topics,
+        data: log.data,
+      });
+
+      // 检查是否是 OrderPlaced 事件
+      if (log.topics && log.topics.length > 0 && log.topics[0] === eventTopic) {
+        this.logger.info(`Found OrderPlaced event in log ${i}`);
+
         try {
-          let orderId = null;
+          // 使用 ethers 解析事件数据
+          const parsedLog = emiterInterface.parseLog({
+            topics: log.topics,
+            data: log.data,
+          });
 
-          for (let j = 1; j < log.topics.length; j++) {
-            const topicValue = log.topics[j];
+          if (parsedLog && parsedLog.name === "OrderPlaced") {
+            this.logger.info("Parsed OrderPlaced event:", parsedLog.args);
 
-            try {
-              const bigIntValue = ethers.getBigInt(topicValue);
-              const numberValue = bigIntValue.toString();
+            // 根据 Emiter.json 的定义，orderId 是第5个参数（索引4）
+            // 事件字段顺序：broker, user, poolId, positionId, orderId, ...
+            const orderId = parsedLog.args[4]; // orderId 在索引 4
 
-              if (bigIntValue > 0n && bigIntValue < 10000000000n) {
-                if (!orderId) {
-                  orderId = numberValue;
-                }
-              }
-            } catch (e) {}
-          }
-
-          if (log.data && log.data !== "0x") {
-            const dataWithoutPrefix = log.data.slice(2); // 移除 '0x'
-
-            const numParams = Math.floor(dataWithoutPrefix.length / 64);
-
-            for (let k = 0; k < numParams; k++) {
-              const start = k * 64;
-              const paramHex =
-                "0x" + dataWithoutPrefix.slice(start, start + 64);
-
-              try {
-                const bigIntValue = ethers.getBigInt(paramHex);
-                const numberValue = bigIntValue.toString();
-
-                if (bigIntValue > 0n && bigIntValue < 10000000000n) {
-                  if (!orderId) {
-                    orderId = numberValue;
-                  }
-                }
-              } catch (e) {}
+            if (orderId !== undefined && orderId !== null) {
+              const orderIdString = orderId.toString();
+              this.logger.info(`Found orderId: ${orderIdString}`);
+              return orderIdString;
             }
           }
-
-          if (!orderId) {
-            for (let j = 1; j < log.topics.length; j++) {
-              try {
-                const bigIntValue = ethers.getBigInt(log.topics[j]);
-                if (bigIntValue > 10000000000n) {
-                  const numberValue = bigIntValue.toString();
-                  if (!orderId) {
-                    orderId = numberValue;
-                  }
-                }
-              } catch (e) {}
-            }
-          }
-
-          if (orderId) {
-            return orderId;
-          }
-
-          return null;
         } catch (error) {
+          this.logger.error(`Error parsing log ${i}:`, error);
           continue;
         }
       }
     }
 
+    this.logger.warn("OrderPlaced event not found in transaction logs");
     return null;
   }
 
@@ -130,7 +115,7 @@ export class Trading {
         slSize: params.slSize,
         slPrice: params.slPrice,
       });
-      console.log("gasLimit--->", gasLimit);
+      this.logger.info("gasLimit--->", gasLimit);
 
       const transaction = await brokerContract.placeOrder(
         {
@@ -160,13 +145,13 @@ export class Trading {
         }
       );
 
-      console.log("Transaction sent:", transaction.hash);
-      console.log("Waiting for confirmation...");
+      this.logger.info("Transaction sent:", transaction.hash);
+      this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      console.log("Transaction confirmed in block:", receipt?.blockNumber);
+      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
-      console.log("placeOrder receipt--->", receipt);
+      this.logger.info("placeOrder receipt--->", receipt);
       // 使用新的方法解析 orderId
       const orderId = this.getOrderIdFromTransaction(receipt);
 
@@ -183,7 +168,7 @@ export class Trading {
       };
 
       if (!orderId) {
-        console.warn("Warning: OrderId not found in transaction logs");
+        this.logger.warn("Warning: OrderId not found in transaction logs");
         result.success = false;
       }
 
@@ -193,7 +178,7 @@ export class Trading {
         data: result,
       };
     } catch (error) {
-      console.error("Error placing order:", error);
+      this.logger.error("Error placing order:", error);
       return {
         code: -1,
         // @ts-ignore
@@ -229,7 +214,7 @@ export class Trading {
         data: allowance.toString(),
       };
     } catch (error) {
-      console.error("Error getting allowance:", error);
+      this.logger.error("Error getting allowance:", error);
       throw error;
     }
   }
@@ -250,7 +235,7 @@ export class Trading {
 
       return needsApproval;
     } catch (error) {
-      console.error("Error checking approval needs:", error);
+      this.logger.error("Error checking approval needs:", error);
       return true;
     }
   }
@@ -284,7 +269,7 @@ export class Trading {
         message: "Approval success",
       };
     } catch (error) {
-      console.error("Approval error:", error);
+      this.logger.error("Approval error:", error);
       return {
         code: -1,
         // @ts-ignore
@@ -329,7 +314,7 @@ export class Trading {
         message: "Orders canceled success",
       };
     } catch (error) {
-      console.error("Error canceling orders:", error);
+      this.logger.error("Error canceling orders:", error);
       return {
         code: -1,
         // @ts-ignore

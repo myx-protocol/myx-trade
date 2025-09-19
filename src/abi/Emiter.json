@@ -1,0 +1,3704 @@
+[
+  {
+    "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAllowedIdentifier",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "AddOnFeeTierUpdated",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "tier",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "makerFeeRate",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "BlockHeader",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "blockNumber",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "blockTimestamp",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "sequence",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "CollateralAccepted",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteDebt",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseCollateral",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteCollateral",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalQuoteDebt",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalBaseCollateral",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "CollateralAdjusted",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "beforeCollateralAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "afterCollateralAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Exchanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "source",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "target",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "sourceAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "targetAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExecutionMatched",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256[]",
+        "name": "triggerOrderIds",
+        "indexed": false
+      },
+      {
+        "type": "uint256[]",
+        "name": "matchedOrderIds",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "matchType",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "FeeDistributed",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "int16",
+        "name": "tradingFeeRate",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "isMaker",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "tradingFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseTradingFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "brokerTradingFee",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "referralRebate",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "referrerRebate",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "referrer",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "userFundingFee",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "reserveFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "FundingRateUpdated",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "epochs",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "duration",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "previousEpochTime",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "lastEpochTime",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "fundingRate",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "fundingRateTracker",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolFundingFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidityMigrated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "fromPoolId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "toPoolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "lpAmountIn",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "lpAmountOut",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidityStopOrderCancelled",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidityStopOrderCreated",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "poolType",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "triggerPrice",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "triggerType",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "minQuoteOut",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidityStopOrderExecuted",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "executor",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oraclePrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolTokenPrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MarketCreated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "deployer",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OrderCancelled",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "remark",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OrderFilled",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "orderType",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "operation",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "triggerType",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "fillSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "filledSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderPrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "fillPrice",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "realizedPnl",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "tradingFee",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "fundingFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OrderMarkedADL",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "orderType",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "operation",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "available",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "requested",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OrderPlaced",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "orderType",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "operation",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "triggerType",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "collateralAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "size",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "tif",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "postOnly",
+        "indexed": false
+      },
+      {
+        "type": "uint16",
+        "name": "slippagePct",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "executionFeeToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executionFeeAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint16",
+        "name": "userLeverage",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OrderUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "tpSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "tpPrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "slSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "slPrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolActivated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "oracleType",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "oracleFeedId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolDeactivated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "remark",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolDeployed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "deployer",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "basePoolToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quotePoolToken",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolDeposited",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "underlyingToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "poolToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "underlyingIn",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolTokenOut",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oraclePrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "exchangeRate",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolTokenPrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolFundDistributed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "profits",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "genesisProfits",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "basePoolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quotePoolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "genesisBasePoolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "genesisQuotePoolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "exchangedBaseFromProfits",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "exchangedBaseAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolFundingFeeSettled",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "prevFundingRateTracker",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "nextFundingRateTracker",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "fundingFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolPreDeactivated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "remark",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolPrimed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolRebateClaimed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolRefunded",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "receiver",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolReprimed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "primer",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolSettlementRecorded",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolEntryPrice",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "realizedPnl",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolWithdrawn",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "underlyingToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "poolToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolTokenIn",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "underlyingOut",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "rebateOut",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oraclePrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "exchangeRate",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolTokenPrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionEarlyClosed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executeSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executePrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionForceClosed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executePrice",
+        "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "reason",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionLiquidated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "liquidationSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "liquidationPrice",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionTransfer",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "from",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "to",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "direction",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "beforeSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "afterSize",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "beforeCollateralAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "afterCollateralAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "entryPrice",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "fundingRateIndex",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReferralRebateClaimed",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReserveRebateCollected",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "keeper",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "stakingAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "keeperAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "treasuryAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "reservedAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "ecoFundAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReserveRebateDisbursed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "keeper",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "poolAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "stakingAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "keeperAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "treasuryAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "reservedAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "ecoFundAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "UserFeeDataUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "signer",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "tier",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "referrer",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "totalReferralRebatePct",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "referrerRebatePct",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "UserSettlementRecorded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "chargeCollateral",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "realizedPnl",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "tradingFee",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "fundingFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "emitAddOnFeeTierUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "tier"
+          },
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          },
+          {
+            "type": "uint32",
+            "name": "makerFeeRate"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitCollateralAccepted",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteDebt"
+          },
+          {
+            "type": "uint256",
+            "name": "baseCollateral"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteCollateral"
+          },
+          {
+            "type": "uint256",
+            "name": "totalQuoteDebt"
+          },
+          {
+            "type": "uint256",
+            "name": "totalBaseCollateral"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitExchanged",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "address",
+            "name": "source"
+          },
+          {
+            "type": "address",
+            "name": "target"
+          },
+          {
+            "type": "uint256",
+            "name": "sourceAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "targetAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitExecutionMatched",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256[]",
+            "name": "triggerOrderIds"
+          },
+          {
+            "type": "uint256[]",
+            "name": "matchedOrderIds"
+          },
+          {
+            "type": "uint8",
+            "name": "matchType"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitFeeDistributed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "int16",
+            "name": "tradingFeeRate"
+          },
+          {
+            "type": "bool",
+            "name": "isMaker"
+          },
+          {
+            "type": "int256",
+            "name": "tradingFee"
+          },
+          {
+            "type": "uint256",
+            "name": "baseTradingFee"
+          },
+          {
+            "type": "uint256",
+            "name": "brokerTradingFee"
+          },
+          {
+            "type": "address",
+            "name": "broker"
+          },
+          {
+            "type": "uint256",
+            "name": "referralRebate"
+          },
+          {
+            "type": "uint256",
+            "name": "referrerRebate"
+          },
+          {
+            "type": "address",
+            "name": "referrer"
+          },
+          {
+            "type": "int256",
+            "name": "userFundingFee"
+          },
+          {
+            "type": "int256",
+            "name": "reserveFee"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitFundingRateUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint64",
+            "name": "epochs"
+          },
+          {
+            "type": "uint64",
+            "name": "duration"
+          },
+          {
+            "type": "uint64",
+            "name": "previousEpochTime"
+          },
+          {
+            "type": "uint64",
+            "name": "lastEpochTime"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRate"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRateTracker"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint256",
+            "name": "poolFundingFee"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitLiquidityMigrated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "fromPoolId"
+          },
+          {
+            "type": "bytes32",
+            "name": "toPoolId"
+          },
+          {
+            "type": "uint256",
+            "name": "lpAmountIn"
+          },
+          {
+            "type": "uint256",
+            "name": "lpAmountOut"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitLiquidityStopOrderCancelled",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitLiquidityStopOrderCreated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "poolType"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "uint256",
+            "name": "triggerPrice"
+          },
+          {
+            "type": "uint8",
+            "name": "triggerType"
+          },
+          {
+            "type": "uint256",
+            "name": "minQuoteOut"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitLiquidityStopOrderExecuted",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "address",
+            "name": "executor"
+          },
+          {
+            "type": "uint256",
+            "name": "oraclePrice"
+          },
+          {
+            "type": "uint256",
+            "name": "poolTokenPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitMarketCreated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "address",
+            "name": "deployer"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitOrderCancelled",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "string",
+            "name": "remark"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitOrderFilled",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint8",
+            "name": "orderType"
+          },
+          {
+            "type": "uint8",
+            "name": "operation"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint8",
+            "name": "triggerType"
+          },
+          {
+            "type": "uint256",
+            "name": "orderSize"
+          },
+          {
+            "type": "uint256",
+            "name": "fillSize"
+          },
+          {
+            "type": "uint256",
+            "name": "filledSize"
+          },
+          {
+            "type": "uint256",
+            "name": "orderPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "fillPrice"
+          },
+          {
+            "type": "int256",
+            "name": "realizedPnl"
+          },
+          {
+            "type": "int256",
+            "name": "tradingFee"
+          },
+          {
+            "type": "int256",
+            "name": "fundingFee"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitOrderMarkedADL",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint8",
+            "name": "orderType"
+          },
+          {
+            "type": "uint8",
+            "name": "operation"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "available"
+          },
+          {
+            "type": "uint256",
+            "name": "requested"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitOrderPlaced",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "broker"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint8",
+            "name": "orderType"
+          },
+          {
+            "type": "uint8",
+            "name": "operation"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint8",
+            "name": "triggerType"
+          },
+          {
+            "type": "uint256",
+            "name": "collateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint8",
+            "name": "tif"
+          },
+          {
+            "type": "bool",
+            "name": "postOnly"
+          },
+          {
+            "type": "uint16",
+            "name": "slippagePct"
+          },
+          {
+            "type": "address",
+            "name": "executionFeeToken"
+          },
+          {
+            "type": "uint256",
+            "name": "executionFeeAmount"
+          },
+          {
+            "type": "uint16",
+            "name": "userLeverage"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitOrderUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "tpSize"
+          },
+          {
+            "type": "uint256",
+            "name": "tpPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "slSize"
+          },
+          {
+            "type": "uint256",
+            "name": "slPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolActivated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "bytes32",
+            "name": "oracleFeedId"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolDeactivated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "string",
+            "name": "remark"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolDeployed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "deployer"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolDeposited",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "address",
+            "name": "recipient"
+          },
+          {
+            "type": "address",
+            "name": "underlyingToken"
+          },
+          {
+            "type": "address",
+            "name": "poolToken"
+          },
+          {
+            "type": "uint256",
+            "name": "underlyingIn"
+          },
+          {
+            "type": "uint256",
+            "name": "poolTokenOut"
+          },
+          {
+            "type": "uint256",
+            "name": "oraclePrice"
+          },
+          {
+            "type": "uint256",
+            "name": "exchangeRate"
+          },
+          {
+            "type": "uint256",
+            "name": "poolTokenPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolFundDistributed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "profits"
+          },
+          {
+            "type": "uint256",
+            "name": "genesisProfits"
+          },
+          {
+            "type": "uint256",
+            "name": "basePoolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quotePoolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "genesisBasePoolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "genesisQuotePoolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "exchangedBaseFromProfits"
+          },
+          {
+            "type": "uint256",
+            "name": "exchangedBaseAmount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolFundingFeeSettled",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "int256",
+            "name": "prevFundingRateTracker"
+          },
+          {
+            "type": "int256",
+            "name": "nextFundingRateTracker"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "positionSize"
+          },
+          {
+            "type": "uint256",
+            "name": "fundingFee"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolPreDeactivated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "string",
+            "name": "remark"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolPrimed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint256",
+            "name": "baseAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteAmount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolRebateClaimed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "address",
+            "name": "recipient"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolRefunded",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "receiver"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint256",
+            "name": "baseAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteAmount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolReprimed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "primer"
+          },
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolSettlementRecorded",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "poolEntryPrice"
+          },
+          {
+            "type": "int256",
+            "name": "realizedPnl"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPoolWithdrawn",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "address",
+            "name": "recipient"
+          },
+          {
+            "type": "address",
+            "name": "underlyingToken"
+          },
+          {
+            "type": "address",
+            "name": "poolToken"
+          },
+          {
+            "type": "uint256",
+            "name": "poolTokenIn"
+          },
+          {
+            "type": "uint256",
+            "name": "underlyingOut"
+          },
+          {
+            "type": "uint256",
+            "name": "rebateOut"
+          },
+          {
+            "type": "uint256",
+            "name": "oraclePrice"
+          },
+          {
+            "type": "uint256",
+            "name": "exchangeRate"
+          },
+          {
+            "type": "uint256",
+            "name": "poolTokenPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionEarlyClosed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionSize"
+          },
+          {
+            "type": "uint256",
+            "name": "executeSize"
+          },
+          {
+            "type": "uint256",
+            "name": "executePrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionForceClosed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionSize"
+          },
+          {
+            "type": "uint256",
+            "name": "executePrice"
+          },
+          {
+            "type": "string",
+            "name": "reason"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionLiquidated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "positionSize"
+          },
+          {
+            "type": "uint256",
+            "name": "liquidationSize"
+          },
+          {
+            "type": "uint256",
+            "name": "liquidationPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionTransfer",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "from"
+          },
+          {
+            "type": "address",
+            "name": "to"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "owner"
+          },
+          {
+            "type": "uint256",
+            "name": "positionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "uint256",
+            "name": "beforeSize"
+          },
+          {
+            "type": "uint256",
+            "name": "afterSize"
+          },
+          {
+            "type": "uint256",
+            "name": "beforeCollateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "afterCollateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "entryPrice"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRateIndex"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitReferralRebateClaimed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitReserveRebateCollected",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
+          },
+          {
+            "type": "uint256",
+            "name": "poolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "stakingAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "keeperAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "treasuryAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "reservedAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "ecoFundAmount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitReserveRebateDisbursed",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
+          },
+          {
+            "type": "uint256",
+            "name": "poolAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "stakingAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "keeperAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "treasuryAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "reservedAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "ecoFundAmount"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitUserFeeDataUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "signer"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "uint8",
+            "name": "tier"
+          },
+          {
+            "type": "address",
+            "name": "referrer"
+          },
+          {
+            "type": "uint32",
+            "name": "totalReferralRebatePct"
+          },
+          {
+            "type": "uint32",
+            "name": "referrerRebatePct"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitUserSettlementRecorded",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "int256",
+            "name": "chargeCollateral"
+          },
+          {
+            "type": "int256",
+            "name": "realizedPnl"
+          },
+          {
+            "type": "int256",
+            "name": "tradingFee"
+          },
+          {
+            "type": "int256",
+            "name": "fundingFee"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyIdentifier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "contractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getImplementation",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "isBlockHeaderEmitted",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "blockNumber"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "registerContract",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "registerDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "sequencer",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "unregisterDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeTo",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  }
+]
