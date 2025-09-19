@@ -28,7 +28,7 @@ export class MyxClient {
     /**
      * initialize trading
      */
-    this.trading = new Trading(this.configManager);
+    this.trading = new Trading(this.configManager, this.logger);
 
     /**
      * initialize markets
