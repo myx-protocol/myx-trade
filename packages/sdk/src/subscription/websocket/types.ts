@@ -25,14 +25,13 @@ export interface WebSocketConfig
 
 // event types
 export interface WebSocketEvents extends Record<string | symbol, any> {
-    open: RWSEvent;
-    message: MessageEvent;
-    close: CloseEvent;
-    error: Event;
-    reconnecting: { detail: number };
-    maxreconnectattempts: void;
-  }
-  
+  open: RWSEvent;
+  message: MessageEvent;
+  close: CloseEvent;
+  error: Event;
+  reconnecting: { detail: number };
+  maxreconnectattempts: void;
+}
 
 /**
  * MYX WebSocket Topic Enum
@@ -103,4 +102,133 @@ export type WebSocketSubscriptionItem<
 export interface WebSocketRequest {
   request: WebSocketMethodEnum;
   args: string[] | string;
+}
+
+/**
+ * @description Ticker Data
+ */
+export interface NativeTickerData {
+  /**
+   * Change
+   */
+  C: string; // change
+  /**
+   *  Timestamp
+   */
+  E: number; // timestamp
+  /**
+   * Turnover
+   */
+  T: string; //turnover
+  /**
+   * High Price
+   */
+  h: string; // high
+  /**
+   * Index Price
+   */
+  i: string; // index price
+  /**
+   * Low Price
+   */
+  l: string; // low
+  /**
+   * Latest Price
+   */
+  p: string; // price
+  /**
+   * Volume
+   */
+  v: string; // volume
+}
+
+/**
+ * MYX Websocket Message Response
+ */
+export interface WebSocketMessageResponse<
+  DataType = Record<string, any> | string
+> {
+  type: string;
+  data: DataType;
+}
+
+/**
+ * MyxTickersDataResponse
+ */
+export interface TickersDataResponse {
+  /**
+   * topic
+   */
+  type: WebSocketTopicEnum.Ticker;
+  /**
+   * globalId
+   */
+  globalId: number;
+  /**
+   * ticker data
+   */
+  data: NativeTickerData;
+}
+
+/**
+ *  Kline Data
+ */
+export interface KlineData {
+  /**
+   * Timestamp
+   */
+  E: number;
+  /**
+   * Turnover
+   */
+  T: string;
+  /**
+   * Close Price
+   */
+  c: string;
+  /**
+   * High Price
+   */
+  h: string;
+  /**
+   * Low Price
+   */
+  l: string;
+  /**
+   * Open Price
+   */
+  o: string;
+  /**
+   * Timestamp
+   */
+  t: number;
+  /**
+   * Volume
+   */
+  v: string;
+}
+
+/**
+ * Kline Data Response
+ */
+export interface KlineDataResponse {
+  /**
+   * topic
+   */
+  type: WebSocketTopicEnum.Kline;
+  /**
+   * globalId
+   */
+  globalId: number;
+
+  /**
+   * resolution
+   */
+  resolution: KlineResolution;
+  /**
+   */
+  /**
+   * kline data
+   */
+  data: KlineData;
 }

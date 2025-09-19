@@ -4,7 +4,7 @@ import Navigation from '@components/Navigation';
 import TradePage from '@pages/TradePage';
 import LPPage from '@pages/LPPage';
 import PoolPage from '@pages/PoolPage';
-import SubscriptionPage from './pages/Subscription';
+import SubscriptionPage from './pages/subscription/Subscription';
 
 const App: React.FC = () => {
   return (

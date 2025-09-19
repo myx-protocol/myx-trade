@@ -79,7 +79,6 @@ export class Trading {
         }
       }
     }
-
     this.logger.warn("OrderPlaced event not found in transaction logs");
     return null;
   }
