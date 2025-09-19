@@ -7,8 +7,15 @@ import {
   WebSocketMethodEnum,
   WebSocketEvents,
   WebSocketConfig,
+  WebSocketMessageResponse,
+  WebSocketTopicEnum,
+  NativeTickerData,
 } from "./types";
-import { generateListenerId } from "./utils";
+import {
+  generateListenerId,
+  isAckMessageResponse,
+  messageTransform,
+} from "./utils";
 import { Logger, LoggerOptions } from "@/logger";
 import { MyxErrorCode, MyxSDKError } from "@/manager/error/const";
 import ReconnectingWebSocket from "reconnecting-websocket";
@@ -20,23 +27,18 @@ export interface Subscription {
   callbacks: Set<(data: any) => void>; // support multiple callback
 }
 
-// request info
-export interface PendingRequest {
-  id: string;
-  resolve: (value: any) => void;
-  reject: (reason?: any) => void;
-  timeout: NodeJS.Timeout;
-}
-
-// config
 
 export class MyxWebSocketClient {
   private ws: ReconnectingWebSocket | null = null;
   private config: Required<WebSocketConfig>;
   private subscriptions = new Map<string, Subscription>();
   private eventBus = mitt<WebSocketEvents>();
-  private isDestroyed = false;
   private heartbeatIntervalId: NodeJS.Timeout | null = null;
+
+  /**
+   * Track if this is the first connection or a reconnection
+   */
+  private isFirstConnection = true;
 
   /**
    *
@@ -65,7 +67,7 @@ export class MyxWebSocketClient {
       maxReconnectAttempts: 10,
       maxEnqueuedMessages: 100,
       requestTimeout: 10000,
-      heartbeatInterval: 30000,
+      heartbeatInterval: 10000,
       heartbeatMessage: "ping",
       noMessageTimeout: 30000,
       // user config
@@ -125,12 +127,17 @@ export class MyxWebSocketClient {
       this.eventBus.emit("open", event);
       this.lastMessageTime = Date.now();
       this.timeoutHeartbeat();
-      this.resubscribeAll();
+
+      // Only resubscribe on reconnection, not on first connection
+      if (!this.isFirstConnection) {
+        this.resubscribeAll();
+      }
+      this.isFirstConnection = false;
       resolve();
     };
 
     this.ws.onmessage = (event) => {
-      this.eventBus.emit("message", event);
+      this.handleMessage(event);
     };
 
     this.ws.onclose = (event) => {
@@ -146,6 +153,8 @@ export class MyxWebSocketClient {
     // listen reconnect event
     (this.ws as any).addEventListener("reconnecting", (event: any) => {
       this.eventBus.emit("reconnecting", { detail: event.detail || 0 });
+      // Mark that this is a reconnection, not first connection
+      this.isFirstConnection = false;
     });
 
     // listen max reconnect attempts event
@@ -155,8 +164,18 @@ export class MyxWebSocketClient {
   }
 
   /**
-   * subscribe topic
-   * 支持多个消费者订阅相同的 listenerId，只发送一次订阅消息
+   * reply ping message
+   */
+  private pong(data: string) {
+    this.send({
+      request: WebSocketMethodEnum.Pong,
+      args: data,
+    });
+  }
+
+  /**
+   * subscribe
+   * support multiple consumers subscribing to the same listenerId, only send one subscription message
    */
   public subscribe(
     subscription: WebSocketSubscriptionItem,
@@ -181,10 +200,9 @@ export class MyxWebSocketClient {
       // save subscription
       this.subscriptions.set(subscriptionId, subscriptionObj);
       this.logger.debug(`create new subscription: ${subscriptionId}`);
-
       this.send({
         request: WebSocketMethodEnum.SubscribeV2,
-        args: subscriptionId,
+        args: [subscriptionId],
       });
     }
   }
@@ -208,7 +226,6 @@ export class MyxWebSocketClient {
       // remove the specified callback
       subscriptionObj.callbacks.delete(callback);
       this.logger.debug(`remove callback from subscription: ${subscriptionId}`);
-
       // if there are no callbacks, mark as need to unsubscribe
       if (subscriptionObj.callbacks.size === 0) {
         this.subscriptions.delete(subscriptionId);
@@ -277,20 +294,6 @@ export class MyxWebSocketClient {
   }
 
   /**
-   * get connection status
-   */
-  public getReadyState(): number {
-    return this.ws?.readyState ?? WebSocket.CLOSED;
-  }
-
-  /**
-   * get reconnect count
-   */
-  public getRetryCount(): number {
-    return this.ws?.retryCount ?? 0;
-  }
-
-  /**
    * event listen
    */
   public on<K extends keyof WebSocketEvents>(
@@ -311,20 +314,6 @@ export class MyxWebSocketClient {
   }
 
   /**
-   * get all subscriptions
-   */
-  public getSubscriptions(): Subscription[] {
-    return Array.from(this.subscriptions.values());
-  }
-
-  /**
-   * clear all subscriptions
-   */
-  public clearSubscriptions(): void {
-    this.subscriptions.clear();
-  }
-
-  /**
    * private methods
    */
 
@@ -333,11 +322,24 @@ export class MyxWebSocketClient {
    */
   private handleMessage(event: MessageEvent): void {
     try {
-      const data = JSON.parse(event.data);
-
-      if (data.topic) {
-        this.handleSubscriptionMessage(data);
+      const data = JSON.parse(event.data) as WebSocketMessageResponse;
+      // update last message time
+      this.lastMessageTime = Date.now();
+      if (data.type === "ping") {
+        this.logger.debug("Ping Message received");
+        // reply pong message by microtask
+        queueMicrotask(() => {
+          this.pong(data.data as string);
+        });
+        return;
       }
+      if (isAckMessageResponse(data)) {
+        this.logger.debug(`AcK Message:${data.type} received`);
+        return;
+      }
+
+      // handle subscription message
+      this.handleSubscriptionMessage(data);
     } catch (error) {
       this.logger.error(`Failed to parse WebSocket message: ${error}`);
     }
@@ -346,23 +348,23 @@ export class MyxWebSocketClient {
   /**
    * handle subscription message
    */
-  private handleSubscriptionMessage(data: any): void {
+  private handleSubscriptionMessage(data: WebSocketMessageResponse): void {
     // dispatch message by subscriptionId
-    if (data.subscriptionId) {
-      const subscription = this.subscriptions.get(data.subscriptionId);
-      if (subscription) {
-        subscription.callbacks.forEach((callback) => {
-          try {
-            callback(data);
-          } catch (error) {
-            this.logger.error(
-              `Callback Error (${data.subscriptionId}): ${error}`
-            );
-          }
-        });
+    const subscriptionId = data.type;
+    const subscription = this.subscriptions.get(subscriptionId);
+    // if subscription not found, return
+    if (!subscription) return;
+
+    // transform data
+    let dataParsed = messageTransform(data);
+
+    subscription.callbacks.forEach((callback) => {
+      try {
+        callback(dataParsed);
+      } catch (error) {
+        this.logger.error(`Callback Error (${subscriptionId}): ${error}`);
       }
-      return;
-    }
+    });
   }
 
   /**
@@ -392,14 +394,17 @@ export class MyxWebSocketClient {
     this.stopHeartbeatTimer();
     if (Date.now() - this.lastMessageTime > this.config.noMessageTimeout) {
       const hasActiveSubscription = this.subscriptions.size > 0;
+      // if no active subscription, close the connection
       if (!hasActiveSubscription) {
         this.ws?.close();
       } else {
-        this.heartbeatIntervalId = setTimeout(() => {
-          this.timeoutHeartbeat();
-        }, this.config.heartbeatInterval);
+        // if response time is too long, reconnect the connection
+        this.reconnect();
       }
     }
+    this.heartbeatIntervalId = setTimeout(() => {
+      this.timeoutHeartbeat();
+    }, this.config.heartbeatInterval);
   }
 
   /**

@@ -29,8 +29,9 @@ export class SubScription {
       : WEBSOCKET_URL.MainNet;
 
     this.wsClient = new MyxWebSocketClient({
+      logLevel: this.configManager.getConfig()?.logLevel,
       url: socketUrl,
-      ...configManager.getConfig()?.socketConfig,
+      ...this.configManager.getConfig()?.socketConfig,
     });
   }
 
@@ -38,13 +39,6 @@ export class SubScription {
    *
    * getters
    */
-  public get readyState() {
-    return this.wsClient.getReadyState();
-  }
-
-  public get retryCount() {
-    return this.wsClient.getRetryCount();
-  }
 
   public get isConnected() {
     return this.wsClient.isConnected();
@@ -134,28 +128,28 @@ export class SubScription {
     );
   }
 
-  /**
-   * tickers all subscription methods
-   */
-  subscribeTickersAll(callback: OnTickersAllCallback) {
-    this.logger.debug(`subscribe tickers all`);
-    this.wsClient.subscribe(
-      {
-        topic: WebSocketTopicEnum.TickerAll,
-      },
-      callback
-    );
-  }
+  // /**
+  //  * tickers all subscription methods
+  //  */
+  // subscribeTickersAll(callback: OnTickersAllCallback) {
+  //   this.logger.debug(`subscribe tickers all`, this.configManager.getConfig());
+  //   this.wsClient.subscribe(
+  //     {
+  //       topic: WebSocketTopicEnum.TickerAll,
+  //     },
+  //     callback
+  //   );
+  // }
 
-  unsubscribeTickersAll(callback: OnTickersAllCallback) {
-    this.logger.debug(`unsubscribe tickers all`);
-    this.wsClient.unsubscribe(
-      {
-        topic: WebSocketTopicEnum.TickerAll,
-      },
-      callback
-    );
-  }
+  // unsubscribeTickersAll(callback: OnTickersAllCallback) {
+  //   this.logger.debug(`unsubscribe tickers all`);
+  //   this.wsClient.unsubscribe(
+  //     {
+  //       topic: WebSocketTopicEnum.TickerAll,
+  //     },
+  //     callback
+  //   );
+  // }
 
   /**
    * with auth methods

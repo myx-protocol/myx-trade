@@ -1,4 +1,4 @@
 export const WEBSOCKET_URL = {
-  TestNet: "wss://websocket.testnet.myx.trade",
-  MainNet: "wss://websocket.mainnet.myx.trade",
+  TestNet: "wss://oapi-test.myx.cash/ws",
+  MainNet: "wss://oapi.myx.finance/ws",
 } as const;
