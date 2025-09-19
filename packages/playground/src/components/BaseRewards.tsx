@@ -2,14 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { usePoolInfo } from "./PoolInfo";
 import { base } from "@myx-trade/sdk";
 import { PoolContext } from "./PoolContext";
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { formatUnits } from "ethers";
 import { Button } from "@/components";
+import { message } from "antd";
 
 
 export const BaseRewards = () => {
   const {chainId, account} = useContext(PoolContext);
   const {pool,poolId} = usePoolInfo()
+  const [loading, setLoading] = useState<boolean>(false)
   
   const {data = null} = useQuery({
     queryKey: [{key: 'rewards'},poolId, account],
@@ -27,7 +29,14 @@ export const BaseRewards = () => {
   const disabled = useMemo(() => !(data?.baseAmountOut && data?.baseAmountOut > 0n), [data?.baseAmountOut] )
   const onHandleClaim = useCallback(async () => {
     if (!poolId || !account) return
-    await base.claim({chainId, poolId})
+    try {
+      setLoading(true)
+      await base.claim({chainId, poolId})
+      message.success("Claim successfully claimed")
+    } finally {
+      setLoading(false)
+    }
+    
   }, [chainId, poolId, account])
   return <div className="flex items-center gap-[20px]">
     <div className={'flex gap-[10px]'}>
@@ -35,7 +44,7 @@ export const BaseRewards = () => {
       <span>{pool && data && formatUnits(data?.rebateAmount, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  || '--'}</span>
       <span>{pool && data && formatUnits(data?.baseAmountOut, pool?.baseDecimals) + ` ${pool.baseSymbol}` || '--'}</span>
     </div>
-    <Button label={'Claim'} disabled={disabled}  onClick={onHandleClaim}/>
+    <Button label={'Claim'} disabled={disabled} isLoading={loading} onClick={onHandleClaim}/>
   </div>
 }
 

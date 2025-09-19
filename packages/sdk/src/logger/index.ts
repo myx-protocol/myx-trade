@@ -25,43 +25,43 @@ export class Logger {
   /**
    * debug
    */
-  debug(message: string) {
+  debug(message: string, ...args: any[]) {
     if (this.options.logLevel === "none") return;
     if (this.options.logLevel === "debug") {
-      console.log(`[MYX-SDK-DEBUG] ${message}`);
+      console.log(`[MYX-SDK-DEBUG] ${message}`, ...args);
     }
   }
 
   /**
    * info
    */
-  info(message: string) {
+  info(message: string, ...args: any[]) {
     if (this.options.logLevel === "none") return;
     if (this.options.logLevel === "debug" || this.options.logLevel === "info") {
-      console.log(`[MYX-SDK-INFO] ${message}`);
+      console.log(`[MYX-SDK-INFO] ${message}`, ...args);
     }
   }
 
   /**
    * error
    */
-  error(message: string) {
+  error(message: string, ...args: any[]) {
     if (this.options.logLevel === "none") return;
     if (
       this.options.logLevel === "debug" ||
       this.options.logLevel === "info" ||
       this.options.logLevel === "error"
     ) {
-      console.error(`[MYX-SDK-ERROR] ${message}`);
+      console.error(`[MYX-SDK-ERROR] ${message}`, ...args);
     }
   }
 
   /**
    * warn
    */
-  warn(message: string) {
+  warn(message: string, ...args: any[]) {
     if (this.options.logLevel !== "none") {
-      console.warn(`[MYX-SDK-WARN] ${message}`);
+      console.warn(`[MYX-SDK-WARN] ${message}`, ...args);
     }
   }
 }
