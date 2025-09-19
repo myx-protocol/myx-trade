@@ -1,5 +1,13 @@
 import { md5 } from "@/crypto/md5";
-import { WebSocketSubscriptionItem, WebSocketTopicEnum } from "./types";
+import {
+  KlineDataResponse,
+  NativeTickerData,
+  TickersDataResponse,
+  WebSocketMessageResponse,
+  WebSocketMethodEnum,
+  WebSocketSubscriptionItem,
+  WebSocketTopicEnum,
+} from "./types";
 
 /**
  * generate listener id
@@ -21,4 +29,68 @@ export const generateListenerId = <T extends WebSocketTopicEnum>(
     default:
       return md5(JSON.stringify({ topic, params }));
   }
+};
+
+/**
+ * isAckMessageResponse
+ */
+export const isAckMessageResponse = ({ type }: WebSocketMessageResponse) => {
+  return Boolean(
+    type === WebSocketMethodEnum.Pong ||
+      type === WebSocketMethodEnum.SignIn ||
+      type === WebSocketMethodEnum.SubscribeV2 ||
+      type === WebSocketMethodEnum.UnsubscribeV2 ||
+      type === "ping" ||
+      type === "pong"
+  );
+};
+
+/**
+ * parse topic from type
+ */
+export const parseTopicFromType = (type: string) => {
+  switch (type) {
+    case WebSocketTopicEnum.Order:
+    case WebSocketTopicEnum.Position:
+    case WebSocketTopicEnum.TickerAll:
+      return type;
+    default:
+      const [topic] = type.split(".");
+      return topic;
+  }
+};
+
+/**
+ * native message transform
+ */
+export const messageTransform = (data: WebSocketMessageResponse) => {
+  const topic = parseTopicFromType(data.type);
+  switch (topic) {
+    /**
+     * tickers
+     */
+    case WebSocketTopicEnum.Ticker: {
+      const [, globalId = ""] = data.type.split(".");
+      return {
+        ...data,
+        type: WebSocketTopicEnum.Ticker,
+        globalId: parseInt(globalId),
+      } as TickersDataResponse;
+    }
+    /**
+     * kline
+     */
+    case WebSocketTopicEnum.Kline: {
+      const [, paramData = ""] = data.type.split(".");
+      const [globalId, resolution] = paramData.split("_");
+      return {
+        ...data,
+        type: WebSocketTopicEnum.Kline,
+        globalId: parseInt(globalId),
+        resolution: resolution,
+      } as KlineDataResponse;
+    }
+  }
+
+  return data;
 };
