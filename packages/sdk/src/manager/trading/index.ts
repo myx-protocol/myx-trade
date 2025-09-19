@@ -5,7 +5,7 @@ import { MyxClientConfig } from "../config";
 import { TIME_IN_FORCE } from "@/config/con";
 import { ethers } from "ethers";
 import { getContractAddressByChainId } from "@/config/address/index";
-import Broker_ABI from "@/abi/Broker.json";
+import Emiter_ABI from "@/abi/Emiter.json";
 
 export class MyxTrading extends MyxBase {
   constructor() {
@@ -14,85 +14,69 @@ export class MyxTrading extends MyxBase {
   }
 
   private getOrderIdFromTransaction(receipt: any): string | null {
-    const ORDER_PLACED_TOPIC = '0xf6b9bfc100eeb47bf64644320e71b858b32880d5028e935db0e717302fa5b564';
-
     if (!receipt || !receipt.logs) {
       return null;
     }
 
-    const iface = new ethers.Interface(Broker_ABI);
+    // 创建 Emiter 合约的接口来解析事件
+    const emiterInterface = new ethers.Interface(Emiter_ABI);
+
+    // 查找 OrderPlaced 事件定义
+    const orderPlacedEvent = Emiter_ABI.find((item: any) =>
+      item.type === 'event' && item.name === 'OrderPlaced'
+    );
+
+    if (!orderPlacedEvent) {
+      console.error('OrderPlaced event not found in Emiter ABI');
+      return null;
+    }
+
+    // 计算 OrderPlaced 事件的 topic hash
+    const eventTopic = ethers.id('OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)');
+
+    console.log('Looking for OrderPlaced events with topic:', eventTopic);
 
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
-     
-      if (log.topics && log.topics.length > 0 && log.topics[0] === ORDER_PLACED_TOPIC) {
-        
+
+      console.log(`Log ${i}:`, {
+        address: log.address,
+        topics: log.topics,
+        data: log.data
+      });
+
+      // 检查是否是 OrderPlaced 事件
+      if (log.topics && log.topics.length > 0 && log.topics[0] === eventTopic) {
+        console.log(`Found OrderPlaced event in log ${i}`);
+
         try {
-          let orderId = null;
-          
-          for (let j = 1; j < log.topics.length; j++) {
-            const topicValue = log.topics[j];
-            
-            try {
-              const bigIntValue = ethers.getBigInt(topicValue);
-              const numberValue = bigIntValue.toString();
-              
-              if (bigIntValue > 0n && bigIntValue < 10000000000n) {
-                if (!orderId) {
-                  orderId = numberValue;
-                }
-              }
-            } catch (e) {}
-          }
-          
-          if (log.data && log.data !== '0x') {
-            const dataWithoutPrefix = log.data.slice(2); // 移除 '0x'
-            
-            const numParams = Math.floor(dataWithoutPrefix.length / 64);
-            
-            for (let k = 0; k < numParams; k++) {
-              const start = k * 64;
-              const paramHex = '0x' + dataWithoutPrefix.slice(start, start + 64);
-              
-              try {
-                const bigIntValue = ethers.getBigInt(paramHex);
-                const numberValue = bigIntValue.toString();
-                
-                if (bigIntValue > 0n && bigIntValue < 10000000000n) {
-                  if (!orderId) {
-                    orderId = numberValue;
-                  }
-                }
-              } catch (e) {}
+          // 使用 ethers 解析事件数据
+          const parsedLog = emiterInterface.parseLog({
+            topics: log.topics,
+            data: log.data
+          });
+
+          if (parsedLog && parsedLog.name === 'OrderPlaced') {
+            console.log('Parsed OrderPlaced event:', parsedLog.args);
+
+            // 根据 Emiter.json 的定义，orderId 是第5个参数（索引4）
+            // 事件字段顺序：broker, user, poolId, positionId, orderId, ...
+            const orderId = parsedLog.args[4]; // orderId 在索引 4
+
+            if (orderId !== undefined && orderId !== null) {
+              const orderIdString = orderId.toString();
+              console.log(`Found orderId: ${orderIdString}`);
+              return orderIdString;
             }
           }
-          
-          if (!orderId) {
-            for (let j = 1; j < log.topics.length; j++) {
-              try {
-                const bigIntValue = ethers.getBigInt(log.topics[j]);
-                if (bigIntValue > 10000000000n) {  
-                  const numberValue = bigIntValue.toString();
-                  if (!orderId) {
-                    orderId = numberValue;
-                  }
-                }
-              } catch (e) {
-              }
-            }
-          }
-          
-          if (orderId) {
-            return orderId;
-          } 
-          
-          return null
         } catch (error) {
+          console.error(`Error parsing log ${i}:`, error);
           continue;
         }
       }
     }
 
+    console.warn('OrderPlaced event not found in transaction logs');
     return null;
   }
 
