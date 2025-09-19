@@ -1,31 +1,31 @@
 import { $fetch } from "@/api/request";
-import { MyxBase } from "../base";
-import { MyxClientConfig } from "@/manager/config";
+import { ConfigManager, MyxClientConfig } from "@/manager/config";
 
-const baseUrl= "https://api-test.myx.cash"
+const baseUrl = "https://api-test.myx.cash";
 
-
-export class MyxMarkets extends MyxBase {
-  constructor() {
-    super();
-    this.getConfig();
+export class Markets {
+  private configManager: ConfigManager;
+  constructor(configManager: ConfigManager) {
+    this.configManager = configManager;
   }
 
-  getMarkets () {
-    return Promise.resolve([])
+  getMarkets() {
+    return Promise.resolve([]);
   }
 
-  async listPools () {
+  async listPools() {
     const rs = await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
 
-    return rs.data || []
+    return rs.data || [];
   }
 
-  async getPoolLevelConfig (poolId: string) {
-   const config = this.getConfig() as MyxClientConfig
-   const rs = await $fetch("GET", `${baseUrl}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${config?.chainId}`);
+  async getPoolLevelConfig(poolId: string) {
+    const chainId = this.configManager.getConfig()?.chainId;
+    const rs = await $fetch(
+      "GET",
+      `${baseUrl}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`
+    );
 
-    return rs.data
+    return rs.data;
   }
 }
-
