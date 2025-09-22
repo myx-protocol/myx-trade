@@ -5,7 +5,7 @@ import { CHAIN_INFO } from "@/config/chains/index";
 import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-import { previewBaseAmountOut, previewLpAmountOut } from "@/lp/base/preview";
+import { previewBaseAmountOut } from "@/lp/base/preview";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
