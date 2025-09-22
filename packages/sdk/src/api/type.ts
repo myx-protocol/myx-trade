@@ -40,6 +40,17 @@ export interface StatDashBoardResponse extends BaseResponse {
   data: DashboardType;
 }
 
+export type AccessTokenType = {
+  accessToken: string;
+  expireAt: number;
+  allowAccount: string;
+  appId: string;
+};
+
+export interface AccessTokenResponse extends BaseResponse {
+  data: AccessTokenType;
+}
+
 export enum MarketPoolState {
   Cook = 0, // 市场建立
   Primed = 1, // 扣款手续费，等待准备oracle
