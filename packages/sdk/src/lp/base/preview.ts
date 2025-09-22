@@ -1,4 +1,4 @@
-import { getBasePoolContract, getQuotePoolContract } from "@/web3/providers";
+import { getBasePoolContract } from "@/web3/providers";
 import { previewAmountOutParams, PreviewWithdrawDataParams } from "@/lp/type";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
