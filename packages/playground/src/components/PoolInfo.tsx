@@ -1,9 +1,11 @@
 import {  useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
-import { Market, getBalanceOf, MarketPoolState } from "@myx-trade/sdk";
+import { Market, getBalanceOf, MarketPoolState, pool as Pool, getLpPrice,} from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
-
+import { Tag } from "antd";
+import { useQuery } from "@tanstack/react-query";
+const COMMON_PRICE_DECIMALS = 30
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
   const { pools , poolId} = useContext(PoolContext);
@@ -62,6 +64,8 @@ export const BalanceInfo = () => {
       setQuotePoolBalance(_balance)
     }
   }
+  
+  
   useEffect(() => {
     getBaseBalance ().then ()
     getQuoteBalance ().then ()
@@ -69,17 +73,19 @@ export const BalanceInfo = () => {
     getQuotePoolBalance ().then ()
   }, [chainId, account, poolId, pool])
   
+  
+  
   return <div className={'flex flex-col gap-[10px] '}>
     <div className={'flex gap-[50px]'}>
       <div className={'flex items-center gap-[10px]'}>
         <span>Base Balance</span>
         <span>{baseBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getBaseBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getBaseBalance()} />
       </div>
       <div className={'flex items-center gap-[10px]'}>
         <span>Quote Balance</span>
         <span>{quoteBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getQuoteBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getQuoteBalance()} />
       </div>
     </div>
     
@@ -87,14 +93,14 @@ export const BalanceInfo = () => {
       <div className={'flex items-center gap-[10px]'}>
         <span>Base Pool Balance</span>
         <span>{basePoolBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getBasePoolBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getBasePoolBalance()} />
       </div>
       
       
       <div className={'flex items-center gap-[10px]'}>
         <span>Quote Pool Balance</span>
         <span>{quotePoolBalance || '--'}</span>
-        <RefreshRight size={16} onClick={() => getQuotePoolBalance()} />
+        <RefreshRight className={'text-[#1677ff]'} size={16} onClick={() => getQuotePoolBalance()} />
       </div>
     </div>
   
@@ -105,9 +111,58 @@ export const BalanceInfo = () => {
 
 export const PoolInfo = () => {
  const { pool, poolId } = usePoolInfo()
+  const {chainId, account} = useContext(PoolContext)
+  const {data: price}  = useQuery({
+    queryKey: [{key: 'lpPirce'},poolId],
+    enabled: !!poolId,
+    queryFn: async () => {
+      if (!poolId ) return null
+      const result = await getLpPrice(
+        chainId,
+        poolId,
+      )
+      if (result) {
+        return formatUnits(result, COMMON_PRICE_DECIMALS)
+      }
+      return
+    },
+    refetchInterval: 5000
+  })
   
-  return <header className={'border-1 p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff]'}>
-    <div>当前Pool：<span>{pool ? MarketPoolState[pool.state] : '--'}</span></div>
+  const {data: userShare}  = useQuery({
+    queryKey: [{key: 'userShare'},poolId, pool],
+    enabled: !!poolId && !!pool?.quotePoolToken,
+    queryFn: async () => {
+      if (!poolId || !pool) return null
+      const result = await Pool.getUserGenesisShare(chainId, pool?.quotePoolToken, account as string)
+      
+      if (result) {
+        return formatUnits(result, Market[chainId].lpDecimals)
+      }
+      return
+    }
+  })
+  
+  return <header className={'border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff]'}>
+    <div className={'flex items-center gap-[4px]'}>
+      当前Pool：
+      <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>
+      <Tag>{pool ? MarketPoolState[pool.state] : '--'}</Tag>
+      <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
+        <span>Price:</span>
+        <span className={''}>
+          {price || '--'}
+        </span>
+        <span>{pool?.quoteSymbol || ''}</span>
+      </div>
+      <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
+        <span>创世LP:</span>
+        <span className={''}>
+          {userShare || '0'}
+        </span>
+        {/*<span>{}</span>*/}
+      </div>
+    </div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
       <span>{poolId || '--'}</span>

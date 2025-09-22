@@ -22,7 +22,7 @@ export const deposit = async (params: Deposit) => {
     const { poolId, chainId, amount, slippage = 0.01 } = params;
     await checkParams (params)
     
-    const pool = await getPoolInfo (poolId);
+    const pool = await getPoolInfo (chainId,poolId);
     const decimals = pool?.baseDecimals
     const tokenAddress = pool?.baseToken
     
