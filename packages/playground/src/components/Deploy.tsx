@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { Button } from "@/components";
-import { pool, quote, Market } from "@myx-trade/sdk";
+import { pool } from "@myx-trade/sdk";
 import { message } from "antd";
 
 export const Deploy = () => {
@@ -22,14 +22,16 @@ export const Deploy = () => {
       setIsLoading(true);
       const poolId = await pool.createPool({chainId,  baseToken: address });
       if (!poolId) return;
-      await quote.deposit({
+      /*await quote.deposit({
         poolId,
         amount: Number(Market[chainId].poolPrimeThreshold),
         chainId,
         slippage: 0.01
-      })
+      })*/
       refetch()
       message.success("Create Pool successfully")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setIsLoading(false)
     }

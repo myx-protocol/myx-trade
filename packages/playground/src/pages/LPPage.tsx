@@ -8,6 +8,8 @@ import { DepositQuote } from "@components/DepositQuote.tsx";
 import { DepositBase } from "@components/DepositBase.tsx";
 import { BaseRewards } from "@components/BaseRewards.tsx";
 import { Transfer } from "@components/Transfer.tsx";
+import { WithdrawBase } from "@components/WithdrawBase.tsx";
+import { QuoteRewards } from "@components/QuoteRewards.tsx";
 
 const LPPage: React.FC = () => {
   return (
@@ -21,7 +23,9 @@ const LPPage: React.FC = () => {
         <Deploy/>
         <DepositQuote/>
         <DepositBase/>
+        <WithdrawBase/>
         <BaseRewards/>
+        <QuoteRewards/>
         <Transfer/>
       </PoolProvider>
     </div>

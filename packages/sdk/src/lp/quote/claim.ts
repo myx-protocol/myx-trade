@@ -1,4 +1,4 @@
-import { getAccount, getBasePoolContract, ProviderType } from "@/web3/providers";
+import { getAccount, getQuotePoolContract, ProviderType } from "@/web3/providers";
 import { ClaimParams } from "@/lp/type";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { Market } from "@/config/market";
@@ -30,7 +30,7 @@ export const claim = async (
       recipient: account
     }
     
-    const contract = await getBasePoolContract(chainId, ProviderType.Signer)
+    const contract = await getQuotePoolContract(chainId, ProviderType.Signer)
     
     // estimateGas
     const _gasLimit = await contract.claimUserRebate.estimateGas(poolId, account, account)
@@ -41,7 +41,7 @@ export const claim = async (
       gasPrice
     })
     
-    console.log('base claim',response)
+    console.log('quote claim',response)
     return response
     
   } catch (error) {

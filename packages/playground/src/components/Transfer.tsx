@@ -25,6 +25,8 @@ export const Transfer = ({className = ''}: {className?: string}) => {
       setLoading(true)
       await quote.transfer(chainId, fromPool, toPool, Number(amount))
       message.success("Transfer success")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setLoading(false)
     }
