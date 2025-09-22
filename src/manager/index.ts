@@ -1,9 +1,13 @@
-import { SubScription } from "@/subscription";
+import { SubScription } from "@/manager/subscription";
 import { ConfigManager } from "./config/index";
 import { type MyxClientConfig } from "./config/index";
 import { Logger } from "@/logger";
 import { Trading } from "./trading";
 import { Markets } from "./markets";
+
+// types
+
+export * from "./subscription/types";
 
 export class MyxClient {
   /**
@@ -41,5 +45,3 @@ export class MyxClient {
     this.subscription = new SubScription(this.configManager, this.logger);
   }
 }
-
-

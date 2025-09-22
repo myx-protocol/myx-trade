@@ -1,50 +1,65 @@
-// pool list [scan]
-// pool info
-"use client";
+import wretch, { WretchOptions } from "wretch";
 
-// import { getActiveLocale } from "base/src/i18n";
-import { ErrorCode, ObjectType } from "@/api/type";
+const client = wretch();
 
-export function $fetch(
-  method: "GET" | "POST",
-  url: string,
-  data?: ObjectType<any>,
-) {
-  return fetch(url, {
-    method,
-    headers: {
-      Accept: "application/json,text/plain,*/*",
-      "Content-Type": "application/json",
-      "Access-Control-Allow-credentials": "true",
-      // "Accept-Language": getActiveLocale(),
-      // "myx-signature-account":
-      //   store.getState().account?.account?.address ?? undefined,
-    } as any,
-    body: method === "GET" || !data ? undefined : JSON.stringify(data),
-  })
-    .then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      } else {
-        return Promise.reject(res);
-      }
-    })
-    .then((data) => {
-      console.log(data);
-      if (
-        data.code === ErrorCode.SUCCESS ||
-        data.code === ErrorCode.SUCCESS_ORIGIN
-      ) {
-        return Promise.resolve(data);
-      } else {
-        // 判断token是否存在，如果存在说明需要更新token
-        return Promise.reject(data);
-      }
-    })
-    .catch((e) => {
-      // console.error(e)
-      // todo toast error message
-      console.error(e.message);
-      return Promise.reject(e);
-    });
-}
+/**
+ * Build query options
+ */
+const buildQueryOptions = (url: string, params?: Record<string, any>) => {
+  if (params) {
+    if (url.includes("?")) {
+      return url + "&" + new URLSearchParams(params).toString();
+    }
+    return url + "?" + new URLSearchParams(params).toString();
+  }
+  return url;
+};
+
+/**
+ * Http request
+ */
+export const http = {
+  /**
+   * Get request
+   */
+  get: <T = Record<string, any>>(
+    url: string,
+    params?: Record<string, any>,
+    options: WretchOptions = {}
+  ) => {
+    const requestUrl = buildQueryOptions(url, params);
+    return client.url(requestUrl).options(options).get().json<T>();
+  },
+
+  /**
+   * Post request
+   */
+  post: <T = Record<string, any>>(
+    url: string,
+    data?: Record<string, any>,
+    options: WretchOptions = {}
+  ) => {
+    return client.url(url).options(options).post(data).json<T>();
+  },
+
+  /**
+   * Put request
+   */
+  put: <T = Record<string, any>>(
+    url: string,
+    data?: Record<string, any>,
+    options: WretchOptions = {}
+  ) => {
+    return client.url(url).options(options).put(data).json<T>();
+  },
+
+  /**
+   * Delete request
+   */
+  delete: <T = Record<string, any>>(
+    url: string,
+    options: WretchOptions = {}
+  ) => {
+    return client.url(url).options(options).delete().json<T>();
+  },
+};
