@@ -1,6 +1,6 @@
 import { RewardsParams } from "@/lp/type";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { getBasePoolContract } from "@/web3/providers";
+import { getQuotePoolContract } from "@/web3/providers";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { getOraclePrice } from "@/api";
 import { parseUnits } from "ethers";
@@ -11,7 +11,6 @@ export const getRewards = async (params: RewardsParams) => {
     const {chainId, account, poolId} = params;
     if (!chainId || !account || !poolId) return
     const chainInfo =  CHAIN_INFO[chainId];
-    const lpAmountIn = 0n
     
     // todo ws price
     const priceResponse = await getOraclePrice(chainId, [poolId]);
@@ -19,17 +18,17 @@ export const getRewards = async (params: RewardsParams) => {
     
     const price = parseUnits(_price, COMMON_PRICE_DECIMALS)
     
-    console.log("pendingUserRebates base data:", [poolId, lpAmountIn,account, price]);
-    const basePoolContract = await getBasePoolContract(chainId);
-    const _gasLimit = await basePoolContract.pendingUserRebates.estimateGas(poolId, account, price)
+    console.log("pendingUserRebates quote data", [poolId,account, price]);
+    const contract = await getQuotePoolContract(chainId);
+    const _gasLimit = await contract.pendingUserRebates.estimateGas(poolId,account, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const request = await basePoolContract.pendingUserRebates(poolId,account, price, {
+    const request = await contract.pendingUserRebates(poolId,account, price, {
       gasLimit,
       gasPrice
     })
     
-    console.log("pendingUserRebates base result:", request);
+    console.log("pendingUserRebates quote result:", request);
     return request
   
   } catch (e) {
