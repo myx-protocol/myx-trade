@@ -88,3 +88,8 @@ export type PriceType = {
 export interface PriceResponse extends BaseResponse {
   data: PriceType[];
 }
+
+
+export interface ApiResponse<T=Record<string, any>> extends BaseResponse {
+  data: T;
+}

@@ -11,6 +11,7 @@
     "build:sdk": "cd ../sdk && pnpm build"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.2",
     "@myx-trade/sdk": "workspace:*",
     "@tanstack/react-query": "^5.85.6",
     "@types/react-router-dom": "^5.3.3",
