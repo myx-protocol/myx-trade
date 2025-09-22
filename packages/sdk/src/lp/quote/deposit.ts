@@ -22,7 +22,7 @@ export const deposit = async (params: Deposit) => {
   try {
     const {poolId, chainId, amount, slippage = 0.01} = params;
     await checkParams(params)
-    const pool = await getPoolInfo(poolId);
+    const pool = await getPoolInfo(chainId, poolId);
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     

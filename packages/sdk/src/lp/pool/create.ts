@@ -3,10 +3,8 @@ import { getPoolManagerContract } from "../../web3/providers";
 import { ChainId } from "@/config/chain";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { Market } from "@/config/market";
-import { getPools } from "@/api";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { deposit } from "@/lp/quote/deposit";
 import {  getMarketPoolId } from "@/lp/pool/get";
 
 const chainId = ChainId.ARB_TESTNET;

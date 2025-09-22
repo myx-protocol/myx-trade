@@ -27,6 +27,7 @@ export const getPools = async () => {
   return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
 }
 
+
 export const getPoolLevel = async (poolId: string, chainId: number) => {
   return await $fetch("GET", `${baseUrl}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`);
 }

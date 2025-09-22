@@ -12,8 +12,8 @@ import { getPoolInfo } from "@/lp/getPoolInfo";
 
 export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {
   try {
-    const fromPool  = await getPoolInfo(fromPoolId);
-    const toPool  = await getPoolInfo(toPoolId);
+    const fromPool  = await getPoolInfo(chainId, fromPoolId);
+    const toPool  = await getPoolInfo(chainId, toPoolId);
     
     if (!toPool || !fromPool) return null;
     

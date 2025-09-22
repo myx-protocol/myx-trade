@@ -156,6 +156,11 @@
   },
   {
     "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "SafeERC20FailedOperation",
     "inputs": [
       {
@@ -300,7 +305,7 @@
   },
   {
     "type": "function",
-    "name": "claimRebate",
+    "name": "claimBasePoolRebate",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -317,7 +322,41 @@
   },
   {
     "type": "function",
-    "name": "claimRebates",
+    "name": "claimBasePoolRebates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "poolIds"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "claimQuotePoolRebate",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "claimQuotePoolRebates",
     "constant": false,
     "payable": false,
     "inputs": [
