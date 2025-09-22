@@ -2,7 +2,7 @@ import { Signer } from "ethers";
 import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
-import { WebSocketConfig } from "@/subscription/websocket/types";
+import { WebSocketConfig } from "@/manager/subscription/websocket/types";
 
 export interface MyxClientConfig {
   chainId: number;
