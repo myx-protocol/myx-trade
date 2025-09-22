@@ -988,7 +988,7 @@ const TradePage: React.FC = () => {
                 <Form.Item label="仓位ID / Position ID" name="positionId">
                   <Input placeholder="请输入仓位ID / Enter Position ID" value={closePositionId} onChange={(e) => setClosePositionId(e.target.value)} />
                 </Form.Item>
-                <Button type="primary" className="ml-2" onClick={async () => {
+                <Button type="primary" onClick={async () => {
                   if (myxClient) {
                     const rs = await myxClient.position.closePosition(closePositionId);
                     console.log("rs-->", rs);
@@ -1004,7 +1004,7 @@ const TradePage: React.FC = () => {
                 <Form.Item label="调整保证金 / Adjust Collateral" name="adjustCollateralAmount">
                   <Input placeholder="请输入调整保证金 / Enter Adjust Collateral" value={adjustCollateralAmount} onChange={(e) => setAdjustCollateralAmount(e.target.value)} />
                 </Form.Item>
-                <Button type="primary" className="ml-2" onClick={async () => {
+                <Button type="primary" onClick={async () => {
                   if (myxClient) {
                     const rs = await myxClient.position.adjustCollateral(adjustCollateralPositionId, adjustCollateralAmount);
                     console.log("rs-->", rs);
