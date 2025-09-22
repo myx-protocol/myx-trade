@@ -1,10 +1,12 @@
 import { getBasePoolContract, getQuotePoolContract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
-import { previewAmountOutParams } from "@/lp/type";
-import { BytesLike } from "ethers";
-import { QuotePool } from "@/abi/types/QuotePool";
+import { previewAmountOutParams, PreviewWithdrawDataParams } from "@/lp/type";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
+import { getOraclePrice } from "@/api";
+import { parseUnits } from "ethers";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { Market } from "@/config/market";
+import { checkParams } from "@/common/checkParams";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
@@ -45,6 +47,58 @@ export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0
     return request
   } catch (e) {
     console.error(e)
+    throw e;
+  }
+}
+
+export const previewUserWithdrawData = async ({ chainId, account, poolId, amount = 0 }: PreviewWithdrawDataParams) => {
+  try {
+   
+    if (!chainId || !account || !poolId ) return
+    if (!amount) {
+      return  {
+        baseAmountOut: 0n,
+        rebateAmount: 0n
+      }
+    }
+    const chainInfo =  CHAIN_INFO[chainId];
+    const decimals = Market[chainId as keyof typeof Market].lpDecimals;
+    
+    await checkParams ({
+      // tokenAddress: lpAddress,
+      decimals,
+      account,
+      chainId,
+      amount: Number(amount),
+    })
+    
+    const amountIn = parseUnits(amount.toString(), decimals);
+    
+    // todo ws price
+    const priceResponse = await getOraclePrice(chainId, [poolId]);
+    const _price = priceResponse.data?.[0]?.price || '0';
+    
+    const price = parseUnits(_price, COMMON_PRICE_DECIMALS)
+    
+    console.log("previewUserWithdrawData data", [poolId, amountIn,account, price]);
+    const basePoolContract = await getBasePoolContract(chainId);
+    const _gasLimit = await basePoolContract.previewUserWithdrawData.estimateGas(poolId, amountIn,account, price)
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+    const request = await basePoolContract.previewUserWithdrawData(poolId, amountIn,account, price, {
+      gasLimit,
+      gasPrice
+    })
+    
+    const {baseAmountOut, rebateAmount} = request
+    console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
+    return {
+      baseAmountOut,
+      rebateAmount,
+    }
+    
+  } catch (e) {
+    console.error(e);
     throw e;
   }
 }
