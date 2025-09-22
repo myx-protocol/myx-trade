@@ -12,26 +12,27 @@ export enum PoolType {
 }
 
 export enum TriggerType {
-  GTE = 1,
-  LTE = 2,
+  TP = 1,
+  SL = 2,
 }
 
 export interface TpSL {
-  amount: bigint;
-  triggerPrice: bigint;
+  amount: number;
+  triggerPrice: number;
   triggerType: TriggerType;
 }
 
 export interface TpSLParams {
   amount: bigint;
   triggerPrice: bigint;
-  triggerType: TriggerType;
+  triggerType: bigint;
   minQuoteOut: bigint;
 }
 
 export interface AddTpSLParams {
+  slippage: number;
   chainId: ChainId;
   poolId: string;
   poolType: PoolType;
-  tpsl: TpSLParams[]
+  tpsl: TpSL[]
 }
