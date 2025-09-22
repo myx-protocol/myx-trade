@@ -1,10 +1,11 @@
 import {  useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
-import { Market, getBalanceOf, MarketPoolState, pool as Pool, getLpPrice,} from "@myx-trade/sdk";
+import { Market, getBalanceOf, MarketPoolState, pool as Pool, getLpPrice, getOraclePrice, } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 import { Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
+import { formatNumberPrecision } from "@/utils/format.ts";
 const COMMON_PRICE_DECIMALS = 30
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
@@ -112,7 +113,25 @@ export const BalanceInfo = () => {
 export const PoolInfo = () => {
  const { pool, poolId } = usePoolInfo()
   const {chainId, account} = useContext(PoolContext)
+  
   const {data: price}  = useQuery({
+    queryKey: [{key: 'pirce'},poolId],
+    enabled: !!poolId,
+    queryFn: async () => {
+      if (!poolId ) return null
+      const result = await getOraclePrice(
+        chainId,
+        [poolId],
+      )
+      if (result) {
+        return result?.data?.[0]?.price
+      }
+      return
+    },
+    refetchInterval: 5000
+  })
+  
+  const {data: lpPrice}  = useQuery({
     queryKey: [{key: 'lpPirce'},poolId],
     enabled: !!poolId,
     queryFn: async () => {
@@ -127,6 +146,20 @@ export const PoolInfo = () => {
       return
     },
     refetchInterval: 5000
+  })
+  
+  const {data: userShareBase}  = useQuery({
+    queryKey: [{key: 'userShareBase'},poolId, pool],
+    enabled: !!poolId && !!pool?.quotePoolToken,
+    queryFn: async () => {
+      if (!poolId || !pool) return null
+      const result = await Pool.getUserGenesisShare(chainId, pool?.basePoolToken, account as string)
+      
+      if (result) {
+        return formatUnits(result, Market[chainId].lpDecimals)
+      }
+      return
+    }
   })
   
   const {data: userShare}  = useQuery({
@@ -151,14 +184,28 @@ export const PoolInfo = () => {
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>Price:</span>
         <span className={''}>
-          {price || '--'}
+          {price ? formatNumberPrecision(price) : '--'}
         </span>
         <span>{pool?.quoteSymbol || ''}</span>
       </div>
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
-        <span>创世LP:</span>
+        <span>LP Price:</span>
         <span className={''}>
-          {userShare || '0'}
+          {lpPrice ? formatNumberPrecision(lpPrice) : '--'}
+        </span>
+        <span>{pool?.quoteSymbol || ''}</span>
+      </div>
+      <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
+        <span>创世LP(B):</span>
+        <span className={''}>
+          {userShareBase ? formatNumberPrecision(userShareBase, 4) : '0'}
+        </span>
+        {/*<span>{}</span>*/}
+      </div>
+      <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
+        <span>创世LP(U):</span>
+        <span className={''}>
+          {userShare ? formatNumberPrecision(userShare) : '0'}
         </span>
         {/*<span>{}</span>*/}
       </div>

@@ -39,3 +39,11 @@ export interface ClaimParams {
   chainId: ChainId;
   poolId: string;
 }
+
+
+export interface PreviewWithdrawDataParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+  amount: string | number;
+}
