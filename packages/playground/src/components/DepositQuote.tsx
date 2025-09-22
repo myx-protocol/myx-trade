@@ -21,6 +21,8 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
       setIsDepositLoading(true)
       await quote.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
       message.success("Deposit success")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setIsDepositLoading(false)
     }

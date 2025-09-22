@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { usePoolInfo } from "./PoolInfo";
-import { base } from "@myx-trade/sdk";
+import { quote } from "@myx-trade/sdk";
 import { PoolContext } from "./PoolContext";
 import { useCallback, useContext, useMemo, useState } from "react";
 import { formatUnits } from "ethers";
@@ -8,7 +8,7 @@ import { Button } from "@/components";
 import { message } from "antd";
 
 
-export const BaseRewards = () => {
+export const QuoteRewards = () => {
   const {chainId, account} = useContext(PoolContext);
   const {pool,poolId} = usePoolInfo()
   const [loading, setLoading] = useState<boolean>(false)
@@ -18,7 +18,7 @@ export const BaseRewards = () => {
     enabled: !!poolId && !!account,
     queryFn: async () => {
       if (!poolId || !account) return null
-      const result = await base.getRewards({
+      const result = await quote.getRewards({
         poolId,
         chainId,
         account
@@ -31,7 +31,7 @@ export const BaseRewards = () => {
     if (!poolId || !account) return
     try {
       setLoading(true)
-      await base.claim({chainId, poolId})
+      await quote.claim({chainId, poolId})
       message.success("Claim successfully claimed")
     } catch(e) {
       message.error(JSON.stringify(e))
@@ -42,7 +42,7 @@ export const BaseRewards = () => {
   }, [chainId, poolId, account])
   return <div className="flex items-center gap-[20px]">
     <div className={'flex gap-[10px]'}>
-      <span>Base Rewards:</span>
+      <span>Quote Rewards:</span>
       <span>{pool && data && formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  || '--'}</span>
     </div>
     <Button label={'Claim'} disabled={disabled} isLoading={loading} onClick={onHandleClaim}/>
