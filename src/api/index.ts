@@ -1,5 +1,5 @@
 import { $fetch } from "@/api/request";
-import { MarketPoolResponse, PriceResponse } from "@/api/type";
+import { MarketPoolResponse, PoolResponse, PriceResponse } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "@/api/utils";
 
@@ -21,5 +21,9 @@ export const getOraclePrice = async (chainId:ChainId, poolIds: string[] = []): P
   return Promise.reject(new Error("Invalid pool id"));
 }
 
+
+export const getPoolDetail = async (chainId: number, poolId: string): Promise<PoolResponse> => {
+  return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/detail?chainId=${chainId}&poolId=${poolId}`);
+}
 
 export * from "./type";
