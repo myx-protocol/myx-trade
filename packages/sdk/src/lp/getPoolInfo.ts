@@ -1,10 +1,11 @@
-import { getPools } from "@/api";
+import { getPoolDetail, getPools } from "@/api";
+import { ChainId } from "@/config/chain";
 
-export const getPoolInfo = async (poolId: string) => {
+
+export const getPoolInfo = async (chainId: ChainId, poolId: string) => {
   try {
-    const pools = (await getPools ()).data || [];
-    const pool  = pools.find((_pool) => _pool.poolId === poolId);
-    
+    const response  = await getPoolDetail(chainId, poolId);
+    const pool = response.data
     if (!pool) return null;
     
     return pool;

@@ -22,7 +22,7 @@ export const withdraw = async (params: WithdrawParams) => {
   try {
     
     const { chainId, poolId, amount, slippage = 0.01 } = params;
-    const pool = await getPoolInfo (poolId)
+    const pool = await getPoolInfo (chainId, poolId)
     const lpAddress = pool?.quotePoolToken
     
     const chainInfo = CHAIN_INFO[chainId];
