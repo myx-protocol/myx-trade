@@ -1,5 +1,10 @@
 import { http } from "@/api/request";
-import { ApiResponse, MarketPoolResponse, PriceResponse } from "@/api/type";
+import {
+  ApiResponse,
+  MarketPoolResponse,
+  PriceResponse,
+  PoolResponse,
+} from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
 const baseUrl = "https://api-test.myx.cash";
@@ -53,12 +58,24 @@ export interface GetPoolLevelConfigParams {
 /**
  * Get Pool Level Config
  */
-export const getPoolLevelConfig = async ({ poolId, chainId }: GetPoolLevelConfigParams) => {
+export const getPoolLevelConfig = async ({
+  poolId,
+  chainId,
+}: GetPoolLevelConfigParams) => {
   return http.get<ApiResponse<PoolLevelConfig>>(
     `${baseUrl}/v2/mx-risk/market_pool/level_config${addQueryParams({
       poolId,
       chainId,
-    })}`,
+    })}`
+  );
+};
+
+export const getPoolDetail = async (
+  chainId: number,
+  poolId: string
+): Promise<PoolResponse> => {
+  return await http.get<PoolResponse>(
+    `${baseUrl}/v2/mx-scan/market/detail?chainId=${chainId}&poolId=${poolId}`
   );
 };
 

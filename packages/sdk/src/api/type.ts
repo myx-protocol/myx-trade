@@ -71,6 +71,9 @@ export type MarketPool = {
 export interface MarketPoolResponse extends BaseResponse {
   data: MarketPool[];
 }
+export interface PoolResponse extends BaseResponse {
+  data: MarketPool;
+}
 
 export enum OracleType {
   Pyth,

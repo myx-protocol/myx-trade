@@ -11,7 +11,9 @@ export const DepositBase = () => {
   const [amount, setAmount] = useState<string>('0.0001')
   const [slippage] = useState<string>('0.01')
   const [isDepositLoading, setIsDepositLoading] = useState(false)
-  const [isWithdrawLoading, setIsWithdrawLoading] = useState(false)
+  
+  
+  
   
   const onHandleDeposit = useCallback(async () => {
     if (!poolId || !amount || !slippage) return
@@ -19,23 +21,15 @@ export const DepositBase = () => {
       setIsDepositLoading(true)
       await base.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
       message.success("Deposit success")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setIsDepositLoading(false)
     }
     
   },[poolId, amount, slippage])
   
-  const onHandleWithdraw = useCallback(async () => {
-    if (!poolId || !amount || !slippage) return
-    try {
-      setIsWithdrawLoading(true)
-      await base.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
-      message.success("Withdraw success")
-    } finally {
-      setIsWithdrawLoading(false)
-    }
-    
-  },[poolId, amount, slippage])
+  
   
   return <div className={'flex flex-col gap-[10px]'}>
     {/*<div>poolId: {poolId}</div>*/}
@@ -43,7 +37,6 @@ export const DepositBase = () => {
       <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1 p-[8px]'} readOnly={true} value={slippage} /></div>
       <div className={'flex items-center gap-[5px]'}><label>Amount:</label><input type="number" className={'border-1 p-[8px]'}  onChange={e => setAmount(e.target.value)} value={amount} placeholder={'Amount'} /></div>
       <Button label={'DepositBase'} isLoading={isDepositLoading} onClick={onHandleDeposit}/>
-      <Button label={'WithdrawBase'} isLoading={isWithdrawLoading} onClick={onHandleWithdraw}/>
     </div>
   </div>
 }

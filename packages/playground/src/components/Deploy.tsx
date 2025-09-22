@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { Button } from "@/components";
-import { pool, quote, Market } from "@myx-trade/sdk";
+import { pool } from "@myx-trade/sdk";
 import { message } from "antd";
 
 export const Deploy = () => {
@@ -22,22 +22,25 @@ export const Deploy = () => {
       setIsLoading(true);
       const poolId = await pool.createPool({chainId,  baseToken: address });
       if (!poolId) return;
-      await quote.deposit({
+      /*await quote.deposit({
         poolId,
         amount: Number(Market[chainId].poolPrimeThreshold),
         chainId,
         slippage: 0.01
-      })
+      })*/
       refetch()
-      message.success("Deploy successfully")
+      message.success("Create Pool successfully")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setIsLoading(false)
     }
    
   }, [refetch, address]);
   
-  return <div className="flex gap-[20px] px-[10px] py-[20px]">
-    <input className={'w-[420px] border-1'} onChange={e => setAddress(e.target.value)} value={address} placeholder={'Base Token Address'}/>
-    <Button label={'Deploy'} isLoading={isLoading} onClick={onHandleDeploy } />
+  return <div className="flex items-center gap-[20px] ">
+    <label>Base Token Address:</label>
+    <input className={'w-[420px] border-1 p-[8px]'} onChange={e => setAddress(e.target.value)} value={address} placeholder={'Base Token Address'}/>
+    <Button label={'Create Pool'} isLoading={isLoading} onClick={onHandleDeploy } />
   </div>
 }
