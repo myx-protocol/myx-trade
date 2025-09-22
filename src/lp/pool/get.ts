@@ -1,24 +1,24 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
 import { getPoolManagerContract } from "../../web3/providers";
 import { ChainId } from "@/config/chain";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { Market } from "@/config/market";
-import { getPools } from "@/api";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { deposit } from "@/lp/quote/deposit";
 import Address from "@/config/address";
-import {ZeroAddress} from 'ethers'
+import { ZeroAddress } from 'ethers'
 
-const chainId = ChainId.ARB_TESTNET;
-const marketId = Market[chainId].marketId;
+
+export const getMarketInfo =  (chainId: ChainId) => {
+  const marketId = Market[chainId].marketId;
+  return marketId;
+}
 
 export const getMarketPoolId = async ({chainId, baseToken}:CreatePoolRequest) => {
   try {
     // if (!isSupportedChainFn(chainId)) {
     //   throw new Error(Errors[ ErrorCode.Invalid_Chain_ID]);
     // }
-    
+    const marketId = getMarketInfo(chainId);
     if (!baseToken) {
       throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);
     }
@@ -63,3 +63,4 @@ export const getMarketPools = async (chainId: ChainId) => {
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
+
