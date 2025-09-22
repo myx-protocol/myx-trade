@@ -10,6 +10,7 @@ import { BaseRewards } from "@components/BaseRewards.tsx";
 import { Transfer } from "@components/Transfer.tsx";
 import { WithdrawBase } from "@components/WithdrawBase.tsx";
 import { QuoteRewards } from "@components/QuoteRewards.tsx";
+import { TpSL } from "@components/TpSL.tsx";
 
 const LPPage: React.FC = () => {
   return (
@@ -23,7 +24,9 @@ const LPPage: React.FC = () => {
         <Deploy/>
         <DepositQuote/>
         <DepositBase/>
+        <TpSL/>
         <WithdrawBase/>
+        
         <BaseRewards/>
         <QuoteRewards/>
         <Transfer/>
