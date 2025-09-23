@@ -13,7 +13,7 @@ export const getPools = async (): Promise<MarketPoolResponse> => {
 export const getOraclePrice = async (chainId:ChainId, poolIds: string[] = []): Promise<PriceResponse> => {
   if (!!poolIds.length){
     
-    return await $fetch("GET", `${baseUrl}/v2/mx-gateway/quote/price/oracles${addQueryParams({
+    return await $fetch("GET", `${baseUrl}/openapi/gateway/quote/price/oracles${addQueryParams({
       chainId,
       poolIds: poolIds.join(","),
     })}`);
