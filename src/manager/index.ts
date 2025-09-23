@@ -4,6 +4,7 @@ import { type MyxClientConfig } from "./config/index";
 import { Logger } from "@/logger";
 import { Trading } from "./trading";
 import { Markets } from "./markets";
+import { Position } from "./position";
 
 // types
 
@@ -22,6 +23,14 @@ export class MyxClient {
   public subscription: SubScription;
   public trading: Trading;
   public markets: Markets;
+  public position: Position;
+
+  /**
+   * 获取配置管理器（用于访问 accessToken 相关方法）
+   */
+  public getConfigManager(): ConfigManager {
+    return this.configManager;
+  }
 
   constructor(options: MyxClientConfig) {
     this.configManager = new ConfigManager(options);
@@ -38,6 +47,8 @@ export class MyxClient {
      * initialize markets
      */
     this.markets = new Markets(this.configManager);
+
+    this.position = new Position(this.configManager, this.logger);
 
     /**
      * initialize subscription

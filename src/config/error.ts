@@ -10,7 +10,8 @@ export enum ErrorCode {
   Invalid_Base,
   Invalid_slippage,
   Invalid_Amount,
-  Invalid_Pool_State
+  Invalid_Pool_State,
+  Invalid_Params
 }
 
 export const Errors = {
@@ -23,6 +24,7 @@ export const Errors = {
   [ErrorCode.Invalid_slippage]: `Invalid Slippage`,
   [ErrorCode.Invalid_Amount]: `Invalid Amount`,
   [ErrorCode.Invalid_Pool_State]: `Invalid Pool State`,
+  [ErrorCode.Invalid_Params]: `Invalid Params`
 }
 
 export function didUserReject(error: any): boolean {
