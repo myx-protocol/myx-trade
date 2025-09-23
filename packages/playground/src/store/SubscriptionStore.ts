@@ -11,18 +11,22 @@ export interface SubscriptionStore {
   marketList: MarketPool[];
   marketTickerMap: Map<number, MarketTicker>;
   klineDataMap: Map<number, KlineDataResponse[]>;
+  klineSubscriptionMap: Map<number, boolean>;
   setMarketList: (marketList: MarketPool[]) => void;
   updateTickerPrice: (globalId: number, price: string, change: string) => void;
   setTickerSubscription: (globalId: number, isSubscribed: boolean) => void;
   getTickerByGlobalId: (globalId: number) => MarketTicker | undefined;
   addKlineData: (globalId: number, data: KlineDataResponse) => void;
   getKlineDataByGlobalId: (globalId: number) => KlineDataResponse[];
+  setKlineSubscription: (globalId: number, isSubscribed: boolean) => void;
+  getKlineSubscription: (globalId: number) => boolean;
 }
 
 export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   marketList: [],
   marketTickerMap: new Map(),
   klineDataMap: new Map(),
+  klineSubscriptionMap: new Map(),
   setMarketList: (marketList: MarketPool[]) => set({ marketList }),
   updateTickerPrice: (
     globalId: number,
@@ -83,5 +87,15 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
   getKlineDataByGlobalId: (globalId: number) => {
     return get().klineDataMap.get(globalId) || [];
+  },
+  setKlineSubscription: (globalId: number, isSubscribed: boolean) => {
+    set((state) => {
+      const newMap = new Map(state.klineSubscriptionMap);
+      newMap.set(globalId, isSubscribed);
+      return { klineSubscriptionMap: newMap };
+    });
+  },
+  getKlineSubscription: (globalId: number) => {
+    return get().klineSubscriptionMap.get(globalId) || false;
   },
 }));
