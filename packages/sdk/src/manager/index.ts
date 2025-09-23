@@ -5,6 +5,7 @@ import { Logger } from "@/logger";
 import { Trading } from "./trading";
 import { Markets } from "./markets";
 import { Position } from "./position";
+import { Order } from "./order";
 
 // types
 
@@ -24,7 +25,7 @@ export class MyxClient {
   public trading: Trading;
   public markets: Markets;
   public position: Position;
-
+  public order: Order;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -50,6 +51,7 @@ export class MyxClient {
 
     this.position = new Position(this.configManager, this.logger);
 
+    this.order = new Order(this.configManager, this.logger);
     /**
      * initialize subscription
      */
