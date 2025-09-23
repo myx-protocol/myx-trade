@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getOraclePrice } from "../api";
 import { useAccount, useWalletClient, useChainId } from "wagmi";
 import { BrowserProvider, ethers } from "ethers";
+import CryptoJS from "crypto-js";
 import {
   Direction,
   OperationType,
@@ -53,10 +54,25 @@ interface TradeFormValues {
 }
 
 const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
-  const rs = await fetch(`https://api-test.myx.cash/openapi/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
-  const res = await rs.json();
-
-  return res.data.accessToken; // 直接返回 accessToken 字符串
+  try {
+    const rs = await fetch(`https://api-test.myx.cash/openapi/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
+    const res = await rs.json();
+  
+    return {
+      code: 0,
+      data: {
+        accessToken: res.data.accessToken,
+        expireAt: res.data.expireAt,
+      },
+    };
+  } catch (error) {
+    console.error("getAccessToken error-->", error);
+    return {
+      code: -1,
+      message: "getAccessToken error",
+    };
+  }
+   
 }
 
 const TradePage: React.FC = () => {
@@ -950,36 +966,34 @@ const TradePage: React.FC = () => {
             <div className="py-[20px]" style={{ minHeight: '200px' }}>
               <Col>
                 <Button type="primary" onClick={async () => {
-                  if (walletClient?.transport) {
-                    const provider = new BrowserProvider(walletClient.transport);
-                    const signer = await provider.getSigner();
 
-                    const appId = "123";
-                    const timestamp = Math.floor(Date.now() / 1000); // 转换为秒
-                    const expireTime = timestamp + 60 * 60 * 24; // 24小时后过期（秒）
-                    const allowAccount = address;
-                    const secret = "123";
+                  const appId = "test1";
+                  const timestamp = Math.floor(Date.now() / 1000); // 转换为秒
+                  const expireTime = 3600; // 1小时后过期（秒）
+                  const allowAccount = address;
+                  const secret = "69v9kHey9b746PseJ0TP";
 
-                    const signature = await signer.signMessage(`${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`);
+                  const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+                  const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+                 
+                  if (myxClient) {
+                    const configManager = myxClient.getConfigManager();
 
-                    // 调用 SDK 的 callGetAccessToken 方法，传递 getAccessToken 函数和参数
-                    if (myxClient) {
-                      const configManager = myxClient.getConfigManager();
+                    // 将 getAccessToken 方法和参数传递给 SDK
+                    const args = [appId, timestamp, expireTime, address!, signature];
 
-                      // 将 getAccessToken 方法和参数传递给 SDK
-                      const args = [appId, timestamp, expireTime, address!, signature];
+                    // 调用 callGetAccessToken，传递函数和参数
+                    const configResponse = await configManager.callGetAccessToken(getAccessToken, args);
 
-                      // 调用 callGetAccessToken，传递函数和参数
-                      const configResponse = await configManager.callGetAccessToken(getAccessToken, args);
-
-                      if (configResponse) {
-                        console.log('✅ AccessToken 已成功获取并存储到 SDK 中');
-                        console.log('存储的 Token:', configResponse);
-                      } else {
-                        console.error('❌ AccessToken 获取或存储失败');
-                      }
+                    console.log("configResponse-->", configResponse);
+                    if (configResponse) {
+                      console.log('✅ AccessToken 已成功获取并存储到 SDK 中');
+                      console.log('存储的 Token:', configResponse);
+                    } else {
+                      console.error('❌ AccessToken 获取或存储失败');
                     }
                   }
+                  // }
                 }}>
                   配置accessToken
                 </Button>

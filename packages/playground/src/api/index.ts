@@ -33,5 +33,5 @@ export const getPoolLevel = async (poolId: string, chainId: number) => {
 }
 
 export const getOraclePrice = async (poolId: string, chainId: number) => {
-  return await $fetch('GET', `${baseUrl}/v2/mx-gateway/quote/price/oracles?poolIds=${poolId}&chainId=${chainId}`);
+  return await $fetch('GET', `${baseUrl}/openapi/gateway/quote/price/oracles?poolIds=${poolId}&chainId=${chainId}`);
 }
