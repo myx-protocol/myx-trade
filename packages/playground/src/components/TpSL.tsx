@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { PoolContext, TpSlContext } from "./PoolContext";
 import { usePoolInfo } from "./PoolInfo";
 import { pool as Pool } from "@myx-trade/sdk";
@@ -17,7 +17,7 @@ export const TpOrSL = ({className = '', amount = '', triggerPrice = '', onAmount
 
 export const TpSL = ({className = ''}: {className?: string}) => {
   const {chainId} = useContext(PoolContext)
-  const {poolId} = usePoolInfo()
+  const {poolId, pool} = usePoolInfo()
   const [loading, setLoading] = useState(false)
   const [tpAmount, setTpAmount] = useState<string | number>("")
   const [tpPrice, setTpPrice] = useState<string | number>("")
@@ -62,6 +62,13 @@ export const TpSL = ({className = ''}: {className?: string}) => {
     }
     
   },[poolId, tpPrice,tpAmount, slAmount,slPrice, slippage])
+  
+  
+  useEffect(() => {
+    if (pool) {
+    
+    }
+  },[pool])
   
   
   return <TpSlContext.Provider value={{tpAmount, tpPrice, slAmount, slPrice, setTpAmount,setTpPrice, setSlAmount,setSlPrice }}>
