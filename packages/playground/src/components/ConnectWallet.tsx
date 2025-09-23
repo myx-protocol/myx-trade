@@ -9,7 +9,7 @@ export const ConnectWallet: React.FC = () => {
   const [showConnectors, setShowConnectors] = useState(false);
 
   // 调试信息
-  console.log('Wallet state:', { address, isConnected, connectorsLength: connectors.length, isPending });
+  // console.log('Wallet state:', { address, isConnected, connectorsLength: connectors.length, isPending });
 
   // USDC地址 0x7E248Ec1721639413A280d9E82e2862Cae2E6E28
   const USDC_ADDRESS = '0x7E248Ec1721639413A280d9E82e2862Cae2E6E28';

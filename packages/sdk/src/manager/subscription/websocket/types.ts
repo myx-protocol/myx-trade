@@ -28,7 +28,7 @@ export interface WebSocketEvents extends Record<string | symbol, any> {
   open: RWSEvent;
   message: MessageEvent;
   close: CloseEvent;
-  error: Event;
+  error: unknown;
   reconnecting: { detail: number };
   maxreconnectattempts: void;
 }
@@ -151,6 +151,15 @@ export interface WebSocketMessageResponse<
   type: string;
   data: DataType;
 }
+
+/**
+ * WebSocket Ack Message Response
+ */
+export interface WebSocketAckMessageResponse
+  extends WebSocketMessageResponse<{
+    code: number;
+    msg: string;
+  }> {}
 
 /**
  * MyxTickersDataResponse

@@ -8,6 +8,7 @@
     "dev": "pnpm --parallel -r dev",
     "clean": "pnpm -r clean",
     "build:sdk": "cd packages/sdk && pnpm build",
+    "install:sdk": "cd packages/sdk && pnpm install",
     "install:playground": "cd packages/playground && pnpm install",
     "dev:playground": "cd packages/playground && pnpm dev",
     "build:playground": "cd packages/playground && pnpm build",
