@@ -23,7 +23,7 @@ export class ConfigManager {
   private config: MyxClientConfig;
   private accessToken?: string;
   private accessTokenExpiry?: number; // accessToken 过期时间
-  
+
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
       isTestnet: false,
@@ -134,16 +134,17 @@ export class ConfigManager {
    * @returns Promise<string | null> 获取到的 accessToken
    */
   async callGetAccessToken(
-    getAccessTokenFn: (...args: any[]) => Promise<AccessTokenResponse>, 
+    getAccessTokenFn: (...args: any[]) => Promise<AccessTokenResponse>,
     args: any[] = [],
   ): Promise<string | boolean> {
     try {
       console.log('主动调用获取 accessToken / Actively calling getAccessToken...', { args });
-      
-      // 调用传入的获取函数，传递参数
-      const {code, data, msg}: AccessTokenResponse = await getAccessTokenFn(...args);
 
-      if (code === 9200) {
+      // 调用传入的获取函数，传递参数
+      const res: AccessTokenResponse = await getAccessTokenFn(...args);
+      const { code, data } = res;
+      console.log("data-->", data);
+      if (code === 0) {
         // 存储新的 token
         this.setAccessToken(data.accessToken, data.expireAt);
         console.log('成功获取并存储 accessToken / Successfully obtained and stored accessToken');
