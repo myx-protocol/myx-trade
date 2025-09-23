@@ -15,7 +15,6 @@ export class Markets {
   }
 
   async listPools() {
-    // const rs = await getpoo
     return (await getPools()).data;
   }
 

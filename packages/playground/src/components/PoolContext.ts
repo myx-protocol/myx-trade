@@ -12,3 +12,16 @@ export interface PoolContextValue {
   isLoading: boolean;
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue);
+
+export interface TpSlContextValue {
+  tpAmount: number | string;
+  setTpAmount: (value: number | string) => void;
+  tpPrice: number | string;
+  setTpPrice: (value: number | string) => void;
+  slAmount: number | string;
+  setSlAmount: (value: number | string) => void;
+  slPrice: number | string;
+  setSlPrice: (value: number | string) => void;
+}
+
+export const TpSlContext = createContext<TpSlContextValue>({} as TpSlContextValue);
