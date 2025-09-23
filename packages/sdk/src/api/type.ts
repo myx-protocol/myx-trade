@@ -104,6 +104,27 @@ export interface PriceResponse extends BaseResponse {
 }
 
 
-export interface ApiResponse<T=Record<string, any>> extends BaseResponse {
+export interface ApiResponse<T = Record<string, any>> extends BaseResponse {
   data: T;
+}
+
+export enum Direction {
+  LONG = 0,
+  SHORT = 1
+}
+
+export interface PositionType {
+  poolId: string,
+  positionId: string,
+  direction: Direction,
+  entryPrice: string
+  fundingRateIndex: string
+  size: string
+  riskTier: number
+  collateralAmount: string
+  txTime: number
+}
+
+export interface PositionResponse extends BaseResponse {
+  data: PositionType[];
 }

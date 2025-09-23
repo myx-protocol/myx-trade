@@ -16,7 +16,6 @@ export interface MyxClientConfig {
   seamlessKeyPassword?: string;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
-  getAccessToken?: () => Promise<string>; // 页面端传入的获取 accessToken 的方法
 }
 
 export class ConfigManager {
@@ -54,32 +53,6 @@ export class ConfigManager {
     }
   }
 
-  /**
-   * 获取 accessToken，如果不存在或已过期则调用页面端方法重新获取
-   * @param forceRefresh 是否强制刷新 token
-   * @returns Promise<string | null> accessToken 或 null
-   */
-  async getAccessToken(forceRefresh: boolean = false): Promise<string | null> {
-    // 检查是否有获取 token 的方法
-    if (!this.config.getAccessToken) {
-      return null;
-    }
-
-    // 检查当前 token 是否有效
-    if (!forceRefresh && this.isAccessTokenValid()) {
-      return this.accessToken!;
-    }
-
-    try {
-      // 调用页面端方法获取新的 token
-      const newToken = await this.config.getAccessToken();
-      this.setAccessToken(newToken);
-      return newToken;
-    } catch (error) {
-      console.error('Failed to get access token:', error);
-      return null;
-    }
-  }
 
   /**
    * 设置 accessToken 和过期时间
@@ -118,13 +91,6 @@ export class ConfigManager {
     this.accessTokenExpiry = undefined;
   }
 
-  /**
-   * 检查是否配置了获取 accessToken 的方法
-   * @returns boolean 是否配置了获取方法
-   */
-  hasAccessTokenMethod(): boolean {
-    return typeof this.config.getAccessToken === 'function';
-  }
 
   /**
    * 主动调用获取 accessToken 的方法

@@ -29,6 +29,10 @@ import {
   Typography,
   Divider,
   Input,
+  Tooltip,
+  Table,
+  Modal,
+  message,
 } from "antd";
 
 const { Text } = Typography;
@@ -51,43 +55,431 @@ interface TradeFormValues {
   tpPrice: number;
   slSize: number;
   slPrice: number;
+  positionId?: string; // 仓位ID，仅在操作类型为DECREASE时使用
 }
 
 const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
   try {
     const rs = await fetch(`https://api-test.myx.cash/openapi/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
     const res = await rs.json();
-  
+
     return {
       code: 0,
+      msg: null,
       data: {
         accessToken: res.data.accessToken,
         expireAt: res.data.expireAt,
+        allowAccount: res.data.allowAccount,
+        appId: appId,
       },
     };
   } catch (error) {
     console.error("getAccessToken error-->", error);
     return {
       code: -1,
-      message: "getAccessToken error",
+      msg: "getAccessToken error",
+      data: {
+        accessToken: "",
+        expireAt: 0,
+        allowAccount: "",
+        appId: "",
+      },
     };
   }
-   
 }
 
 const TradePage: React.FC = () => {
   const { address, isConnected } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
+
+  const handleAccessToken = async () => {
+    const appId = "test1";
+    const timestamp = Math.floor(Date.now() / 1000); // 转换为秒
+    const expireTime = 3600 * 24;
+    const allowAccount = address;
+    const secret = "69v9kHey9b746PseJ0TP";
+
+    const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+    const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+
+    if (myxClient) {
+      const configManager = myxClient.getConfigManager();
+
+      // 将 getAccessToken 方法和参数传递给 SDK
+      const args = [appId, timestamp, expireTime, address!, signature];
+
+      // 调用 callGetAccessToken，传递函数和参数
+      const configResponse = await configManager.callGetAccessToken(getAccessToken, args);
+
+      console.log("configResponse-->", configResponse);
+      if (configResponse) {
+        console.log('✅ AccessToken 已成功获取并存储到 SDK 中');
+        console.log('存储的 Token:', configResponse);
+      } else {
+        console.error('❌ AccessToken 获取或存储失败');
+      }
+    }
+  }
+
+  // 仓位列表表格列配置
+  const positionColumns = [
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>仓位ID</span>,
+      dataIndex: 'positionId',
+      key: 'positionId',
+      render: (positionId: any) => <Tag color="blue" style={{ fontSize: '11px' }}>{positionId}</Tag>,
+      width: 80,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>交易对</span>,
+      dataIndex: 'poolId',
+      key: 'poolId',
+      render: (poolId: string) => (
+        <Tooltip title={poolId}>
+          <Text ellipsis style={{ maxWidth: '100px', display: 'inline-block', fontSize: '11px' }}>
+            {poolId}
+          </Text>
+        </Tooltip>
+      ),
+      width: 120,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>方向</span>,
+      dataIndex: 'direction',
+      key: 'direction',
+      render: (direction: number) => (
+        <Tag color={direction === 0 ? 'green' : 'red'} style={{ fontSize: '10px' }}>
+          {direction === 0 ? '多' : '空'}
+        </Tag>
+      ),
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>数量</span>,
+      dataIndex: 'size',
+      key: 'size',
+      align: 'right' as const,
+      render: (size: string) => <span style={{ fontSize: '11px' }}>{size}</span>,
+      width: 80,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>保证金</span>,
+      dataIndex: 'collateralAmount',
+      key: 'collateralAmount',
+      align: 'right' as const,
+      render: (amount: string) => <span style={{ fontSize: '11px' }}>{parseFloat(amount).toFixed(2)}</span>,
+      width: 90,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>开仓价</span>,
+      dataIndex: 'entryPrice',
+      key: 'entryPrice',
+      align: 'right' as const,
+      render: (price: string) => <span style={{ fontSize: '11px' }}>{parseFloat(price).toFixed(2)}</span>,
+      width: 90,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>风险等级</span>,
+      dataIndex: 'riskTier',
+      key: 'riskTier',
+      render: (riskTier: number) => <Tag style={{ fontSize: '10px' }}>{riskTier}</Tag>,
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>链</span>,
+      dataIndex: 'chainId',
+      key: 'chainId',
+      render: (chainId: number) => <Tag color="purple" style={{ fontSize: '10px' }}>{chainId}</Tag>,
+      width: 70,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>操作</span>,
+      key: 'actions',
+      fixed: 'right' as const,
+      width: 160,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => handleClosePosition(record.positionId)}
+            style={{ fontSize: '10px', padding: '2px 6px' }}
+          >
+            平仓
+          </Button>
+          <Button
+            type="default"
+            size="small"
+            onClick={() => handleAdjustCollateral(record)}
+            style={{ fontSize: '10px', padding: '2px 6px' }}
+          >
+            调整
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  // 订单列表表格列配置
+  const orderColumns = [
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>订单ID</span>,
+      dataIndex: 'orderId',
+      key: 'orderId',
+      render: (orderId: any) => <Tag color="blue" style={{ fontSize: '11px' }}>{orderId}</Tag>,
+      width: 80,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>交易对</span>,
+      dataIndex: 'poolId',
+      key: 'poolId',
+      render: (poolId: string) => (
+        <Tooltip title={poolId}>
+          <Text ellipsis style={{ maxWidth: '100px', display: 'inline-block', fontSize: '11px' }}>
+            {poolId}
+          </Text>
+        </Tooltip>
+      ),
+      width: 120,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>类型</span>,
+      dataIndex: 'orderType',
+      key: 'orderType',
+      render: (orderType: number) => {
+        const types = {
+          0: { text: '市价', color: 'green' },
+          1: { text: '限价', color: 'blue' },
+          2: { text: '止损', color: 'orange' },
+          3: { text: '条件', color: 'purple' }
+        };
+        const type = types[orderType as keyof typeof types] || { text: `T${orderType}`, color: 'default' };
+        return <Tag color={type.color} style={{ fontSize: '10px' }}>{type.text}</Tag>;
+      },
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>方向</span>,
+      dataIndex: 'direction',
+      key: 'direction',
+      render: (direction: number) => (
+        <Tag color={direction === 0 ? 'green' : 'red'} style={{ fontSize: '10px' }}>
+          {direction === 0 ? '多' : '空'}
+        </Tag>
+      ),
+      width: 50,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>操作</span>,
+      dataIndex: 'operation',
+      key: 'operation',
+      render: (operation: number) => (
+        <Tag color={operation === 0 ? 'cyan' : 'magenta'} style={{ fontSize: '10px' }}>
+          {operation === 0 ? '增' : '减'}
+        </Tag>
+      ),
+      width: 50,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>数量</span>,
+      dataIndex: 'size',
+      key: 'size',
+      align: 'right' as const,
+      render: (size: string) => <span style={{ fontSize: '11px' }}>{size}</span>,
+      width: 70,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>价格</span>,
+      dataIndex: 'price',
+      key: 'price',
+      align: 'right' as const,
+      render: (price: string) => <span style={{ fontSize: '11px' }}>{parseFloat(price).toFixed(2)}</span>,
+      width: 80,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>保证金</span>,
+      dataIndex: 'collateralAmount',
+      key: 'collateralAmount',
+      align: 'right' as const,
+      render: (amount: string) => <span style={{ fontSize: '11px' }}>{parseFloat(amount).toFixed(2)}</span>,
+      width: 90,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>杠杆</span>,
+      dataIndex: 'userLeverage',
+      key: 'userLeverage',
+      render: (leverage: number) => <Tag style={{ fontSize: '10px' }}>{leverage}x</Tag>,
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>已成交</span>,
+      dataIndex: 'filledSize',
+      key: 'filledSize',
+      align: 'right' as const,
+      render: (filledSize: string, record: any) => (
+        <div style={{ fontSize: '11px' }}>
+          <div>{filledSize}</div>
+          <Text type="secondary" style={{ fontSize: '10px' }}>
+            {parseFloat(record.filledAmount).toFixed(2)}
+          </Text>
+        </div>
+      ),
+      width: 80,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>状态</span>,
+      key: 'status',
+      render: (record: any) => {
+        const isPartiallyFilled = parseFloat(record.filledSize) > 0;
+        const isFullyFilled = parseFloat(record.filledSize) === parseFloat(record.size);
+
+        if (isFullyFilled) {
+          return <Tag color="green" style={{ fontSize: '10px' }}>完全成交</Tag>;
+        } else if (isPartiallyFilled) {
+          return <Tag color="orange" style={{ fontSize: '10px' }}>部分成交</Tag>;
+        } else {
+          return <Tag color="blue" style={{ fontSize: '10px' }}>待成交</Tag>;
+        }
+      },
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>链</span>,
+      dataIndex: 'chainId',
+      key: 'chainId',
+      render: (chainId: number) => <Tag color="purple" style={{ fontSize: '10px' }}>{chainId}</Tag>,
+      width: 60,
+    },
+    {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>操作</span>,
+      key: 'actions',
+      fixed: 'right' as const,
+      width: 100,
+      render: (_: any, record: any) => {
+        const isFullyFilled = parseFloat(record.filledSize) === parseFloat(record.size);
+        const hasPartialFill = parseFloat(record.filledSize) > 0;
+
+        return (
+          <Button
+            type="primary"
+            size="small"
+            danger
+            onClick={() => handleCancelOrder(record.orderId)}
+            disabled={isFullyFilled}
+            title={isFullyFilled ? '订单已完成，无法取消' : '取消订单'}
+            style={{ fontSize: '10px', padding: '2px 6px' }}
+          >
+            {hasPartialFill && !isFullyFilled ? '强制' : '取消'}
+          </Button>
+        );
+      },
+    },
+  ];
+
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(false);
-  const [orderId, setOrderId] = useState<string>("");
-  const [orderIds, setOrderIds] = useState<string>("");
   const [form] = Form.useForm<TradeFormValues>();
   const [myxClient, setMyxClient] = useState<MyxClient | null>(null);
-  const [closePositionId, setClosePositionId] = useState<string>('');
-  const [adjustCollateralPositionId, setAdjustCollateralPositionId] = useState<string>('');
-  const [adjustCollateralAmount, setAdjustCollateralAmount] = useState<string>('');
+  const [positionsList, setPositionsList] = useState<any[]>([]);
+  const [ordersList, setOrdersList] = useState<any[]>([]);
+
+  // 调整保证金弹窗相关状态
+  const [adjustModalVisible, setAdjustModalVisible] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<any>(null);
+  const [adjustAmount, setAdjustAmount] = useState('');
+  const [adjustLoading, setAdjustLoading] = useState(false);
+
+  // 处理平仓操作
+  const handleClosePosition = async (positionId: string) => {
+    Modal.confirm({
+      title: '确认平仓 / Confirm Close Position',
+      content: `确定要平仓 ID 为 ${positionId} 的仓位吗？/ Are you sure you want to close position ${positionId}?`,
+      okText: '确认 / Confirm',
+      cancelText: '取消 / Cancel',
+      onOk: async () => {
+        try {
+          if (myxClient) {
+            const result = await myxClient.position.closePosition(positionId);
+            if (result.code === 0) {
+              message.success('平仓成功 / Position closed successfully');
+            } else {
+              message.error(`平仓失败 / Close failed: ${result.message}`);
+            }
+            console.log("Close position result:", result);
+          }
+        } catch (error) {
+          console.error("Close position error:", error);
+          message.error('平仓失败 / Close position failed');
+        }
+      }
+    });
+  };
+
+  // 处理调整保证金操作
+  const handleAdjustCollateral = (position: any) => {
+    setSelectedPosition(position);
+    setAdjustAmount('');
+    setAdjustModalVisible(true);
+  };
+
+  // 处理取消订单操作
+  const handleCancelOrder = async (orderId: string) => {
+    Modal.confirm({
+      title: '确认取消订单 / Confirm Cancel Order',
+      content: `确定要取消订单 ID 为 ${orderId} 的订单吗？/ Are you sure you want to cancel order ${orderId}?`,
+      okText: '确认 / Confirm',
+      cancelText: '取消 / Cancel',
+      onOk: async () => {
+        try {
+          if (myxClient) {
+            const result = await myxClient.trading.cancelOrder(orderId);
+            if (result.code === 0) {
+              message.success('订单取消成功 / Order cancelled successfully');
+            } else {
+              message.error(`取消失败 / Cancel failed: ${result.message}`);
+            }
+            console.log("Cancel order result:", result);
+          }
+        } catch (error) {
+          console.error("Cancel order error:", error);
+          message.error('订单取消失败 / Cancel order failed');
+        }
+      }
+    });
+  };
+
+  // 执行调整保证金
+  const executeAdjustCollateral = async () => {
+    if (!selectedPosition || !adjustAmount) {
+      message.warning('请输入调整金额 / Please enter adjustment amount');
+      return;
+    }
+
+    setAdjustLoading(true);
+    try {
+      if (myxClient) {
+        const result = await myxClient.position.adjustCollateral(
+          selectedPosition.positionId,
+          adjustAmount
+        );
+        if (result.code === 0) {
+          message.success('保证金调整成功 / Collateral adjusted successfully');
+          setAdjustModalVisible(false);
+          setAdjustAmount('');
+        } else {
+          message.error(`调整失败 / Adjustment failed: ${result.message}`);
+        }
+        console.log("Adjust collateral result:", result);
+      }
+    } catch (error) {
+      console.error("Adjust collateral error:", error);
+      message.error('保证金调整失败 / Collateral adjustment failed');
+    } finally {
+      setAdjustLoading(false);
+    }
+  };
 
   const initClient = async () => {
     if (walletClient?.transport) {
@@ -138,6 +530,40 @@ const TradePage: React.FC = () => {
   const selectedPool = poolList?.find(
     (item: any) => item.poolId === selectedPoolId
   );
+
+
+  useSWR("getPositionList", async () => {
+
+    const res = await myxClient?.position.listPositions()
+
+    if (res?.code !== 0) {
+      handleAccessToken()
+      return
+    }
+
+    const positions: any[] = res?.data ?? [];
+    console.log(positions)
+    setPositionsList(positions);
+
+    return
+  }, {
+    refreshInterval: 5000,
+  });
+
+  useSWR('getOrderList', async () => {
+    const res = await myxClient?.order.getOrders()
+    if (res?.code !== 0) {
+      handleAccessToken()
+      return
+    }
+    const orders: any[] = res?.data ?? [];
+    setOrdersList(orders);
+
+    return
+  }, {
+    refreshInterval: 5000,
+  })
+
 
   // get pool level config
   const { data: poolLevelData } = useSWR(
@@ -237,7 +663,7 @@ const TradePage: React.FC = () => {
         chainId: ChainId.ARB_TESTNET,
         address: address as `0x${string}`,
         poolId: selectedPool.poolId,
-        positionId: 0,
+        positionId: values.operation === OperationType.DECREASE && values.positionId ? parseInt(values.positionId) : 0,
         orderType: values.orderType as OrderType,
         triggerType: values.triggerType as TriggerType,
         operation: values.operation as OperationType,
@@ -283,7 +709,7 @@ const TradePage: React.FC = () => {
           : "0",
       };
 
-      console.log("orderData");
+      console.log("orderData-->", orderData);
 
       const rs = await myxClient.trading.placeOrder(orderData);
 
@@ -749,14 +1175,13 @@ const TradePage: React.FC = () => {
                           限价单 / Limit Order
                         </Option>
                         <Option value={OrderType.STOP}>
-                          止损单 / Stop Order
+                          止盈止损 / TPSL
                         </Option>
                         <Option value={OrderType.CONDITIONAL}>
                           条件单 / Conditional Order
                         </Option>
                       </Select>
                     </Form.Item>
-
                     <Form.Item
                       label="触发类型 / Trigger Type"
                       name="triggerType"
@@ -784,6 +1209,21 @@ const TradePage: React.FC = () => {
                           减少 / Decrease
                         </Option>
                       </Select>
+                    </Form.Item>
+
+                    <Form.Item noStyle dependencies={['operation']}>
+                      {({ getFieldValue }) => {
+                        const operation = getFieldValue('operation');
+                        return operation === OperationType.DECREASE ? (
+                          <Form.Item
+                            label="仓位ID / Position ID"
+                            name="positionId"
+                            rules={[{ required: true, }]}
+                          >
+                            <Input placeholder="请输入仓位ID / Enter Position ID" />
+                          </Form.Item>
+                        ) : null;
+                      }}
                     </Form.Item>
 
                     <Form.Item label="方向 / Direction" name="direction">
@@ -959,75 +1399,36 @@ const TradePage: React.FC = () => {
             </Form>
           </Card>
         </Col>
-
         <Col span={24}>
           <Card title="仓位管理 / Position Management" size="default">
-            {/* 仓位管理内容区域 - 您可以在这里添加具体内容 */}
-            <div className="py-[20px]" style={{ minHeight: '200px' }}>
-              <Col>
-                <Button type="primary" onClick={async () => {
-
-                  const appId = "test1";
-                  const timestamp = Math.floor(Date.now() / 1000); // 转换为秒
-                  const expireTime = 3600; // 1小时后过期（秒）
-                  const allowAccount = address;
-                  const secret = "69v9kHey9b746PseJ0TP";
-
-                  const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-                  const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
-                 
-                  if (myxClient) {
-                    const configManager = myxClient.getConfigManager();
-
-                    // 将 getAccessToken 方法和参数传递给 SDK
-                    const args = [appId, timestamp, expireTime, address!, signature];
-
-                    // 调用 callGetAccessToken，传递函数和参数
-                    const configResponse = await configManager.callGetAccessToken(getAccessToken, args);
-
-                    console.log("configResponse-->", configResponse);
-                    if (configResponse) {
-                      console.log('✅ AccessToken 已成功获取并存储到 SDK 中');
-                      console.log('存储的 Token:', configResponse);
-                    } else {
-                      console.error('❌ AccessToken 获取或存储失败');
-                    }
-                  }
-                  // }
-                }}>
-                  配置accessToken
-                </Button>
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Card title="当前仓位列表 / Current Positions" size="small">
+                  <Table
+                    columns={positionColumns}
+                    dataSource={positionsList}
+                    rowKey="positionId"
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) => 
+                        `${range[0]}-${range[1]} 共 ${total} 条 / ${range[0]}-${range[1]} of ${total} items`,
+                    }}
+                    scroll={{ x: 'max-content' }}
+                    locale={{
+                      emptyText: '暂无仓位数据 / No position data available'
+                    }}
+                    size="small"
+                    style={{
+                      fontSize: '12px',
+                    }}
+                    className="compact-table"
+                  />
+                </Card>
               </Col>
-              <Col className="mt-2">
-                <Form.Item label="仓位ID / Position ID" name="positionId">
-                  <Input placeholder="请输入仓位ID / Enter Position ID" value={closePositionId} onChange={(e) => setClosePositionId(e.target.value)} />
-                </Form.Item>
-                <Button type="primary" onClick={async () => {
-                  if (myxClient) {
-                    const rs = await myxClient.position.closePosition(closePositionId);
-                    console.log("rs-->", rs);
-                  }
-                }}>
-                  平仓
-                </Button>
-              </Col>
-              <Col className="mt-2">
-                <Form.Item label="仓位ID / Position ID" name="positionId">
-                  <Input placeholder="请输入仓位ID / Enter Position ID" value={adjustCollateralPositionId} onChange={(e) => setAdjustCollateralPositionId(e.target.value)} />
-                </Form.Item>
-                <Form.Item label="调整保证金 / Adjust Collateral" name="adjustCollateralAmount">
-                  <Input placeholder="请输入调整保证金 / Enter Adjust Collateral" value={adjustCollateralAmount} onChange={(e) => setAdjustCollateralAmount(e.target.value)} />
-                </Form.Item>
-                <Button type="primary" onClick={async () => {
-                  if (myxClient) {
-                    const rs = await myxClient.position.adjustCollateral(adjustCollateralPositionId, adjustCollateralAmount);
-                    console.log("rs-->", rs);
-                  }
-                }}>
-                  调整保证金
-                </Button>
-              </Col>
-            </div>
+            </Row>
+
           </Card>
         </Col>
       </Row>
@@ -1038,64 +1439,97 @@ const TradePage: React.FC = () => {
         <Col span={24}>
           <Card title="订单管理 / Order Management" size="default">
             <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Card title="取消单个订单 / Cancel Single Order" size="small">
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Form.Item label={`订单ID / Order ID`} style={{ marginBottom: 0 }}>
-                      <Input
-                        placeholder="请输入订单ID / Enter Order ID"
-                        value={orderId}
-                        onChange={(e) => setOrderId(e.target.value)}
-                      />
-                    </Form.Item>
-                    <Button
-                      type="primary"
-                      block
-                      onClick={async () => {
-                        console.log(orderId);
-                        const rs = await myxClient?.trading.cancelOrder(orderId);
-                        console.log("rs--->", rs);
-                      }}
-                      disabled={!orderId.trim()}
-                    >
-                      取消订单 / Cancel Order
-                    </Button>
-                  </Space>
+              <Col span={24}>
+                <Card title="当前订单列表 / Current Orders" size="small">
+                  <Table
+                    columns={orderColumns}
+                    dataSource={ordersList}
+                    rowKey="orderId"
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} 共 ${total} 条 / ${range[0]}-${range[1]} of ${total} items`,
+                    }}
+                    scroll={{ x: 'max-content' }}
+                    locale={{
+                      emptyText: '暂无订单数据 / No order data available'
+                    }}
+                    size="small"
+                    style={{
+                      fontSize: '12px',
+                    }}
+                    className="compact-table"
+                  />
                 </Card>
               </Col>
 
-              <Col span={12}>
-                <Card title="批量取消订单 / Batch Cancel Orders" size="small">
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Form.Item label={`订单ID(逗号隔开) / Order IDs (comma separated)`} style={{ marginBottom: 0 }}>
-                      <Input
-                        placeholder="请输入多个订单ID，用逗号隔开 / Enter multiple Order IDs, separated by commas"
-                        value={orderIds}
-                        onChange={(e) => setOrderIds(e.target.value)}
-                      />
-                    </Form.Item>
-                    <Button
-                      type="primary"
-                      block
-                      onClick={async () => {
-                        const ids = orderIds.split(",").map(id => id.trim()).filter(id => id);
-
-                        if (!myxClient || !ids.length) return;
-                        const rs = await myxClient?.trading.cancelOrders(ids);
-
-                        console.log("rs--->", rs);
-                      }}
-                      disabled={!orderIds.trim()}
-                    >
-                      批量取消订单 / Batch Cancel Orders
-                    </Button>
-                  </Space>
-                </Card>
-              </Col>
             </Row>
           </Card>
         </Col>
       </Row>
+
+      {/* 调整保证金弹窗 / Adjust Collateral Modal */}
+      <Modal
+        title="调整保证金 / Adjust Collateral"
+        open={adjustModalVisible}
+        onOk={executeAdjustCollateral}
+        onCancel={() => {
+          setAdjustModalVisible(false);
+          setAdjustAmount('');
+        }}
+        confirmLoading={adjustLoading}
+        okText="确认调整 / Confirm"
+        cancelText="取消 / Cancel"
+      >
+        {selectedPosition && (
+          <div>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <div>
+                <Text strong>仓位信息 / Position Info:</Text>
+              </div>
+              <div>
+                <Text>仓位ID / Position ID: </Text>
+                <Tag color="blue">{selectedPosition.positionId}</Tag>
+              </div>
+              <div>
+                <Text>方向 / Direction: </Text>
+                <Tag color={selectedPosition.direction === 0 ? 'green' : 'red'}>
+                  {selectedPosition.direction === 0 ? '做多 / LONG' : '做空 / SHORT'}
+                </Tag>
+              </div>
+              <div>
+                <Text>当前保证金 / Current Collateral: </Text>
+                <Text strong>{selectedPosition.collateralAmount}</Text>
+              </div>
+              <div>
+                <Text>数量 / Size: </Text>
+                <Text strong>{selectedPosition.size}</Text>
+              </div>
+
+              <Form.Item
+                label="调整金额 / Adjustment Amount"
+                style={{ marginBottom: 0, marginTop: 16 }}
+              >
+                <Input
+                  value={adjustAmount}
+                  onChange={(e) => setAdjustAmount(e.target.value)}
+                  placeholder="输入正数增加，负数减少保证金 / Enter positive to add, negative to reduce"
+                  suffix="USDT"
+                />
+              </Form.Item>
+
+              <div style={{ marginTop: 8 }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  提示：输入正数增加保证金，输入负数减少保证金 /
+                  Tip: Enter positive number to increase, negative to decrease collateral
+                </Text>
+              </div>
+            </Space>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
