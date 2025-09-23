@@ -21,7 +21,7 @@ export const getOraclePrice = async (
   poolIds: string[] = []
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
-    return http.get(`${baseUrl}/v2/mx-gateway/quote/price/oracles`, {
+    return http.get(`${baseUrl}/openapi/gateway/quote/price/oracles`, {
       chainId,
       poolIds: poolIds.join(","),
     });
