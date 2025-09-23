@@ -49,6 +49,10 @@ export class Position {
     }
   }
 
+  async listPositions() {
+
+  }
+
   async adjustCollateral(positionId: string, adjustAmount: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
