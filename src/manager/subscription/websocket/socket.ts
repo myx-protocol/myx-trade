@@ -10,6 +10,7 @@ import {
   WebSocketMessageResponse,
   WebSocketTopicEnum,
   NativeTickerData,
+  WebSocketAckMessageResponse,
 } from "./types";
 import {
   generateListenerId,
@@ -26,7 +27,6 @@ export interface Subscription {
   id: string;
   callbacks: Set<(data: any) => void>; // support multiple callback
 }
-
 
 export class MyxWebSocketClient {
   private ws: ReconnectingWebSocket | null = null;
@@ -70,15 +70,19 @@ export class MyxWebSocketClient {
       heartbeatInterval: 10000,
       heartbeatMessage: "ping",
       noMessageTimeout: 30000,
+      connectionTimeout: 10000,
       // user config
       ...args,
     } as Required<WebSocketConfig>;
+
     /**
      * init logger
      */
     this.logger = new Logger({
       logLevel: config?.logLevel,
     });
+
+    this.logger.debug("WebSocketClient constructor", this.config);
   }
 
   /**
@@ -99,6 +103,7 @@ export class MyxWebSocketClient {
           reconnectionDelayGrowFactor: this.config.reconnectMultiplier,
           maxRetries: this.config.maxReconnectAttempts,
           maxEnqueuedMessages: this.config.maxEnqueuedMessages,
+          connectionTimeout: this.config.connectionTimeout,
         };
 
         this.ws = new ReconnectingWebSocket(
@@ -334,7 +339,12 @@ export class MyxWebSocketClient {
         return;
       }
       if (isAckMessageResponse(data)) {
-        this.logger.debug(`AcK Message:${data.type} received`);
+        if ((data as WebSocketAckMessageResponse).data.code !== 9200) {
+          this.logger.error(`Ack Message:${data.type} received`, data);
+          this.eventBus.emit("error", data as unknown as Event);
+        } else {
+          this.logger.debug(`AcK Message:${data.type} received`);
+        }
         return;
       }
 
@@ -350,13 +360,17 @@ export class MyxWebSocketClient {
    */
   private handleSubscriptionMessage(data: WebSocketMessageResponse): void {
     // dispatch message by subscriptionId
-    const subscriptionId = data.type;
-    const subscription = this.subscriptions.get(subscriptionId);
-    // if subscription not found, return
-    if (!subscription) return;
+
 
     // transform data
     let dataParsed = messageTransform(data);
+
+    const subscriptionId = dataParsed.type;
+    this.logger.debug(`handle subscription message: ${subscriptionId}`);
+
+    const subscription = this.subscriptions.get(subscriptionId);
+    // if subscription not found, return
+    if (!subscription) return;
 
     subscription.callbacks.forEach((callback) => {
       try {

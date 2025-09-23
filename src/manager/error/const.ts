@@ -1,5 +1,6 @@
 export enum MyxErrorCode {
   SocketNotConnected = "SOCKET_NOT_CONNECTED",
+  SocketNotInited = "SOCKET_NOT_INITED",
   ParamError = "PARAM_ERROR",
   InvalidChainId = "INVALID_CHAIN_ID",
 }
