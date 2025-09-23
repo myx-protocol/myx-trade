@@ -1,7 +1,8 @@
-import { $fetch } from "@/api/request";
+import { http } from "@/api/request";
 import { ConfigManager } from "@/manager/config";
 
 import { BASE_URL } from "@/config/url";
+import { getPoolLevelConfig, getPools } from "@/api";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -14,18 +15,16 @@ export class Markets {
   }
 
   async listPools() {
-    const rs = await $fetch("GET", `${BASE_URL}/v2/mx-scan/market/list`);
-
-    return rs.data || [];
+    return (await getPools()).data;
   }
 
   async getPoolLevelConfig(poolId: string) {
     const config = this.configManager.getConfig();
-    const rs = await $fetch(
-      "GET",
-      `${BASE_URL}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${config?.chainId}`
-    );
-
-    return rs.data;
+    return (
+      await getPoolLevelConfig({
+        poolId,
+        chainId: config?.chainId,
+      })
+    ).data;
   }
 }
