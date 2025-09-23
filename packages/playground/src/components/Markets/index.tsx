@@ -8,6 +8,7 @@ type MarketProps = {
   onSubscribeTicker: (globalId: number) => void;
   onUnsubscribeTicker: (globalId: number) => void;
   onSubscribeKline: (globalId: number) => void;
+  onUnsubscribeKline: (globalId: number) => void;
   subscriptionStore: SubscriptionStore;
 };
 
@@ -16,6 +17,7 @@ export const Markets = ({
   onSubscribeTicker,
   onUnsubscribeTicker,
   onSubscribeKline,
+  onUnsubscribeKline,
   subscriptionStore,
 }: MarketProps) => {
   const columns = useMemo<TableColumnsType<MarketPool>>(() => {
@@ -49,36 +51,41 @@ export const Markets = ({
         title: "Operation",
         render(_, row) {
           const ticker = subscriptionStore.getTickerByGlobalId(row.globalId);
-          const isSubscribed = ticker?.isSubscribed || false;
+          const isTickerSubscribed = ticker?.isSubscribed || false;
+          const isKlineSubscribed = subscriptionStore.getKlineSubscription(row.globalId);
 
           return (
             <div style={{ display: 'flex', gap: '8px' }}>
               <Button
-                type={isSubscribed ? "default" : "primary"}
+                type={isTickerSubscribed ? "default" : "primary"}
                 onClick={() => {
-                  if (isSubscribed) {
+                  if (isTickerSubscribed) {
                     onUnsubscribeTicker(row.globalId);
                   } else {
                     onSubscribeTicker(row.globalId);
                   }
                 }}
               >
-                {isSubscribed ? "UnSub Ticker" : "Sub Ticker"}
+                {isTickerSubscribed ? "UnSub Ticker" : "Sub Ticker"}
               </Button>
               <Button
-                type="primary"
+                type={isKlineSubscribed ? "default" : "primary"}
                 onClick={() => {
-                  onSubscribeKline(row.globalId);
+                  if (isKlineSubscribed) {
+                    onUnsubscribeKline(row.globalId);
+                  } else {
+                    onSubscribeKline(row.globalId);
+                  }
                 }}
               >
-                Sub Kline
+                {isKlineSubscribed ? "UnSub Kline" : "Sub Kline"}
               </Button>
             </div>
           );
         },
       },
     ];
-  }, [onSubscribeTicker, onUnsubscribeTicker, onSubscribeKline, subscriptionStore]);
+  }, [onSubscribeTicker, onUnsubscribeTicker, onSubscribeKline, onUnsubscribeKline, subscriptionStore]);
 
   return <Table dataSource={markets} columns={columns} />;
 };

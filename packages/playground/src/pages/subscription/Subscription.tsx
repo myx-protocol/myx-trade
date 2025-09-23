@@ -26,43 +26,57 @@ const SubscriptionPage: React.FC = () => {
     return myxClientRef.current?.markets.listPools();
   }, []);
 
-  const onKlineData = useCallback((data: KlineDataResponse) => {
-    console.log("Kline data:", data);
-    subscriptionStore.addKlineData(data.globalId, data);
-  }, [subscriptionStore]);
+  const onKlineData = useCallback(
+    (data: KlineDataResponse) => {
+      console.log("Kline data:", data);
+      subscriptionStore.addKlineData(data.globalId, data);
+    },
+    [subscriptionStore]
+  );
 
   const subscribeKline = useCallback(
     (globalId: number) => {
       if (!myxClientRef.current) return;
+
+      // 设置订阅状态
+      subscriptionStore.setKlineSubscription(globalId, true);
+
       myxClientRef.current.subscription.subscribeKline(
         globalId,
-        "1d",
+        "1m",
         onKlineData
       );
     },
-    [onKlineData]
+    [onKlineData, subscriptionStore]
   );
 
-  // const unsubscribeKline = useCallback(
-  //   (globalId: number) => {
-  //     if (!myxClientRef.current) return;
-  //     myxClientRef.current.subscription.unsubscribeKline(
-  //       globalId,
-  //       "1d",
-  //       onKlineData
-  //     );
-  //   },
-  //   [onKlineData]
-  // );
+  const unsubscribeKline = useCallback(
+    (globalId: number) => {
+      if (!myxClientRef.current) return;
 
-  const onTickerData = useCallback((data: TickersDataResponse) => {
-    // console.log("Ticker data:", data);
-    subscriptionStore.updateTickerPrice(
-      data.globalId,
-      data.data.p,
-      data.data.C
-    );
-  }, [subscriptionStore]);
+      // 设置取消订阅状态
+      subscriptionStore.setKlineSubscription(globalId, false);
+
+      myxClientRef.current.subscription.unsubscribeKline(
+        globalId,
+        "1m",
+        onKlineData
+      );
+    },
+    [onKlineData, subscriptionStore]
+  );
+
+  const onTickerData = useCallback(
+    (data: TickersDataResponse) => {
+      // console.log("Ticker data:", data);
+      subscriptionStore.updateTickerPrice(
+        data.globalId,
+        data.data.p,
+        data.data.C
+      );
+    },
+    [subscriptionStore]
+  );
 
   // 订阅ticker的方法
   const subscribeTicker = useCallback(
@@ -133,39 +147,78 @@ const SubscriptionPage: React.FC = () => {
           onSubscribeTicker={subscribeTicker}
           onUnsubscribeTicker={unsubscribeTicker}
           onSubscribeKline={subscribeKline}
+          onUnsubscribeKline={unsubscribeKline}
           subscriptionStore={subscriptionStore}
         />
       </Card>
 
       {/* Kline Data Display */}
       <Card title="Kline Data" style={{ marginBottom: 24 }}>
-        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
           {subscriptionStore.marketList.map((market) => {
-            const klineData = subscriptionStore.getKlineDataByGlobalId(market.globalId);
+            const klineData = subscriptionStore.getKlineDataByGlobalId(
+              market.globalId
+            );
             if (klineData.length === 0) return null;
-            
+
             return (
-              <div key={market.globalId} style={{ marginBottom: '16px', padding: '12px', border: '1px solid #f0f0f0', borderRadius: '6px' }}>
-                <h4>{market.baseSymbol}/{market.quoteSymbol} (Global ID: {market.globalId})</h4>
-                <div style={{ fontSize: '12px', color: '#666' }}>
+              <div
+                key={market.globalId}
+                style={{
+                  marginBottom: "16px",
+                  padding: "12px",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "6px",
+                }}
+              >
+                <h4>
+                  {market.baseSymbol}/{market.quoteSymbol} (Global ID:{" "}
+                  {market.globalId})
+                </h4>
+                <div style={{ fontSize: "12px", color: "#666" }}>
                   {klineData.map((data, index) => (
-                    <div key={index} style={{ marginBottom: '8px', padding: '8px', backgroundColor: '#fafafa', borderRadius: '4px' }}>
-                      <div><strong>Time:</strong> {new Date(data.data.t).toLocaleString()}</div>
-                      <div><strong>Open:</strong> {data.data.o}</div>
-                      <div><strong>High:</strong> {data.data.h}</div>
-                      <div><strong>Low:</strong> {data.data.l}</div>
-                      <div><strong>Close:</strong> {data.data.c}</div>
-                      <div><strong>Volume:</strong> {data.data.v}</div>
+                    <div
+                      key={index}
+                      style={{
+                        marginBottom: "8px",
+                        padding: "8px",
+                        backgroundColor: "#fafafa",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      <div>
+                        <strong>Time:</strong>{" "}
+                        {new Date(data.data.t).toLocaleString()}
+                      </div>
+                      <div>
+                        <strong>Open:</strong> {data.data.o}
+                      </div>
+                      <div>
+                        <strong>High:</strong> {data.data.h}
+                      </div>
+                      <div>
+                        <strong>Low:</strong> {data.data.l}
+                      </div>
+                      <div>
+                        <strong>Close:</strong> {data.data.c}
+                      </div>
+                      <div>
+                        <strong>Volume:</strong> {data.data.v}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             );
           })}
-          {subscriptionStore.marketList.every(market => 
-            subscriptionStore.getKlineDataByGlobalId(market.globalId).length === 0
+          {subscriptionStore.marketList.every(
+            (market) =>
+              subscriptionStore.getKlineDataByGlobalId(market.globalId)
+                .length === 0
           ) && (
-            <div style={{ textAlign: 'center', color: '#999', padding: '40px' }}>
+            <div
+              style={{ textAlign: "center", color: "#999", padding: "40px" }}
+            >
               暂无Kline数据，请点击"Sub Kline"按钮订阅
             </div>
           )}

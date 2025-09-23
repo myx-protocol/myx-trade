@@ -4,12 +4,12 @@ import {
   WebSocketMethodEnum,
   WebSocketTopicEnum,
   WebSocketConfig,
+  WebSocketEvents,
 } from "./websocket/types";
 import {
   OnKlineCallback,
   OnOrderCallback,
   OnPositionCallback,
-  OnTickersAllCallback,
   OnTickersCallback,
 } from "./types";
 import { Logger } from "@/logger";
@@ -128,29 +128,6 @@ export class SubScription {
     );
   }
 
-  // /**
-  //  * tickers all subscription methods
-  //  */
-  // subscribeTickersAll(callback: OnTickersAllCallback) {
-  //   this.logger.debug(`subscribe tickers all`, this.configManager.getConfig());
-  //   this.wsClient.subscribe(
-  //     {
-  //       topic: WebSocketTopicEnum.TickerAll,
-  //     },
-  //     callback
-  //   );
-  // }
-
-  // unsubscribeTickersAll(callback: OnTickersAllCallback) {
-  //   this.logger.debug(`unsubscribe tickers all`);
-  //   this.wsClient.unsubscribe(
-  //     {
-  //       topic: WebSocketTopicEnum.TickerAll,
-  //     },
-  //     callback
-  //   );
-  // }
-
   /**
    * with auth methods
    */
@@ -210,5 +187,26 @@ export class SubScription {
       },
       callback
     );
+  }
+
+  /**
+   * event listen
+   */
+  on<K extends keyof WebSocketEvents>(
+    event: K,
+    handler: (data: WebSocketEvents[K]) => void
+  ): void {
+    this.wsClient.on(event, handler);
+  }
+
+  /**
+   * event remove listen
+   */
+
+  off<K extends keyof WebSocketEvents>(
+    event: K,
+    handler: (data: WebSocketEvents[K]) => void
+  ): void {
+    this.wsClient.off(event, handler);
   }
 }

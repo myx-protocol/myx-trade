@@ -1,6 +1,7 @@
 import { md5 } from "@/crypto/md5";
 import {
   KlineDataResponse,
+  KlineResolution,
   NativeTickerData,
   TickersDataResponse,
   WebSocketMessageResponse,
@@ -73,7 +74,10 @@ export const messageTransform = (data: WebSocketMessageResponse) => {
       const [, globalId = ""] = data.type.split(".");
       return {
         ...data,
-        type: WebSocketTopicEnum.Ticker,
+        type: generateListenerId({
+          topic: WebSocketTopicEnum.Ticker,
+          params: { globalId: parseInt(globalId) },
+        }),
         globalId: parseInt(globalId),
       } as TickersDataResponse;
     }
@@ -82,10 +86,17 @@ export const messageTransform = (data: WebSocketMessageResponse) => {
      */
     case WebSocketTopicEnum.Kline: {
       const [, paramData = ""] = data.type.split(".");
-      const [globalId, resolution] = paramData.split("_");
+      let [globalId, resolution] = paramData.split("_");
+
       return {
         ...data,
-        type: WebSocketTopicEnum.Kline,
+        type: generateListenerId({
+          topic: WebSocketTopicEnum.Kline,
+          params: {
+            globalId: parseInt(globalId),
+            resolution: resolution as KlineResolution,
+          },
+        }),
         globalId: parseInt(globalId),
         resolution: resolution,
       } as KlineDataResponse;
