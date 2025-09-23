@@ -5,6 +5,7 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import { ethers } from "ethers";
 import positionManagerAbi from "@/abi/PositionManager.json";
 import broker_abi from "@/abi/Broker.json";
+import { getPositions } from "@/api";
 
 export class Position {
   private configManager: ConfigManager;
@@ -28,6 +29,7 @@ export class Position {
       config.signer
     );
 
+    console.log('positionId--->', positionId);
     try {
       const gasLimit = await positionManagerContract.closePosition.estimateGas(positionId);
       this.logger.info("gasLimit--->", gasLimit);
@@ -50,7 +52,19 @@ export class Position {
   }
 
   async listPositions() {
-
+    const config: MyxClientConfig = this.configManager.getConfig();
+    const accessToken = await this.configManager.getCurrentAccessToken();
+    if (!accessToken) {
+      return {
+        code: -1,
+        message: "accessToken is empty",
+      };
+    }
+    const res = await getPositions(accessToken, config.chainId);
+    return {
+      code: 0,
+      data: res.data,
+    };
   }
 
   async adjustCollateral(positionId: string, adjustAmount: string) {
