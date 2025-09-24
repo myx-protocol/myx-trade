@@ -13,19 +13,28 @@ export class Order {
 
   async getOrders() {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const accessToken = await this.configManager.getCurrentAccessToken();
+    
+    // 自动获取 accessToken，如果没有或过期会自动刷新
+    const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       return {
         code: -1,
-        message: "accessToken is empty",
+        message: "Failed to obtain accessToken",
       };
     }
 
-    const res = await getOrders(accessToken, config.chainId);
-    return {
-      code: 0,
-      data: res.data,
-    };
-
+    try {
+      const res = await getOrders(accessToken, config.chainId);
+      return {
+        code: 0,
+        data: res.data,
+      };
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      return {
+        code: -1,
+        message: "Failed to fetch orders",
+      };
+    }
   }
 }

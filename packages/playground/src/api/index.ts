@@ -24,12 +24,12 @@ const baseUrl= "https://api-test.myx.cash"
 //   "activeTime": null
 // }
 export const getPools = async () => {
-  return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
+  return await $fetch("GET", `${baseUrl}/openapi/gateway/scan/market/list`);
 }
 
 
 export const getPoolLevel = async (poolId: string, chainId: number) => {
-  return await $fetch("GET", `${baseUrl}/v2/mx-risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`);
+  return await $fetch("GET", `${baseUrl}/openapi/gateway/risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`);
 }
 
 export const getOraclePrice = async (poolId: string, chainId: number) => {

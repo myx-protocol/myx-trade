@@ -60,7 +60,7 @@ interface TradeFormValues {
 
 const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
   try {
-    const rs = await fetch(`https://api-test.myx.cash/openapi/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
+    const rs = await fetch(`https://api-test.myx.cash/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
     const res = await rs.json();
 
     return {
@@ -93,34 +93,30 @@ const TradePage: React.FC = () => {
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
 
-  const handleAccessToken = async () => {
-    const appId = "test1";
-    const timestamp = Math.floor(Date.now() / 1000); // 转换为秒
-    const expireTime = 3600 * 24;
-    const allowAccount = address;
-    const secret = "69v9kHey9b746PseJ0TP";
+  // 为 SDK 提供的 accessToken 获取方法
+  const createGetAccessTokenMethod = () => {
+    return async (): Promise<{ accessToken: string; expireAt: number }> => {
+      const appId = "test1";
+      const timestamp = Math.floor(Date.now() / 1000);
+      const expireTime = 3600 * 24;
+      const allowAccount = address!;
+      const secret = "69v9kHey9b746PseJ0TP";
 
-    const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-    const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+      const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+      const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
 
-    if (myxClient) {
-      const configManager = myxClient.getConfigManager();
+      const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature);
 
-      // 将 getAccessToken 方法和参数传递给 SDK
-      const args = [appId, timestamp, expireTime, address!, signature];
-
-      // 调用 callGetAccessToken，传递函数和参数
-      const configResponse = await configManager.callGetAccessToken(getAccessToken, args);
-
-      console.log("configResponse-->", configResponse);
-      if (configResponse) {
-        console.log('✅ AccessToken 已成功获取并存储到 SDK 中');
-        console.log('存储的 Token:', configResponse);
+      if (response.code === 0) {
+        return {
+          accessToken: response.data.accessToken,
+          expireAt: response.data.expireAt // 到期时间戳（秒）
+        };
       } else {
-        console.error('❌ AccessToken 获取或存储失败');
+        throw new Error(response.msg || 'Failed to get access token');
       }
-    }
-  }
+    };
+  };
 
   // 仓位列表表格列配置
   const positionColumns = [
@@ -482,7 +478,7 @@ const TradePage: React.FC = () => {
   };
 
   const initClient = async () => {
-    if (walletClient?.transport) {
+    if (walletClient?.transport && address) {
       const provider = new BrowserProvider(walletClient.transport);
       const signer = await provider.getSigner();
 
@@ -491,9 +487,11 @@ const TradePage: React.FC = () => {
         chainId: ChainId.ARB_TESTNET,
         brokerAddress: "0xa70245309631Ce97425532466F24ef86FE630311",
         isTestnet: true,
+        getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
       });
 
       setMyxClient(client);
+      console.log('✅ MYX Client initialized with auto token management');
     }
   };
 
@@ -533,33 +531,37 @@ const TradePage: React.FC = () => {
 
 
   useSWR("getPositionList", async () => {
+    if (!myxClient) return;
 
-    const res = await myxClient?.position.listPositions()
+    const res = await myxClient.position.listPositions();
 
-    if (res?.code !== 0) {
-      handleAccessToken()
-      return
+    if (res?.code === 0) {
+      const positions: any[] = res?.data ?? [];
+      console.log('positions-->', positions);
+      setPositionsList(positions);
+    } else {
+      console.error('Failed to fetch positions:', res?.message);
     }
 
-    const positions: any[] = res?.data ?? [];
-    console.log(positions)
-    setPositionsList(positions);
-
-    return
+    return res;
   }, {
     refreshInterval: 5000,
   });
 
   useSWR('getOrderList', async () => {
-    const res = await myxClient?.order.getOrders()
-    if (res?.code !== 0) {
-      handleAccessToken()
-      return
-    }
-    const orders: any[] = res?.data ?? [];
-    setOrdersList(orders);
+    if (!myxClient) return;
 
-    return
+    const res = await myxClient.order.getOrders();
+
+    if (res?.code === 0) {
+      const orders: any[] = res?.data ?? [];
+      console.log('orders-->', orders);
+      setOrdersList(orders);
+    } else {
+      console.error('Failed to fetch orders:', res?.message);
+    }
+
+    return res;
   }, {
     refreshInterval: 5000,
   })
@@ -763,6 +765,157 @@ const TradePage: React.FC = () => {
                     : "❌ 错误网络 / Wrong Network"}
                 </Tag>
               </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        <Col span={24}>
+          <Card title="选择交易池 / Select Trading Pool" loading={!poolList}>
+            <Row gutter={[16, 16]}>
+              {poolList?.map((pool: any) => (
+                <Col span={12} key={pool.poolId}>
+                  <Card
+                    hoverable
+                    className={
+                      selectedPoolId === pool.poolId
+                        ? "border-blue-500 bg-blue-50"
+                        : ""
+                    }
+                    onClick={() => setSelectedPoolId(pool.poolId)}
+                    size="small"
+                  >
+                    <div className="space-y-3">
+                      {/* 交易对名称 */}
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-gray-800 mb-1">
+                          {pool.baseSymbol}/{pool.quoteSymbol}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {selectedPoolId === pool.poolId && (
+                            <span className="text-blue-600">✓ 已选择</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 基本信息 */}
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-500">基础资产:</span>
+                          <div className="font-mono">{pool.baseSymbol}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价资产:</span>
+                          <div className="font-mono">{pool.quoteSymbol}</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">基础精度:</span>
+                          <div className="font-mono">{pool.baseDecimals}位</div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价精度:</span>
+                          <div className="font-mono">
+                            {pool.quoteDecimals}位
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 合约地址 */}
+                      <div className="space-y-1 text-xs">
+                        <div>
+                          <span className="text-gray-500">基础代币:</span>
+                          <div className="font-mono text-blue-600 break-all">
+                            {pool.baseToken}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">计价代币:</span>
+                          <div className="font-mono text-blue-600 break-all">
+                            {pool.quoteToken}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Pool ID */}
+                      <div className="text-xs">
+                        <span className="text-gray-500">Pool ID:</span>
+                        <div className="font-mono text-gray-600 break-all">
+                          {pool.poolId}
+                        </div>
+                      </div>
+
+                      {/* Level 配置信息 */}
+                      {pool.levelData && pool.levelData.levelConfig && (
+                        <div className="space-y-1 text-xs bg-gray-50 p-2 rounded">
+                          <div className="font-semibold text-gray-700 mb-1">
+                            配置 {pool.levelData.levelName} (Level{" "}
+                            {pool.levelData.level})
+                          </div>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div>
+                              <span className="text-gray-500">杠杆:</span>
+                              <span className="font-bold text-blue-600">
+                                {" "}
+                                {pool.levelData.levelConfig.leverage}x
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">最小订单:</span>
+                              <span className="font-semibold">
+                                {" "}
+                                ${pool.levelData.levelConfig.minOrderSizeInUsd}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">维持保证金:</span>
+                              <span className="font-semibold">
+                                {" "}
+                                {(
+                                  pool.levelData.levelConfig
+                                    .maintainCollateralRate * 100
+                                ).toFixed(1)}
+                                %
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">滑点:</span>
+                              <span className="font-semibold">
+                                {" "}
+                                {(
+                                  pool.levelData.levelConfig.slip * 100
+                                ).toFixed(2)}
+                                %
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 其他参数 */}
+                      {pool.maxLeverage && (
+                        <div className="text-xs">
+                          <span className="text-gray-500">最大杠杆:</span>
+                          <span className="font-bold text-orange-600">
+                            {" "}
+                            {pool.maxLeverage}x
+                          </span>
+                        </div>
+                      )}
+
+                      {pool.state !== undefined && (
+                        <div className="text-xs">
+                          <span className="text-gray-500">状态:</span>
+                          <span
+                            className={`ml-1 px-2 py-1 rounded text-white text-xs ${pool.state === 2 ? "bg-green-500" : "bg-red-500"
+                              }`}
+                          >
+                            {pool.state === 2 ? "可交易" : "不可交易"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Col>
+              ))}
             </Row>
             {selectedPool && (
               <>
@@ -998,157 +1151,7 @@ const TradePage: React.FC = () => {
               </>
             )}
           </Card>
-        </Col>
 
-        <Col span={24}>
-          <Card title="选择交易池 / Select Trading Pool" loading={!poolList}>
-            <Row gutter={[16, 16]}>
-              {poolList?.map((pool: any) => (
-                <Col span={12} key={pool.poolId}>
-                  <Card
-                    hoverable
-                    className={
-                      selectedPoolId === pool.poolId
-                        ? "border-blue-500 bg-blue-50"
-                        : ""
-                    }
-                    onClick={() => setSelectedPoolId(pool.poolId)}
-                    size="small"
-                  >
-                    <div className="space-y-3">
-                      {/* 交易对名称 */}
-                      <div className="text-center">
-                        <div className="text-xl font-bold text-gray-800 mb-1">
-                          {pool.baseSymbol}/{pool.quoteSymbol}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {selectedPoolId === pool.poolId && (
-                            <span className="text-blue-600">✓ 已选择</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* 基本信息 */}
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-500">基础资产:</span>
-                          <div className="font-mono">{pool.baseSymbol}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">计价资产:</span>
-                          <div className="font-mono">{pool.quoteSymbol}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">基础精度:</span>
-                          <div className="font-mono">{pool.baseDecimals}位</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">计价精度:</span>
-                          <div className="font-mono">
-                            {pool.quoteDecimals}位
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 合约地址 */}
-                      <div className="space-y-1 text-xs">
-                        <div>
-                          <span className="text-gray-500">基础代币:</span>
-                          <div className="font-mono text-blue-600 break-all">
-                            {pool.baseToken}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">计价代币:</span>
-                          <div className="font-mono text-blue-600 break-all">
-                            {pool.quoteToken}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Pool ID */}
-                      <div className="text-xs">
-                        <span className="text-gray-500">Pool ID:</span>
-                        <div className="font-mono text-gray-600 break-all">
-                          {pool.poolId}
-                        </div>
-                      </div>
-
-                      {/* Level 配置信息 */}
-                      {pool.levelData && pool.levelData.levelConfig && (
-                        <div className="space-y-1 text-xs bg-gray-50 p-2 rounded">
-                          <div className="font-semibold text-gray-700 mb-1">
-                            配置 {pool.levelData.levelName} (Level{" "}
-                            {pool.levelData.level})
-                          </div>
-                          <div className="grid grid-cols-2 gap-1">
-                            <div>
-                              <span className="text-gray-500">杠杆:</span>
-                              <span className="font-bold text-blue-600">
-                                {" "}
-                                {pool.levelData.levelConfig.leverage}x
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">最小订单:</span>
-                              <span className="font-semibold">
-                                {" "}
-                                ${pool.levelData.levelConfig.minOrderSizeInUsd}
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">维持保证金:</span>
-                              <span className="font-semibold">
-                                {" "}
-                                {(
-                                  pool.levelData.levelConfig
-                                    .maintainCollateralRate * 100
-                                ).toFixed(1)}
-                                %
-                              </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-500">滑点:</span>
-                              <span className="font-semibold">
-                                {" "}
-                                {(
-                                  pool.levelData.levelConfig.slip * 100
-                                ).toFixed(2)}
-                                %
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 其他参数 */}
-                      {pool.maxLeverage && (
-                        <div className="text-xs">
-                          <span className="text-gray-500">最大杠杆:</span>
-                          <span className="font-bold text-orange-600">
-                            {" "}
-                            {pool.maxLeverage}x
-                          </span>
-                        </div>
-                      )}
-
-                      {pool.state !== undefined && (
-                        <div className="text-xs">
-                          <span className="text-gray-500">状态:</span>
-                          <span
-                            className={`ml-1 px-2 py-1 rounded text-white text-xs ${pool.state === 2 ? "bg-green-500" : "bg-red-500"
-                              }`}
-                          >
-                            {pool.state === 2 ? "可交易" : "不可交易"}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          </Card>
         </Col>
 
         <Col span={24}>
@@ -1412,7 +1415,7 @@ const TradePage: React.FC = () => {
                       pageSize: 10,
                       showSizeChanger: true,
                       showQuickJumper: true,
-                      showTotal: (total, range) => 
+                      showTotal: (total, range) =>
                         `${range[0]}-${range[1]} 共 ${total} 条 / ${range[0]}-${range[1]} of ${total} items`,
                     }}
                     scroll={{ x: 'max-content' }}
