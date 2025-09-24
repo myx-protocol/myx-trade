@@ -6,7 +6,6 @@ import ReconnectingWebSocket, {
 export interface WebSocketConfig
   extends Omit<RWSOptions, "maxReconnectionDelay" | "minReconnectionDelay"> {
   url: string;
-  debug?: boolean;
   protocols?: string | string[];
   // exponential backoff config
   initialReconnectDelay?: number; // initial reconnect delay (ms)
@@ -20,7 +19,8 @@ export interface WebSocketConfig
   // heartbeat config
   heartbeatInterval?: number; // heartbeat interval (ms)
   heartbeatMessage?: string; // heartbeat message
-  noMessageTimeout?: number; // no message timeout (ms)
+  noMessageTimeout: number; // no message timeout (ms)
+  onBeforeReSubscribe?: (() => void) | (() => Promise<void>);
 }
 
 // event types
@@ -159,6 +159,7 @@ export interface WebSocketAckMessageResponse
   extends WebSocketMessageResponse<{
     code: number;
     msg: string;
+    data?: string[];
   }> {}
 
 /**
