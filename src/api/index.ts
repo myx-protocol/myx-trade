@@ -8,13 +8,13 @@ import {
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
-const baseUrl = "https://api-test.myx.cash";
+const baseUrl = "https://api-test.myx.cash/openapi/gateway";
 
 /**
  * Get pools
  */
 export const getPools = async (): Promise<MarketPoolResponse> => {
-  return http.get(`${baseUrl}/v2/mx-scan/market/list`);
+  return http.get(`${baseUrl}/scan/market/list`);
 };
 
 export const getOraclePrice = async (
@@ -22,7 +22,7 @@ export const getOraclePrice = async (
   poolIds: string[] = []
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
-    return http.get(`${baseUrl}/openapi/gateway/quote/price/oracles`, {
+    return http.get(`${baseUrl}/quote/price/oracles`, {
       chainId,
       poolIds: poolIds.join(","),
     });
@@ -64,7 +64,7 @@ export const getPoolLevelConfig = async ({
   chainId,
 }: GetPoolLevelConfigParams) => {
   return http.get<ApiResponse<PoolLevelConfig>>(
-    `${baseUrl}/v2/mx-risk/market_pool/level_config${addQueryParams({
+    `${baseUrl}/risk/market_pool/level_config${addQueryParams({
       poolId,
       chainId,
     })}`
@@ -76,13 +76,13 @@ export const getPoolDetail = async (
   poolId: string
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/v2/mx-scan/market/detail?chainId=${chainId}&poolId=${poolId}`
+    `${baseUrl}/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
 export const getPositions = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/position/list?chainId=${chainId}`,
+    `${baseUrl}/scan/position/list?chainId=${chainId}`,
     undefined, // params
     {
       headers: {
@@ -94,7 +94,7 @@ export const getPositions = async (accessToken: string, chainId: ChainId): Promi
 
 export const getOrders = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/order/open?chainId=${chainId}`,
+    `${baseUrl}/scan/order/open?chainId=${chainId}`,
     undefined,
     { headers: { 'myx_openapi_access_token': accessToken } }
   );
