@@ -3,6 +3,8 @@ export enum MyxErrorCode {
   SocketNotInited = "SOCKET_NOT_INITED",
   ParamError = "PARAM_ERROR",
   InvalidChainId = "INVALID_CHAIN_ID",
+  InvalidAccessToken = "INVALID_ACCESS_TOKEN",
+  RequestFailed = "REQUEST_FAILED",
 }
 
 export class MyxSDKError extends Error {

@@ -3,7 +3,11 @@ import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
-import { AccessTokenResponse } from "@/api/type";
+
+interface AccessTokenResponse {
+  accessToken: string;
+  expireAt: number;
+}
 
 export interface MyxClientConfig {
   chainId: number;
@@ -16,7 +20,9 @@ export interface MyxClientConfig {
   seamlessKeyPassword?: string;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
-  getAccessToken?: () => Promise<{ accessToken: string; expireAt: number }>; // 前端提供的获取 accessToken 的方法
+  getAccessToken?:
+    | (() => Promise<AccessTokenResponse | undefined>)
+    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
 }
 
 export class ConfigManager {
@@ -54,7 +60,6 @@ export class ConfigManager {
     }
   }
 
-
   /**
    * 获取有效的 accessToken，自动处理获取和刷新
    * @param forceRefresh 是否强制刷新
@@ -68,42 +73,42 @@ export class ConfigManager {
 
     // 如果没有提供获取 token 的方法，返回 null
     if (!this.config.getAccessToken) {
-      console.warn('No getAccessToken method provided in config');
+      console.warn("No getAccessToken method provided in config");
       return null;
     }
 
     try {
-      console.log('Automatically fetching accessToken...');
-      
+      console.log("Automatically fetching accessToken...");
+
       // 调用前端提供的方法获取新的 token
       const response = await this.config.getAccessToken();
-      
+
       if (response && response.accessToken) {
         // expireAt 是到期时间戳，需要转换为有效期秒数
         let expiryInSeconds = 3600; // 默认1小时
         if (response.expireAt) {
           const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
           expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
-          
+
           // 确保有效期为正数，如果已过期则使用默认值
           if (expiryInSeconds <= 0) {
-            console.warn('Received expired token, using default expiry');
+            console.warn("Received expired token, using default expiry");
             expiryInSeconds = 3600;
           }
         }
-        
+
         this.setAccessToken(response.accessToken, expiryInSeconds);
-        console.log('✅ AccessToken fetched and stored successfully', {
+        console.log("✅ AccessToken fetched and stored successfully", {
           expiryInSeconds,
-          expireAt: response.expireAt
+          expireAt: response.expireAt,
         });
         return response.accessToken;
       } else {
-        console.warn('❌ Received empty accessToken');
+        console.warn("❌ Received empty accessToken");
         return null;
       }
     } catch (error) {
-      console.error('❌ Failed to fetch accessToken:', error);
+      console.error("❌ Failed to fetch accessToken:", error);
       return null;
     }
   }
@@ -115,7 +120,7 @@ export class ConfigManager {
    */
   setAccessToken(token: string, expiryInSeconds: number = 3600): void {
     this.accessToken = token;
-    this.accessTokenExpiry = Date.now() + (expiryInSeconds * 1000);
+    this.accessTokenExpiry = Date.now() + expiryInSeconds * 1000;
   }
 
   /**

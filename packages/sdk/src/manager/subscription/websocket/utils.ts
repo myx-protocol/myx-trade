@@ -6,9 +6,22 @@ import {
   TickersDataResponse,
   WebSocketMessageResponse,
   WebSocketMethodEnum,
+  WebSocketRequest,
   WebSocketSubscriptionItem,
   WebSocketTopicEnum,
 } from "./types";
+
+/**
+ *
+ * generateRequestId
+ */
+export const generateRequestId = (param: WebSocketRequest) => {
+  switch (param.request) {
+    case WebSocketMethodEnum.SignIn:
+      return md5(param.request);
+  }
+  return md5(JSON.stringify(param));
+};
 
 /**
  * generate listener id

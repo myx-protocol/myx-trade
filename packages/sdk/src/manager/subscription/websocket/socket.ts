@@ -14,12 +14,14 @@ import {
 } from "./types";
 import {
   generateListenerId,
+  generateRequestId,
   isAckMessageResponse,
   messageTransform,
 } from "./utils";
 import { Logger, LoggerOptions } from "@/logger";
 import { MyxErrorCode, MyxSDKError } from "@/manager/error/const";
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { md5 } from "@/crypto/md5";
 
 // subscription info
 export interface Subscription {
@@ -28,10 +30,37 @@ export interface Subscription {
   callbacks: Set<(data: any) => void>; // support multiple callback
 }
 
+const DEFAULT_CONFIG: WebSocketConfig = {
+  url: "",
+  initialReconnectDelay: 1000,
+  maxReconnectDelay: 30000,
+  reconnectMultiplier: 1.5,
+  maxReconnectAttempts: 10,
+  maxEnqueuedMessages: 100,
+  requestTimeout: 10000,
+  heartbeatInterval: 10000,
+  heartbeatMessage: "ping",
+  noMessageTimeout: 5000,
+  connectionTimeout: 1000,
+};
+
 export class MyxWebSocketClient {
   private ws: ReconnectingWebSocket | null = null;
-  private config: Required<WebSocketConfig>;
+  private config: WebSocketConfig;
   private subscriptions = new Map<string, Subscription>();
+  /**
+   * waiting requests
+   */
+  private waitingRequests = new Map<
+    string,
+    {
+      onSuccess: Set<(data: Record<string, any>) => void>;
+      onError: Set<(error: MyxSDKError) => void>;
+    }
+  >();
+  /**
+   * event bus
+   */
   private eventBus = mitt<WebSocketEvents>();
   private heartbeatIntervalId: NodeJS.Timeout | null = null;
 
@@ -50,7 +79,7 @@ export class MyxWebSocketClient {
    */
   private logger: Logger;
 
-  constructor(config?: WebSocketConfig & LoggerOptions) {
+  constructor(config?: Partial<WebSocketConfig & LoggerOptions>) {
     /**
      * init config
      */
@@ -61,16 +90,7 @@ export class MyxWebSocketClient {
     const { logLevel, ...args } = _config;
     this.config = {
       // default config
-      initialReconnectDelay: 1000,
-      maxReconnectDelay: 30000,
-      reconnectMultiplier: 1.5,
-      maxReconnectAttempts: 10,
-      maxEnqueuedMessages: 100,
-      requestTimeout: 10000,
-      heartbeatInterval: 10000,
-      heartbeatMessage: "ping",
-      noMessageTimeout: 30000,
-      connectionTimeout: 10000,
+      ...DEFAULT_CONFIG,
       // user config
       ...args,
     } as Required<WebSocketConfig>;
@@ -119,6 +139,13 @@ export class MyxWebSocketClient {
     });
   }
 
+  private async onBeforeReSubscribe() {
+    if (this.config.onBeforeReSubscribe) {
+      await this.config.onBeforeReSubscribe();
+    }
+    return true;
+  }
+
   /**
    * setup event listeners
    */
@@ -128,14 +155,15 @@ export class MyxWebSocketClient {
   ) {
     if (!this.ws) return;
 
-    this.ws.onopen = (event) => {
+    this.ws.onopen = async (event) => {
       this.eventBus.emit("open", event);
+      console.log("onOPen");
       this.lastMessageTime = Date.now();
       this.timeoutHeartbeat();
 
       // Only resubscribe on reconnection, not on first connection
       if (!this.isFirstConnection) {
-        this.resubscribeAll();
+        this.onBeforeReSubscribe().then(() => this.resubscribeAll());
       }
       this.isFirstConnection = false;
       resolve();
@@ -175,6 +203,23 @@ export class MyxWebSocketClient {
     this.send({
       request: WebSocketMethodEnum.Pong,
       args: data,
+    });
+  }
+
+  /** request */
+  public request(param: WebSocketRequest) {
+    return new Promise((resolve, reject) => {
+      const requestId = generateRequestId(param);
+      if (this.waitingRequests.has(requestId)) {
+        this.waitingRequests.get(requestId)?.onSuccess.add(resolve);
+        this.waitingRequests.get(requestId)?.onError.add(reject);
+      } else {
+        this.waitingRequests.set(requestId, {
+          onSuccess: new Set([resolve]),
+          onError: new Set([reject]),
+        });
+      }
+      this.send(param);
     });
   }
 
@@ -263,6 +308,10 @@ export class MyxWebSocketClient {
       );
     }
 
+    if (this.ws.readyState !== WebSocket.OPEN) {
+      this.reconnect();
+    }
+
     this.ws?.send(message);
   }
 
@@ -339,12 +388,8 @@ export class MyxWebSocketClient {
         return;
       }
       if (isAckMessageResponse(data)) {
-        if ((data as WebSocketAckMessageResponse).data.code !== 9200) {
-          this.logger.error(`Ack Message:${data.type} received`, data);
-          this.eventBus.emit("error", data as unknown as Event);
-        } else {
-          this.logger.debug(`AcK Message:${data.type} received`);
-        }
+        this.handleAckMessage(data as WebSocketAckMessageResponse);
+
         return;
       }
 
@@ -356,11 +401,52 @@ export class MyxWebSocketClient {
   }
 
   /**
+   * handle Ack Message
+   */
+  private handleAckMessage(data: WebSocketAckMessageResponse): void {
+    let requestId: string;
+    switch (data.type) {
+      case WebSocketMethodEnum.SignIn:
+        requestId = generateRequestId({
+          request: data.type,
+          args: "",
+        });
+        break;
+      default:
+        requestId = generateRequestId({
+          request: data.type,
+          args: data.data.data,
+        } as WebSocketRequest);
+        break;
+    }
+    const waitRequest = this.waitingRequests.get(requestId);
+    const isSuccess = (data as WebSocketAckMessageResponse).data.code === 9200;
+    if (!isSuccess) {
+      this.logger.error(`Ack Message:${data.type} received`, data);
+      this.eventBus.emit("error", data as unknown as Event);
+    } else {
+      this.logger.debug(`AcK Message:${data.type} received`);
+    }
+
+    // emit request error callback
+    if (waitRequest?.onError.size && !isSuccess) {
+      waitRequest.onError.forEach((reject) => {
+        reject(new MyxSDKError(MyxErrorCode.RequestFailed, "Request failed"));
+      });
+    }
+    // emit request success callback
+    if (waitRequest?.onSuccess.size && isSuccess) {
+      waitRequest.onSuccess.forEach((resolve) => {
+        resolve(data.data);
+      });
+    }
+  }
+
+  /**
    * handle subscription message
    */
   private handleSubscriptionMessage(data: WebSocketMessageResponse): void {
     // dispatch message by subscriptionId
-
 
     // transform data
     let dataParsed = messageTransform(data);
@@ -406,7 +492,11 @@ export class MyxWebSocketClient {
    */
   private timeoutHeartbeat(): void {
     this.stopHeartbeatTimer();
-    if (Date.now() - this.lastMessageTime > this.config.noMessageTimeout) {
+    if (
+      Date.now() - this.lastMessageTime >
+      (this.config.noMessageTimeout || DEFAULT_CONFIG.noMessageTimeout)
+    ) {
+      this.logger.debug("no message timeout");
       const hasActiveSubscription = this.subscriptions.size > 0;
       // if no active subscription, close the connection
       if (!hasActiveSubscription) {

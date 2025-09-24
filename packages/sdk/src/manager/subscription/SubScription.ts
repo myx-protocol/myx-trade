@@ -15,6 +15,7 @@ import {
 import { Logger } from "@/logger";
 import { ConfigManager } from "@/manager/config";
 import { WEBSOCKET_URL } from "@/manager/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class SubScription {
   private wsClient: MyxWebSocketClient;
@@ -32,6 +33,13 @@ export class SubScription {
       logLevel: this.configManager.getConfig()?.logLevel,
       url: socketUrl,
       ...this.configManager.getConfig()?.socketConfig,
+      onBeforeReSubscribe: () => {
+        if (this.clientAuth) {
+          return this.auth(true).then(() => {
+            this.logger.debug("reconnect auth success");
+          });
+        }
+      },
     });
   }
 
@@ -128,15 +136,39 @@ export class SubScription {
     );
   }
 
+  private async getAccessToken() {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    return accessToken;
+  }
+  private clientAuth = false;
+  private prevAccessToken = "";
   /**
    * with auth methods
    */
-  auth(accessToken: string) {
-    this.logger.debug(`auth ${accessToken}`);
-    this.wsClient.send({
-      request: WebSocketMethodEnum.SignIn,
-      args: `sdk.${accessToken}`,
-    });
+  public async auth(isReconnect = false) {
+    const token = await this.getAccessToken();
+    if (token === this.prevAccessToken && this.clientAuth && !isReconnect) {
+      // client auth success
+      return Promise.resolve();
+    }
+    this.logger.debug(`auth ${token}`);
+    await this.wsClient
+      .request({
+        request: WebSocketMethodEnum.SignIn,
+        args: `sdk.${token}`,
+      })
+      .then(() => {
+        // client auth success
+        this.logger.debug(`auth success ${token}`);
+        this.prevAccessToken = token;
+        this.clientAuth = true;
+      });
   }
 
   /**
@@ -146,8 +178,9 @@ export class SubScription {
   /**
    * position subscription methods
    */
-  subscribePosition(callback: OnPositionCallback) {
+  async subscribePosition(callback: OnPositionCallback) {
     this.logger.debug(`subscribe position`);
+    await this.auth();
     this.wsClient.subscribe(
       {
         topic: WebSocketTopicEnum.Position,
@@ -169,8 +202,9 @@ export class SubScription {
   /**
    * order subscription methods
    */
-  subscribeOrder(callback: OnOrderCallback) {
+  async subscribeOrder(callback: OnOrderCallback) {
     this.logger.debug(`subscribe order`);
+    await this.auth();
     this.wsClient.subscribe(
       {
         topic: WebSocketTopicEnum.Order,
