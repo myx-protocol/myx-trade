@@ -8,7 +8,7 @@ import { Position } from "./position";
 import { Order } from "./order";
 
 // types
-
+export type { MyxClientConfig } from "./config/index";
 export * from "./subscription/types";
 
 export class MyxClient {
