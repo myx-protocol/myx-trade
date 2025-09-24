@@ -24,7 +24,7 @@ const baseUrl= "https://api-test.myx.cash"
 //   "activeTime": null
 // }
 export const getPools = async () => {
-  return await $fetch("GET", `${baseUrl}/openapi/gateway/scan/market/list`);
+  return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
 }
 
 

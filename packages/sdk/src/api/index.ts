@@ -14,7 +14,7 @@ const baseUrl = "https://api-test.myx.cash/openapi/gateway";
  * Get pools
  */
 export const getPools = async (): Promise<MarketPoolResponse> => {
-  return http.get(`${baseUrl}/scan/market/list`);
+  return http.get(`https://api-test.myx.cash/v2/mx-scan/market/list`);
 };
 
 export const getOraclePrice = async (

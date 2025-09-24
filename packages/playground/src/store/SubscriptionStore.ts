@@ -12,6 +12,13 @@ export interface SubscriptionStore {
   marketTickerMap: Map<number, MarketTicker>;
   klineDataMap: Map<number, KlineDataResponse[]>;
   klineSubscriptionMap: Map<number, boolean>;
+  // 账户信息订阅相关
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  orderData: (any & { timestamp: number })[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  positionData: (any & { timestamp: number })[];
+  isOrderSubscribed: boolean;
+  isPositionSubscribed: boolean;
   setMarketList: (marketList: MarketPool[]) => void;
   updateTickerPrice: (globalId: number, price: string, change: string) => void;
   setTickerSubscription: (globalId: number, isSubscribed: boolean) => void;
@@ -20,6 +27,15 @@ export interface SubscriptionStore {
   getKlineDataByGlobalId: (globalId: number) => KlineDataResponse[];
   setKlineSubscription: (globalId: number, isSubscribed: boolean) => void;
   getKlineSubscription: (globalId: number) => boolean;
+  // 账户信息订阅方法
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addOrderData: (data: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addPositionData: (data: any) => void;
+  setOrderSubscription: (isSubscribed: boolean) => void;
+  setPositionSubscription: (isSubscribed: boolean) => void;
+  clearOrderData: () => void;
+  clearPositionData: () => void;
 }
 
 export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
@@ -27,6 +43,11 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   marketTickerMap: new Map(),
   klineDataMap: new Map(),
   klineSubscriptionMap: new Map(),
+  // 账户信息订阅初始状态
+  orderData: [],
+  positionData: [],
+  isOrderSubscribed: false,
+  isPositionSubscribed: false,
   setMarketList: (marketList: MarketPool[]) => set({ marketList }),
   updateTickerPrice: (
     globalId: number,
@@ -97,5 +118,30 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
   },
   getKlineSubscription: (globalId: number) => {
     return get().klineSubscriptionMap.get(globalId) || false;
+  },
+  // 账户信息订阅方法实现
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addOrderData: (data: any) => {
+    set((state) => ({
+      orderData: [...state.orderData, { ...data, timestamp: Date.now() }]
+    }));
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  addPositionData: (data: any) => {
+    set((state) => ({
+      positionData: [...state.positionData, { ...data, timestamp: Date.now() }]
+    }));
+  },
+  setOrderSubscription: (isSubscribed: boolean) => {
+    set({ isOrderSubscribed: isSubscribed });
+  },
+  setPositionSubscription: (isSubscribed: boolean) => {
+    set({ isPositionSubscribed: isSubscribed });
+  },
+  clearOrderData: () => {
+    set({ orderData: [] });
+  },
+  clearPositionData: () => {
+    set({ positionData: [] });
   },
 }));
