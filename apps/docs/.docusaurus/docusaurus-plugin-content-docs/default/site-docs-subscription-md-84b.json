@@ -1,0 +1,26 @@
+{
+  "id": "subscription",
+  "title": "Subscription Module",
+  "description": "The Subscription module provides WebSocket connection functionality with the MYX trading platform for subscribing to real-time market data, user orders, and position information.",
+  "source": "@site/docs/subscription.md",
+  "sourceDirName": ".",
+  "slug": "/subscription",
+  "permalink": "/docs/subscription",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "MYX Trade SDK",
+    "permalink": "/docs/intro"
+  },
+  "next": {
+    "title": "SDK Integration Guide",
+    "permalink": "/docs/SDK_INTEGRATION_GUIDE"
+  }
+}

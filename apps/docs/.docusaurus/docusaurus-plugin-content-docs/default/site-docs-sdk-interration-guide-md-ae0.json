@@ -1,0 +1,19 @@
+{
+  "id": "SDK_INTERRATION_GUIDE",
+  "title": "MYX Trade SDK Integration Guide",
+  "description": "Overview",
+  "source": "@site/docs/SDK_INTERRATION_GUIDE.md",
+  "sourceDirName": ".",
+  "slug": "/SDK_INTERRATION_GUIDE",
+  "permalink": "/docs/SDK_INTERRATION_GUIDE",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "SDK Integration Guide",
+    "permalink": "/docs/SDK_INTEGRATION_GUIDE"
+  }
+}
