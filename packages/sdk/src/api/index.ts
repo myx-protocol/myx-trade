@@ -14,7 +14,7 @@ const baseUrl = "https://api-test.myx.cash";
  * Get pools
  */
 export const getPools = async (): Promise<MarketPoolResponse> => {
-  return http.get(`https://api-test.myx.cash/v2/mx-scan/market/list`);
+  return http.get(`${baseUrl}/v2/mx-scan/market/list`);
 };
 
 export const getOraclePrice = async (
@@ -22,7 +22,7 @@ export const getOraclePrice = async (
   poolIds: string[] = []
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
-    return http.get(`${baseUrl}/quote/price/oracles`, {
+    return http.get(`${baseUrl}/openapi/gateway/quote/price/oracles`, {
       chainId,
       poolIds: poolIds.join(","),
     });
@@ -76,7 +76,7 @@ export const getPoolDetail = async (
   poolId: string
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
+    `${baseUrl}/v2/mx-scan/market/detail?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
