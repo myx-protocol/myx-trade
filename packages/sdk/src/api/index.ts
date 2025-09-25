@@ -8,7 +8,7 @@ import {
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
-const baseUrl = "https://api-test.myx.cash/openapi/gateway";
+const baseUrl = "https://api-test.myx.cash";
 
 /**
  * Get pools
@@ -64,7 +64,7 @@ export const getPoolLevelConfig = async ({
   chainId,
 }: GetPoolLevelConfigParams) => {
   return http.get<ApiResponse<PoolLevelConfig>>(
-    `${baseUrl}/risk/market_pool/level_config${addQueryParams({
+    `${baseUrl}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
       poolId,
       chainId,
     })}`
@@ -76,13 +76,13 @@ export const getPoolDetail = async (
   poolId: string
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
+    `${baseUrl}/openapi/gateway/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
 export const getPositions = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/scan/position/list?chainId=${chainId}`,
+    `${baseUrl}/openapi/scan/position/list?chainId=${chainId}`,
     undefined, // params
     {
       headers: {
@@ -94,7 +94,7 @@ export const getPositions = async (accessToken: string, chainId: ChainId): Promi
 
 export const getOrders = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/scan/order/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/scan/order/open?chainId=${chainId}`,
     undefined,
     { headers: { 'myx_openapi_access_token': accessToken } }
   );
