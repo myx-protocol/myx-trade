@@ -1,0 +1,27 @@
+{
+  "id": "zh-CN/tutorial-basics/congratulations",
+  "title": "恭喜！",
+  "description": "您刚刚学习了 Docusaurus 的基础知识，并对 初始模板 进行了一些更改。",
+  "source": "@site/docs/zh-CN/tutorial-basics/congratulations.md",
+  "sourceDirName": "zh-CN/tutorial-basics",
+  "slug": "/zh-CN/tutorial-basics/congratulations",
+  "permalink": "/docs/zh-CN/tutorial-basics/congratulations",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/zh-CN/tutorial-basics/congratulations.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "sidebar_position": 6
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "创建文档",
+    "permalink": "/docs/zh-CN/tutorial-basics/create-a-document"
+  },
+  "next": {
+    "title": "管理文档版本",
+    "permalink": "/docs/zh-CN/tutorial-extras/manage-docs-versions"
+  }
+}

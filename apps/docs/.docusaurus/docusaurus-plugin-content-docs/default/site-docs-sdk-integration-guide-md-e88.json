@@ -1,0 +1,22 @@
+{
+  "id": "SDK_INTEGRATION_GUIDE",
+  "title": "SDK Integration Guide",
+  "description": "This guide will help you quickly integrate MYX Trade SDK into your application.",
+  "source": "@site/docs/SDK_INTEGRATION_GUIDE.md",
+  "sourceDirName": ".",
+  "slug": "/SDK_INTEGRATION_GUIDE",
+  "permalink": "/docs/SDK_INTEGRATION_GUIDE",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Subscription Module",
+    "permalink": "/docs/subscription"
+  }
+}

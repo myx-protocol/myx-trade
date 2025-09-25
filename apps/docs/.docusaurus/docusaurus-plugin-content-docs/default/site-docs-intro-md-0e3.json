@@ -1,0 +1,22 @@
+{
+  "id": "intro",
+  "title": "MYX Trade SDK",
+  "description": "Welcome to MYX Trade SDK! This is a powerful JavaScript/TypeScript SDK for interacting with the MYX trading platform.",
+  "source": "@site/docs/intro.md",
+  "sourceDirName": ".",
+  "slug": "/intro",
+  "permalink": "/docs/intro",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Subscription Module",
+    "permalink": "/docs/subscription"
+  }
+}
