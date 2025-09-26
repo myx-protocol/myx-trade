@@ -701,7 +701,7 @@ const TradePage: React.FC = () => {
             : "0",
           tpPrice: values.tpPrice
             ? new BigNumber(values.tpPrice)
-              .multipliedBy(10 ** selectedPool.quoteDecimals)
+              .multipliedBy(10 ** 30)
               .toString()
             : "0",
           slSize: values.slSize
@@ -711,7 +711,7 @@ const TradePage: React.FC = () => {
             : "0",
           slPrice: values.slPrice
             ? new BigNumber(values.slPrice)
-              .multipliedBy(10 ** selectedPool.quoteDecimals)
+              .multipliedBy(10 ** 30)
               .toString()
             : "0",
         };
