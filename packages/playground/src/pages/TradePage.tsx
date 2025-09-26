@@ -507,6 +507,7 @@ const TradePage: React.FC = () => {
   }, [walletClient]);
 
   const { data: poolList } = useSWR("getPoolList", async () => {
+    if (!myxClient) return [];
     const poolList = await myxClient?.markets.listPools() ?? []
     // console.log("poolList-->", poolList);
 
@@ -527,6 +528,8 @@ const TradePage: React.FC = () => {
     );
 
     return poolsWithLevel;
+  }, {
+    refreshInterval: 5000,
   });
 
   const [selectedPoolId, setSelectedPoolId] = useState<string>("");
