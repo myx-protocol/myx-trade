@@ -451,37 +451,6 @@ const TradePage: React.FC = () => {
     });
   };
 
-  // 执行调整保证金
-  // const executeAdjustCollateral = async () => {
-  //   if (!selectedPosition || !adjustAmount) {
-  //     message.warning('请输入调整金额 / Please enter adjustment amount');
-  //     return;
-  //   }
-
-  //   setAdjustLoading(true);
-  //   try {
-  //     if (myxClient) {
-  //       const result = await myxClient.position.adjustCollateral(
-  //         selectedPosition.positionId,
-  //         adjustAmount
-  //       );
-  //       if (result.code === 0) {
-  //         message.success('保证金调整成功 / Collateral adjusted successfully');
-  //         setAdjustModalVisible(false);
-  //         setAdjustAmount('');
-  //       } else {
-  //         message.error(`调整失败 / Adjustment failed: ${result.message}`);
-  //       }
-  //       console.log("Adjust collateral result:", result);
-  //     }
-  //   } catch (error) {
-  //     console.error("Adjust collateral error:", error);
-  //     message.error('保证金调整失败 / Collateral adjustment failed');
-  //   } finally {
-  //     setAdjustLoading(false);
-  //   }
-  // };
-
   const initClient = async () => {
     if (walletClient?.transport && address) {
       const provider = new BrowserProvider(walletClient.transport);
@@ -506,7 +475,7 @@ const TradePage: React.FC = () => {
     }
   }, [walletClient]);
 
-  const { data: poolList } = useSWR("getPoolList", async () => {
+  const { data: poolList } = useSWR(myxClient ? { key: "getPoolList", myxClient } : null, async () => {
     if (!myxClient) return [];
     const poolList = await myxClient?.markets.listPools() ?? []
     // console.log("poolList-->", poolList);
