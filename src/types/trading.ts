@@ -94,15 +94,13 @@ export interface PlaceOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId?: number;
+  positionId: number;
   orderType: OrderType;
-  triggerType?: TriggerType;
-  operation: OperationType;
+  triggerType: TriggerType;
   direction: Direction;
   collateralAmount: string;
   size: string;
-  orderPrice?: string;
-  triggerPrice?: string;
+  price: string;
   timeInForce: TimeInForce;
   postOnly: boolean;
   slippagePct: string;
