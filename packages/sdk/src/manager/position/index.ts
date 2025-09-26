@@ -6,49 +6,18 @@ import { ethers } from "ethers";
 import positionManagerAbi from "@/abi/PositionManager.json";
 import broker_abi from "@/abi/Broker.json";
 import { getPositions } from "@/api";
+import { Utils } from "../utils";
+
 
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
-  constructor(configManager: ConfigManager, logger: Logger) {
+  private utils: Utils;
+
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
     this.configManager = configManager;
     this.logger = logger;
-  }
-
-
-  async closePosition(positionId: string) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
-    const spenderAddress = getContractAddressByChainId(
-      config.chainId
-    ).POSITION_MANAGER;
-
-    const positionManagerContract = new ethers.Contract(
-      spenderAddress,
-      positionManagerAbi,
-      config.signer
-    );
-
-    console.log('positionId--->', positionId);
-    try {
-      const gasLimit = await positionManagerContract.closePosition.estimateGas(positionId);
-      this.logger.info("gasLimit--->", gasLimit);
-
-      const tx = await positionManagerContract.closePosition(positionId, {
-        gasLimit,
-      });
-      await tx.wait();
-      return {
-        code: 0,
-        message: "Position closed success",
-      };
-    } catch (error) {
-      return {
-        code: -1,
-        // @ts-ignore
-        message: error?.message,
-      };
-    }
+    this.utils = utils;
   }
 
   async listPositions() {

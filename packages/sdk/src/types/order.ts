@@ -2,28 +2,7 @@
  * Order related types and interfaces
  */
 
-import { OrderType, TriggerType, OperationType, Direction, TimeInForce, OrderStatus } from './trading';
-
-// Order creation parameters
-export interface CreateOrderParams {
-  poolId: string;
-  orderType: OrderType;
-  triggerType?: TriggerType;
-  operation: OperationType;
-  direction: Direction;
-  size: string;
-  collateralAmount: string;
-  orderPrice?: string;
-  triggerPrice?: string;
-  timeInForce: TimeInForce;
-  postOnly: boolean;
-  slippagePct: string;
-  leverage: number;
-  tpSize?: string;
-  tpPrice?: string;
-  slSize?: string;
-  slPrice?: string;
-}
+import { OrderType, Direction, OrderStatus } from './trading';
 
 // Order update parameters
 export interface UpdateOrderParams {
@@ -111,4 +90,16 @@ export interface OrderEstimation {
   estimatedSlippage: string;
   minimumReceived: string;
   priceImpact: string;
+}
+
+
+export interface UpdateOrderParams {
+  orderId: string;
+  tpSize: string;
+  tpPrice: string;
+  slSize: string;
+  slPrice: string;
+  address: string;
+  useOrderCollateral: boolean;
+  executionFeeToken: string;
 }

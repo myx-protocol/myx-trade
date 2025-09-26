@@ -70,6 +70,11 @@
   },
   {
     "type": "error",
+    "name": "InvalidParameter",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotActiveBroker",
     "inputs": [
       {
@@ -91,6 +96,11 @@
   {
     "type": "error",
     "name": "NotOrderOwner",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotPositionOwner",
     "inputs": []
   },
   {
@@ -253,6 +263,10 @@
         "name": "orderId"
       },
       {
+        "type": "uint256",
+        "name": "positionId"
+      },
+      {
         "type": "address",
         "name": "keeper"
       },
@@ -269,7 +283,7 @@
         "name": "realizedPnl"
       },
       {
-        "type": "uint256",
+        "type": "int256",
         "name": "tradingFee"
       },
       {
@@ -410,7 +424,11 @@
           },
           {
             "type": "uint256",
-            "name": "price"
+            "name": "orderPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "triggerPrice"
           },
           {
             "type": "uint256",
@@ -574,7 +592,11 @@
           },
           {
             "type": "uint256",
-            "name": "price"
+            "name": "orderPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "triggerPrice"
           },
           {
             "type": "uint256",

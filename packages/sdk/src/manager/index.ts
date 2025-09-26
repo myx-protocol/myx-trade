@@ -2,10 +2,10 @@ import { SubScription } from "@/manager/subscription";
 import { ConfigManager } from "./config/index";
 import { type MyxClientConfig } from "./config/index";
 import { Logger } from "@/logger";
-import { Trading } from "./trading";
 import { Markets } from "./markets";
 import { Position } from "./position";
 import { Order } from "./order";
+import { Utils } from "./utils";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -22,10 +22,10 @@ export class MyxClient {
    * public properties
    */
   public subscription: SubScription;
-  public trading: Trading;
   public markets: Markets;
   public position: Position;
   public order: Order;
+  public utils: Utils;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -39,19 +39,27 @@ export class MyxClient {
       logLevel: options.logLevel,
     });
 
-    /**
-     * initialize trading
-     */
-    this.trading = new Trading(this.configManager, this.logger);
+     /**
+   * initialize utils
+   */
+     this.utils = new Utils(this.configManager, this.logger)
 
     /**
      * initialize markets
      */
     this.markets = new Markets(this.configManager);
 
-    this.position = new Position(this.configManager, this.logger);
+    /**
+      * initialize position
+      */
+    this.position = new Position(this.configManager, this.logger, this.utils);
 
-    this.order = new Order(this.configManager, this.logger);
+    /**
+    * initialize orders
+    */
+    this.order = new Order(this.configManager, this.logger, this.utils);
+
+   
     /**
      * initialize subscription
      */
