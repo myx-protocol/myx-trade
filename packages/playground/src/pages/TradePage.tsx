@@ -34,6 +34,9 @@ import {
   Modal,
   message,
 } from "antd";
+import { OrderTpSlButton } from './components/OrderTpSlButton';
+import { AdjustCollateral } from "./components/AdjustCollateral";
+import { CreateDecreaseOrderButton } from "./components/CreateDecreaseOrder";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -45,8 +48,7 @@ interface TradeFormValues {
   direction: number;
   collateralAmount: number;
   size: number;
-  orderPrice?: number;
-  triggerPrice?: number;
+  price: number;
   timeInForce: number;
   postOnly: boolean;
   slippagePct: number;
@@ -196,23 +198,8 @@ const TradePage: React.FC = () => {
       width: 160,
       render: (_: any, record: any) => (
         <Space size="small">
-          <Button
-            type="primary"
-            size="small"
-            danger
-            onClick={() => handleClosePosition(record.positionId)}
-            style={{ fontSize: '10px', padding: '2px 6px' }}
-          >
-            平仓
-          </Button>
-          <Button
-            type="default"
-            size="small"
-            onClick={() => handleAdjustCollateral(record)}
-            style={{ fontSize: '10px', padding: '2px 6px' }}
-          >
-            调整
-          </Button>
+          <CreateDecreaseOrderButton record={record} myxClient={myxClient as MyxClient} poolList={poolList ?? []} address={address as string} />
+          <AdjustCollateral record={record} myxClient={myxClient as MyxClient} poolList={poolList ?? []} />
         </Space>
       ),
     },
@@ -342,6 +329,29 @@ const TradePage: React.FC = () => {
       width: 60,
     },
     {
+      title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>止盈止损</span>,
+      key: 'tpsl',
+      render: (record: any) => (
+        <div style={{ fontSize: '10px' }}>
+          {record.tpPrice && parseFloat(record.tpPrice) > 0 ? (
+            <div style={{ color: 'green' }}>
+              TP: {parseFloat(record.tpPrice).toFixed(2)} ({record.tpSize})
+            </div>
+          ) : null}
+          {record.slPrice && parseFloat(record.slPrice) > 0 ? (
+            <div style={{ color: 'red' }}>
+              SL: {parseFloat(record.slPrice).toFixed(2)} ({record.slSize})
+            </div>
+          ) : null}
+          {(!record.tpPrice || parseFloat(record.tpPrice) <= 0) &&
+            (!record.slPrice || parseFloat(record.slPrice) <= 0) ? (
+            <Text type="secondary" style={{ fontSize: '10px' }}>未设置</Text>
+          ) : null}
+        </div>
+      ),
+      width: 80,
+    },
+    {
       title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>链</span>,
       dataIndex: 'chainId',
       key: 'chainId',
@@ -352,23 +362,28 @@ const TradePage: React.FC = () => {
       title: <span style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>操作</span>,
       key: 'actions',
       fixed: 'right' as const,
-      width: 100,
+      width: 150,
       render: (_: any, record: any) => {
         const isFullyFilled = parseFloat(record.filledSize) === parseFloat(record.size);
         const hasPartialFill = parseFloat(record.filledSize) > 0;
 
         return (
-          <Button
-            type="primary"
-            size="small"
-            danger
-            onClick={() => handleCancelOrder(record.orderId)}
-            disabled={isFullyFilled}
-            title={isFullyFilled ? '订单已完成，无法取消' : '取消订单'}
-            style={{ fontSize: '10px', padding: '2px 6px' }}
-          >
-            {hasPartialFill && !isFullyFilled ? '强制' : '取消'}
-          </Button>
+          <Space size="small" direction="vertical">
+            <Space size="small">
+              <Button
+                type="primary"
+                size="small"
+                danger
+                onClick={() => handleCancelOrder(record.orderId)}
+                disabled={isFullyFilled}
+                title={isFullyFilled ? '订单已完成，无法取消' : '取消订单'}
+                style={{ fontSize: '10px', padding: '2px 6px' }}
+              >
+                {hasPartialFill && !isFullyFilled ? '强制' : '取消'}
+              </Button>
+              <OrderTpSlButton record={record} myxClient={myxClient as MyxClient} poolList={poolList ?? []} />
+            </Space>
+          </Space>
         );
       },
     },
@@ -382,43 +397,33 @@ const TradePage: React.FC = () => {
   const [ordersList, setOrdersList] = useState<any[]>([]);
 
   // 调整保证金弹窗相关状态
-  const [adjustModalVisible, setAdjustModalVisible] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState<any>(null);
-  const [adjustAmount, setAdjustAmount] = useState('');
-  const [adjustLoading, setAdjustLoading] = useState(false);
+  const [cancelAllLoading, setCancelAllLoading] = useState(false);
 
-  // 处理平仓操作
-  const handleClosePosition = async (positionId: string) => {
-    Modal.confirm({
-      title: '确认平仓 / Confirm Close Position',
-      content: `确定要平仓 ID 为 ${positionId} 的仓位吗？/ Are you sure you want to close position ${positionId}?`,
-      okText: '确认 / Confirm',
-      cancelText: '取消 / Cancel',
-      onOk: async () => {
-        try {
-          if (myxClient) {
-            const result = await myxClient.position.closePosition(positionId);
-            if (result.code === 0) {
-              message.success('平仓成功 / Position closed successfully');
-            } else {
-              message.error(`平仓失败 / Close failed: ${result.message}`);
-            }
-            console.log("Close position result:", result);
-          }
-        } catch (error) {
-          console.error("Close position error:", error);
-          message.error('平仓失败 / Close position failed');
-        }
-      }
-    });
-  };
-
-  // 处理调整保证金操作
-  const handleAdjustCollateral = (position: any) => {
-    setSelectedPosition(position);
-    setAdjustAmount('');
-    setAdjustModalVisible(true);
-  };
+  // // 处理平仓操作
+  // const handleClosePosition = async (positionId: string) => {
+  //   Modal.confirm({
+  //     title: '确认平仓 / Confirm Close Position',
+  //     content: `确定要平仓 ID 为 ${positionId} 的仓位吗？/ Are you sure you want to close position ${positionId}?`,
+  //     okText: '确认 / Confirm',
+  //     cancelText: '取消 / Cancel',
+  //     onOk: async () => {
+  //       // try {
+  //       //   if (myxClient) {
+  //       //     const result = await myxClient.position.createDecreaseOrder(positionId);
+  //       //     if (result.code === 0) {
+  //       //       message.success('平仓成功 / Position closed successfully');
+  //       //     } else {
+  //       //       message.error(`平仓失败 / Close failed: ${result.message}`);
+  //       //     }
+  //       //     console.log("Close position result:", result);
+  //       //   }
+  //       // } catch (error) {
+  //       //   console.error("Close position error:", error);
+  //       //   message.error('平仓失败 / Close position failed');
+  //       // }
+  //     }
+  //   });
+  // };
 
   // 处理取消订单操作
   const handleCancelOrder = async (orderId: string) => {
@@ -430,7 +435,7 @@ const TradePage: React.FC = () => {
       onOk: async () => {
         try {
           if (myxClient) {
-            const result = await myxClient.trading.cancelOrder(orderId);
+            const result = await myxClient.order.cancelOrder(orderId);
             if (result.code === 0) {
               message.success('订单取消成功 / Order cancelled successfully');
             } else {
@@ -447,35 +452,35 @@ const TradePage: React.FC = () => {
   };
 
   // 执行调整保证金
-  const executeAdjustCollateral = async () => {
-    if (!selectedPosition || !adjustAmount) {
-      message.warning('请输入调整金额 / Please enter adjustment amount');
-      return;
-    }
+  // const executeAdjustCollateral = async () => {
+  //   if (!selectedPosition || !adjustAmount) {
+  //     message.warning('请输入调整金额 / Please enter adjustment amount');
+  //     return;
+  //   }
 
-    setAdjustLoading(true);
-    try {
-      if (myxClient) {
-        const result = await myxClient.position.adjustCollateral(
-          selectedPosition.positionId,
-          adjustAmount
-        );
-        if (result.code === 0) {
-          message.success('保证金调整成功 / Collateral adjusted successfully');
-          setAdjustModalVisible(false);
-          setAdjustAmount('');
-        } else {
-          message.error(`调整失败 / Adjustment failed: ${result.message}`);
-        }
-        console.log("Adjust collateral result:", result);
-      }
-    } catch (error) {
-      console.error("Adjust collateral error:", error);
-      message.error('保证金调整失败 / Collateral adjustment failed');
-    } finally {
-      setAdjustLoading(false);
-    }
-  };
+  //   setAdjustLoading(true);
+  //   try {
+  //     if (myxClient) {
+  //       const result = await myxClient.position.adjustCollateral(
+  //         selectedPosition.positionId,
+  //         adjustAmount
+  //       );
+  //       if (result.code === 0) {
+  //         message.success('保证金调整成功 / Collateral adjusted successfully');
+  //         setAdjustModalVisible(false);
+  //         setAdjustAmount('');
+  //       } else {
+  //         message.error(`调整失败 / Adjustment failed: ${result.message}`);
+  //       }
+  //       console.log("Adjust collateral result:", result);
+  //     }
+  //   } catch (error) {
+  //     console.error("Adjust collateral error:", error);
+  //     message.error('保证金调整失败 / Collateral adjustment failed');
+  //   } finally {
+  //     setAdjustLoading(false);
+  //   }
+  // };
 
   const initClient = async () => {
     if (walletClient?.transport && address) {
@@ -584,7 +589,7 @@ const TradePage: React.FC = () => {
         .then((oraclePriceRes) => {
           const _price = oraclePriceRes.data[0].price;
           form.setFieldsValue({
-            orderPrice: _price,
+            price: _price,
           });
         })
         .catch(console.error);
@@ -605,8 +610,7 @@ const TradePage: React.FC = () => {
         direction: Direction.LONG,
         collateralAmount: 1000,
         size: 10,
-        orderPrice: 0,
-        triggerPrice: 0,
+        price: 0,
         timeInForce: TimeInForce.IOC,
         postOnly: false,
         slippagePct: 0.001, // 0.5%
@@ -615,6 +619,7 @@ const TradePage: React.FC = () => {
         tpPrice: 0,
         slSize: 0,
         slPrice: 0,
+        positionId: '0',
       });
     }
   }, [selectedPool, form]);
@@ -633,7 +638,7 @@ const TradePage: React.FC = () => {
 
     setApproving(true);
     try {
-      const rs = await myxClient?.trading.approveAuthorization({
+      const rs = await myxClient?.utils.approveAuthorization({
         quoteAddress: selectedPool.quoteToken,
       });
       console.log("rs-->", rs);
@@ -661,61 +666,92 @@ const TradePage: React.FC = () => {
 
     setLoading(true);
     try {
-      const orderData = {
-        chainId: ChainId.ARB_TESTNET,
-        address: address as `0x${string}`,
-        poolId: selectedPool.poolId,
-        positionId: values.operation === OperationType.DECREASE && values.positionId ? parseInt(values.positionId) : 0,
-        orderType: values.orderType as OrderType,
-        triggerType: values.triggerType as TriggerType,
-        operation: values.operation as OperationType,
-        direction: values.direction as Direction,
-        collateralAmount: new BigNumber(values.collateralAmount)
-          .multipliedBy(10 ** selectedPool.quoteDecimals)
-          .toString(),
-        size: new BigNumber(values.size)
-          .multipliedBy(10 ** selectedPool.baseDecimals)
-          .toString(),
-        orderPrice: values.orderPrice
-          ? ethers.parseUnits(values.orderPrice.toString(), 30).toString()
-          : "0",
-        triggerPrice: values.orderPrice
-          ? ethers.parseUnits(values.orderPrice.toString(), 30).toString()
-          : "0", //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
-        timeInForce: values.timeInForce as TimeInForce,
-        postOnly: values.postOnly,
-        slippagePct: new BigNumber(values.slippagePct)
-          .multipliedBy(10 ** 4)
-          .toString(), // 转换为精度4位
-        executionFeeToken: selectedPool.quoteToken,
-        leverage: values.leverage,
-        tpSize: values.tpSize
-          ? new BigNumber(values.tpSize)
-            .multipliedBy(10 ** selectedPool.baseDecimals)
-            .toString()
-          : "0",
-        tpPrice: values.tpPrice
-          ? new BigNumber(values.tpPrice)
+      if (values.operation === OperationType.INCREASE) {
+        const orderData = {
+          chainId: ChainId.ARB_TESTNET,
+          address: address as `0x${string}`,
+          poolId: selectedPool.poolId,
+          positionId: values.positionId ? parseInt(values.positionId) : 0,
+          orderType: values.orderType as OrderType,
+          triggerType: values.triggerType as TriggerType,
+          direction: values.direction as Direction,
+          collateralAmount: new BigNumber(values.collateralAmount)
             .multipliedBy(10 ** selectedPool.quoteDecimals)
-            .toString()
-          : "0",
-        slSize: values.slSize
-          ? new BigNumber(values.slSize)
+            .toString(),
+          size: new BigNumber(values.size)
             .multipliedBy(10 ** selectedPool.baseDecimals)
-            .toString()
-          : "0",
-        slPrice: values.slPrice
-          ? new BigNumber(values.slPrice)
+            .toString(),
+          price: values.price
+            ? ethers.parseUnits(values.price.toString(), 30).toString()
+            : "0",  //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
+          timeInForce: values.timeInForce as TimeInForce,
+          postOnly: values.postOnly,
+          slippagePct: new BigNumber(values.slippagePct)
+            .multipliedBy(10 ** 4)
+            .toString(), // 转换为精度4位
+          executionFeeToken: selectedPool.quoteToken,
+          leverage: values.leverage,
+          tpSize: values.tpSize
+            ? new BigNumber(values.tpSize)
+              .multipliedBy(10 ** selectedPool.baseDecimals)
+              .toString()
+            : "0",
+          tpPrice: values.tpPrice
+            ? new BigNumber(values.tpPrice)
+              .multipliedBy(10 ** selectedPool.quoteDecimals)
+              .toString()
+            : "0",
+          slSize: values.slSize
+            ? new BigNumber(values.slSize)
+              .multipliedBy(10 ** selectedPool.baseDecimals)
+              .toString()
+            : "0",
+          slPrice: values.slPrice
+            ? new BigNumber(values.slPrice)
+              .multipliedBy(10 ** selectedPool.quoteDecimals)
+              .toString()
+            : "0",
+        };
+
+        console.log("orderData-->", orderData);
+
+        const rs = await myxClient.order.createIncreaseOrder(orderData);
+
+        console.log("Order placed:", rs);
+      } else {
+        // 平仓操作
+        const orderData = {
+          chainId: ChainId.ARB_TESTNET,
+          address: address as `0x${string}`,
+          poolId: selectedPool.poolId,
+          positionId: values.positionId ? parseInt(values.positionId) : 0,
+          orderType: values.orderType as OrderType,
+          triggerType: values.triggerType as TriggerType,
+          direction: values.direction as Direction,
+          collateralAmount: new BigNumber(values.collateralAmount)
             .multipliedBy(10 ** selectedPool.quoteDecimals)
-            .toString()
-          : "0",
-      };
+            .toString(),
+          size: new BigNumber(values.size)
+            .multipliedBy(10 ** selectedPool.baseDecimals)
+            .toString(),
+          price: values.price
+            ? ethers.parseUnits(values.price.toString(), 30).toString()
+            : "0",
+          timeInForce: values.timeInForce as TimeInForce,
+          postOnly: values.postOnly,
+          slippagePct: new BigNumber(values.slippagePct)
+            .multipliedBy(10 ** 4)
+            .toString(), // 转换为精度4位
+          executionFeeToken: selectedPool.quoteToken,
+          leverage: values.leverage,
+        };
 
-      console.log("orderData-->", orderData);
+        console.log("orderData-->", orderData);
 
-      const rs = await myxClient.trading.placeOrder(orderData);
+        const rs = await myxClient.order.createDecreaseOrder(orderData);
 
-      console.log("Order placed:", rs);
+        console.log("Order placed:", rs);
+      }
     } catch (error) {
       console.error("Error placing order:", error);
     } finally {
@@ -1155,7 +1191,7 @@ const TradePage: React.FC = () => {
         </Col>
 
         <Col span={24}>
-          <Card title="交易参数 / Trading Parameters" loading={!selectedPool}>
+          <Card title="开仓 / 平仓 Open & Close" loading={!selectedPool}>
             <Form
               form={form}
               layout="vertical"
@@ -1206,34 +1242,18 @@ const TradePage: React.FC = () => {
                     >
                       <Select>
                         <Option value={OperationType.INCREASE}>
-                          增加 / Increase
+                          开仓 / Increase
                         </Option>
                         <Option value={OperationType.DECREASE}>
-                          减少 / Decrease
+                          平仓 / Decrease
                         </Option>
                       </Select>
                     </Form.Item>
-
-                    <Form.Item noStyle dependencies={['operation']}>
-                      {({ getFieldValue }) => {
-                        const operation = getFieldValue('operation');
-                        return operation === OperationType.DECREASE ? (
-                          <Form.Item
-                            label="仓位ID / Position ID"
-                            name="positionId"
-                            rules={[{ required: true, }]}
-                          >
-                            <Input placeholder="请输入仓位ID / Enter Position ID" />
-                          </Form.Item>
-                        ) : null;
-                      }}
-                    </Form.Item>
-
-                    <Form.Item label="方向 / Direction" name="direction">
-                      <Select>
-                        <Option value={Direction.LONG}>做多 / Long</Option>
-                        <Option value={Direction.SHORT}>做空 / Short</Option>
-                      </Select>
+                    <Form.Item
+                      label="仓位ID / Position ID"
+                      name="positionId"
+                    >
+                      <Input placeholder="请输入仓位ID / Enter Position ID" />
                     </Form.Item>
                   </Card>
                 </Col>
@@ -1261,19 +1281,17 @@ const TradePage: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item
-                      label={`订单价格 / Order Price (${selectedPool?.quoteSymbol || "USDT"
+                      label={`价格 / Price (${selectedPool?.quoteSymbol || "USDT"
                         })`}
-                      name="orderPrice"
+                      name="price"
                     >
                       <InputNumber style={{ width: "100%" }} min={0} />
                     </Form.Item>
-
-                    <Form.Item
-                      label={`触发价格 / Trigger Price (${selectedPool?.quoteSymbol || "USDT"
-                        })`}
-                      name="triggerPrice"
-                    >
-                      <InputNumber style={{ width: "100%" }} min={0} />
+                    <Form.Item label="方向 / Direction" name="direction">
+                      <Select>
+                        <Option value={Direction.LONG}>做多 / Long</Option>
+                        <Option value={Direction.SHORT}>做空 / Short</Option>
+                      </Select>
                     </Form.Item>
                   </Card>
                 </Col>
@@ -1411,17 +1429,11 @@ const TradePage: React.FC = () => {
                     columns={positionColumns}
                     dataSource={positionsList}
                     rowKey="positionId"
-                    pagination={{
-                      pageSize: 10,
-                      showSizeChanger: true,
-                      showQuickJumper: true,
-                      showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} 共 ${total} 条 / ${range[0]}-${range[1]} of ${total} items`,
-                    }}
                     scroll={{ x: 'max-content' }}
                     locale={{
                       emptyText: '暂无仓位数据 / No position data available'
                     }}
+
                     size="small"
                     style={{
                       fontSize: '12px',
@@ -1440,7 +1452,41 @@ const TradePage: React.FC = () => {
 
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <Card title="订单管理 / Order Management" size="default">
+          <Card
+            title="订单管理 / Order Management"
+            size="default"
+            extra={
+              <Button
+                type="primary"
+                danger
+                size="small"
+                onClick={async () => {
+                  try {
+                    setCancelAllLoading(true)
+                    const result = await myxClient?.order.cancelOrders(ordersList.map((order) => order.orderId));
+                    if (result?.code === 0) {
+                      message.success('订单取消成功 / Order cancelled successfully');
+                    } else {
+                      message.error(`取消失败 / Cancel failed: ${result?.message}`);
+                    }
+                    console.log("Cancel orders result:", result);
+
+                  } catch (error) {
+                    message.error(`取消失败 / Cancel error`);
+                    console.error(error)
+                  } finally {
+                    setCancelAllLoading(false)
+                  }
+
+                }}
+                disabled={!ordersList || ordersList.length === 0}
+                loading={cancelAllLoading}
+                style={{ fontSize: '12px' }}
+              >
+                取消全部订单 / Cancel All Orders
+              </Button>
+            }
+          >
             <Row gutter={[16, 16]}>
               <Col span={24}>
                 <Card title="当前订单列表 / Current Orders" size="small">
@@ -1448,13 +1494,6 @@ const TradePage: React.FC = () => {
                     columns={orderColumns}
                     dataSource={ordersList}
                     rowKey="orderId"
-                    pagination={{
-                      pageSize: 10,
-                      showSizeChanger: true,
-                      showQuickJumper: true,
-                      showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} 共 ${total} 条 / ${range[0]}-${range[1]} of ${total} items`,
-                    }}
                     scroll={{ x: 'max-content' }}
                     locale={{
                       emptyText: '暂无订单数据 / No order data available'
@@ -1467,72 +1506,13 @@ const TradePage: React.FC = () => {
                   />
                 </Card>
               </Col>
-
             </Row>
           </Card>
         </Col>
       </Row>
 
       {/* 调整保证金弹窗 / Adjust Collateral Modal */}
-      <Modal
-        title="调整保证金 / Adjust Collateral"
-        open={adjustModalVisible}
-        onOk={executeAdjustCollateral}
-        onCancel={() => {
-          setAdjustModalVisible(false);
-          setAdjustAmount('');
-        }}
-        confirmLoading={adjustLoading}
-        okText="确认调整 / Confirm"
-        cancelText="取消 / Cancel"
-      >
-        {selectedPosition && (
-          <div>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <div>
-                <Text strong>仓位信息 / Position Info:</Text>
-              </div>
-              <div>
-                <Text>仓位ID / Position ID: </Text>
-                <Tag color="blue">{selectedPosition.positionId}</Tag>
-              </div>
-              <div>
-                <Text>方向 / Direction: </Text>
-                <Tag color={selectedPosition.direction === 0 ? 'green' : 'red'}>
-                  {selectedPosition.direction === 0 ? '做多 / LONG' : '做空 / SHORT'}
-                </Tag>
-              </div>
-              <div>
-                <Text>当前保证金 / Current Collateral: </Text>
-                <Text strong>{selectedPosition.collateralAmount}</Text>
-              </div>
-              <div>
-                <Text>数量 / Size: </Text>
-                <Text strong>{selectedPosition.size}</Text>
-              </div>
 
-              <Form.Item
-                label="调整金额 / Adjustment Amount"
-                style={{ marginBottom: 0, marginTop: 16 }}
-              >
-                <Input
-                  value={adjustAmount}
-                  onChange={(e) => setAdjustAmount(e.target.value)}
-                  placeholder="输入正数增加，负数减少保证金 / Enter positive to add, negative to reduce"
-                  suffix="USDT"
-                />
-              </Form.Item>
-
-              <div style={{ marginTop: 8 }}>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  提示：输入正数增加保证金，输入负数减少保证金 /
-                  Tip: Enter positive number to increase, negative to decrease collateral
-                </Text>
-              </div>
-            </Space>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
