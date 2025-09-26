@@ -82,7 +82,7 @@ export const getPoolDetail = async (
 
 export const getPositions = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/position/list?chainId=${chainId}`,
+    `${baseUrl}/openapi/scan/position/open?chainId=${chainId}`,
     undefined, // params
     {
       headers: {
