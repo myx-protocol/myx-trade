@@ -6,6 +6,7 @@ import { Markets } from "./markets";
 import { Position } from "./position";
 import { Order } from "./order";
 import { Utils } from "./utils";
+import { Account } from "./account";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -26,6 +27,7 @@ export class MyxClient {
   public position: Position;
   public order: Order;
   public utils: Utils;
+  public account: Account;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -60,6 +62,7 @@ export class MyxClient {
     this.order = new Order(this.configManager, this.logger, this.utils);
 
    
+    this.account = new Account(this.configManager, this.logger, this.utils);
     /**
      * initialize subscription
      */
