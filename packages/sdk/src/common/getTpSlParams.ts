@@ -7,7 +7,7 @@ import { getDecimalPlaces } from "@/utils/number";
 
 export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = 18) => {
   if (tpsl.length === 0) {
-    throw new Error(Errors[ ErrorCode.Invalid_Params]);
+    return []
   }
   if (tpsl.filter(item => item.amount && item.triggerPrice && item.triggerType).length === 0) {
     throw new Error(Errors[ ErrorCode.Invalid_Params]);
