@@ -548,6 +548,7 @@ const TradePage: React.FC = () => {
     selectedPool ? `poolLevel-${selectedPool.poolId}` : null,
     async () => {
       if (!selectedPool) return null;
+    
       const res = await myxClient?.markets.getPoolLevelConfig(selectedPool.poolId);
       return res;
     }
@@ -557,7 +558,10 @@ const TradePage: React.FC = () => {
   useEffect(() => {
     if (selectedPool) {
       getOraclePrice(selectedPool.poolId, ChainId.ARB_TESTNET)
-        .then((oraclePriceRes) => {
+        .then(async (oraclePriceRes) => {
+          console.log(selectedPool)
+          const networkFee = await myxClient?.utils.getNetworkFee(selectedPool.quoteToken);
+          console.log("networkFee-->", networkFee);
           const _price = oraclePriceRes.data[0].price;
           form.setFieldsValue({
             price: _price,
@@ -665,8 +669,8 @@ const TradePage: React.FC = () => {
           slSize: values.slSize
             ? ethers.parseUnits(values.slSize.toString(), selectedPool.baseDecimals).toString()
             : "0",
-            slPrice: values.slPrice
-              ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
+          slPrice: values.slPrice
+            ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
             : "0",
         };
 
