@@ -21,15 +21,17 @@ const LPPage: React.FC = () => {
           <PoolList/>
           <BaseTokenList/>
         </div>
-        <Deploy/>
+        <Deploy className={'border-1'}/>
         <DepositQuote/>
         <DepositBase/>
-        <TpSL/>
+        <TpSL className={'border-1'}/>
         <WithdrawBase/>
         
         <BaseRewards/>
         <QuoteRewards/>
         <Transfer/>
+        
+        <CancelOrder/>
       </PoolProvider>
     </div>
   );

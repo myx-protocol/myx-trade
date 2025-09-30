@@ -4,7 +4,7 @@ import { Button } from "@/components";
 import { pool } from "@myx-trade/sdk";
 import { message } from "antd";
 
-export const Deploy = () => {
+export const Deploy = ({className = ''}:{className?:string}) => {
   const { refetch,chainId} = useContext(PoolContext);
   const {pools} = useContext(PoolContext);
   const [address, setAddress] = useState("");
@@ -38,7 +38,7 @@ export const Deploy = () => {
    
   }, [refetch, address]);
   
-  return <div className="flex items-center gap-[20px] ">
+  return <div className={ `flex items-center gap-[20px] ${className}` }>
     <label>Base Token Address:</label>
     <input className={'w-[420px] border-1 p-[8px]'} onChange={e => setAddress(e.target.value)} value={address} placeholder={'Base Token Address'}/>
     <Button label={'Create Pool'} isLoading={isLoading} onClick={onHandleDeploy } />
