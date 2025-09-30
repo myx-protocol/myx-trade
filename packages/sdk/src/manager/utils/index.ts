@@ -1,11 +1,9 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 
-
 import { ethers } from "ethers";
 import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import OrderManager_ABI from "@/abi/OrderManager.json";
-
 import { Logger } from "@/logger";
 
 export class Utils {
@@ -187,16 +185,14 @@ export class Utils {
     );
 
     try {
-      console.log()
-      console.log('getNetworkFee-->', quoteAddress);
       const networkFee = await orderManagerContract.getExecutionFee(quoteAddress);
-  
+
       console.log("networkFee-->", networkFee.toString());
       return networkFee.toString();
     } catch (error) {
       this.logger.error("Error getting network fee:", error);
       return "0";
     }
-    
+
   }
 }
