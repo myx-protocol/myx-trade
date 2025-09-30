@@ -1,6 +1,25 @@
 [
   {
     "type": "error",
+    "name": "AccountInsufficientFreeAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "AccountInsufficientTradableAmount",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "accountTradableAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "requiredTradableAmount"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
       {
@@ -28,25 +47,6 @@
     "type": "error",
     "name": "FailedCall",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientFreeAmount",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientTradableAmount",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "accountTradableAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "requiredTradableAmount"
-      }
-    ]
   },
   {
     "type": "error",
@@ -149,7 +149,7 @@
   {
     "type": "event",
     "anonymous": false,
-    "name": "PayForAdjustCollateral",
+    "name": "PayWithPrincipal",
     "inputs": [
       {
         "type": "address",
@@ -181,39 +181,7 @@
   {
     "type": "event",
     "anonymous": false,
-    "name": "PayForExecutionFee",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "receiver",
-        "indexed": false
-      },
-      {
-        "type": "bytes32",
-        "name": "poolId",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "quoteToken",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "amount",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "PayForPlaceOrder",
+    "name": "PayWithProfitFirst",
     "inputs": [
       {
         "type": "address",
@@ -448,7 +416,7 @@
   },
   {
     "type": "function",
-    "name": "payForAdjustCollateral",
+    "name": "payWithPrincipal",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -458,37 +426,7 @@
       },
       {
         "type": "address",
-        "name": "positionOwner"
-      },
-      {
-        "type": "uint256",
-        "name": "amount"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "usedFreeAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "usedRestrictedAmount"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "payForExecutionFee",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "poolId"
-      },
-      {
-        "type": "address",
-        "name": "positionOwner"
+        "name": "account"
       },
       {
         "type": "uint256",
@@ -499,7 +437,7 @@
   },
   {
     "type": "function",
-    "name": "payForPlaceOrder",
+    "name": "payWithProfitFirst",
     "constant": false,
     "payable": false,
     "inputs": [
