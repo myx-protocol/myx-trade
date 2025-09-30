@@ -27,11 +27,11 @@ const LPPage: React.FC = () => {
         <DepositBase/>
         <TpSL className={'border-1'}/>
         <WithdrawBase/>
-        
+
         <BaseRewards/>
         <QuoteRewards/>
         <Transfer/>
-        
+
         <CancelOrder/>
       </PoolProvider>
     </div>
