@@ -9,8 +9,8 @@ export const TpOrSL = ({className = '', amount = '', triggerPrice = '', onAmount
   return <div className={`flex flex-col gap-[10px] ${className}`}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px]'}>
-      <div className={'flex items-center gap-[5px]'}><label>Amount: </label><input  className={'border-1 flex-1 p-[8px] '}  value={amount} onChange={e => onAmountChange?.(e.target.value)}/></div>
-      <div className={'flex items-center gap-[5px]'}><label>TriggerPrice: </label><input  className={'border-1 flex-1 p-[8px]'} value={triggerPrice}  onChange={e => onPriceChange?.(e.target.value)} /></div>
+      <div className={'flex items-center gap-[5px]'}><label>Amount: </label><input type="number" className={'border-1 flex-1 p-[8px] '}  value={amount} onChange={e => onAmountChange?.(e.target.value)}/></div>
+      <div className={'flex items-center gap-[5px]'}><label>TriggerPrice: </label><input type="number" className={'border-1 flex-1 p-[8px]'} value={triggerPrice}  onChange={e => onPriceChange?.(e.target.value)} /></div>
     </div>
   </div>
 }
@@ -78,17 +78,20 @@ export const TpSL = ({className = ''}: {className?: string}) => {
       <div className={'flex gap-[10px] flex-col'}>
         <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input  readOnly={true} className={'border-1 flex-1 p-[8px] '}  value={slippage} /></div>
       </div>
-      <div className={'flex gap-[10px] flex-col'} >
+      <div className={'flex gap-[10px]'} >
         <label>TP: </label>
         <TpOrSL amount={tpAmount} onAmountChange={setTpAmount} triggerPrice={tpPrice} onPriceChange={setTpPrice} />
         
       </div>
-      <div className={'flex gap-[10px] flex-col'} >
+      <div className={'flex gap-[10px]'} >
         <label>SL: </label>
         <TpOrSL amount={slAmount} onAmountChange={setSlAmount} triggerPrice={slPrice} onPriceChange={setSlPrice} />
       
       </div>
-      <Button label={'AddTpSl'} isLoading={loading} onClick={onHandleTpSl}/>
+      <div className={'w-[200px]'}>
+        <Button label={'AddTpSl'} isLoading={loading}  onClick={onHandleTpSl}/>
+      </div>
+     
     </div>
   </TpSlContext.Provider>
   

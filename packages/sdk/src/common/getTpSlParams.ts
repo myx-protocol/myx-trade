@@ -2,10 +2,10 @@ import { ErrorCode, Errors } from "@/config/error";
 import { parseUnits } from "ethers";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas";
-import { TpSL, TpSLParams } from "@/lp/pool";
+import type { TpSl, TpSLParams } from "@/lp/pool";
 import { getDecimalPlaces } from "@/utils/number";
 
-export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSL[] = [], decimals = 18) => {
+export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = 18) => {
   if (tpsl.length === 0) {
     throw new Error(Errors[ ErrorCode.Invalid_Params]);
   }

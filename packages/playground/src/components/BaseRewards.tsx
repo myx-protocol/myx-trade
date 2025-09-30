@@ -43,7 +43,7 @@ export const BaseRewards = () => {
   return <div className="flex items-center gap-[20px]">
     <div className={'flex gap-[10px]'}>
       <span>Base Rewards:</span>
-      <span>{pool && data && formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  || '--'}</span>
+      <span>{pool && data !== null  ? formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  : '--'}</span>
     </div>
     <Button label={'Claim'} disabled={disabled} isLoading={loading} onClick={onHandleClaim}/>
   </div>
