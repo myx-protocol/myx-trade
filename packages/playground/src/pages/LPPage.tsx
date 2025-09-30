@@ -11,6 +11,7 @@ import { Transfer } from "@components/Transfer.tsx";
 import { WithdrawBase } from "@components/WithdrawBase.tsx";
 import { QuoteRewards } from "@components/QuoteRewards.tsx";
 import { TpSL } from "@components/TpSL.tsx";
+import { CancelOrder } from "@components/CancelOrder.tsx";
 
 const LPPage: React.FC = () => {
   return (
