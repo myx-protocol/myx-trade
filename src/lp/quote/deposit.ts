@@ -16,11 +16,13 @@ import { getPoolInfo } from "@/lp/getPoolInfo";
 import { BigNumberish, Typed } from "ethers/lib.esm";
 import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import type { TpSl } from "@/lp/pool";
+import { getTpSlParams } from "@/common/getTpSlParams";
 
 
 export const deposit = async (params: Deposit) => {
   try {
-    const {poolId, chainId, amount, slippage = 0.01} = params;
+    const {poolId, chainId, amount, slippage = 0.01, tpsl = []} = params;
     await checkParams(params)
     const pool = await getPoolInfo(chainId, poolId);
     const chainInfo =  CHAIN_INFO[chainId];
@@ -67,17 +69,23 @@ export const deposit = async (params: Deposit) => {
     } else {
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
     }
+    
+    const _tpsl = tpsl.map((item) => {
+      return {
+        amount,
+        triggerPrice: item.triggerPrice,
+        triggerType: item.triggerType,
+      } as TpSl
+    })
+    
+    const tpslParams = getTpSlParams(slippage, _tpsl, decimals);
    
-    console.log(amountOut)
-    const tpslParams = []
-   
-   console.log((amount * (1- slippage)))
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
       recipient: account,
-      tpslParams: []
+      tpslParams
     }
     
     console.log("deposit params: price, data, value :",price, data, value);

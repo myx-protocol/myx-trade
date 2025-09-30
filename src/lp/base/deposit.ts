@@ -15,11 +15,13 @@ import { getPoolInfo } from "@/lp/getPoolInfo";
 import {  MarketPoolState } from "@/api";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getPriceData } from "@/common/price";
+import { getTpSlParams } from "@/common/getTpSlParams";
+import type { TpSl } from "@/lp/pool";
 
 
 export const deposit = async (params: Deposit) => {
   try {
-    const { poolId, chainId, amount, slippage = 0.01 } = params;
+    const { poolId, chainId, amount, slippage = 0.01, tpsl = [] } = params;
     await checkParams (params)
     
     const pool = await getPoolInfo (chainId,poolId);
@@ -64,12 +66,21 @@ export const deposit = async (params: Deposit) => {
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
     }
     
+    const _tpsl = tpsl.map((item) => {
+      return {
+        amount,
+        triggerPrice: item.triggerPrice,
+        triggerType: item.triggerType,
+      } as TpSl
+    })
+    const tpslParams = getTpSlParams(slippage, _tpsl, decimals);
+    
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
       recipient: account,
-      tpslParams: [] // todo lp price
+      tpslParams
     }
     
     console.log("deposit base", price, data, value);

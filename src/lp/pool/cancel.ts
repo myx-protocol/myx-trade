@@ -1,51 +1,35 @@
-import { AddTpSLParams } from "@/lp/pool/type";
+import { CancelTpSLParams } from "@/lp/pool/type";
 import { getLiquidityRouterContract } from "../../web3/providers";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
+import { getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
-import { getTpSlParams } from "@/common/getTpSlParams";
 
 
-export const addTpSl = async (params:AddTpSLParams) => {
+export const cancelTpSl = async (params:CancelTpSLParams) => {
   try {
-    const {chainId, poolId, poolType,slippage = 0.01,  tpsl = []} = params;
+    const {chainId, orderId} = params;
     await checkParams (params)
-    
-    
-    
-    
-    
-    const decimals = Market[chainId].lpDecimals
-    const tpslParams = getTpSlParams(slippage, tpsl, decimals);
     
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getLiquidityRouterContract(chainId)
     
-    const data =  {
-      poolId,
-      poolType: BigInt(poolType),
-      tpslParams
-    }
     
-    console.log('add tpSl params:', data)
-    
-    const _gasLimit = await contract.addTpsl.estimateGas(data)
+    const _gasLimit = await contract.cancelTpsl.estimateGas(orderId)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     console.log("gasPrice", gasPrice)
     
-    const request = await contract.addTpsl(data, {
+    const request = await contract.cancelTpsl(orderId, {
       gasLimit,
       gasPrice
     })
-    console.log("addTpsl request", request);
+    console.log("cancelTpSl request", request);
     const receipt = await request?.wait()
     console.log(request)
     return receipt;
