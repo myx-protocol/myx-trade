@@ -11,6 +11,7 @@ import { Transfer } from "@components/Transfer.tsx";
 import { WithdrawBase } from "@components/WithdrawBase.tsx";
 import { QuoteRewards } from "@components/QuoteRewards.tsx";
 import { TpSL } from "@components/TpSL.tsx";
+import { CancelOrder } from "@components/CancelOrder.tsx";
 
 const LPPage: React.FC = () => {
   return (
@@ -21,15 +22,17 @@ const LPPage: React.FC = () => {
           <PoolList/>
           <BaseTokenList/>
         </div>
-        <Deploy/>
+        <Deploy className={'border-1'}/>
         <DepositQuote/>
         <DepositBase/>
-        <TpSL/>
+        <TpSL className={'border-1'}/>
         <WithdrawBase/>
         
         <BaseRewards/>
         <QuoteRewards/>
         <Transfer/>
+        
+        <CancelOrder/>
       </PoolProvider>
     </div>
   );

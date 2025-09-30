@@ -14,7 +14,7 @@ export const QuoteRewards = () => {
   const [loading, setLoading] = useState<boolean>(false)
   
   const {data = null} = useQuery({
-    queryKey: [{key: 'rewards'},poolId, account],
+    queryKey: [{key: 'quote_rewards'},poolId, account],
     enabled: !!poolId && !!account,
     queryFn: async () => {
       if (!poolId || !account) return null
@@ -23,6 +23,7 @@ export const QuoteRewards = () => {
         chainId,
         account
       })
+      console.log(result)
       return result
     }
   })
@@ -43,7 +44,7 @@ export const QuoteRewards = () => {
   return <div className="flex items-center gap-[20px]">
     <div className={'flex gap-[10px]'}>
       <span>Quote Rewards:</span>
-      <span>{pool && data && formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  || '--'}</span>
+      <span>{pool && data !== null  ? formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  :  '--'}</span>
     </div>
     <Button label={'Claim'} disabled={disabled} isLoading={loading} onClick={onHandleClaim}/>
   </div>
