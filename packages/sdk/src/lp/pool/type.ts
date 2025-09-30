@@ -16,7 +16,7 @@ export enum TriggerType {
   SL = 2,
 }
 
-export interface TpSL {
+export interface TpSl {
   amount: number;
   triggerPrice: number;
   triggerType: TriggerType;
@@ -34,5 +34,10 @@ export interface AddTpSLParams {
   chainId: ChainId;
   poolId: string;
   poolType: PoolType;
-  tpsl: TpSL[]
+  tpsl: TpSl[]
+}
+
+export interface CancelTpSLParams {
+  chainId: ChainId;
+  orderId: string;
 }

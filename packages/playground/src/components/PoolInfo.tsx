@@ -1,7 +1,7 @@
 import {  useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
-import { Market, getBalanceOf, MarketPoolState, pool as Pool, getLpPrice, getOraclePrice, } from "@myx-trade/sdk";
+import { Market, getBalanceOf, MarketPoolState, pool as Pool, base, quote, getOraclePrice, } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 import { Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
@@ -131,12 +131,29 @@ export const PoolInfo = () => {
     refetchInterval: 5000
   })
   
-  const {data: lpPrice}  = useQuery({
-    queryKey: [{key: 'lpPirce'},poolId],
+  const {data: baseLpPrice}  = useQuery({
+    queryKey: [{key: 'baseLpPrice'},poolId],
     enabled: !!poolId,
     queryFn: async () => {
       if (!poolId ) return null
-      const result = await getLpPrice(
+      const result = await base.getLpPrice(
+        chainId,
+        poolId,
+      )
+      if (result) {
+        return formatUnits(result, COMMON_PRICE_DECIMALS)
+      }
+      return
+    },
+    refetchInterval: 5000
+  })
+  
+  const {data: quoteLpPrice}  = useQuery({
+    queryKey: [{key: 'quoteLpPrice'},poolId],
+    enabled: !!poolId,
+    queryFn: async () => {
+      if (!poolId ) return null
+      const result = await quote.getLpPrice(
         chainId,
         poolId,
       )
@@ -189,9 +206,16 @@ export const PoolInfo = () => {
         <span>{pool?.quoteSymbol || ''}</span>
       </div>
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
-        <span>LP Price:</span>
+        <span>LP Price(B):</span>
         <span className={''}>
-          {lpPrice ? formatNumberPrecision(lpPrice) : '--'}
+          {baseLpPrice ? formatNumberPrecision(baseLpPrice) : '--'}
+        </span>
+        <span>{pool?.quoteSymbol || ''}</span>
+      </div>
+      <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
+        <span>LP Price(U):</span>
+        <span className={''}>
+          {quoteLpPrice ? formatNumberPrecision(quoteLpPrice) : '--'}
         </span>
         <span>{pool?.quoteSymbol || ''}</span>
       </div>

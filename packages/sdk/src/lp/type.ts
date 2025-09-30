@@ -1,5 +1,7 @@
 import { ChainId } from "@/config/chain";
-import type { AddressLike } from "ethers/lib.esm";
+import type { TpSl } from "@/lp/pool";
+
+export type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>
 
 export interface Deposit {
   chainId: ChainId,
@@ -8,6 +10,7 @@ export interface Deposit {
   // address: AddressLike;
   amount: number;
   slippage: number;
+  tpsl?: DepositTpSl[]
 }
 
 
