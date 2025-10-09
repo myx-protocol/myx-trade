@@ -18,6 +18,7 @@ import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import type { TpSl } from "@/lp/pool";
 import { getTpSlParams } from "@/common/getTpSlParams";
+import { ErrorCode, Errors } from "@/config/error";
 
 
 export const deposit = async (params: Deposit) => {
@@ -25,6 +26,9 @@ export const deposit = async (params: Deposit) => {
     const {poolId, chainId, amount, slippage = 0.01, tpsl = []} = params;
     await checkParams(params)
     const pool = await getPoolInfo(chainId, poolId);
+    if (!pool) {
+      throw new Error(Errors[ErrorCode.Invalid_Params])
+    }
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
@@ -32,7 +36,8 @@ export const deposit = async (params: Deposit) => {
     const contractAddress = addresses.QUOTE_POOL;
     
     const tokenAddress = Market[chainId].quoteToken;
-    const decimals = Market[chainId].decimals;
+    const decimals = pool?.quoteDecimals;
+    
     
    
     await checkParams ({
@@ -78,7 +83,7 @@ export const deposit = async (params: Deposit) => {
       } as TpSl
     })
     
-    const tpslParams = getTpSlParams(slippage, _tpsl, decimals);
+    const tpslParams = getTpSlParams(slippage, _tpsl, decimals, decimals);
    
     const data = {
       poolId: poolId as unknown as BytesLike,
