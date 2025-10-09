@@ -110,7 +110,7 @@ export const BalanceInfo = () => {
 }
 
 
-export const PoolInfo = () => {
+export const PoolInfo = ({className = ''}:{className?:string}) => {
  const { pool, poolId } = usePoolInfo()
   const {chainId, account} = useContext(PoolContext)
   
@@ -193,7 +193,7 @@ export const PoolInfo = () => {
     }
   })
   
-  return <header className={'border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff]'}>
+  return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
       <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>
