@@ -9,7 +9,7 @@ export const DepositBase = () => {
   const {chainId} = useContext(PoolContext)
   const {poolId} = usePoolInfo()
   const [amount, setAmount] = useState<string>('0.0001')
-  const [slippage] = useState<string>('0.01')
+  const [slippage, setSlippage] = useState<string>('0.01')
   const [isDepositLoading, setIsDepositLoading] = useState(false)
   
   
@@ -34,7 +34,7 @@ export const DepositBase = () => {
   return <div className={'flex flex-col gap-[10px]'}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>
-      <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1 p-[8px]'} readOnly={true} value={slippage} /></div>
+      <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1 p-[8px]'} readOnly={false} value={slippage} onChange={(e) => setSlippage(e.target.value)} /></div>
       <div className={'flex items-center gap-[5px]'}><label>Amount:</label><input type="number" className={'border-1 p-[8px]'}  onChange={e => setAmount(e.target.value)} value={amount} placeholder={'Amount'} /></div>
       <Button label={'DepositBase'} isLoading={isDepositLoading} onClick={onHandleDeposit}/>
     </div>
