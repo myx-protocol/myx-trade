@@ -43,7 +43,8 @@ export const TpSL = ({className = ''}: {className?: string}) => {
         triggerPrice: Number(slPrice),
         triggerType: Pool.TriggerType.SL
       }
-    ]
+    ].filter((item) => item.amount && item.triggerPrice)
+    
     const params: Pool.AddTpSLParams = {
       slippage: Number(slippage),
       poolId,
