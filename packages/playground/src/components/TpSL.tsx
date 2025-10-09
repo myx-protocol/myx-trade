@@ -24,7 +24,7 @@ export const TpSL = ({className = ''}: {className?: string}) => {
   const [tpPrice, setTpPrice] = useState<string | number>("")
   const [slAmount, setSlAmount] = useState<string | number>("")
   const [slPrice, setSlPrice] = useState<string | number>("")
-  const [slippage] = useState<string>('0.01')
+  const [slippage, setSlippage] = useState<string>('0.01')
   const [poolType, setPoolType] = useState<Pool.PoolType>(Pool.PoolType.Base)
   
   
@@ -103,7 +103,9 @@ export const TpSL = ({className = ''}: {className?: string}) => {
       {/*<div>poolId: {poolId}</div>*/}
       
       <div className={'flex gap-[10px] flex-col'}>
-        <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input  readOnly={true} className={'border-1 flex-1 p-[8px] '}  value={slippage} /></div>
+        <div className={'flex items-center gap-[5px]'}>
+          <label>Slippage: </label>
+          <input  readOnly={false} className={'border-1 flex-1 p-[8px] '}  value={slippage} onChange={e => setSlippage?.(e.target.value)} /></div>
         <div className={'flex items-center gap-[5px]'}><label>Type:</label>
           <Radio.Group
             onChange={onChange}
@@ -115,12 +117,12 @@ export const TpSL = ({className = ''}: {className?: string}) => {
           />
         </div>
       </div>
-      <div className={'flex gap-[10px]'} >
+      <div className={'flex gap-[10px] items-center'} >
         <label>TP: </label>
         <TpOrSL amount={tpAmount} onAmountChange={setTpAmount} triggerPrice={tpPrice} onPriceChange={setTpPrice} />
         
       </div>
-      <div className={'flex gap-[10px]'} >
+      <div className={'flex gap-[10px] items-center'} >
         <label>SL: </label>
         <TpOrSL amount={slAmount} onAmountChange={setSlAmount} triggerPrice={slPrice} onPriceChange={setSlPrice} />
       
