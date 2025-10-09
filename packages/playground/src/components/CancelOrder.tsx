@@ -30,7 +30,7 @@ export const CancelOrder = () => {
   return <div className={'flex flex-col gap-[10px]'}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>
-      <div className={'flex items-center gap-[5px]'}><label>OrderId: </label><input  className={'border-1 p-[8px]'} readOnly={true} value={orderId} onChange={e => setOrderId(e.target.value)} /></div>
+      <div className={'flex items-center gap-[5px]'}><label>OrderId: </label><input  className={'border-1 p-[8px]'}  value={orderId} onChange={e => setOrderId(e.target.value)} /></div>
       <Button label={'Cancel'} isLoading={isLoading} onClick={onHandleCancel}/>
     </div>
   </div>

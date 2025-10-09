@@ -4,8 +4,9 @@ import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas";
 import type { TpSl, TpSLParams } from "@/lp/pool";
 import { getDecimalPlaces } from "@/utils/number";
+import { Market } from "@/config/market";
 
-export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = 18) => {
+export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = 18, quoteDecimal: number) => {
   if (tpsl.length === 0) {
     return []
   }
@@ -19,7 +20,7 @@ export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decima
     const triggerPrice = parseUnits(item.triggerPrice.toString(), COMMON_PRICE_DECIMALS)
     const decimal = getDecimalPlaces(item.triggerPrice.toString())
     const price = parseUnits(item.triggerPrice.toString(), decimal)
-    const minQuoteOut = bigintAmountSlipperCalculator(amount * price/ BigInt(10 ** decimal), slippage)
+    const minQuoteOut = bigintAmountSlipperCalculator(amount * price * BigInt(10 ** quoteDecimal)/ BigInt(10 ** (decimal + decimals)), slippage)
     return {
       amount,
       triggerPrice,
