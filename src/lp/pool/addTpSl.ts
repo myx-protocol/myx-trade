@@ -9,19 +9,25 @@ import { CHAIN_INFO } from "@/config/chains/index";
 import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
 import { getTpSlParams } from "@/common/getTpSlParams";
+import { getPoolInfo } from "@/lp/getPoolInfo";
 
 
 export const addTpSl = async (params:AddTpSLParams) => {
   try {
     const {chainId, poolId, poolType,slippage = 0.01,  tpsl = []} = params;
     await checkParams (params)
-    
+    const pool = await getPoolInfo(chainId, poolId);
+    if (!pool) {
+      throw new Error(Errors[ErrorCode.Invalid_Params])
+    }
     
     
     
     
     const decimals = Market[chainId].lpDecimals
-    const tpslParams = getTpSlParams(slippage, tpsl, decimals);
+    const quoteDecimals = pool.quoteDecimals
+    
+    const tpslParams = getTpSlParams(slippage, tpsl, decimals, quoteDecimals);
     
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getLiquidityRouterContract(chainId)
