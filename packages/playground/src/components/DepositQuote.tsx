@@ -9,7 +9,7 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
   const {chainId} = useContext(PoolContext)
   const {poolId} = usePoolInfo()
   const [amount, setAmount] = useState<string>(Market[chainId].poolPrimeThreshold.toString())
-  const [slippage] = useState<string>('0.01')
+  const [slippage, setSlippage] = useState<string>('0.01')
   const [isDepositLoading, setIsDepositLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   
@@ -46,7 +46,7 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
   return <div className={`flex flex-col gap-[10px] ${className}`}>
     {/*<div>poolId: {poolId}</div>*/}
     <div className={'flex gap-[10px] items-center'}>
-      <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1 p-[8px]'} readOnly={true} value={slippage} /></div>
+      <div className={'flex items-center gap-[5px]'}><label>Slippage: </label><input type="number" className={'border-1 p-[8px]'} readOnly={false} value={slippage} onChange={(e) => setSlippage(e.target.value)} /></div>
       <div className={'flex items-center gap-[5px]'}><label>Amount: </label><input type="number" className={'border-1 p-[8px]'}  onChange={e => setAmount(e.target.value)} value={amount} placeholder={'Amount'} /></div>
       <Button label={'DepositQuote'} isLoading={isDepositLoading} onClick={onHandleDepositQuote}/>
       <Button label={'WithdrawQuote'} isLoading={isLoading} onClick={onHandleWithdraw}/>
