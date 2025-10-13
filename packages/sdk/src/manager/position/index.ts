@@ -3,10 +3,10 @@ import { Logger } from "@/logger";
 
 import { getContractAddressByChainId } from "@/config/address/index";
 import { ethers } from "ethers";
-import positionManagerAbi from "@/abi/PositionManager.json";
-import broker_abi from "@/abi/Broker.json";
+import oracleAbi from "@/abi/MYXOracle.json";
 import { getPositions } from "@/api";
 import { Utils } from "../utils";
+import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
 
 
 export class Position {
@@ -22,7 +22,7 @@ export class Position {
 
   async listPositions() {
     const config: MyxClientConfig = this.configManager.getConfig();
-    
+
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -31,7 +31,7 @@ export class Position {
         message: "Failed to obtain accessToken",
       };
     }
-    
+
     try {
       const res = await getPositions(accessToken, config.chainId);
       return {
@@ -47,31 +47,27 @@ export class Position {
     }
   }
 
-  async adjustCollateral(positionId: string, adjustAmount: string) {
+  async adjustCollateral({poolId, positionId, adjustAmount}: {poolId: string, positionId: string, adjustAmount: string}) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const spenderAddress = getContractAddressByChainId(
       config.chainId
-    ).BROKER;
+    ).EIP7702Delegation;
 
-    const brokerContract = new ethers.Contract(
+    const eip7702DelegationContract = new ethers.Contract(
       spenderAddress,
-      broker_abi,
+      eip7702DelegationAbi,
       config.signer
     );
-
     try {
-      const gasLimit = await brokerContract.adjustCollateral.estimateGas(positionId, adjustAmount);
-      this.logger.info("gasLimit--->", gasLimit);
+      const oraclePrice = await this.utils.getOraclePrice(poolId);
 
-      const tx = await brokerContract.adjustCollateral(positionId, adjustAmount, {
-        gasLimit,
-      });
-      await tx.wait();
-      return {
-        code: 0,
-        message: "Collateral adjusted success",
-      };
+      console.log("oraclePrice-->", oraclePrice);
+      console.log('positionId-->', positionId);
+      console.log('adjustAmount-->', adjustAmount);
+      console.log('eip7702DelegationContract-->', eip7702DelegationContract)
+      // const gasLimit = await eip7702DelegationContract.updatePriceAndBatchExecute.estimateGas(positionId);
+
     } catch (error) {
       return {
         code: -1,

@@ -25,7 +25,6 @@ export const OrderTpSlButton = ({ record, myxClient, poolList }: { record: any, 
           tpPrice: tpPrice,
           slSize: slSize,
           slPrice: slPrice,
-          address: record.address,
           executionFeeToken: record.executionFeeToken,
           useOrderCollateral: false,
         })

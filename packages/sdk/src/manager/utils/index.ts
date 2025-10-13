@@ -5,6 +5,7 @@ import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import OrderManager_ABI from "@/abi/OrderManager.json";
 import { Logger } from "@/logger";
+import { getOraclePrice } from "@/api";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -194,5 +195,17 @@ export class Utils {
       return "0";
     }
 
+  }
+
+  async getOraclePrice(poolId: string) {
+    try {
+      const config: MyxClientConfig = this.configManager.getConfig();
+      const priceResponse = await getOraclePrice(config.chainId, [poolId]);
+      const _price = priceResponse.data?.[0]?.price || '0';
+      return _price;
+    } catch (error) {
+      this.logger.error("Error getting oracle price:", error);
+      return "0";
+    }
   }
 }

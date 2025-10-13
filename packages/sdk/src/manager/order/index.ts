@@ -1,10 +1,12 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
 import { getOrders } from "@/api";
-import { getBrokerSingerContract } from "@/web3/providers";
+import { getBrokerSingerContract, getOrderManagerSingerContract } from "@/web3/providers";
 import { Direction, TIME_IN_FORCE } from "@/config/con";
-import { PlaceOrderParams, OperationType, OrderType, TriggerType, PositionTpSlOrderParams } from "@/types/trading";
+import { PlaceOrderParams, OperationType, OrderType, PositionTpSlOrderParams } from "@/types/trading";
 import { Utils } from "../utils";
+import { UpdateOrderParams } from "@/types/order";
+
 export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -14,10 +16,6 @@ export class Order {
     this.logger = logger;
     this.utils = utils;
   }
-
-  /**
-   * create increase order
-   */
 
   async createIncreaseOrder(params: PlaceOrderParams) {
     try {
@@ -31,6 +29,27 @@ export class Order {
 
       const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
 
+      console.log('createIncreaseOrder params--->', {
+        user: params.address,
+        poolId: params.poolId,
+        positionId: params.positionId,
+        orderType: params.orderType,
+        triggerType: params.triggerType,
+        operation: OperationType.INCREASE,
+        direction: params.direction,
+        collateralAmount: collateralWithNetworkFee,
+        size: params.size,
+        price: params.price,
+        timeInForce: TIME_IN_FORCE,
+        postOnly: params.postOnly,
+        slippagePct: params.slippagePct,
+        executionFeeToken: params.executionFeeToken,
+        leverage: params.leverage,
+        tpSize: params.tpSize ? params.tpSize : 0,
+        tpPrice: params.tpPrice ? params.tpPrice : 0,
+        slSize: params.slSize ? params.slSize : 0,
+        slPrice: params.slPrice ? params.slPrice : 0,
+      });
       const gasLimit = await brokerContract.placeOrder.estimateGas({
         user: params.address,
         poolId: params.poolId,
@@ -122,9 +141,6 @@ export class Order {
     }
   }
 
-  /**
-   * create decrease order
-   */
   async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
@@ -267,7 +283,7 @@ export class Order {
               operation: OperationType.DECREASE,
               direction: Direction.LONG,
               collateralAmount: networkFee,
-              size:params.tpSize ?? '0',
+              size: params.tpSize ?? '0',
               price: params.tpPrice ?? '0',
               timeInForce: TIME_IN_FORCE,
               postOnly: false,
@@ -450,7 +466,6 @@ export class Order {
     }
   }
 
-
   async cancelOrders(orderIds: string[]) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
@@ -473,7 +488,52 @@ export class Order {
       };
     }
   }
+  
+  async updateOrderTpSl(params: UpdateOrderParams) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+    const orderManagerContract = await getOrderManagerSingerContract(
+      config.chainId,
+      config.signer
+    );
 
+    console.log("updateOrderTpSl params", params)
+    try {
+      const gasLimit = await orderManagerContract.updateOrder.estimateGas({
+        orderId: params.orderId,
+        tpSize: params.tpSize,
+        tpPrice: params.tpPrice,
+        slSize: params.slSize,
+        slPrice: params.slPrice,
+        executionFeeToken: params.executionFeeToken,
+        useOrderCollateral: params.useOrderCollateral,
+      });
+
+      const request = await orderManagerContract.updateOrder({
+        orderId: params.orderId,
+        tpSize: params.tpSize,
+        tpPrice: params.tpPrice,
+        slSize: params.slSize,
+        slPrice: params.slPrice,
+        executionFeeToken: params.executionFeeToken,
+        useOrderCollateral: params.useOrderCollateral,
+      }, {
+        gasLimit: (gasLimit * 120n) / 100n,
+      }
+      );
+
+      const receipt = await request?.wait()
+      console.log("updateOrderTpSl receipt", receipt)
+      return receipt;
+
+    } catch (e) {
+      console.error('Error updating order:', e);
+      return {
+        code: -1,
+        message: "Failed to update order",
+      };
+    }
+
+  }
 
   async getOrders() {
     const config: MyxClientConfig = this.configManager.getConfig();

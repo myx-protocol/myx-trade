@@ -563,11 +563,6 @@ const TradePage: React.FC = () => {
     const res = await getOraclePrice(selectedPool.poolId, ChainId.ARB_TESTNET);
     const _price = res.data[0].price;
     setPrice(_price);
-    // const networkFee = await myxClient?.utils.getNetworkFee(selectedPool.quoteToken);
-    // console.log("networkFee-->", networkFee);
-    // form.setFieldsValue({
-    //   price: _price,
-    // });
     return res;
   }, {
     refreshInterval: 1000,
@@ -680,7 +675,7 @@ const TradePage: React.FC = () => {
           poolId: selectedPool.poolId,
           positionId: values.positionId ? parseInt(values.positionId) : 0,
           orderType: values.orderType as OrderType,
-          triggerType: TriggerType.NONE,
+          triggerType: values.triggerType as TriggerType,
           direction: values.direction as Direction,
           collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
           size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
@@ -706,8 +701,6 @@ const TradePage: React.FC = () => {
             : "0",
         };
 
-        console.log("orderData-->", orderData);
-
         const rs = await myxClient.order.createIncreaseOrder(orderData);
 
         console.log("Order placed:", rs);
@@ -719,7 +712,7 @@ const TradePage: React.FC = () => {
           poolId: selectedPool.poolId,
           positionId: values.positionId ? parseInt(values.positionId) : 0,
           orderType: values.orderType as OrderType,
-          triggerType: TriggerType.NONE,
+          triggerType: values.triggerType as TriggerType,
           direction: values.direction as Direction,
           collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
           size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
@@ -1229,6 +1222,20 @@ const TradePage: React.FC = () => {
                             </Form.Item>
                           }
                         }
+                      </Form.Item>
+                      <Form.Item
+                        label="触发类型 / Trigger Type"
+                        name="triggerType"
+                      >
+                        <Select>
+                          <Option value={TriggerType.NONE}>无 / None</Option>
+                          <Option value={TriggerType.GTE}>
+                            大于等于 / Greater Than or Equal
+                          </Option>
+                          <Option value={TriggerType.LTE}>
+                            小于等于 / Less Than or Equal
+                          </Option>
+                        </Select>
                       </Form.Item>
                       <Form.Item
                         label="仓位ID / Position ID"
