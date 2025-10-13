@@ -50,9 +50,6 @@ export class Position {
   async adjustCollateral({poolId, positionId, adjustAmount}: {poolId: string, positionId: string, adjustAmount: string}) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    
-
-
     try {
       const oraclePrice = await this.utils.getOraclePrice(poolId);
       console.log("oraclePrice-->", oraclePrice);
@@ -83,7 +80,9 @@ export class Position {
       referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
       oracleUpdateData: oraclePrice?.vaa ?? '0',
       publishTime: oraclePrice.publishTime,
-    }]);
+    }], {
+      value: '1'
+    });
 
     console.log("updatePricesGasLimit-->", updatePricesGasLimit)
 
