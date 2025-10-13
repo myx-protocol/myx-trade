@@ -9,7 +9,6 @@ export const OrderTpSlButton = ({ record, myxClient, poolList }: { record: any, 
   const [form] = Form.useForm();
 
   const executeTpSlOrder = async (values: any) => {
-    console.log("executeTpSlOrder values", values)
     setTpSlLoading(true);
     try {
       if (myxClient) {
@@ -26,7 +25,7 @@ export const OrderTpSlButton = ({ record, myxClient, poolList }: { record: any, 
           slSize: slSize,
           slPrice: slPrice,
           executionFeeToken: record.executionFeeToken,
-          useOrderCollateral: false,
+          useOrderCollateral: true,
         })
 
         console.log("executeTpSlOrder result", result)
@@ -34,7 +33,7 @@ export const OrderTpSlButton = ({ record, myxClient, poolList }: { record: any, 
         // form.resetFields();
       }
     } catch (error) {
-      console.error("Set TP/SL error:", error);
+      // console.error("Set TP/SL error:", error);
       message.error('止盈止损设置失败 / TP/SL setting failed');
     } finally {
       setTpSlLoading(false);

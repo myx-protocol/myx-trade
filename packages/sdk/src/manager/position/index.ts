@@ -50,25 +50,53 @@ export class Position {
   async adjustCollateral({poolId, positionId, adjustAmount}: {poolId: string, positionId: string, adjustAmount: string}) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const spenderAddress = getContractAddressByChainId(
+    
+
+
+    try {
+      const oraclePrice = await this.utils.getOraclePrice(poolId);
+      console.log("oraclePrice-->", oraclePrice);
+      const eip7702DelegationAddress = getContractAddressByChainId(
       config.chainId
     ).EIP7702Delegation;
 
     const eip7702DelegationContract = new ethers.Contract(
-      spenderAddress,
+      eip7702DelegationAddress,
       eip7702DelegationAbi,
       config.signer
     );
-    try {
-      const oraclePrice = await this.utils.getOraclePrice(poolId);
 
+        
+    const oracleAddress = getContractAddressByChainId(
+      config.chainId
+    ).ORACLE;
+
+    const oracleContract = new ethers.Contract(
+      oracleAddress,
+      oracleAbi,
+      config.signer
+    );
+
+
+    const updatePricesGasLimit = await oracleContract.updatePrices.estimateGas([{
+      poolId: poolId,
+      referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
+      oracleUpdateData: oraclePrice?.vaa ?? '0',
+      publishTime: oraclePrice.publishTime,
+    }]);
+
+    console.log("updatePricesGasLimit-->", updatePricesGasLimit)
+
+    // console.log("updatePricesGasLimit", updatePricesGasLimit)
+      
       console.log("oraclePrice-->", oraclePrice);
       console.log('positionId-->', positionId);
       console.log('adjustAmount-->', adjustAmount);
-      console.log('eip7702DelegationContract-->', eip7702DelegationContract)
+      // console.log('eip7702DelegationContract-->', eip7702DelegationContract)
       // const gasLimit = await eip7702DelegationContract.updatePriceAndBatchExecute.estimateGas(positionId);
 
     } catch (error) {
+      console.log('error-->', error)
       return {
         code: -1,
         // @ts-ignore

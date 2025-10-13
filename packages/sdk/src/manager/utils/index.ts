@@ -194,18 +194,21 @@ export class Utils {
       this.logger.error("Error getting network fee:", error);
       return "0";
     }
-
   }
 
   async getOraclePrice(poolId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
       const priceResponse = await getOraclePrice(config.chainId, [poolId]);
-      const _price = priceResponse.data?.[0]?.price || '0';
-      return _price;
+      return priceResponse.data?.[0];
     } catch (error) {
       this.logger.error("Error getting oracle price:", error);
-      return "0";
+      return {
+        price: '0',
+        vaa: '',
+        publishTime: 0,
+        poolId: ''
+      };
     }
   }
 }
