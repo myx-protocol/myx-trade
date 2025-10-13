@@ -146,6 +146,8 @@ export interface ContractAddress {
   readonly BASE_POOL:Address,
   readonly QUOTE_POOL:Address,
   readonly BROKER:Address,
+  readonly ORACLE:Address,
+  readonly EIP7702Delegation:Address,
 }
 
 export interface ChainInfo {

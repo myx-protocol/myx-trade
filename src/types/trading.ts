@@ -133,3 +133,13 @@ export interface TradingResult {
   gasUsed?: string;
   error?: string;
 }
+
+export interface UpdateOrderTpSlParams {
+  orderId: string;
+  tpSize: string;
+  tpPrice: string;
+  slSize: string;
+  slPrice: string;
+  address: string;
+  executionFeeToken: string;
+}
