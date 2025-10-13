@@ -461,7 +461,7 @@ const TradePage: React.FC = () => {
       const client = new MyxClient({
         signer: signer,
         chainId: ChainId.ARB_TESTNET,
-        brokerAddress: "0xa70245309631Ce97425532466F24ef86FE630311",
+        brokerAddress: "0x8Aa46a3EB0E80af6E42537FE334bD768b331b277",
         isTestnet: true,
         getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
       });
