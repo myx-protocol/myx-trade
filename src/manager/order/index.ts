@@ -488,7 +488,7 @@ export class Order {
       };
     }
   }
-  
+
   async updateOrderTpSl(params: UpdateOrderParams) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const orderManagerContract = await getOrderManagerSingerContract(
@@ -525,8 +525,16 @@ export class Order {
       console.log("updateOrderTpSl receipt", receipt)
       return receipt;
 
-    } catch (e) {
-      console.error('Error updating order:', e);
+    } catch (e: any) {
+      console.log("e", e.data)
+      const revertData =
+        e.data ||
+        e.error?.data ||
+        e.info?.error?.data ||
+        e.cause?.data ||
+        null;
+      const error = orderManagerContract.interface.parseError(revertData)
+      console.log("error", error)
       return {
         code: -1,
         message: "Failed to update order",
