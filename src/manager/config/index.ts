@@ -3,6 +3,7 @@ import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
+import { WalletClient } from "viem";
 
 interface AccessTokenResponse {
   accessToken: string;
@@ -12,6 +13,7 @@ interface AccessTokenResponse {
 export interface MyxClientConfig {
   chainId: number;
   signer: Signer;
+  walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
   poolingInterval?: number;
