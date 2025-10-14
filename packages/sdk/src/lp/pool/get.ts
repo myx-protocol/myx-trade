@@ -1,5 +1,5 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
-import { getPoolManagerContract } from "../../web3/providers";
+import { getDataProviderContract, getPoolManagerContract } from "../../web3/providers";
 import { ChainId } from "@/config/chain";
 import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
@@ -64,3 +64,13 @@ export const getMarketPools = async (chainId: ChainId) => {
   }
 }
 
+export const getPoolInfo = async (chainId: ChainId, poolId: string, marketPrice: bigint) => {
+  try {
+    const contract = await getDataProviderContract(chainId)
+    const request = await contract.getPoolInfo( poolId, marketPrice )
+    console.log(request)
+  }catch(error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+  }
+}

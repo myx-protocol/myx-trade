@@ -57,7 +57,7 @@ export const TpSL = ({className = ''}: {className?: string}) => {
       setLoading(true)
       const rs = await Pool.addTpSl(params)
       console.log("addTpSL ", rs)
-      message.success("Transfer success")
+      message.success("AddTpSL success")
     } catch(e) {
       message.error(JSON.stringify(e))
     } finally {

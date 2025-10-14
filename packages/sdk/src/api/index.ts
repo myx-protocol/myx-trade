@@ -100,5 +100,12 @@ export const getOrders = async (accessToken: string, chainId: ChainId): Promise<
   );
 };
 
+export const getPoolOpenOrders = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
+  return await http.get<PositionResponse>(
+    `${baseUrl}/openapi/scan/pool-order/open?chainId=${chainId}`,
+    undefined,
+    { headers: { 'myx_openapi_access_token': accessToken } }
+  );
+};
 
 export * from "./type";

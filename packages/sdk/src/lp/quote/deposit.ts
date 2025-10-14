@@ -35,7 +35,7 @@ export const deposit = async (params: Deposit) => {
     const addresses = Address[chainId as keyof typeof Address];
     const contractAddress = addresses.QUOTE_POOL;
     
-    const tokenAddress = Market[chainId].quoteToken;
+    const tokenAddress = pool.quoteToken;
     const decimals = pool?.quoteDecimals;
     
     

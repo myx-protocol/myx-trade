@@ -1,11 +1,12 @@
-import {  useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { formatUnits } from "ethers";
 import { Market, getBalanceOf, MarketPoolState, pool as Pool, base, quote, getOraclePrice, } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
-import { Tag } from "antd";
+import { message, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { formatNumberPrecision } from "@/utils/format.ts";
+import { Button } from "./Button";
 const COMMON_PRICE_DECIMALS = 30
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
@@ -113,6 +114,7 @@ export const BalanceInfo = () => {
 export const PoolInfo = ({className = ''}:{className?:string}) => {
  const { pool, poolId } = usePoolInfo()
   const {chainId, account} = useContext(PoolContext)
+  const [loading, setLoading] = useState<boolean>(false)
   
   const {data: price}  = useQuery({
     queryKey: [{key: 'pirce'},poolId],
@@ -193,6 +195,19 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     }
   })
   
+  const onReprime = useCallback(async () => {
+    try {
+      if (!poolId) return
+      setLoading(true)
+      await Pool.reprime(chainId, poolId)
+      message.success('Pool reprime')
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }, [poolId, chainId])
+  
   return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
@@ -233,6 +248,9 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         </span>
         {/*<span>{}</span>*/}
       </div>
+      {
+        pool?.state === MarketPoolState.Bench && <Button label={'重新上架'} isLoading={loading}  onClick={onReprime}/>
+      }
     </div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
