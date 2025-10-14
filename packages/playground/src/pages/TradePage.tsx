@@ -401,32 +401,6 @@ const TradePage: React.FC = () => {
   // 调整保证金弹窗相关状态
   const [cancelAllLoading, setCancelAllLoading] = useState(false);
 
-  // // 处理平仓操作
-  // const handleClosePosition = async (positionId: string) => {
-  //   Modal.confirm({
-  //     title: '确认平仓 / Confirm Close Position',
-  //     content: `确定要平仓 ID 为 ${positionId} 的仓位吗？/ Are you sure you want to close position ${positionId}?`,
-  //     okText: '确认 / Confirm',
-  //     cancelText: '取消 / Cancel',
-  //     onOk: async () => {
-  //       // try {
-  //       //   if (myxClient) {
-  //       //     const result = await myxClient.position.createDecreaseOrder(positionId);
-  //       //     if (result.code === 0) {
-  //       //       message.success('平仓成功 / Position closed successfully');
-  //       //     } else {
-  //       //       message.error(`平仓失败 / Close failed: ${result.message}`);
-  //       //     }
-  //       //     console.log("Close position result:", result);
-  //       //   }
-  //       // } catch (error) {
-  //       //   console.error("Close position error:", error);
-  //       //   message.error('平仓失败 / Close position failed');
-  //       // }
-  //     }
-  //   });
-  // };
-
   // 处理取消订单操作
   const handleCancelOrder = async (orderId: string) => {
     Modal.confirm({
@@ -461,6 +435,7 @@ const TradePage: React.FC = () => {
       const client = new MyxClient({
         signer: signer,
         chainId: ChainId.ARB_TESTNET,
+        walletClient: walletClient,
         brokerAddress: "0x8Aa46a3EB0E80af6E42537FE334bD768b331b277",
         isTestnet: true,
         getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
