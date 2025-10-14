@@ -207,7 +207,8 @@ export class Utils {
         price: '0',
         vaa: '',
         publishTime: 0,
-        poolId: ''
+        poolId: '',
+        nativeFee: 0
       };
     }
   }
