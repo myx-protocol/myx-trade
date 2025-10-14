@@ -7,8 +7,8 @@ export interface CreatePoolRequest {
   baseToken: AddressLike;
 }
 export enum PoolType {
-  Base = 1,
-  Quote = 2
+  Base = 0,
+  Quote = 1
 }
 
 export enum TriggerType {
