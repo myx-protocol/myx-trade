@@ -7,8 +7,13 @@ import oracleAbi from "@/abi/MYXOracle.json";
 import { getPositions } from "@/api";
 import { Utils } from "../utils";
 import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
-
-
+import { privateKeyToAccount } from "viem/accounts";
+import { createWalletClient } from "viem";
+import { arbitrumSepolia } from "viem/chains";
+import { http } from "viem";
+import { Account } from "viem";
+import { encodeFunctionData } from "viem";
+import brokerAbi from "@/abi/Broker.json";
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -47,51 +52,107 @@ export class Position {
     }
   }
 
-  async adjustCollateral({poolId, positionId, adjustAmount}: {poolId: string, positionId: string, adjustAmount: string}) {
+  async adjustCollateral({ poolId, positionId, adjustAmount }: { poolId: string, positionId: string, adjustAmount: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
+    console.log("adjustCollateral-->", { poolId, positionId, adjustAmount })
     try {
       const oraclePrice = await this.utils.getOraclePrice(poolId);
       console.log("oraclePrice-->", oraclePrice);
       const eip7702DelegationAddress = getContractAddressByChainId(
-      config.chainId
-    ).EIP7702Delegation;
+        config.chainId
+      ).EIP7702Delegation;
 
-    const eip7702DelegationContract = new ethers.Contract(
-      eip7702DelegationAddress,
-      eip7702DelegationAbi,
-      config.signer
-    );
+      const oracleAddress = getContractAddressByChainId(
+        config.chainId
+      ).ORACLE;
 
-        
-    const oracleAddress = getContractAddressByChainId(
-      config.chainId
-    ).ORACLE;
+      const brokerAddress = getContractAddressByChainId(
+        config.chainId
+      ).BROKER;
 
-    const oracleContract = new ethers.Contract(
-      oracleAddress,
-      oracleAbi,
-      config.signer
-    );
+      const oracleContract = new ethers.Contract(
+        oracleAddress,
+        oracleAbi,
+        config.signer
+      );
 
-    const updatePricesGasLimit = await oracleContract.updatePrices.estimateGas([{
-      poolId: poolId,
-      referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
-      oracleUpdateData: oraclePrice?.vaa ?? '0',
-      publishTime: oraclePrice.publishTime,
-    }], {
-      value: '1'
-    });
+      const updatePricesGasLimit = await oracleContract.updatePrices.estimateGas([{
+        poolId: poolId,
+        referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
+        oracleUpdateData: oraclePrice?.vaa ?? '0',
+        publishTime: oraclePrice.publishTime,
+      }], {
+        value: oraclePrice.nativeFee
+      });
 
-    console.log("updatePricesGasLimit-->", updatePricesGasLimit)
+      const updateParams = {
+        poolId: poolId,
+        referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
+        oracleUpdateData: oraclePrice?.vaa ?? '0',
+        publishTime: oraclePrice.publishTime,
+      }
 
-    // console.log("updatePricesGasLimit", updatePricesGasLimit)
-      
-      console.log("oraclePrice-->", oraclePrice);
-      console.log('positionId-->', positionId);
-      console.log('adjustAmount-->', adjustAmount);
-      // console.log('eip7702DelegationContract-->', eip7702DelegationContract)
-      // const gasLimit = await eip7702DelegationContract.updatePriceAndBatchExecute.estimateGas(positionId);
+      const updatePriceData = {
+        target: oracleAddress,
+        gas: updatePricesGasLimit,
+        data: encodeFunctionData({
+          abi: oracleAbi,
+          functionName: 'updatePrices',
+          args: [[updateParams]],
+        }),
+        value: oraclePrice.nativeFee ?? '1',
+      }
+
+      const adjustParams = [positionId, adjustAmount]
+
+      const adjustCollateralData = {
+        target: brokerAddress,
+        gas: 10000000n,
+        data: encodeFunctionData({
+          abi: brokerAbi,
+          functionName: 'adjustCollateral',
+          args: adjustParams,
+        }),
+      }
+
+      const account = privateKeyToAccount('0x579ba5df60f80e975cfa3f1441f765db765fe0ad9b6e2c5754a0dc994e2fc3de')
+
+      const walletClient = createWalletClient({
+        account: account,
+        chain: arbitrumSepolia,
+        transport: http('https://sepolia-rollup.arbitrum.io/rpc'),
+      })
+
+      const authorization1 = await walletClient?.signAuthorization({
+        account: account as Account,
+        contractAddress: eip7702DelegationAddress as `0x${string}`,
+        // chainId: 0,
+        nonce: 180,
+        executor: 'self'
+      });
+
+      const data3 = encodeFunctionData({
+        abi: eip7702DelegationAbi,
+        functionName: 'updatePriceAndBatchExecute',
+        args: [[updatePriceData, adjustCollateralData]],
+      })
+
+      console.log("data3->", data3)
+
+      const hash = await walletClient?.sendTransaction({
+        to: account.address as `0x${string}`,
+        authorizationList: [authorization1!],
+        type: 'eip7702',
+        data: data3,
+        gas: 10000000n,
+        override: {
+          value: oraclePrice?.nativeFee ?? '1',
+        }
+      })
+
+
+      console.log("hash->", hash)
 
     } catch (error) {
       console.log('error-->', error)
