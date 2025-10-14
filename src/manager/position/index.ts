@@ -141,7 +141,7 @@ export class Position {
 
       console.log("data3->", data3)
 
-      const hash = await walletClient?.sendTransaction({
+      const hash = await walletClient.sendTransaction({
         to: account.address as `0x${string}`,
         authorizationList: [authorization1!],
         type: 'eip7702',
