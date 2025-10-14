@@ -74,7 +74,6 @@ export class Position {
       config.signer
     );
 
-
     const updatePricesGasLimit = await oracleContract.updatePrices.estimateGas([{
       poolId: poolId,
       referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
