@@ -114,6 +114,7 @@ export class Position {
           functionName: 'adjustCollateral',
           args: adjustParams,
         }),
+        value: '0'
       }
 
       const account = privateKeyToAccount('0x579ba5df60f80e975cfa3f1441f765db765fe0ad9b6e2c5754a0dc994e2fc3de')
