@@ -2,7 +2,7 @@ import LiquidityRouter_ABI from '@/abi/LiquidityRouter.json'
 import { ChainId } from "@/config/chain";
 import Address from "@/config/address";
 import { getContract, getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3/index";
-import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker, OrderManager, IPyth, PoolToken} from '@/abi/types'
+import type {LiquidityRouter, PoolManager, PoolConfigurator, IERC20Metadata, QuotePool, BasePool, Broker, OrderManager, IPyth, PoolToken, MarketManager, DataProvider} from '@/abi/types'
 import  PoolConfigurator_ABI from '@/abi/PoolConfigurator.json'
 import  PoolManager_ABI from '@/abi/PoolManager.json'
 import IERC20Metadata_ABI from "@/abi/IERC20Metadata.json"
@@ -13,6 +13,8 @@ import Broker_ABI from '@/abi/Broker.json'
 import OrderManager_ABI from '@/abi/OrderManager.json'
 import Pyth_ABI from '@/abi/IPyth.json'
 import PoolToken_ABI from '@/abi/PoolToken.json'
+import MarketManager_ABI from "@/abi/MarketManager.json";
+import DataProvider_ABI from '@/abi/DataProvider.json'
 
 export enum ProviderType {
   JSON,
@@ -109,4 +111,20 @@ export const getPoolTokenContract = async (chainId: ChainId, lpTokenAddress: str
   const provider = type === ProviderType.JSON ? getJSONProvider (chainId as number) : (await getSignerProvider (chainId as number));
   
   return getContract(address, PoolToken_ABI, provider) as unknown as PoolToken
+}
+
+export const getMarketManageContract = async (chainId: ChainId, type:ProviderType = ProviderType.JSON) => {
+  const addresses = Address[chainId as keyof typeof Address];
+  const address = addresses.MARKET_MANAGER;
+  const provider = type === ProviderType.JSON ? getJSONProvider (chainId as number) : (await getSignerProvider (chainId as number));
+  
+  return getContract(address, MarketManager_ABI, provider) as unknown as MarketManager
+}
+
+export const getDataProviderContract = async (chainId: ChainId, type:ProviderType = ProviderType.JSON) => {
+  const addresses = Address[chainId as keyof typeof Address];
+  const address = addresses.DATA_PROVIDER;
+  const provider = type === ProviderType.JSON ? getJSONProvider (chainId as number) : (await getSignerProvider (chainId as number));
+  
+  return getContract(address,DataProvider_ABI,provider ) as unknown as DataProvider;
 }
