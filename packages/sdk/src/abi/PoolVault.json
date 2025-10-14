@@ -1,0 +1,753 @@
+[
+  {
+    "type": "error",
+    "name": "ExceedBaseReserved",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "reserved"
+      },
+      {
+        "type": "uint256",
+        "name": "release"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ExceedQuoteReserved",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "reserved"
+      },
+      {
+        "type": "uint256",
+        "name": "release"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InsufficientLiquidity",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "available"
+      },
+      {
+        "type": "uint256",
+        "name": "request"
+      },
+      {
+        "type": "uint256",
+        "name": "reserved"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidDistributionAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidPrice",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ReservableNotEnough",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "available"
+      },
+      {
+        "type": "uint256",
+        "name": "request"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "BaseTokenDeposited",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "BaseTokenWithdrawn",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalAmount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "to",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "DisbursedToTradingVault",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseSize",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "QuoteTokenDeposited",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "QuoteTokenWithdrawn",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalAmount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "to",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReserveReleased",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseReserved",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteReserved",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Reserved",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseReserved",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteReserved",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "baseToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "depositBaseToken",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "depositQuoteToken",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "disburseToOracleVault",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      },
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "disburseToTradingVault",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "distribute",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "profits"
+      },
+      {
+        "type": "uint256",
+        "name": "genesisProfits"
+      },
+      {
+        "type": "uint256",
+        "name": "exchangedProfits"
+      },
+      {
+        "type": "uint256",
+        "name": "exchangedBaseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyIdentifier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "contractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      },
+      {
+        "type": "bytes32",
+        "name": "_poolId"
+      },
+      {
+        "type": "address",
+        "name": "_baseToken"
+      },
+      {
+        "type": "address",
+        "name": "_quoteToken"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "poolId",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "quoteToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "receiveFromOracleVault",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "baseIn"
+      },
+      {
+        "type": "uint256",
+        "name": "baseQuoteIn"
+      },
+      {
+        "type": "uint256",
+        "name": "quoteIn"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "redeemCollateral",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "registerDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "reservable",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "baseReservable"
+      },
+      {
+        "type": "uint256",
+        "name": "quoteReservable"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "reserveInfo",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "tuple",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "baseTotalAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "baseReservedAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteTotalAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteReservedAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteReservedAvgPrice"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "splitPoolProfits",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "profits"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "baseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "unregisterDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "update",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      },
+      {
+        "type": "address",
+        "name": "newAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updatePoolReserve",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "change"
+      },
+      {
+        "type": "uint256",
+        "name": "executeSize"
+      },
+      {
+        "type": "uint256",
+        "name": "executePrice"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawBaseToken",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "to"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawQuoteToken",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "to"
+      }
+    ],
+    "outputs": []
+  }
+]
