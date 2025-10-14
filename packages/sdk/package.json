@@ -52,6 +52,7 @@
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.1",
     "reconnecting-websocket": "^4.4.0",
+    "viem": "^2.36.0",
     "wretch": "^2.11.0",
     "ws": "^8.18.3"
   }
