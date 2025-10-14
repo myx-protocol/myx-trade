@@ -112,6 +112,19 @@ export interface PlaceOrderParams {
   slPrice?: string;
 }
 
+export interface PositionTpSlOrderParams  {
+  chainId: number;
+  address: string;
+  poolId: string;
+  positionId: number;
+  executionFeeToken: string;
+  tpTriggerType: TriggerType;
+  slTriggerType: TriggerType;
+  tpSize?: string;
+  tpPrice?: string;
+  slSize?: string;
+  slPrice?: string;
+}
 // Trading result
 export interface TradingResult {
   success: boolean;
@@ -119,4 +132,14 @@ export interface TradingResult {
   transactionHash: string;
   gasUsed?: string;
   error?: string;
+}
+
+export interface UpdateOrderTpSlParams {
+  orderId: string;
+  tpSize: string;
+  tpPrice: string;
+  slSize: string;
+  slPrice: string;
+  address: string;
+  executionFeeToken: string;
 }

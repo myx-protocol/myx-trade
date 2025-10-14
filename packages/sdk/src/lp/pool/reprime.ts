@@ -1,10 +1,14 @@
 import { ChainId } from "@/config/chain";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { getPoolManagerContract } from "@/web3/providers";
+import { getAccount, getPoolManagerContract } from "@/web3/providers";
 import { checkParams } from "@/common/checkParams";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common";
 import { getPoolInfo } from "@/lp/getPoolInfo";
+import Address from "@/config/address";
+import { getOracleFee } from "@/lp/market";
+import { getMarketInfo } from "./get";
+import { formatUnits } from "ethers";
 
 export const reprime = async (chainId: ChainId, poolId: string) => {
   try {
@@ -13,15 +17,23 @@ export const reprime = async (chainId: ChainId, poolId: string) => {
     if (!pool) {
       throw new Error(Errors[ErrorCode.Invalid_Params])
     }
+    const marketId= getMarketInfo (chainId);
+    const account = await getAccount (chainId);
+    const _amount = await getOracleFee(chainId, marketId);
+    
+    if (!_amount) {
+      throw new Error('Invalid Market');
+    }
     
     await checkParams ({
       tokenAddress: pool.quoteToken,
-      contractAddress,
-      decimals,
+      contractAddress: Address[chainId as keyof typeof Address].ORACLE_RESERVE,
+      decimals: pool.quoteDecimals,
       account,
       chainId,
-      amount,
+      amount: Number(formatUnits(_amount, pool.quoteDecimals)),
     })
+    
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getPoolManagerContract(chainId)
     const _gasLimit = await contract.reprimePool.estimateGas({ poolId })

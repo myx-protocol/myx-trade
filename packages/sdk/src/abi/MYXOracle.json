@@ -1,0 +1,612 @@
+[
+  {
+    "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ExceedMaxPriceDeviation",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidRewindPrice",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OracleInsufficientFee",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeCastOverflowedUintDowncast",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "bits"
+      },
+      {
+        "type": "uint256",
+        "name": "value"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "StalePrice",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OracleAdminUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "oldOracleAdmin",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "newOracleAdmin",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolPriceUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "oracleType",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "oracleAdapter",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "referencePrice",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oraclePrice",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "publishTime",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PriceAgeUpdated",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "oldAge",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newAge",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyIdentifier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "contractAddress"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getImplementation",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getMarketPrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "price"
+      },
+      {
+        "type": "uint64",
+        "name": "publishTime"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPriceAge",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPriceData",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "oraclePrice"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "latestOraclePrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "registerDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "removeRewindPrice",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "safeOraclePrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "unregisterDependencies",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "update",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      },
+      {
+        "type": "address",
+        "name": "newAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updatePriceAge",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint32",
+        "name": "age"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updatePrices",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateRewindPrice",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeTo",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  }
+]

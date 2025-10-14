@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export const CreateDecreaseOrderButton = ({ record, myxClient, poolList, address }: { record: any, myxClient: MyxClient, poolList: any[], address: string }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [amount, setAmount] = useState<string>('')
+  const [amount, setAmount] = useState<string>('0')
   const [price, setPrice] = useState<string>('')
 
   useEffect(() => {
@@ -44,8 +44,7 @@ export const CreateDecreaseOrderButton = ({ record, myxClient, poolList, address
         })
 
         console.log("executeDecreaseOrder result", result)
-        // setOpen(false);
-        // form.resetFields();
+        setOpen(false);
       }
     } catch (error) {
       console.error("Close position error:", error);

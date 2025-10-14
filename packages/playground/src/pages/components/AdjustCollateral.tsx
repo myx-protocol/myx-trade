@@ -18,13 +18,17 @@ export const AdjustCollateral = ({ record, myxClient, poolList }: { record: any,
         const adjustAmount = ethers.parseUnits(amount, pool?.quoteDecimals).toString();
         console.log("adjustAmount", adjustAmount);
         console.log("record.positionId", record.positionId);
-        const result = await myxClient.position.adjustCollateral(record.positionId, adjustAmount);
-        if (result.code === 0) {
+        const result = await myxClient.position.adjustCollateral({
+          poolId: record.poolId,
+          positionId: record.positionId,
+          adjustAmount: adjustAmount,
+        });
+        if (result?.code === 0) {
           message.success('保证金调整成功 / Collateral adjusted successfully');
           setAdjustModalVisible(false);
           setAmount('');
         } else {
-          message.error(`保证金调整失败 / Collateral adjustment failed: ${result.message}`);
+          message.error(`保证金调整失败 / Collateral adjustment failed: ${result?.message}`);
         }
       }
     } catch (error) {

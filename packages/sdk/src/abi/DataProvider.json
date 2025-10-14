@@ -1,0 +1,441 @@
+[
+  {
+    "type": "constructor",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "ADDRESS_MANAGER",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getBrokerFeeTiers",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "brokerAddress"
+      },
+      {
+        "type": "bool",
+        "name": "isMYXBroker"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "brokerFee",
+        "components": [
+          {
+            "type": "tuple[]",
+            "name": "addOnFeeTiers",
+            "components": [
+              {
+                "type": "uint8",
+                "name": "tier"
+              },
+              {
+                "type": "uint16",
+                "name": "takerFeeRate"
+              },
+              {
+                "type": "int16",
+                "name": "makerFeeRate"
+              }
+            ]
+          },
+          {
+            "type": "tuple[]",
+            "name": "baseFeeRate",
+            "components": [
+              {
+                "type": "uint8",
+                "name": "assetClass"
+              },
+              {
+                "type": "uint16",
+                "name": "makerFeeRate"
+              },
+              {
+                "type": "uint16",
+                "name": "takerFeeRate"
+              }
+            ]
+          },
+          {
+            "type": "tuple[]",
+            "name": "specialFeeTiers",
+            "components": [
+              {
+                "type": "uint8",
+                "name": "tier"
+              },
+              {
+                "type": "uint16",
+                "name": "takerFeeRate"
+              },
+              {
+                "type": "int16",
+                "name": "makerFeeRate"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getExchangeables",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "poolIds"
+      },
+      {
+        "type": "uint256[]",
+        "name": "marketPrices"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "exchangeables",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "maxBaseIn"
+          },
+          {
+            "type": "uint256",
+            "name": "maxQuoteIn"
+          },
+          {
+            "type": "uint256",
+            "name": "maxBaseOut"
+          },
+          {
+            "type": "uint256",
+            "name": "maxQuoteOut"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolInfo",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "marketPrice"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "components": [
+          {
+            "type": "tuple",
+            "name": "basePool",
+            "components": [
+              {
+                "type": "address",
+                "name": "poolToken"
+              },
+              {
+                "type": "uint256",
+                "name": "exchangeRate"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenPrice"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenSupply"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "quotePool",
+            "components": [
+              {
+                "type": "address",
+                "name": "poolToken"
+              },
+              {
+                "type": "uint256",
+                "name": "exchangeRate"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenPrice"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenSupply"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "reserveInfo",
+            "components": [
+              {
+                "type": "uint256",
+                "name": "baseTotalAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "baseReservedAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "quoteTotalAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "quoteReservedAmount"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "fundingInfo",
+            "components": [
+              {
+                "type": "int256",
+                "name": "nextFundingRate"
+              },
+              {
+                "type": "int256",
+                "name": "lastFundingFeeTracker"
+              },
+              {
+                "type": "uint256",
+                "name": "nextEpochTime"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "oi",
+            "components": [
+              {
+                "type": "int256",
+                "name": "tracker"
+              },
+              {
+                "type": "uint256",
+                "name": "longSize"
+              },
+              {
+                "type": "uint256",
+                "name": "shortSize"
+              },
+              {
+                "type": "uint256",
+                "name": "poolEntryPrice"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolInfos",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "poolIds"
+      },
+      {
+        "type": "uint256[]",
+        "name": "marketPrices"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "components": [
+          {
+            "type": "tuple",
+            "name": "basePool",
+            "components": [
+              {
+                "type": "address",
+                "name": "poolToken"
+              },
+              {
+                "type": "uint256",
+                "name": "exchangeRate"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenPrice"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenSupply"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "quotePool",
+            "components": [
+              {
+                "type": "address",
+                "name": "poolToken"
+              },
+              {
+                "type": "uint256",
+                "name": "exchangeRate"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenPrice"
+              },
+              {
+                "type": "uint256",
+                "name": "poolTokenSupply"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "reserveInfo",
+            "components": [
+              {
+                "type": "uint256",
+                "name": "baseTotalAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "baseReservedAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "quoteTotalAmount"
+              },
+              {
+                "type": "uint256",
+                "name": "quoteReservedAmount"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "fundingInfo",
+            "components": [
+              {
+                "type": "int256",
+                "name": "nextFundingRate"
+              },
+              {
+                "type": "int256",
+                "name": "lastFundingFeeTracker"
+              },
+              {
+                "type": "uint256",
+                "name": "nextEpochTime"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "oi",
+            "components": [
+              {
+                "type": "int256",
+                "name": "tracker"
+              },
+              {
+                "type": "uint256",
+                "name": "longSize"
+              },
+              {
+                "type": "uint256",
+                "name": "shortSize"
+              },
+              {
+                "type": "uint256",
+                "name": "poolEntryPrice"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolTokenPrices",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "poolIds"
+      },
+      {
+        "type": "uint256[]",
+        "name": "marketPrices"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "basePoolTokenPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "quotePoolTokenPrice"
+          }
+        ]
+      }
+    ]
+  }
+]

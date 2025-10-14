@@ -99,7 +99,6 @@ export interface UpdateOrderParams {
   tpPrice: string;
   slSize: string;
   slPrice: string;
-  address: string;
   useOrderCollateral: boolean;
   executionFeeToken: string;
 }
