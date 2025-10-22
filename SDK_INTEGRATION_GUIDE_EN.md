@@ -30,7 +30,7 @@ const signer = await provider.getSigner();
 const myxClient = new MyxClient({
   chainId: 421614, // Arbitrum Sepolia Testnet
   signer: signer,
-  brokerAddress: "0x17b72e6713233EA5C16c952AFA7742F71B20ea8c",
+  brokerAddress: "0xDb25D3f37f2d35005582fb7Bdf126C0EF7738106",
   isTestnet: true
 });
 ```
