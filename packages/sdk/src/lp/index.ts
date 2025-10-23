@@ -6,3 +6,6 @@ import * as market from './market';
 export * from '../common/price'
 
 export { base, quote, pool, market };
+
+export {formatUnits, parseUnits} from 'ethers'
+
