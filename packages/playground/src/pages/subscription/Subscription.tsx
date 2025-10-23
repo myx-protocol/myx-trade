@@ -236,7 +236,7 @@ const SubscriptionPage: React.FC = () => {
       myxClientRef.current = new MyxClient({
         signer: signer,
         chainId: ChainId.ARB_TESTNET,
-        brokerAddress: "0xDb25D3f37f2d35005582fb7Bdf126C0EF7738106",
+        brokerAddress: "0xd3d5b9c4316468697D827389B79622F43BDF6483",
         isTestnet: true,
         logLevel: "debug",
         getAccessToken,
