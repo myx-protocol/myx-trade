@@ -559,25 +559,74 @@ try {
 }
 ```
 
-#### 11. get base lp Rewards
+#### 11. get pool detail
 
 ```typescript
-import { quote } from "@myx-trade/sdk";
+import { pool } from "@myx-trade/sdk";
 
-const [fromPool, setFromPool] = useState<string>(poolId || '')
-const [toPool, setToPool] = useState<string>('')
-const [amount, setAmount] = useState<number | string>(100)
-const [loading, setLoading] = useState(false)
+const poolId = 'poolId'
+await pool.getPoolDetail(poolId)
+
+```
+
+#### 12. get base lp Rewards
+
+```typescript
+import { base, pool as Pool } from "@myx-trade/sdk";
+
+const pool = await Pool.getPoolDetail(poolId)
+
+const result = await base.getRewards({
+  poolId,
+  chainId,
+  account
+})
+
+const rewards = formatUnits(result, pool?.quoteDecimals)
+```
+
+#### 13. claim base lp Rewards
+
+```typescript
+import { base } from "@myx-trade/sdk";
+
+const poolId = 'poolId'
 
 try {
   setLoading(true)
-  await quote.transfer(chainId, fromPool, toPool, Number(amount))
-  // message.success("Transfer success")
+  await base.claim({chainId, poolId})
+  // message.success("Claim successfully claimed")
 } catch(e) {
   // message.error(JSON.stringify(e))
 } finally {
   setLoading(false)
 }
+```
+
+#### 14. get quote lp Rewards
+
+```typescript
+import { quote, pool as Pool } from "@myx-trade/sdk";
+
+const pool = await Pool.getPoolDetail(poolId)
+
+const result = await quote.getRewards({
+  poolId,
+  chainId,
+  account
+})
+
+const rewards = formatUnits(result, pool?.quoteDecimals)
+```
+
+#### 15. claim quote lp Rewards
+
+```typescript
+import { quote } from "@myx-trade/sdk";
+
+const poolId = 'poolId'
+
+await quote.claim({chainId, poolId})
 ```
 
 ## 错误处理
