@@ -7,13 +7,9 @@ import oracleAbi from "@/abi/MYXOracle.json";
 import { getPositions } from "@/api";
 import { Utils } from "../utils";
 import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
-import { privateKeyToAccount } from "viem/accounts";
-import { createWalletClient } from "viem";
-import { arbitrumSepolia } from "viem/chains";
-import { http } from "viem";
-import { Account } from "viem";
 import { encodeFunctionData } from "viem";
 import brokerAbi from "@/abi/Broker.json";
+
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -59,6 +55,7 @@ export class Position {
     try {
       const oraclePrice = await this.utils.getOraclePrice(poolId);
       console.log("oraclePrice-->", oraclePrice);
+      
       const eip7702DelegationAddress = getContractAddressByChainId(
         config.chainId
       ).EIP7702Delegation;
@@ -70,6 +67,36 @@ export class Position {
       const brokerAddress = getContractAddressByChainId(
         config.chainId
       ).BROKER;
+
+      // 获取用户地址
+      const userAddress = await config.signer.getAddress();
+      const nonce = await config.signer.getNonce();
+
+      // 1️⃣ 构造签名消息
+      const message = {
+        chainId: config.chainId,
+        delegate: eip7702DelegationAddress,
+        nonce: nonce,
+      };
+
+      const signature = await config.signer.signMessage(JSON.stringify(message));
+
+      // 3️⃣ 构造 authorizationList
+      const sig = signature.slice(2);
+      const r = `0x${sig.slice(0, 64)}` as `0x${string}`;
+      const s = `0x${sig.slice(64, 128)}` as `0x${string}`;
+      const v = parseInt(sig.slice(128, 130), 16);
+      
+      const authorizationList = [
+        {
+          chainId: config.chainId,
+          address: eip7702DelegationAddress as `0x${string}`,
+          nonce: Number(nonce),
+          r,
+          s,
+          yParity: v === 27 ? 0 : 1,
+        }
+      ];
 
       const oracleContract = new ethers.Contract(
         oracleAddress,
@@ -86,6 +113,7 @@ export class Position {
         value: oraclePrice.nativeFee
       });
 
+      // 构造更新价格的数据
       const updateParams = {
         poolId: poolId,
         referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
@@ -104,56 +132,50 @@ export class Position {
         value: oraclePrice.nativeFee ?? '1',
       }
 
-      const adjustParams = [positionId, adjustAmount]
-
+      // 构造调整保证金的数据
       const adjustCollateralData = {
         target: brokerAddress,
         gas: 10000000n,
         data: encodeFunctionData({
           abi: brokerAbi,
           functionName: 'adjustCollateral',
-          args: adjustParams,
+          args: [positionId, adjustAmount],
         }),
         value: '0'
       }
 
-      const account = privateKeyToAccount('0x579ba5df60f80e975cfa3f1441f765db765fe0ad9b6e2c5754a0dc994e2fc3de')
-
-      const walletClient = createWalletClient({
-        account: account,
-        chain: arbitrumSepolia,
-        transport: http('https://sepolia-rollup.arbitrum.io/rpc'),
-      })
-
-      const authorization1 = await walletClient?.signAuthorization({
-        account: account as Account,
-        contractAddress: eip7702DelegationAddress as `0x${string}`,
-        // chainId: 0,
-        nonce: 180,
-        executor: 'self'
-      });
-
-      const data3 = encodeFunctionData({
+      // 编码批量执行的数据
+      const batchExecuteData = encodeFunctionData({
         abi: eip7702DelegationAbi,
         functionName: 'updatePriceAndBatchExecute',
         args: [[updatePriceData, adjustCollateralData]],
-      })
-
-      console.log("data3->", data3)
-
-      const hash = await walletClient.sendTransaction({
-        to: account.address as `0x${string}`,
-        authorizationList: [authorization1!],
-        type: 'eip7702',
-        data: data3,
-        gas: 10000000n,
-        override: {
-          value: oraclePrice?.nativeFee ?? '1',
-        }
-      })
+      });
 
 
-      console.log("hash->", hash)
+      // 4️⃣ 发送交易
+      let hash: string;
+
+      if (config.walletClient) {
+        hash = await config.walletClient.sendTransaction({
+          account: userAddress as `0x${string}`,
+          to: userAddress as `0x${string}`,
+          data: batchExecuteData as `0x${string}`,
+          value: BigInt(oraclePrice?.nativeFee ?? '1'),
+          gas: 10000000n,
+          authorizationList,
+          type: 'eip7702',
+        } as any);
+      } else {
+        throw new Error('EIP-7702 交易目前只支持使用 walletClient，请在配置中提供 walletClient');
+      }
+
+      console.log("Transaction hash->", hash);
+
+      return {
+        code: 0,
+        data: { hash },
+        message: "调整保证金交易已提交"
+      };
 
     } catch (error) {
       console.log('error-->', error)
