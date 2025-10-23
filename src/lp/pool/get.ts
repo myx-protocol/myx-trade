@@ -68,7 +68,13 @@ export const getPoolInfo = async (chainId: ChainId, poolId: string, marketPrice:
   try {
     const contract = await getDataProviderContract(chainId)
     const request = await contract.getPoolInfo( poolId, marketPrice )
-    console.log(request)
+    console.log(request?.quotePool, request.basePool, request.reserveInfo, request.fundingInfo);
+    return {
+      quotePool: request.quotePool,
+      basePool: request.basePool,
+      reserveInfo: request.reserveInfo,
+      fundingInfo: request.fundingInfo,
+    }
   }catch(error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
