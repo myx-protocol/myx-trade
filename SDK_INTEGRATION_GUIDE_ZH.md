@@ -343,6 +343,242 @@ const config = levelData.data.levelConfig;
 //   slip: 0.001
 // }
 ```
+### LP 管理
+#### 1. 创建lp
+
+```typescript
+import { pool } from "@myx-trade/sdk";
+
+try {
+  setIsLoading(true);
+  const poolId = await pool.createPool({chainId,  baseToken: address });
+  if (!poolId) return;
+  
+} catch(e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setIsLoading(false)
+}
+```
+
+#### 2. Deposit Lp by Quote
+
+```typescript
+import {quote} from "@myx-trade/sdk";
+
+const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const [amount, setAmount] = useState<string>('2000')
+const [slippage, setSlippage] = useState<string>('0.01')
+
+try {
+  setIsDepositLoading(true)
+  await quote.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  // message.success("Deposit success")
+} catch(e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setIsDepositLoading(false)
+}
+```
+
+#### 3. withdraw lp Quote
+
+```typescript
+import {quote} from "@myx-trade/sdk";
+
+const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const [amount, setAmount] = useState<string>('2000')
+const [slippage, setSlippage] = useState<string>('0.01')
+
+try {
+  setIsLoading(true)
+  await quote.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  message.success("Withdraw success")
+} finally {
+  setIsLoading(false)
+}
+```
+
+
+#### 4. deposit lp Base
+
+```typescript
+import {base} from "@myx-trade/sdk";
+
+const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const [amount, setAmount] = useState<string>('0.01')
+const [slippage, setSlippage] = useState<string>('0.01')
+
+try {
+  setIsLoading(true)
+  await base.quote({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  message.success("Withdraw success")
+} finally {
+  setIsLoading(false)
+}
+```
+
+#### 5. withdraw lp Base
+
+```typescript
+import {base} from "@myx-trade/sdk";
+
+const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const [amount, setAmount] = useState<string>('0.01')
+const [slippage, setSlippage] = useState<string>('0.01')
+
+try {
+  setIsWithdrawLoading(true)
+  await base.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  message.success("Withdraw success")
+} catch(e) {
+  message.error(JSON.stringify(e))
+} finally {
+  setIsWithdrawLoading(false)
+}
+```
+
+#### 6. get quote lp price
+
+```typescript
+import { quote, formatUnits } from "@myx-trade/sdk";
+
+if (!poolId ) return null
+const result = await quote.getLpPrice(
+  chainId,
+  poolId,
+)
+if (result) {
+  return formatUnits(result, COMMON_PRICE_DECIMALS) // COMMON_PRICE_DECIMALS = 30
+}
+```
+
+#### 7. get base lp price
+
+```typescript
+import { base, formatUnits } from "@myx-trade/sdk";
+
+if (!poolId ) return null
+const result = await base.getLpPrice(
+  chainId,
+  poolId,
+)
+if (result) {
+  return formatUnits(result, COMMON_PRICE_DECIMALS) // COMMON_PRICE_DECIMALS = 30
+}
+```
+
+
+#### 8. add TPSL
+
+```typescript
+import {pool as Pool } from "@myx-trade/sdk";
+
+const chainId = 421614
+const poolId = 'poolId'
+const [loading, setLoading] = useState(false)
+const [tpAmount, setTpAmount] = useState<string | number>("")
+const [tpPrice, setTpPrice] = useState<string | number>("")
+const [slAmount, setSlAmount] = useState<string | number>("")
+const [slPrice, setSlPrice] = useState<string | number>("")
+const [slippage, setSlippage] = useState<string>('0.01')
+const [poolType, setPoolType] = useState<Pool.PoolType>(Pool.PoolType.Base)
+
+if (!poolId ) return
+const tpsl = [
+  {
+    amount: Number(tpAmount),
+    triggerPrice: Number(tpPrice),
+    triggerType: Pool.TriggerType.TP
+  },
+  {
+    amount: Number(slAmount),
+    triggerPrice: Number(slPrice),
+    triggerType: Pool.TriggerType.SL
+  }
+].filter((item) => item.amount && item.triggerPrice)
+
+const params: Pool.AddTpSLParams = {
+  slippage: Number(slippage),
+  poolId,
+  chainId,
+  poolType: poolType,
+  tpsl
+}
+
+try {
+  setLoading(true)
+  const rs = await Pool.addTpSl(params)
+  // console.log("addTpSL ", rs)
+  // message.success("AddTpSL success")
+} catch(e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setLoading(false)
+}
+
+```
+
+#### 9. cancel TPSL order
+
+```typescript
+import { pool } from "@myx-trade/sdk";
+
+const [orderId, setOrderId] = useState<string>('')
+
+try {
+  if (!orderId) return
+  await pool.cancelTpSl({orderId, chainId})
+  // message.success("Cancel Order successfully")
+} catch (e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setIsLoading(false)
+}
+```
+
+
+#### 10. transfer
+
+```typescript
+import { quote } from "@myx-trade/sdk";
+
+const [fromPool, setFromPool] = useState<string>(poolId || '')
+const [toPool, setToPool] = useState<string>('')
+const [amount, setAmount] = useState<number | string>(100)
+const [loading, setLoading] = useState(false)
+
+try {
+  setLoading(true)
+  await quote.transfer(chainId, fromPool, toPool, Number(amount))
+  // message.success("Transfer success")
+} catch(e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setLoading(false)
+}
+```
+
+#### 11. get base lp Rewards
+
+```typescript
+import { quote } from "@myx-trade/sdk";
+
+const [fromPool, setFromPool] = useState<string>(poolId || '')
+const [toPool, setToPool] = useState<string>('')
+const [amount, setAmount] = useState<number | string>(100)
+const [loading, setLoading] = useState(false)
+
+try {
+  setLoading(true)
+  await quote.transfer(chainId, fromPool, toPool, Number(amount))
+  // message.success("Transfer success")
+} catch(e) {
+  // message.error(JSON.stringify(e))
+} finally {
+  setLoading(false)
+}
+```
 
 ## 错误处理
 
