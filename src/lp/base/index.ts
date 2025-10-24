@@ -1,4 +1,4 @@
-export { claim } from "./claim";
+export { claimBasePoolRebate, claimBasePoolRebates } from "./claim";
 export { deposit } from "./deposit";
 export {withdraw} from "./withdraw";
 export {getRewards} from "./rewards";
