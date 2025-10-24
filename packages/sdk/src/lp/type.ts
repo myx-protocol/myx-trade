@@ -43,6 +43,11 @@ export interface ClaimParams {
   poolId: string;
 }
 
+export interface ClaimRebatesParams {
+  chainId: ChainId;
+  poolIds: string[];
+}
+
 
 export interface PreviewWithdrawDataParams {
   chainId: ChainId;
