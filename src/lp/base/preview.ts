@@ -7,6 +7,7 @@ import { parseUnits } from "ethers";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
+import { getErrorTextFormError } from "@/config/error";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
@@ -23,9 +24,9 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
     })
     console.log(request)
     return request
-  } catch (e) {
-    console.error(e)
-    throw e;
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 
@@ -45,9 +46,9 @@ export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0
     })
     console.log('previewBaseAmountOut response', request)
     return request
-  } catch (e) {
-    console.error(e)
-    throw e;
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 
@@ -97,8 +98,8 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
       rebateAmount,
     }
     
-  } catch (e) {
-    console.error(e);
-    throw e;
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

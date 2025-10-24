@@ -16,6 +16,7 @@ import { MarketPoolState } from "@/api";
 import { BigNumberish, Typed } from "ethers/lib.esm";
 import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { getErrorTextFormError } from "@/config/error";
 
 
 export const withdraw = async (params: WithdrawParams) => {
@@ -96,7 +97,7 @@ export const withdraw = async (params: WithdrawParams) => {
     
   } catch (error) {
     console.error (error);
-    throw error;
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 

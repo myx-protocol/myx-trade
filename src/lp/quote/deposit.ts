@@ -1,12 +1,11 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import {  type BytesLike, MaxUint256, parseUnits } from "ethers";
+import {  type BytesLike, parseUnits } from "ethers";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { Market } from "@/config/market";
 import Address from "@/config/address";
 import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
@@ -18,7 +17,7 @@ import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import type { TpSl } from "@/lp/pool";
 import { getTpSlParams } from "@/common/getTpSlParams";
-import { ErrorCode, Errors } from "@/config/error";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 
 
 export const deposit = async (params: Deposit) => {
@@ -109,8 +108,8 @@ export const deposit = async (params: Deposit) => {
     
     console.log("deposit", result)
     return result
-  } catch (e) {
-    console.error(e)
-    throw e
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
