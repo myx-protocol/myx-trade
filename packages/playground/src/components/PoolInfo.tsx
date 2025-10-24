@@ -1,7 +1,16 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
-import { formatUnits } from "ethers";
-import { Market, getBalanceOf, MarketPoolState, pool as Pool, base, quote, getOraclePrice, } from "@myx-trade/sdk";
+import { formatUnits, parseUnits } from "ethers";
+import {
+  Market,
+  getBalanceOf,
+  MarketPoolState,
+  pool as Pool,
+  base,
+  quote,
+  getOraclePrice,
+  market,
+} from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 import { message, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
@@ -208,6 +217,25 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     }
   }, [poolId, chainId])
   
+  
+  const {data: info}  = useQuery({
+    queryKey: [{key: 'poolContractInfo'},poolId, price],
+    enabled: !!poolId,
+    queryFn: async () => {
+      if (!poolId || !price) return null
+      const result = await Pool.getPoolInfo(
+        chainId,
+        poolId,
+        parseUnits(price, COMMON_PRICE_DECIMALS)
+      )
+      if (result) {
+        return result?.data?.[0]?.price
+      }
+      return
+    },
+    refetchInterval: 5000
+  })
+  
   return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
@@ -265,6 +293,10 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         </div>
         <div className={'flex gap-[10px]'}>
           <span>Decimals:</span>
+          <span>{pool?.baseDecimals || '--'}</span>
+        </div>
+        <div className={'flex gap-[10px]'}>
+          <span>Amount:</span>
           <span>{pool?.baseDecimals || '--'}</span>
         </div>
       </div>

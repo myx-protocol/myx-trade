@@ -412,7 +412,7 @@ const [slippage, setSlippage] = useState<string>('0.01')
 
 try {
   setIsLoading(true)
-  await base.quote({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
+  await base.deposit({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
   message.success("Withdraw success")
 } finally {
   setIsLoading(false)
