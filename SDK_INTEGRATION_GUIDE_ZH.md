@@ -349,11 +349,13 @@ const config = levelData.data.levelConfig;
 ```typescript
 import { pool } from "@myx-trade/sdk";
 
+const [tokenAddress] = useState<string>('0x0d5307e4ba49b82a580f7e9aefe6cdfc4e472056')
+
 try {
   setIsLoading(true);
-  const poolId = await pool.createPool({chainId,  baseToken: address });
+  const poolId = await pool.createPool({chainId,  baseToken: tokenAddress });
   if (!poolId) return;
-  
+
 } catch(e) {
   // message.error(JSON.stringify(e))
 } finally {
@@ -361,12 +363,22 @@ try {
 }
 ```
 
-#### 2. Deposit Lp by Quote
+#### 2. get pool detail
+
+```typescript
+import { pool } from "@myx-trade/sdk";
+
+const poolId = 'poolId'
+await pool.getPoolDetail(poolId)
+
+```
+
+#### 3. Deposit Lp by Quote
 
 ```typescript
 import {quote} from "@myx-trade/sdk";
 
-const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const {poolId} = 'poolId'
 const [amount, setAmount] = useState<string>('2000')
 const [slippage, setSlippage] = useState<string>('0.01')
 
@@ -381,31 +393,31 @@ try {
 }
 ```
 
-#### 3. withdraw lp Quote
+#### 4. withdraw lp Quote
 
 ```typescript
 import {quote} from "@myx-trade/sdk";
 
-const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const {poolId} = 'poolId'
 const [amount, setAmount] = useState<string>('2000')
 const [slippage, setSlippage] = useState<string>('0.01')
 
 try {
   setIsLoading(true)
   await quote.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
-  message.success("Withdraw success")
+  // message.success("Withdraw success")
 } finally {
   setIsLoading(false)
 }
 ```
 
 
-#### 4. deposit lp Base
+#### 5. deposit lp Base
 
 ```typescript
 import {base} from "@myx-trade/sdk";
 
-const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const {poolId} = 'poolId'
 const [amount, setAmount] = useState<string>('0.01')
 const [slippage, setSlippage] = useState<string>('0.01')
 
@@ -418,12 +430,12 @@ try {
 }
 ```
 
-#### 5. withdraw lp Base
+#### 6. withdraw lp Base
 
 ```typescript
 import {base} from "@myx-trade/sdk";
 
-const {poolId} = '创建lp返回的poolId，or 列表中的poolId'
+const {poolId} = 'poolId'
 const [amount, setAmount] = useState<string>('0.01')
 const [slippage, setSlippage] = useState<string>('0.01')
 
@@ -438,10 +450,10 @@ try {
 }
 ```
 
-#### 6. get quote lp price
+#### 7. get quote lp price
 
 ```typescript
-import { quote, formatUnits } from "@myx-trade/sdk";
+import { quote, formatUnits, COMMON_PRICE_DECIMALS } from "@myx-trade/sdk";
 
 if (!poolId ) return null
 const result = await quote.getLpPrice(
@@ -453,10 +465,10 @@ if (result) {
 }
 ```
 
-#### 7. get base lp price
+#### 8. get base lp price
 
 ```typescript
-import { base, formatUnits } from "@myx-trade/sdk";
+import { base, formatUnits, COMMON_PRICE_DECIMALS } from "@myx-trade/sdk";
 
 if (!poolId ) return null
 const result = await base.getLpPrice(
@@ -469,7 +481,7 @@ if (result) {
 ```
 
 
-#### 8. add TPSL
+#### 9. add TPSL
 
 ```typescript
 import {pool as Pool } from "@myx-trade/sdk";
@@ -477,11 +489,11 @@ import {pool as Pool } from "@myx-trade/sdk";
 const chainId = 421614
 const poolId = 'poolId'
 const [loading, setLoading] = useState(false)
-const [tpAmount, setTpAmount] = useState<string | number>("")
-const [tpPrice, setTpPrice] = useState<string | number>("")
-const [slAmount, setSlAmount] = useState<string | number>("")
-const [slPrice, setSlPrice] = useState<string | number>("")
-const [slippage, setSlippage] = useState<string>('0.01')
+const [tpAmount, setTpAmount] = useState<string | number>("0.01")
+const [tpPrice, setTpPrice] = useState<string | number>("120000")
+const [slAmount, setSlAmount] = useState<string | number>("0.01")
+const [slPrice, setSlPrice] = useState<string | number>("100000")
+const [slippage, setSlippage] = useState<string>('0.002')
 const [poolType, setPoolType] = useState<Pool.PoolType>(Pool.PoolType.Base)
 
 if (!poolId ) return
@@ -519,7 +531,7 @@ try {
 
 ```
 
-#### 9. cancel TPSL order
+#### 10. cancel TPSL order
 
 ```typescript
 import { pool } from "@myx-trade/sdk";
@@ -538,7 +550,7 @@ try {
 ```
 
 
-#### 10. transfer
+#### 11. transfer
 
 ```typescript
 import { quote } from "@myx-trade/sdk";
@@ -557,16 +569,6 @@ try {
 } finally {
   setLoading(false)
 }
-```
-
-#### 11. get pool detail
-
-```typescript
-import { pool } from "@myx-trade/sdk";
-
-const poolId = 'poolId'
-await pool.getPoolDetail(poolId)
-
 ```
 
 #### 12. get base lp Rewards
