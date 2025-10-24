@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import {
   Market,
@@ -316,56 +316,71 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       <span>{poolId || '--'}</span>
     </div>
     <div className={'flex flex-col gap-[5px]'}>
-      <div className={'flex justify-between'}>
-        <div className={'flex gap-[10px]'}>
+      <div className={'flex gap-[30px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
           <span>Base:</span>
           <span>{pool?.baseSymbol || '--'}</span>
           
         </div>
-        <div className={'flex gap-[10px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
           <span>Decimals:</span>
           <span>{pool?.baseDecimals || '--'}</span>
         </div>
-        <div className={'flex gap-[10px]'}>
-          <span>Amount:</span>
-          <span>{info?.basePool?.poolTokenSupply || '--'}</span>
-        </div>
+        
       </div>
       
       <div className={'flex gap-[10px]'}>
         <span>Base token:</span>
         <span>{pool?.baseToken || '--'}</span>
       </div>
-      <div className={'flex gap-[10px]'}>
-        <span>Base poolToken:</span>
-        <span>{pool?.basePoolToken || '--'}</span>
+      <div className={'flex gap-[30px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Base poolToken:</span>
+          <span>{pool?.basePoolToken || '--'}</span>
+        </div>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Decimals:</span>
+          <span>{COMMON_LP_AMOUNT_DECIMALS || '--'}</span>
+        </div>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Amount:</span>
+          <span>{info?.basePool?.poolTokenSupply || '--'}</span>
+        </div>
       </div>
+      
     </div>
     
     <div className={'flex flex-col gap-[5px]'}>
-      <div className={'flex justify-between'}>
-        <div className={'flex gap-[10px]'}>
+      <div className={'flex gap-[30px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
           <span>Quote:</span>
           <span>{pool?.quoteSymbol || '--'}</span>
         </div>
-        <div className={'flex gap-[10px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
           <span>Decimals:</span>
           <span>{pool?.quoteDecimals || '--'}</span>
         </div>
         
-        <div className={'flex gap-[10px]'}>
-          <span>Amount:</span>
-          <span>{info?.quotePool?.poolTokenSupply || '--'}</span>
-        </div>
+        
       </div>
       
       <div className={'flex gap-[10px]'}>
         <span>Quote token:</span>
         <span>{pool?.quoteToken || '--'}</span>
       </div>
-      <div className={'flex gap-[10px]'}>
-        <span>Quote poolToken:</span>
-        <span>{pool?.quotePoolToken || '--'}</span>
+      <div className={'flex gap-[30px]'}>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Quote poolToken:</span>
+          <span>{pool?.quotePoolToken || '--'}</span>
+        </div>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Decimals:</span>
+          <span>{COMMON_LP_AMOUNT_DECIMALS || '--'}</span>
+        </div>
+        <div className={'flex gap-[10px] flex-1'}>
+          <span>Amount:</span>
+          <span>{info?.quotePool?.poolTokenSupply || '--'}</span>
+        </div>
       </div>
     </div>
     

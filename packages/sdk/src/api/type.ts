@@ -97,6 +97,7 @@ export type PriceType = {
   publishTime: number
   oracleType?: OracleType
   nativeFee?: number | string
+  poolId: string
 }
 
 export interface PriceResponse extends BaseResponse {

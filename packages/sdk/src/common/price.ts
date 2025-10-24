@@ -1,11 +1,39 @@
-import { getOraclePrice, MarketPoolState, OracleType } from "@/api";
+import { getOraclePrice, MarketPoolState, OracleType, type PriceType } from "@/api";
 import { ChainId } from "@/config/chain";
 import { isNil } from "lodash-es";
-import { getBasePoolContract, getPythContract } from "@/web3/providers";
-import { parseUnits } from "ethers";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { getPoolInfo } from "@/lp/getPoolInfo";
+import {  getPythContract } from "@/web3/providers";
+const parsePriceData = async (chainId: ChainId, data: PriceType[]) => {
+  const result = await Promise.all(
+    data.map(async (item) => {
+      const { publishTime, vaa, oracleType, nativeFee, price, poolId } = item
+      let value = !isNil(nativeFee) ? BigInt(nativeFee) : 1n
+      
+      if (oracleType === OracleType.Pyth) {
+        const PythContract = await getPythContract(chainId)
+        const v = await PythContract.getUpdateFee([vaa])
+        value = v
+      }
+      
+      return {
+        poolId,
+        price,
+        value,
+        publishTime,
+        oracleType: oracleType ?? OracleType.Pyth,
+        vaa,
+      }
+    })
+  )
+  
+  return result
+}
 
+export const getPricesData = async (chainId: ChainId, poolIds : string[]) => {
+  if (!poolIds || !poolIds.length) return
+  const rs = await getOraclePrice(chainId, poolIds)
+  const result =  await parsePriceData (chainId, rs.data)
+  return result
+}
 export const getPriceData = async (chainId:ChainId,poolId: string) => {
   if (!poolId) return
   const rs = await getOraclePrice(chainId, [poolId])
@@ -13,20 +41,8 @@ export const getPriceData = async (chainId:ChainId,poolId: string) => {
   if (!data) {
     throw new Error (`Unable to get price for ${poolId} in the deposit`)
   }
-  const { publishTime, vaa, oracleType, nativeFee, price } = data
-  let value = !isNil(nativeFee) ? BigInt(nativeFee) : 1n
-  if (oracleType === OracleType.Pyth) {
-    const PythContract = await getPythContract(chainId)
-    const v = await PythContract.getUpdateFee([vaa])
-    value = v
-  }
   
-  return {
-    price,
-    value,
-    publishTime,
-    oracleType: oracleType ?? OracleType.Pyth,
-    vaa,
-  }
+  const result =  await  parsePriceData (chainId, [data])
+  return result?.[0]
 }
 
