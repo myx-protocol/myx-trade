@@ -9,6 +9,7 @@ import {
 import { parseUnits } from "ethers";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getPricesData } from "@/common/price";
+import { getErrorTextFormError } from "@/config/error";
 
 export const claimQuotePoolRebate = async (
   params: ClaimParams
@@ -70,7 +71,7 @@ export const claimQuotePoolRebate = async (
     
   } catch (error) {
     console.error(error);
-    throw error;
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 
@@ -133,6 +134,6 @@ export const claimQuotePoolRebates = async (
     
   } catch (error) {
     console.error(error);
-    throw error;
+        throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

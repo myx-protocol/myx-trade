@@ -5,6 +5,7 @@ import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } fro
 import { getOraclePrice } from "@/api";
 import { parseUnits } from "ethers";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { getErrorTextFormError } from "@/config/error";
 
 export const getRewards = async (params: RewardsParams) => {
   try {
@@ -32,8 +33,8 @@ export const getRewards = async (params: RewardsParams) => {
     console.log("pendingUserRebates base result:", request);
     return request
   
-  } catch (e) {
-    console.error(e);
-    throw e;
+  } catch (error) {
+    console.error(error);
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

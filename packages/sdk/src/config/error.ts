@@ -1,5 +1,7 @@
 import {ErrorType, ErrorDecoder} from 'ethers-decode-error'
+import {customErrorMapping} from './customErrorMap'
 const errorDecoder = ErrorDecoder.create();
+
 
 export enum ErrorCode {
   Invalid_Chain_ID = 1,
@@ -43,9 +45,21 @@ export async function getErrorTextFormError(error: any) {
   }
   
   const decodeErrorResult = await errorDecoder.decode(error)
+  // console.log(decodeErrorResult)
   if (decodeErrorResult.type === ErrorType.UserRejectError) {
     return {
       error: Errors[ErrorCode.USER_REJECTED_REQUEST],
+    }
+  }
+  if (decodeErrorResult.type === ErrorType.CustomError) {
+    const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
+    if (errorKey) {
+      return {
+        error: customErrorMapping[errorKey] ,
+      }
+    }
+    return {
+      error: error?.reason || decodeErrorResult.reason || error.message || error?.code,
     }
   }
   

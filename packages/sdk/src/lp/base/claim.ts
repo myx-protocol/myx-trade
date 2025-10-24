@@ -9,6 +9,7 @@ import {
 import { parseUnits } from "ethers";
 import {  COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import {  getPricesData } from "@/common/price";
+import { getErrorTextFormError } from "@/config/error";
 
 export const claimBasePoolRebate = async (
   params: ClaimParams
@@ -67,7 +68,7 @@ export const claimBasePoolRebate = async (
     
   } catch (error) {
     console.error(error);
-    throw error;
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 
@@ -76,30 +77,30 @@ export const claimBasePoolRebates = async (
   params: ClaimRebatesParams
 ) => {
   try {
-    const { chainId, poolIds} = params;
-    if(poolIds.length === 0) return;
+    const { chainId, poolIds } = params;
+    if (poolIds.length === 0) return;
     
-    const chainInfo =  CHAIN_INFO[chainId];
+    const chainInfo = CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
     await checkParams ({
       account,
       chainId,
     })
-    const priceData = await  getPricesData(chainId, poolIds)
+    const priceData = await getPricesData (chainId, poolIds)
     if (!priceData) return
-   
-    const prices = priceData.map((item) => {
+    
+    const prices = priceData.map ((item) => {
       return {
         poolId: item.poolId,
-        referencePrice: parseUnits(item?.price ?? '0', COMMON_PRICE_DECIMALS),
+        referencePrice: parseUnits (item?.price ?? '0', COMMON_PRICE_DECIMALS),
         oracleUpdateData: item?.vaa ?? '0',
         publishTime: item.publishTime
       }
     })
     
-    const values = priceData.map((item) => item.value)
-    const value = values.reduce((prev, curr) => curr + prev, 0n)
+    const values = priceData.map ((item) => item.value)
+    const value = values.reduce ((prev, curr) => curr + prev, 0n)
     
     const data = {
       prices,
@@ -108,26 +109,26 @@ export const claimBasePoolRebates = async (
       recipient: account
     }
     
-    console.log('base claim pool rebates', data)
-    const contract = await getLiquidityRouterContract(chainId)
+    console.log ('base claim pool rebates', data)
+    const contract = await getLiquidityRouterContract (chainId)
     
     // estimateGas
-    const _gasLimit = await contract["claimBasePoolRebates((bytes32,uint256,bytes,uint64)[],bytes32[],address)"].estimateGas(prices, poolIds, account, {
+    const _gasLimit = await contract["claimBasePoolRebates((bytes32,uint256,bytes,uint64)[],bytes32[],address)"].estimateGas (prices, poolIds, account, {
       value
     })
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
     const response = await contract["claimBasePoolRebates((bytes32,uint256,bytes,uint64)[],bytes32[],address)"] (prices, poolIds, account, {
       gasLimit,
       gasPrice,
       value
     })
     
-    console.log('base claim rebates',response)
+    console.log ('base claim rebates', response)
     return response
     
   } catch (error) {
-    console.error(error);
-    throw error;
+    console.error (error);
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
