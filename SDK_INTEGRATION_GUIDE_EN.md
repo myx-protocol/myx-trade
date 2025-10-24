@@ -344,8 +344,8 @@ const config = levelData.data.levelConfig;
 // }
 ```
 
-### LP 管理
-#### 1. 创建lp
+### LP Manage
+#### 1. create LP
 
 ```typescript
 import { pool } from "@myx-trade/sdk";
