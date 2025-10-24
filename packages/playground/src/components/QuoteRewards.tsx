@@ -13,7 +13,7 @@ export const QuoteRewards = () => {
   const {pool,poolId} = usePoolInfo()
   const [loading, setLoading] = useState<boolean>(false)
   
-  const {data = null} = useQuery({
+  const {data = null, refetch} = useQuery({
     queryKey: [{key: 'quote_rewards'},poolId, account],
     enabled: !!poolId && !!account,
     queryFn: async () => {
@@ -34,6 +34,7 @@ export const QuoteRewards = () => {
       setLoading(true)
       await quote.claim({chainId, poolId})
       message.success("Claim successfully claimed")
+      await refetch()
     } catch(e) {
       message.error(JSON.stringify(e))
     } finally {

@@ -1,12 +1,12 @@
 import { ErrorCode, Errors } from "@/config/error";
 import { parseUnits } from "ethers";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS, } from "@/config/decimals";
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas";
 import type { TpSl, TpSLParams } from "@/lp/pool";
 import { getDecimalPlaces } from "@/utils/number";
 import { Market } from "@/config/market";
 
-export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = 18, quoteDecimal: number) => {
+export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = COMMON_LP_AMOUNT_DECIMALS, quoteDecimal: number) => {
   if (tpsl.length === 0) {
     return []
   }
