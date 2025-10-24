@@ -1,30 +1,46 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
-import { formatUnits, parseUnits } from "ethers";
 import {
   Market,
   getBalanceOf,
   MarketPoolState,
   pool as Pool,
-  base,
-  quote,
+  // base,
+  // quote,
   getOraclePrice,
-  market,
+  formatUnits,
+  parseUnits,
+  COMMON_PRICE_DECIMALS,
+  COMMON_LP_AMOUNT_DECIMALS
 } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 import { message, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { formatNumberPrecision } from "@/utils/format.ts";
 import { Button } from "./Button";
-const COMMON_PRICE_DECIMALS = 30
+// const  = 30
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
-  const { pools , poolId} = useContext(PoolContext);
-  const pool = useMemo(() => {
-    if (!poolId) return undefined;
-    return pools?.find((_pool) => _pool.poolId === poolId)
-  }, [pools, poolId]);
-  return {pool, poolId};
+  const { poolId, chainId, setPoolId} = useContext(PoolContext);
+  
+  const {data: pool}  = useQuery({
+    queryKey: [{key: 'pool_detail_by_poolId'},poolId, chainId],
+    queryFn: async () => {
+      if (!poolId || !chainId) return null
+      const result = await Pool.getPoolDetail(chainId, poolId);
+     
+      return result
+    },
+  })
+  
+  
+  const refresh = async () => {
+    const _poolId = poolId || '';
+    setPoolId('');
+    console.log('refresh');
+    setTimeout(() => setPoolId(_poolId), 1000);
+  }
+  return {pool, poolId, refresh};
 }
 
 
@@ -38,6 +54,8 @@ export const BalanceInfo = () => {
   const getQuoteBalance = async () => {
     setQuoteBalance('')
     if (!poolId || !account) return
+    if (!pool) return
+    
     if (pool?.quoteToken && account) {
       const bigintBalance = await getBalanceOf(chainId, account, pool?.quoteToken)
       const _balance = formatUnits(bigintBalance, pool.quoteDecimals)
@@ -121,7 +139,7 @@ export const BalanceInfo = () => {
 
 
 export const PoolInfo = ({className = ''}:{className?:string}) => {
- const { pool, poolId } = usePoolInfo()
+ const { pool, poolId, refresh } = usePoolInfo()
   const {chainId, account} = useContext(PoolContext)
   const [loading, setLoading] = useState<boolean>(false)
   
@@ -142,39 +160,39 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     refetchInterval: 5000
   })
   
-  const {data: baseLpPrice}  = useQuery({
-    queryKey: [{key: 'baseLpPrice'},poolId],
-    enabled: !!poolId,
-    queryFn: async () => {
-      if (!poolId ) return null
-      const result = await base.getLpPrice(
-        chainId,
-        poolId,
-      )
-      if (result) {
-        return formatUnits(result, COMMON_PRICE_DECIMALS)
-      }
-      return
-    },
-    refetchInterval: 5000
-  })
+  // const {data: baseLpPrice}  = useQuery({
+  //   queryKey: [{key: 'baseLpPrice'},poolId],
+  //   enabled: !!poolId,
+  //   queryFn: async () => {
+  //     if (!poolId ) return null
+  //     const result = await base.getLpPrice(
+  //       chainId,
+  //       poolId,
+  //     )
+  //     if (result) {
+  //       return formatUnits(result, COMMON_PRICE_DECIMALS)
+  //     }
+  //     return
+  //   },
+  //   refetchInterval: 5000
+  // })
   
-  const {data: quoteLpPrice}  = useQuery({
-    queryKey: [{key: 'quoteLpPrice'},poolId],
-    enabled: !!poolId,
-    queryFn: async () => {
-      if (!poolId ) return null
-      const result = await quote.getLpPrice(
-        chainId,
-        poolId,
-      )
-      if (result) {
-        return formatUnits(result, COMMON_PRICE_DECIMALS)
-      }
-      return
-    },
-    refetchInterval: 5000
-  })
+  // const {data: quoteLpPrice}  = useQuery({
+  //   queryKey: [{key: 'quoteLpPrice'},poolId],
+  //   enabled: !!poolId,
+  //   queryFn: async () => {
+  //     if (!poolId ) return null
+  //     const result = await quote.getLpPrice(
+  //       chainId,
+  //       poolId,
+  //     )
+  //     if (result) {
+  //       return formatUnits(result, COMMON_PRICE_DECIMALS)
+  //     }
+  //     return
+  //   },
+  //   refetchInterval: 5000
+  // })
   
   const {data: userShareBase}  = useQuery({
     queryKey: [{key: 'userShareBase'},poolId, pool],
@@ -210,6 +228,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       setLoading(true)
       await Pool.reprime(chainId, poolId)
       message.success('Pool reprime')
+      await refresh()
     } catch (e) {
       console.error(e)
     } finally {
@@ -219,19 +238,31 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   
   
   const {data: info}  = useQuery({
-    queryKey: [{key: 'poolContractInfo'},poolId, price],
+    queryKey: [{key: 'poolContractInfo'},poolId],
     enabled: !!poolId,
     queryFn: async () => {
-      if (!poolId || !price) return null
+      if (!poolId || !price) return
       const result = await Pool.getPoolInfo(
         chainId,
         poolId,
         parseUnits(price, COMMON_PRICE_DECIMALS)
       )
+      
       if (result) {
-        return result?.data?.[0]?.price
+        return {
+          basePool: {
+            poolTokenPrice: formatUnits(result.basePool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            poolTokenSupply: formatUnits(result.basePool.poolTokenSupply, COMMON_LP_AMOUNT_DECIMALS) ,
+          },
+          quotePool: {
+            poolTokenPrice: formatUnits(result.quotePool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            poolTokenSupply: formatUnits(result.quotePool.poolTokenSupply, COMMON_LP_AMOUNT_DECIMALS) ,
+          }
+        }
       }
-      return
+      
+      return  result
+      
     },
     refetchInterval: 5000
   })
@@ -251,14 +282,14 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>LP Price(B):</span>
         <span className={''}>
-          {baseLpPrice ? formatNumberPrecision(baseLpPrice) : '--'}
+          {info?.basePool?.poolTokenPrice  ? formatNumberPrecision(info?.basePool?.poolTokenPrice) : '--'}
         </span>
         <span>{pool?.quoteSymbol || ''}</span>
       </div>
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>LP Price(U):</span>
         <span className={''}>
-          {quoteLpPrice ? formatNumberPrecision(quoteLpPrice) : '--'}
+          {info?.quotePool?.poolTokenPrice ? formatNumberPrecision(info?.quotePool?.poolTokenPrice) : '--'}
         </span>
         <span>{pool?.quoteSymbol || ''}</span>
       </div>
@@ -297,7 +328,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         </div>
         <div className={'flex gap-[10px]'}>
           <span>Amount:</span>
-          <span>{pool?.baseDecimals || '--'}</span>
+          <span>{info?.basePool?.poolTokenSupply || '--'}</span>
         </div>
       </div>
       
@@ -320,6 +351,11 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         <div className={'flex gap-[10px]'}>
           <span>Decimals:</span>
           <span>{pool?.quoteDecimals || '--'}</span>
+        </div>
+        
+        <div className={'flex gap-[10px]'}>
+          <span>Amount:</span>
+          <span>{info?.quotePool?.poolTokenSupply || '--'}</span>
         </div>
       </div>
       
