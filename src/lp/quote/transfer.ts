@@ -6,7 +6,7 @@ import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import { ChainId } from "@/config/chain";
 import { MarketPoolState } from "@/api/type";
-import { ErrorCode, Errors } from "@/config/error";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { getPoolInfo } from "@/lp/getPoolInfo";
 
 
@@ -47,7 +47,8 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     })
     console.log("migrateLiquidity",result)
     return result
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    // console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

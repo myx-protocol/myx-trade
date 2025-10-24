@@ -17,7 +17,7 @@ import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getPriceData } from "@/common/price";
 import { getTpSlParams } from "@/common/getTpSlParams";
 import type { TpSl } from "@/lp/pool";
-import { ErrorCode, Errors } from "@/config/error";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 
 
 export const deposit = async (params: Deposit) => {
@@ -107,7 +107,8 @@ export const deposit = async (params: Deposit) => {
     console.log("deposit", result)
     return result
     
-  } catch (e) {
-    throw e
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
