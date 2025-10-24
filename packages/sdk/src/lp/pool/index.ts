@@ -5,5 +5,6 @@ export { getUserGenesisShare } from "@/lp/pool/getUserGenesisShare";
 export {addTpSl} from "./addTpSl";
 export {cancelTpSl} from "./cancel";
 export {reprime} from "./reprime";
-export {getPoolInfo as getPoolDetail} from '../getPoolInfo'
+import {getPoolInfo as getPoolDetail} from '../getPoolInfo'
+export {getPoolDetail}
 export * from './type'
