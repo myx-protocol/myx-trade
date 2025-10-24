@@ -1,5 +1,6 @@
 import { getPoolDetail, type MarketPool } from "@/api";
 import { ChainId } from "@/config/chain";
+import { getErrorTextFormError } from "@/config/error";
 
 
 export const getPoolInfo = async (chainId: ChainId, poolId: string) => {
@@ -8,7 +9,7 @@ export const getPoolInfo = async (chainId: ChainId, poolId: string) => {
     const response  = await getPoolDetail(chainId, poolId);
     const pool: MarketPool = response.data
     return pool;
-  } catch (e) {
-    throw e;
+  } catch (error) {
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

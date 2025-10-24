@@ -2,6 +2,7 @@ import { getQuotePoolContract } from "@/web3/providers";
 import { previewAmountOutParams } from "@/lp/type";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
+import { getErrorTextFormError } from "@/config/error";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
@@ -18,9 +19,9 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
     })
     console.log(request)
     return request
-  } catch (e) {
-    console.error(e)
-    throw e;
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
 
@@ -40,8 +41,8 @@ export const previewQuoteAmountOut = async ({chainId, amountIn, poolId, price = 
     })
     console.log('previewQuoteAmountOut response', request)
     return request
-  } catch (e) {
-    console.error(e)
-    throw e;
+  } catch (error) {
+    console.error(error)
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
