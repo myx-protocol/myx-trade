@@ -9,9 +9,10 @@ import { message } from "antd";
 
 
 export const BaseRewards = () => {
-  const {chainId, account} = useContext(PoolContext);
+  const {chainId, account, pools} = useContext(PoolContext);
   const {pool,poolId} = usePoolInfo()
   const [loading, setLoading] = useState<boolean>(false)
+  const [allLoading, setAllLoading] = useState<boolean>(false)
   
   const {data = null, refetch} = useQuery({
     queryKey: [{key: 'rewards'},poolId, account],
@@ -31,7 +32,7 @@ export const BaseRewards = () => {
     if (!poolId || !account) return
     try {
       setLoading(true)
-      await base.claim({chainId, poolId})
+      await base.claimBasePoolRebate({chainId, poolId})
       message.success("Claim successfully claimed")
       await refetch()
     } catch(e) {
@@ -41,12 +42,28 @@ export const BaseRewards = () => {
     }
     
   }, [chainId, poolId, account])
+  
+  const onHandleAllClaim = useCallback(async () => {
+    if (!poolId || !account) return
+    try {
+      setAllLoading(true)
+      await base.claimBasePoolRebates({chainId, poolIds: (pools || []).map((_pool) => _pool.poolId)})
+      message.success("Claim successfully claimed")
+      await refetch()
+    } catch(e) {
+      message.error(JSON.stringify(e))
+    } finally {
+      setAllLoading(false)
+    }
+    
+  }, [chainId, poolId, account])
   return <div className="flex items-center gap-[20px]">
     <div className={'flex gap-[10px]'}>
       <span>Base Rewards:</span>
       <span>{pool && data !== null  ? formatUnits(data, pool?.quoteDecimals) + ` ${pool.quoteSymbol}`  : '--'}</span>
     </div>
     <Button label={'Claim'} disabled={disabled} isLoading={loading} onClick={onHandleClaim}/>
+    <Button label={'Claim All'} disabled={!pools?.length} isLoading={allLoading} onClick={onHandleAllClaim}/>
   </div>
 }
 

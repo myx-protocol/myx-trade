@@ -44,7 +44,7 @@ export const getAccount = async (chainId:ChainId) => {
 export const getLiquidityRouterContract = async (chainId: ChainId) => {
   const addresses = Address[chainId as keyof typeof Address];
   const address = addresses.LIQUIDITY_ROUTER;
-  console.log("LiquidityRouter address", address);
+  // console.log("LiquidityRouter address", address);
   const provider = await getSignerProvider (chainId as number);
   
   return getContract(address,LiquidityRouter_ABI,provider ) as unknown as LiquidityRouter;
