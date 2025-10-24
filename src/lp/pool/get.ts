@@ -67,14 +67,37 @@ export const getMarketPools = async (chainId: ChainId) => {
 export const getPoolInfo = async (chainId: ChainId, poolId: string, marketPrice: bigint) => {
   try {
     const contract = await getDataProviderContract(chainId)
+    console.log('DataProvider.getPoolInfo,', poolId, marketPrice)
     const request = await contract.getPoolInfo( poolId, marketPrice )
-    console.log(request?.quotePool, request.basePool, request.reserveInfo, request.fundingInfo);
-    return {
-      quotePool: request.quotePool,
-      basePool: request.basePool,
-      reserveInfo: request.reserveInfo,
-      fundingInfo: request.fundingInfo,
+    
+    // console.log(request?.quotePool, request.basePool, request.reserveInfo, request.fundingInfo);
+    const info = {
+      quotePool: {
+        poolToken: request.quotePool.poolToken,
+        exchangeRate: request.quotePool.exchangeRate,
+        poolTokenPrice: request.quotePool.poolTokenPrice,
+        poolTokenSupply: request.quotePool.poolTokenSupply,
+      },
+      basePool: {
+        poolToken: request.basePool.poolToken,
+        exchangeRate: request.basePool.exchangeRate,
+        poolTokenPrice: request.basePool.poolTokenPrice,
+        poolTokenSupply: request.basePool.poolTokenSupply
+      },
+      reserveInfo: {
+        baseTotalAmount: request.reserveInfo.baseTotalAmount,
+        baseReservedAmount: request.reserveInfo.baseReservedAmount,
+        quoteTotalAmount: request.reserveInfo.quoteTotalAmount,
+        quoteReservedAmount: request.reserveInfo.quoteReservedAmount,
+      },
+      fundingInfo: {
+        nextFundingRate: request.fundingInfo.nextFundingRate,
+        lastFundingFeeTracker: request.fundingInfo.lastFundingFeeTracker,
+        nextEpochTime: request.fundingInfo.nextEpochTime,
+      },
     }
+    console.log(info)
+    return info
   }catch(error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))

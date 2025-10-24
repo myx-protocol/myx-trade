@@ -1,16 +1,14 @@
-import { getPoolDetail, getPools } from "@/api";
+import { getPoolDetail, type MarketPool } from "@/api";
 import { ChainId } from "@/config/chain";
 
 
 export const getPoolInfo = async (chainId: ChainId, poolId: string) => {
   try {
+    if (!chainId || !poolId) return
     const response  = await getPoolDetail(chainId, poolId);
-    const pool = response.data
-    if (!pool) return null;
-    
+    const pool: MarketPool = response.data
     return pool;
   } catch (e) {
-    console.error(e)
     throw e;
   }
 }
