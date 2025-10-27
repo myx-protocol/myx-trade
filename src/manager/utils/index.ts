@@ -6,6 +6,7 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import OrderManager_ABI from "@/abi/OrderManager.json";
 import { Logger } from "@/logger";
 import { getOraclePrice } from "@/api";
+import { getErrorTextFormError } from "@/config/error";
 
 export class Utils {
   private configManager: ConfigManager;
