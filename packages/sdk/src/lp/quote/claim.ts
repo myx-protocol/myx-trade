@@ -54,15 +54,15 @@ export const claimQuotePoolRebate = async (
     console.log("quote claim params", data)
     
     // estimateGas
-    // const _gasLimit = await contract["claimQuotePoolRebate((bytes32,uint256,bytes,uint64)[],bytes32,address)"]
-    // .estimateGas(prices,poolId, account, {
-    //   value: values[0]
-    // })
-    // const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    // const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+    const _gasLimit = await contract["claimQuotePoolRebate((bytes32,uint256,bytes,uint64)[],bytes32,address)"]
+    .estimateGas(prices,poolId, account, {
+      value: values[0]
+    })
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
     const response = await contract["claimQuotePoolRebate((bytes32,uint256,bytes,uint64)[],bytes32,address)"] ( prices,poolId, account, {
-      // gasLimit,
-      // gasPrice,
+      gasLimit,
+      gasPrice,
       value: values[0]
     })
     
