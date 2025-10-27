@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
@@ -37,6 +32,11 @@
   {
     "type": "error",
     "name": "InvalidFeeRate",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidFeeTier",
     "inputs": []
   },
   {
@@ -134,29 +134,22 @@
     ]
   },
   {
-    "type": "event",
-    "anonymous": false,
-    "name": "AddOnFeeTierUpdated",
+    "type": "error",
+    "name": "UnsupportedAssetClass",
     "inputs": [
       {
-        "type": "address",
-        "name": "broker",
-        "indexed": true
-      },
+        "type": "uint8",
+        "name": "assetClass"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "UnsupportedFeeTier",
+    "inputs": [
       {
         "type": "uint8",
-        "name": "tier",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "takerFeeRate",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "makerFeeRate",
-        "indexed": false
+        "name": "tier"
       }
     ]
   },
@@ -346,6 +339,19 @@
   },
   {
     "type": "function",
+    "name": "activeSpecialFeeTierList",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256[]"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "addressManager",
     "constant": true,
     "stateMutability": "view",
@@ -370,6 +376,10 @@
       {
         "type": "int256",
         "name": "adjustAmount"
+      },
+      {
+        "type": "bool",
+        "name": "useAccountBalance"
       }
     ],
     "outputs": []
@@ -489,6 +499,58 @@
   },
   {
     "type": "function",
+    "name": "getBaseFeeRate",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "assetClass"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "baseFeeRate",
+        "components": [
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          },
+          {
+            "type": "uint32",
+            "name": "makerFeeRate"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getSpecialFeeTier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "feeTier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int32",
+        "name": "makerFeeRate"
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getUserFeeRate",
     "constant": true,
     "stateMutability": "view",
@@ -505,19 +567,19 @@
     ],
     "outputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "takerFeeRate"
       },
       {
-        "type": "int16",
+        "type": "int32",
         "name": "makerFeeRate"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "baseTakerFeeRate"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "baseMakerFeeRate"
       }
     ]
@@ -553,11 +615,11 @@
         "name": "baseFeeRates",
         "components": [
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "takerFeeRate"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "makerFeeRate"
           }
         ]
@@ -741,6 +803,10 @@
           {
             "type": "uint256",
             "name": "slPrice"
+          },
+          {
+            "type": "bool",
+            "name": "useAccountBalance"
           }
         ]
       }
@@ -833,6 +899,10 @@
           {
             "type": "uint256",
             "name": "slPrice"
+          },
+          {
+            "type": "bool",
+            "name": "useAccountBalance"
           }
         ]
       }
@@ -860,6 +930,27 @@
       {
         "type": "bool",
         "name": "isSigner"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setSpecialFeeTier",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "feeTier"
+      },
+      {
+        "type": "int32",
+        "name": "makerFeeRate"
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate"
       }
     ],
     "outputs": []
@@ -909,6 +1000,36 @@
   },
   {
     "type": "function",
+    "name": "setUserSpecialFeeTier",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "uint8",
+        "name": "feeTier"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "supportedAssetClasses",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256[]"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "transferOwnership",
     "constant": false,
     "payable": false,
@@ -916,6 +1037,37 @@
       {
         "type": "address",
         "name": "newOwner"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateBaseFeeRates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8[]",
+        "name": "assetClasses"
+      },
+      {
+        "type": "bool[]",
+        "name": "isEnables"
+      },
+      {
+        "type": "tuple[]",
+        "name": "baseFeeRates",
+        "components": [
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          },
+          {
+            "type": "uint32",
+            "name": "makerFeeRate"
+          }
+        ]
       }
     ],
     "outputs": []
@@ -948,11 +1100,11 @@
         "name": "feeRate",
         "components": [
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "takerFeeRate"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "makerFeeRate"
           }
         ]
@@ -975,11 +1127,11 @@
         "name": "feeRates",
         "components": [
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "takerFeeRate"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "makerFeeRate"
           }
         ]
@@ -1036,6 +1188,10 @@
               {
                 "type": "bool",
                 "name": "useOrderCollateral"
+              },
+              {
+                "type": "bool",
+                "name": "useAccountBalance"
               }
             ]
           }
