@@ -70,6 +70,7 @@ export class Order {
         tpPrice: params.tpPrice ? params.tpPrice : 0,
         slSize: params.slSize ? params.slSize : 0,
         slPrice: params.slPrice ? params.slPrice : 0,
+        useAccountBalance: false
       });
 
 
@@ -94,6 +95,7 @@ export class Order {
           tpPrice: params.tpPrice ? params.tpPrice : 0,
           slSize: params.slSize ? params.slSize : 0,
           slPrice: params.slPrice ? params.slPrice : 0,
+          useAccountBalance: false
         },
         {
           gasLimit: (gasLimit * 120n) / 100n,
@@ -193,6 +195,7 @@ export class Order {
         tpPrice: 0,
         slSize: 0,
         slPrice: 0,
+        useAccountBalance: false
       });
 
       const transaction = await brokerContract.placeOrder(
@@ -216,6 +219,7 @@ export class Order {
           tpPrice: 0,
           slSize: 0,
           slPrice: 0,
+          useAccountBalance: false
         },
         {
           gasLimit: (gasLimit * 130n) / 100n,
@@ -294,6 +298,7 @@ export class Order {
               tpPrice: '0',
               slSize: '0',
               slPrice: '0',
+              useAccountBalance: false
             },
             {
               user: params.address,
@@ -315,6 +320,7 @@ export class Order {
               tpPrice: '0',
               slSize: '0',
               slPrice: '0',
+              useAccountBalance: false
             },
           ]
 
@@ -383,6 +389,7 @@ export class Order {
           tpPrice: '0',
           slSize: '0',
           slPrice: '0',
+          useAccountBalance: false
         }
 
         console.log('createPositionTpSlOrder data--->', data);
