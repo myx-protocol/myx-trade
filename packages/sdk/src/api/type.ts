@@ -1,3 +1,4 @@
+import { Direction } from "@/types/trading";
 export interface ObjectType<T> {
   [key: string]: T;
 }
@@ -109,10 +110,7 @@ export interface ApiResponse<T = Record<string, any>> extends BaseResponse {
   data: T;
 }
 
-export enum Direction {
-  LONG = 0,
-  SHORT = 1
-}
+
 
 export interface PositionType {
   poolId: string,

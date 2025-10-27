@@ -11,7 +11,7 @@ import {
   TriggerType,
 } from "../config/con";
 import { ChainId } from "../config/chain";
-import { MyxClient } from "@myx-trade/sdk";
+import { MyxClient, type PositionTpSlOrderParams } from "@myx-trade/sdk";
 
 import useSWR from "swr";
 import {
@@ -616,13 +616,18 @@ const TradePage: React.FC = () => {
           message.error("Position ID is required");
           return;
         }
-
-        const orderData = {
+        const position = positionsList.find(item => item.positionId === parseInt(values.positionId ?? '0'));
+        if (!position) {
+          message.error("Position not found");
+          return;
+        }
+        const orderData: PositionTpSlOrderParams = {
+          direction: position.direction as Direction,
           chainId: ChainId.ARB_TESTNET,
           address: address as `0x${string}`,
           poolId: selectedPool.poolId,
           positionId: values.positionId ? parseInt(values.positionId) : 0,
-          orderType: OrderType.STOP,
+          // orderType: OrderType.STOP,
           tpTriggerType: values.tpTriggerType as TriggerType,
           slTriggerType: values.slTriggerType as TriggerType,
           executionFeeToken: selectedPool.quoteToken,
