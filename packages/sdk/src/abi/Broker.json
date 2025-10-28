@@ -1202,6 +1202,50 @@
   },
   {
     "type": "function",
+    "name": "updatePriceAndAdjustCollateral",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "prices",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      },
+      {
+        "type": "uint256",
+        "name": "positionId"
+      },
+      {
+        "type": "int256",
+        "name": "adjustAmount"
+      },
+      {
+        "type": "bool",
+        "name": "useAccountBalance"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "userFeeData",
     "constant": true,
     "stateMutability": "view",

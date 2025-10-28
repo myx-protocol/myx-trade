@@ -438,6 +438,7 @@ const TradePage: React.FC = () => {
         walletClient: walletClient,
         brokerAddress: "0xd3d5b9c4316468697D827389B79622F43BDF6483",
         isTestnet: true,
+        logLevel: 'debug',
         getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
       });
 
