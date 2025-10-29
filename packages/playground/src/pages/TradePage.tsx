@@ -436,7 +436,7 @@ const TradePage: React.FC = () => {
         signer: signer,
         chainId: ChainId.ARB_TESTNET,
         walletClient: walletClient,
-        brokerAddress: "0xd3d5b9c4316468697D827389B79622F43BDF6483",
+        brokerAddress: "0xf95E6cb54794b8cc1D769cfcEE9A63bee9C2E53E",
         isTestnet: true,
         logLevel: 'debug',
         getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
