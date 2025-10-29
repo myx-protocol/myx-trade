@@ -45,8 +45,8 @@ export async function getErrorTextFormError(error: any) {
   }
   
   const decodeErrorResult = await errorDecoder.decode(error)
-  // console.log(decodeErrorResult)
-  if (decodeErrorResult.type === ErrorType.UserRejectError) {
+  console.log(decodeErrorResult)
+  if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
     return {
       error: Errors[ErrorCode.USER_REJECTED_REQUEST],
     }
@@ -66,6 +66,6 @@ export async function getErrorTextFormError(error: any) {
   console.error(error)
   
   return {
-    error: undefined,
+    error: decodeErrorResult.reason,
   }
 }
