@@ -241,11 +241,11 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     queryKey: [{key: 'poolContractInfo'},poolId],
     enabled: !!poolId,
     queryFn: async () => {
-      if (!poolId || !price) return
+      if (!poolId ) return
       const result = await Pool.getPoolInfo(
         chainId,
         poolId,
-        parseUnits(price, COMMON_PRICE_DECIMALS)
+        parseUnits(price || '0', COMMON_PRICE_DECIMALS)
       )
       
       if (result) {
