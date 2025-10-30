@@ -500,67 +500,15 @@ export class Order {
     const config: MyxClientConfig = this.configManager.getConfig();
     console.log("updateOrderTpSl params", params)
 
-    // const orderManagerContract = await getOrderManagerSingerContract(
-    //   config.chainId,
-    //   config.signer
-    // );
-
-    // try {
-    //   const gasLimit = await orderManagerContract.updateOrder.estimateGas({
-    //     orderId: params.orderId,
-    //     tpSize: params.tpSize,
-    //     tpPrice: params.tpPrice,
-    //     slSize: params.slSize,
-    //     slPrice: params.slPrice,
-    //     executionFeeToken: params.executionFeeToken,
-    //     useOrderCollateral: false,
-    //   });
-
-    //   console.log('gaslimit->', gasLimit)
-
-    //   const request = await orderManagerContract.updateOrder({
-    //     orderId: params.orderId,
-    //     tpSize: params.tpSize,
-    //     tpPrice: params.tpPrice,
-    //     slSize: params.slSize,
-    //     slPrice: params.slPrice,
-    //     executionFeeToken: params.executionFeeToken,
-    //     useOrderCollateral: false,
-    //   }, {
-    //     gasLimit: (gasLimit * 120n) / 100n,
-    //   }
-    //   );
-
-    // const receipt = await request?.wait()
-    // console.log("updateOrderTpSl receipt", receipt)
-    // return receipt;
-
-    // } catch (e: any) {
-    //   console.log("e", e)
-    //   const revertData =
-    //     e.data ||
-    //     e.error?.data ||
-    //     e.info?.error?.data ||
-    //     e.cause?.data ||
-    //     null;
-    //   const error = orderManagerContract.interface.parseError(revertData)
-    //   console.log("error", error)
-    //   return {
-    //     code: -1,
-    //     message: "Failed to update order",
-    //   };
-    // }
-
     const brokerContract = await getBrokerSingerContract(
       config.chainId,
       config.signer
     );
 
-
     const data = {
       orderId: params.orderId,
-      size: "10000000000000000",
-      price: "110568447641688930000000000000000000",
+      size: params.size,
+      price: params.price,
       tpsl: {
         tpSize: params.tpSize,
         tpPrice: params.tpPrice,
