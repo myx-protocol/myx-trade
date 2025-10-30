@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import {
   Market,
@@ -241,11 +241,11 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     queryKey: [{key: 'poolContractInfo'},poolId],
     enabled: !!poolId,
     queryFn: async () => {
-      if (!poolId || !price) return
+      if (!poolId ) return
       const result = await Pool.getPoolInfo(
         chainId,
         poolId,
-        parseUnits(price, COMMON_PRICE_DECIMALS)
+        parseUnits(price || '0', COMMON_PRICE_DECIMALS)
       )
       
       if (result) {
@@ -267,11 +267,30 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     refetchInterval: 5000
   })
   
+  const state = useMemo(() => {
+    // "success", "processing", "error", "default", "warning
+    switch (pool?.state) {
+      // case MarketPoolState.Cook:
+      //   return 'default'
+      case MarketPoolState.Primed:
+        return 'processing'
+      case MarketPoolState.Trench:
+        return 'success'
+      case MarketPoolState.PreBench:
+        return 'warning'
+      case MarketPoolState.Bench:
+        return 'error'
+      default:
+        return 'default'
+    }
+    
+  }, [pool?.state])
+  
   return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
       <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>
-      <Tag>{pool ? MarketPoolState[pool.state] : '--'}</Tag>
+      <Tag color={state}>{pool ? MarketPoolState[pool.state] : '--'}</Tag>
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>Price:</span>
         <span className={''}>

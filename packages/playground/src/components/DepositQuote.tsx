@@ -37,6 +37,8 @@ export const DepositQuote = ({className = ''}: {className?: string}) => {
       setIsLoading(true)
       await quote.withdraw({chainId, poolId, amount: Number(amount), slippage: Number(slippage) })
       message.success("Withdraw success")
+    } catch(e) {
+      message.error(JSON.stringify(e))
     } finally {
       setIsLoading(false)
     }
