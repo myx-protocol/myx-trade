@@ -7,4 +7,5 @@ export {cancelTpSl} from "./cancel";
 export {reprime} from "./reprime";
 import {getPoolInfo as getPoolDetail} from '../getPoolInfo'
 export {getPoolDetail}
+export {getOpenOrders} from './orders'
 export * from './type'
