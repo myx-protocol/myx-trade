@@ -5,7 +5,7 @@ import { useAccount, useWalletClient } from "wagmi";
 import { MyxClient } from "@myx-trade/sdk";
 import { BrowserProvider } from "ethers";
 import { ChainId } from "@config/chain.ts";
-
+import CryptoJS from "crypto-js";
 
 const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
   try {
