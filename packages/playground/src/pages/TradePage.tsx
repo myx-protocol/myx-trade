@@ -33,7 +33,7 @@ import {
   Modal,
   message,
 } from "antd";
-import { OrderTpSlButton } from './components/OrderTpSlButton';
+import { OrderSettingsButton } from './components/OrderTpSlButton';
 import { AdjustCollateral } from "./components/AdjustCollateral";
 import { CreateDecreaseOrderButton } from "./components/CreateDecreaseOrder";
 
@@ -383,7 +383,7 @@ const TradePage: React.FC = () => {
               >
                 {hasPartialFill && !isFullyFilled ? '强制' : '取消'}
               </Button>
-              <OrderTpSlButton record={record} myxClient={myxClient as MyxClient} poolList={poolList ?? []} />
+              <OrderSettingsButton record={record} myxClient={myxClient as MyxClient} poolList={poolList ?? []} />
             </Space>
           </Space>
         );

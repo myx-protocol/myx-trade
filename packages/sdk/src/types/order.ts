@@ -4,15 +4,6 @@
 
 import { OrderType, Direction, OrderStatus } from './trading';
 
-// Order update parameters
-export interface UpdateOrderParams {
-  orderId: string;
-  size?: string;
-  orderPrice?: string;
-  triggerPrice?: string;
-  slippagePct?: string;
-}
-
 // Order cancellation parameters
 export interface CancelOrderParams {
   orderId: string;
@@ -101,4 +92,6 @@ export interface UpdateOrderParams {
   slPrice: string;
   useOrderCollateral: boolean;
   executionFeeToken: string;
+  size: string;
+  price: string;
 }
