@@ -7,6 +7,8 @@ import { Position } from "./position";
 import { Order } from "./order";
 import { Utils } from "./utils";
 import { Account } from "./account";
+import { BrowserProvider } from "ethers";
+import { MxSDK } from "@/web3";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -67,5 +69,12 @@ export class MyxClient {
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
+    
+    if (options.walletClient?.transport) {
+      const provider = new BrowserProvider (options.walletClient?.transport);
+      if (provider) {
+        MxSDK.getInstance().setProvider(provider)
+      }
+    }
   }
 }
