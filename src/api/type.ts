@@ -1,4 +1,5 @@
 import { Direction } from "@/types/trading";
+import { PoolType, TriggerType } from "@/lp/pool";
 export interface ObjectType<T> {
   [key: string]: T;
 }
@@ -126,4 +127,21 @@ export interface PositionType {
 
 export interface PositionResponse extends BaseResponse {
   data: PositionType[];
+}
+
+export interface PoolOpenOrder {
+  amount: string
+  chainId: number
+  minQuoteOut: string
+  orderId: number
+  poolId: string
+  poolType: PoolType
+  triggerPrice: string
+  triggerType: TriggerType
+  txTime: number
+  user: string
+}
+
+export interface PoolOpenOrdersResponse extends BaseResponse {
+  data: PoolOpenOrder[];
 }
