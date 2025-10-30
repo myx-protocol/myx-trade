@@ -1,11 +1,9 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useState } from "react";
 import { ChainId } from "@/config/chain";
 import { useQuery } from "@tanstack/react-query";
 import { getPools } from "@/api";
 import { PoolContext } from "./PoolContext";
-import { useAccount, useWalletClient } from "wagmi";
-import { BrowserProvider } from "ethers";
-import {MxSDK} from "@myx-trade/sdk";
+import { useAccount } from "wagmi";
 
 
 export const PoolProvider = ({ children }: { children?: ReactNode }) => {
@@ -13,7 +11,7 @@ export const PoolProvider = ({ children }: { children?: ReactNode }) => {
   const [chainId] = useState<ChainId>(ChainId.ARB_TESTNET);
   // const [account] = useState<string>('0xC410a0E83671A12250247F38e6F7906cb1964154');
   const  {address: account} = useAccount()
-  const { data: walletClient } = useWalletClient();
+  // const { data: walletClient } = useWalletClient();
   
   const {data: pools, isLoading, refetch} = useQuery({
     queryKey: ['getMarketPoolList'],
@@ -23,16 +21,16 @@ export const PoolProvider = ({ children }: { children?: ReactNode }) => {
     }
   })
   
-  useEffect(() => {
-    if (walletClient?.transport) {
-      const provider = new BrowserProvider(walletClient.transport);
-      // const signer = await provider.getSigner();
-      if (provider){
-        MxSDK.getInstance().setProvider(provider)
-      }
-    }
-   
-  },[walletClient]);
+  // useEffect(() => {
+  //   if (walletClient?.transport) {
+  //     const provider = new BrowserProvider(walletClient.transport);
+  //     // const signer = await provider.getSigner();
+  //     if (provider){
+  //       MxSDK.getInstance().setProvider(provider)
+  //     }
+  //   }
+  //
+  // },[walletClient]);
   
   
   // const poolInfo = useMemo(() => {
