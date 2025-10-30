@@ -13,6 +13,7 @@ import { ChainId } from "@/config/chain";
 import { getChainInfo } from "@/config/chains/index";
 import { RotationProvider } from "@/web3/rotationProvider";
 import pkg from '../../package.json'
+import { ConfigManager } from "@/manager/config";
 
 export function getContract(
   address: string,
@@ -51,14 +52,25 @@ export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
 export class MxSDK {
   version = pkg.version;
   public provider: BrowserProvider | undefined;
+  private configManager: ConfigManager | undefined;
+  private static _instance: MxSDK
+  
+  
   constructor() {
     console.log(this.version);
   }
-  private static _instance: MxSDK
-  setProvider(provider: BrowserProvider) {
+  
+  public setConfigManager(configManager: ConfigManager): void {
+    this.configManager = configManager;
+  }
+  public getConfigManager(): ConfigManager | undefined {
+    return this.configManager;
+  }
+  
+  public setProvider(provider: BrowserProvider) {
     this.provider = provider;
   }
-  getProvider() {
+  public getProvider() {
     return  this.provider
   }
   static getInstance() {
