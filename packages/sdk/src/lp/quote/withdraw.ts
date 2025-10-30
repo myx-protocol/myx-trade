@@ -93,7 +93,10 @@ export const withdraw = async (params: WithdrawParams) => {
     })
     
     console.log ("withdraw quote with price", request)
-    return request
+    const receipt = await request?.wait()
+    
+    console.log ("withdraw quote receipt", receipt)
+    return receipt
     
   } catch (error) {
     console.error (error);

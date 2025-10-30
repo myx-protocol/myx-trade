@@ -80,9 +80,10 @@ export const withdraw = async (
         gasPrice,
         value,
       })
-      
-      console.log('base withdraw',response)
-      return response
+    
+    const receipt = await response?.wait()
+    console.log('base withdraw',response)
+    return receipt
     
     
   } catch (error) {
