@@ -84,7 +84,7 @@ export class Utils {
     return null;
   }
 
-  private async getApproveQuoteAmount(quoteAddress: string) {
+  private async getApproveQuoteAmount(quoteAddress: string, spenderAddress?: string) {
     try {
       const erc20Abi = [
         "function allowance(address owner, address spender) external view returns (uint256)",
@@ -94,7 +94,7 @@ export class Utils {
 
       const owner = await config.signer.getAddress();
 
-      const spenderAddress = getContractAddressByChainId(
+      const spender = spenderAddress ?? getContractAddressByChainId(
         config.chainId
       ).ORDER_MANAGER;
 
@@ -104,7 +104,7 @@ export class Utils {
         config.signer
       );
 
-      const allowance = await tokenContract.allowance(owner, spenderAddress);
+      const allowance = await tokenContract.allowance(owner, spender);
 
       return {
         code: 0,
@@ -118,11 +118,13 @@ export class Utils {
 
   async needsApproval(
     quoteAddress: string,
-    requiredAmount: string
+    requiredAmount: string,
+    spenderAddress?: string
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
-        quoteAddress
+        quoteAddress,
+        spenderAddress
       );
       const currentAllowance = currentAllowanceRes.data;
       const allowanceBigInt = ethers.getBigInt(currentAllowance);
@@ -140,9 +142,11 @@ export class Utils {
   async approveAuthorization({
     quoteAddress,
     amount,
+    spenderAddress
   }: {
     quoteAddress: string;
     amount?: string;
+    spenderAddress?: string
   }) {
     try {
       const erc20Abi = [
@@ -156,10 +160,10 @@ export class Utils {
         config.signer
       );
       const approveAmount = amount ?? ethers.MaxUint256;
-      const spenderAddress = getContractAddressByChainId(
+      const spender = spenderAddress ?? getContractAddressByChainId(
         config.chainId
       ).ORDER_MANAGER;
-      const tx = await usdcContract.approve(spenderAddress, approveAmount);
+      const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
         code: 0,
