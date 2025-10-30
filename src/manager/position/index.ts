@@ -195,10 +195,12 @@ export class Position {
     poolId,
     positionId,
     adjustAmount,
+    quoteToken,
   }: {
     poolId: string;
     positionId: string;
     adjustAmount: string;
+    quoteToken: string;
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
@@ -206,6 +208,7 @@ export class Position {
       poolId,
       positionId,
       adjustAmount,
+      quoteToken,
     });
     try {
       /**
@@ -219,12 +222,46 @@ export class Position {
         publishTime: oraclePrice.publishTime,
       };
 
+      const contractAddress = getContractAddressByChainId(config.chainId);
+
+      // adjust collateral check and approve
+      if (Number(adjustAmount) > 0) {
+        this.logger.debug("adjust collateral check and approve-->", {
+          quoteToken,
+          adjustAmount,
+          spenderAddress: contractAddress.POSITION_MANAGER,
+        });
+        const needsApproval = await this.utils.needsApproval(
+          quoteToken,
+          adjustAmount,
+          contractAddress.POSITION_MANAGER
+        );
+        this.logger.debug("adjust collateral needs approval-->", {
+          needsApproval,
+        });
+
+        if (needsApproval) {
+          this.logger.debug("adjust collateral approve-->", {
+            quoteToken,
+            amount: ethers.MaxUint256.toString(),
+            spenderAddress: contractAddress.POSITION_MANAGER,
+          });
+          const approvalResult = await this.utils.approveAuthorization({
+            quoteAddress: quoteToken,
+            amount: ethers.MaxUint256.toString(),
+            spenderAddress: contractAddress.POSITION_MANAGER,
+          });
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
+      }
+
       /**
        * call broker contract
        */
-      const brokerAddress = getContractAddressByChainId(config.chainId).BROKER;
       const brokerContract = getContract(
-        brokerAddress,
+        contractAddress.BROKER,
         brokerAbi,
         config.signer
       );
@@ -233,11 +270,25 @@ export class Position {
         updateParams,
         positionId,
         adjustAmount,
+        useAccountBalance: false,
       });
 
-      const transaction = await brokerContract.updatePriceAndAdjustCollateral([updateParams], positionId, adjustAmount, true);
+      const transaction = await brokerContract.updatePriceAndAdjustCollateral(
+        [updateParams],
+        positionId,
+        adjustAmount,
+        false,
+        {
+          value: BigInt(oraclePrice?.nativeFee ?? "1"),
+          gas: 10000000n,
+        }
+      );
       const hash = await transaction.wait();
-      return { code: 0, data: { hash }, message: "Adjust collateral transaction submitted" };
+      return {
+        code: 0,
+        data: { hash },
+        message: "Adjust collateral transaction submitted",
+      };
     } catch (error) {
       this.logger.error("adjustCollateral error-->", error);
       return {
