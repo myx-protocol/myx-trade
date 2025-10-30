@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getOraclePrice } from "../api";
 import { useAccount, useWalletClient, useChainId } from "wagmi";
-import { BrowserProvider, ethers } from "ethers";
-import CryptoJS from "crypto-js";
+import {  ethers } from "ethers";
 import {
   Direction,
   OperationType,
@@ -36,6 +35,7 @@ import {
 import { OrderTpSlButton } from './components/OrderTpSlButton';
 import { AdjustCollateral } from "./components/AdjustCollateral";
 import { CreateDecreaseOrderButton } from "./components/CreateDecreaseOrder";
+import { MyxClientContext } from "@providers/MyxClientContext.ts";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -61,66 +61,11 @@ interface TradeFormValues {
   positionId?: string; // 仓位ID，仅在操作类型为DECREASE时使用
 }
 
-const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
-  try {
-    const rs = await fetch(`https://api-test.myx.cash/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`)
-    const res = await rs.json();
-
-    return {
-      code: 0,
-      msg: null,
-      data: {
-        accessToken: res.data.accessToken,
-        expireAt: res.data.expireAt,
-        allowAccount: res.data.allowAccount,
-        appId: appId,
-      },
-    };
-  } catch (error) {
-    console.error("getAccessToken error-->", error);
-    return {
-      code: -1,
-      msg: "getAccessToken error",
-      data: {
-        accessToken: "",
-        expireAt: 0,
-        allowAccount: "",
-        appId: "",
-      },
-    };
-  }
-}
-
 const TradePage: React.FC = () => {
   const { address, isConnected } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
   const [price, setPrice] = useState<string>('0');
-
-  // 为 SDK 提供的 accessToken 获取方法
-  const createGetAccessTokenMethod = () => {
-    return async (): Promise<{ accessToken: string; expireAt: number }> => {
-      const appId = "test1";
-      const timestamp = Math.floor(Date.now() / 1000);
-      const expireTime = 3600 * 24;
-      const allowAccount = address!;
-      const secret = "69v9kHey9b746PseJ0TP";
-
-      const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-      const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
-
-      const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature);
-
-      if (response.code === 0) {
-        return {
-          accessToken: response.data.accessToken,
-          expireAt: response.data.expireAt // 到期时间戳（秒）
-        };
-      } else {
-        throw new Error(response.msg || 'Failed to get access token');
-      }
-    };
-  };
 
   // 仓位列表表格列配置
   const positionColumns = [
@@ -394,13 +339,14 @@ const TradePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(false);
   const [form] = Form.useForm<TradeFormValues>();
-  const [myxClient, setMyxClient] = useState<MyxClient | null>(null);
+
   const [positionsList, setPositionsList] = useState<any[]>([]);
   const [ordersList, setOrdersList] = useState<any[]>([]);
 
   // 调整保证金弹窗相关状态
   const [cancelAllLoading, setCancelAllLoading] = useState(false);
 
+  const {myxClient} = useContext(MyxClientContext);
   // 处理取消订单操作
   const handleCancelOrder = async (orderId: string) => {
     Modal.confirm({
@@ -427,31 +373,7 @@ const TradePage: React.FC = () => {
     });
   };
 
-  const initClient = async () => {
-    if (walletClient?.transport && address) {
-      const provider = new BrowserProvider(walletClient.transport);
-      const signer = await provider.getSigner();
-
-      const client = new MyxClient({
-        signer: signer,
-        chainId: ChainId.ARB_TESTNET,
-        walletClient: walletClient,
-        brokerAddress: "0xf95E6cb54794b8cc1D769cfcEE9A63bee9C2E53E",
-        isTestnet: true,
-        logLevel: 'debug',
-        getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法
-      });
-
-      setMyxClient(client);
-      console.log('✅ MYX Client initialized with auto token management');
-    }
-  };
-
-  useEffect(() => {
-    if (walletClient?.transport) {
-      initClient();
-    }
-  }, [walletClient]);
+ 
 
   const { data: poolList } = useSWR(myxClient ? { key: "getPoolList", myxClient } : null, async () => {
     if (!myxClient) return [];
