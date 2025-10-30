@@ -12,6 +12,7 @@ import { WithdrawBase } from "@components/WithdrawBase.tsx";
 import { QuoteRewards } from "@components/QuoteRewards.tsx";
 import { TpSL } from "@components/TpSL.tsx";
 import { CancelOrder } from "@components/CancelOrder.tsx";
+import { PoolOpenOrders } from "@components/OpenOrders.tsx";
 
 const LPPage: React.FC = () => {
   return (
@@ -33,6 +34,7 @@ const LPPage: React.FC = () => {
         <Transfer/>
 
         <CancelOrder/>
+        <PoolOpenOrders/>
       </PoolProvider>
     </div>
   );

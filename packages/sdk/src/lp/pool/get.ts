@@ -64,7 +64,7 @@ export const getMarketPools = async (chainId: ChainId) => {
   }
 }
 
-export const getPoolInfo = async (chainId: ChainId, poolId: string, marketPrice: bigint) => {
+export const getPoolInfo = async (chainId: ChainId, poolId: string, marketPrice: bigint = 0n) => {
   try {
     const contract = await getDataProviderContract(chainId)
     console.log('DataProvider.getPoolInfo,', poolId, marketPrice)
