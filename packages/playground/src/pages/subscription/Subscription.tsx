@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { useAccount, useWalletClient } from "wagmi";
-import { BrowserProvider } from "ethers";
+import React, {  useRef, useCallback, useContext } from "react";
+import { useAccount } from "wagmi";
 import CryptoJS from "crypto-js";
 
-import { ChainId } from "../../config/chain";
 import {
   MyxClient,
   type TickersDataResponse,
@@ -14,13 +12,14 @@ import { Card, Typography, Button, Space, notification } from "antd";
 
 import { useSubscriptionStore } from "@/store/SubscriptionStore";
 import { Markets } from "@/components/Markets";
+import { MyxClientContext } from "@providers/MyxClientContext.ts";
 
 const { Title } = Typography;
 
 const SubscriptionPage: React.FC = () => {
   const { address, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const myxClientRef = useRef<MyxClient | null>(null);
+  const {myxClient} = useContext(MyxClientContext);
+  const myxClientRef = useRef<MyxClient | null>(myxClient);
 
   const subscriptionStore = useSubscriptionStore();
   const getPoolList = useCallback(async () => {
@@ -203,55 +202,6 @@ const SubscriptionPage: React.FC = () => {
     myxClientRef.current.subscription.unsubscribePosition(onPositionData);
   }, [onPositionData, subscriptionStore]);
 
-  const getAccessToken = async () => {
-    if (!isConnected) {
-      alert("请链接钱包");
-      return;
-    }
-    const appId = "test1";
-    const timestamp = Math.floor(Date.now() / 1000);
-    const expireTime = 3600 * 24;
-    const allowAccount = address!;
-    const secret = "69v9kHey9b746PseJ0TP";
-
-    const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-    const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
-    const rs = await fetch(
-      `https://api-test.myx.cash/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`
-    );
-    const res = await rs.json();
-
-    return {
-      accessToken: res.data.accessToken,
-      // accessToken: "123123",
-      expireAt: res.data.expireAt,
-    };
-  };
-
-  // Initialize client
-  const initClient = useCallback(async () => {
-    if (walletClient?.transport) {
-      const provider = new BrowserProvider(walletClient.transport);
-      const signer = await provider.getSigner();
-      myxClientRef.current = new MyxClient({
-        signer: signer,
-        chainId: ChainId.ARB_TESTNET,
-        brokerAddress: "0xf95E6cb54794b8cc1D769cfcEE9A63bee9C2E53E",
-        isTestnet: true,
-        logLevel: "debug",
-        getAccessToken,
-      });
-      // mutatePoolList();
-      getPoolList().then(subscriptionStore.setMarketList);
-      myxClientRef.current.subscription.connect();
-    }
-  }, [walletClient, getPoolList, subscriptionStore.setMarketList]);
-
-  useEffect(() => {
-    if (walletClient?.transport) {
-      initClient();
-    }
-  }, [walletClient, initClient]);
 
   return (
     <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px" }}>
