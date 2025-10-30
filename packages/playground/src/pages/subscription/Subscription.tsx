@@ -1,4 +1,4 @@
-import React, {  useRef, useCallback, useContext } from "react";
+import React, { useRef, useCallback, useContext, useEffect } from "react";
 
 import {
   MyxClient,
@@ -15,117 +15,135 @@ import { MyxClientContext } from "@providers/MyxClientContext.ts";
 const { Title } = Typography;
 
 const SubscriptionPage: React.FC = () => {
-  const {myxClient} = useContext(MyxClientContext);
+  const { myxClient } = useContext(MyxClientContext);
+
   const myxClientRef = useRef<MyxClient | null>(myxClient);
 
-  const subscriptionStore = useSubscriptionStore();
-  
+  useEffect(() => {
+    myxClientRef.current = myxClient;
+    if (myxClient) {
+      myxClient.subscription.connect();
 
-  const onKlineData = useCallback(
-    (data: KlineDataResponse) => {
-      console.log("Kline data:", data);
-      subscriptionStore.addKlineData(data.globalId, data);
-    },
-    [subscriptionStore]
+      return () => {
+        myxClient.subscription.disconnect();
+      };
+    }
+  }, [myxClient]);
+
+  const subscriptionStore = useSubscriptionStore();
+
+  // 使用 ref 持有最新的 store，避免回调闭包导致引用变更
+  const subscriptionStoreRef = useRef(subscriptionStore);
+  useEffect(() => {
+    subscriptionStoreRef.current = subscriptionStore;
+  }, [subscriptionStore]);
+
+  // 为每种订阅维护稳定的回调引用，确保取消订阅传入同一个函数
+  const tickerHandlerMapRef = useRef(
+    new Map<number, (data: TickersDataResponse) => void>()
   );
+  const klineHandlerMapRef = useRef(
+    new Map<number, (data: KlineDataResponse) => void>()
+  );
+  const orderHandlerRef = useRef<((data: unknown) => void) | null>(null);
+  const positionHandlerRef = useRef<((data: unknown) => void) | null>(null);
+
+  useEffect(() => {
+    if (myxClient) {
+      myxClient.markets.listPools().then((pools) => {
+        subscriptionStore.setMarketList(pools);
+      });
+    }
+  }, [myxClient, subscriptionStore]);
+
+  const ensureKlineHandler = useCallback((globalId: number) => {
+    if (!klineHandlerMapRef.current.has(globalId)) {
+      const handler = (data: KlineDataResponse) => {
+        // 使用最新的 store 引用
+        subscriptionStoreRef.current.addKlineData(data.globalId, data);
+      };
+      klineHandlerMapRef.current.set(globalId, handler);
+    }
+    return klineHandlerMapRef.current.get(globalId)!;
+  }, []);
 
   const subscribeKline = useCallback(
     (globalId: number) => {
       if (!myxClientRef.current) return;
-
-      // 设置订阅状态
       subscriptionStore.setKlineSubscription(globalId, true);
-
+      const handler = ensureKlineHandler(globalId);
       myxClientRef.current.subscription.subscribeKline(
         globalId,
         "1m",
-        onKlineData
+        handler
       );
     },
-    [onKlineData, subscriptionStore]
+    [ensureKlineHandler, subscriptionStore]
   );
 
   const unsubscribeKline = useCallback(
     (globalId: number) => {
       if (!myxClientRef.current) return;
-
-      // 设置取消订阅状态
       subscriptionStore.setKlineSubscription(globalId, false);
-
+      const handler = ensureKlineHandler(globalId);
       myxClientRef.current.subscription.unsubscribeKline(
         globalId,
         "1m",
-        onKlineData
+        handler
       );
     },
-    [onKlineData, subscriptionStore]
+    [ensureKlineHandler, subscriptionStore]
   );
 
-  const onTickerData = useCallback(
-    (data: TickersDataResponse) => {
-      // console.log("Ticker data:", data);
-      subscriptionStore.updateTickerPrice(
-        data.globalId,
-        data.data.p,
-        data.data.C
-      );
-    },
-    [subscriptionStore]
-  );
+  const ensureTickerHandler = useCallback((globalId: number) => {
+    if (!tickerHandlerMapRef.current.has(globalId)) {
+      const handler = (data: TickersDataResponse) => {
+        subscriptionStoreRef.current.updateTickerPrice(
+          data.globalId,
+          data.data.p,
+          data.data.C
+        );
+      };
+      tickerHandlerMapRef.current.set(globalId, handler);
+    }
+    return tickerHandlerMapRef.current.get(globalId)!;
+  }, []);
 
   // 订阅ticker的方法
   const subscribeTicker = useCallback(
     (globalId: number) => {
       if (!myxClientRef.current) return;
-
-      // 设置订阅状态
       subscriptionStore.setTickerSubscription(globalId, true);
-
-      // 订阅ticker数据
-      myxClientRef.current.subscription.subscribeTickers(
-        globalId,
-        onTickerData
-      );
+      const handler = ensureTickerHandler(globalId);
+      myxClientRef.current.subscription.subscribeTickers(globalId, handler);
     },
-    [subscriptionStore, onTickerData]
+    [subscriptionStore, ensureTickerHandler]
   );
 
   // 取消订阅ticker的方法
   const unsubscribeTicker = useCallback(
     (globalId: number) => {
       if (!myxClientRef.current) return;
-
-      // 设置取消订阅状态
       subscriptionStore.setTickerSubscription(globalId, false);
-
-      // 取消订阅ticker数据
-      myxClientRef.current.subscription.unsubscribeTickers(
-        globalId,
-        onTickerData
-      );
+      const handler = ensureTickerHandler(globalId);
+      myxClientRef.current.subscription.unsubscribeTickers(globalId, handler);
     },
-    [subscriptionStore, onTickerData]
+    [subscriptionStore, ensureTickerHandler]
   );
 
   // Order 数据回调
-  const onOrderData = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (data: any) => {
-      console.log("Order data:", data);
-      subscriptionStore.addOrderData(data);
-    },
-    [subscriptionStore]
-  );
+  if (!orderHandlerRef.current) {
+    orderHandlerRef.current = (data: unknown) => {
+      subscriptionStoreRef.current.addOrderData(data);
+    };
+  }
 
   // Position 数据回调
-  const onPositionData = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (data: any) => {
-      console.log("Position data:", data);
-      subscriptionStore.addPositionData(data);
-    },
-    [subscriptionStore]
-  );
+  if (!positionHandlerRef.current) {
+    positionHandlerRef.current = (data: unknown) => {
+      subscriptionStoreRef.current.addPositionData(data);
+    };
+  }
 
   // 订阅 Order
   const subscribeOrder = useCallback(async () => {
@@ -139,7 +157,7 @@ const SubscriptionPage: React.FC = () => {
 
       // 订阅订单数据
       myxClientRef.current.subscription
-        .subscribeOrder(onOrderData)
+        .subscribeOrder(orderHandlerRef.current!)
         .then(() => {
           subscriptionStore.setOrderSubscription(true);
         })
@@ -153,7 +171,7 @@ const SubscriptionPage: React.FC = () => {
       console.error("订阅Order失败:", error);
       subscriptionStore.setOrderSubscription(false);
     }
-  }, [onOrderData, subscriptionStore]);
+  }, [subscriptionStore]);
 
   // 取消订阅 Order
   const unsubscribeOrder = useCallback(() => {
@@ -163,8 +181,8 @@ const SubscriptionPage: React.FC = () => {
     subscriptionStore.setOrderSubscription(false);
 
     // 取消订阅订单数据
-    myxClientRef.current.subscription.unsubscribeOrder(onOrderData);
-  }, [onOrderData, subscriptionStore]);
+    myxClientRef.current.subscription.unsubscribeOrder(orderHandlerRef.current!);
+  }, [subscriptionStore]);
 
   // 订阅 Position
   const subscribePosition = useCallback(async () => {
@@ -178,12 +196,14 @@ const SubscriptionPage: React.FC = () => {
       subscriptionStore.setPositionSubscription(true);
 
       // 订阅持仓数据
-      myxClientRef.current.subscription.subscribePosition(onPositionData);
+      myxClientRef.current.subscription.subscribePosition(
+        positionHandlerRef.current!
+      );
     } catch (error) {
       console.error("订阅Position失败:", error);
       subscriptionStore.setPositionSubscription(false);
     }
-  }, [onPositionData, subscriptionStore]);
+  }, [subscriptionStore]);
 
   // 取消订阅 Position
   const unsubscribePosition = useCallback(() => {
@@ -193,9 +213,10 @@ const SubscriptionPage: React.FC = () => {
     subscriptionStore.setPositionSubscription(false);
 
     // 取消订阅持仓数据
-    myxClientRef.current.subscription.unsubscribePosition(onPositionData);
-  }, [onPositionData, subscriptionStore]);
-
+    myxClientRef.current.subscription.unsubscribePosition(
+      positionHandlerRef.current!
+    );
+  }, [subscriptionStore]);
 
   return (
     <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px" }}>
