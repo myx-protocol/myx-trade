@@ -4,7 +4,7 @@ import {
   MarketPoolResponse,
   PriceResponse,
   PoolResponse,
-  PositionResponse,
+  PositionResponse, PoolOpenOrdersResponse,
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
@@ -100,9 +100,9 @@ export const getOrders = async (accessToken: string, chainId: ChainId): Promise<
   );
 };
 
-export const getPoolOpenOrders = async (accessToken: string, chainId: ChainId): Promise<PositionResponse> => {
-  return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/pool-order/open?chainId=${chainId}`,
+export const getPoolOpenOrders = async (accessToken: string, chainId: ChainId): Promise<PoolOpenOrdersResponse> => {
+  return await http.get<PoolOpenOrdersResponse>(
+    `${baseUrl}/openapi/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
     { headers: { 'myx_openapi_access_token': accessToken } }
   );
