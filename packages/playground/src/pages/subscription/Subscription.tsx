@@ -1,6 +1,4 @@
 import React, {  useRef, useCallback, useContext } from "react";
-import { useAccount } from "wagmi";
-import CryptoJS from "crypto-js";
 
 import {
   MyxClient,
@@ -17,15 +15,11 @@ import { MyxClientContext } from "@providers/MyxClientContext.ts";
 const { Title } = Typography;
 
 const SubscriptionPage: React.FC = () => {
-  const { address, isConnected } = useAccount();
   const {myxClient} = useContext(MyxClientContext);
   const myxClientRef = useRef<MyxClient | null>(myxClient);
 
   const subscriptionStore = useSubscriptionStore();
-  const getPoolList = useCallback(async () => {
-    if (!myxClientRef.current) return [];
-    return myxClientRef.current?.markets.listPools();
-  }, []);
+  
 
   const onKlineData = useCallback(
     (data: KlineDataResponse) => {
