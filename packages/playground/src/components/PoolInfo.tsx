@@ -306,6 +306,9 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       当前Pool：
       <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>
       <Tag color={state}>{pool ? MarketPoolState[pool.state] : '--'}</Tag>
+      {
+        pool?.state === MarketPoolState.Bench && <Button label={`重上架 -${Number(fee)}U`} isLoading={loading}  onClick={onReprime}/>
+      }
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>Price:</span>
         <span className={''}>
@@ -341,9 +344,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         </span>
         {/*<span>{}</span>*/}
       </div>
-      {
-        pool?.state === MarketPoolState.Bench && <Button label={`重新上架 -${fee}U`} isLoading={loading}  onClick={onReprime}/>
-      }
+      
     </div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
