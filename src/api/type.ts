@@ -1,5 +1,6 @@
 import { Direction } from "@/types/trading";
 import { PoolType, TriggerType } from "@/lp/pool";
+import { ChainId } from "@/config/chain";
 export interface ObjectType<T> {
   [key: string]: T;
 }
@@ -58,29 +59,28 @@ export enum MarketPoolState {
   Primed = 1, // 扣款手续费，等待准备oracle
   Trench = 2, // 上架交易
   PreBench = 3, // 预下架
-  Bench = 4 // 下架
+  Bench = 4, // 下架
 }
 
 export type MarketPool = {
-
-  "chainId": number,
-  "marketId": string,
-  "poolId": string,
-  "oracleId": number,
-  "globalId": number,
-  "state": MarketPoolState,
-  "baseSymbol": string,
-  "quoteSymbol": string,
-  "baseDecimals": number,
-  "quoteDecimals": number,
-  "baseToken": string,
-  "quoteToken": string,
-  "basePoolToken": string,
-  "quotePoolToken": string,
-  "oracleType": number,
-  "feedId": number,
-  "activeTime": number
-}
+  chainId: number;
+  marketId: string;
+  poolId: string;
+  oracleId: number;
+  globalId: number;
+  state: MarketPoolState;
+  baseSymbol: string;
+  quoteSymbol: string;
+  baseDecimals: number;
+  quoteDecimals: number;
+  baseToken: string;
+  quoteToken: string;
+  basePoolToken: string;
+  quotePoolToken: string;
+  oracleType: number;
+  feedId: number;
+  activeTime: number;
+};
 export interface MarketPoolResponse extends BaseResponse {
   data: MarketPool[];
 }
@@ -93,36 +93,33 @@ export enum OracleType {
   Chainlink,
 }
 export type PriceType = {
-  oracleId: number
-  price: string
-  vaa: string
-  publishTime: number
-  oracleType?: OracleType
-  nativeFee?: number | string
-  poolId: string
-}
+  oracleId: number;
+  price: string;
+  vaa: string;
+  publishTime: number;
+  oracleType?: OracleType;
+  nativeFee?: number | string;
+  poolId: string;
+};
 
 export interface PriceResponse extends BaseResponse {
   data: PriceType[];
 }
 
-
 export interface ApiResponse<T = Record<string, any>> extends BaseResponse {
   data: T;
 }
 
-
-
 export interface PositionType {
-  poolId: string,
-  positionId: string,
-  direction: Direction,
-  entryPrice: string
-  fundingRateIndex: string
-  size: string
-  riskTier: number
-  collateralAmount: string
-  txTime: number
+  poolId: string;
+  positionId: string;
+  direction: Direction;
+  entryPrice: string;
+  fundingRateIndex: string;
+  size: string;
+  riskTier: number;
+  collateralAmount: string;
+  txTime: number;
 }
 
 export interface PositionResponse extends BaseResponse {
@@ -130,18 +127,54 @@ export interface PositionResponse extends BaseResponse {
 }
 
 export interface PoolOpenOrder {
-  amount: string
-  chainId: number
-  minQuoteOut: string
-  orderId: number
-  poolId: string
-  poolType: PoolType
-  triggerPrice: string
-  triggerType: TriggerType
-  txTime: number
-  user: string
+  amount: string;
+  chainId: number;
+  minQuoteOut: string;
+  orderId: number;
+  poolId: string;
+  poolType: PoolType;
+  triggerPrice: string;
+  triggerType: TriggerType;
+  txTime: number;
+  user: string;
 }
 
 export interface PoolOpenOrdersResponse extends BaseResponse {
   data: PoolOpenOrder[];
+}
+
+export interface AccessTokenRequest {
+  accessToken: string;
+}
+
+export enum HttpKlineIntervalEnum {
+  Minute1 = 1,
+  Minute5 = 5,
+  Minute15 = 15,
+  Minute30 = 30,
+  Hour1 = 60,
+  Hour4 = 240,
+  Day1 = 1440,
+  Week1 = 10080,
+  Month1 = 40320,
+}
+
+export interface KlineDataItemType {
+  time: number;
+  open: string;
+  close: string;
+  high: string;
+  low: string;
+}
+
+export interface TickerDataItem {
+  chainId: ChainId;
+  poolId: string;
+  oracleId: number;
+  price: string;
+  change: string;
+  high: string;
+  low: string;
+  volume: string;
+  turnover: string;
 }

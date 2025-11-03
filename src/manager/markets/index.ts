@@ -1,8 +1,13 @@
-import { http } from "@/api/request";
 import { ConfigManager } from "@/manager/config";
-
-import { BASE_URL } from "@/config/url";
-import { getPoolLevelConfig, getPools } from "@/api";
+import {
+  getKlineData,
+  GetKlineDataParams,
+  getKlineLatestBar,
+  getPoolLevelConfig,
+  getPools,
+  getTickerData,
+  GetTickerDataParams,
+} from "@/api";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -27,4 +32,47 @@ export class Markets {
       })
     ).data;
   }
+
+  /**
+   * kline start
+   */
+  async getKlineList(params: Omit<GetKlineDataParams, "chainId">) {
+    const config = this.configManager.getConfig();
+    return (
+      await getKlineData({
+        ...params,
+        chainId: config?.chainId,
+      })
+    ).data;
+  }
+
+  async getKlineLatestBar(params: Omit<GetKlineDataParams, "chainId">) {
+    const config = this.configManager.getConfig();
+    return (
+      await getKlineLatestBar({
+        ...params,
+        chainId: config?.chainId,
+      })
+    ).data;
+  }
+  /**
+   * kline end
+   */
+
+  /**
+   * ticker start
+   */
+  async getTickerList(params: Omit<GetTickerDataParams, "chainId">) {
+    const config = this.configManager.getConfig();
+    return (
+      await getTickerData({
+        ...params,
+        chainId: config?.chainId,
+      })
+    ).data;
+  }
+
+  /**
+   * ticker end
+   */
 }
