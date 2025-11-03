@@ -11,7 +11,8 @@ import {
   formatUnits,
   parseUnits,
   COMMON_PRICE_DECIMALS,
-  COMMON_LP_AMOUNT_DECIMALS
+  COMMON_LP_AMOUNT_DECIMALS,
+  market as _Market
 } from "@myx-trade/sdk";
 import { RefreshRight } from "./Icon";
 import { message, Tag } from "antd";
@@ -28,11 +29,11 @@ export const usePoolInfo = () => {
     queryFn: async () => {
       if (!poolId || !chainId) return null
       const result = await Pool.getPoolDetail(chainId, poolId);
+      
      
       return result
     },
   })
-  
   
   const refresh = async () => {
     const _poolId = poolId || '';
@@ -51,6 +52,8 @@ export const BalanceInfo = () => {
   const [quotePoolBalance, setQuotePoolBalance] = useState<string>('')
   const [baseBalance, setBaseBalance] = useState<string>('')
   const [basePoolBalance, setBasePoolBalance] = useState<string>('')
+  
+  
   const getQuoteBalance = async () => {
     setQuoteBalance('')
     if (!poolId || !account) return
@@ -143,6 +146,17 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   const {chainId, account} = useContext(PoolContext)
   const [loading, setLoading] = useState<boolean>(false)
   
+  const {data: fee}  = useQuery({
+    queryKey: [{key: 'market_fee_Info'},chainId],
+    queryFn: async () => {
+      if (!chainId) return null
+      const result = await _Market.getOracleFee(chainId, Market[chainId].marketId);
+      
+      
+      return result ? formatUnits(result, Market[chainId].decimals) : undefined
+    },
+  })
+  
   const {data: price}  = useQuery({
     queryKey: [{key: 'pirce'},poolId],
     enabled: !!poolId,
@@ -231,6 +245,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       await refresh()
     } catch (e) {
       console.error(e)
+      message.error(JSON.stringify(e))
     } finally {
       setLoading(false)
     }
@@ -291,6 +306,9 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       当前Pool：
       <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>
       <Tag color={state}>{pool ? MarketPoolState[pool.state] : '--'}</Tag>
+      {
+        pool?.state === MarketPoolState.Bench && <Button label={`重上架 -${Number(fee)}U`} isLoading={loading}  onClick={onReprime}/>
+      }
       <div className={'ml-[16px] font-bold flex items-center gap-[4px]'}>
         <span>Price:</span>
         <span className={''}>
@@ -326,9 +344,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
         </span>
         {/*<span>{}</span>*/}
       </div>
-      {
-        pool?.state === MarketPoolState.Bench && <Button label={'重新上架'} isLoading={loading}  onClick={onReprime}/>
-      }
+      
     </div>
     <div className={'flex gap-[10px]'}>
       <span>Pool ID:</span>
