@@ -24,6 +24,7 @@ export const reprime = async (chainId: ChainId, poolId: string) => {
     if (!_amount) {
       throw new Error('Invalid Market');
     }
+    console.log(Number(formatUnits(_amount, pool.quoteDecimals)))
     
     await checkParams ({
       tokenAddress: pool.quoteToken,
