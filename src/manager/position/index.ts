@@ -294,10 +294,11 @@ export class Position {
         message: "Adjust collateral transaction submitted",
       };
     } catch (error) {
-      this.logger.error("adjustCollateral error-->", error);
+      const errorMessage = await this.utils.getErrorMessage(error);
+      this.logger.error("adjustCollateral error-->", errorMessage);
       return {
         code: -1,
-        message: "Failed to adjust collateral",
+        message: errorMessage,
       };
     }
   }
