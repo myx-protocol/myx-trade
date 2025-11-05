@@ -257,4 +257,24 @@ export class Utils {
         );
     }
   }
+
+  async getErrorMessage(error: any, fallbackErrorMessage = "Unknown error") {
+    try {
+      if (typeof error === "string") {
+        return error;
+      }
+      if (error instanceof MyxSDKError) {
+        return error.message;
+      }
+
+      const errorText = await getErrorTextFormError(error);
+      if (errorText) {
+        return errorText.error;
+      }
+
+      return JSON.stringify(error);
+    } catch (error: any) {
+      return error?.message ?? error?.toString() ?? fallbackErrorMessage;
+    }
+  }
 }
