@@ -89,8 +89,8 @@ export interface PoolResponse extends BaseResponse {
 }
 
 export enum OracleType {
+  Chainlink = 1,
   Pyth,
-  Chainlink,
 }
 export type PriceType = {
   oracleId: number;
