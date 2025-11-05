@@ -9,6 +9,7 @@ import { getOraclePrice, HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
 import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { getPriceData } from "@/lp";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -213,8 +214,10 @@ export class Utils {
   async getOraclePrice(poolId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-      const priceResponse = await getOraclePrice(config.chainId, [poolId]);
-      return priceResponse.data?.[0];
+      // update price data
+      const priceData = await getPriceData(config.chainId, poolId);
+      if (!priceData) throw new Error("Failed to get price data");
+      return priceData;
     } catch (error) {
       this.logger.error("Error getting oracle price:", error);
       return {
@@ -222,7 +225,7 @@ export class Utils {
         vaa: "",
         publishTime: 0,
         poolId: "",
-        nativeFee: 0,
+        value: 0,
       };
     }
   }
