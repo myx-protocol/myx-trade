@@ -8,11 +8,15 @@ import {
   getTickerData,
   GetTickerDataParams,
 } from "@/api";
+import { KlineResolution } from "../subscription/types";
+import { Utils } from "../utils";
 
 export class Markets {
   private configManager: ConfigManager;
-  constructor(configManager: ConfigManager) {
+  private utils: Utils;
+  constructor(configManager: ConfigManager, utils: Utils) {
     this.configManager = configManager;
+    this.utils = utils;
   }
 
   getMarkets() {
@@ -36,21 +40,33 @@ export class Markets {
   /**
    * kline start
    */
-  async getKlineList(params: Omit<GetKlineDataParams, "chainId">) {
+  async getKlineList({
+    interval,
+    ...params
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime"> & {
+    interval: KlineResolution;
+  }) {
     const config = this.configManager.getConfig();
     return (
       await getKlineData({
         ...params,
+        interval: this.utils.transferKlineResolutionToInterval(interval),
         chainId: config?.chainId,
       })
     ).data;
   }
 
-  async getKlineLatestBar(params: Omit<GetKlineDataParams, "chainId">) {
+  async getKlineLatestBar({
+    interval,
+    ...params
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime"> & {
+    interval: KlineResolution;
+  }) {
     const config = this.configManager.getConfig();
     return (
       await getKlineLatestBar({
         ...params,
+        interval: this.utils.transferKlineResolutionToInterval(interval),
         chainId: config?.chainId,
       })
     ).data;
