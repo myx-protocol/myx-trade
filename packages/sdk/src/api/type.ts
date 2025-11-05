@@ -66,7 +66,7 @@ export type MarketPool = {
   chainId: number;
   marketId: string;
   poolId: string;
-  oracleId: number;
+  oracleId?: number | null;
   globalId: number;
   state: MarketPoolState;
   baseSymbol: string;
@@ -77,8 +77,8 @@ export type MarketPool = {
   quoteToken: string;
   basePoolToken: string;
   quotePoolToken: string;
-  oracleType: number;
-  feedId: number;
+  oracleType?: number | null;
+  feedId?: number | null;
   activeTime: number;
 };
 export interface MarketPoolResponse extends BaseResponse {

@@ -43,42 +43,40 @@ export class MyxClient {
       logLevel: options.logLevel,
     });
 
-     /**
-   * initialize utils
-   */
-     this.utils = new Utils(this.configManager, this.logger)
+    /**
+     * initialize utils
+     */
+    this.utils = new Utils(this.configManager, this.logger);
 
     /**
      * initialize markets
      */
-    this.markets = new Markets(this.configManager);
+    this.markets = new Markets(this.configManager, this.utils);
 
     /**
-      * initialize position
-      */
+     * initialize position
+     */
     this.position = new Position(this.configManager, this.logger, this.utils);
 
     /**
-    * initialize orders
-    */
+     * initialize orders
+     */
     this.order = new Order(this.configManager, this.logger, this.utils);
 
-   
     this.account = new Account(this.configManager, this.logger, this.utils);
     /**
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
-    
-    const lp = MxSDK.getInstance()
+
+    const lp = MxSDK.getInstance();
     if (options.walletClient?.transport) {
-      const provider = new BrowserProvider (options.walletClient?.transport);
+      const provider = new BrowserProvider(options.walletClient?.transport);
       if (provider) {
-        lp.setProvider(provider)
+        lp.setProvider(provider);
       }
     }
-    
+
     lp.setConfigManager(this.configManager);
-    
   }
 }

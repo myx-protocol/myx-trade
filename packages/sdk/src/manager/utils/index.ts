@@ -5,8 +5,10 @@ import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import OrderManager_ABI from "@/abi/OrderManager.json";
 import { Logger } from "@/logger";
-import { getOraclePrice } from "@/api";
+import { getOraclePrice, HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
+import { KlineResolution } from "../subscription/types";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -84,7 +86,10 @@ export class Utils {
     return null;
   }
 
-  private async getApproveQuoteAmount(quoteAddress: string, spenderAddress?: string) {
+  private async getApproveQuoteAmount(
+    quoteAddress: string,
+    spenderAddress?: string
+  ) {
     try {
       const erc20Abi = [
         "function allowance(address owner, address spender) external view returns (uint256)",
@@ -94,9 +99,9 @@ export class Utils {
 
       const owner = await config.signer.getAddress();
 
-      const spender = spenderAddress ?? getContractAddressByChainId(
-        config.chainId
-      ).ORDER_MANAGER;
+      const spender =
+        spenderAddress ??
+        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
 
       const tokenContract = new ethers.Contract(
         quoteAddress,
@@ -112,7 +117,9 @@ export class Utils {
       };
     } catch (error) {
       this.logger.error("Error getting allowance:", error);
-          throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+      throw typeof error === "string"
+        ? error
+        : await getErrorTextFormError(error);
     }
   }
 
@@ -142,11 +149,11 @@ export class Utils {
   async approveAuthorization({
     quoteAddress,
     amount,
-    spenderAddress
+    spenderAddress,
   }: {
     quoteAddress: string;
     amount?: string;
-    spenderAddress?: string
+    spenderAddress?: string;
   }) {
     try {
       const erc20Abi = [
@@ -160,9 +167,9 @@ export class Utils {
         config.signer
       );
       const approveAmount = amount ?? ethers.MaxUint256;
-      const spender = spenderAddress ?? getContractAddressByChainId(
-        config.chainId
-      ).ORDER_MANAGER;
+      const spender =
+        spenderAddress ??
+        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
       const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
@@ -191,7 +198,9 @@ export class Utils {
     );
 
     try {
-      const networkFee = await orderManagerContract.getExecutionFee(quoteAddress);
+      const networkFee = await orderManagerContract.getExecutionFee(
+        quoteAddress
+      );
 
       console.log("networkFee-->", networkFee.toString());
       return networkFee.toString();
@@ -209,12 +218,40 @@ export class Utils {
     } catch (error) {
       this.logger.error("Error getting oracle price:", error);
       return {
-        price: '0',
-        vaa: '',
+        price: "0",
+        vaa: "",
         publishTime: 0,
-        poolId: '',
-        nativeFee: 0
+        poolId: "",
+        nativeFee: 0,
       };
+    }
+  }
+
+  transferKlineResolutionToInterval(resolution: KlineResolution) {
+    switch (resolution) {
+      case "1m":
+        return HttpKlineIntervalEnum.Minute1;
+      case "5m":
+        return HttpKlineIntervalEnum.Minute5;
+      case "15m":
+        return HttpKlineIntervalEnum.Minute15;
+      case "30m":
+        return HttpKlineIntervalEnum.Minute30;
+      case "1h":
+        return HttpKlineIntervalEnum.Hour1;
+      case "4h":
+        return HttpKlineIntervalEnum.Hour4;
+      case "1d":
+        return HttpKlineIntervalEnum.Day1;
+      case "1w":
+        return HttpKlineIntervalEnum.Week1;
+      case "1M":
+        return HttpKlineIntervalEnum.Month1;
+      default:
+        throw new MyxSDKError(
+          MyxErrorCode.ParamError,
+          `Invalid kline resolution: ${resolution}`
+        );
     }
   }
 }
