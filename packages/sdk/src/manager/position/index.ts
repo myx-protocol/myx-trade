@@ -10,6 +10,7 @@ import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
 import { encodeFunctionData } from "viem";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
+import { getPriceData, pool } from "@/lp";
 
 export class Position {
   private configManager: ConfigManager;
@@ -115,7 +116,7 @@ export class Position {
   //       oracleUpdateData: oraclePrice?.vaa ?? '0',
   //       publishTime: oraclePrice.publishTime,
   //     }], {
-  //       value: oraclePrice.nativeFee
+  //       value: oraclePrice.value ?? 1n,
   //     });
 
   //     // 构造更新价格的数据
@@ -134,7 +135,7 @@ export class Position {
   //         functionName: 'updatePrices',
   //         args: [[updateParams]],
   //       }),
-  //       value: oraclePrice.nativeFee ?? '1',
+  //       value: oraclePrice.value ?? 1n,
   //     }
 
   //     // 构造调整保证金的数据
@@ -164,7 +165,7 @@ export class Position {
   //         account: userAddress as `0x${string}`,
   //         to: userAddress as `0x${string}`,
   //         data: batchExecuteData as `0x${string}`,
-  //         value: BigInt(oraclePrice?.nativeFee ?? '1'),
+  //         value: BigInt(oraclePrice?.value ?? 1n),
   //         gas: 10000000n,
   //         authorizationList,
   //         type: 'eip7702',
@@ -214,12 +215,15 @@ export class Position {
       /**
        * fetch oracle price
        */
-      const oraclePrice = await this.utils.getOraclePrice(poolId);
+      const priceData = await this.utils.getOraclePrice(poolId);
+      if (!priceData) {
+        throw new Error("Failed to get price data");
+      }
       const updateParams = {
         poolId: poolId,
-        referencePrice: ethers.parseUnits(oraclePrice?.price ?? "0", 30),
-        oracleUpdateData: oraclePrice?.vaa ?? "0",
-        publishTime: oraclePrice.publishTime,
+        referencePrice: ethers.parseUnits(priceData?.price ?? "0", 30),
+        oracleUpdateData: priceData?.vaa ?? "0",
+        publishTime: priceData.publishTime,
       };
 
       const contractAddress = getContractAddressByChainId(config.chainId);
@@ -279,7 +283,7 @@ export class Position {
         adjustAmount,
         false,
         {
-          value: BigInt(oraclePrice?.nativeFee ?? "1"),
+          value: BigInt(priceData?.value ?? "1"),
           gas: 10000000n,
         }
       );
