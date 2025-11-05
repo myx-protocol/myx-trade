@@ -13,6 +13,7 @@ import {
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
+// todo @JC
 const baseUrl = "https://api-test.myx.cash";
 
 /**
