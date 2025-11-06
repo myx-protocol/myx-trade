@@ -41,7 +41,7 @@
   },
   {
     "type": "error",
-    "name": "InvalidBaseAssetAddress",
+    "name": "InvalidBaseToken",
     "inputs": []
   },
   {
@@ -63,6 +63,11 @@
         "name": "marketId"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
   },
   {
     "type": "error",
@@ -90,6 +95,16 @@
       {
         "type": "address",
         "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PoolExists",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
       }
     ]
   },
@@ -132,16 +147,6 @@
     "type": "error",
     "name": "UnexpectedPoolState",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "WindowCapOutOfRange",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "poolId"
-      }
-    ]
   },
   {
     "type": "event",
@@ -197,6 +202,10 @@
           {
             "type": "uint256",
             "name": "baseAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "baseQuoteAmount"
           },
           {
             "type": "uint256",
@@ -371,14 +380,6 @@
             "name": "tradingVault"
           },
           {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "bytes32",
-            "name": "oracleFeedId"
-          },
-          {
             "type": "uint16",
             "name": "maxPriceDeviation"
           },
@@ -395,7 +396,7 @@
             "name": "compoundEnabled"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
@@ -455,14 +456,6 @@
             "name": "tradingVault"
           },
           {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "bytes32",
-            "name": "oracleFeedId"
-          },
-          {
             "type": "uint16",
             "name": "maxPriceDeviation"
           },
@@ -479,7 +472,7 @@
             "name": "compoundEnabled"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
@@ -519,11 +512,11 @@
             "name": "quoteReserveRatio"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleFeeUsd"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleRefundFeeUsd"
           },
           {
@@ -600,7 +593,7 @@
           },
           {
             "type": "uint256",
-            "name": "initPrice"
+            "name": "referencePrice"
           }
         ]
       }
@@ -683,7 +676,7 @@
             "name": "riskTier"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
@@ -700,6 +693,23 @@
       {
         "type": "bytes32[]",
         "name": "identifiers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "update",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      },
+      {
+        "type": "address",
+        "name": "newAddress"
       }
     ],
     "outputs": []
@@ -788,7 +798,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
