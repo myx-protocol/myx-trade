@@ -11,7 +11,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { MarketPoolState } from "@/api";
+import { MarketPoolState, OracleType } from "@/api";
 import { BigNumberish, type BytesLike, Typed } from "ethers/lib.esm";
 import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
@@ -42,7 +42,7 @@ export const withdraw = async (
     
     const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
     
-    const price : Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; }[] =[]
+    const price : Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; oracleType: OracleType}[] =[]
     let value = 0n;
     let amountOut;
     if (isNeedPrice) {
@@ -55,6 +55,7 @@ export const withdraw = async (
         referencePrice ,
         oracleUpdateData: priceData.vaa,
         publishTime: priceData.publishTime,
+        oracleType: priceData.oracleType,
       })
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
@@ -72,10 +73,10 @@ export const withdraw = async (
     const contract = await getLiquidityRouterContract(chainId)
     
       // estimateGas
-      const _gasLimit = await contract["withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas(price, data, { value })
+      const _gasLimit = await contract["withdrawBase((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas(price, data, { value })
       const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
       const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-      const response = await contract["withdrawBase((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"] (price, data, {
+      const response = await contract["withdrawBase((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"] (price, data, {
         gasLimit,
         gasPrice,
         value,
