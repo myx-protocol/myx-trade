@@ -99,11 +99,11 @@ export const deposit = async (params: Deposit) => {
     //estimateGas
     const _gasLimit =  await contract["depositQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, { value })
     
-    // const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    // const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     const result = await contract["depositQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price,data, {
-      // gasLimit,
-      // gasPrice,
+      gasLimit,
+      gasPrice,
       value
     })
     
