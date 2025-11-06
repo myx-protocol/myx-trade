@@ -12,12 +12,12 @@ export const getMarket = async (chainId: ChainId, marketId: string)  => {
   
     const contract = await getMarketManageContract(chainId)
     const chainInfo = CHAIN_INFO[chainId];
-    const _gasLimit = await contract.getMarket.estimateGas(marketId)
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // const _gasLimit = await contract.getMarket.estimateGas(marketId)
+    // const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
-    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
+    // console.log("gasPrice", gasPrice)
     
     const request = await contract.getMarket(marketId)
     console.log("MarketManage.getMarket request", request);
