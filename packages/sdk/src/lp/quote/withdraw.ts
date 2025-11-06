@@ -12,7 +12,7 @@ import {
 import { checkParams } from "@/common/checkParams";
 import { previewQuoteAmountOut } from "@/lp/quote/preview";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-import { MarketPoolState } from "@/api";
+import { MarketPoolState, OracleType } from "@/api";
 import { BigNumberish, Typed } from "ethers/lib.esm";
 import { getPriceData } from "@/common/price";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
@@ -49,6 +49,7 @@ export const withdraw = async (params: WithdrawParams) => {
       referencePrice: BigNumberish;
       oracleUpdateData: BytesLike;
       publishTime: BigNumberish;
+      oracleType: OracleType
     }[] = []
     
     let value = 0n;
@@ -65,6 +66,7 @@ export const withdraw = async (params: WithdrawParams) => {
         referencePrice,
         oracleUpdateData: priceData.vaa,
         publishTime: priceData.publishTime,
+        oracleType: priceData.oracleType,
       })
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
@@ -83,10 +85,10 @@ export const withdraw = async (params: WithdrawParams) => {
     
     const contract = await getLiquidityRouterContract (chainId)
     
-    const _gasLimit = await contract["withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas (price, data, { value })
+    const _gasLimit = await contract["withdrawQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas (price, data, { value })
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract["withdrawQuote((bytes32,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"] ([], data, {
+    const request = await contract["withdrawQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"]([], data, {
       gasLimit,
       gasPrice,
       value,
