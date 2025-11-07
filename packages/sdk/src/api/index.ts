@@ -91,7 +91,7 @@ export const getPositions = async (
   chainId: ChainId
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/position/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/position/open?chainId=${chainId}`,
     undefined, // params
     {
       headers: {
@@ -106,7 +106,7 @@ export const getOrders = async (
   chainId: ChainId
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/scan/order/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/order/open?chainId=${chainId}`,
     undefined,
     { headers: { myx_openapi_access_token: accessToken } }
   );
@@ -117,7 +117,7 @@ export const getPoolOpenOrders = async (
   chainId: ChainId
 ): Promise<PoolOpenOrdersResponse> => {
   return await http.get<PoolOpenOrdersResponse>(
-    `${baseUrl}/openapi/scan/market/pool-order/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
     { headers: { myx_openapi_access_token: accessToken } }
   );
