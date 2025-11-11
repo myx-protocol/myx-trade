@@ -6,6 +6,7 @@ import { baseUrl } from "..";
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
+  poolId?: string
 }
 
 export enum OrderTypeEnum {
