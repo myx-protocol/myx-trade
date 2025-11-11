@@ -1,0 +1,14 @@
+# npm 私有包配置示例
+# 复制此文件为 .npmrc 并填入实际的 token
+
+# 方案 1: npm 私有包
+@myx-trade:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+
+# 方案 2: GitHub Packages（如果使用）
+# @myx-trade:registry=https://npm.pkg.github.com
+# //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+
+# 发布时设置为 public（如果需要公开包）
+# access=public
+
