@@ -1,11 +1,20 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
-import { getOrders } from "@/api";
-import { getBrokerSingerContract, getOrderManagerSingerContract } from "@/web3/providers";
+import { getHistoryOrders, GetHistoryOrdersParams, getOrders } from "@/api";
+import {
+  getBrokerSingerContract,
+  getOrderManagerSingerContract,
+} from "@/web3/providers";
 import { Direction, TIME_IN_FORCE } from "@/config/con";
-import { PlaceOrderParams, OperationType, OrderType, PositionTpSlOrderParams } from "@/types/trading";
+import {
+  PlaceOrderParams,
+  OperationType,
+  OrderType,
+  PositionTpSlOrderParams,
+} from "@/types/trading";
 import { Utils } from "../utils";
 import { UpdateOrderParams } from "@/types/order";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class Order {
   private configManager: ConfigManager;
@@ -25,11 +34,14 @@ export class Order {
         params.chainId,
         config.signer
       );
-      const networkFee = await this.utils.getNetworkFee(params.executionFeeToken);
+      const networkFee = await this.utils.getNetworkFee(
+        params.executionFeeToken
+      );
 
-      const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
+      const collateralWithNetworkFee =
+        BigInt(params.collateralAmount) + BigInt(networkFee);
 
-      console.log('createIncreaseOrder params--->', {
+      console.log("createIncreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
         positionId: params.positionId,
@@ -70,9 +82,8 @@ export class Order {
         tpPrice: params.tpPrice ? params.tpPrice : 0,
         slSize: params.slSize ? params.slSize : 0,
         slPrice: params.slPrice ? params.slPrice : 0,
-        useAccountBalance: false
+        useAccountBalance: false,
       });
-
 
       const transaction = await brokerContract.placeOrder(
         {
@@ -95,7 +106,7 @@ export class Order {
           tpPrice: params.tpPrice ? params.tpPrice : 0,
           slSize: params.slSize ? params.slSize : 0,
           slPrice: params.slPrice ? params.slPrice : 0,
-          useAccountBalance: false
+          useAccountBalance: false,
         },
         {
           gasLimit: (gasLimit * 120n) / 100n,
@@ -150,14 +161,16 @@ export class Order {
         params.chainId,
         config.signer
       );
-      const networkFee = await this.utils.getNetworkFee(params.executionFeeToken);
+      const networkFee = await this.utils.getNetworkFee(
+        params.executionFeeToken
+      );
 
-      const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
+      const collateralWithNetworkFee =
+        BigInt(params.collateralAmount) + BigInt(networkFee);
 
-      console.log('createDecreaseOrder', params)
+      console.log("createDecreaseOrder", params);
 
-
-      console.log('createDecreaseOrder params--->', {
+      console.log("createDecreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
         positionId: params.positionId,
@@ -195,7 +208,7 @@ export class Order {
         tpPrice: 0,
         slSize: 0,
         slPrice: 0,
-        useAccountBalance: false
+        useAccountBalance: false,
       });
 
       const transaction = await brokerContract.placeOrder(
@@ -219,7 +232,7 @@ export class Order {
           tpPrice: 0,
           slSize: 0,
           slPrice: 0,
-          useAccountBalance: false
+          useAccountBalance: false,
         },
         {
           gasLimit: (gasLimit * 130n) / 100n,
@@ -256,7 +269,6 @@ export class Order {
         message: "create decrease order success",
         data: result,
       };
-
     } catch (error) {
       return {
         code: -1,
@@ -274,9 +286,11 @@ export class Order {
         config.signer
       );
       try {
-        const networkFee = await this.utils.getNetworkFee(params.executionFeeToken);
+        const networkFee = await this.utils.getNetworkFee(
+          params.executionFeeToken
+        );
 
-        if (params.tpSize !== '0' && params.slSize !== '0') {
+        if (params.tpSize !== "0" && params.slSize !== "0") {
           const data = [
             {
               user: params.address,
@@ -287,18 +301,18 @@ export class Order {
               operation: OperationType.DECREASE,
               direction: params.direction,
               collateralAmount: networkFee,
-              size: params.tpSize ?? '0',
-              price: params.tpPrice ?? '0',
+              size: params.tpSize ?? "0",
+              price: params.tpPrice ?? "0",
               timeInForce: TIME_IN_FORCE,
               postOnly: false,
-              slippagePct: '0',
+              slippagePct: "0",
               executionFeeToken: params.executionFeeToken,
               leverage: 0,
-              tpSize: '0',
-              tpPrice: '0',
-              slSize: '0',
-              slPrice: '0',
-              useAccountBalance: false
+              tpSize: "0",
+              tpPrice: "0",
+              slSize: "0",
+              slPrice: "0",
+              useAccountBalance: false,
             },
             {
               user: params.address,
@@ -309,38 +323,37 @@ export class Order {
               operation: OperationType.DECREASE,
               direction: params.direction,
               collateralAmount: networkFee,
-              size: params.slSize ?? '0',
-              price: params.slPrice ?? '0',
+              size: params.slSize ?? "0",
+              price: params.slPrice ?? "0",
               timeInForce: TIME_IN_FORCE,
               postOnly: false,
-              slippagePct: '0',
+              slippagePct: "0",
               executionFeeToken: params.executionFeeToken,
               leverage: 0,
-              tpSize: '0',
-              tpPrice: '0',
-              slSize: '0',
-              slPrice: '0',
-              useAccountBalance: false
+              tpSize: "0",
+              tpPrice: "0",
+              slSize: "0",
+              slPrice: "0",
+              useAccountBalance: false,
             },
-          ]
+          ];
 
-          console.log('createPositionTpSlOrder data--->', data);
+          console.log("createPositionTpSlOrder data--->", data);
 
           const gasLimit = await brokerContract.placeOrders.estimateGas(data);
 
-          const transaction = await brokerContract.placeOrders(
-            data,
-            {
-              gasLimit: (gasLimit * 120n) / 100n,
-            }
-          );
-
+          const transaction = await brokerContract.placeOrders(data, {
+            gasLimit: (gasLimit * 120n) / 100n,
+          });
 
           this.logger.info("Transaction sent:", transaction.hash);
           this.logger.info("Waiting for confirmation...");
 
           const receipt = await transaction.wait();
-          this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+          this.logger.info(
+            "Transaction confirmed in block:",
+            receipt?.blockNumber
+          );
 
           this.logger.info("createDecreaseOrder receipt--->", receipt);
           const orderId = this.utils.getOrderIdFromTransaction(receipt);
@@ -374,39 +387,44 @@ export class Order {
           poolId: params.poolId,
           positionId: params.positionId,
           orderType: OrderType.STOP,
-          triggerType: params.tpSize !== '0' ? params.tpTriggerType : params.slTriggerType,
+          triggerType:
+            params.tpSize !== "0" ? params.tpTriggerType : params.slTriggerType,
           operation: OperationType.DECREASE,
           direction: params.direction,
           collateralAmount: networkFee,
-          size: params.tpSize !== '0' ? params.tpSize ?? '0' : params.slSize ?? '0',
-          price: params.tpPrice !== '0' ? params.tpPrice ?? '0' : params.slPrice ?? '0',
+          size:
+            params.tpSize !== "0" ? params.tpSize ?? "0" : params.slSize ?? "0",
+          price:
+            params.tpPrice !== "0"
+              ? params.tpPrice ?? "0"
+              : params.slPrice ?? "0",
           timeInForce: TIME_IN_FORCE,
           postOnly: false,
-          slippagePct: '0',
+          slippagePct: "0",
           executionFeeToken: params.executionFeeToken,
           leverage: 0,
-          tpSize: '0',
-          tpPrice: '0',
-          slSize: '0',
-          slPrice: '0',
-          useAccountBalance: false
-        }
+          tpSize: "0",
+          tpPrice: "0",
+          slSize: "0",
+          slPrice: "0",
+          useAccountBalance: false,
+        };
 
-        console.log('createPositionTpSlOrder data--->', data);
+        console.log("createPositionTpSlOrder data--->", data);
 
         const gasLimit = await brokerContract.placeOrder.estimateGas(data);
 
-        const transaction = await brokerContract.placeOrder(
-          data,
-          {
-            gasLimit: (gasLimit * 120n) / 100n,
-          }
-        );
+        const transaction = await brokerContract.placeOrder(data, {
+          gasLimit: (gasLimit * 120n) / 100n,
+        });
         this.logger.info("Transaction sent:", transaction.hash);
         this.logger.info("Waiting for confirmation...");
 
         const receipt = await transaction.wait();
-        this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+        this.logger.info(
+          "Transaction confirmed in block:",
+          receipt?.blockNumber
+        );
 
         this.logger.info("createDecreaseOrder receipt--->", receipt);
         const orderId = this.utils.getOrderIdFromTransaction(receipt);
@@ -457,7 +475,6 @@ export class Order {
         config.signer
       );
 
-
       const tx = await brokerContract.cancelOrder(orderId);
       await tx.wait();
       return {
@@ -498,7 +515,7 @@ export class Order {
 
   async updateOrderTpSl(params: UpdateOrderParams) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    console.log("updateOrderTpSl params", params)
+    console.log("updateOrderTpSl params", params);
 
     const brokerContract = await getBrokerSingerContract(
       config.chainId,
@@ -516,24 +533,24 @@ export class Order {
         slPrice: params.slPrice,
         executionFeeToken: params.executionFeeToken,
         useOrderCollateral: true,
-        useAccountBalance: false
-      }
-    }
+        useAccountBalance: false,
+      },
+    };
 
-    console.log(data)
+    console.log(data);
     try {
       const gasLimit = await brokerContract.updateOrder.estimateGas(data);
-      console.log('gaslimit->', gasLimit)
+      console.log("gaslimit->", gasLimit);
 
       const request = await brokerContract.updateOrder(data, {
         gasLimit: (gasLimit * 120n) / 100n,
       });
 
-      const receipt = await request?.wait()
-      console.log("updateOrderTpSl receipt", receipt)
+      const receipt = await request?.wait();
+      console.log("updateOrderTpSl receipt", receipt);
       return receipt;
     } catch (error) {
-      console.error('Error updating order:', error);
+      console.error("Error updating order:", error);
       return {
         code: -1,
         message: "Failed to update order",
@@ -560,11 +577,26 @@ export class Order {
         data: res.data,
       };
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
       return {
         code: -1,
         message: "Failed to fetch orders",
       };
     }
+  }
+
+  async getOrderHistory(params: GetHistoryOrdersParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    const res = await getHistoryOrders({ accessToken, ...params });
+    return {
+      code: 0,
+      data: res.data,
+    };
   }
 }
