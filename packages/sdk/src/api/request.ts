@@ -7,6 +7,7 @@ const client = wretch();
  */
 const buildQueryOptions = (url: string, params?: Record<string, any>) => {
   if (params) {
+    params = JSON.parse(JSON.stringify(params));
     if (url.includes("?")) {
       return url + "&" + new URLSearchParams(params).toString();
     }
