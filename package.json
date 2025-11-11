@@ -1,6 +1,6 @@
 {
   "name": "myx-trade-sdk",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "MYX Trade SDK monorepo",
   "private": true,
   "scripts": {
