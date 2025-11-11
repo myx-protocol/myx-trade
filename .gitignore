@@ -137,3 +137,7 @@ packages/playground/node_modules/.vite/
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# npm config (may contain tokens)
+.npmrc
+packages/*/.npmrc
