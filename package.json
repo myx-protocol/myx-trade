@@ -1,6 +1,10 @@
 {
   "name": "@myx-trade/sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "MYX Trade SDK for trading operations",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
