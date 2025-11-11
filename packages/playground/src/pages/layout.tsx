@@ -85,7 +85,6 @@ export default function Layout() {
       });
       
       setMyxClient(client);
-      console.log('✅ MYX Client initialized with auto token management');
     }
   };
   

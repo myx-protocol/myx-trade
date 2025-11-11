@@ -1487,8 +1487,6 @@ const TradePage: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 调整保证金弹窗 / Adjust Collateral Modal */}
-
     </div>
   );
 };
