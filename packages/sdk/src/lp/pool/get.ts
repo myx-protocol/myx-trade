@@ -5,7 +5,6 @@ import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
 import Address from "@/config/address";
-import { ZeroAddress } from 'ethers'
 
 
 export const getMarketInfo =  (chainId: ChainId) => {
@@ -34,7 +33,7 @@ export const getMarketPoolId = async ({chainId, baseToken}:CreatePoolRequest) =>
     // console.log(request)
     const request = await contract.getMarketPool(marketId, baseToken)
     
-    return request.poolId === ZeroAddress  || !request.poolId? undefined : request.poolId;
+    return request.poolId === '0x0000000000000000000000000000000000000000000000000000000000000000'  || !request.poolId   ? undefined : request.poolId;
   } catch (error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
