@@ -534,6 +534,7 @@ export class Order {
         executionFeeToken: params.executionFeeToken,
         useOrderCollateral: true,
         useAccountBalance: false,
+        paymentType: 0,
       },
     };
 
