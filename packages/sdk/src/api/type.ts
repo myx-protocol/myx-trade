@@ -178,3 +178,157 @@ export interface TickerDataItem {
   volume: string;
   turnover: string;
 }
+
+export enum MarketType {
+  Contract = 1,
+  Cook = 2,
+  Earn = 3,
+}
+export enum SearchTypeEnum {
+  All = 0,
+  Contract = MarketType.Contract,
+  Cook = MarketType.Cook,
+  Earn = MarketType.Earn,
+}
+
+export enum MarketCapType {
+  BlueChips = 1,
+  Alpha = 2,
+}
+export enum SearchSecondTypeEnum {
+  BlueChips = MarketCapType.BlueChips,
+  Alpha = MarketCapType.Alpha,
+  Favorite = 3,
+}
+
+export interface ChainIdRequest {
+  chainId: ChainId;
+}
+
+export type FavoritesType = -1 | 1;
+
+export interface SearchResultContractItem {
+  chainId: ChainId;
+  poolId: string;
+  baseQuoteSymbol: string;
+  symbolName: string;
+  baseToken: Address;
+  tokenIcon: string;
+  type: MarketType;
+  capType: MarketCapType;
+  favorites: FavoritesType;
+  volume: string;
+  liquidity: string;
+  basePrice: string;
+  priceChange: string;
+}
+
+export interface SearchResultCookItem {
+  chainId: ChainId;
+  poolId: string;
+  mBaseQuoteSymbol: string;
+  symbolName: string;
+  baseToken: Address;
+  tokenIcon: string;
+  type: MarketType;
+  state: MarketPoolState;
+  tvl: string;
+  marketCap: string;
+  lpPrice: string;
+  lpPriceChange: string;
+}
+
+export interface SearchResultEarnItem {
+  chainId: ChainId;
+  poolId: string;
+  mQuoteBaseSymbol: string;
+  symbolName: string;
+  baseToken: Address;
+  tokenIcon: string;
+  type: MarketType;
+  state: MarketPoolState;
+  rating: string;
+  tvl: string;
+  marketCap: string;
+  apr: string;
+}
+
+export interface SearchResultResponse {
+  earnInfo: {
+    list: SearchResultEarnItem[];
+    total: number;
+  };
+  cookInfo: {
+    list: SearchResultCookItem[];
+    total: number;
+  };
+  contractInfo: {
+    list: SearchResultContractItem[];
+    total: number;
+  };
+}
+
+// favorites list
+export interface FavoritesListItem {
+  ChainId: ChainId;
+  poolId: string;
+  symbolName: string;
+  tokenIcon: string;
+  capType: MarketCapType;
+  baseToken: Address;
+  basePrice: string;
+  priceChange: string;
+  volume: string;
+  marketCap: string;
+  baseQuoteSymbol: string;
+  favorites: FavoritesType;
+}
+
+// base detail
+export interface BaseDetailResponse {
+  totalSupply: string;
+  circulation: string;
+  marketCap: string;
+  fdv: string;
+  holders: number;
+  traders: number;
+  liquidity: string;
+  volume: string;
+  longPosition: number;
+  shortPosition: number;
+  fundingRate: string;
+  tokenIcon: string;
+  poolId: string;
+  mSymbol: string;
+  symbolName: string;
+  lpPriceChange: string;
+  chainId: number;
+  tokenCreateTime: number;
+  baseToken: Address;
+  marketId: string;
+  basePrice: string;
+  tvl: string;
+  apr: string;
+}
+
+// market detail
+export interface MarketDetailResponse {
+  chainId: number;
+  marketId: string;
+  poolId: string;
+  oracleId: number;
+  globalId: number;
+  state: MarketPoolState;
+  baseSymbol: string;
+  quoteSymbol: string;
+  baseDecimals: number;
+  quoteDecimals: number;
+  baseToken: Address;
+  quoteToken: Address;
+  basePoolToken: Address;
+  quotePoolToken: Address;
+  oracleType: OracleType;
+  feedId: string;
+  activeTime: number;
+  capType: MarketCapType;
+}
