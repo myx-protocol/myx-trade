@@ -331,4 +331,6 @@ export interface MarketDetailResponse {
   feedId: string;
   activeTime: number;
   capType: MarketCapType;
+  baseReserveRatio: string
+  quoteReserveRatio: string
 }

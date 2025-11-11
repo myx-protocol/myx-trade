@@ -67,6 +67,9 @@ export interface HistoryOrderItem {
   tradingFee: string; // trading fee
   fundingFee: string; // funding fee
   realizedPnl: string; // realized pnl
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  leverage: number; // leverage
 }
 
 /**
@@ -105,6 +108,9 @@ export interface PositionHistoryItem {
   openTime: number;
   closeTime: number;
   realizedPnl: string;
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  leverage: number; // leverage
 }
 
 export const getPositionHistory = async ({
@@ -138,6 +144,9 @@ export interface TradeFlowItem {
   afterCollateralAmount: string;
   txHash: string;
   txTime: number;
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  leverage: number; // leverage
 }
 export const getTradeFlow = async ({
   accessToken,
