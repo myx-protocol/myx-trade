@@ -4,6 +4,7 @@ import { ZeroAddress } from "ethers";
 export const ARB_TEST_SEPOLIA: ContractAddress = {
   USDC: '',
   POOL_MANAGER: '0x29fA92d5f47051E49Ab9001A3cbd8091c34c5638',
+  Account: '0x900F3003c59b9c55A09CEB7b3134A53E511531C3',
   POOL_VIEW: '',
   HYPER_VAULT: ZeroAddress,
   FEE_COLLECTOR: '',
