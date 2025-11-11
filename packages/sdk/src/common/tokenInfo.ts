@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { getERC20Contract, getTokenContract } from "@/web3/providers";
+import {  getTokenContract } from "@/web3/providers";
 /**
  * 检查图片 URL 是否可访问
  */
