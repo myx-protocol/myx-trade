@@ -4,13 +4,18 @@ import { Logger } from "@/logger";
 import { getContractAddressByChainId } from "@/config/address/index";
 import { ethers } from "ethers";
 import oracleAbi from "@/abi/MYXOracle.json";
-import { getPositions } from "@/api";
+import {
+  GetHistoryOrdersParams,
+  getPositionHistory,
+  getPositions,
+} from "@/api";
 import { Utils } from "../utils";
 import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
 import { encodeFunctionData } from "viem";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
 import { getPriceData, pool } from "@/lp";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class Position {
   private configManager: ConfigManager;
@@ -50,6 +55,20 @@ export class Position {
     }
   }
 
+  async getPositionHistory(params: GetHistoryOrdersParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    const res = await getPositionHistory({ accessToken, ...params });
+    return {
+      code: 0,
+      data: res.data,
+    };
+  }
   /**
    * @desc temp skip eip7702
    * @todo adjustCollateral 调整保证金

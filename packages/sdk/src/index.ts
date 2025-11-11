@@ -9,3 +9,4 @@ export * from "./common";
 export { MyxClient } from "./manager";
 export * from "./manager";
 export * from "./types/trading";
+export { ChainId } from "./config/chain";

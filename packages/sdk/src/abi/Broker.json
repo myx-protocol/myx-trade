@@ -1,5 +1,10 @@
 [
   {
+    "type": "constructor",
+    "payable": false,
+    "inputs": []
+  },
+  {
     "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
@@ -32,11 +37,6 @@
   {
     "type": "error",
     "name": "InvalidFeeRate",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InvalidFeeTier",
     "inputs": []
   },
   {
@@ -339,19 +339,6 @@
   },
   {
     "type": "function",
-    "name": "activeSpecialFeeTierList",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256[]"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "addressManager",
     "constant": true,
     "stateMutability": "view",
@@ -523,29 +510,6 @@
             "name": "makerFeeRate"
           }
         ]
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getSpecialFeeTier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "feeTier"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "int32",
-        "name": "makerFeeRate"
-      },
-      {
-        "type": "uint32",
-        "name": "takerFeeRate"
       }
     ]
   },
@@ -936,27 +900,6 @@
   },
   {
     "type": "function",
-    "name": "setSpecialFeeTier",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "feeTier"
-      },
-      {
-        "type": "int32",
-        "name": "makerFeeRate"
-      },
-      {
-        "type": "uint32",
-        "name": "takerFeeRate"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "setUserFeeData",
     "constant": false,
     "payable": false,
@@ -994,23 +937,6 @@
       {
         "type": "bytes",
         "name": "signature"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "setUserSpecialFeeTier",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      },
-      {
-        "type": "uint8",
-        "name": "feeTier"
       }
     ],
     "outputs": []
@@ -1186,12 +1112,8 @@
                 "name": "executionFeeToken"
               },
               {
-                "type": "bool",
-                "name": "useOrderCollateral"
-              },
-              {
-                "type": "bool",
-                "name": "useAccountBalance"
+                "type": "uint8",
+                "name": "paymentType"
               }
             ]
           }
@@ -1214,6 +1136,10 @@
           {
             "type": "bytes32",
             "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
           },
           {
             "type": "uint256",

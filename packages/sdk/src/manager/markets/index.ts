@@ -7,9 +7,23 @@ import {
   getPools,
   getTickerData,
   GetTickerDataParams,
+  searchMarket,
+  searchMarketAuth,
+  SearchMarketParams,
+  addFavorite,
+  AddFavoriteParams,
+  removeFavorite,
+  RemoveFavoriteParams,
+  getFavoritesList,
+  FavoritesListParams,
+  getBaseDetail,
+  type GetBaseDetailParams,
+  getMarketDetail,
+  type GetMarketDetailParams,
 } from "@/api";
 import { KlineResolution } from "../subscription/types";
 import { Utils } from "../utils";
+import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -91,4 +105,100 @@ export class Markets {
   /**
    * ticker end
    */
+
+  /**
+   * search by access token
+   * (only for authenticated users)
+   *
+   */
+  async searchMarketAuth(params: SearchMarketParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    return (
+      await searchMarketAuth({
+        ...params,
+        accessToken: accessToken,
+      })
+    ).data;
+  }
+
+  /**
+   * search by unauthenticated users
+   */
+  async searchMarket(params: SearchMarketParams) {
+    return (await searchMarket(params)).data;
+  }
+
+  /**
+   * get favorites list
+   * (only for authenticated users)
+   */
+  async getFavoritesList(params: FavoritesListParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    return (
+      await getFavoritesList({
+        ...params,
+        accessToken: accessToken,
+      })
+    ).data;
+  }
+  /**
+   * favorite
+   */
+  async addFavorite(params: AddFavoriteParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    return (
+      await addFavorite({
+        ...params,
+        accessToken: accessToken,
+      })
+    ).data;
+  }
+
+  async removeFavorite(params: RemoveFavoriteParams) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    return (
+      await removeFavorite({
+        ...params,
+        accessToken: accessToken,
+      })
+    ).data;
+  }
+
+  /**
+   * base detail
+   */
+  async getBaseDetail(params: GetBaseDetailParams) {
+    return (await getBaseDetail(params)).data;
+  }
+
+  /**
+   * get market detail
+   */
+  async getMarketDetail(params: GetMarketDetailParams) {
+    return (await getMarketDetail(params)).data;
+  }
 }
