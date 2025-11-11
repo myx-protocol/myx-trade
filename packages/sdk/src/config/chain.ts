@@ -126,6 +126,7 @@ export interface RpcRetryOption {
 }
 
 export interface ContractAddress {
+  readonly Account:Address,
   readonly USDC:Address,
   readonly POOL_MANAGER:Address,
   readonly POOL_VIEW:Address,
