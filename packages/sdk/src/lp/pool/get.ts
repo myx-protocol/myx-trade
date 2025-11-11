@@ -8,7 +8,6 @@ import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
 import Address from "@/config/address";
-import { ZeroAddress } from "ethers";
 
 export const getMarketInfo = (chainId: ChainId) => {
   const marketId = Market[chainId].marketId;
@@ -39,7 +38,7 @@ export const getMarketPoolId = async ({
     // console.log(request)
     const request = await contract.getMarketPool(marketId, baseToken);
 
-    return request.poolId === ZeroAddress || !request.poolId
+    return request.poolId === '0x0000000000000000000000000000000000000000000000000000000000000000' || !request.poolId
       ? undefined
       : request.poolId;
   } catch (error) {
