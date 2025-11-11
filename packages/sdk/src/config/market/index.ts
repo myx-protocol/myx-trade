@@ -6,3 +6,5 @@ export type MarketInfoMap = { readonly [chainId: number]: MarketInfo }
 export const Market: MarketInfoMap = {
   [ChainId.ARB_TESTNET]:ARB_TEST_SEPOLIA,
 }
+
+export type {MarketInfo} from "./type";

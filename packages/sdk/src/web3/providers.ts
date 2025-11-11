@@ -21,6 +21,10 @@ export enum ProviderType {
   Signer
 }
 
+export const getTokenContract = async (chainId:ChainId,tokenAddress: string) => {
+  const provider = getJSONProvider (chainId) ;
+  return getContract(tokenAddress, IERC20Metadata_ABI, provider) as unknown as IERC20Metadata;
+}
 export const getERC20Contract = async (chainId:ChainId,tokenAddress: string) => {
   const provider = await getSignerProvider (chainId) ;
   return getContract(tokenAddress, IERC20Metadata_ABI, provider) as unknown as IERC20Metadata;
