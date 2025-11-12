@@ -4,7 +4,6 @@ import {
   GetKlineDataParams,
   getKlineLatestBar,
   getPoolLevelConfig,
-  getPools,
   getTickerData,
   GetTickerDataParams,
   searchMarket,
@@ -36,10 +35,7 @@ export class Markets {
   getMarkets() {
     return Promise.resolve([]);
   }
-
-  async listPools() {
-    return (await getPools()).data;
-  }
+  
 
   async getPoolLevelConfig(poolId: string) {
     const config = this.configManager.getConfig();
