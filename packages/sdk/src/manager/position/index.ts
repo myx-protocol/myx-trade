@@ -8,6 +8,7 @@ import {
   GetHistoryOrdersParams,
   getPositionHistory,
   getPositions,
+  OracleType,
 } from "@/api";
 import { Utils } from "../utils";
 import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
@@ -216,13 +217,18 @@ export class Position {
     positionId,
     adjustAmount,
     quoteToken,
+    poolOracleType,
   }: {
     poolId: string;
     positionId: string;
     adjustAmount: string;
     quoteToken: string;
+    poolOracleType: OracleType
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+    }
 
     this.logger.debug("adjustCollateral-->", {
       poolId,
@@ -243,6 +249,7 @@ export class Position {
         referencePrice: ethers.parseUnits(priceData?.price ?? "0", 30),
         oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
+        oracleType: poolOracleType,
       };
 
       const contractAddress = getContractAddressByChainId(config.chainId);
@@ -313,6 +320,7 @@ export class Position {
         message: "Adjust collateral transaction submitted",
       };
     } catch (error) {
+      console.log(error, 'error')
       const errorMessage = await this.utils.getErrorMessage(error);
       this.logger.error("adjustCollateral error-->", errorMessage);
       return {
