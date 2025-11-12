@@ -23,12 +23,7 @@ import { addQueryParams } from "./utils";
 // todo @JC
 export const baseUrl = "https://api-test.myx.cash";
 
-/**
- * Get pools
- */
-export const getPools = async (): Promise<MarketPoolResponse> => {
-  return http.get(`${baseUrl}/v2/mx-scan/market/list`);
-};
+
 
 export const getOraclePrice = async (
   chainId: ChainId,
@@ -89,7 +84,7 @@ export const getPoolDetail = async (
   poolId: string
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/v2/mx-scan/market/detail?chainId=${chainId}&poolId=${poolId}`
+    `${baseUrl}/openapi/gateway/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
   );
 };
 

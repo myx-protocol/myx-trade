@@ -288,7 +288,7 @@ if (ordersResult.code === 0) {
 
 #### 1. Get Trading Pool List
 
-```typescript
+```typescript 
 import { getPools } from '@myx-trade/sdk';
 
 const poolsData = await getPools();
