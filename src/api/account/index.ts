@@ -70,7 +70,7 @@ export interface HistoryOrderItem {
   realizedPnl: string; // realized pnl
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
-  leverage: number; // leverage
+  userLeverage: number; // leverage
 }
 
 /**
@@ -111,7 +111,7 @@ export interface PositionHistoryItem {
   realizedPnl: string;
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
-  leverage: number; // leverage
+  userLeverage: number; // leverage
 }
 
 export const getPositionHistory = async ({
@@ -147,7 +147,7 @@ export interface TradeFlowItem {
   txTime: number;
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
-  leverage: number; // leverage
+  userLeverage: number; // leverage
 }
 export const getTradeFlow = async ({
   accessToken,
