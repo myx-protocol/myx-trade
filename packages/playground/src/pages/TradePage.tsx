@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getOraclePrice } from "../api";
+import { getOraclePrice, getPools } from "../api";
 import { useAccount, useWalletClient, useChainId } from "wagmi";
 import {  ethers } from "ethers";
 import {
@@ -377,7 +377,7 @@ const TradePage: React.FC = () => {
 
   const { data: poolList } = useSWR(myxClient ? { key: "getPoolList", myxClient } : null, async () => {
     if (!myxClient) return [];
-    const poolList = await myxClient?.markets.listPools() ?? []
+    const poolList = (await getPools()).data ?? []
     // console.log("poolList-->", poolList);
 
     const poolsWithLevel = await Promise.all(
