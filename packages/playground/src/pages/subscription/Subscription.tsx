@@ -11,6 +11,7 @@ import { Card, Typography, Button, Space, notification } from "antd";
 import { useSubscriptionStore } from "@/store/SubscriptionStore";
 import { Markets } from "@/components/Markets";
 import { MyxClientContext } from "@providers/MyxClientContext.ts";
+import { getPools } from "@/api";
 
 const { Title } = Typography;
 
@@ -49,12 +50,10 @@ const SubscriptionPage: React.FC = () => {
   const positionHandlerRef = useRef<((data: unknown) => void) | null>(null);
 
   useEffect(() => {
-    if (myxClient) {
-      myxClient.markets.listPools().then((pools) => {
-        subscriptionStore.setMarketList(pools);
-      });
-    }
-  }, [myxClient, subscriptionStore]);
+    getPools().then((pools) => {
+      subscriptionStore.setMarketList(pools.data);
+    });
+  }, [ subscriptionStore]);
 
   const ensureKlineHandler = useCallback((globalId: number) => {
     if (!klineHandlerMapRef.current.has(globalId)) {
