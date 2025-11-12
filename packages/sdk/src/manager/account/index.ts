@@ -19,6 +19,12 @@ export class Account {
 
   async getWalletQuoteTokenBalance() {
     const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidSigner,
+        "Invalid signer"
+      );
+    }
     const contractAddress = getContractAddressByChainId(config.chainId);
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
@@ -37,6 +43,12 @@ export class Account {
    */
   async getTradableAmount({ poolId }: { poolId: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidSigner,
+        "Invalid signer"
+      );
+    }
     const contractAddress = getContractAddressByChainId(config.chainId);
     const accountContract = new ethers.Contract(
       contractAddress.Account,

@@ -5,6 +5,7 @@ export enum MyxErrorCode {
   InvalidChainId = "INVALID_CHAIN_ID",
   InvalidAccessToken = "INVALID_ACCESS_TOKEN",
   RequestFailed = "REQUEST_FAILED",
+  InvalidSigner = "INVALID_SIGNER",
 }
 
 export class MyxSDKError extends Error {

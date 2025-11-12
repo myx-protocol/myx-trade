@@ -221,6 +221,8 @@ export interface SearchResultContractItem {
   liquidity: string;
   basePrice: string;
   priceChange: string;
+  tvl: string
+  marketCap: string
 }
 
 export interface SearchResultCookItem {
