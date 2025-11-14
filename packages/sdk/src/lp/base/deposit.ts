@@ -89,7 +89,7 @@ export const deposit = async (params: Deposit) => {
       tpslParams
     }
     
-    console.log("deposit base", price, data, value);
+    // console.log("deposit base", price, data, value);
     const  contract = await getLiquidityRouterContract(chainId)
     
     
@@ -105,7 +105,7 @@ export const deposit = async (params: Deposit) => {
       value
     })
     
-    console.log("deposit", result)
+    // console.log("deposit", result)
     return result
     
   } catch (error) {

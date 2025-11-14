@@ -17,9 +17,9 @@ export const bigintTradingGasPriceWithRatio = async (chainId:ChainId) => {
     if (!gasPrice) {
       throw new Error('Network Error')
     }
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio)
-    console.log('gasPriceWithRatio--->', gasPriceWithRatio)
+    // console.log('gasPriceWithRatio--->', gasPriceWithRatio)
     return {
       gasPrice: gasPriceWithRatio,
     }

@@ -18,9 +18,9 @@ export const getOracleFee = async (chainId: ChainId, marketId: string)  => {
     // console.log("gasPrice", gasPrice)
     
     const request = await contract.getOracleFee(marketId)
-    console.log("MarketManage.getOracleFee request", request);
+    // console.log("MarketManage.getOracleFee request", request);
     
-    console.log(request)
+    // console.log(request)
     return request;
   } catch (error) {
     console.error (error);

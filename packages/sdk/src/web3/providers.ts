@@ -55,10 +55,11 @@ export const getLiquidityRouterContract = async (chainId: ChainId) => {
   return getContract(address,LiquidityRouter_ABI,provider ) as unknown as LiquidityRouter;
 }
 
-export const getPoolManagerContract = async (chainId: ChainId) => {
+export const getPoolManagerContract = async (chainId: ChainId, type = ProviderType.Signer) => {
   const addresses = Address[chainId as keyof typeof Address];
   const address = addresses.POOL_MANAGER;
-  const provider = await getSignerProvider(chainId as number);
+  const provider =  type === ProviderType.JSON ? getJSONProvider (chainId as number) : (await getSignerProvider (chainId as number));
+  
   
   return getContract(address,PoolManager_ABI,provider ) as unknown as PoolManager;
 }

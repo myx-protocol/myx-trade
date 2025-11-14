@@ -7,7 +7,7 @@ export const getUserGenesisShare = async (chainId: ChainId, tokenAddress: string
     const contract = await getPoolTokenContract (chainId, tokenAddress)
     
     const request = await contract.userGenesisShare (account)
-    console.log (`UserGenesisShare : `,  request)
+    // console.log (`UserGenesisShare : `,  request)
     return request
   } catch (error) {
     console.error (error)

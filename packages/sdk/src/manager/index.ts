@@ -70,12 +70,12 @@ export class MyxClient {
     this.subscription = new SubScription(this.configManager, this.logger);
 
     const lp = MxSDK.getInstance();
-    if (options.walletClient?.transport) {
-      const provider = new BrowserProvider(options.walletClient?.transport);
-      if (provider) {
-        lp.setProvider(provider);
-      }
-    }
+    // if (options.walletClient?.transport) {
+    //   const provider = new BrowserProvider(options.walletClient?.transport);
+    //   if (provider) {
+    //     lp.setProvider(provider);
+    //   }
+    // }
 
     lp.setConfigManager(this.configManager);
   }
