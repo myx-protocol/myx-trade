@@ -107,31 +107,15 @@ export const getWalletProvider = async (chainId: ChainId) => {
     if (!provider) {
       throw new Error('missing provider');
     }
-    // const provider = new BrowserProvider(options.walletClient?.transport);
-    //   if (provider) {
-    //     lp.setProvider(provider);
-    //   }
-    /*if (provider) {
-      provider.on("disconnect", (error: any) => {
-        console.log("Wallet disconnected:", error);
-        // Suggest full reload or attempt reconnect
-        window.location.reload();
-      });
-      
-      provider.on("connect", (info: any) => {
-        console.log("Wallet connected:", info);
-      });
-    }*/
 
     // 如果指定了 chainId，可以验证当前链是否匹配
     // if (chainId) {
-    //   // const network = await provider.getNetwork()
-    //   // // console.log(provider)
-    //   // // console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
-    //   // if(Number(network.chainId) !== chainId) {
-    //   //   await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
-    //   // }
-    //   config?.chainId.
+    //   const network = await provider.getNetwork()
+    //   console.log(provider)
+    //   console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
+    //   if(Number(network.chainId) !== chainId) {
+    //     await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
+    //   }
     // }
 
     return provider
