@@ -41,7 +41,7 @@ export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
     })
     const receipt = await request?.wait()
     if (receipt?.hash) {
-      const poolId = await getMarketPoolId({chainId, baseToken})
+      const poolId = await getMarketPoolId({chainId, baseToken}, )
       return poolId
     }
     // console.log(request)

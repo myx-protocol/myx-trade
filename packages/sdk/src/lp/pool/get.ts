@@ -1,8 +1,5 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
-import {
-  getDataProviderContract,
-  getPoolManagerContract,
-} from "../../web3/providers";
+import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "../../web3/providers";
 import { ChainId } from "@/config/chain";
 import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
@@ -29,7 +26,7 @@ export const getMarketPoolId = async ({
     const chainInfo = CHAIN_INFO[chainId];
     const addresses = Address[chainId as keyof typeof Address];
     const address = addresses.POOL_MANAGER;
-    const contract = await getPoolManagerContract(chainId);
+    const contract = await getPoolManagerContract(chainId, ProviderType.JSON);
 
     const data = [marketId, baseToken];
 
