@@ -6,6 +6,7 @@ import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import ERC20Token_ABI from "@/abi/ERC20Token.json";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -16,20 +17,61 @@ export class Account {
     this.utils = utils;
   }
 
+  async getWalletQuoteTokenBalance() {
+    const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidSigner,
+        "Invalid signer"
+      );
+    }
+    const contractAddress = getContractAddressByChainId(config.chainId);
+    const erc20Contract = new ethers.Contract(
+      contractAddress.ERC20,
+      ERC20Token_ABI,
+      config.signer
+    );
+    const balance = await erc20Contract.balanceOf(config.signer.getAddress());
+    return {
+      code: 0,
+      data: balance,
+    };
+  }
 
   /**
    * get tradable amount
    */
   async getTradableAmount({ poolId }: { poolId: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidSigner,
+        "Invalid signer"
+      );
+    }
     const contractAddress = getContractAddressByChainId(config.chainId);
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
       config.signer
     );
-    const assets = await accountContract.getTradableAmount(config.signer.getAddress(), poolId);
-    return assets;
+    try {
+      const assets = await accountContract.getTradableAmount(config.signer.getAddress(), poolId);
+      const data = {
+        profitIsReleased: assets[0],
+        freeAmount: assets[1],
+        tradeableProfit: assets[2],
+      }
+      return {
+        code: 0,
+        data,
+      };
+    } catch (error) {
+      return {
+        code: -1
+      }
+    }
+
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams) {
