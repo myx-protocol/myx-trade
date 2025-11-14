@@ -102,7 +102,7 @@ export const getWalletProvider = async (chainId: ChainId) => {
     // }
 
     // 创建 ethers provider
-    const walletClient  = sdk.getConfigManager()?.getConfig().walletClient
+    const walletClient  = sdk.getConfigManager()?.getConfig()?.walletClient
     const provider = new BrowserProvider(walletClient?.transport!);
     if (!provider) {
       throw new Error('missing provider');
