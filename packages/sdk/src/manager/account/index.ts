@@ -102,7 +102,8 @@ export class Account {
 
     try {
       console.log("withdraw", config.signer?.getAddress() ?? "", poolId, amount);
-      const rs = await accountContract.withdraw(poolId, amount, config.signer?.getAddress() ?? "");
+      const account = await config.signer?.getAddress() ?? ''
+      const rs = await accountContract.withdraw(poolId, amount, account);
       const receipt = await rs?.wait(1);
 
       return {
@@ -128,8 +129,9 @@ export class Account {
     );
 
     try {
-      console.log("deposit", config.signer?.getAddress() ?? "", poolId, amount);
-      const rs = await accountContract.deposit(config.signer?.getAddress() ?? "", poolId, amount);
+        const account = await config.signer?.getAddress() ?? ''
+      console.log("deposit", account, poolId, amount);
+      const rs = await accountContract.deposit(account, poolId, amount);
       const receipt = await rs?.wait(1);
 
       return {
