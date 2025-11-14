@@ -52,7 +52,7 @@ export const claimQuotePoolRebate = async (
     }
     
     const contract = await getLiquidityRouterContract(chainId)
-    console.log("quote claim params", data)
+    // console.log("quote claim params", data)
     
     // estimateGas
     const _gasLimit = await contract["claimQuotePoolRebate((bytes32,uint8,uint256,bytes,uint64)[],bytes32,address)"]
@@ -67,7 +67,7 @@ export const claimQuotePoolRebate = async (
       value: values[0]
     })
     
-    console.log('quote claim',response)
+    // console.log('quote claim',response)
     return response
     
   } catch (error) {
@@ -115,7 +115,7 @@ export const claimQuotePoolRebates = async (
       recipient: account
     }
     
-    console.log("quote claim Rebates params", data)
+    // console.log("quote claim Rebates params", data)
     
     const contract = await getLiquidityRouterContract(chainId)
     
@@ -131,7 +131,7 @@ export const claimQuotePoolRebates = async (
       value
     })
     
-    console.log('quote claim rebates',response)
+    // console.log('quote claim rebates',response)
     return response
     
   } catch (error) {

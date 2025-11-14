@@ -21,9 +21,6 @@ export const addTpSl = async (params:AddTpSLParams) => {
       throw new Error(Errors[ErrorCode.Invalid_Params])
     }
     
-    
-    
-    
     const decimals = Market[chainId].lpDecimals
     const quoteDecimals = pool.quoteDecimals
     
@@ -38,22 +35,22 @@ export const addTpSl = async (params:AddTpSLParams) => {
       tpslParams
     }
     
-    console.log('add tpSl params:', data)
+    // console.log('add tpSl params:', data)
     
     const _gasLimit = await contract.addTpsl.estimateGas(data)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     
     const request = await contract.addTpsl(data, {
       gasLimit,
       gasPrice
     })
-    console.log("addTpsl request", request);
+    // console.log("addTpsl request", request);
     const receipt = await request?.wait()
-    console.log(request)
+    // console.log(request)
     return receipt;
   } catch (error) {
     console.error(error)

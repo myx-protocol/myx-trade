@@ -210,7 +210,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   
   const {data: userShareBase}  = useQuery({
     queryKey: [{key: 'userShareBase'},poolId, pool],
-    enabled: !!poolId && !!pool?.quotePoolToken,
+    enabled: !!poolId && !!pool?.basePoolToken,
     queryFn: async () => {
       if (!poolId || !pool) return null
       const result = await Pool.getUserGenesisShare(chainId, pool?.basePoolToken, account as string)

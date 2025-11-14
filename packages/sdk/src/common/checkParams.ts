@@ -37,7 +37,7 @@ export  const checkParams = async (params: OptionalParams) => {
     }
   }
   
-  console.log('checkbalance')
+  // console.log('checkbalance')
   const {tokenAddress,contractAddress, chainId, amount, decimals, account} = params
   if(amount && chainId && decimals && account) {
     
@@ -45,7 +45,7 @@ export  const checkParams = async (params: OptionalParams) => {
     const amountIn = parseUnits (amount.toString (), decimals)
     if (tokenAddress ) {
       const balance = await getBalanceOf (chainId, account, tokenAddress)
-      console.log ("balance", balance, tokenAddress);
+      // console.log ("balance", balance, tokenAddress);
       
       if (!balance || balance < amountIn) {
         throw new Error (Errors[ErrorCode.Insufficient_Balance]);

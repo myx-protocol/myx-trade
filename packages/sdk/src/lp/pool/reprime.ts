@@ -24,7 +24,7 @@ export const reprime = async (chainId: ChainId, poolId: string) => {
     if (!_amount) {
       throw new Error('Invalid Market');
     }
-    console.log(Number(formatUnits(_amount, pool.quoteDecimals)))
+    // console.log(Number(formatUnits(_amount, pool.quoteDecimals)))
     
     await checkParams ({
       tokenAddress: pool.quoteToken,
@@ -39,16 +39,16 @@ export const reprime = async (chainId: ChainId, poolId: string) => {
     const contract = await getPoolManagerContract(chainId)
     const _gasLimit = await contract.reprimePool.estimateGas({ poolId })
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     
     const request = await contract.reprimePool({poolId})
-    console.log("PoolManager.reprimePool request", request);
+    // console.log("PoolManager.reprimePool request", request);
     
     const receipt = await request?.wait()
-    console.log(receipt)
+    // console.log(receipt)
     return receipt;
   } catch (error) {
     console.error (error);
