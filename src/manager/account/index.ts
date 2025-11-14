@@ -88,4 +88,57 @@ export class Account {
       data: res.data,
     };
   }
+
+
+  async withdraw({ poolId, amount }: { poolId: string, amount: string }) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+
+    const contractAddress = getContractAddressByChainId(config.chainId);
+    const accountContract = new ethers.Contract(
+      contractAddress.Account,
+      Account_ABI,
+      config.signer
+    );
+
+    try {
+      const rs = await accountContract.withdraw(poolId, amount, config.signer?.getAddress() ?? "");
+      const receipt = await rs?.wait(1);
+
+      return {
+        code: 0,
+        data: receipt,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async deposit({ poolId, amount }: { poolId: string, amount: string }) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+
+    const contractAddress = getContractAddressByChainId(config.chainId);
+    const accountContract = new ethers.Contract(
+      contractAddress.Account,
+      Account_ABI,
+      config.signer
+    );
+
+    try {
+      const rs = await accountContract.deposit(config.signer?.getAddress() ?? "", poolId, amount);
+      const receipt = await rs?.wait(1);
+
+      return {
+        code: 0,
+        data: receipt,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
 }
