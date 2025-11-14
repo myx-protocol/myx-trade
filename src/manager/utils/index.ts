@@ -97,6 +97,12 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(
+          MyxErrorCode.InvalidSigner,
+          "Invalid signer"
+        );
+      }
 
       const owner = await config.signer.getAddress();
 
