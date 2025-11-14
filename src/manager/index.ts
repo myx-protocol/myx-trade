@@ -84,7 +84,7 @@ export class MyxClient {
    * auth the client
    */
   public auth(
-    params: Pick<MyxClientConfig, "signer" | "getAccessToken" | "walletClient">
+    params: Required<Pick<MyxClientConfig, "signer" | "getAccessToken" | "walletClient">>
   ) {
     this.configManager.auth(params);
   }
