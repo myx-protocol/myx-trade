@@ -21,7 +21,7 @@ export const getLpPrice = async (chainId:ChainId,poolId: string) => {
     }
     
     const data = await contract.getPoolTokenPrice(poolId, price)
-    console.log( `pool ${poolId} price: `, data)
+    // console.log( `pool ${poolId} price: `, data)
     return data
   } catch (error) {
     console.error(error)
