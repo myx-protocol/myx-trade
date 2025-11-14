@@ -29,6 +29,9 @@ export class Order {
   async createIncreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
 
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
@@ -157,6 +160,9 @@ export class Order {
   async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
         config.signer
@@ -281,6 +287,9 @@ export class Order {
   async createPositionTpSlOrder(params: PositionTpSlOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
         config.signer
@@ -470,6 +479,9 @@ export class Order {
   async cancelOrder(orderId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       const brokerContract = await getBrokerSingerContract(
         config.chainId,
         config.signer
@@ -493,6 +505,9 @@ export class Order {
   async cancelOrders(orderIds: string[]) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       const brokerContract = await getBrokerSingerContract(
         config.chainId,
         config.signer
@@ -515,6 +530,9 @@ export class Order {
 
   async updateOrderTpSl(params: UpdateOrderParams) {
     const config: MyxClientConfig = this.configManager.getConfig();
+    if (!config.signer) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+    }
     console.log("updateOrderTpSl params", params);
 
     const brokerContract = await getBrokerSingerContract(
@@ -534,6 +552,7 @@ export class Order {
         executionFeeToken: params.executionFeeToken,
         useOrderCollateral: true,
         useAccountBalance: false,
+        paymentType: 0,
       },
     };
 

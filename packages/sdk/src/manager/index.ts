@@ -79,4 +79,19 @@ export class MyxClient {
 
     lp.setConfigManager(this.configManager);
   }
+
+  /**
+   * auth the client
+   */
+  public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
+    this.configManager.auth(params);
+  }
+
+  /**
+   * close the client
+   */
+  public close() {
+    this.configManager.clear();
+    this.subscription.disconnect();
+  }
 }

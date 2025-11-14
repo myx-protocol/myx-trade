@@ -12,7 +12,7 @@ interface AccessTokenResponse {
 
 export interface MyxClientConfig {
   chainId: number;
-  signer: Signer;
+  signer?: Signer;
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
@@ -39,6 +39,24 @@ export class ConfigManager {
     };
     this.validateConfig(mergedConfig);
     this.config = mergedConfig;
+  }
+
+  public clear() {
+    this.accessToken = undefined;
+    this.accessTokenExpiry = undefined;
+    this.config = {
+      ...this.config,
+      signer: undefined,
+      getAccessToken: undefined,
+    };
+  }
+
+  public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
+    this.config = {
+      ...this.config,
+      ...params,
+    };
+    this.validateConfig(this.config);
   }
 
   private validateConfig(config: MyxClientConfig) {

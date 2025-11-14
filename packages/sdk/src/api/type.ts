@@ -221,6 +221,8 @@ export interface SearchResultContractItem {
   liquidity: string;
   basePrice: string;
   priceChange: string;
+  tvl: string
+  marketCap: string
 }
 
 export interface SearchResultCookItem {
@@ -331,4 +333,6 @@ export interface MarketDetailResponse {
   feedId: string;
   activeTime: number;
   capType: MarketCapType;
+  baseReserveRatio: string
+  quoteReserveRatio: string
 }

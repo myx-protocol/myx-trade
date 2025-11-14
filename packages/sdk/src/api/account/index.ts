@@ -6,6 +6,7 @@ import { baseUrl } from "..";
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
+  poolId?: string
 }
 
 export enum OrderTypeEnum {
@@ -58,7 +59,7 @@ export interface HistoryOrderItem {
   filledSize: string; // filled size amount
   filledAmount: string; // filled amount
   price: string; // price
-  lastPrice: string; // last price
+  lastPrice: string; // last price(avg price)
   orderStatus: OrderStatusEnum; // order status
   execType: ExecTypeEnum; // exec type
   slippagePct: number; // slippage percentage
@@ -67,6 +68,9 @@ export interface HistoryOrderItem {
   tradingFee: string; // trading fee
   fundingFee: string; // funding fee
   realizedPnl: string; // realized pnl
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  userLeverage: number; // leverage
 }
 
 /**
@@ -91,6 +95,18 @@ export const getHistoryOrders = async ({
  * Get position history
  */
 
+export enum CloseTypeEnum {
+  Open = 0,
+  PartialClose = 1,
+  FullClose = 2,
+  Liquidation = 3,
+  EarlyClose = 4,
+  MarketClose = 5,
+  ADL = 6,
+  TP = 7,
+  SL = 8,
+  Increase = 9,
+}
 export interface PositionHistoryItem {
   chainId: number;
   poolId: string;
@@ -105,6 +121,11 @@ export interface PositionHistoryItem {
   openTime: number;
   closeTime: number;
   realizedPnl: string;
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  userLeverage: number; // leverage
+  closeType: CloseTypeEnum; // close type
+  avgClosePrice: string; // average close price
 }
 
 export const getPositionHistory = async ({
@@ -138,6 +159,11 @@ export interface TradeFlowItem {
   afterCollateralAmount: string;
   txHash: string;
   txTime: number;
+  baseSymbol: string; // base symbol
+  quoteSymbol: string; // quote symbol
+  userLeverage: number; // leverage
+  executionFee: string; // execution fee
+  type: OperationEnum; // operation type
 }
 export const getTradeFlow = async ({
   accessToken,

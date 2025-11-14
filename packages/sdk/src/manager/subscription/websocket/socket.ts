@@ -110,7 +110,7 @@ export class MyxWebSocketClient {
    */
   public connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.ws?.readyState === WebSocket.OPEN) {
+      if (this.ws?.readyState === WebSocket.OPEN || this.ws?.readyState === WebSocket.CONNECTING) {
         resolve();
         return;
       }
@@ -308,11 +308,13 @@ export class MyxWebSocketClient {
       );
     }
 
-    if (this.ws.readyState !== WebSocket.OPEN) {
+    if (
+      this.ws.readyState !== WebSocket.OPEN &&
+      this.ws.readyState !== WebSocket.CONNECTING
+    ) {
       this.reconnect();
     }
-
-    this.ws?.send(message);
+    this.ws.send(message);
   }
 
   /**
@@ -332,7 +334,9 @@ export class MyxWebSocketClient {
    */
   public reconnect(): void {
     if (this.ws) {
-      this.ws.reconnect();
+      if (this.ws.readyState !== WebSocket.CONNECTING) {
+        this.ws.reconnect();
+      }
     } else {
       this.connect().catch((err) => {
         this.logger.error(err);
