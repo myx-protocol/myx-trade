@@ -100,10 +100,13 @@ export class Account {
       config.signer
     );
 
+
+
     try {
-      console.log("withdraw", config.signer?.getAddress() ?? "", poolId, amount);
       const account = await config.signer?.getAddress() ?? ''
-      const rs = await accountContract.withdraw(poolId, amount, account);
+
+      console.log("withdraw", account, amount, poolId);
+      const rs = await accountContract.withdraw(poolId, account, amount);
       const receipt = await rs?.wait(1);
 
       return {
@@ -118,7 +121,7 @@ export class Account {
     }
   }
 
-  async deposit({ poolId, amount }: { poolId: string, amount: string }) {
+  async deposit({ poolId, amount, tokenAddress }: { poolId: string, amount: string, tokenAddress: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(config.chainId);
@@ -129,7 +132,25 @@ export class Account {
     );
 
     try {
-        const account = await config.signer?.getAddress() ?? ''
+      const needApproval = await this.utils.needsApproval(
+        tokenAddress,
+        amount,
+        contractAddress.Account,
+      );
+
+      if(needApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          quoteAddress: tokenAddress,
+          amount: amount,
+          spenderAddress: contractAddress.Account,
+        });
+
+        if(approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
+
+      const account = await config.signer?.getAddress() ?? ''
       console.log("deposit", account, poolId, amount);
       const rs = await accountContract.deposit(account, poolId, amount);
       const receipt = await rs?.wait(1);
