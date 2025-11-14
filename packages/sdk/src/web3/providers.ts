@@ -41,9 +41,9 @@ export const getERC20Contract = async (chainId:ChainId,tokenAddress: string) => 
 
 
 export const getAccount = async (chainId:ChainId) => {
-  const provider = await getWalletProvider (chainId);
-  const accounts = await provider.send("eth_requestAccounts", []);
-  return  accounts?.[0] ?? undefined;
+  const provider = await getSignerProvider (chainId);
+  const account = await provider?.getAddress()
+  return  account ?? undefined;
 }
 
 export const getLiquidityRouterContract = async (chainId: ChainId) => {
