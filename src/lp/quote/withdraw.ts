@@ -81,7 +81,7 @@ export const withdraw = async (params: WithdrawParams) => {
       recipient: account,
     }
     
-    console.log ("withdraw", data);
+    // console.log ("withdraw", data);
     
     const contract = await getLiquidityRouterContract (chainId)
     
@@ -94,10 +94,10 @@ export const withdraw = async (params: WithdrawParams) => {
       value,
     })
     
-    console.log ("withdraw quote with price", request)
+    // console.log ("withdraw quote with price", request)
     const receipt = await request?.wait()
     
-    console.log ("withdraw quote receipt", receipt)
+    // console.log ("withdraw quote receipt", receipt)
     return receipt
     
   } catch (error) {
