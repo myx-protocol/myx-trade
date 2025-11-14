@@ -41,15 +41,13 @@ export const claimBasePoolRebate = async (
       }
     })
     
-    
-    
     const data = {
       prices,
       values,
       poolId,
       recipient: account
     }
-    console.log('base claim', data)
+    // console.log('base claim', data)
     const contract = await getLiquidityRouterContract(chainId)
     
     // estimateGas
@@ -64,7 +62,7 @@ export const claimBasePoolRebate = async (
       value: values[0],
     })
     
-    console.log('base claim',response)
+    // console.log('base claim',response)
     return response
     
   } catch (error) {
@@ -111,7 +109,7 @@ export const claimBasePoolRebates = async (
       recipient: account
     }
     
-    console.log ('base claim pool rebates', data)
+    // console.log ('base claim pool rebates', data)
     const contract = await getLiquidityRouterContract (chainId)
     
     // estimateGas
@@ -126,7 +124,7 @@ export const claimBasePoolRebates = async (
       value
     })
     
-    console.log ('base claim rebates', response)
+    // console.log ('base claim rebates', response)
     return response
     
   } catch (error) {

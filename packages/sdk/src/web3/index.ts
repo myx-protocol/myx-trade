@@ -102,11 +102,15 @@ export const getWalletProvider = async (chainId: ChainId) => {
     // }
 
     // 创建 ethers provider
-    const provider = sdk.provider
+    const walletClient  = sdk.getConfigManager()?.getConfig().walletClient
+    const provider = new BrowserProvider(walletClient?.transport!);
     if (!provider) {
-      throw new Error('Provider missing in provider');
+      throw new Error('missing provider');
     }
-    
+    // const provider = new BrowserProvider(options.walletClient?.transport);
+    //   if (provider) {
+    //     lp.setProvider(provider);
+    //   }
     /*if (provider) {
       provider.on("disconnect", (error: any) => {
         console.log("Wallet disconnected:", error);
@@ -120,14 +124,15 @@ export const getWalletProvider = async (chainId: ChainId) => {
     }*/
 
     // 如果指定了 chainId，可以验证当前链是否匹配
-    if (chainId) {
-      const network = await provider.getNetwork()
-      console.log(provider)
-      console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
-      if(Number(network.chainId) !== chainId) {
-        await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
-      }
-    }
+    // if (chainId) {
+    //   // const network = await provider.getNetwork()
+    //   // // console.log(provider)
+    //   // // console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
+    //   // if(Number(network.chainId) !== chainId) {
+    //   //   await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
+    //   // }
+    //   config?.chainId.
+    // }
 
     return provider
   } catch (error) {
@@ -139,6 +144,6 @@ export const getWalletProvider = async (chainId: ChainId) => {
 
 export const getSignerProvider = async (chainId: ChainId) => {
   const provider = await getWalletProvider (chainId);
-  console.log(provider)
+  // console.log(provider)
   return provider?.getSigner?.();
 };

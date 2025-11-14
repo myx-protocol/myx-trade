@@ -8,7 +8,7 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
   try {
     const chainInfo =  CHAIN_INFO[chainId];
     
-    console.log("previewLpAmountOut data", [poolId, amountIn, price]);
+    // console.log("previewLpAmountOut data", [poolId, amountIn, price]);
     const quotePoolContract = await getQuotePoolContract(chainId);
     const _gasLimit = await quotePoolContract.previewLpAmountOut.estimateGas(poolId, amountIn, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -17,7 +17,7 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
       gasLimit,
       gasPrice
     })
-    console.log(request)
+    // console.log(request)
     return request
   } catch (error) {
     console.error(error)
@@ -30,7 +30,7 @@ export const previewQuoteAmountOut = async ({chainId, amountIn, poolId, price = 
   try {
     const chainInfo =  CHAIN_INFO[chainId];
     
-    console.log("previewQuoteAmountOut data", [poolId, amountIn, price]);
+    // console.log("previewQuoteAmountOut data", [poolId, amountIn, price]);
     const quotePoolContract = await getQuotePoolContract(chainId);
     const _gasLimit = await quotePoolContract.previewQuoteAmountOut.estimateGas(poolId, amountIn, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -39,7 +39,7 @@ export const previewQuoteAmountOut = async ({chainId, amountIn, poolId, price = 
       gasLimit,
       gasPrice
     })
-    console.log('previewQuoteAmountOut response', request)
+    // console.log('previewQuoteAmountOut response', request)
     return request
   } catch (error) {
     console.error(error)

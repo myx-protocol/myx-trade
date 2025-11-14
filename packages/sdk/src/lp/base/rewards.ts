@@ -20,7 +20,7 @@ export const getRewards = async (params: RewardsParams) => {
     
     const price = parseUnits(_price, COMMON_PRICE_DECIMALS)
     
-    console.log("pendingUserRebates base data:", [poolId, lpAmountIn,account, price]);
+    // console.log("pendingUserRebates base data:", [poolId, lpAmountIn,account, price]);
     const basePoolContract = await getBasePoolContract(chainId);
     const _gasLimit = await basePoolContract.pendingUserRebates.estimateGas(poolId, account, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -30,7 +30,7 @@ export const getRewards = async (params: RewardsParams) => {
       gasPrice
     })
     
-    console.log("pendingUserRebates base result:", request);
+    // console.log("pendingUserRebates base result:", request);
     return request
   
   } catch (error) {
