@@ -13,7 +13,7 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
   try {
     const chainInfo =  CHAIN_INFO[chainId];
     
-    console.log("previewLpAmountOut data", [poolId, amountIn, price]);
+    // console.log("previewLpAmountOut data", [poolId, amountIn, price]);
     const basePoolContract = await getBasePoolContract(chainId);
     const _gasLimit = await basePoolContract.previewLpAmountOut.estimateGas(poolId, amountIn, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -22,7 +22,7 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
       gasLimit,
       gasPrice
     })
-    console.log(request)
+    // console.log(request)
     return request
   } catch (error) {
     console.error(error)
@@ -35,7 +35,7 @@ export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0
   try {
     const chainInfo =  CHAIN_INFO[chainId];
     
-    console.log("previewQuoteAmountOut data", [poolId, amountIn, price]);
+    // console.log("previewQuoteAmountOut data", [poolId, amountIn, price]);
     const basePoolContract = await getBasePoolContract(chainId);
     const _gasLimit = await basePoolContract.previewBaseAmountOut.estimateGas(poolId, amountIn, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -44,7 +44,7 @@ export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0
       gasLimit,
       gasPrice
     })
-    console.log('previewBaseAmountOut response', request)
+    // console.log('previewBaseAmountOut response', request)
     return request
   } catch (error) {
     console.error(error)
@@ -81,7 +81,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     
     const price = parseUnits(_price, COMMON_PRICE_DECIMALS)
     
-    console.log("previewUserWithdrawData data", [poolId, amountIn,account, price]);
+    // console.log("previewUserWithdrawData data", [poolId, amountIn,account, price]);
     const basePoolContract = await getBasePoolContract(chainId);
     const _gasLimit = await basePoolContract.previewUserWithdrawData.estimateGas(poolId, amountIn,account, price)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
@@ -92,7 +92,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     })
     
     const {baseAmountOut, rebateAmount} = request
-    console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
+    // console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
     return {
       baseAmountOut,
       rebateAmount,

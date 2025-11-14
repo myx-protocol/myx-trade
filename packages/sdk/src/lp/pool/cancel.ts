@@ -17,21 +17,20 @@ export const cancelTpSl = async (params:CancelTpSLParams) => {
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getLiquidityRouterContract(chainId)
     
-    
     const _gasLimit = await contract.cancelTpsl.estimateGas(orderId)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     
     const request = await contract.cancelTpsl(orderId, {
       gasLimit,
       gasPrice
     })
-    console.log("cancelTpSl request", request);
+    // console.log("cancelTpSl request", request);
     const receipt = await request?.wait()
-    console.log(request)
+    // console.log(request)
     return receipt;
   } catch (error) {
     console.error(error)

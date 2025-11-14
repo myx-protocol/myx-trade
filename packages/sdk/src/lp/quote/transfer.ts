@@ -34,7 +34,7 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
       minLpOut: 0n,
       amount: parseUnits(amount.toString(), decimals),
     }
-    console.log('migrateLiquiditydata', data)
+    // console.log('migrateLiquiditydata', data)
     const contract = await getLiquidityRouterContract(chainId)
     //estimateGas
     const _gasLimit =  await contract.migrateLiquidity.estimateGas(data)
@@ -45,7 +45,7 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
       gasLimit,
       gasPrice
     })
-    console.log("migrateLiquidity",result)
+    // console.log("migrateLiquidity",result)
     return result
   } catch (error) {
     // console.error(error)
