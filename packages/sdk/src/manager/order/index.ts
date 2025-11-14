@@ -3,9 +3,8 @@ import { Logger } from "@/logger";
 import { getHistoryOrders, GetHistoryOrdersParams, getOrders } from "@/api";
 import {
   getBrokerSingerContract,
-  getOrderManagerSingerContract,
 } from "@/web3/providers";
-import { Direction, TIME_IN_FORCE } from "@/config/con";
+import { TIME_IN_FORCE } from "@/config/con";
 import {
   PlaceOrderParams,
   OperationType,
@@ -15,6 +14,7 @@ import {
 import { Utils } from "../utils";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { ethers } from "ethers";
 
 export class Order {
   private configManager: ConfigManager;
@@ -44,6 +44,24 @@ export class Order {
       const collateralWithNetworkFee =
         BigInt(params.collateralAmount) + BigInt(networkFee);
 
+      const needsApproval = await this.utils.needsApproval(
+        params.executionFeeToken,
+        collateralWithNetworkFee.toString(),
+        config.brokerAddress,
+      );
+
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          quoteAddress: params.executionFeeToken,
+          amount: ethers.MaxUint256.toString(),
+          spenderAddress: config.brokerAddress,
+        });
+
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
+
       console.log("createIncreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
@@ -64,7 +82,9 @@ export class Order {
         tpPrice: params.tpPrice ? params.tpPrice : 0,
         slSize: params.slSize ? params.slSize : 0,
         slPrice: params.slPrice ? params.slPrice : 0,
+        useAccountBalance: false,
       });
+
       const gasLimit = await brokerContract.placeOrder.estimateGas({
         user: params.address,
         poolId: params.poolId,
@@ -116,11 +136,11 @@ export class Order {
         }
       );
 
-      this.logger.info("Transaction sent:", transaction.hash);
-      this.logger.info("Waiting for confirmation...");
+      // this.logger.info("Transaction sent:", transaction.hash);
+      // this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       this.logger.info("createIncreaseOrder receipt--->", receipt);
       const orderId = this.utils.getOrderIdFromTransaction(receipt);
