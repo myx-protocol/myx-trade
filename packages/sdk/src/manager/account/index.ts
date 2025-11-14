@@ -123,7 +123,8 @@ export class Account {
 
   async deposit({ poolId, amount, tokenAddress }: { poolId: string, amount: string, tokenAddress: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-
+    const account = await config.signer?.getAddress() ?? ''
+    console.log("deposit", account, poolId, amount);
     const contractAddress = getContractAddressByChainId(config.chainId);
     const accountContract = new ethers.Contract(
       contractAddress.Account,
@@ -138,20 +139,20 @@ export class Account {
         contractAddress.Account,
       );
 
-      if(needApproval) {
+      if (needApproval) {
         const approvalResult = await this.utils.approveAuthorization({
           quoteAddress: tokenAddress,
-          amount: amount,
+          amount: ethers.MaxUint256.toString(),
           spenderAddress: contractAddress.Account,
         });
 
-        if(approvalResult.code !== 0) {
+        if (approvalResult.code !== 0) {
           throw new Error(approvalResult.message);
         }
       }
 
-      const account = await config.signer?.getAddress() ?? ''
-      console.log("deposit", account, poolId, amount);
+
+
       const rs = await accountContract.deposit(account, poolId, amount);
       const receipt = await rs?.wait(1);
 

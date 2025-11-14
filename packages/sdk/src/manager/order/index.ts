@@ -47,14 +47,13 @@ export class Order {
       const needsApproval = await this.utils.needsApproval(
         params.executionFeeToken,
         collateralWithNetworkFee.toString(),
-        config.brokerAddress,
       );
+
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
           quoteAddress: params.executionFeeToken,
           amount: ethers.MaxUint256.toString(),
-          spenderAddress: config.brokerAddress,
         });
 
         if (approvalResult.code !== 0) {
