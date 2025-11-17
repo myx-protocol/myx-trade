@@ -35,7 +35,6 @@ export class Order {
 
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
-        config.signer
       );
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken
@@ -184,7 +183,6 @@ export class Order {
       }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
-        config.signer
       );
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken
@@ -311,7 +309,6 @@ export class Order {
       }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
-        config.signer
       );
       try {
         const networkFee = await this.utils.getNetworkFee(
@@ -502,8 +499,7 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId,
-        config.signer
+        config.chainId
       );
 
       const tx = await brokerContract.cancelOrder(orderId);
@@ -528,8 +524,7 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId,
-        config.signer
+        config.chainId
       );
       const tx = await brokerContract.cancelOrders(orderIds);
       await tx.wait();
@@ -555,8 +550,7 @@ export class Order {
     console.log("updateOrderTpSl params", params);
 
     const brokerContract = await getBrokerSingerContract(
-      config.chainId,
-      config.signer
+      config.chainId
     );
 
     const data = {
