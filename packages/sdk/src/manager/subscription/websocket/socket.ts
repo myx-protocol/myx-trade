@@ -226,33 +226,56 @@ export class MyxWebSocketClient {
   /**
    * subscribe
    * support multiple consumers subscribing to the same listenerId, only send one subscription message
+   * support batch subscription: pass an array of subscriptions to subscribe multiple topics at once
    */
   public subscribe(
-    subscription: WebSocketSubscriptionItem,
+    subscription: WebSocketSubscriptionItem | WebSocketSubscriptionItem[],
     callback: (data: any) => void
   ) {
-    const subscriptionId = generateListenerId(subscription);
-    if (this.subscriptions.has(subscriptionId)) {
-      // if the subscription already exists, only add the new callback
-      const existingSubscription = this.subscriptions.get(subscriptionId)!;
-      existingSubscription.callbacks.add(callback);
-      this.logger.debug(
-        `add callback to existing subscription: ${subscriptionId}`
-      );
-    } else {
-      // create new subscription
-      const subscriptionObj: Subscription = {
-        id: subscriptionId,
-        topic: subscription.topic,
-        callbacks: new Set([callback]),
-      };
+    const subscriptionList = Array.isArray(subscription)
+      ? subscription
+      : [subscription];
 
-      // save subscription
-      this.subscriptions.set(subscriptionId, subscriptionObj);
-      this.logger.debug(`create new subscription: ${subscriptionId}`);
+    const newSubscriptionIds: string[] = [];
+    // track processed subscriptionIds to avoid duplicate processing
+    const processedIds = new Set<string>();
+
+    subscriptionList.forEach((subscriptionItem) => {
+      const subscriptionId = generateListenerId(subscriptionItem);
+      
+      // skip if already processed in this batch
+      if (processedIds.has(subscriptionId)) {
+        return;
+      }
+      processedIds.add(subscriptionId);
+
+      if (this.subscriptions.has(subscriptionId)) {
+        // if the subscription already exists, only add the new callback
+        const existingSubscription = this.subscriptions.get(subscriptionId)!;
+        existingSubscription.callbacks.add(callback);
+        this.logger.debug(
+          `add callback to existing subscription: ${subscriptionId}`
+        );
+      } else {
+        // create new subscription
+        const subscriptionObj: Subscription = {
+          id: subscriptionId,
+          topic: subscriptionItem.topic,
+          callbacks: new Set([callback]),
+        };
+
+        // save subscription
+        this.subscriptions.set(subscriptionId, subscriptionObj);
+        newSubscriptionIds.push(subscriptionId);
+        this.logger.debug(`create new subscription: ${subscriptionId}`);
+      }
+    });
+
+    // batch send all new subscriptions in one request
+    if (newSubscriptionIds.length > 0) {
       this.send({
         request: WebSocketMethodEnum.SubscribeV2,
-        args: [subscriptionId],
+        args: newSubscriptionIds,
       });
     }
   }
@@ -260,33 +283,49 @@ export class MyxWebSocketClient {
   /**
    * unsubscribe
    * unsubscribe by callback, only send unsubscribe message when all callbacks are removed
+   * support batch unsubscribe: pass an array of subscriptions to unsubscribe multiple topics at once
    */
   public unsubscribe(
-    subscriptions: WebSocketSubscriptionItem,
+    subscriptions: WebSocketSubscriptionItem | WebSocketSubscriptionItem[],
     callback: (data: any) => void
   ): void {
     if (!subscriptions) return;
 
+    const subscriptionList = Array.isArray(subscriptions)
+      ? subscriptions
+      : [subscriptions];
+
     const subscriptionsToUnsubscribe: string[] = [];
+    // track processed subscriptionIds to avoid duplicate processing
+    const processedIds = new Set<string>();
 
-    const subscriptionId = generateListenerId(subscriptions);
-    const subscriptionObj = this.subscriptions.get(subscriptionId);
-
-    if (subscriptionObj) {
-      // remove the specified callback
-      subscriptionObj.callbacks.delete(callback);
-      this.logger.debug(`remove callback from subscription: ${subscriptionId}`);
-      // if there are no callbacks, mark as need to unsubscribe
-      if (subscriptionObj.callbacks.size === 0) {
-        this.subscriptions.delete(subscriptionId);
-        subscriptionsToUnsubscribe.push(subscriptionId);
-        this.logger.debug(
-          `subscription ${subscriptionId} has no callbacks, will unsubscribe`
-        );
+    subscriptionList.forEach((subscriptionItem) => {
+      const subscriptionId = generateListenerId(subscriptionItem);
+      
+      // skip if already processed in this batch
+      if (processedIds.has(subscriptionId)) {
+        return;
       }
-    }
+      processedIds.add(subscriptionId);
 
-    // only send unsubscribe message to subscriptions that have no callbacks
+      const subscriptionObj = this.subscriptions.get(subscriptionId);
+
+      if (subscriptionObj) {
+        // remove the specified callback
+        subscriptionObj.callbacks.delete(callback);
+        this.logger.debug(`remove callback from subscription: ${subscriptionId}`);
+        // if there are no callbacks, mark as need to unsubscribe
+        if (subscriptionObj.callbacks.size === 0) {
+          this.subscriptions.delete(subscriptionId);
+          subscriptionsToUnsubscribe.push(subscriptionId);
+          this.logger.debug(
+            `subscription ${subscriptionId} has no callbacks, will unsubscribe`
+          );
+        }
+      }
+    });
+
+    // batch send unsubscribe message for subscriptions that have no callbacks
     if (subscriptionsToUnsubscribe.length > 0) {
       this.send({
         request: WebSocketMethodEnum.UnsubscribeV2,

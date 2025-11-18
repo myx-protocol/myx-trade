@@ -71,28 +71,28 @@ export class SubScription {
   /**
    * tickers subscription methods
    */
-  subscribeTickers(globalId: number, callback: OnTickersCallback) {
-    this.logger.debug(`subscribe tickers ${globalId}`);
+  subscribeTickers(globalIds: number | number[], callback: OnTickersCallback) {
+    this.logger.debug(`subscribe tickers ${globalIds}`);
+    const globalIdsList = Array.isArray(globalIds) ? globalIds : [globalIds];
     this.wsClient.subscribe(
-      {
+      globalIdsList.map((globalId) => ({
         topic: WebSocketTopicEnum.Ticker,
-        params: {
-          globalId: globalId,
-        },
-      },
+        params: { globalId },
+      })),
       callback
     );
   }
-
-  unsubscribeTickers(globalId: number, callback: OnTickersCallback) {
-    this.logger.debug(`unsubscribe tickers ${globalId}`);
+  unsubscribeTickers(
+    globalIds: number | number[],
+    callback: OnTickersCallback
+  ) {
+    this.logger.debug(`unsubscribe tickers ${globalIds}`);
+    const globalIdsList = Array.isArray(globalIds) ? globalIds : [globalIds];
     this.wsClient.unsubscribe(
-      {
+      globalIdsList.map((globalId) => ({
         topic: WebSocketTopicEnum.Ticker,
-        params: {
-          globalId,
-        },
-      },
+        params: { globalId },
+      })),
       callback
     );
   }
