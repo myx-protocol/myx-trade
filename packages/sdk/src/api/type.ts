@@ -223,6 +223,7 @@ export interface SearchResultContractItem {
   priceChange: string;
   tvl: string
   marketCap: string
+  globalId: number
 }
 
 export interface SearchResultCookItem {
@@ -238,6 +239,7 @@ export interface SearchResultCookItem {
   marketCap: string;
   lpPrice: string;
   lpPriceChange: string;
+  globalId: number;
 }
 
 export interface SearchResultEarnItem {
@@ -253,6 +255,7 @@ export interface SearchResultEarnItem {
   tvl: string;
   marketCap: string;
   apr: string;
+  globalId: number;
 }
 
 export interface SearchResultResponse {
