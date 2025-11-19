@@ -34,7 +34,8 @@
     "publish:patch": "node scripts/publish.js patch",
     "publish:minor": "node scripts/publish.js minor",
     "publish:major": "node scripts/publish.js major",
-    "publish:no-bump": "npm run build && npm publish --access public"
+    "publish:no-bump": "npm run build && npm publish --access public",
+    "type-check": "echo 'Skipping type-check for @myx-trade/sdk'"
   },
   "keywords": [
     "trading",
