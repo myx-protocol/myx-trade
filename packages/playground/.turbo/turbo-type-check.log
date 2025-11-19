@@ -1,0 +1,5 @@
+
+
+> @myx-trade/playground@0.0.0 type-check /Users/allen/work/mx-trade-sdk/packages/playground
+> tsc -b --noEmit
+

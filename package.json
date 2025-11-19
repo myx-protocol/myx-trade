@@ -12,7 +12,10 @@
     "install:playground": "cd packages/playground && pnpm install",
     "dev:playground": "cd packages/playground && pnpm dev",
     "build:playground": "cd packages/playground && pnpm build",
-    "gen:abi": "cd packages/sdk && pnpm run gen:abi"
+    "gen:abi": "cd packages/sdk && pnpm run gen:abi",
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky",
+    "type-check": "turbo run type-check"
   },
   "keywords": [
     "trading",
@@ -27,5 +30,13 @@
     "@wagmi/core": "^2.20.3",
     "crypto-js": "^4.2.0",
     "swr": "^2.3.6"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.0",
+    "turbo": "^2.6.1",
+    "typescript": "~5.8.3"
   }
 }
