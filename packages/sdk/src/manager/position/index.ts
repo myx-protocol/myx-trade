@@ -11,11 +11,8 @@ import {
   OracleType,
 } from "@/api";
 import { Utils } from "../utils";
-import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
-import { encodeFunctionData } from "viem";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
-import { getPriceData, pool } from "@/lp";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 
 export class Position {
