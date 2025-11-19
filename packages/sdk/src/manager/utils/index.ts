@@ -5,11 +5,12 @@ import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import OrderManager_ABI from "@/abi/OrderManager.json";
 import { Logger } from "@/logger";
-import { getOraclePrice, HttpKlineIntervalEnum } from "@/api";
+import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
 import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
+import Broker_ABI from "@/abi/Broker.json";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -185,6 +186,40 @@ export class Utils {
       };
     } catch (error) {
       this.logger.error("Approval error:", error);
+      return {
+        code: -1,
+        // @ts-ignore
+        message: error?.message,
+      };
+    }
+  }
+
+  async getUserTradingFeeRate(assetClass: number) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+    const brokerAddress = getContractAddressByChainId(
+      config.chainId
+    ).BROKER;
+    const brokerContract = new ethers.Contract(
+      brokerAddress,
+      Broker_ABI,
+      config.signer
+    );
+    try {
+      const userFeeRate = await brokerContract.getUserFeeRate(
+        config.signer?.getAddress(),
+        assetClass
+      );
+      return {
+        code: 0,
+        data: {
+          takerFeeRate: userFeeRate[0].toString(),
+          makerFeeRate: userFeeRate[1].toString(),
+          baseTakerFeeRate: userFeeRate[2].toString(),
+          baseMakerFeeRate: userFeeRate[3].toString(),
+        },
+      };
+    } catch (error) {
+      this.logger.error("Error getting user trading fee rate:", error);
       return {
         code: -1,
         // @ts-ignore
