@@ -3,3 +3,39 @@
 > @myx-trade/playground@0.0.0 type-check /Users/allen/work/mx-trade-sdk/packages/playground
 > tsc -b --noEmit
 
+[96msrc/pages/components/CreateDecreaseOrder.tsx[0m:[93m32[0m:[93m11[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'positionId' does not exist in type 'PlaceOrderParams'.
+
+[7m32[0m           positionId: record.positionId,
+[7m  [0m [91m          ~~~~~~~~~~[0m
+
+[96msrc/pages/TradePage.tsx[0m:[93m552[0m:[93m11[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'positionId' does not exist in type 'PositionTpSlOrderParams'.
+
+[7m552[0m           positionId: values.positionId ? parseInt(values.positionId) : 0,
+[7m   [0m [91m          ~~~~~~~~~~[0m
+
+[96msrc/pages/TradePage.tsx[0m:[93m607[0m:[93m62[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ chainId: 421614; address: `0x${string}`; poolId: any; positionId: number; orderType: OrderType; triggerType: TriggerType; direction: Direction; collateralAmount: string; size: string; ... 9 more ...; slPrice: string; }' is not assignable to parameter of type 'PlaceOrderParams'.
+  Property 'userPositionSalt' is missing in type '{ chainId: 421614; address: `0x${string}`; poolId: any; positionId: number; orderType: OrderType; triggerType: TriggerType; direction: Direction; collateralAmount: string; size: string; ... 9 more ...; slPrice: string; }' but required in type 'PlaceOrderParams'.
+
+[7m607[0m         const rs = await myxClient.order.createIncreaseOrder(orderData);
+[7m   [0m [91m                                                             ~~~~~~~~~[0m
+
+  [96m../sdk/dist/index.d.mts[0m:[93m178[0m:[93m5[0m
+    [7m178[0m     userPositionSalt: number;
+    [7m   [0m [96m    ~~~~~~~~~~~~~~~~[0m
+    'userPositionSalt' is declared here.
+
+[96msrc/pages/TradePage.tsx[0m:[93m634[0m:[93m62[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ chainId: 421614; address: `0x${string}`; poolId: any; positionId: number; orderType: OrderType; triggerType: TriggerType; direction: Direction; collateralAmount: string; size: string; ... 5 more ...; leverage: number; }' is not assignable to parameter of type 'PlaceOrderParams'.
+  Property 'userPositionSalt' is missing in type '{ chainId: 421614; address: `0x${string}`; poolId: any; positionId: number; orderType: OrderType; triggerType: TriggerType; direction: Direction; collateralAmount: string; size: string; ... 5 more ...; leverage: number; }' but required in type 'PlaceOrderParams'.
+
+[7m634[0m         const rs = await myxClient.order.createDecreaseOrder(orderData);
+[7m   [0m [91m                                                             ~~~~~~~~~[0m
+
+  [96m../sdk/dist/index.d.mts[0m:[93m178[0m:[93m5[0m
+    [7m178[0m     userPositionSalt: number;
+    [7m   [0m [96m    ~~~~~~~~~~~~~~~~[0m
+    'userPositionSalt' is declared here.
+
+
+Found 4 errors.
+
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 2.[39m
