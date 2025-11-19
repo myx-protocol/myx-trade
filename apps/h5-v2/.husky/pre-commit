@@ -1,0 +1,5 @@
+# .husky/pre-commit
+#!/usr/bin/env sh
+
+pnpm type-check
+pnpm lint-staged

@@ -1,5 +1,5 @@
 {
-  "name": "myx-trade-sdk",
+  "name": "@myx",
   "version": "0.1.1",
   "description": "MYX Trade SDK monorepo",
   "private": true,

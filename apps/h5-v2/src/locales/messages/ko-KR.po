@@ -1,0 +1,530 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2023-08-13 19:04+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ko\n"
+"Project-Id-Version: myx-m-trade\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-09-24 08:42\n"
+"Last-Translator: \n"
+"Language-Team: Korean\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: myx-m-trade\n"
+"X-Crowdin-Project-ID: 819840\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: en.po\n"
+"X-Crowdin-File-ID: 12\n"
+
+#. placeholder {0}: item.label
+#: src/components/Header/Menu.tsx
+msgid "{0}"
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/index.tsx
+msgid "{pendingTransactionsLength} 笔交易正在确认"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "A system-set take-profit to secure extreme profits and protect the protocol"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Account Mode"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Accumulated funding fees will be settled each time the position size (coin) changes"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Actions"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Airdrop"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "All Chains"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Amount"
+msgstr "수량"
+
+#: src/components/Footer/index.tsx
+msgid "Audit Report"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Auto TP Price"
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Automatically list your token for derivatives trading, enabling long/short strategies. This stimulates real market demand and drives liquidity."
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
+msgstr ""
+
+#: src/components/Footer/index.tsx
+#: src/components/NoticeTeaching/index.tsx
+msgid "Beginner's Guide"
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Boost Your Token's Exposure"
+msgstr ""
+
+#: src/components/Login/LoginModal.tsx
+msgid "Choose how to start"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Claim airdrop"
+msgstr "에어드롭 클레임"
+
+#: src/store/transactions/options.ts
+msgid "Claim referral fee"
+msgstr "초청 수수료 청구"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Classic"
+msgstr "클래식"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Close"
+msgstr "청산"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Close All"
+msgstr "일괄 청산\t"
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "close all positions at market price?"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Collaboration Application"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Community"
+msgstr ""
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Confirm"
+msgstr "확인"
+
+#: src/pages/Market/components/steps.tsx
+msgid "Confirm token info"
+msgstr ""
+
+#: src/pages/Market/components/create.tsx
+msgid "Connect wallet"
+msgstr ""
+
+#: src/components/WalletConnect/index.tsx
+msgid "Connect Wallet"
+msgstr "지갑 연결"
+
+#: src/components/Header/const.tsx
+msgid "Cook"
+msgstr ""
+
+#: src/pages/Market/components/create.tsx
+msgid "Create a Market"
+msgstr ""
+
+#: src/components/Header/const.tsx
+msgid "Create Market"
+msgstr ""
+
+#: src/pages/Market/components/create.tsx
+msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Developers"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Discord"
+msgstr "Discord"
+
+#: src/components/Footer/index.tsx
+msgid "Documentation"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/const.tsx
+msgid "Earn"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Ecosystem"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Email"
+msgstr "이메일"
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Enter the token address for the new perpetuals market."
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Entry Price"
+msgstr "진입 가격"
+
+#: src/store/transactions/options.ts
+msgid "Faucet"
+msgstr "Faucet 수도꼭지"
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/Operation/Community.tsx
+msgid "Feedback"
+msgstr "피드백"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Finance"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Funding Fee"
+msgstr "펀딩비"
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Genesis Rewards"
+msgstr ""
+
+#: src/components/Header/Operation/Community.tsx
+msgid "Help"
+msgstr "도움"
+
+#: src/components/Footer/index.tsx
+msgid "Helper Center"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Hide Others Symbols"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Hypervault Purchase"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Hypervault Sale"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Liq.Price"
+msgstr "청산가"
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "LP Yield Generation"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin"
+msgstr "증거금"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin used to maintain positions, subject to potential total loss upon liquidation"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Mark Price"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Market Close"
+msgstr "시장가 종료"
+
+#: src/components/Footer/index.tsx
+msgid "Medium"
+msgstr ""
+
+#: src/components/NoticeTeaching/index.tsx
+msgid "More detailed help content will be available soon."
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "No data"
+msgstr "데이터 없음"
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction confirmed"
+msgstr "온체인 트랜잭션 완료"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "On-Chain Transaction History"
+msgstr "온체인 트랜잭션 내역"
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction pending"
+msgstr "온체인 트랜잭션 대기 중"
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction Rejected"
+msgstr "온체인 트랜잭션 실패"
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction timed out"
+msgstr "온체인 트랜잭션 시간 초과"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Open Orders"
+msgstr "미체결 주문"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Open position amounts shown are calculated based on the actual coin quantity. Values change with the last price of the token"
+msgstr ""
+
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+msgid "Order confirmed"
+msgstr "주문 완료"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Order History"
+msgstr ""
+
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+msgid "Order Rejected"
+msgstr "주문 거부됨"
+
+#: src/components/Footer/index.tsx
+msgid "Others"
+msgstr ""
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Please confirm whether to"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Pnl/(Position Value /Leverage)"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Position History"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Positions"
+msgstr "포지션"
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Provide liquidity to earn trading fees and receive additional platform rewards. Your LP assets will grow in value automatically."
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Ratio"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Reward Claim"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Reward Vesting"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "ROE%"
+msgstr ""
+
+#: src/pages/Market/components/steps.tsx
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Select token"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Staking"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Staking Claim"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Staking Unlock"
+msgstr ""
+
+#: src/pages/Market/components/steps.tsx
+msgid "Step 1"
+msgstr ""
+
+#: src/pages/Market/components/steps.tsx
+msgid "Step 2"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Symbol"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Terms of Use"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "The average position cost price for multiple opening and closing trades"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "The current real-time oracle price, used to calculate unrealized PnL and margin."
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "The New Species of Perpetual DEX"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "TP/SL"
+msgstr "익절/손절"
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/const.tsx
+msgid "Trade"
+msgstr "거래"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Trading Setting"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Twitter"
+msgstr "Twitter"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "unPnl"
+msgstr "미실현 손익"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "VIP Redeem Code"
+msgstr "VIP 코드 사용"
+
+#: src/components/NoticeTeaching/index.tsx
+msgid "Welcome to MYX! This is a placeholder for the beginner's guide."
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "全部平仓"
+msgstr "모두 닫기"
+
+#: src/store/transactions/options.ts
+msgid "全部撤销"
+msgstr "전부 취소하기"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "其他"
+msgstr "기타"
+
+#: src/store/transactions/options.ts
+msgid "出售MLP"
+msgstr "MLP 판매"
+
+#: src/store/transactions/options.ts
+msgid "取消平仓"
+msgstr "취소"
+
+#: src/store/transactions/options.ts
+msgid "取消开仓"
+msgstr "취소"
+
+#: src/store/transactions/options.ts
+msgid "取消止损"
+msgstr "취소"
+
+#: src/store/transactions/options.ts
+msgid "取消止盈"
+msgstr "취소"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "哈希"
+msgstr "해시"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "基础设置"
+msgstr "기본 설정"
+
+#: src/store/transactions/options.ts
+msgid "增加保证金"
+msgstr "마진 증가"
+
+#: src/store/transactions/options.ts
+msgid "平仓"
+msgstr "종료"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "平仓二次确认"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "开仓"
+msgstr "오픈"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "开仓二次确认"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "授权"
+msgstr "승인됨"
+
+#: src/store/transactions/options.ts
+msgid "提取保证金"
+msgstr "증거금 인출"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "数据"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "文档"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "止盈止损"
+msgstr "익절/손절"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "状态"
+msgstr "상태"
+
+#: src/pages/Market/components/create.tsx
+msgid "立即创建我的合约交易市场"
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "类型"
+msgstr "유형"
+
+#: src/store/transactions/options.ts
+msgid "购买MLP"
+msgstr "MLP 구매"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "通用滑点容忍设置"
+msgstr ""

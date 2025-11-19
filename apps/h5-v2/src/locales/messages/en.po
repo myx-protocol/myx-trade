@@ -1,0 +1,530 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2023-08-13 19:04+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+"Project-Id-Version: myx-m-trade\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-09-25 08:07\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: myx-m-trade\n"
+"X-Crowdin-Project-ID: 819840\n"
+"X-Crowdin-Language: en\n"
+"X-Crowdin-File: en.po\n"
+"X-Crowdin-File-ID: 12\n"
+
+#. placeholder {0}: item.label
+#: src/components/Header/Menu.tsx
+msgid "{0}"
+msgstr "{0}"
+
+#: src/components/Header/Operation/Transactions/index.tsx
+msgid "{pendingTransactionsLength} 笔交易正在确认"
+msgstr "{pendingTransactionsLength} 笔交易正在确认"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "A system-set take-profit to secure extreme profits and protect the protocol"
+msgstr "A system-set take-profit to secure extreme profits and protect the protocol"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Account Mode"
+msgstr "Account Mode"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Accumulated funding fees will be settled each time the position size (coin) changes"
+msgstr "Accumulated funding fees will be settled each time the position size (coin) changes"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Actions"
+msgstr "Actions"
+
+#: src/components/Footer/index.tsx
+msgid "Airdrop"
+msgstr "Airdrop"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "All Chains"
+msgstr "All Chains"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Amount"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Audit Report"
+msgstr "Audit Report"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Auto TP Price"
+msgstr "Auto TP Price"
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Automatically list your token for derivatives trading, enabling long/short strategies. This stimulates real market demand and drives liquidity."
+msgstr "Automatically list your token for derivatives trading, enabling long/short strategies. This stimulates real market demand and drives liquidity."
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
+msgstr "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
+
+#: src/components/Footer/index.tsx
+#: src/components/NoticeTeaching/index.tsx
+msgid "Beginner's Guide"
+msgstr "Beginner's Guide"
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Boost Your Token's Exposure"
+msgstr "Boost Your Token's Exposure"
+
+#: src/components/Login/LoginModal.tsx
+msgid "Choose how to start"
+msgstr "Choose how to start"
+
+#: src/store/transactions/options.ts
+msgid "Claim airdrop"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Claim referral fee"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Classic"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Close"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Close All"
+msgstr ""
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "close all positions at market price?"
+msgstr "close all positions at market price?"
+
+#: src/components/Footer/index.tsx
+msgid "Collaboration Application"
+msgstr "Collaboration Application"
+
+#: src/components/Footer/index.tsx
+msgid "Community"
+msgstr "Community"
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Confirm"
+msgstr ""
+
+#: src/pages/Market/components/steps.tsx
+msgid "Confirm token info"
+msgstr "Confirm token info"
+
+#: src/pages/Market/components/create.tsx
+msgid "Connect wallet"
+msgstr "Connect wallet"
+
+#: src/components/WalletConnect/index.tsx
+msgid "Connect Wallet"
+msgstr ""
+
+#: src/components/Header/const.tsx
+msgid "Cook"
+msgstr "Cook"
+
+#: src/pages/Market/components/create.tsx
+msgid "Create a Market"
+msgstr "Create a Market"
+
+#: src/components/Header/const.tsx
+msgid "Create Market"
+msgstr "Create Market"
+
+#: src/pages/Market/components/create.tsx
+msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
+msgstr "Create your own derivatives market to enjoy LP rewards and fee sharing."
+
+#: src/components/Footer/index.tsx
+msgid "Developers"
+msgstr "Developers"
+
+#: src/components/Footer/index.tsx
+msgid "Discord"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Documentation"
+msgstr "Documentation"
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/const.tsx
+msgid "Earn"
+msgstr "Earn"
+
+#: src/components/Footer/index.tsx
+msgid "Ecosystem"
+msgstr "Ecosystem"
+
+#: src/components/Footer/index.tsx
+msgid "Email"
+msgstr ""
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Enter the token address for the new perpetuals market."
+msgstr "Enter the token address for the new perpetuals market."
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Entry Price"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "Faucet"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/Operation/Community.tsx
+msgid "Feedback"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Finance"
+msgstr "Finance"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Funding Fee"
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Genesis Rewards"
+msgstr "Genesis Rewards"
+
+#: src/components/Header/Operation/Community.tsx
+msgid "Help"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Helper Center"
+msgstr "Helper Center"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Hide Others Symbols"
+msgstr "Hide Others Symbols"
+
+#: src/store/transactions/options.ts
+msgid "Hypervault Purchase"
+msgstr "Hypervault Purchase"
+
+#: src/store/transactions/options.ts
+msgid "Hypervault Sale"
+msgstr "Hypervault Sale"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Liq.Price"
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "LP Yield Generation"
+msgstr "LP Yield Generation"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)"
+msgstr "Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Margin used to maintain positions, subject to potential total loss upon liquidation"
+msgstr "Margin used to maintain positions, subject to potential total loss upon liquidation"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Mark Price"
+msgstr "Mark Price"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Market Close"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Medium"
+msgstr "Medium"
+
+#: src/components/NoticeTeaching/index.tsx
+msgid "More detailed help content will be available soon."
+msgstr "More detailed help content will be available soon."
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "No data"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction confirmed"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "On-Chain Transaction History"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction pending"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction Rejected"
+msgstr ""
+
+#: src/store/transactions/options.ts
+msgid "On-chain Transaction timed out"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Open Orders"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Open position amounts shown are calculated based on the actual coin quantity. Values change with the last price of the token"
+msgstr "Open position amounts shown are calculated based on the actual coin quantity. Values change with the last price of the token"
+
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+msgid "Order confirmed"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Order History"
+msgstr "Order History"
+
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+#: src/store/transactions/options.ts
+msgid "Order Rejected"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+msgid "Others"
+msgstr "Others"
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Please confirm whether to"
+msgstr "Please confirm whether to"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Pnl/(Position Value /Leverage)"
+msgstr "Pnl/(Position Value /Leverage)"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Position History"
+msgstr "Position History"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Positions"
+msgstr ""
+
+#: src/pages/Market/components/Introduction.tsx
+msgid "Provide liquidity to earn trading fees and receive additional platform rewards. Your LP assets will grow in value automatically."
+msgstr "Provide liquidity to earn trading fees and receive additional platform rewards. Your LP assets will grow in value automatically."
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Ratio"
+msgstr "Ratio"
+
+#: src/store/transactions/options.ts
+msgid "Reward Claim"
+msgstr "Reward Claim"
+
+#: src/store/transactions/options.ts
+msgid "Reward Vesting"
+msgstr "Reward Vesting"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "ROE%"
+msgstr "ROE%"
+
+#: src/pages/Market/components/steps.tsx
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Select token"
+msgstr "Select token"
+
+#: src/store/transactions/options.ts
+msgid "Staking"
+msgstr "Staking"
+
+#: src/store/transactions/options.ts
+msgid "Staking Claim"
+msgstr "Staking Claim"
+
+#: src/store/transactions/options.ts
+msgid "Staking Unlock"
+msgstr "Staking Unlock"
+
+#: src/pages/Market/components/steps.tsx
+msgid "Step 1"
+msgstr "Step 1"
+
+#: src/pages/Market/components/steps.tsx
+msgid "Step 2"
+msgstr "Step 2"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Symbol"
+msgstr "Symbol"
+
+#: src/components/Footer/index.tsx
+msgid "Terms of Use"
+msgstr "Terms of Use"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "The average position cost price for multiple opening and closing trades"
+msgstr "The average position cost price for multiple opening and closing trades"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "The current real-time oracle price, used to calculate unrealized PnL and margin."
+msgstr "The current real-time oracle price, used to calculate unrealized PnL and margin."
+
+#: src/components/Footer/index.tsx
+msgid "The New Species of Perpetual DEX"
+msgstr "The New Species of Perpetual DEX"
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "TP/SL"
+msgstr ""
+
+#: src/components/Footer/index.tsx
+#: src/components/Header/const.tsx
+msgid "Trade"
+msgstr ""
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "Trading Setting"
+msgstr "Trading Setting"
+
+#: src/components/Footer/index.tsx
+msgid "Twitter"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "unPnl"
+msgstr ""
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
+msgstr "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "VIP Redeem Code"
+msgstr ""
+
+#: src/components/NoticeTeaching/index.tsx
+msgid "Welcome to MYX! This is a placeholder for the beginner's guide."
+msgstr "Welcome to MYX! This is a placeholder for the beginner's guide."
+
+#: src/pages/Trade/components/Tables/Position.tsx
+msgid "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
+msgstr "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
+
+#: src/store/transactions/options.ts
+msgid "全部平仓"
+msgstr "Close All Positions"
+
+#: src/store/transactions/options.ts
+msgid "全部撤销"
+msgstr "Cancel All Orders"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "其他"
+msgstr "Other"
+
+#: src/store/transactions/options.ts
+msgid "出售MLP"
+msgstr "Sell MLP"
+
+#: src/store/transactions/options.ts
+msgid "取消平仓"
+msgstr "Cancel"
+
+#: src/store/transactions/options.ts
+msgid "取消开仓"
+msgstr "Cancel"
+
+#: src/store/transactions/options.ts
+msgid "取消止损"
+msgstr "Cancel SL"
+
+#: src/store/transactions/options.ts
+msgid "取消止盈"
+msgstr "Cancel TP"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "哈希"
+msgstr "Hash"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "基础设置"
+msgstr "Basic Settings"
+
+#: src/store/transactions/options.ts
+msgid "增加保证金"
+msgstr "Increase Margin"
+
+#: src/store/transactions/options.ts
+msgid "平仓"
+msgstr "Close"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "平仓二次确认"
+msgstr "平仓二次确认"
+
+#: src/store/transactions/options.ts
+msgid "开仓"
+msgstr "Open"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "开仓二次确认"
+msgstr "开仓二次确认"
+
+#: src/store/transactions/options.ts
+msgid "授权"
+msgstr "Authorize"
+
+#: src/store/transactions/options.ts
+msgid "提取保证金"
+msgstr "Withdraw Margin"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "数据"
+msgstr "数据"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "文档"
+msgstr "文档"
+
+#: src/store/transactions/options.ts
+msgid "止盈止损"
+msgstr "TP/SL"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "状态"
+msgstr "Status"
+
+#: src/pages/Market/components/create.tsx
+msgid "立即创建我的合约交易市场"
+msgstr "立即创建我的合约交易市场"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "类型"
+msgstr "Type"
+
+#: src/store/transactions/options.ts
+msgid "购买MLP"
+msgstr "Buy MLP"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+msgid "通用滑点容忍设置"
+msgstr "通用滑点容忍设置"

@@ -235,14 +235,14 @@ export class MyxWebSocketClient {
     const subscriptionList = Array.isArray(subscription)
       ? subscription
       : [subscription];
-
+      console.log('sinscribes:', subscriptionList)
+    this.logger.debug('subscriptionList:', subscriptionList)
     const newSubscriptionIds: string[] = [];
     // track processed subscriptionIds to avoid duplicate processing
     const processedIds = new Set<string>();
-
     subscriptionList.forEach((subscriptionItem) => {
       const subscriptionId = generateListenerId(subscriptionItem);
-      
+      this.logger.debug('subscriptionId:', subscriptionId)
       // skip if already processed in this batch
       if (processedIds.has(subscriptionId)) {
         return;

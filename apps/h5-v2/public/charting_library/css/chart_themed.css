@@ -1,0 +1,66 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&display=swap');
+
+
+:root:not(.theme-dark) {
+	--tv-color-platform-background: rgba(255,255,255,1);
+	--tv-color-pane-background: rgba(255,255,255,1);
+	--tv-color-pane-background-secondary: rgba(255,255,255,1);
+	--tv-color-toolbar-button-background-hover: rgb(240, 243, 250);
+	--tv-color-toolbar-button-background-secondary-hover: rgb(240, 243, 250);
+	--tv-color-toolbar-button-background-expanded: rgb(240, 243, 250);
+	--tv-color-toolbar-button-text: rgb(19, 23, 34);
+	--tv-color-toolbar-button-text-hover: black;
+	--tv-color-toolbar-button-text-active: rgb(33, 150, 243);
+	--tv-color-toolbar-button-text-active-hover: rgb(30, 136, 229);
+	--tv-color-item-active-text: red;
+	--tv-color-toolbar-toggle-button-background-active: rgb(33, 150, 243);
+	--tv-color-toolbar-toggle-button-background-active-hover: rgb(30, 136, 229);
+}
+
+.theme-dark:root {
+    --tv-color-platform-background: #101114;
+    --tv-color-pane-background: #101114;
+    --tv-color-pane-background-secondary: #101114;
+    --tv-color-toolbar-button-background-hover: rgb(42, 46, 57);
+    --tv-color-toolbar-button-background-secondary-hover: rgb(42, 46, 57);
+    --tv-color-toolbar-button-background-expanded: rgb(42, 46, 57);
+    --tv-color-toolbar-button-text: rgb(120, 123, 134);
+    --tv-color-toolbar-button-text-hover: rgb(134, 137, 147);
+    --tv-color-toolbar-button-text-active: rgb(25, 118, 210);
+    --tv-color-toolbar-button-text-active-hover: rgb(30, 136, 229);
+    --tv-color-item-active-text: red;
+	--tv-color-toolbar-toggle-button-background-active: rgb(25, 118, 210);
+	--tv-color-toolbar-toggle-button-background-active-hover: rgb(30, 136, 229);
+}
+
+.chart-line-type {
+	padding: 6px 12px;
+	font-weight: 600;
+	font-size: 12px;
+	cursor: pointer;
+}
+:root:not(.theme-dark) .chart-line-type-active {
+	color: rgba(83,130,0,1);
+	background-color: rgba(233,250,207,1);
+}
+:root:not(.theme-dark) .chart-line-type-normal {
+	color: rgba(123,136,145,1);
+}
+
+.theme-dark:root .chart-line-type-active {
+	color: rgba(217,255,142,1);
+	background-color: rgba(35,37,45,1);
+}
+.theme-dark:root .chart-line-type-normal {
+	color: rgba(145,151,176,1);
+}
+
+.toggleButton-3zv4iS2j {
+	bottom: 100px;
+}
+
+
+body {
+	font-family: 'HarmonyOS', 'HarmonyOS_SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+}
