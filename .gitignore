@@ -141,3 +141,9 @@ packages/playground/node_modules/.vite/
 # npm config (may contain tokens)
 .npmrc
 packages/*/.npmrc
+
+**/*/node_modules/
+**/*/dist/
+**/*/build/
+
+.turbo/

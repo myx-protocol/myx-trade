@@ -29,6 +29,7 @@
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@myx-trade/sdk": "workspace:*",
+    "@myx/config": "workspace:*",
     "@particle-network/auth-core": "^2.1.1",
     "@particle-network/authkit": "^2.1.1",
     "@tanstack/react-query": "^5.90.2",
