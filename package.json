@@ -22,6 +22,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
+    "@types/node": "^24.3.0",
     "@wagmi/core": "^2.20.3",
     "crypto-js": "^4.2.0",
     "eslint": "^9.39.1",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
+    "concurrently": "^9.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.0",
     "turbo": "^2.6.1",

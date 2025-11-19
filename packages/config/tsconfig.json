@@ -12,7 +12,10 @@
     "isolatedModules": true,
     "incremental": true,
     "newLine": "lf",
-    "noImplicitThis": false
+    "noImplicitThis": false,
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext"
   },
   "exclude": ["**/node_modules", "**/.*/"]
 }

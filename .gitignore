@@ -147,3 +147,5 @@ packages/*/.npmrc
 **/*/build/
 
 .turbo/
+
+**/*/.turbo/
