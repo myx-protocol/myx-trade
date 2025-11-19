@@ -52,10 +52,14 @@ export class ConfigManager {
   }
 
   public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
+    // before auth, clear the accessToken and accessTokenExpiry
+    this.clear();
+    // then set the new config
     this.config = {
       ...this.config,
       ...params,
     };
+    // then validate the config
     this.validateConfig(this.config);
   }
 
