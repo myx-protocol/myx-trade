@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
@@ -41,7 +36,17 @@
   },
   {
     "type": "error",
+    "name": "InvalidFeeTier",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidParameter",
     "inputs": []
   },
   {
@@ -318,6 +323,19 @@
   },
   {
     "type": "function",
+    "name": "__ERC2771ContextUpgradeable_init",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "trustedForwarder_"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "acceptOwnership",
     "constant": false,
     "payable": false,
@@ -327,6 +345,19 @@
   {
     "type": "function",
     "name": "activeFeeTiers",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256[]"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "activeSpecialFeeTierList",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -357,7 +388,7 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       },
       {
@@ -515,6 +546,29 @@
   },
   {
     "type": "function",
+    "name": "getSpecialFeeTier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "feeTier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int32",
+        "name": "makerFeeRate"
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getUserFeeRate",
     "constant": true,
     "stateMutability": "view",
@@ -598,6 +652,24 @@
     "stateMutability": "view",
     "payable": false,
     "inputs": [],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "isTrustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "forwarder"
+      }
+    ],
     "outputs": [
       {
         "type": "bool"
@@ -701,8 +773,8 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "positionId"
+            "type": "uint64",
+            "name": "userPositionSalt"
           },
           {
             "type": "uint8",
@@ -797,8 +869,8 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "positionId"
+            "type": "uint64",
+            "name": "userPositionSalt"
           },
           {
             "type": "uint8",
@@ -900,7 +972,81 @@
   },
   {
     "type": "function",
+    "name": "setSpecialFeeTier",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "feeTier"
+      },
+      {
+        "type": "int32",
+        "name": "makerFeeRate"
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "setUserFeeData",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "uint64",
+            "name": "nonce"
+          },
+          {
+            "type": "uint64",
+            "name": "deadline"
+          },
+          {
+            "type": "tuple",
+            "name": "feeData",
+            "components": [
+              {
+                "type": "uint8",
+                "name": "tier"
+              },
+              {
+                "type": "address",
+                "name": "referrer"
+              },
+              {
+                "type": "uint32",
+                "name": "totalReferralRebatePct"
+              },
+              {
+                "type": "uint32",
+                "name": "referrerRebatePct"
+              }
+            ]
+          },
+          {
+            "type": "bytes",
+            "name": "signature"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setUserSpecialFeeTier",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -909,34 +1055,8 @@
         "name": "user"
       },
       {
-        "type": "uint64",
-        "name": "deadline"
-      },
-      {
-        "type": "tuple",
-        "name": "feeData",
-        "components": [
-          {
-            "type": "uint8",
-            "name": "tier"
-          },
-          {
-            "type": "address",
-            "name": "referrer"
-          },
-          {
-            "type": "uint32",
-            "name": "totalReferralRebatePct"
-          },
-          {
-            "type": "uint32",
-            "name": "referrerRebatePct"
-          }
-        ]
-      },
-      {
-        "type": "bytes",
-        "name": "signature"
+        "type": "uint8",
+        "name": "feeTier"
       }
     ],
     "outputs": []
@@ -966,6 +1086,19 @@
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "trustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
   },
   {
     "type": "function",
@@ -1156,7 +1289,7 @@
         ]
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       },
       {
@@ -1198,6 +1331,25 @@
       {
         "type": "uint32",
         "name": "referrerRebatePct"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "userNonces",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint64",
+        "name": "nonce"
       }
     ]
   },
