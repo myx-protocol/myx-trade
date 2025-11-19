@@ -1,0 +1,2 @@
+export const MENU_DROPDOWN_OPEN_DELAY = 200
+export const MENU_DROPDOWN_CLOSE_DELAY = 300

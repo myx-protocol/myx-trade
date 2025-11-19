@@ -1,0 +1,7 @@
+export const DEFAULT_SLIPPAGE_LEVEL_1 = 0.003
+export const DEFAULT_SLIPPAGE_LEVEL_2 = 0.01
+export const DEFAULT_SLIPPAGE_LEVEL_3 = 0.02
+export const DEFAULT_SLIPPAGE_LEVEL_4 = 0.05
+
+export const MAX_SLIPPING_PERCENT = 50
+export const MIN_SLIPPING_PERCENT = 0
