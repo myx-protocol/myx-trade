@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "MYX Trade SDK monorepo",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm --parallel -r dev",
@@ -17,18 +18,13 @@
     "prepare": "husky",
     "type-check": "turbo run type-check"
   },
-  "keywords": [
-    "trading",
-    "sdk",
-    "myx",
-    "finance"
-  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
     "@wagmi/core": "^2.20.3",
     "crypto-js": "^4.2.0",
+    "eslint": "^9.39.1",
     "swr": "^2.3.6"
   },
   "devDependencies": {
