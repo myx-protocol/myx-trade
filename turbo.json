@@ -7,15 +7,15 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "build:test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "build:prod": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["dist/**"]
     },
     "dev": {
       "persistent": true,
