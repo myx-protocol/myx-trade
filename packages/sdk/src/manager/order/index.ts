@@ -63,7 +63,7 @@ export class Order {
       console.log("createIncreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
-        positionId: params.positionId,
+        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
@@ -86,7 +86,7 @@ export class Order {
       const gasLimit = await brokerContract.placeOrder.estimateGas({
         user: params.address,
         poolId: params.poolId,
-        positionId: params.positionId,
+        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
@@ -110,7 +110,7 @@ export class Order {
         {
           user: params.address,
           poolId: params.poolId,
-          positionId: params.positionId ?? 0,
+          userPositionSalt: params.userPositionSalt,
           orderType: params.orderType,
           triggerType: params.triggerType,
           operation: OperationType.INCREASE,
@@ -196,7 +196,7 @@ export class Order {
       console.log("createDecreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
-        positionId: params.positionId,
+        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.DECREASE,
@@ -214,7 +214,7 @@ export class Order {
       const gasLimit = await brokerContract.placeOrder.estimateGas({
         user: params.address,
         poolId: params.poolId,
-        positionId: params.positionId,
+        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.DECREASE,
@@ -238,7 +238,7 @@ export class Order {
         {
           user: params.address,
           poolId: params.poolId,
-          positionId: params.positionId,
+          userPositionSalt: params.userPositionSalt,
           orderType: params.orderType,
           triggerType: params.triggerType,
           operation: OperationType.DECREASE,
@@ -320,7 +320,7 @@ export class Order {
             {
               user: params.address,
               poolId: params.poolId,
-              positionId: params.positionId,
+              userPositionSalt: params.userPositionSalt,
               orderType: OrderType.STOP,
               triggerType: params.tpTriggerType,
               operation: OperationType.DECREASE,
@@ -342,7 +342,7 @@ export class Order {
             {
               user: params.address,
               poolId: params.poolId,
-              positionId: params.positionId,
+              userPositionSalt: params.userPositionSalt,
               orderType: OrderType.STOP,
               triggerType: params.slTriggerType,
               operation: OperationType.DECREASE,
@@ -410,7 +410,7 @@ export class Order {
         const data = {
           user: params.address,
           poolId: params.poolId,
-          positionId: params.positionId,
+          userPositionSalt: params.userPositionSalt,
           orderType: OrderType.STOP,
           triggerType:
             params.tpSize !== "0" ? params.tpTriggerType : params.slTriggerType,
