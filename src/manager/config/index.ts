@@ -10,6 +10,12 @@ interface AccessTokenResponse {
   expireAt: number;
 }
 
+interface GetAccessTokenQueueItem {
+  resolve: (token: string | null) => void;
+  reject: (error: any) => void;
+  forceRefresh: boolean;
+}
+
 export interface MyxClientConfig {
   chainId: number;
   signer?: Signer;
@@ -89,9 +95,47 @@ export class ConfigManager {
    * @param forceRefresh 是否强制刷新
    * @returns Promise<string | null> 有效的 accessToken 或 null
    */
+
+  private _getAccessTokenQueue: Array<GetAccessTokenQueueItem> = [];
+  private _isGettingAccessToken = false;
   async getAccessToken(forceRefresh: boolean = false): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      this._getAccessTokenQueue.push({
+        resolve,
+        reject,
+        forceRefresh,
+      });
+      this._processAccessTokenQueue();
+    });
+  }
+
+  private _processAccessTokenQueue() {
+    if (this._isGettingAccessToken) {
+      return;
+    }
+    this._isGettingAccessToken = true;
+    const item = this._getAccessTokenQueue.shift();
+    if (item) {
+      this._getAccessToken(item.forceRefresh)
+        .then(item.resolve)
+        .catch(item.reject)
+        .finally(() => {
+          this._isGettingAccessToken = false;
+          if (this._getAccessTokenQueue.length > 0) {
+            this._processAccessTokenQueue();
+          }
+        });
+    } else {
+      this._isGettingAccessToken = false;
+    }
+  }
+
+  private async _getAccessToken(
+    forceRefresh: boolean = false
+  ): Promise<string | null> {
     // 如果当前 token 有效且不需要强制刷新，直接返回
     if (!forceRefresh && this.isAccessTokenValid()) {
+      this._isGettingAccessToken = false;
       return this.accessToken!;
     }
 
@@ -160,7 +204,12 @@ export class ConfigManager {
    * @returns boolean token 是否有效
    */
   isAccessTokenValid(): boolean {
-    if (!this.accessToken || !this.accessTokenExpiry) {
+    if (
+      !this.accessToken ||
+      !this.accessTokenExpiry ||
+      !this.config.getAccessToken ||
+      !this.config.signer
+    ) {
       return false;
     }
     return Date.now() < this.accessTokenExpiry;
