@@ -153,7 +153,6 @@ export class SubScription {
    */
   public async auth(isReconnect = false) {
     const token = await this.getAccessToken();
-    this.logger.debug('new access token-->', token, 'prevAccessToken-->', this.prevAccessToken, 'clientAuth-->', this.clientAuth, 'isReconnect-->', isReconnect)
     if (token === this.prevAccessToken && this.clientAuth && !isReconnect) {
       // client auth success
       return Promise.resolve();
