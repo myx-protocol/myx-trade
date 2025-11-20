@@ -1,20 +1,22 @@
 import { Outlet } from 'react-router-dom'
-import { Header } from './Header'
-import { Footer } from './Footer'
-import { useLayout } from '@/hooks/layout/useLayout'
 import { MyxSdkProvider } from '@/providers/MyxSdkProvider'
 import { GlobalSearch } from './GlobalSearch/GlobalSearch'
 import { useGlobalSearchStore } from './GlobalSearch/store'
+import { Tabbar } from '@/components/Tabbar/index'
+import { useLayout } from '@/hooks/layout/useLayout'
 function Layout() {
-  const { isShowFooter } = useLayout()
   const { isOpen } = useGlobalSearchStore()
+  const { tabbarActiveItem } = useLayout()
   return (
     <MyxSdkProvider>
-      <div className="mx-auto flex min-h-screen min-w-[1200px] flex-col">
-        <Header />
+      <div className="fixed bottom-0 left-0 z-20 h-[var(--tabbar-height)] w-full">
+        {tabbarActiveItem && <Tabbar />}
+      </div>
+      <div className="flex min-h-screen flex-col pb-[var(--tabbar-height)]">
+        {/* <Header /> */}
         {/* 主要内容区域 */}
         <Outlet />
-        {isShowFooter && <Footer />}
+        {/* {isShowFooter && <Footer />} */}
       </div>
       {/* global search modal */}
       {isOpen && <GlobalSearch />}

@@ -5,14 +5,7 @@ import { NotFound } from '../NotFound'
 import { useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SearchListLoading } from '../Loading'
-import {
-  useDebounce,
-  useDebounceFn,
-  useMount,
-  useUnmount,
-  useUpdateEffect,
-  useVirtualList,
-} from 'ahooks'
+import { useDebounceFn, useMount, useUnmount, useUpdateEffect, useVirtualList } from 'ahooks'
 import { FuturesListDataRow } from './DataRow'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 

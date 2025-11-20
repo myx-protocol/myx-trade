@@ -5,10 +5,8 @@ import type { MarketDetailResponse } from '@myx-trade/sdk'
 import { KlineTypeEnum } from '../Charts/type'
 
 interface TradePageStore {
-  symbol: string
-  setSymbol: (symbol: string) => void
   symbolInfo: MarketDetailResponse | null
-  setSymbolInfo: (symbolInfo: MarketDetailResponse) => void
+  setSymbolInfo: (symbolInfo: MarketDetailResponse | null) => void
 
   // kline
   resolutionFixed: string | number
@@ -25,8 +23,6 @@ export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
   devtools(
     persist(
       immer((set) => ({
-        symbol: 'BTCUSDT',
-        setSymbol: (symbol: string) => set({ symbol }),
         symbolInfo: null,
         setSymbolInfo: (symbolInfo) => set({ symbolInfo }),
 
@@ -46,7 +42,6 @@ export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
       {
         name: 'MYX_TradePageStore',
         partialize: (state: TradePageStore) => ({
-          symbol: state.symbol,
           resolutionFixed: state.resolutionFixed,
           resolutionActive: state.resolutionActive,
           klineType: state.klineType,

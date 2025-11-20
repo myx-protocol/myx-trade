@@ -42,7 +42,7 @@ export const MarketInfo = () => {
       <div className="flex-shrink-0">
         <p className="whitespace-nowrap text-[#9397A3]">{t`24h High`}</p>
         <p className="mt-[5px] whitespace-nowrap">
-          {formatNumber(tickerData?.high, {
+          {formatNumber(tickerData?.high || 0, {
             showUnit: false,
             decimals: symbolInfo?.quoteDecimals,
           })}
@@ -53,7 +53,7 @@ export const MarketInfo = () => {
       <div className="flex-shrink-0">
         <p className="whitespace-nowrap text-[#9397A3]">{t`24h Low`}</p>
         <p className="mt-[5px] whitespace-nowrap">
-          {formatNumber(tickerData?.low, {
+          {formatNumber(tickerData?.low || 0, {
             showUnit: false,
             decimals: symbolInfo?.quoteDecimals,
           })}
@@ -64,7 +64,7 @@ export const MarketInfo = () => {
       <div className="flex-shrink-0">
         <p className="whitespace-nowrap text-[#9397A3]">{t`24h Volume`}</p>
         <p className="mt-[5px] whitespace-nowrap">
-          {formatNumber(tickerData?.volume, {
+          {formatNumber(tickerData?.volume || 0, {
             showUnit: false,
             decimals: symbolInfo?.quoteDecimals,
           })}

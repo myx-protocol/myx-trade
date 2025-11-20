@@ -9,6 +9,11 @@ import { TokenContext } from '@/pages/Market/context.ts'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { Button } from '@mui/material'
+import { toast } from 'react-hot-toast'
+import { t } from '@lingui/core/macro'
+import type { QuoteLpDetail } from '@/request/lp/type.ts'
+import { getQuoteLPDetail } from '@/request'
+import { formatNumber } from '@/utils/number.ts'
 // import { useContext } from 'react'
 // import { TokenContext } from '@/pages/Market/context.ts'
 
@@ -25,17 +30,28 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
       return result ? formatUnits(result, Market[+chainId].decimals) : undefined
     },
   })
+  const { data: quoteLpDetail } = useQuery({
+    queryKey: [{ key: 'QuotePoolDetail' }, chainId, poolId],
+    queryFn: async () => {
+      if (!chainId || !poolId) return {} as QuoteLpDetail
+      const response = await getQuoteLPDetail(chainId as unknown as number, poolId)
+      if (response.data) {
+        return response.data
+      }
+      return {} as QuoteLpDetail
+    },
+  })
 
   const onReprime = useCallback(async () => {
     try {
       if (!poolId || !chainId) return
       setLoading(true)
       await Pool.reprime(+chainId, poolId)
-      // message.success('Pool reprime')
+      toast.success(t`Pool reprime`)
       onNext?.()
     } catch (e) {
       console.error(e)
-      // message.error(JSON.stringify(e))
+      toast.error(JSON.stringify(e))
     } finally {
       setLoading(false)
     }
@@ -53,7 +69,9 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
       >
         <TokenInfo />
         <Box className={'flex flex-col items-end gap-[4px] leading-[1]'}>
-          <h3 className={'text-[20px] font-[700] text-white'}>$2.34K</h3>
+          <h3 className={'text-[20px] font-[700] text-white'}>
+            ${quoteLpDetail?.marketCap ? formatNumber(quoteLpDetail?.marketCap) : '--'}
+          </h3>
           <span>mcap</span>
         </Box>
       </Box>

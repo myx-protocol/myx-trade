@@ -16,7 +16,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
   const { data: price } = useQuery({
-    queryKey: [{ key: 'quoteLpPrice' }, poolId],
+    queryKey: [{ key: 'getBasePoolPrice' }, poolId, chainId],
     enabled: !!poolId,
     queryFn: async () => {
       if (!poolId || !chainId) return ''
@@ -39,7 +39,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
     },
   })
 
-  const { data: baseLpDetail } = useQuery({
+  const { data: baseLpDetail, refetch } = useQuery({
     queryKey: [{ key: 'BasePoolDetail' }, chainId, poolId],
     queryFn: async () => {
       if (!chainId || !poolId) return {} as BaseLpDetail
@@ -74,7 +74,14 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <PoolContext.Provider
-      value={{ chainId: Number(chainId), poolId: poolId as string, pool, price, baseLpDetail }}
+      value={{
+        chainId: Number(chainId),
+        poolId: poolId as string,
+        pool,
+        price,
+        baseLpDetail,
+        refetch,
+      }}
     >
       {children}
     </PoolContext.Provider>

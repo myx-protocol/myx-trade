@@ -4,10 +4,10 @@ import { TipsFill, WalletLine } from '@/components/Icon'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import ArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
 import { Describe, DescribeItem } from '@/components/Describe.tsx'
-import { TradeButton } from '@/components/TradeButton.tsx'
+import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Card } from '@/pages/Earn/components/Trade/Card.tsx'
 import { t } from '@lingui/core/macro'
-import { quote as Quote, getBalanceOf, formatUnits } from '@myx-trade/sdk'
+import { quote as Quote, getBalanceOf, formatUnits, MarketPoolState } from '@myx-trade/sdk'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAccount } from 'wagmi'
@@ -21,6 +21,7 @@ import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { isSafeNumber } from '@/utils'
 import toast from 'react-hot-toast'
+import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
 
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
@@ -175,15 +176,31 @@ export const Subscribe = () => {
           </p>
         </Box>
       )}
-      <TradeButton
-        variant="contained"
-        className={''}
-        disabled={!amount || isInsufficient}
-        loading={loading}
-        onClick={onHandleSubscribe}
-      >
-        <Trans>Subscribe</Trans>
-      </TradeButton>
+      <Box className="mt-[8px] mb-[4px] w-full">
+        {quoteLpDetail?.state === MarketPoolState.PreBench ||
+        quoteLpDetail?.state === MarketPoolState.Bench ? (
+          <>
+            <DefaultButton variant="contained" className={'w-full'} disabled>
+              <Trans>暂停中</Trans>
+            </DefaultButton>
+          </>
+        ) : (
+          <TradeButton
+            variant="contained"
+            className={'w-full'}
+            disabled={
+              !amount ||
+              isInsufficient ||
+              pool?.state === MarketPoolState.PreBench ||
+              pool?.state === MarketPoolState.Bench
+            }
+            loading={loading}
+            onClick={onHandleSubscribe}
+          >
+            <Trans>Subscribe</Trans>
+          </TradeButton>
+        )}
+      </Box>
       <Describe>
         <EstRate />
 

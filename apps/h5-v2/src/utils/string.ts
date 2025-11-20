@@ -47,7 +47,7 @@ export const truncateString = (
  */
 export const truncateAddress = (
   address: string,
-  startLength: number = 6,
+  startLength: number = 4,
   endLength: number = 4,
 ): string => {
   return truncateString(address, startLength, endLength, '...')

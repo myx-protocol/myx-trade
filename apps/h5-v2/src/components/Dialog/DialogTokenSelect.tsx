@@ -19,17 +19,9 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { formatNumber } from '@/utils/number.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { CoinIcon } from '../UI/CoinIcon'
-interface Asset {
-  chainId: number
-  address: string
-  decimals: number
-  logo: string
-  name: string
-  symbol: string
-  price: number | string
-  change: number | string
-  balance: number | string
-}
+import { Empty } from '@/components/Empty.tsx'
+import { type Asset, useWalletPortfolio } from '@/hooks/useWalletPortfolio'
+
 interface TokenItemProps {
   disabled?: boolean
   asset?: Asset
@@ -192,35 +184,9 @@ const ChainSelector = ({ value = null, onChange, options = [] }: ChainSelectProp
 
 const TokenSelectDialogContent = () => {
   const { address: account } = useWalletConnection()
+  const { walletAssets, isLoading, chainId, setChainId } = useWalletPortfolio()
   const [input, setInput] = useState('')
-  const [chainId, setChainId] = useState<ChainId | undefined>(undefined)
   const searchRef = useRef<HTMLInputElement>(null)
-
-  const { data: walletAssets, isLoading } = useQuery({
-    queryKey: [{ key: 'getWalletAssets' }, chainId, account],
-    enabled: !!account,
-    queryFn: async () => {
-      if (!account) return undefined
-      const result = await getAccountHoldings(
-        account,
-        !chainId ? ((getSupportedChainIdsByEnv() as unknown as ChainId[]) ?? undefined) : [chainId],
-      )
-      return (result.data?.assets || []).map((item: any) => {
-        const token = {
-          chainId: Number(item.asset?.blockchains?.[0].replace('evm:', '')),
-          address: item.asset.contracts[0],
-          decimals: item.asset.decimals[0],
-          logo: item.asset.logo,
-          name: item.asset.name,
-          symbol: item.asset.symbol,
-          price: item.price,
-          change: item.price_change_24h,
-          balance: item.token_balance,
-        } as Asset
-        return token
-      })
-    },
-  })
 
   const { data: searchList, isLoading: isSearching } = useQuery({
     queryKey: [{ key: 'getWalletAssets' }, chainId, account],
@@ -285,6 +251,7 @@ const TokenSelectDialogContent = () => {
             return <TokenItem key={index} asset={asset} />
           },
         )}
+        {!isLoading && walletAssets?.length === 0 && <Empty />}
       </Box>
     </Box>
   )

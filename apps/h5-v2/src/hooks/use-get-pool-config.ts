@@ -5,13 +5,14 @@ import useSWR from 'swr'
 import { getPoolLevelConfig } from '@/api'
 import { useState } from 'react'
 
-export const useGetPoolConfig = () => {
+export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) => {
   const { symbolInfo, setMaxLeverage } = useTradePageStore()
   const { chainId } = useWalletConnection()
 
   const [poolConfig, setPoolConfig] = useState<{
     level: number
     levelConfig: {
+      assetClass: number
       fundingFeeRate1: number
       fundingFeeRate1Max: number
       fundingFeeRate2: number
@@ -29,10 +30,14 @@ export const useGetPoolConfig = () => {
   } | null>(null)
 
   useSWR(['getPoolLevelConfig', symbolInfo?.poolId, symbolInfo?.chainId], async () => {
-    const res = await getPoolLevelConfig(symbolInfo?.poolId as string, chainId as number)
+    const res = await getPoolLevelConfig(
+      targetPoolId ?? (symbolInfo?.poolId as string),
+      targetChainId ?? (chainId as number),
+    )
     const data = res.data as {
       level: number
       levelConfig: {
+        assetClass: number
         fundingFeeRate1: number
         fundingFeeRate1Max: number
         fundingFeeRate2: number

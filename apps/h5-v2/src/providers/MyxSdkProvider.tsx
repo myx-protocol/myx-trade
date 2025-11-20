@@ -7,9 +7,9 @@ import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import CryptoJS from 'crypto-js'
 import { getAccessToken } from '@/api'
-import { useEffect } from 'react'
 import { useRef } from 'react'
 import { appPubSub } from '@/utils/pubsub'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 
 interface MyxSdkContextValue {
   client?: MyxClient
@@ -51,15 +51,16 @@ export const useMyxSdkClient = () => useContext(myxSdkContext)
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   const [client, setClient] = useState<MyxClient | null>(null)
   const [clientIsAuthenticated, setClientIsAuthenticated] = useState(false)
-  const { isWalletConnected, address } = useWalletConnection()
-  const { data: walletClient } = useWalletClient()
+  const { isWalletConnected, address, chainId } = useWalletConnection()
+  const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
   const myxSdkClientRef = useRef<MyxClient | null>(null)
+
   useMount(() => {
     const options: MyxClientConfig = {
       chainId: ChainId.ARB_TESTNET,
       brokerAddress: '0x461A33C5E75c292A45f8c961ab816060a94AfbA0',
       isTestnet: true,
-      logLevel: 'debug',
+      logLevel: 'error',
     }
     const createMyxClientFallback = () => {
       const client = new MyxClient(options)
@@ -67,8 +68,10 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       myxSdkClientRef.current = client
       return client
     }
+    console.log('provider-->', walletClient, isWalletConnected, 'sdk init')
+
     if (walletClient && isWalletConnected) {
-      const provider = new BrowserProvider(walletClient?.transport ?? window.ethereum)
+      const provider = new BrowserProvider(walletClient?.transport)
       provider
         .getSigner()
         .then((signer) => {
@@ -81,23 +84,55 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
         })
         .catch(createMyxClientFallback)
     } else {
+      console.log('else-->', isWalletConnected)
+      if (isWalletConnected) {
+        refetchWalletClient().catch((error) => {
+          console.error('Failed to refetch walletClient:', error)
+        })
+      }
+      console.log('createMyxClientFallback-->')
       createMyxClientFallback()
     }
   })
 
+  console.log(walletClient, 'wallctClient')
+
   useUpdateEffect(() => {
-    if (!walletClient || !isWalletConnected || !address || !myxSdkClientRef.current) return
-    const provider = new BrowserProvider(walletClient?.transport ?? window.ethereum)
-    provider.getSigner().then((signer) => {
-      myxSdkClientRef.current?.auth({
-        signer,
-        walletClient: walletClient,
-        getAccessToken: createGetAccessTokenMethod(address ?? ''),
+    console.log('myxSdkProvider-updateEffect-->', Date.now())
+    if (!isWalletConnected || !address || !myxSdkClientRef.current) {
+      setClientIsAuthenticated(false)
+      return
+    }
+
+    // 如果 walletClient 为 undefined（比如切换链后），尝试手动重新获取
+    if (!walletClient) {
+      setClientIsAuthenticated(false)
+      // 手动触发重新获取 walletClient
+      // 使用 setTimeout 避免在 effect 中直接调用异步函数
+      refetchWalletClient().catch((error) => {
+        console.error('Failed to refetch walletClient:', error)
       })
-      setClientIsAuthenticated(true)
-      appPubSub.emit('app:sdk:authenticated')
-    })
-  }, [walletClient, isWalletConnected, address])
+      return
+    }
+
+    const provider = new BrowserProvider(walletClient.transport)
+    provider
+      .getSigner()
+      .then((signer) => {
+        myxSdkClientRef.current?.auth({
+          signer,
+          walletClient: walletClient,
+          getAccessToken: createGetAccessTokenMethod(address ?? ''),
+        })
+        setClientIsAuthenticated(true)
+        console.log('authed-emit-authenticated-->', Date.now())
+        appPubSub.emit('app:sdk:authenticated')
+      })
+      .catch((error) => {
+        console.error('Failed to get signer:', error)
+        setClientIsAuthenticated(false)
+      })
+  }, [walletClient, isWalletConnected, address, chainId, refetchWalletClient])
 
   useUnmount(() => {
     if (myxSdkClientRef.current) {

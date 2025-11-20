@@ -14,14 +14,18 @@ import { useGetWalletBalance } from '@/hooks/balance/use-get-wallet-balance'
 import { ethers } from 'ethers'
 import { useGetAccountPoolAssets } from '@/hooks/balance/use-get-account-pool-Assets'
 import { TransferDialogButton } from './TransferDialog'
-import { ReceiveDialogButton } from './ReceiveDialog'
+import { useTradePanelStore } from '../store'
+import { t } from '@lingui/core/macro'
+import { useBoolean } from 'ahooks'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 
 export const MarginAccount = () => {
   const { symbolInfo } = useTradePageStore()
   const positionList = useGetPositionList()
-  const { oraclePriceData } = useMarketStore()
-  const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
+  const { tickerData } = useMarketStore()
+  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
   const accountBalance = useGetAccountPoolAssets(symbolInfo?.poolId as string)
+  const { setReceiveDialogOpen } = useTradePanelStore()
 
   const totalUnrealizedPnl = useMemo(() => {
     if (!positionList || positionList.length === 0) return '0'
@@ -51,6 +55,19 @@ export const MarginAccount = () => {
   const walletBalance =
     ethers.formatUnits(tokenBalanceString, symbolInfo?.quoteDecimals ?? 6) ?? '0'
 
+  const [isSwitchNetwork, { setTrue: setIsSwitchNetworkTrue, setFalse: setIsSwitchNetworkFalse }] =
+    useBoolean(false)
+
+  const { checkWalletChainId } = useWalletChainCheck()
+  const onReceive = () => {
+    if (!symbolInfo?.chainId) return
+    setIsSwitchNetworkTrue()
+    checkWalletChainId(symbolInfo.chainId).then(() => {
+      setIsSwitchNetworkFalse()
+      setReceiveDialogOpen(true)
+    })
+  }
+
   return (
     <div className="mt-[20px] border-t-[1px] border-[#202129] pt-[24px] leading-[1]">
       <p className="text-[12px] font-medium text-[#CED1D9]">
@@ -63,7 +80,10 @@ export const MarginAccount = () => {
       <div className="mt-[16px] flex flex-col gap-[14px] text-[12px] font-medium text-white">
         <FlexRowLayout
           left={
-            <Tooltips title="Wallet Balance">
+            <Tooltips
+              title={t`The total assets in your on-chain wallet available for trading.
+${symbolInfo?.baseSymbol ?? ''}${symbolInfo?.quoteSymbol ?? ''} Available Margin: The margin amount in your ${symbolInfo?.baseSymbol ?? ''} ${symbolInfo?.quoteSymbol ?? ''} trading account currently available for withdrawal to your wallet.`}
+            >
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Wallet Balance</Trans>
               </p>
@@ -81,7 +101,9 @@ export const MarginAccount = () => {
 
         <FlexRowLayout
           left={
-            <Tooltips title="Margin Balance">
+            <Tooltips
+              title={t`The margin amount in your ${symbolInfo?.baseSymbol ?? ''}${symbolInfo?.quoteSymbol ?? ''} trading account currently available for withdrawal to your wallet.`}
+            >
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Margin Balance</Trans>
               </p>
@@ -103,7 +125,9 @@ export const MarginAccount = () => {
         />
         <FlexRowLayout
           left={
-            <Tooltips title="Unlocking PnL">
+            <Tooltips
+              title={t`The realized profit from your ${symbolInfo?.baseSymbol ?? ''}${symbolInfo?.quoteSymbol ?? ''} position currently pending unlock, which can be used as margin for new positions. Once unlocked, it can be used as margin or withdrawn.`}
+            >
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Unlocking PnL</Trans>
               </p>
@@ -127,7 +151,9 @@ export const MarginAccount = () => {
         />
         <FlexRowLayout
           left={
-            <Tooltips title="Unrealized PnL">
+            <Tooltips
+              title={t`The floating profit or loss for your ${symbolInfo?.baseSymbol ?? ''}${symbolInfo?.quoteSymbol ?? ''} position based on the current price (position not yet closed).`}
+            >
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Unrealized PnL</Trans>
               </p>
@@ -145,7 +171,9 @@ export const MarginAccount = () => {
       </div>
 
       <div className="mt-[12px] flex gap-[10px]">
-        <ReceiveDialogButton />
+        <InfoButton className="w-full" onClick={onReceive} loading={isSwitchNetwork}>
+          <Trans>Receive</Trans>
+        </InfoButton>
         <TransferDialogButton />
       </div>
     </div>

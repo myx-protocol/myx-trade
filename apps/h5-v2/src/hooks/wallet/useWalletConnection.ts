@@ -1,7 +1,8 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { LoginChannelEnum } from '@/store/wallet/types'
+import { isSupportedChainFn } from '@/config/chain'
 
 export const useWalletConnection = () => {
   const { address, isConnected, isConnecting, chainId } = useAccount()
@@ -51,6 +52,12 @@ export const useWalletConnection = () => {
     [connect, connectors],
   )
 
+  const isWrongNetwork = useMemo(() => {
+    return Boolean(address && isConnected && !isSupportedChainFn(chainId))
+  }, [address, isConnected, chainId])
+
+  // console.log('isConnected', isConnected, address, chainId, 'chainId')
+
   return {
     // 状态
     address,
@@ -63,5 +70,6 @@ export const useWalletConnection = () => {
     isWalletConnected: Boolean(isConnected && address),
     setLoginModalOpen,
     chainId,
+    isWrongNetwork,
   }
 }
