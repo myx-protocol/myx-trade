@@ -10,7 +10,7 @@ interface HeaderProps {
 export const Header = ({ isConnected }: HeaderProps) => {
   if (isConnected) {
     return (
-      <div className="bg-plus sticky top-0 left-0 z-20 w-full px-[16px] pt-[15px]">
+      <div className="sticky top-0 left-0 z-20 w-full bg-[#101114] px-[16px] py-[15px]">
         <div className="flex items-center justify-start">
           {/* menu */}
           <img src={MenuSimple} role="button" className="w-[20px]" />
@@ -23,7 +23,7 @@ export const Header = ({ isConnected }: HeaderProps) => {
     )
   }
   return (
-    <div className="bg-plus sticky top-0 left-0 z-20 w-full px-[16px] pt-[10px]">
+    <div className="left-0w-full sticky top-0 z-20 bg-[#101114] px-[16px] pt-[10px] pb-[5px]">
       <div role="button">
         <MenuIcon size={22} color="#fff" />
       </div>

@@ -6,7 +6,7 @@ import { Header } from './components/Header'
 import { MarketList } from './components/MarketList'
 
 export const Home = () => {
-  const isConnected = true
+  const isConnected = false
   return (
     <div>
       <Header isConnected={isConnected} />
