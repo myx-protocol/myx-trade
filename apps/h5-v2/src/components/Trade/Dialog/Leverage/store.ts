@@ -10,7 +10,7 @@ interface LeverageItem {
 
 interface LeverageDialogStore {
   leverageMap: Partial<Record<ChainId, Record<string, LeverageItem>>>
-  setLeverage: (chainId: ChainId, symbol: string, leverage: number) => void
+  setLeverage: (chainId: ChainId, poolId: string, leverage: number) => void
   isOpen: boolean
   open: () => void
   close: () => void
@@ -32,12 +32,12 @@ export const useLeverageDialogStore = createWithEqualityFn<LeverageDialogStore>(
             },
             // dialog leverage map
             leverageMap: {},
-            setLeverage(chainId, symbol, leverage) {
+            setLeverage(chainId, poolId, leverage) {
               set((state) => {
                 if (!state.leverageMap[chainId]) {
                   state.leverageMap[chainId] = {}
                 }
-                state.leverageMap[chainId][symbol] = { leverage }
+                state.leverageMap[chainId][poolId] = { leverage }
               })
             },
           }) as LeverageDialogStore,

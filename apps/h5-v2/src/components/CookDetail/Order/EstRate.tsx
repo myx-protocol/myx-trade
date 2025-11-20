@@ -6,6 +6,8 @@ import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useMemo, useState } from 'react'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useExchangeRate } from '@/pages/Cook/hook/rate.ts'
+import { isSafeNumber } from '@/utils'
+import Big from 'big.js'
 
 enum Direction {
   LpToB = 1,
@@ -18,11 +20,11 @@ export const EstRate = () => {
   const [direction, setDirection] = useState<Direction>(Direction.LpToB)
 
   const rate = useMemo(() => {
-    if (direction === Direction.LpToB && _rate) {
+    if (direction === Direction.LpToB && isSafeNumber(_rate)) {
       return _rate
     }
     if (direction === Direction.BToLp && _rate) {
-      return formatNumberPrecision(1 / Number(_rate), COMMON_BASE_DISPLAY_DECIMALS)
+      return new Big('1').div(new Big(_rate)).toString()
     }
     return ''
   }, [direction, _rate])

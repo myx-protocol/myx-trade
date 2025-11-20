@@ -23,9 +23,9 @@ const MIN_LEVERAGE = 1
 
 function LeverageDialogContent() {
   const { chainId } = useWalletConnection()
-  const { symbol, maxLeverage } = useTradePageStore()
+  const { symbolInfo, maxLeverage } = useTradePageStore()
   const { close, setLeverage } = useLeverageDialogStore()
-  const leverage = useLeverage(symbol)
+  const leverage = useLeverage(symbolInfo?.poolId)
 
   // 写死的变量
   const minLeverage = MIN_LEVERAGE
@@ -34,10 +34,10 @@ function LeverageDialogContent() {
   const [leverageInputString, setLeverageInputString] = useState(leverage.toString())
 
   const handleClickSureChange = useCallback(() => {
-    setLeverage(chainId as ChainId, symbol, leverageInput)
+    setLeverage(chainId as ChainId, symbolInfo?.poolId ?? '', leverageInput)
 
     close()
-  }, [leverageInput, close, setLeverage, symbol])
+  }, [leverageInput, close, setLeverage, symbolInfo?.poolId])
 
   // watch symbol leverage change
   useUpdateEffect(() => {

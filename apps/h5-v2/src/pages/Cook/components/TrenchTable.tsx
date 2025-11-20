@@ -25,14 +25,23 @@ import { CookContext } from '@/pages/Cook/context.ts'
 import { formatNumber } from '@/utils/number.ts'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
-import EmptyPng from '@/assets/images/common/empty.png'
-import { t } from '@lingui/core/macro'
-import { Interval, type SortOrder, type TrenchSortField } from '@/request/type.ts'
+import {
+  type Address,
+  Interval,
+  PageDirection,
+  type SortOrder,
+  type TrenchSortField,
+} from '@/request/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
-import { base as Base, COMMON_PRICE_DECIMALS, formatUnits } from '@myx-trade/sdk'
+import { base as Base, COMMON_PRICE_DECIMALS, formatUnits, getBalanceOf } from '@myx-trade/sdk'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { Empty } from '@/components/Empty.tsx'
+import { encodeSortValue } from '@/utils/sort.ts'
+import { Price } from '@/components/Price'
 
 interface Data {
+  id: number | string
   market: Token
   price: string
   change: string
@@ -42,6 +51,7 @@ interface Data {
   open: string
   chainId: number
   poolId: string
+  sortValue: string
 }
 
 const StyledTableContainer = styled(TableContainer)(() => ({
@@ -150,19 +160,36 @@ export const TrenchTable = ({
 }) => {
   const navigate = useNavigate()
   const { type } = useContext(CookContext)
-  // const [orderBy, setOrderBy] = useState<TrenchSortField>('priceChange')
+  const { address: account } = useWalletConnection()
   const [order, setOrder] = useState<SortOrder>('desc')
-  const [before, setBefore] = useState<Trench['id'] | undefined>(undefined)
-  const [after, setAfter] = useState<Trench['id'] | undefined>(undefined)
+  const [before, setBefore] = useState<string | undefined>(undefined)
+  const [after, setAfter] = useState<string | undefined>(undefined)
 
-  // const handleSort = (property: keyof Data) => {
-  //   const isAsc = orderBy === property && order === 'asc'
-  //   setOrder(isAsc ? 'desc' : 'asc')
-  //   setOrderBy(property)
-  // }
+  const getSortValue = (item: Trench) => {
+    switch (sortField) {
+      case TrenchType.Gainers:
+        return item.lpPriceChange
+      case TrenchType.Latest:
+        return item.tokenCreateTime
+      case TrenchType.APR:
+        return item.apr
+      case TrenchType.Eligible:
+        return item.tvl
+    }
+  }
 
   const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
-    queryKey: [{ key: 'TokenNewList' }, type, interval, chainId, sortField, order],
+    queryKey: [
+      { key: 'TokenNewList' },
+      type,
+      interval,
+      chainId,
+      sortField,
+      order,
+      account,
+      before,
+      after,
+    ],
     enabled: type === CookType.Trench,
     queryFn: async () => {
       const limit = DEFAULT_LIMIT
@@ -173,10 +200,9 @@ export const TrenchTable = ({
         sortField: sortField as unknown as TrenchSortField,
         sortOrder: order,
         limit: paginatedLimit,
-        before,
-        after,
+        direction: before ? PageDirection.Prev : after ? PageDirection.Next : undefined,
+        cursor: before || after,
       })
-      console.log(result)
 
       let hasNextPage = true
       let hasPrevPage = true
@@ -199,6 +225,7 @@ export const TrenchTable = ({
         data: (limit ? result.data.slice(0, limit) : result.data).map((item: Trench) => {
           return {
             id: item.id,
+            sortValue: getSortValue(item),
             market: {
               icon: item.tokenIcon,
               name: item.mBaseQuoteSymbol,
@@ -215,7 +242,7 @@ export const TrenchTable = ({
             open: item.oi,
             chainId: item.chainId,
             poolId: item.poolId,
-          }
+          } as Data
         }),
         hasNextPage,
         hasPrevPage,
@@ -233,7 +260,7 @@ export const TrenchTable = ({
   }, [data.data])
 
   const { data: priceMap } = useQuery({
-    queryKey: [{ key: 'getTrendLpAssetsBalance' }, priceQueryParams],
+    queryKey: [{ key: 'getTrendLpAssetsPrice' }, priceQueryParams],
     enabled: !!priceQueryParams.length,
     queryFn: async () => {
       if (!priceQueryParams.length) return {} as PriceMapType
@@ -267,27 +294,53 @@ export const TrenchTable = ({
     refetchInterval: 5000,
   })
 
+  const { data: valueMap } = useQuery({
+    queryKey: [{ key: 'getTrendLpAssetsBalance' }, priceQueryParams, account, sortField],
+    queryFn: async () => {
+      if (sortField !== TrenchType.Eligible) return {} as PriceMapType
+      const balances = await Promise.all(
+        (data.data || []).map(async (item) => {
+          let balance = ''
+          try {
+            // 更改为 mobula 的价值
+            const _balance = await getBalanceOf(
+              item.chainId,
+              account as Address,
+              item.market.address,
+            )
+            balance = formatUnits(_balance, 6) //item.baseDecimals
+          } catch (_e) {
+            console.error(_e)
+          }
+          return {
+            poolId: item.poolId,
+            balance,
+          }
+        }),
+      )
+      const map = (balances || []).reduce((acc, cur) => {
+        return {
+          ...acc,
+          [cur.poolId]: cur.balance,
+        } as PriceMapType
+      }, {} as PriceMapType)
+      return map
+    },
+  })
+
   useEffect(() => {
     setOrder('desc')
     setBefore(undefined)
     setAfter(undefined)
   }, [sortField])
 
-  // const sortedRows = useMemo(() => {
-  //   // return [...data.data].sort((a, b) => {
-  //   //   const valA = orderBy === 'market' ? a.market.name : Number(a[orderBy])
-  //   //   const valB = orderBy === 'market' ? b.market.name : Number(b[orderBy])
-  //   //
-  //   //   if (typeof valA === 'string' && typeof valB === 'string') {
-  //   //     const result = valA.localeCompare(valB, 'en', { sensitivity: 'base' })
-  //   //     return order === 'asc' ? result : -result
-  //   //   }
-  //   //
-  //   //   if (valA < valB) return order === 'asc' ? -1 : 1
-  //   //   if (valA > valB) return order === 'asc' ? 1 : -1
-  //   //   return 0
-  //   // })
-  // }, [data, orderBy, order])
+  const sortedRows = useMemo(() => {
+    if (!data?.data?.length) return data?.data
+    if (!(account && sortField === TrenchType.Eligible)) return data?.data
+    return [...(data?.data || [])].sort(
+      (a, b) => Number(valueMap?.[b.poolId]) - Number(valueMap?.[a.poolId]) || 0,
+    )
+  }, [data.data])
 
   return (
     <StyledTableContainer className="max-h-[calc(100vh-186px)]">
@@ -399,7 +452,7 @@ export const TrenchTable = ({
             <TableLoading />
           ) : (
             <>
-              {(data?.data || []).map((row, index) => (
+              {(sortedRows || []).map((row, index) => (
                 <StyledTableRow
                   className="cursor-pointer"
                   key={index}
@@ -445,7 +498,7 @@ export const TrenchTable = ({
                           onClick={() => {
                             if (isLoading || !data.hasPrevPage) return
 
-                            setBefore(() => data.data?.[0]?.id)
+                            setBefore(() => encodeSortValue(data.data?.[0]))
                             setAfter(() => undefined)
                           }}
                         />
@@ -460,7 +513,7 @@ export const TrenchTable = ({
                             if (isLoading || !data.hasNextPage) return
 
                             setBefore(() => undefined)
-                            setAfter(() => data.data?.[data.data?.length - 1]?.id)
+                            setAfter(() => encodeSortValue(data.data?.[data.data?.length - 1]))
                           }}
                         />
                       </Box>
@@ -474,10 +527,7 @@ export const TrenchTable = ({
             <>
               <TableRow>
                 <StyledTableCell className={'empty'} colSpan={999}>
-                  <Box className={'flex flex-col items-center justify-center py-[100px]'}>
-                    <img src={EmptyPng} alt="empty" className="h-[56px] w-[56px]" />
-                    <div className="mt-[16px] leading-[1] font-medium text-[#848E9C] text-[12x]">{t`No results found`}</div>
-                  </Box>
+                  <Empty />
                 </StyledTableCell>
               </TableRow>
             </>

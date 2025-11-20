@@ -30,6 +30,7 @@ export interface TableComponentProps<T = any> extends Omit<TableProps, 'children
   // pagination?: boolean
   onRowClick?: (record: T, index: number) => void
   emptyText?: string | ReactNode
+  height?: string | number
   // bordered?: boolean
 }
 
@@ -42,6 +43,7 @@ export const Table = <T extends Record<string, any>>({
   onRowClick,
   emptyText = '暂无数据',
   sx,
+  height,
   ...props
 }: TableComponentProps<T>) => {
   // 获取行的唯一key
@@ -110,6 +112,7 @@ export const Table = <T extends Record<string, any>>({
         backgroundColor: 'transparent',
         boxShadow: 'none',
         overflowX: 'auto',
+        maxHeight: height,
         '& .MuiPaper-root': {
           backgroundColor: 'transparent',
         },
@@ -117,6 +120,7 @@ export const Table = <T extends Record<string, any>>({
     >
       <MuiTable
         {...props}
+        stickyHeader={Boolean(height)}
         sx={{
           backgroundColor: '#101114',
           width: 'max-content',
@@ -170,7 +174,13 @@ export const Table = <T extends Record<string, any>>({
             </TableRow>
           ) : dataSource.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={columns.length} align="center">
+              <TableCell
+                sx={{
+                  borderBottom: 'none !important',
+                }}
+                colSpan={columns.length}
+                align="center"
+              >
                 {emptyText}
               </TableCell>
             </TableRow>

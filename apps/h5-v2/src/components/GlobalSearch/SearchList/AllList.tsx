@@ -1,6 +1,11 @@
 import { EarnList } from './EarnList'
 import { useGlobalSearchStore } from '../store'
-import { SearchTypeEnum } from '@myx-trade/sdk'
+import {
+  SearchTypeEnum,
+  type SearchResultContractItem,
+  type SearchResultCookItem,
+  type SearchResultEarnItem,
+} from '@myx-trade/sdk'
 import { Trans } from '@lingui/react/macro'
 import { NotFound } from './NotFound'
 import { SearchListLoading } from './Loading'
@@ -8,11 +13,94 @@ import { t } from '@lingui/core/macro'
 import { FuturesListDataRow } from './FuturesList/DataRow'
 import { CookListDataRow } from './CookList/DataRow'
 import { EarnListDataRow } from './EarnList/DataRow'
+import { useCallback, useMemo, useState } from 'react'
+import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
+import { useDebounceFn, useMount, useUnmount, useUpdateEffect } from 'ahooks'
+import { useNavigate } from 'react-router-dom'
 
 const previewLimit = 3
 
 export const AllList = () => {
-  const { setSearchTab, searchResult, searchLoading } = useGlobalSearchStore()
+  const { setSearchTab, searchResult, searchLoading, close } = useGlobalSearchStore()
+
+  const futuresList = useMemo(() => {
+    return searchResult?.contractInfo.list?.slice(0, previewLimit)
+  }, [searchResult])
+
+  interface ActivePool {
+    poolId: string
+    globalId: number
+  }
+
+  const [activePool, setActivePool] = useState<Array<ActivePool>>([])
+
+  const { flush, run } = useDebounceFn(
+    () => {
+      if (!futuresList) return
+      setActivePool(
+        futuresList.map((item) => ({
+          poolId: item.poolId,
+          globalId: item.globalId,
+        })),
+      )
+    },
+    {
+      wait: 500,
+    },
+  )
+
+  const { subscribeToTicker } = useSubscription()
+
+  // subscribe ticker data
+  useUpdateEffect(() => {
+    console.log('activePool')
+    if (activePool.length) {
+      const unSubscribe = subscribeToTicker(activePool)
+      return () => {
+        if (unSubscribe) {
+          unSubscribe()
+        }
+      }
+    }
+  }, [activePool, subscribeToTicker])
+
+  useMount(() => {
+    flush()
+  })
+
+  useUpdateEffect(() => {
+    run()
+  }, [futuresList])
+
+  useUnmount(() => {
+    setActivePool([])
+  })
+
+  const navigate = useNavigate()
+
+  const toTradePage = useCallback(
+    (item: SearchResultContractItem) => {
+      close()
+      navigate(`/trade/${item.chainId}/${item.poolId}`)
+    },
+    [navigate, close],
+  )
+
+  const toCookPage = useCallback(
+    (item: SearchResultCookItem) => {
+      close()
+      navigate(`/cook/${item.chainId}/${item.poolId}`)
+    },
+    [navigate, close],
+  )
+
+  const toEarnPage = useCallback(
+    (item: SearchResultEarnItem) => {
+      close()
+      navigate(`/earn/${item.chainId}/${item.poolId}`)
+    },
+    [navigate, close],
+  )
 
   if (searchLoading) {
     return <SearchListLoading line={9} />
@@ -49,11 +137,11 @@ export const AllList = () => {
           </div>
         </div>
         <div>
-          {searchResult?.contractInfo.list?.slice(0, previewLimit).map((item) => (
+          {futuresList?.map((item) => (
             <FuturesListDataRow
               key={`futures-${item.chainId}-${item.poolId}`}
               item={item}
-              onItemClick={() => {}}
+              onItemClick={toTradePage}
             />
           ))}
         </div>
@@ -88,7 +176,7 @@ export const AllList = () => {
               <CookListDataRow
                 key={`cook-${item.chainId}-${item.poolId}`}
                 item={item}
-                onItemClick={() => {}}
+                onItemClick={toCookPage}
               />
             ))}
           </div>
@@ -122,7 +210,7 @@ export const AllList = () => {
             <EarnListDataRow
               key={`earn-${item.chainId}-${item.poolId}`}
               item={item}
-              onItemClick={() => {}}
+              onItemClick={toEarnPage}
             />
           ))}
         </div>

@@ -213,9 +213,5 @@ export const CHAIN_INFO: ChainInfoMap = {
 export function getChainInfo(chainId: ChainId) {
   const chainInfo = CHAIN_INFO[chainId]
 
-  if (!chainInfo) {
-    throw new Error(t`Could not find information with chain id ${chainId}`)
-  }
-
-  return chainInfo
+  return chainInfo || null
 }

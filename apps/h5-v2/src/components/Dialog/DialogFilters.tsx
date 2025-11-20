@@ -5,7 +5,7 @@ import { DialogSuspense } from '@/components/Loading'
 import { Box, Button } from '@mui/material'
 import { NumericInput } from '@/components/Dialog/NumberInput.tsx'
 import { t } from '@lingui/core/macro'
-import { TradeButton } from '@/components/TradeButton.tsx'
+import { TradeButton } from '@/components/Button/TradeButton.tsx'
 interface FilterItemProps {
   // disabled?: boolean,
   value: [string, string]

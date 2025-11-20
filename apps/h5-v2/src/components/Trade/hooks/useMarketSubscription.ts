@@ -79,7 +79,6 @@ export const useSubscription = () => {
         }
       }
 
-      console.log('subscribeTickers', globalIdList)
       client.subscription.subscribeTickers(globalIdList, onTickerUpdate)
 
       return () => {
@@ -95,11 +94,6 @@ export const useSubscription = () => {
           })
           if (removedPoolIdList.length) {
             marketStore.removeTickerDataBatch(removedPoolIdList)
-            console.log(
-              'delete ticker data',
-              removedPoolIdList,
-              useMarketStore.getState().tickerData,
-            )
           }
           client.subscription.unsubscribeTickers(globalIdList, onTickerUpdate)
         }

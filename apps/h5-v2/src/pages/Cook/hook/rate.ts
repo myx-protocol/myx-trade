@@ -11,11 +11,11 @@ export const useExchangeRate = () => {
   const rate = useMemo(() => {
     if (price && tickerData?.price) {
       const _rate = new Big(price).div(new Big(tickerData?.price))
-      const result = _rate.toFixed(COMMON_BASE_DISPLAY_DECIMALS)
+      const result = _rate.toString()
       // console.log(price, tickerData?.price, _rate, result)
       return result
     }
-    return
+    return ''
   }, [price, tickerData?.price])
   return rate
 }

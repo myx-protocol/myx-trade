@@ -75,7 +75,7 @@ const AmountSliderMarks = [
 ]
 
 export const AmountInput = () => {
-  const { symbolInfo, symbol } = useTradePageStore()
+  const { symbolInfo } = useTradePageStore()
   const [sliderValue, setSliderValue] = useState<number>(0)
   const [useSlider, setUseSlider] = useState(false)
   const {
@@ -88,7 +88,7 @@ export const AmountInput = () => {
     setAmountUnit,
     positionAction,
   } = useTradePanelStore()
-  const leverage = useLeverage(symbol)
+  const leverage = useLeverage(symbolInfo?.poolId)
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const totalBalanceString = useTotalAvailableBalance()
 
@@ -201,18 +201,17 @@ export const AmountInput = () => {
                   if (parseBigNumber(price).eq(0)) {
                     setLongSize('0')
                     setShortSize('0')
-                  } else {
-                    const maxSize = parseBigNumber(totalBalance)
-                      .div(parseBigNumber(price))
-                      .toString()
-                    const openSize = parseBigNumber(newValue)
-                      .div(100)
-                      .mul(parseBigNumber(maxSize))
-                      .toString()
-
-                    setLongSize(openSize)
-                    setShortSize(openSize)
+                    return
                   }
+
+                  const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
+                  const openSize = parseBigNumber(newValue)
+                    .div(100)
+                    .mul(parseBigNumber(maxSize))
+                    .toString()
+
+                  setLongSize(openSize)
+                  setShortSize(openSize)
                 }
               } else {
                 const balance = parseBigNumber(collateralAmount)
@@ -232,9 +231,7 @@ export const AmountInput = () => {
                     setLongSize('0')
                     setShortSize('0')
                   } else {
-                    const maxSize = parseBigNumber(collateralAmount)
-                      .div(parseBigNumber(price))
-                      .toString()
+                    const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
                     const openSize = parseBigNumber(newValue)
                       .div(100)
                       .mul(parseBigNumber(maxSize))

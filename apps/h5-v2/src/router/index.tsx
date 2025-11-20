@@ -6,16 +6,20 @@ import Cook from '@/pages/Cook'
 import { CookDetail } from '@/pages/Cook/detail/index'
 import EarnList from '@/pages/Earn/List.tsx'
 import EarnDetail from '@/pages/Earn/Detail.tsx'
+import { Home } from '@/pages/Home'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
+import ErrorPage from '@/ErrorPage'
+import NotFound from '@/404'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <Navigate to={DEFAULT_PAIR_PATH} />,
+        element: <Home />,
       },
       {
         path: 'trade',
@@ -56,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: 'earn/:chainId/:poolId',
         element: <EarnDetail />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
       },
     ],
   },

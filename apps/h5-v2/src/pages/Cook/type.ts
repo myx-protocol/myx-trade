@@ -25,8 +25,8 @@ export type TokenData = {
 }
 
 export enum TrenchType {
-  Gainers = TrenchSortField.tvl,
+  Gainers = TrenchSortField.priceChange,
   Latest = TrenchSortField.tokenCreateTime,
   APR = TrenchSortField.apr,
-  Eligible = TrenchSortField.oi,
+  Eligible = TrenchSortField.tvl,
 }

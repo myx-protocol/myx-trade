@@ -4,6 +4,7 @@ import { formatNumber } from '@/utils/number'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMemo } from 'react'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
 
 interface CookListDataRowProps {
   item: SearchResultCookItem

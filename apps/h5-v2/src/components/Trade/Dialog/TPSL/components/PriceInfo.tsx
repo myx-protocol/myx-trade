@@ -1,11 +1,10 @@
-import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 
 interface PriceInfoProps {
-  currentPrice?: number
-  forceTpPrice?: number
-  entryPrice?: number
-  estimatedForceSlPrice?: number
+  currentPrice?: string
+  forceTpPrice?: string
+  entryPrice?: string
+  estimatedForceSlPrice?: string
 }
 
 export const PriceInfo = ({
@@ -21,12 +20,7 @@ export const PriceInfo = ({
           <span>
             <Trans>当前价格</Trans>
           </span>
-          <span className="text-[#CED1D9]">
-            {formatNumber(currentPrice || 0, {
-              showUnit: false,
-              showSign: false,
-            })}
-          </span>
+          <span className="text-[#CED1D9]">{currentPrice}</span>
         </div>
       )}
 
@@ -35,12 +29,7 @@ export const PriceInfo = ({
           <span>
             <Trans>开仓价格</Trans>
           </span>
-          <span className="text-[#CED1D9]">
-            {formatNumber(entryPrice || 0, {
-              showUnit: false,
-              showSign: false,
-            })}
-          </span>
+          <span className="text-[#CED1D9]">{entryPrice}</span>
         </div>
       )}
 
@@ -49,12 +38,7 @@ export const PriceInfo = ({
           <span>
             <Trans>强制止盈价</Trans>
           </span>
-          <span className="text-[#CED1D9]">
-            {formatNumber(forceTpPrice || 0, {
-              showUnit: false,
-              showSign: false,
-            })}
-          </span>
+          <span className="text-[#CED1D9]">{forceTpPrice}</span>
         </div>
       )}
       {estimatedForceSlPrice && (
@@ -62,12 +46,7 @@ export const PriceInfo = ({
           <span>
             <Trans>预估强平价</Trans>
           </span>
-          <span className="text-[#F29D39]">
-            {formatNumber(estimatedForceSlPrice || 0, {
-              showUnit: false,
-              showSign: false,
-            })}
-          </span>
+          <span className="text-[#F29D39]">{estimatedForceSlPrice}</span>
         </div>
       )}
     </div>

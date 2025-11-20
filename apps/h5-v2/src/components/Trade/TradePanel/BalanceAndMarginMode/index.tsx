@@ -10,6 +10,7 @@ import { ethers } from 'ethers'
 import { useGetAccountPoolAssets } from '@/hooks/balance/use-get-account-pool-Assets'
 import { useMemo } from 'react'
 import { parseBigNumber } from '@/utils/bn'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 
 const Balance = () => {
   const { symbolInfo } = useTradePageStore()
@@ -17,6 +18,7 @@ const Balance = () => {
   const walletBalance =
     ethers.formatUnits(tokenBalanceString, symbolInfo?.quoteDecimals ?? 6) ?? '0'
   const accountPoolAssets = useGetAccountPoolAssets(symbolInfo?.poolId as string)
+  const { setReceiveDialogOpen } = useTradePanelStore()
 
   const totalBalance = useMemo(() => {
     const freeAmount =
@@ -27,6 +29,15 @@ const Balance = () => {
       .plus(parseBigNumber(freeAmount))
       .toString()
   }, [walletBalance, accountPoolAssets, symbolInfo?.quoteDecimals])
+
+  const { checkWalletChainId } = useWalletChainCheck()
+
+  const onReceive = () => {
+    if (!symbolInfo?.chainId) return
+    checkWalletChainId(symbolInfo.chainId).then(() => {
+      setReceiveDialogOpen(true)
+    })
+  }
 
   return (
     <div className="flex min-w-0 flex-[1_1_0%] items-center gap-[4px] text-[12px] leading-[1] font-medium">
@@ -39,7 +50,7 @@ const Balance = () => {
           showUnit: false,
         })}
       </p>
-      <div className="flex flex-shrink-0">
+      <div className="flex flex-shrink-0 cursor-pointer" onClick={onReceive}>
         <Reverse size={14} color="#00E3A5" />
       </div>
     </div>

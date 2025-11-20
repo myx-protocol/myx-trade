@@ -8,7 +8,7 @@ import {
   type PriceInterval,
   PoolType,
 } from '@/request/type.ts'
-import { pool } from '@myx-trade/sdk'
+import { type MarketPoolState, pool } from '@myx-trade/sdk'
 
 export interface PoolOpenOrder {
   amount: string
@@ -155,6 +155,7 @@ export interface QuotePool {
   symbolName: string
   tvl: string
   id: number
+  quotePoolToken: string
 }
 
 export interface QuotePoolResponse extends BaseResponse {
@@ -202,6 +203,9 @@ export interface BaseLpDetail {
   apr: string
   globalId: number
   mBaseQuoteSymbol: string
+  state: MarketPoolState
+  poolPreTime: number
+  totalTvl: string
 }
 
 export interface BaseLpDetailResponse extends BaseResponse {
@@ -236,6 +240,11 @@ export interface QuoteLpDetail {
   quoteDecimals: number
   quoteSymbol: string
   mBaseQuoteSymbol: string
+  mQuoteBaseSymbol: string
+  state: MarketPoolState
+  poolPreTime?: number
+  baseToken?: string
+  totalTvl: string
 }
 
 export interface QuoteLpDetailResponse extends BaseResponse {

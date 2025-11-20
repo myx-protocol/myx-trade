@@ -9,7 +9,7 @@ import { SearchTypeEnum } from '@myx-trade/sdk'
 
 export const SymbolInfo = () => {
   const { open: openGlobalSearch } = useGlobalSearchStore()
-  const { baseLpDetail, pool, chainId } = usePoolContext()
+  const { baseLpDetail, chainId } = usePoolContext()
   return (
     <div className="flex leading-[1]">
       <PairLogo

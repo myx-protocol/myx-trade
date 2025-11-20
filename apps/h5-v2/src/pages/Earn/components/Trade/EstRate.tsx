@@ -33,7 +33,7 @@ export const EstRate = () => {
       <Box className={'flex items-center gap-[2px]'}>
         {/*<Refresh size={12} className={'cursor-pointer'} />*/}
         <span>
-          1{direction === Direction.LpToU ? quoteLpDetail?.mBaseQuoteSymbol : pool?.quoteSymbol}
+          1{direction === Direction.LpToU ? quoteLpDetail?.mQuoteBaseSymbol : pool?.quoteSymbol}
         </span>
         <Box
           className={'text-green cursor-pointer px-[3px] py-[2px]'}
@@ -45,7 +45,7 @@ export const EstRate = () => {
         </Box>
         <span>
           {formatNumberPrecision(rate, COMMON_BASE_DISPLAY_DECIMALS)}
-          {direction === Direction.LpToU ? pool?.quoteSymbol : quoteLpDetail?.mBaseQuoteSymbol}
+          {direction === Direction.LpToU ? pool?.quoteSymbol : quoteLpDetail?.mQuoteBaseSymbol}
         </span>
       </Box>
     </DescribeItem>

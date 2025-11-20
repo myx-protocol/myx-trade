@@ -12,7 +12,7 @@ interface TradeFlowDetailProps {
 
 export const TradeFlowDetail = ({ tradeFlow, trigger }: TradeFlowDetailProps) => {
   return (
-    <HoverCard trigger={trigger} placement="bottom-start" className="rounded-[16px]! py-[4px]!">
+    <HoverCard trigger={trigger} placement="bottom-end" className="rounded-[16px]! py-[4px]!">
       <div className="flex min-w-[200px] flex-col">
         <div className="flex items-center justify-between border-b-[1px] border-[#202129] px-[16px] py-[12px] text-[12px] leading-[1] font-normal text-[#9397A3]">
           <p>

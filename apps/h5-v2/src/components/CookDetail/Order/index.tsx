@@ -1,5 +1,4 @@
 import { OrderSide } from './OrderSide'
-import { OrderNotice } from './OrderNotice'
 import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { CookOrderSideEnum } from '@/components/CookDetail/Order/type.ts'
 import { Buy } from '@/components/CookDetail/Order/Buy.tsx'
@@ -13,7 +12,7 @@ export const Order = () => {
       <div className="p-[20px] leading-[1]">
         <OrderSide />
         <Buy />
-        <OrderNotice />
+        <OrderTips />
       </div>
     )
   }
@@ -23,6 +22,7 @@ export const Order = () => {
       <div className="p-[20px] leading-[1]">
         <OrderSide />
         <Sell />
+        <OrderTips />
       </div>
     )
   }

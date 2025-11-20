@@ -8,15 +8,18 @@ import { ethers } from 'ethers'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AmountUnitEnum, PositionActionEnum, TpSlTypeEnum } from '@/components/Trade/type'
 import { parseBigNumber } from '@/utils/bn'
-import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { toast } from 'react-hot-toast'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { sleep } from '@/utils'
+import { tradePubSub } from '@/utils/pubsub'
 
 export const useSubmitOrder = () => {
   const { client } = useMyxSdkClient()
   const { chainId, address } = useWalletConnection()
-  const { symbolInfo, symbol } = useTradePageStore()
+  const { symbolInfo } = useTradePageStore()
   const { oraclePriceData } = useMarketStore()
+  const { checkWalletChainId } = useWalletChainCheck()
   const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
   const {
     longSize,
@@ -35,12 +38,14 @@ export const useSubmitOrder = () => {
     slType,
   } = useTradePanelStore()
 
-  const leverage = useLeverage(symbol)
-  const positionList = useGetPositionList()
+  const leverage = useLeverage(symbolInfo?.poolId ?? '')
 
   const submitOrder = useCallback(
     async (direction: Direction) => {
-      console.log('direction-->', direction, longSize, shortSize)
+      if (!symbolInfo) return
+
+      await checkWalletChainId(symbolInfo.chainId as number)
+
       let size = '0'
       if (direction === Direction.LONG) {
         size = longSize
@@ -52,20 +57,20 @@ export const useSubmitOrder = () => {
 
       if (orderType === OrderType.LIMIT) {
         if (positionAction === PositionActionEnum.OPEN) {
-          formatTriggerType = parseBigNumber(marketPrice).gt(parseBigNumber(price))
-            ? TriggerType.GTE
-            : (TriggerType.LTE as TriggerType)
+          if (direction === Direction.LONG) {
+            formatTriggerType = TriggerType.LTE
+          } else {
+            formatTriggerType = TriggerType.GTE
+          }
         } else {
-          formatTriggerType = parseBigNumber(marketPrice).lt(parseBigNumber(price))
-            ? TriggerType.GTE
-            : (TriggerType.LTE as TriggerType)
+          if (direction === Direction.LONG) {
+            formatTriggerType = TriggerType.GTE
+          } else {
+            formatTriggerType = TriggerType.LTE
+          }
         }
       }
 
-      const positionInfo =
-        positionList?.find(
-          (item: any) => item.poolId === symbolInfo?.poolId && item.direction === direction,
-        ) ?? {}
       let formatCollateralAmount = '0'
       if (positionAction === PositionActionEnum.OPEN) {
         formatCollateralAmount = parseBigNumber(collateralAmount)
@@ -175,10 +180,10 @@ export const useSubmitOrder = () => {
       // return
 
       const orderData = {
-        chainId: chainId as number,
+        chainId: symbolInfo.chainId as number,
         address: address as `0x${string}`,
         poolId: symbolInfo?.poolId as string,
-        positionId: positionInfo.positionId ?? 0,
+        userPositionSalt: 1,
         orderType: orderType as OrderType,
         triggerType: formatTriggerType as TriggerType,
         direction: direction,
@@ -201,6 +206,9 @@ export const useSubmitOrder = () => {
         console.log('rs-->', rs)
         if (rs?.code === 0) {
           toast.success('Submit open order success')
+          // wait backend sync data
+          await sleep(1500)
+          tradePubSub.emit('place:order:success')
         } else {
           toast.error('Submit open order failed')
         }
@@ -209,6 +217,9 @@ export const useSubmitOrder = () => {
         console.log('rs-->', rs)
         if (rs?.code === 0) {
           toast.success('Submit close order success')
+          // wait backend sync data
+          await sleep(1500)
+          tradePubSub.emit('place:order:success')
         } else {
           toast.error('Submit close order failed')
         }
@@ -227,13 +238,13 @@ export const useSubmitOrder = () => {
       symbolInfo,
       chainId,
       address,
-      positionList,
       autoMarginMode,
       marketPrice,
       tpValue,
       slValue,
       tpType,
       slType,
+      checkWalletChainId,
     ],
   )
 
