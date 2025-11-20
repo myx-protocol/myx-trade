@@ -8,7 +8,7 @@ import { Trans } from '@lingui/react/macro'
 
 export const AccountInfo = () => {
   return (
-    <div className="mt-[24px] w-full px-[16px]">
+    <div className="mt-[9px] w-full px-[16px]">
       {/* wallet */}
       <div className="flex items-center">
         <img src={WalletIcon} className="w-[20px]" />
