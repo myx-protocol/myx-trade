@@ -56,3 +56,21 @@ export const getPoolLevelConfig = async (poolId: string, chainId: number) => {
     }
   }
 }
+
+export const getPools = async () => {
+  try {
+    const res = await http.get(`${baseUrl}/v2/mx-scan/market/list`)
+    return {
+      code: 0,
+      msg: null,
+      data: res.data,
+    }
+  } catch (error) {
+    console.error('getPools error-->', error)
+    return {
+      code: -1,
+      msg: 'getPools error',
+      data: null,
+    }
+  }
+}

@@ -5,7 +5,7 @@ interface ImportMetaEnv {
   // 这里可以继续定义其他变量...
 }
 
-import type { IChartingLibraryWidget, TradingView } from '@public/charting_library/charting_library'
+import type { IChartingLibraryWidget, TradingView } from 'public/charting_library/charting_library'
 import { Buffer } from 'buffer'
 
 interface ImportMeta {

@@ -6,11 +6,11 @@ import IconHelp from '@/components/Icon/set/Help.tsx'
 import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { OrderOptions } from '@/components/CookDetail/Order/OrderOptions'
 import { Box } from '@mui/material'
-import { TradeButton } from '@/components/TradeButton.tsx'
+import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { useAccount } from 'wagmi'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { formatUnits, getBalanceOf, base as Base } from '@myx-trade/sdk'
+import { formatUnits, getBalanceOf, base as Base, MarketPoolState } from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
@@ -20,6 +20,7 @@ import { useExchangeRate } from '@/pages/Cook/hook/rate.ts'
 import { toast } from 'react-hot-toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
+import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
@@ -174,15 +175,24 @@ export const Buy = () => {
           </Box>
         )}
         <Box className="mt-[12px] w-full">
-          <TradeButton
-            variant="contained"
-            className={'w-full'}
-            disabled={!amount || isInsufficient}
-            loading={loading}
-            onClick={onHandleBuy}
-          >
-            <Trans>Buy</Trans>
-          </TradeButton>
+          {baseLpDetail?.state === MarketPoolState.PreBench ||
+          baseLpDetail?.state === MarketPoolState.Bench ? (
+            <>
+              <DefaultButton variant="contained" className={'w-full'} disabled>
+                <Trans>暂停中</Trans>
+              </DefaultButton>
+            </>
+          ) : (
+            <TradeButton
+              variant="contained"
+              className={'w-full'}
+              disabled={!amount || isInsufficient}
+              loading={loading}
+              onClick={onHandleBuy}
+            >
+              <Trans>Buy</Trans>
+            </TradeButton>
+          )}
         </Box>
       </Box>
     </>

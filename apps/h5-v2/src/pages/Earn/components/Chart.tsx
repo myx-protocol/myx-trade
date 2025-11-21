@@ -31,7 +31,7 @@ const Token = () => {
           <CoinIcon
             size={32}
             icon={quoteLpDetail?.tokenIcon ?? ''}
-            symbol={quoteLpDetail?.mBaseQuoteSymbol}
+            symbol={quoteLpDetail?.mQuoteBaseSymbol}
           />
           <Box
             className={
@@ -42,7 +42,7 @@ const Token = () => {
           </Box>
         </Box>
         <Box className={'text-[24px] leading-[1] font-[700] text-white'}>
-          {quoteLpDetail?.mBaseQuoteSymbol || '--'}
+          {quoteLpDetail?.mQuoteBaseSymbol || '--'}
         </Box>
       </Box>
 
@@ -158,7 +158,7 @@ const ChartHeader = () => {
       </Box>
       <Box className={'mt-[32px] flex w-full items-center justify-between py-[6px]'}>
         <span>
-          <Trans>Exchange Rate</Trans>
+          <Trans>Price</Trans>
         </span>
         <IntervalSelector />
       </Box>

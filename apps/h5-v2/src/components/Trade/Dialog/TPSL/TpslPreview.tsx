@@ -1,18 +1,13 @@
 import { DialogBase } from '@/components/UI/DialogBase'
-import { Tab, Tabs } from '@/components/UI/Tabs'
 import { t } from '@lingui/core/macro'
-import { TPSLTabTypeEnum } from './types'
 import { useState } from 'react'
 import { PriceInfo } from './components/PriceInfo'
-import { TpslFormGroup } from './components/TpslFormGroup'
-import { TpslSlippage } from './components/TpslSlippage'
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { TradeSelect, type TradeSelectOption } from '../../components/Select'
 import { TpslOrderItem } from './components/TpslOrderItem'
 
 export const TpslPreviewDialog = () => {
-  const [activeTab, setActiveTab] = useState<TPSLTabTypeEnum>(TPSLTabTypeEnum.TPOrSL)
   const [sortType, setSortType] = useState<'time' | 'price' | 'pnl'>('time')
 
   const handleSortTypeChange = (value: 'time' | 'price' | 'pnl') => {
@@ -40,10 +35,10 @@ export const TpslPreviewDialog = () => {
       <div className="px-[20px]">
         {/* price */}
         <PriceInfo
-          currentPrice={1233.45}
-          forceTpPrice={1233.45}
-          entryPrice={1233.45}
-          estimatedForceSlPrice={1233.45}
+          currentPrice={'1233.45'}
+          forceTpPrice={'1233.45'}
+          entryPrice={'1233.45'}
+          estimatedForceSlPrice={'1233.45'}
         />
         {/* tpsl type */}
         <div className="mt-[12px] flex items-center justify-between">

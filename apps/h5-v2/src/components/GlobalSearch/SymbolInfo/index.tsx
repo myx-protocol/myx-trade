@@ -63,7 +63,7 @@ export const SymbolInfo = ({
         <div>
           {/* symbol name */}
           <div className="flex items-center gap-[4px]">
-            <p className="text-[14px] font-medium text-white line-clamp-1">{symbolName}</p>
+            <p className="line-clamp-1 text-[14px] font-medium text-white">{symbolName}</p>
             {/* bluechip */}
             {isBluechip && (
               <div className="rounded rounded-[4px] bg-[rgba(0,227,165,0.1)] px-[4px] py-[3px] text-[10px] leading-[1] text-[#00E3A5]">{t`蓝筹`}</div>
@@ -77,7 +77,7 @@ export const SymbolInfo = ({
           </div>
           {/* info */}
           <div className="text-normal mt-[2px] flex items-center gap-[8px] text-[12px] text-[#848E9C]">
-            <p className="leading-[1.2] line-clamp-1">{coinName}</p>
+            <p className="line-clamp-1 leading-[1.2]">{coinName}</p>
             <div className="flex items-center gap-[4px]">
               <p>{truncateAddress(tokenAddress || '--')}</p>
               <Copy className="" content={tokenAddress}></Copy>

@@ -8,16 +8,19 @@ import { appPubSub } from '@/utils/pubsub'
 import { useMount, useUnmount } from 'ahooks'
 
 export const Favorite = () => {
-  const { client } = useMyxSdkClient()
+  const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { symbolInfo } = useTradePageStore()
 
   const { address, isConnected, setLoginModalOpen } = useWalletConnection()
   const [isFavorite, setIsFavorite] = useState<boolean>(false)
   const { refetch } = useQuery({
-    queryKey: ['favorite', symbolInfo?.poolId, symbolInfo?.chainId, address],
-    enabled: Boolean(isConnected && address && symbolInfo?.poolId && symbolInfo.chainId),
+    queryKey: ['favorite', symbolInfo?.poolId, symbolInfo?.chainId, address, clientIsAuthenticated],
+    enabled: Boolean(
+      isConnected && address && symbolInfo?.poolId && symbolInfo.chainId && clientIsAuthenticated,
+    ),
     queryFn: async () => {
-      if (!symbolInfo?.poolId || !symbolInfo.chainId || !client) return null
+      if (!symbolInfo?.poolId || !symbolInfo.chainId || !client || !clientIsAuthenticated)
+        return null
       const favorite = await client.markets.getFavoritesList({
         poolId: symbolInfo.poolId,
         chainId: symbolInfo.chainId,

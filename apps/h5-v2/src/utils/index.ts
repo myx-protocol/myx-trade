@@ -23,6 +23,7 @@ export const isNull = (a: any) => {
 
 export const isSafeNumber = (value?: any): boolean => {
   if (isNil(value)) return false
+  if (typeof value === 'string' && value.trimStart().trimEnd() === '') return false
   const num = Number(value)
   if (isNaN(num)) return false
   return true
@@ -86,4 +87,14 @@ export const getRelativeTime = (timestamp: number) => {
   }
   return `${Math.floor(diff / SECOND_IN_SECONDS)}${t`S`}`
 }
+
+/**
+ * sleep
+ * @param ms 睡眠时间
+ * @returns
+ */
+export const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export * from './url'

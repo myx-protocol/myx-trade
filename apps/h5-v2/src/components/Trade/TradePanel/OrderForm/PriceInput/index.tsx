@@ -11,13 +11,14 @@ import { OrderType } from '@myx-trade/sdk'
 
 export const PriceInput = () => {
   const { orderType, setOrderType, price, setPrice } = useTradePanelStore()
-  const { oraclePriceData } = useMarketStore()
+  const { tickerData } = useMarketStore()
   const { symbolInfo } = useTradePageStore()
-  const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
+
+  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
 
   useEffect(() => {
     if (orderType === OrderType.MARKET) {
-      setPrice(marketPrice.toString())
+      setPrice(tickerData?.price?.toString() ?? '0')
     }
   }, [orderType, marketPrice])
 
@@ -46,7 +47,7 @@ export const PriceInput = () => {
             <p
               className="text-[12px] text-[#00E3A5]"
               role="button"
-              onClick={() => setPrice(marketPrice)}
+              onClick={() => setPrice(marketPrice?.toString() ?? '0')}
             >
               <Trans>Last</Trans>
             </p>

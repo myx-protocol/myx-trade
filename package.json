@@ -16,7 +16,8 @@
     "gen:abi": "cd packages/sdk && pnpm run gen:abi",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
-    "type-check": "turbo run type-check"
+    "type-check": "turbo run type-check",
+    "dev:sdk": "pnpm --filter @myx-trade/sdk dev"
   },
   "author": "",
   "license": "ISC",

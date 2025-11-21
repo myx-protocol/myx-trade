@@ -4,7 +4,7 @@ import { ChainId } from '@/config/chain'
 import { useTradePageStore } from '../store/TradePageStore'
 const DEFAULT_LEVERAGE = 1
 
-export const useLeverage = (symbol: string) => {
+export const useLeverage = (poolId?: string) => {
   const { chainId } = useWalletConnection()
   const { leverageMap } = useLeverageDialogStore()
   const { maxLeverage } = useTradePageStore()
@@ -20,6 +20,6 @@ export const useLeverage = (symbol: string) => {
     defaultLeverage = 1
   }
 
-  const leverage = leverageMap[chainId as ChainId]?.[symbol]?.leverage ?? defaultLeverage
+  const leverage = leverageMap[chainId as ChainId]?.[poolId ?? '']?.leverage ?? defaultLeverage
   return leverage
 }

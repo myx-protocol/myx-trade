@@ -31,15 +31,21 @@ export type SortOrder = 'asc' | 'desc'
 export type TimeInterval = '10m' | '1h' | '4h' | '12h' | '24h'
 
 export enum TrenchSortField {
-  'priceChange' = 'priceChange',
-  'apr' = 'apr',
-  'tvl' = 'tvl',
+  'priceChange' = 'lpPriceChange',
+  'apr' = 'baseApr',
+  'tvl' = 'baseTvl',
   'volume' = 'volume',
   'oi' = 'oi',
   'tokenCreateTime' = 'tokenCreateTime',
 }
 
-export type QuoteLPSortField = 'priceChange' | 'apr' | 'tvl' | 'volume' | 'oi' | 'tokenCreateTime'
+export type QuoteLPSortField =
+  | 'priceChange'
+  | 'quoteApr'
+  | 'quoteTvl'
+  | 'volume'
+  | 'oi'
+  | 'tokenCreateTime'
 
 export interface FilterRequest {
   limit?: number
@@ -52,10 +58,14 @@ export const baseFilter: FilterRequest = {
   sortOrder: 'desc',
 }
 
+export enum PageDirection {
+  Next = 'next',
+  Prev = 'prev',
+}
 export interface PageRequest {
   limit: number
-  before?: number
-  after?: number
+  direction?: PageDirection
+  cursor?: string
 }
 
 export enum PriceInterval {

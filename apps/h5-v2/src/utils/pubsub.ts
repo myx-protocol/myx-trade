@@ -13,6 +13,7 @@ type TradePagePubSubEvents = {
   'kline:take:screenshot': void
   'kline:full:screen:toggle': void
   'global:search:update': void
+  'place:order:success': void
 }
 
 export const tradePubSub = mitt<TradePagePubSubEvents>()

@@ -15,7 +15,9 @@ import Big from 'big.js'
 import { TableNoData } from '../TableNoData'
 import { usePositionStore } from '@/store/position/createStore'
 import { getProfitRatePrecision } from '@/utils/math'
-import { useMount } from 'ahooks'
+import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
+import { useEffect } from 'react'
+import { tradePubSub } from '@/utils/pubsub'
 
 const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
   [CloseTypeEnum.PartialClose]: () => t`部分平仓`,
@@ -28,16 +30,26 @@ const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
 export const PositionHistory = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { symbolInfo } = useTradePageStore()
-  const { address } = useWalletConnection()
+  const { address, isWrongNetwork } = useWalletConnection()
   const { selectChainId, hideOthersSymbols } = usePositionStore()
-  const { data } = useQuery({
-    queryKey: ['positionHistory', symbolInfo?.poolId, address, selectChainId, hideOthersSymbols],
+  const { data, refetch } = useQuery({
+    queryKey: [
+      'positionHistory',
+      symbolInfo?.poolId,
+      address,
+      selectChainId,
+      hideOthersSymbols,
+      isWrongNetwork,
+    ],
     enabled: Boolean(
-      address && symbolInfo?.poolId && symbolInfo?.chainId && !!client && clientIsAuthenticated,
+      address &&
+        symbolInfo?.poolId &&
+        symbolInfo?.chainId &&
+        !!client &&
+        clientIsAuthenticated &&
+        !isWrongNetwork,
     ),
     queryFn: async () => {
-      console.log('clientIsAuthenticated', clientIsAuthenticated)
-      console.log('client', client)
       if (!client || !clientIsAuthenticated) return null
       const res = await client.position.getPositionHistory({
         chainId: selectChainId === '0' ? 0 : Number(selectChainId),
@@ -46,17 +58,20 @@ export const PositionHistory = () => {
       return res
     },
   })
-  useMount(() => {
-    console.log(
-      'useMount',
-      Boolean(
-        address && symbolInfo?.poolId && symbolInfo?.chainId && !!client && clientIsAuthenticated,
-      ),
-    )
-  })
+
+  useEffect(() => {
+    const onRefresh = () => {
+      refetch()
+    }
+    tradePubSub.on('place:order:success', onRefresh)
+    return () => {
+      tradePubSub.off('place:order:success', onRefresh)
+    }
+  }, [])
   return (
     <Table<PositionHistoryItem>
-      emptyText={<TableNoData />}
+      height={500}
+      emptyText={isWrongNetwork ? <TableWongNetwork /> : <TableNoData />}
       columns={[
         {
           title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`合约`}</span>,

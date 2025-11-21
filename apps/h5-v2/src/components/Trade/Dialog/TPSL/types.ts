@@ -1,4 +1,4 @@
-export enum TPSLTabTypeEnum {
+export enum TpSlTabTypeEnum {
   TPOrSL = 'tpOrSl',
   TPAndSL = 'tpAndSl',
 }

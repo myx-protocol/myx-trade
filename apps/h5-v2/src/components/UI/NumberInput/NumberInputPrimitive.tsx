@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react'
 import { isUndefined } from 'lodash-es'
 import { scrollIntroView } from '@/utils'
-import { parseBigNumber, formatBigNumber } from '@/utils/bn'
+import { parseBigNumber } from '@/utils/bn'
 import { NumericFormat } from 'react-number-format'
 import { type NumberInputSourceInfo, type OnValueChange } from './types'
 import { twMerge } from 'tailwind-merge'
@@ -45,24 +45,6 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
     const placeholderLabel =
       placeholder ?? (decimalPlaceholder ? decimalPlaceholderLabel : undefined)
 
-    // 格式化显示值
-    const formatDisplayValue = useCallback(
-      (val: string | number | undefined): string => {
-        if (val === undefined || val === null || val === '') return ''
-
-        const bigValue = parseBigNumber(val)
-        if (bigValue.eq(0) && val !== '0') return ''
-
-        // return formatPriceDisplay(bigValue.toString())
-        return formatBigNumber(bigValue, {
-          decimals: decimalScale ?? 2,
-          thousandsSeparator: thousandSeparator as string,
-          decimalSeparator: decimalSeparator,
-        })
-      },
-      [decimalScale, thousandSeparator, decimalSeparator],
-    )
-
     // 处理焦点事件
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
@@ -71,14 +53,6 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
       },
       [onFocus],
     )
-
-    const handleBlur = useCallback(() => {
-      // 失焦时格式化显示值
-      if (displayValue !== '') {
-        const formattedValue = formatDisplayValue(displayValue)
-        setDisplayValue(formattedValue)
-      }
-    }, [displayValue, formatDisplayValue])
 
     // 处理键盘事件
     const handleKeyDown = useCallback(
@@ -165,10 +139,27 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
     // 同步外部值变化
     useEffect(() => {
       if (value !== undefined) {
-        const formattedValue = formatDisplayValue(value ?? '')
-        setDisplayValue(formattedValue)
+        // 直接使用外部传入的值，不进行格式化，保持用户输入的原始格式
+        setDisplayValue(String(value))
       }
-    }, [value, formatDisplayValue])
+    }, [value])
+
+    // 动态计算小数位数：如果整数部分有值，则显示2位小数
+    const getEffectiveDecimalScale = useCallback(
+      (inputValue: string) => {
+        if (isUndefined(decimalScale)) {
+          // 如果没有指定 decimalScale，检查整数部分
+          const numValue = parseFloat(inputValue || '0')
+          if (!isNaN(numValue) && Math.abs(Math.floor(numValue)) > 0) {
+            return 2
+          }
+        }
+        return decimalScale
+      },
+      [decimalScale],
+    )
+
+    const effectiveDecimalScale = getEffectiveDecimalScale(displayValue)
 
     return (
       <NumericFormat
@@ -209,11 +200,10 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
           return true
         }}
         onFocus={handleFocus}
-        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         onBeforeInput={handleBeforeInput}
         placeholder={placeholderLabel}
-        decimalScale={decimalScale}
+        decimalScale={effectiveDecimalScale}
         inputMode={inputMode}
         allowLeadingZeros
         thousandSeparator={thousandSeparator}

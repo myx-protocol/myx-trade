@@ -34,9 +34,7 @@ export const useMarketDetail = (params: UseMarketDetailParams) => {
    * get the market detail data
    */
   const getDetail = useCallback(async () => {
-    console.log('getDetail-->', client, poolId, chainId)
     if (!client) {
-      console.log('client not found')
       return null
     }
     if (!poolId || !chainId) return null

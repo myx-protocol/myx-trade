@@ -24,6 +24,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { getAccountHoldings } from '@/request'
 
 const Market = () => {
+  const [loading, setLoading] = useState(false)
   const { address: account } = useWalletConnection()
   const navigate = useNavigate()
   const { chainId, address } = useParams()

@@ -78,7 +78,7 @@ export default function Layout() {
         signer: signer,
         chainId: ChainId.ARB_TESTNET,
         walletClient: walletClient,
-        brokerAddress: "0x6136899e8c77C452bc46AcD786aA2C09fD31f947",
+        brokerAddress: "0xB3DaeFF433c005e214D6cd73C35cD4bBCe7f94fD",
         isTestnet: true,
         logLevel: 'debug',
         getAccessToken: createGetAccessTokenMethod(), // 传入 accessToken 获取方法

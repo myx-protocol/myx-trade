@@ -2,29 +2,25 @@ import { Table } from '@/components/UI/Table'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
 import { EditIcon } from '@/components/UI/Icon'
-import { InfoButton } from '@/components/UI/Button'
-import { Trans } from '@lingui/react/macro'
 import { AdjustMarginDialog } from '@/components/Trade/Dialog/AdjustMargin'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import useSWR from 'swr'
 import dayjs from 'dayjs'
 import { Direction, OrderTypeEnum } from '@myx-trade/sdk'
 import { CancelOrderButton } from '../CancelOrderButton'
 import { TableNoData } from '../TableNoData'
 import { displayAmount } from '@/utils/number'
-import { usePositionStore } from '@/store/position/createStore'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
-import { useMemo } from 'react'
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
+import { TpSlButton } from '@/components/Trade/Dialog/TPSL'
 
 export const Entrusts = () => {
   const orders = useGetOrderList()
-
+  const { isWrongNetwork } = useWalletConnection()
   return (
     <>
-      <AdjustMarginDialog />
       <Table
-        emptyText={<TableNoData />}
+        height={500}
+        emptyText={isWrongNetwork ? <TableWongNetwork /> : <TableNoData />}
         columns={[
           {
             title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`Time`}</span>,
@@ -134,12 +130,6 @@ export const Entrusts = () => {
                 <Tooltips
                   title={t`Margin used to maintain positions, subject to potential total loss upon liquidation`}
                 >
-                  <span className="cursor-pointer text-[12px] leading-[12px] text-[#9397a3] underline decoration-dotted underline-offset-[2px]">{t`Filled`}</span>
-                </Tooltips>
-                <span className="mx-[2px] text-[12px] leading-[12px] text-[#9397a3]">|</span>
-                <Tooltips
-                  title={t`Margin used to maintain positions, subject to potential total loss upon liquidation`}
-                >
                   <span className="cursor-pointer text-[12px] leading-[12px] text-[#9397a3] underline decoration-dotted underline-offset-[2px]">{t`Amount`}</span>
                 </Tooltips>
               </div>
@@ -150,9 +140,6 @@ export const Entrusts = () => {
             render: (_: string, record: any) => {
               return (
                 <div className="flex flex-col items-center items-start gap-[4px]">
-                  <p className="text-[12px] text-[white]">
-                    {record.filledSize} {record.baseSymbol}
-                  </p>
                   <div className="justify-flex flex items-center gap-[4px] text-[12px]">
                     <p className="text-[12px] text-[white]">
                       {displayAmount(record.size)} {record.baseSymbol}
@@ -206,7 +193,7 @@ export const Entrusts = () => {
                   <p className="text-[12px] text-[white]">
                     +{displayAmount(record.collateralAmount)} {record.quoteSymbol}
                   </p>
-                  <EditIcon />
+                  <AdjustMarginDialog position={record} />
                 </div>
               )
             },
@@ -224,12 +211,10 @@ export const Entrusts = () => {
             key: 'tpSl',
             align: 'left',
             minWidth: '100px',
-            render: () => {
+            render: (_: string, record: any) => {
               return (
                 <div className="justify-flex flex items-center gap-[4px] text-[12px]">
-                  <InfoButton onClick={() => {}}>
-                    +<Trans>Add</Trans>
-                  </InfoButton>
+                  <TpSlButton position={record} />
                 </div>
               )
             },

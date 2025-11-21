@@ -14,6 +14,9 @@ import { TradeFlowDetail } from '../TradeFlowDetail'
 import { TableNoData } from '../TableNoData'
 import { usePositionStore } from '@/store/position/createStore'
 import { TransactionHash } from '@/components/TransactionHash'
+import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
+import { useEffect } from 'react'
+import { tradePubSub } from '@/utils/pubsub'
 
 const TradeFlowType: Record<OperationEnum, () => string> = {
   [OperationEnum.Increase]: () => t`开仓`,
@@ -25,10 +28,23 @@ export const Finance = () => {
   const { symbolInfo } = useTradePageStore()
   const { isWalletConnected, address } = useWalletConnection()
   const { selectChainId, hideOthersSymbols } = usePositionStore()
-  const { data: financeData } = useQuery({
-    queryKey: ['finance', symbolInfo?.poolId, address, selectChainId, hideOthersSymbols],
+  const { isWrongNetwork } = useWalletConnection()
+  const { data: financeData, refetch } = useQuery({
+    queryKey: [
+      'finance',
+      symbolInfo?.poolId,
+      address,
+      selectChainId,
+      hideOthersSymbols,
+      isWrongNetwork,
+    ],
     enabled: Boolean(
-      isWalletConnected && address && symbolInfo?.poolId && symbolInfo?.chainId && !!client,
+      isWalletConnected &&
+        address &&
+        symbolInfo?.poolId &&
+        symbolInfo?.chainId &&
+        !!client &&
+        !isWrongNetwork,
     ),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
@@ -39,9 +55,20 @@ export const Finance = () => {
       return res.data
     },
   })
+
+  useEffect(() => {
+    const onRefresh = () => {
+      refetch()
+    }
+    tradePubSub.on('place:order:success', onRefresh)
+    return () => {
+      tradePubSub.off('place:order:success', onRefresh)
+    }
+  }, [])
   return (
     <Table<TradeFlowItem>
-      emptyText={<TableNoData />}
+      height={500}
+      emptyText={isWrongNetwork ? <TableWongNetwork /> : <TableNoData />}
       columns={[
         {
           title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`时间`}</span>,

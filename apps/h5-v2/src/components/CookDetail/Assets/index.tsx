@@ -12,7 +12,7 @@ import {
   Box,
   Paper,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import SortDown from '@/components/Icon/set/SortDown'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { Copy } from '@/components/Copy'
@@ -25,15 +25,14 @@ import { PoolType } from '@/request/type.ts'
 import type { LpAsset } from '@/request/lp/type.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
-import { encryptionAddress, isSafeNumber } from '@/utils'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
-import EmptyPng from '@/assets/images/common/empty.png'
-import { t } from '@lingui/core/macro'
+import { encryptionAddress } from '@/utils'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { base as Base, COMMON_PRICE_DECIMALS, formatUnits, Market } from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { calculationPnl } from '@/utils/pnl.ts'
+import { Empty } from '@/components/Empty.tsx'
+import { useAccessToken } from '@/hooks/useAccessToken.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -65,29 +64,14 @@ const TableLoading = () => {
 }
 
 export const Assets = () => {
-  const { client } = useMyxSdkClient()
+  const { accessToken } = useAccessToken()
   const { poolId, pool, price } = usePoolContext()
   const [showAllAssets, setShowAllAssets] = useState(false)
   const [sortField, setSortField] = useState<string>('')
   const [sortOrder, setSortOrder] = useState<SortOrder>(false)
-  const [openClaimTotalRewardsDialog, setOpenClaimTotalRewardsDialog] = useState(false)
   const [openClaimRewardsDialog, setOpenClaimRewardsDialog] = useState(false)
-  const [accessToken, setAccessToken] = useState<string | null>(null)
-  const { isWalletConnected, address: account } = useWalletConnection()
+  const { address: account } = useWalletConnection()
   const [lpAsset, setLpAsset] = useState<LpAsset | undefined>(undefined)
-
-  const getAccessToken = async () => {
-    const accessToken = await client?.getConfigManager()?.getAccessToken()
-    if (accessToken) {
-      setAccessToken(accessToken)
-    }
-  }
-
-  useEffect(() => {
-    if (client && isWalletConnected) {
-      getAccessToken().then()
-    }
-  }, [client, isWalletConnected])
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -100,7 +84,8 @@ export const Assets = () => {
     enabled: !!accessToken,
     queryFn: async () => {
       // console.log(poolId , pool , accessToken)
-      if (!poolId || !pool || !accessToken) return [] as LpAsset[]
+      if (!accessToken) return [] as LpAsset[]
+      if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
       const request = await getLpAssets(accessToken, {
         poolType: PoolType.base,
         poolId: showAllAssets ? undefined : poolId,
@@ -210,17 +195,6 @@ export const Assets = () => {
       maximumFractionDigits: decimals,
     })
   }
-
-  // 格式化货币显示
-  const formatCurrency = (value: number) => {
-    return `$${formatNumber(value)}`
-  }
-
-  // // 格式化盈亏显示
-  // const formatPnL = (value: number) => {
-  //   const formatted = formatCurrency(Math.abs(value))
-  //   return value >= 0 ? `+${formatted}` : `-${formatted}`
-  // }
 
   // 处理排序
   const handleSort = (field: string) => {
@@ -556,10 +530,7 @@ export const Assets = () => {
                 <>
                   <TableRow>
                     <TableCell className={'empty'} colSpan={7777}>
-                      <Box className={'flex flex-col items-center justify-center py-[20px]'}>
-                        <img src={EmptyPng} alt="empty" className="h-[56px] w-[56px]" />
-                        <div className="mt-[16px] leading-[1] font-medium text-[#848E9C] text-[12x]">{t`No results found`}</div>
-                      </Box>
+                      <Empty className={'py-[20px]'} />
                     </TableCell>
                   </TableRow>
                 </>

@@ -1,16 +1,23 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-
-const ignoreFooterPaths = ['/cook', 'trade']
+import { TAB_LIST } from '@/components/Tabbar/const'
 
 export const useLayout = () => {
-  const location = useLocation()
-
-  const isShowFooter = useMemo(() => {
-    return !ignoreFooterPaths.some((path) => location.pathname.includes(path))
-  }, [location.pathname])
+  const { pathname } = useLocation()
+  /**
+   * actived tabbar item
+   */
+  const tabbarActiveItem = useMemo(() => {
+    const item = TAB_LIST.find((item) => {
+      if (item.path === '/') {
+        return pathname === '/'
+      }
+      return pathname.startsWith(item.path)
+    })
+    return item
+  }, [pathname])
 
   return {
-    isShowFooter,
+    tabbarActiveItem,
   }
 }

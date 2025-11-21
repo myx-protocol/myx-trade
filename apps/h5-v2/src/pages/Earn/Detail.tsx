@@ -26,7 +26,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)`
 
 const Detail = () => {
   const { chainId, poolId } = useParams()
-  const { data: quoteLpDetail } = useQuery({
+  const { data: quoteLpDetail, refetch } = useQuery({
     queryKey: [{ key: 'QuotePoolDetail' }, chainId, poolId],
     queryFn: async () => {
       if (!chainId || !poolId) return {} as QuoteLpDetail
@@ -49,12 +49,12 @@ const Detail = () => {
   })
 
   const { data: price } = useQuery({
-    queryKey: [{ key: 'quoteLpPrice' }, poolId],
+    queryKey: [{ key: 'getQuotePoolPrice' }, poolId, chainId],
     enabled: !!poolId,
     queryFn: async () => {
       if (!poolId || !chainId) return ''
       const result = await Quote.getLpPrice(+chainId, poolId)
-
+      console.log(result)
       if (result) {
         return formatUnits(result, COMMON_PRICE_DECIMALS)
       }
@@ -65,7 +65,14 @@ const Detail = () => {
 
   return (
     <PoolContext.Provider
-      value={{ chainId: Number(chainId), poolId: poolId as string, pool, price, quoteLpDetail }}
+      value={{
+        chainId: Number(chainId),
+        poolId: poolId as string,
+        pool,
+        price,
+        quoteLpDetail,
+        refetch,
+      }}
     >
       <Container className={'flex !w-[1196px] !min-w-[1196px] flex-col'}>
         <StyledBreadcrumbs
@@ -78,7 +85,7 @@ const Detail = () => {
           </Link>
 
           <span className={'text-regular !text-[16px] leading-[1]'}>
-            {quoteLpDetail?.mBaseQuoteSymbol || ''}
+            {quoteLpDetail?.mQuoteBaseSymbol || ''}
           </span>
         </StyledBreadcrumbs>
 

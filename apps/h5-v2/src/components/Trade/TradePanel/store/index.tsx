@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { AmountUnitEnum, OrderTypeEnum, PositionActionEnum, TpSlTypeEnum } from '../../type'
+import { AmountUnitEnum, PositionActionEnum, TpSlTypeEnum } from '../../type'
 import { OrderType } from '@myx-trade/sdk'
 
 export interface TradePanelStore {
@@ -93,6 +93,12 @@ export interface TradePanelStore {
    */
   tpSlSlippage: number
   setTpSlSlippage: (tpSlSlippage: number) => void
+
+  /**
+   * chain id
+   */
+  receiveDialogOpen: boolean
+  setReceiveDialogOpen: (receiveDialogOpen: boolean) => void
 }
 
 export const useTradePanelStore = create<TradePanelStore>((set) => ({
@@ -137,4 +143,6 @@ export const useTradePanelStore = create<TradePanelStore>((set) => ({
   setClosePositionSlippage: (closePositionSlippage: number) => set({ closePositionSlippage }),
   tpSlSlippage: 0,
   setTpSlSlippage: (tpSlSlippage: number) => set({ tpSlSlippage }),
+  receiveDialogOpen: false,
+  setReceiveDialogOpen: (receiveDialogOpen: boolean) => set({ receiveDialogOpen }),
 }))

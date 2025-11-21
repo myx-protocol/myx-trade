@@ -1,9 +1,8 @@
 import { Table } from '@/components/UI/Table'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
-import { EditIcon } from '@/components/UI/Icon'
-import { InfoButton } from '@/components/UI/Button'
-import { Trans } from '@lingui/react/macro'
+// import { InfoButton } from '@/components/UI/Button'
+// import { Trans } from '@lingui/react/macro'
 import { AdjustMarginDialog } from '@/components/Trade/Dialog/AdjustMargin'
 import { DirectionEnum } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
@@ -14,23 +13,144 @@ import { formatNumber } from '@/utils/number'
 import { MarketClosePositionButton } from '../MarketClosePositionButton'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
+import { TpSlButton } from '@/components/Trade/Dialog/TPSL'
+import { useGetFundingFee } from '@/hooks/calculate/use-get-fundingfee'
+import useSWR from 'swr'
+import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
+import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
+
+const RenderLiqPrice = ({ position, marketPrice }: { position: any; marketPrice: string }) => {
+  const { getLiqPrice } = useGetLiqPrice({ poolId: position.poolId, chainId: position.chainId })
+  const { poolConfig } = useGetPoolConfig(position.poolId, position.chainId)
+
+  const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
+  const { data: liqPrice } = useSWR(
+    `getLiqPrice-${position.positionId}`,
+    async () => {
+      const rs = await getLiqPrice({
+        entryPrice: position.entryPrice,
+        collateralAmount: position.collateralAmount,
+        size: position.size,
+        price: marketPrice,
+        assetClass: assetClass,
+        fundingRateIndexEntry: position.fundingRateIndex,
+        direction: position.direction,
+        maintainMarginRate: poolConfig?.levelConfig?.maintainCollateralRate.toString() ?? '0',
+      })
+
+      return rs
+    },
+    {
+      refreshInterval: 10000,
+    },
+  )
+  return (
+    <>
+      <p className="text-[12px] text-[#F29D39]">
+        {parseBigNumber(liqPrice ?? '0').eq(0)
+          ? '--'
+          : formatNumber(liqPrice ?? '0', { showUnit: false })}
+      </p>
+      <p className="text-[12px] text-[white]">
+        {parseBigNumber(position?.earlyClosePrice ?? '0').eq(0)
+          ? '--'
+          : formatNumber(position?.earlyClosePrice ?? 0, { showUnit: false })}
+      </p>
+    </>
+  )
+}
+
+const RenderFundingFee = ({ position }: { position: any }) => {
+  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
+
+  const { data: fundingFee } = useSWR(
+    `getFundingFee-${position.positionId}`,
+    async () => {
+      const rs = await getFundingFee(position.fundingRateIndex, position.size, position.direction)
+
+      return rs
+    },
+    {
+      refreshInterval: 10000,
+    },
+  )
+
+  return (
+    <div
+      className="text-[12px]"
+      style={{ color: parseBigNumber(fundingFee ?? '0').gt(0) ? '#00E3A5' : '#EC605A' }}
+    >
+      {formatNumber(fundingFee ?? '0')} {position.quoteSymbol}
+    </div>
+  )
+}
+
+const RenderMarginRadio = ({ position, marketPrice }: { position: any; marketPrice: string }) => {
+  let pnl
+  if (position.direction === DirectionEnum.Long) {
+    pnl =
+      parseBigNumber(marketPrice)
+        .minus(parseBigNumber(position.entryPrice))
+        .mul(parseBigNumber(position.size)) ?? '0'
+  } else {
+    pnl =
+      parseBigNumber(position.entryPrice)
+        .minus(parseBigNumber(marketPrice))
+        .mul(parseBigNumber(position.size)) ?? '0'
+  }
+
+  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
+  const { getTradingFee } = useGetTradingFee()
+  const { poolConfig } = useGetPoolConfig(position.poolId, position.chainId)
+
+  const { data: marginRadio } = useSWR(
+    `get_margin_radio_${position.positionId}`,
+    async () => {
+      const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
+      const fundingFee = getFundingFee(position.fundingRateIndex, position.size, position.direction)
+      const tradingFee = await getTradingFee({
+        size: position.size,
+        price: marketPrice,
+        assetClass,
+      })
+      const positionValue = parseBigNumber(position.size).mul(position.entryPrice).mul(0.01)
+      const collateralAmount = parseBigNumber(position.collateralAmount)
+        .plus(pnl)
+        .plus(parseBigNumber(fundingFee))
+        .minus(parseBigNumber(tradingFee ?? '0'))
+
+      const ratio = positionValue.div(collateralAmount)
+
+      return ratio.mul(100).toFixed(2) ?? '0'
+    },
+    {
+      refreshInterval: 10000,
+    },
+  )
+  // Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized PNL + Pending Funding Fee - Close Position Fee)
+
+  return <p className="text-[12px] text-[white]">{marginRadio ?? '0'}%</p>
+}
 
 export const Position = () => {
-  const { oraclePriceData } = useMarketStore()
+  const { tickerData } = useMarketStore()
   const { symbolInfo } = useTradePageStore()
   const positionList = useGetPositionList()
+  const { isWrongNetwork } = useWalletConnection()
 
   return (
     <>
-      <AdjustMarginDialog />
       <Table
-        emptyText={<TableNoData />}
+        height={500}
+        emptyText={isWrongNetwork ? <TableWongNetwork /> : <TableNoData />}
         columns={[
           {
             title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`Symbol`}</span>,
             key: 'symbol',
             align: 'left',
-            width: '100px',
             minWidth: '100px',
             fixed: 'left',
             render: (_: string, record: any) => {
@@ -109,7 +229,7 @@ export const Position = () => {
             key: 'Entry',
             align: 'left',
             render: (_, record: any) => {
-              const priceInfo = oraclePriceData[record.poolId]
+              const priceInfo = tickerData[record.poolId]
               return (
                 <div className="text-[12px]">
                   <div className="flex flex-col items-center items-start gap-[4px]">
@@ -133,7 +253,7 @@ export const Position = () => {
                   <span className="cursor-pointer text-[12px] leading-[12px] text-[#9397a3] underline decoration-dotted underline-offset-[2px]">{t`Margin`}</span>
                 </Tooltips>
                 <Tooltips
-                  title={t`Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)`}
+                  title={t`Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized PNL + Pending Funding Fee - Close Position Fee)`}
                 >
                   <span className="mt-[2px] cursor-pointer text-[12px] leading-[12px] text-[#9397a3] underline decoration-dotted underline-offset-[2px]">{t`Ratio`}</span>
                 </Tooltips>
@@ -141,16 +261,20 @@ export const Position = () => {
             ),
             key: 'Margin',
             align: 'left',
+            width: '200px',
             render: (_, record: any) => {
+              const marketPrice = tickerData[record.poolId]?.price.toString() ?? '0'
+
               return (
                 <div className="justify-flex flex items-center text-[12px]">
                   <div className="flex flex-col items-center items-start gap-[4px]">
                     <p className="text-[12px] text-[white]">
-                      {record.collateralAmount} {record.quoteSymbol}
+                      {formatNumber(record.collateralAmount, { showUnit: false })}{' '}
+                      {record.quoteSymbol}
                     </p>
-                    <p className="text-[12px] text-[white]">3.33%</p>
+                    <RenderMarginRadio position={record} marketPrice={marketPrice} />
                   </div>
-                  <EditIcon />
+                  <AdjustMarginDialog position={record} />
                 </div>
               )
             },
@@ -170,8 +294,9 @@ export const Position = () => {
             ),
             key: 'unPnl',
             align: 'left',
+            width: '200px',
             render: (_, record: any) => {
-              const marketPrice = oraclePriceData[record.poolId]?.price ?? 0
+              const marketPrice = tickerData[record.poolId]?.price ?? 0
               let pnl
               if (record.direction === DirectionEnum.Long) {
                 pnl =
@@ -186,6 +311,7 @@ export const Position = () => {
               }
               const rate =
                 pnl.div(parseBigNumber(record.collateralAmount)).mul(100).toFixed(2) ?? '0'
+
               return (
                 <div className="flex flex-col items-center items-start gap-[4px]">
                   <p
@@ -220,13 +346,19 @@ export const Position = () => {
               </div>
             ),
             key: 'Liq',
+            width: '200px',
             align: 'left',
-            render: () => (
-              <div className="flex flex-col items-center items-start gap-[4px]">
-                <p className="text-[12px] text-[#F29D39]">98,765.43</p>
-                <p className="text-[12px] text-[white]">98,765.43</p>
-              </div>
-            ),
+            render: (_, record: any) => {
+              const priceInfo = tickerData[record.poolId]
+              return (
+                <div className="flex flex-col items-center items-start gap-[4px]">
+                  <RenderLiqPrice
+                    position={record}
+                    marketPrice={priceInfo?.price.toString() ?? '0'}
+                  />
+                </div>
+              )
+            },
           },
           {
             title: (
@@ -240,17 +372,16 @@ export const Position = () => {
             ),
             key: 'Funding Fee',
             align: 'left',
-            render: () => <div className="text-[12px]">-2.34 USDC</div>,
+            width: '200px',
+            render: (_: string, record: any) => <RenderFundingFee position={record} />,
           },
           {
             title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`TP/SL`}</span>,
             key: 'TP/SL',
             align: 'left',
-            render: () => (
+            render: (_, record: any) => (
               <div className="text-[12px]">
-                <InfoButton onClick={() => {}}>
-                  +<Trans>Add</Trans>
-                </InfoButton>
+                <TpSlButton position={record} />
               </div>
             ),
           },
@@ -264,17 +395,14 @@ export const Position = () => {
             align: 'right',
             fixed: 'right',
             render: (_, record: any) => {
-              const priceInfo = oraclePriceData[record.poolId]
+              const priceInfo = tickerData[record.poolId]
               return (
                 <div className="flex items-center justify-end gap-[4px]">
                   <MarketClosePositionButton
                     position={record}
-                    marketPrice={priceInfo?.price ?? 0}
+                    marketPrice={priceInfo?.price.toString() ?? '0'}
                     symbolInfo={symbolInfo}
                   />
-                  {/* <InfoButton onClick={() => { }}>
-                    <Trans>Close</Trans>
-                  </InfoButton> */}
                 </div>
               )
             },

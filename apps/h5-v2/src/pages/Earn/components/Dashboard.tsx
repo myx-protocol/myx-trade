@@ -146,7 +146,7 @@ export const Dashboard = () => {
     },
     {
       key: 'apr',
-      label: <Trans>ARP</Trans>,
+      label: <Trans>APR</Trans>,
       align: 'right',
       render: (row: Vault) => {
         return (
