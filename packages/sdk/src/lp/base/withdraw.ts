@@ -2,7 +2,6 @@ import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
 import {parseUnits } from "ethers";
 import { WithdrawParams } from "@/lp/type";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
 import { getPoolInfo } from "@/lp/getPoolInfo";
 import { previewBaseAmountOut } from "@/lp/base/preview";
@@ -14,7 +13,7 @@ import {
 import { MarketPoolState, OracleType } from "@/api";
 import { BigNumberish, type BytesLike, Typed } from "ethers/lib.esm";
 import { getPriceData } from "@/common/price";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getErrorTextFormError } from "@/config/error";
 
 export const withdraw = async (
@@ -28,7 +27,7 @@ export const withdraw = async (
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
-    const decimals = Market[chainId as keyof typeof Market].lpDecimals;
+    const decimals = COMMON_LP_AMOUNT_DECIMALS;
     
     await checkParams ({
       tokenAddress: lpAddress,

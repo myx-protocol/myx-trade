@@ -10,14 +10,13 @@ import { getOracleFee } from "@/lp/market";
 import { getMarketInfo } from "./get";
 import { formatUnits } from "ethers";
 
-export const reprime = async (chainId: ChainId, poolId: string) => {
+export const reprime = async (chainId: ChainId, poolId: string, marketId:string) => {
   try {
     await checkParams({chainId})
     const pool = await getPoolInfo(chainId, poolId);
     if (!pool) {
       throw new Error(Errors[ErrorCode.Invalid_Params])
     }
-    const marketId= getMarketInfo (chainId);
     const account = await getAccount (chainId);
     const _amount = await getOracleFee(chainId, marketId);
     
