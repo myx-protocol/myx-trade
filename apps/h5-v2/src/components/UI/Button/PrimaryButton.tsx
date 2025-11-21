@@ -39,6 +39,7 @@ const PrimaryButton = ({
     textTransform: 'none',
     whiteSpace: 'nowrap',
     position: 'relative',
+    lineHeight: 1,
 
     '&:hover': {
       backgroundImage: simple

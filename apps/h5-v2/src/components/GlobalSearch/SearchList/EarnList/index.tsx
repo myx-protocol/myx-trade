@@ -5,16 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { SearchResultEarnItem } from '@myx-trade/sdk'
 import { SearchListLoading } from '../Loading'
-import {
-  useDebounceFn,
-  useMount,
-  useThrottleFn,
-  useUnmount,
-  useUpdateEffect,
-  useVirtualList,
-} from 'ahooks'
+import { useVirtualList } from 'ahooks'
 import { EarnListDataRow } from './DataRow'
-import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 
 export const EarnList = () => {
   const { searchResult, searchLoading, close } = useGlobalSearchStore()

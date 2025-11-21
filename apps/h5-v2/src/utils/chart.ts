@@ -12,6 +12,7 @@ import { BarChart, LineChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 
+type AxisExtent = { min: number; max: number }
 echarts.use([
   GridComponent,
   GraphicComponent,
@@ -35,7 +36,7 @@ export const formatter = (interval: ChartInterval, params: any[]) => {
                      .utc()
                      .format(`YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''))}</p>
                    <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${i18n._(
-                     t`Exchange Rate`,
+                     t`Price`,
                    )} <span style="color: white">${formatNumberPrecision(data, COMMON_BASE_DISPLAY_DECIMALS)}
                   </span></p>
                 </div>`
@@ -58,8 +59,8 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       // boundaryGap: [0, '100%'],
       show: false,
       splitLine: { show: false },
-      min: 'dataMin',
-      max: 'dataMax',
+      min: (value: AxisExtent) => (Math.floor((value.min * 1000) / 10) * 10) / 1000,
+      max: (value: AxisExtent) => (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
     },
     tooltip: {
       trigger: 'axis',

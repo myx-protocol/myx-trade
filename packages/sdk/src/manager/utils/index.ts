@@ -196,9 +196,7 @@ export class Utils {
 
   async getUserTradingFeeRate(assetClass: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const brokerAddress = getContractAddressByChainId(
-      config.chainId
-    ).BROKER;
+    const brokerAddress = config.brokerAddress;
     const brokerContract = new ethers.Contract(
       brokerAddress,
       Broker_ABI,

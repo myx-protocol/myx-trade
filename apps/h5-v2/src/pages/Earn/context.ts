@@ -17,6 +17,7 @@ export interface PoolContextValue {
   poolId: string
   price?: string
   quoteLpDetail?: QuoteLpDetail
+  refetch: () => void
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
 

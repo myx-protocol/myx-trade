@@ -19,7 +19,7 @@ enum PriceChangeMode {
  * cache price value and mode
  */
 
-export const Price = ({ value, showUnit = false, decimals = 2 }: PriceProps) => {
+export const Price = ({ value, showUnit = false, decimals }: PriceProps) => {
   const priceValueRef = useRef<BigSource>(value)
   const modeRef = useRef<PriceChangeMode>(PriceChangeMode.None)
   useEffect(() => {
@@ -30,7 +30,7 @@ export const Price = ({ value, showUnit = false, decimals = 2 }: PriceProps) => 
     } else {
       modeRef.current = PriceChangeMode.Fall
     }
-    priceValueRef.current = Big(value).toNumber()
+    priceValueRef.current = value
   }, [value])
   return (
     <span
@@ -39,7 +39,7 @@ export const Price = ({ value, showUnit = false, decimals = 2 }: PriceProps) => 
         'text-fall': modeRef.current === PriceChangeMode.Fall,
       })}
     >
-      {formatNumber(Big(value).toNumber(), {
+      {formatNumber(value, {
         showUnit,
         decimals,
       })}

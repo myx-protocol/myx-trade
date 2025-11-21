@@ -13,17 +13,32 @@ import { OrderStatus } from '../OrderStatus'
 import { OrderType } from '../OrderType'
 import { TableNoData } from '../TableNoData'
 import { usePositionStore } from '@/store/position/createStore'
+import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
+import { useEffect } from 'react'
+import { tradePubSub } from '@/utils/pubsub'
+import { parseBigNumber } from '@/utils/bn'
 
 export const OrderHistory = () => {
   const { client } = useMyxSdkClient()
   const { symbolInfo } = useTradePageStore()
-  const { isWalletConnected, address } = useWalletConnection()
+  const { isWalletConnected, address, isWrongNetwork } = useWalletConnection()
   const { selectChainId, hideOthersSymbols } = usePositionStore()
-
-  const { data: orderHistory } = useQuery({
-    queryKey: ['orderHistory', symbolInfo?.poolId, address, selectChainId, hideOthersSymbols],
+  const { data: orderHistory, refetch } = useQuery({
+    queryKey: [
+      'orderHistory',
+      symbolInfo?.poolId,
+      address,
+      selectChainId,
+      hideOthersSymbols,
+      isWrongNetwork,
+    ],
     enabled: Boolean(
-      isWalletConnected && address && symbolInfo?.poolId && symbolInfo?.chainId && !!client,
+      isWalletConnected &&
+        address &&
+        symbolInfo?.poolId &&
+        symbolInfo?.chainId &&
+        !!client &&
+        !isWrongNetwork,
     ),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
@@ -34,9 +49,20 @@ export const OrderHistory = () => {
       return res.data
     },
   })
+
+  useEffect(() => {
+    const onRefresh = () => {
+      refetch()
+    }
+    tradePubSub.on('place:order:success', onRefresh)
+    return () => {
+      tradePubSub.off('place:order:success', onRefresh)
+    }
+  }, [])
   return (
     <Table<HistoryOrderItem>
-      emptyText={<TableNoData />}
+      height={500}
+      emptyText={isWrongNetwork ? <TableWongNetwork /> : <TableNoData />}
       columns={[
         {
           title: <span className="text-[12px] leading-[12px] text-[#9397a3]">{t`时间`}</span>,
@@ -99,9 +125,11 @@ export const OrderHistory = () => {
             <div className="text-[12px]">
               <div className="flex flex-col items-center items-start gap-[4px]">
                 <p className="text-[12px] text-[white]">
-                  {formatNumber(record.lastPrice, {
-                    showUnit: false,
-                  })}
+                  {parseBigNumber(record.lastPrice).eq(0)
+                    ? '--'
+                    : formatNumber(record.lastPrice, {
+                        showUnit: false,
+                      })}
                 </p>
               </div>
             </div>
@@ -123,9 +151,11 @@ export const OrderHistory = () => {
           render: (_, record) => (
             <div className="justify-flex flex items-center text-[12px]">
               <div className="flex flex-col items-center items-start gap-[4px]">
-                {formatNumber(record.price, {
-                  showUnit: false,
-                })}
+                {parseBigNumber(record.price).eq(0)
+                  ? '--'
+                  : formatNumber(record.price, {
+                      showUnit: false,
+                    })}
               </div>
             </div>
           ),
@@ -146,9 +176,11 @@ export const OrderHistory = () => {
           render: (_, record) => (
             <div className="">
               <span>
-                {formatNumber(record.size, {
-                  showUnit: false,
-                })}
+                {parseBigNumber(record.size).eq(0)
+                  ? '--'
+                  : formatNumber(record.size, {
+                      showUnit: false,
+                    })}
               </span>
               <span className="ml-[2px]">{record.baseSymbol}</span>
             </div>
@@ -170,9 +202,11 @@ export const OrderHistory = () => {
           render: (_, record) => (
             <div className="">
               <span>
-                {formatNumber(record.filledSize, {
-                  showUnit: false,
-                })}
+                {parseBigNumber(record.filledSize).eq(0)
+                  ? '--'
+                  : formatNumber(record.filledSize, {
+                      showUnit: false,
+                    })}
               </span>
               <span className="ml-[2px]">{record.baseSymbol}</span>
             </div>
@@ -185,9 +219,11 @@ export const OrderHistory = () => {
           width: '100px',
           render: (_, record) => (
             <div className="text-[12px]">
-              {formatNumber(record.tradingFee, {
-                showUnit: false,
-              })}
+              {parseBigNumber(record.tradingFee).eq(0)
+                ? '--'
+                : formatNumber(record.tradingFee, {
+                    showUnit: false,
+                  })}
             </div>
           ),
         },

@@ -16,6 +16,8 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { parseBigNumber } from '@/utils/bn'
 import usdcIcon from '@/assets/icon/chainIcon/usdc.svg'
 import usdtIcon from '@/assets/icon/chainIcon/usdt.svg'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { useBoolean } from 'ahooks'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -40,9 +42,22 @@ export const TransferDialogButton = () => {
     return ethers.formatUnits(accountPoolAssets.freeAmount, symbolInfo?.quoteDecimals ?? 6)
   }, [accountPoolAssets.freeAmount, symbolInfo?.quoteDecimals])
 
+  const { checkWalletChainId } = useWalletChainCheck()
+
+  const [isSwitchNetwork, { setTrue: setIsSwitchNetworkTrue, setFalse: setIsSwitchNetworkFalse }] =
+    useBoolean(false)
+  const handleTransfer = async () => {
+    if (!symbolInfo?.chainId) return
+    setIsSwitchNetworkTrue()
+    checkWalletChainId(symbolInfo.chainId).then(() => {
+      setIsSwitchNetworkFalse()
+      setOpen(true)
+    })
+  }
+
   return (
     <>
-      <InfoButton className="w-full" onClick={() => setOpen(true)}>
+      <InfoButton className="w-full" onClick={handleTransfer} loading={isSwitchNetwork}>
         <Trans>Transfer</Trans>
       </InfoButton>
       {open && (

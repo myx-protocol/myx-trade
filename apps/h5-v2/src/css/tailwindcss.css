@@ -48,6 +48,10 @@
   .rounded-full {
     @apply rounded-[99999px];
   }
+
+  :root {
+    @apply text-[14px] leading-[1] font-normal text-white;
+  }
 }
 
 :root {
@@ -65,15 +69,17 @@
   --placeholder-text: #4d515c;
   --darker-text: #101114;
   --sell-text: #ec605a;
-  --sell-border: #F66276;
+  --sell-border: #f66276;
   --warning-color: #f29d39;
   --brand-gradient: linear-gradient(117deg, var(--green-yellow) 16.86%, #00e5a7 83.14%);
   --border-input-r: 8px;
   --brand-10: rgba(0, 227, 165, 0.1);
   --warning-10: rgba(242, 157, 57, 0.1);
-  --brand-deep-gradient: linear-gradient(95deg, #3D996B 0%, #00996F 18.58%);
-  --sell-gradient: linear-gradient(275deg, #C23749 3.47%, #BA4C47 99.82%);
-  --light-bg: #2D3138;
+  --brand-deep-gradient: linear-gradient(95deg, #3d996b 0%, #00996f 18.58%);
+  --sell-gradient: linear-gradient(275deg, #c23749 3.47%, #ba4c47 99.82%);
+  --light-bg: #2d3138;
+
+  --tabbar-height: 60px;
 }
 
 /*Button {

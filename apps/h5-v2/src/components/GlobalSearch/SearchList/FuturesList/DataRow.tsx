@@ -9,8 +9,9 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { tradePubSub } from '@/utils/pubsub'
-import { useInViewport, useMount } from 'ahooks'
+import { useMount } from 'ahooks'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { Price } from '@/components/Price'
 
 interface FuturesListDataRowProps {
   item: SearchResultContractItem
@@ -96,9 +97,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
       </div>
       <div className="flex w-[103px] flex-col items-center items-end text-right text-[14px] font-medium text-white">
         <p>
-          {formatNumber(tickerData?.price || item.basePrice, {
-            showUnit: false,
-          })}
+          <Price value={tickerData?.price || item.basePrice} showUnit={false} decimals={2} />
         </p>
         <p className="mt-[6px] text-[12px]">
           <RiseFallTextPrecent value={tickerData?.change || item.priceChange} />

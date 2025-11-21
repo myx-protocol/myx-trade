@@ -10,7 +10,7 @@ export const LatestPrice = () => {
     <div className="ml-[40px] min-w-[90px] leading-[1]">
       {/* price */}
       <p className="text-[16px] font-bold">
-        <Price value={tickerData?.price || 0} showUnit={false} decimals={2} />
+        <Price value={tickerData?.price || 0} showUnit={false} />
       </p>
       {/* change */}
       <p className="mt-[4px] text-[12px] font-medium text-white">

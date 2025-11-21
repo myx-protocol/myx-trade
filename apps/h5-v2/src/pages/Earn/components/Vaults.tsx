@@ -11,31 +11,40 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { Trans } from '@lingui/react/macro'
 import { Next, Prev, SortIcon } from '@/components/Icon'
-import type { Token } from '@/pages/Cook/type.ts'
+import { type Token } from '@/pages/Cook/type.ts'
 import { Copy } from '@/components/Copy.tsx'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getQuoteLpList } from '@/request'
 import { getTimeDiff } from '@/utils/date.ts'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { encryptionAddress } from '@/utils'
 import { useNavigate } from 'react-router-dom'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { formatNumber } from '@/utils/number'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { TradeSide } from '@/pages/Earn/components/Trade/Context.ts'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import EmptyPng from '@/assets/images/common/empty.png'
 import { t } from '@lingui/core/macro'
-import type { PriceMapType, Trench } from '@/request/lp/type.ts'
+import type { PriceMapType, QuotePool } from '@/request/lp/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
-import { quote as Quote, COMMON_PRICE_DECIMALS, formatUnits, getBalanceOf } from '@myx-trade/sdk'
-import type { Address } from '@/request/type.ts'
+import {
+  COMMON_PRICE_DECIMALS,
+  formatUnits,
+  getBalanceOf,
+  Market,
+  quote as Quote,
+} from '@myx-trade/sdk'
 import { SearchContext } from '@/pages/Earn/context.ts'
+import { useAccessToken } from '@/hooks/useAccessToken.ts'
+import { type Address, PageDirection } from '@/request/type.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { calculationPnl } from '@/utils/pnl.ts'
+import { Price } from '@/components/Price'
+import { encodeSortValue } from '@/utils/sort.ts'
 
 interface Vault {
   name: string
@@ -51,7 +60,20 @@ interface Vault {
   time: number
   poolId: string
   id: number
+  sortValue: any
+  idx: number
+  quotePoolToken: string
+  avgLpPrice: string
 }
+
+enum SortField {
+  apr = 'quoteApr',
+  tvl = 'quoteTvl',
+  time = 'tokenCreateTime',
+  deposits = 'deposit',
+  pnl = 'pnl',
+}
+
 const StyledTableContainer = styled(TableContainer)(() => ({
   backgroundColor: 'var(--deep-bg)',
   borderRadius: '12px',
@@ -149,47 +171,56 @@ const TableLoading = () => {
 
 export const Vaults = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { accessToken } = useAccessToken()
+  const { address: account } = useWalletConnection()
   const { chainId, interval } = useContext(SearchContext)
+  const [orderBy, setOrderBy] = useState<SortField>(SortField.tvl)
+  const [order, setOrder] = useState<'asc' | 'desc' | undefined>(undefined)
+  const [before, setBefore] = useState<string | undefined>(undefined)
+  const [after, setAfter] = useState<string | undefined>(undefined)
 
-  const [orderBy, setOrderBy] = useState<keyof Vault>('name')
-  const [order, setOrder] = useState<'asc' | 'desc' | ''>('')
-  const [accessToken, setAccessToken] = useState<string>()
-
-  const [before, setBefore] = useState<Trench['id'] | undefined>(undefined)
-  const [after, setAfter] = useState<Trench['id'] | undefined>(undefined)
-
-  const handleSort = (property: keyof Vault) => {
+  const handleSort = (property: SortField) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
   }
-  const getAccessToken = async () => {
-    const accessToken = await client?.getConfigManager()?.getAccessToken()
-    if (accessToken) {
-      setAccessToken(accessToken)
+  const getSortValue = (item: QuotePool, sort: SortField) => {
+    switch (sort) {
+      case SortField.apr:
+        return item.apr
+      case SortField.time:
+        return item.tokenCreateTime
+      default:
+        return item.tvl
     }
   }
 
-  useEffect(() => {
-    if (client && clientIsAuthenticated) {
-      getAccessToken().then()
-    }
-  }, [client, clientIsAuthenticated])
-
   const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
-    queryKey: [{ key: 'quotePoolList' }, accessToken, chainId, interval],
+    queryKey: [
+      { key: 'quotePoolList' },
+      accessToken,
+      chainId,
+      interval,
+      before,
+      after,
+      orderBy,
+      order,
+    ],
     enabled: !!accessToken,
     queryFn: async () => {
       if (!accessToken) return { data: [], hasNextPage: false, hasPrevPage: false }
       const limit = DEFAULT_LIMIT
       const paginatedLimit = limit + 1
+      const sortField =
+        orderBy === SortField.deposits || orderBy === SortField.pnl ? SortField.tvl : orderBy
       const result = await getQuoteLpList(accessToken, {
         timeInterval: interval,
         chainId: chainId,
+        sortField,
+        sortOrder: order,
         limit: paginatedLimit,
-        before: before,
-        after: after,
+        direction: after ? PageDirection.Next : before ? PageDirection.Prev : undefined,
+        cursor: after || before,
       })
 
       let hasNextPage = true
@@ -208,9 +239,8 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
           hasPrevPage = false
         }
       }
-      console.log('result', result)
       return {
-        data: (limit ? result.data.slice(0, limit) : result.data).map((quote) => {
+        data: (limit ? result.data.slice(0, limit) : result.data).map((quote, index) => {
           return {
             name: quote.symbolName,
             symbol: quote.mQuoteBaseSymbol,
@@ -225,7 +255,10 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
             chainId: quote.chainId,
             poolId: quote.poolId,
             id: quote.id,
-            // quoteLpToken: quote.quoteLpToken,
+            idx: index,
+            quotePoolToken: quote.quotePoolToken,
+            avgLpPrice: quote.avgLpPrice,
+            sortValue: getSortValue(quote, sortField),
           } as Vault
         }),
         hasNextPage,
@@ -235,11 +268,16 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
   })
 
   const priceQueryParams = useMemo(() => {
-    return (data.data || []).map((item) => ({ poolId: item.poolId, chainId: item.chainId }))
+    return (data.data || []).map((item) => ({
+      poolId: item.poolId,
+      chainId: item.chainId,
+      idx: item.idx,
+      quotePoolToken: item.quotePoolToken,
+    }))
   }, [data.data])
 
   const { data: priceMap } = useQuery({
-    queryKey: [{ key: 'getVaultsLpAssetBalance' }, priceQueryParams],
+    queryKey: [{ key: 'getVaultsLpAssetPrice' }, priceQueryParams],
     enabled: !!priceQueryParams.length,
     queryFn: async () => {
       if (!priceQueryParams.length) return {} as PriceMapType
@@ -272,71 +310,97 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
     },
     refetchInterval: 5000,
   })
-  /*
+
   const { data: depositMap } = useQuery({
-    queryKey: [{ key: 'getVaultsLpDeposit' }, priceQueryParams,],
+    queryKey: [{ key: 'getVaultsLpDeposit' }, priceQueryParams, account],
     enabled: !!priceQueryParams.length,
     queryFn: async () => {
       if (!priceQueryParams.length) return {} as PriceMapType
       const result = await Promise.all(
         priceQueryParams.map(async (item) => {
-          let _price = ''
+          let balance = ''
           try {
-            const bigintBalance = await getBalanceOf(item.chainId, account as Address, item?.basePoolToken)
-            const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
-            if (rs) {
-              _price = formatUnits(rs, COMMON_PRICE_DECIMALS)
-            }
+            const bigintBalance = await getBalanceOf(
+              item.chainId,
+              account as Address,
+              item?.quotePoolToken,
+            )
+            balance = formatUnits(bigintBalance, Market[item.chainId].lpDecimals)
+            console.log(balance)
           } catch (_e) {
             console.error(_e)
           }
           return {
+            idx: item.idx,
             poolId: item.poolId,
             chainId: item.chainId,
-            price: _price,
+            balance: balance,
           }
         }),
       )
-      
+
       const map = (result || []).reduce((acc, cur) => {
         return {
           ...acc,
-          [cur.poolId]: cur.price,
+          [cur.poolId]: cur.balance,
         }
       }, {} as PriceMapType)
       return map
     },
-    refetchInterval: 5000,
+    // refetchInterval: 5000,
   })
-  */
+
+  const pnlMap: Record<string, string> = useMemo(() => {
+    if (!data?.data?.length) return {}
+    return (data.data || [])
+      .map((item) => {
+        const price = priceMap?.[item.poolId]
+        const avgPrice = item.avgLpPrice
+        const lastTotal = depositMap?.[item.poolId]
+
+        return {
+          poolId: item.poolId,
+          pnl: price && avgPrice && lastTotal ? calculationPnl(price, avgPrice, lastTotal) : '',
+        }
+      })
+      .reduce((acc, cur) => {
+        return {
+          ...acc,
+          [cur.poolId]: cur.pnl,
+        }
+      }, {})
+  }, [data.data, priceMap, depositMap])
   const sortedRows = useMemo(() => {
+    if (!(orderBy === SortField.deposits || orderBy === SortField.pnl)) {
+      return data.data
+    }
     return [...data.data].sort((a, b) => {
-      const valA = orderBy === 'name' ? a.symbol : Number(a[orderBy])
-      const valB = orderBy === 'name' ? b.symbol : Number(b[orderBy])
+      const valA = orderBy === SortField.deposits ? depositMap?.[a.poolId] : pnlMap?.[a.poolId]
+      const valB = orderBy === SortField.deposits ? depositMap?.[b.poolId] : pnlMap?.[b.poolId]
 
       if (typeof valA === 'string' && typeof valB === 'string') {
         const result = valA.localeCompare(valB, 'en', { sensitivity: 'base' })
         return order === 'asc' ? result : -result
       }
 
-      if (valA < valB) return order === 'asc' ? -1 : 1
-      if (valA > valB) return order === 'asc' ? 1 : -1
+      if (valA && valB && valA < valB) return order === 'asc' ? -1 : 1
+      if (valA && valB && valA > valB) return order === 'asc' ? 1 : -1
       return 0
     })
-  }, [data, orderBy, order])
+  }, [data, orderBy, order, depositMap])
 
   return (
     <StyledTableContainer className={`${className}`}>
-      <Table stickyHeader>
+      <Table stickyHeader className={'w-full table-fixed'}>
         <TableHead>
           <TableRow>
-            <StyledTableCell>
-              <TableSortLabel onClick={() => handleSort('name')} hideSortIcon>
+            <StyledTableCell className={'w-1/6 overflow-hidden'}>
+              <TableSortLabel onClick={() => handleSort(SortField.time)} hideSortIcon>
                 <span className="text-third flex items-center gap-1">
                   <Trans>Vault</Trans>
                   <SortIcon
                     className={`text-third transition-color ${
-                      orderBy === 'name' && order ? order : ''
+                      orderBy === SortField.time && order ? order : ''
                     }`}
                     size={10}
                   />
@@ -344,13 +408,13 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               </TableSortLabel>
             </StyledTableCell>
 
-            <StyledTableCell align={'right'}>
-              <TableSortLabel onClick={() => handleSort('apr')} hideSortIcon>
+            <StyledTableCell align={'right'} className={'w-1/6 overflow-hidden'}>
+              <TableSortLabel onClick={() => handleSort(SortField.apr)} hideSortIcon>
                 <span className="text-third flex items-center gap-1">
                   <Trans>APR</Trans>
                   <SortIcon
                     className={`text-third transition-color ${
-                      orderBy === 'apr' && order ? order : ''
+                      orderBy === SortField.apr && order ? order : ''
                     }`}
                     size={10}
                   />
@@ -358,13 +422,13 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               </TableSortLabel>
             </StyledTableCell>
 
-            <StyledTableCell align={'right'}>
-              <TableSortLabel onClick={() => handleSort('tvl')} hideSortIcon>
+            <StyledTableCell align={'right'} className={'w-1/6 overflow-hidden'}>
+              <TableSortLabel onClick={() => handleSort(SortField.tvl)} hideSortIcon>
                 <span className="text-third flex items-center gap-1">
                   <Trans>TVL</Trans>
                   <SortIcon
                     className={`text-third transition-color ${
-                      orderBy === 'tvl' && order ? order : ''
+                      orderBy === SortField.tvl && order ? order : ''
                     }`}
                     size={10}
                   />
@@ -372,13 +436,13 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               </TableSortLabel>
             </StyledTableCell>
 
-            <StyledTableCell align={'right'}>
-              <TableSortLabel onClick={() => handleSort('deposits')} hideSortIcon>
+            <StyledTableCell align={'right'} className={'w-1/6 overflow-hidden'}>
+              <TableSortLabel onClick={() => handleSort(SortField.deposits)} hideSortIcon>
                 <span className="text-third flex items-center gap-1">
                   <Trans>My Deposits</Trans>
                   <SortIcon
                     className={`text-third transition-color ${
-                      orderBy === 'deposits' && order ? order : ''
+                      orderBy === SortField.deposits && order ? order : ''
                     }`}
                     size={10}
                   />
@@ -386,13 +450,13 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               </TableSortLabel>
             </StyledTableCell>
 
-            <StyledTableCell align={'right'}>
-              <TableSortLabel onClick={() => handleSort('pnl')} hideSortIcon>
+            <StyledTableCell align={'right'} className={'w-1/6 overflow-hidden'}>
+              <TableSortLabel onClick={() => handleSort(SortField.pnl)} hideSortIcon>
                 <span className="text-third flex items-center gap-1">
                   <Trans>My PnL</Trans>
                   <SortIcon
                     className={`text-third transition-color ${
-                      orderBy === 'pnl' && order ? order : ''
+                      orderBy === SortField.pnl && order ? order : ''
                     }`}
                     size={10}
                   />
@@ -400,7 +464,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               </TableSortLabel>
             </StyledTableCell>
 
-            <StyledTableCell align={'right'}>
+            <StyledTableCell align={'right'} className={'w-1/6 overflow-hidden'}>
               <Trans>Actions</Trans>
             </StyledTableCell>
           </TableRow>
@@ -439,12 +503,26 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
                     {row.tvl ? formatNumber(row.tvl) : '--'}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    {row.deposits
-                      ? formatNumberPrecision(row.deposits, COMMON_PRICE_DISPLAY_DECIMALS)
-                      : '--'}
+                    <span>
+                      $
+                      {formatNumberPrecision(
+                        depositMap?.[row?.poolId],
+                        COMMON_BASE_DISPLAY_DECIMALS,
+                      )}
+                    </span>
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    {row.pnl ? formatNumberPrecision(row.pnl, COMMON_PRICE_DISPLAY_DECIMALS) : '--'}
+                    <span
+                      className={
+                        Number(pnlMap?.[row.poolId]) > 0
+                          ? 'text-rise'
+                          : Number(pnlMap?.[row.poolId]) < 0
+                            ? 'text-fall'
+                            : ''
+                      }
+                    >
+                      ${formatNumberPrecision(pnlMap?.[row.poolId], COMMON_BASE_DISPLAY_DECIMALS)}
+                    </span>
                   </StyledTableCell>
                   <StyledTableCell align="right">
                     <Box className={'flex items-center justify-end gap-[12px]'}>
@@ -489,7 +567,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
                           onClick={() => {
                             if (isLoading || !data.hasPrevPage) return
 
-                            setBefore(() => data.data?.[0]?.id)
+                            setBefore(() => encodeSortValue(data.data?.[0]))
                             setAfter(() => undefined)
                           }}
                         />
@@ -504,7 +582,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
                             if (isLoading || !data.hasNextPage) return
 
                             setBefore(() => undefined)
-                            setAfter(() => data.data?.[data.data?.length - 1]?.id)
+                            setAfter(() => encodeSortValue(data.data?.[data.data?.length - 1]))
                           }}
                         />
                       </Box>

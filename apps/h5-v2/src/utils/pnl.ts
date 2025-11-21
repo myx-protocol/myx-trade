@@ -7,5 +7,7 @@ export const calculationPnl = (price: string, avgPrice: string, lastTotal: strin
   const _price = new Big(price)
   const quantity = new Big(lastTotal)
   const _avgPrice = new Big(avgPrice)
-  return _price.sub(_avgPrice).mul(quantity).toFixed(COMMON_PRICE_DISPLAY_DECIMALS)
+  const pnl = _price.sub(_avgPrice).mul(quantity).toString()
+  console.log(price, avgPrice, lastTotal, pnl)
+  return pnl
 }

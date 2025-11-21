@@ -4,21 +4,24 @@ import { useWalletConnection } from '../wallet/useWalletConnection'
 import { usePositionStore } from '@/store/position/createStore'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import useSWR from 'swr'
+import { useEffect } from 'react'
+import { tradePubSub } from '@/utils/pubsub'
 
 export const useGetPositionList = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
-  const { address } = useWalletConnection()
+  const { address, isWrongNetwork } = useWalletConnection()
   const { hideOthersSymbols } = usePositionStore()
   const { symbolInfo } = useTradePageStore()
 
-  const { data } = useSWR(
-    address && client && symbolInfo?.poolId && clientIsAuthenticated
+  const { data, mutate } = useSWR(
+    address && client && symbolInfo?.poolId && clientIsAuthenticated && !isWrongNetwork
       ? {
           key: 'get_position_list',
           address,
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
           clientIsAuthenticated,
+          isWrongNetwork,
         }
       : null,
     async () => {
@@ -34,6 +37,16 @@ export const useGetPositionList = () => {
       refreshInterval: 10000,
     },
   )
+
+  useEffect(() => {
+    const onRefresh = () => {
+      mutate()
+    }
+    tradePubSub.on('place:order:success', onRefresh)
+    return () => {
+      tradePubSub.off('place:order:success', onRefresh)
+    }
+  }, [])
 
   return data ?? []
 }

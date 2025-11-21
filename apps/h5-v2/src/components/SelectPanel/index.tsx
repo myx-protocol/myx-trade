@@ -78,6 +78,7 @@ export const SelectPanel = ({ maxCount = 3, value, options = [], onChange }: Sel
         {displayed.map((o) => {
           return (
             <Box
+              key={o.value}
               className={`cursor-pointer rounded-[6px] p-[6px] ${value === o?.value ? 'bg-base-bg text-white' : ''}`}
               onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                 e.stopPropagation()

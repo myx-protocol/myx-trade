@@ -5,7 +5,7 @@ import IconArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
 import IconHelp from '@/components/Icon/set/Help.tsx'
 import { OrderOptions } from '@/components/CookDetail/Order/OrderOptions'
 import { Box } from '@mui/material'
-import { SellButton } from '@/components/SellButton.tsx'
+import { SellButton } from '@/components/Button/SellButton.tsx'
 import { FormControlLabel } from '@/components/UI/FormControlLabel'
 import { CheckBox } from '@/components/UI/CheckBox'
 import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
@@ -28,6 +28,8 @@ import { toast } from 'react-hot-toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import { OrderTips } from '@/components/CookDetail/Order/OrderTips'
+import { Big } from 'big.js'
+import { TipsFill } from '@/components/Icon'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
@@ -91,10 +93,10 @@ export const Sell = () => {
   const trueBalance = useMemo(() => {
     if (retainGenesisLPShares) {
       if (isSafeNumber(balance) && isSafeNumber(userShareBase)) {
-        const _balance = Number(balance) - Number(userShareBase)
-        return _balance < 0 ? _balance : _balance
+        const _balance = new Big(balance || 0).minus(new Big(userShareBase || 0)).toString()
+        return Number(_balance) < 0 ? '0' : _balance
       }
-      return ''
+      return balance
     } else {
       return balance
     }
@@ -107,6 +109,15 @@ export const Sell = () => {
     }
     return false
   }, [trueBalance, amount])
+
+  const burned = useMemo(() => {
+    if (retainGenesisLPShares) return ''
+    if (isInsufficient) return ''
+    if (!amount || !balance || !userShareBase) return ''
+    const value = new Big(amount).minus(new Big(balance).minus(new Big(userShareBase))).toString()
+    console.log('value', value)
+    return value
+  }, [retainGenesisLPShares, balance, userShareBase, amount, isInsufficient])
 
   const onHandleMax = useCallback(() => {
     if (balance) {
@@ -277,9 +288,24 @@ export const Sell = () => {
           </p>
         </Box>
       )}
-      {/* todo 三种状态*/}
-      <OrderTips />
-      {/*todo 重新激活*/}
+
+      {burned && Number(burned) > 0 && (
+        <Box className={'border-base mt-[4px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>
+          <Box className={'text-third mt-[2px]'}>
+            <TipsFill size={14} />
+          </Box>
+          <p className={'text-regular text-[12px] leading-[1.5]'}>
+            <Trans>
+              This will burn{' '}
+              <span className={'text-warning'}>
+                {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
+              </span>{' '}
+              {baseLpDetail?.mBaseQuoteSymbol} and you will permanently forfeit the right to your{' '}
+              <span className={'text-warning'}>2%</span> share of trading fees.
+            </Trans>
+          </p>
+        </Box>
+      )}
       <Box className="mt-[12px] w-full">
         <SellButton
           variant="contained"

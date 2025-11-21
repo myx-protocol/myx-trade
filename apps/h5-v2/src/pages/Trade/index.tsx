@@ -2,15 +2,13 @@ import { CurrentMarket } from '@/components/Trade/CurrentMarket'
 import { Tables } from './components/Tables'
 import { Charts } from '@/components/Trade/Charts'
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
-import { TPSLDialog } from '@/components/Trade/Dialog/TPSL'
 import { TradePanel } from '@/components/Trade/TradePanel'
-import { useMount, useUpdateEffect } from 'ahooks'
+import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
 import { useCallback } from 'react'
-import { TpslPreviewDialog } from '@/components/Trade/Dialog/TPSL/TpslPreview'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
@@ -47,6 +45,10 @@ export const Trade = () => {
     getMarketDetail()
   }, [chainId, poolId, getMarketDetail])
 
+  useUnmount(() => {
+    setSymbolInfo(null)
+  })
+
   if (!chainId || !poolId) {
     return <Navigate to={DEFAULT_PAIR_PATH} />
   }
@@ -65,8 +67,6 @@ export const Trade = () => {
         </div>
       </div>
       <LeverageDialog />
-      <TPSLDialog />
-      <TpslPreviewDialog />
     </>
   )
 }

@@ -19,10 +19,10 @@ export const PairLogo = ({
 }: PairLogoProps) => {
   return (
     <div className="flex items-end justify-center">
-      <CoinIcon icon={baseLogo || ''} size={baseLogoSize} className="z-[1]" symbol={baseSymbol} />
+      <CoinIcon icon={baseLogo || ''} size={baseLogoSize} className="z-1" symbol={baseSymbol} />
       <CoinIcon
         icon={quoteLogo || ''}
-        className={`z-[2]`}
+        className="z-2"
         size={quoteLogoSize}
         style={{ marginLeft: `-${quoteLogoSize / 2}px` }}
         symbol={quoteSymbol}

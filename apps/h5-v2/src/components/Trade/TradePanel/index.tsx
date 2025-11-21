@@ -22,6 +22,10 @@ import {
   DEFAULT_SLIPPAGE_LEVEL_3,
   DEFAULT_SLIPPAGE_LEVEL_4,
 } from '@/constant/slippage'
+import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
+import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
+import { useGetPoolList } from '../hooks/use-get-pool-list'
+import { useTradePageStore } from '../store/TradePageStore'
 
 const getSlippage = (level: number) => {
   if (level === 1) {
@@ -38,7 +42,9 @@ const getSlippage = (level: number) => {
 export const TradePanel = () => {
   const { positionAction } = useTradePanelStore()
   const { poolConfig } = useGetPoolConfig()
+  useGetPoolList()
   const {
+    receiveDialogOpen,
     openPositionSlippage,
     setOpenPositionSlippage,
     closePositionSlippage,
@@ -68,6 +74,8 @@ export const TradePanel = () => {
     setTpSlSlippage,
   ])
 
+  const { symbolInfo } = useTradePageStore()
+
   return (
     <div>
       <div className="flex h-full gap-[4px]">
@@ -79,7 +87,14 @@ export const TradePanel = () => {
       {positionAction === PositionActionEnum.OPEN && <BalanceAndMarginMode />}
       <OrderForm />
       {positionAction === PositionActionEnum.OPEN && <TPSL />}
-      <PlaceOrder />
+      <CanSwitchWalletNetwork
+        targetChainId={symbolInfo?.chainId}
+        style={{
+          marginTop: '8px',
+        }}
+      >
+        <PlaceOrder />
+      </CanSwitchWalletNetwork>
       <MaxTradeAmount />
       <Slippage defaultSlippage={getSlippage(poolConfig?.level ?? 1)} direction={positionAction} />
       <MarginAccount />
@@ -87,6 +102,7 @@ export const TradePanel = () => {
         <PoolsInfo />
         <TokenInfo />
       </CollapseGroup>
+      {receiveDialogOpen && <ReceiveDialog />}
     </div>
   )
 }

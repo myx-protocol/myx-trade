@@ -16,10 +16,10 @@ export const CurrentMarket = () => {
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
-  const currentSymbolGlobalIdRef = useRef(symbolInfo?.globalId)
+  const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
   useUpdateEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
-    if (!symbolInfo) return
+    if (!symbolInfo || symbolInfo.globalId === currentSymbolGlobalIdRef.current) return
     if (client) {
       currentSymbolGlobalIdRef.current = symbolInfo.globalId
       client.markets
@@ -31,6 +31,7 @@ export const CurrentMarket = () => {
           // subscribe oracle price
           subscribeOraclePrice({ poolId: symbolInfo.poolId })
           // subscribe ticker data
+          console.log('xd', currentSymbolGlobalIdRef.current, symbolInfo.globalId)
           if (currentSymbolGlobalIdRef.current === symbolInfo.globalId) {
             unsubscribe = subscribeToTicker({
               poolId: symbolInfo.poolId,
@@ -41,6 +42,7 @@ export const CurrentMarket = () => {
     }
 
     return () => {
+      console.log('unsubscribe', unsubscribe)
       // unsubscribe oracle price
       unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
       if (unsubscribe && typeof unsubscribe === 'function') {

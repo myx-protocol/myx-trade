@@ -4,7 +4,7 @@ import { TipsFill, WalletLine } from '@/components/Icon'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import ArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
 import { Describe, DescribeItem } from '@/components/Describe.tsx'
-import { TradeButton } from '@/components/TradeButton.tsx'
+import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Card } from '@/pages/Earn/components/Trade/Card.tsx'
 import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { useCallback, useContext, useMemo, useState } from 'react'
@@ -22,19 +22,25 @@ import {
   pool as Pool,
 } from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { useAccount } from 'wagmi'
+import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import toast from 'react-hot-toast'
+import { calculationPnl } from '@/utils/pnl.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { getLpAssets } from '@/request'
+import { PoolType } from '@/request/type.ts'
+import { useAccessToken } from '@/hooks/useAccessToken.ts'
+import { Big } from 'big.js'
 
 export const Redeem = () => {
   const { pool, quoteLpDetail, chainId, poolId, price } = useContext(PoolContext)
   const { slippage, setSlippage } = useContext(TradeContext)
-  const { address: account } = useAccount()
+  const { address: account } = useWalletConnection()
   const [retainLPShare, setRetailLpShare] = useState(true)
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+  const { accessToken } = useAccessToken()
 
   const { data: balance, refetch } = useQuery({
     queryKey: [{ key: 'getQuoteBalance' }, chainId, poolId, account],
@@ -71,13 +77,28 @@ export const Redeem = () => {
     },
   })
 
+  const { data: asset } = useQuery({
+    queryKey: [{ key: 'userQuoteLpAsset' }, accessToken, poolId, pool?.quotePoolToken],
+    enabled: !!accessToken,
+    queryFn: async () => {
+      // console.log(poolId , pool , accessToken)
+      if (!poolId || !pool || !accessToken) return null
+      const request = await getLpAssets(accessToken, {
+        poolType: PoolType.quote,
+        poolId: poolId,
+        poolToken: pool?.quotePoolToken,
+      })
+      return request?.data?.[0] || null
+    },
+  })
+
   const trueBalance = useMemo(() => {
     if (retainLPShare) {
-      if (isSafeNumber(balance) && isSafeNumber(userShare)) {
-        const _balance = Number(balance) - Number(userShare)
-        return _balance < 0 ? _balance : _balance
+      if (isSafeNumber(balance)) {
+        const _balance = new Big(balance || 0).minus(new Big(userShare || '0')).toString()
+        return Number(_balance) < 0 ? '0' : _balance
       }
-      return ''
+      return balance
     } else {
       return balance
     }
@@ -90,6 +111,15 @@ export const Redeem = () => {
     }
     return false
   }, [trueBalance, amount])
+
+  const pnl = useMemo(() => {
+    // console.log(asset)
+    if (price && asset && balance) {
+      const { avgPrice } = asset
+      return calculationPnl(price, avgPrice, balance)
+    }
+    return undefined
+  }, [price, asset, balance])
 
   const onHandleMax = useCallback(() => {
     if (balance) {
@@ -122,6 +152,14 @@ export const Redeem = () => {
     }
   }, [chainId, amount, slippage, poolId])
 
+  const burned = useMemo(() => {
+    if (retainLPShare) return ''
+    if (isInsufficient) return ''
+    if (!amount || !balance || !userShare) return ''
+    const value = new Big(amount).minus(new Big(balance).minus(new Big(userShare))).toString()
+    return value
+  }, [retainLPShare, balance, userShare, amount, isInsufficient])
+
   return (
     <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
       <Box className={'relative z-[1] flex flex-col gap-[6px]'}>
@@ -133,7 +171,7 @@ export const Redeem = () => {
                 <WalletLine size={14} />
                 <span>
                   {formatNumberPrecision(trueBalance, COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
-                  {quoteLpDetail?.mBaseQuoteSymbol}
+                  {quoteLpDetail?.mQuoteBaseSymbol}
                 </span>
               </Box>
             </>
@@ -159,11 +197,11 @@ export const Redeem = () => {
             >
               <img
                 src={quoteLpDetail?.tokenIcon}
-                alt={quoteLpDetail?.mBaseQuoteSymbol}
+                alt={quoteLpDetail?.mQuoteBaseSymbol}
                 className={'aspect-square h-[20px] w-[20px] rounded-full'}
               />
               <span className={'leading-[1] font-[500] text-white'}>
-                {quoteLpDetail?.mBaseQuoteSymbol}
+                {quoteLpDetail?.mQuoteBaseSymbol}
               </span>
             </Box>
           </Box>
@@ -213,30 +251,42 @@ export const Redeem = () => {
         </Card>
       </Box>
       <Box className={'flex flex-col'}>
-        <Box className={'flex items-center gap-[4px] p-[4px]'}>
-          <CustomCheckBox
-            type={'normal'}
-            label={<Trans>Retain Genesis LP Share</Trans>}
-            checked={retainLPShare}
-            onChange={(value: boolean) => {
-              setRetailLpShare(value)
-            }}
-          />
+        {isSafeNumber(userShare) && Number(userShare) > 0 && (
+          <>
+            <Box className={'flex items-center gap-[4px] p-[4px]'}>
+              <CustomCheckBox
+                type={'normal'}
+                label={<Trans>Retain Genesis LP Share</Trans>}
+                checked={retainLPShare}
+                onChange={(value: boolean) => {
+                  setRetailLpShare(value)
+                }}
+              />
 
-          <TipsFill size={14} />
-        </Box>
+              <TipsFill size={14} />
+            </Box>
 
-        <Box className={'border-base mt-[4px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>
-          <Box className={'mt-[2px]'}>
-            <TipsFill size={14} />
-          </Box>
-          <p className={'text-regular text-[12px] leading-[1.5]'}>
-            <Trans>
-              This will burn... and you will permanently forfeit the right to your 2% share of
-              trading fees.
-            </Trans>
-          </p>
-        </Box>
+            {burned && Number(burned) > 0 && (
+              <Box
+                className={'border-base mt-[4px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}
+              >
+                <Box className={'mt-[2px]'}>
+                  <TipsFill size={14} />
+                </Box>
+                <p className={'text-regular text-[12px] leading-[1.5]'}>
+                  <Trans>
+                    This will burn{' '}
+                    <span className={'text-warning'}>
+                      {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
+                    </span>{' '}
+                    {quoteLpDetail?.mQuoteBaseSymbol} and you will permanently forfeit the right to
+                    your <span className={'text-warning'}>2%</span> share of trading fees.
+                  </Trans>
+                </p>
+              </Box>
+            )}
+          </>
+        )}
 
         {isInsufficient && (
           <Box className={'mt-[4px] text-[14px] leading-[1]'}>
@@ -259,7 +309,13 @@ export const Redeem = () => {
       </Box>
       <Describe>
         <DescribeItem title={<Trans>Total PnL</Trans>}>
-          <span>1234.12 {quoteLpDetail?.quoteSymbol}</span>
+          <span>
+            {' '}
+            <span className={Number(pnl) > 0 ? 'text-rise' : Number(pnl) < 0 ? 'text-fall' : ''}>
+              {formatNumberPrecision(pnl, COMMON_BASE_DISPLAY_DECIMALS)}
+            </span>{' '}
+            {quoteLpDetail?.quoteSymbol}
+          </span>
         </DescribeItem>
 
         <EstRate />
