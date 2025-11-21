@@ -22,9 +22,9 @@ export const PriceChangeBlock = ({
       className={clsx(
         'w-full min-w-fit rounded-[4px] px-[12px] py-[7px] text-center text-[12px] leading-[1.2] font-medium text-white',
         {
-          'bg-green': Big(value).gt(0),
+          'bg-green2': Big(value).gt(0),
           'bg-danger': Big(value).lt(0),
-          'bg-base': Big(value).eq(0),
+          'bg-placeholder': Big(value).eq(0),
         },
         className,
       )}

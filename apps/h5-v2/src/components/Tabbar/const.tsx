@@ -20,7 +20,7 @@ export const TAB_LIST: TabItem[] = [
   },
   {
     label: () => t`Markets`,
-    path: '/markets',
+    path: '/market-list',
     icon: <MarketsIcon size={18} />,
   },
   {

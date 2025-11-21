@@ -13,6 +13,7 @@ import { SetPasswordDialog } from './components/Seamless/SetPasswordDialog'
 import { ImportDialog } from './components/Seamless/ImportDialog'
 import { ExportInfoDialog } from './components/Seamless/ExportInfoDialog'
 import { ExportDialog } from './components/Seamless/ExportDialog'
+import { useMount, useUpdateEffect } from 'ahooks'
 
 function App() {
   const { closeAllPositionDialogOpen } = usePositionStore()
@@ -25,6 +26,21 @@ function App() {
     exportSeamlessInfoDialogOpen,
     exportSeamlessKeyDialogOpen,
   } = useGlobalStore()
+
+  useUpdateEffect(() => {
+    const vh = window.innerHeight * 0.01
+    document.documentElement.style.setProperty('--vh', `${vh}px`)
+
+    const handleResize = () => {
+      const vh = window.innerHeight * 0.01
+      document.documentElement.style.setProperty('--vh', `${vh}px`)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  })
   return (
     <>
       <RouterProvider router={router} />

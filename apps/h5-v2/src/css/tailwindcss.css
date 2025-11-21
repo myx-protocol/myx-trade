@@ -18,6 +18,7 @@
   --color-warning: var(--warning-color);
   --color-brand-10: var(--brand-10);
   --color-warning-10: var(--warning-10);
+  --color-green2: var(--green2);
 }
 
 @layer utilities {
@@ -51,6 +52,11 @@
 
   :root {
     @apply text-[14px] leading-[1] font-normal text-white;
+    --vh: 1vh;
+    --tabbar-height: 0px;
+  }
+  .min-h-screen {
+    height: calc(var(--vh, 1vh) * 100 - var(--tabbar-height, 0px));
   }
 }
 
@@ -78,8 +84,7 @@
   --brand-deep-gradient: linear-gradient(95deg, #3d996b 0%, #00996f 18.58%);
   --sell-gradient: linear-gradient(275deg, #c23749 3.47%, #ba4c47 99.82%);
   --light-bg: #2d3138;
-
-  --tabbar-height: 60px;
+  --green2: #00996f;
 }
 
 /*Button {

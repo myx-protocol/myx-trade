@@ -9,6 +9,8 @@ interface SymbolInfoProps {
   chainId?: number
   className?: string
   descriptionText?: ReactNode
+  baseLogoSize?: number
+  quoteTokenSize?: number
 }
 
 export const SymbolInfo = ({
@@ -17,6 +19,8 @@ export const SymbolInfo = ({
   chainId,
   className,
   descriptionText,
+  baseLogoSize = 24,
+  quoteTokenSize = 10,
 }: SymbolInfoProps) => {
   const chainInfo = useMemo(() => {
     if (!chainId) return null
@@ -25,8 +29,8 @@ export const SymbolInfo = ({
   return (
     <div className={clsx('flex items-center justify-start gap-[8px]', className)}>
       <PairLogo
-        baseLogoSize={24}
-        quoteLogoSize={10}
+        baseLogoSize={baseLogoSize}
+        quoteLogoSize={quoteTokenSize}
         baseLogo={baseTokenLogo}
         quoteLogo={chainInfo?.logoUrl}
         baseSymbol={symbol}

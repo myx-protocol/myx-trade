@@ -10,6 +10,8 @@ import { Home } from '@/pages/Home'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import ErrorPage from '@/ErrorPage'
 import NotFound from '@/404'
+import { MarketList } from '@/pages/MarketList'
+import { Rank } from '@/pages/rank'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: 'market-list',
+        element: <MarketList />,
+      },
+      {
+        path: 'rank',
+        element: <Rank />,
       },
       {
         path: 'trade',

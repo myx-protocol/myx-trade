@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { memo } from 'react'
 import type { ReactNode } from 'react'
 
 interface MarketListRowProps {
@@ -7,7 +8,7 @@ interface MarketListRowProps {
   className?: string
 }
 
-export const MarketListRow = ({ columnClasses, values, className }: MarketListRowProps) => {
+export const MarketListRow = memo(({ columnClasses, values, className }: MarketListRowProps) => {
   return (
     <div className={clsx('flex items-center justify-between gap-[20px]', className)}>
       {/* left */}
@@ -33,4 +34,4 @@ export const MarketListRow = ({ columnClasses, values, className }: MarketListRo
       </div>
     </div>
   )
-}
+})
