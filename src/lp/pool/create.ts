@@ -1,16 +1,11 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
 import { getPoolManagerContract } from "../../web3/providers";
-import { ChainId } from "@/config/chain";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
 import {  getMarketPoolId } from "@/lp/pool/get";
 
-const chainId = ChainId.ARB_TESTNET;
-const marketId = Market[chainId].marketId;
-
-export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
+export const createPool = async ({chainId, baseToken, marketId}:CreatePoolRequest) => {
   try {
     // if (!isSupportedChainFn(chainId)) {
     //   throw new Error(Errors[ ErrorCode.Invalid_Chain_ID]);
@@ -23,6 +18,8 @@ export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
     // if (_poolId) {
     //   throw new Error(Errors[ErrorCode.Invalid_Base]);
     // }
+    
+    
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getPoolManagerContract(chainId)
     
@@ -41,7 +38,7 @@ export const createPool = async ({chainId, baseToken}:CreatePoolRequest) => {
     })
     const receipt = await request?.wait()
     if (receipt?.hash) {
-      const poolId = await getMarketPoolId({chainId, baseToken}, )
+      const poolId = await getMarketPoolId({chainId, baseToken, marketId})
       return poolId
     }
     // console.log(request)
