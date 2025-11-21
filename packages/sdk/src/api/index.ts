@@ -16,7 +16,7 @@ import {
   ChainIdRequest,
   FavoritesListItem,
   BaseDetailResponse,
-  MarketDetailResponse,
+  MarketDetailResponse, MarketInfo,
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
@@ -84,7 +84,7 @@ export const getPoolDetail = async (
   poolId: string
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/detail?chainId=${chainId}&poolId=${poolId}`
+    `${baseUrl}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
@@ -319,6 +319,10 @@ export const getMarketDetail = async (params: GetMarketDetailParams) => {
     params
   );
 };
+
+export const getMarketList = async () => {
+  return http.get<ApiResponse<MarketInfo[]>>(`${baseUrl}/openapi/gateway/scan/market`);
+}
 
 export * from "./type";
 

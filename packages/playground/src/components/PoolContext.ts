@@ -1,5 +1,5 @@
 import { ChainId } from "@config/chain.ts";
-import type { MarketPool } from "@myx-trade/sdk";
+import type { MarketInfo, MarketPool } from "@myx-trade/sdk";
 import { createContext } from "react";
 
 export interface PoolContextValue {
@@ -10,6 +10,10 @@ export interface PoolContextValue {
   setPoolId: (poolId: string) => void;
   refetch: () => void;
   isLoading: boolean;
+  markets?: MarketInfo[];
+  // setMarkets: (markets: MarketPool[]) => void;
+  marketId?: string;
+  setMarketId: (marketId: string) => void;
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue);
 

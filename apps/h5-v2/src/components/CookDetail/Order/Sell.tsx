@@ -13,7 +13,13 @@ import { usePoolContext } from '@/pages/Cook/hook'
 import { useCallback, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
-import { getBalanceOf, base as Base, formatUnits, Market, pool as Pool } from '@myx-trade/sdk'
+import {
+  getBalanceOf,
+  base as Base,
+  formatUnits,
+  COMMON_LP_AMOUNT_DECIMALS,
+  pool as Pool,
+} from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
@@ -43,7 +49,7 @@ export const Sell = () => {
       if (pool?.basePoolToken && account) {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.basePoolToken)
         // todo api 未返回 quoteDecimals
-        const _balance = formatUnits(bigintBalance, Market[chainId].lpDecimals)
+        const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
         return formatNumberPrecision(_balance, COMMON_BASE_DISPLAY_DECIMALS, false, false)
       }
     },
@@ -57,7 +63,7 @@ export const Sell = () => {
       const result = await Pool.getUserGenesisShare(chainId, pool?.basePoolToken, account as string)
 
       if (result) {
-        return formatUnits(result, Market[chainId].lpDecimals)
+        return formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
       }
       return
     },

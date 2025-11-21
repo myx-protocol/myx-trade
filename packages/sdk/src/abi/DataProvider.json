@@ -10,6 +10,30 @@
     ]
   },
   {
+    "type": "error",
+    "name": "PositionNotHealthy",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
+      {
+        "type": "uint256",
+        "name": "marginRatio"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "SafeCastOverflowedUintToInt",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "value"
+      }
+    ]
+  },
+  {
     "type": "function",
     "name": "ADDRESS_MANAGER",
     "constant": true,
@@ -19,6 +43,36 @@
     "outputs": [
       {
         "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getAvailableLiquiditySize",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint8",
+        "name": "operation"
+      },
+      {
+        "type": "uint8",
+        "name": "direction"
+      },
+      {
+        "type": "uint256",
+        "name": "executePrice"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   },
@@ -52,11 +106,11 @@
                 "name": "tier"
               },
               {
-                "type": "uint16",
+                "type": "uint32",
                 "name": "takerFeeRate"
               },
               {
-                "type": "int16",
+                "type": "int32",
                 "name": "makerFeeRate"
               }
             ]
@@ -70,11 +124,11 @@
                 "name": "assetClass"
               },
               {
-                "type": "uint16",
+                "type": "uint32",
                 "name": "makerFeeRate"
               },
               {
-                "type": "uint16",
+                "type": "uint32",
                 "name": "takerFeeRate"
               }
             ]
@@ -88,11 +142,11 @@
                 "name": "tier"
               },
               {
-                "type": "uint16",
+                "type": "uint32",
                 "name": "takerFeeRate"
               },
               {
-                "type": "int16",
+                "type": "int32",
                 "name": "makerFeeRate"
               }
             ]
@@ -139,6 +193,32 @@
             "name": "maxQuoteOut"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getLiquidationPrice",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
+      {
+        "type": "uint256",
+        "name": "marketPrice"
+      },
+      {
+        "type": "address",
+        "name": "broker"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   },
@@ -433,6 +513,110 @@
           {
             "type": "uint256",
             "name": "quotePoolTokenPrice"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPositionFees",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
+      {
+        "type": "address",
+        "name": "broker"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "netCollateral"
+      },
+      {
+        "type": "uint256",
+        "name": "collateralAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "tradingFee"
+      },
+      {
+        "type": "int256",
+        "name": "fundingFee"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUserPositionInfos",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "bytes32[]",
+        "name": "poolIds"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "positions",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "positionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "entryPrice"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRateIndex"
+          },
+          {
+            "type": "uint256",
+            "name": "earlyClosePrice"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint64",
+            "name": "lastUpdateTime"
+          },
+          {
+            "type": "uint256",
+            "name": "collateralAmount"
           }
         ]
       }

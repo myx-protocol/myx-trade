@@ -14,7 +14,13 @@ import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { useQuery } from '@tanstack/react-query'
-import { formatUnits, getBalanceOf, quote as Quote, Market, pool as Pool } from '@myx-trade/sdk'
+import {
+  formatUnits,
+  getBalanceOf,
+  quote as Quote,
+  COMMON_LP_AMOUNT_DECIMALS,
+  pool as Pool,
+} from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
@@ -46,7 +52,7 @@ export const Redeem = () => {
       if (pool?.quotePoolToken && account) {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.quotePoolToken)
         // todo api 未返回 quoteDecimals
-        const _balance = formatUnits(bigintBalance, Market[chainId].lpDecimals)
+        const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
         return formatNumberPrecision(_balance, COMMON_PRICE_DISPLAY_DECIMALS, false, false)
       }
     },
@@ -64,7 +70,7 @@ export const Redeem = () => {
       )
 
       if (result) {
-        const _balance = formatUnits(result, Market[chainId].lpDecimals)
+        const _balance = formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
         return formatNumberPrecision(_balance, COMMON_PRICE_DISPLAY_DECIMALS, false, false)
       }
       return ''
