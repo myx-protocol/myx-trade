@@ -41,7 +41,7 @@ export type TimeInForce = (typeof TimeInForce)[keyof typeof TimeInForce];
 
 // Trading position interface
 export interface Position {
-  userPositionSalt: string;
+  positionId: string;
   poolId: string;
   direction: Direction;
   size: string;
@@ -60,7 +60,7 @@ export interface Position {
 export interface Order {
   orderId: string;
   poolId: string;
-  userPositionSalt?: string;
+  positionId: string;
   orderType: OrderType;
   triggerType: TriggerType;
   operation: OperationType;
@@ -94,7 +94,7 @@ export interface PlaceOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  userPositionSalt: number;
+  positionId: string;
   orderType: OrderType;
   triggerType: TriggerType;
   direction: Direction;
@@ -116,7 +116,7 @@ export interface PositionTpSlOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  userPositionSalt: number;
+  positionId: string;
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;

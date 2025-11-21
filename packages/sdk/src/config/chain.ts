@@ -50,7 +50,7 @@ export const DEV_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
-export const SupportedChainIds = [ChainId.ARB_TESTNET]
+export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_SEPOLIA]
 // export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
 //   if (isTestMode()) {
 //     return TEST_ENV_CHAIN_IDS
@@ -127,21 +127,10 @@ export interface RpcRetryOption {
 
 export interface ContractAddress {
   readonly Account:Address,
-  readonly USDC:Address,
   readonly POOL_MANAGER:Address,
-  readonly POOL_VIEW:Address,
-  readonly HYPER_VAULT:Address,
-  readonly FEE_COLLECTOR:Address,
   readonly POSITION_MANAGER:Address,
   readonly ORDER_MANAGER:Address,
-  readonly TRUSTED_FORWARDER:Address,
-  readonly FRONT_FACET:Address, // router address
-  readonly DELEGATE_FACET:Address, // Seamless router address
-  readonly FAUCET:Address,
-  readonly UI_POOL_DATA_PROVIDER:Address,
-  readonly UI_POSITION_DATA_PROVIDER:Address,
   readonly PYTH:Address,
-  readonly MYX:Address,
   readonly ERC20:Address,
   readonly LIQUIDITY_ROUTER:Address,
   readonly BASE_POOL:Address,

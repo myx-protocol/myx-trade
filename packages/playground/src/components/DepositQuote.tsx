@@ -2,13 +2,13 @@ import { useCallback, useContext, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import { usePoolInfo } from "./PoolInfo";
 import { Button } from "@/components";
-import { Market , quote} from "@myx-trade/sdk";
+import {  quote} from "@myx-trade/sdk";
 import { message } from "antd";
 
 export const DepositQuote = ({className = ''}: {className?: string}) => {
   const {chainId} = useContext(PoolContext)
-  const {poolId} = usePoolInfo()
-  const [amount, setAmount] = useState<string>(Market[chainId].poolPrimeThreshold.toString())
+  const {poolId, market} = usePoolInfo()
+  const [amount, setAmount] = useState<string>(market?.poolPrimeThreshold?.toString() || '')
   const [slippage, setSlippage] = useState<string>('0.01')
   const [isDepositLoading, setIsDepositLoading] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
