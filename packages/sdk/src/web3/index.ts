@@ -14,6 +14,7 @@ import { getChainInfo } from "@/config/chains/index";
 import { RotationProvider } from "@/web3/rotationProvider";
 import pkg from '../../package.json'
 import { ConfigManager } from "@/manager/config";
+import { getMarketList, MarketInfo } from "@/api";
 
 export function getContract(
   address: string,
@@ -54,10 +55,11 @@ export class MxSDK {
   public provider: BrowserProvider | undefined;
   private configManager: ConfigManager | undefined;
   private static _instance: MxSDK
-  
+  Markets: MarketInfo[] | undefined
   
   constructor() {
     console.log(this.version);
+    this.getMarkets().then()
   }
   
   public setConfigManager(configManager: ConfigManager): void {
@@ -80,6 +82,14 @@ export class MxSDK {
       // this.chainId = chainId
     }
     return this._instance
+  }
+  public async getMarkets () {
+    try {
+      const result = await getMarketList()
+      this.Markets = result?.data || []
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

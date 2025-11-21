@@ -1,25 +1,25 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
 import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "../../web3/providers";
 import { ChainId } from "@/config/chain";
-import { Market } from "@/config/market";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
 import Address from "@/config/address";
+import sdk from "@/web3";
 
-export const getMarketInfo = (chainId: ChainId) => {
-  const marketId = Market[chainId].marketId;
+export const getMarketInfo = (chainId: ChainId, quoteToken: string) => {
+  const marketId = sdk?.Markets?.find((m) => m.chainId === chainId && m.quoteToken === quoteToken);
   return marketId;
 };
 
 export const getMarketPoolId = async ({
   chainId,
   baseToken,
+  marketId,
 }: CreatePoolRequest) => {
   try {
     // if (!isSupportedChainFn(chainId)) {
     //   throw new Error(Errors[ ErrorCode.Invalid_Chain_ID]);
     // }
-    const marketId = getMarketInfo(chainId);
     if (!baseToken) {
       throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);
     }

@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PoolContext } from "./PoolContext";
 import {
-  Market,
   getBalanceOf,
   MarketPoolState,
   pool as Pool,
@@ -22,7 +21,11 @@ import { Button } from "./Button";
 // const  = 30
 // eslint-disable-next-line react-refresh/only-export-components
 export const usePoolInfo = () => {
-  const { poolId, chainId, setPoolId} = useContext(PoolContext);
+  const { poolId, chainId, setPoolId, marketId, markets} = useContext(PoolContext);
+  
+  const market = useMemo(() => {
+    return markets?.find(_m => _m.marketId === marketId)
+  },[markets, marketId]);
   
   const {data: pool}  = useQuery({
     queryKey: [{key: 'pool_detail_by_poolId'},poolId, chainId],
@@ -41,7 +44,7 @@ export const usePoolInfo = () => {
     console.log('refresh');
     setTimeout(() => setPoolId(_poolId), 1000);
   }
-  return {pool, poolId, refresh};
+  return {pool, poolId, refresh, market, markets, marketId};
 }
 
 
@@ -82,7 +85,7 @@ export const BalanceInfo = () => {
     if (!poolId || !account) return
     if (pool?.quoteToken && account) {
       const bigintBalance = await getBalanceOf(chainId, account, pool?.basePoolToken)
-      const _balance = formatUnits(bigintBalance, Market[chainId].lpDecimals)
+      const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
       setBasePoolBalance(_balance)
     }
   }
@@ -92,7 +95,7 @@ export const BalanceInfo = () => {
     if (!poolId || !account) return
     if (pool?.quoteToken && account) {
       const bigintBalance = await getBalanceOf(chainId, account, pool?.quotePoolToken)
-      const _balance = formatUnits(bigintBalance,Market[chainId].lpDecimals)
+      const _balance = formatUnits(bigintBalance,COMMON_LP_AMOUNT_DECIMALS)
       setQuotePoolBalance(_balance)
     }
   }
@@ -142,18 +145,19 @@ export const BalanceInfo = () => {
 
 
 export const PoolInfo = ({className = ''}:{className?:string}) => {
- const { pool, poolId, refresh } = usePoolInfo()
+ const { pool, poolId, refresh, market, marketId } = usePoolInfo()
   const {chainId, account} = useContext(PoolContext)
   const [loading, setLoading] = useState<boolean>(false)
   
   const {data: fee}  = useQuery({
-    queryKey: [{key: 'market_fee_Info'},chainId],
+    queryKey: [{key: 'market_fee_Info'},chainId, marketId],
+    enabled: !!marketId,
     queryFn: async () => {
       if (!chainId) return null
-      const result = await _Market.getOracleFee(chainId, Market[chainId].marketId);
+      const result = await _Market.getOracleFee(chainId, marketId!);
       
       
-      return result ? formatUnits(result, Market[chainId].decimals) : undefined
+      return result ? formatUnits(result, COMMON_LP_AMOUNT_DECIMALS) : undefined
     },
   })
   
@@ -216,7 +220,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       const result = await Pool.getUserGenesisShare(chainId, pool?.basePoolToken, account as string)
       
       if (result) {
-        return formatUnits(result, Market[chainId].lpDecimals)
+        return formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
       }
       return
     }
@@ -230,7 +234,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       const result = await Pool.getUserGenesisShare(chainId, pool?.quotePoolToken, account as string)
       
       if (result) {
-        return formatUnits(result, Market[chainId].lpDecimals)
+        return formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
       }
       return
     }
@@ -238,9 +242,9 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   
   const onReprime = useCallback(async () => {
     try {
-      if (!poolId) return
+      if (!poolId || !marketId) return
       setLoading(true)
-      await Pool.reprime(chainId, poolId)
+      await Pool.reprime(chainId, poolId, marketId)
       message.success('Pool reprime')
       await refresh()
     } catch (e) {
@@ -249,7 +253,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
     } finally {
       setLoading(false)
     }
-  }, [poolId, chainId])
+  }, [poolId, chainId, marketId])
   
   
   const {data: info}  = useQuery({
@@ -302,6 +306,9 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   }, [pool?.state])
   
   return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
+    <div className={`flex flex-col gap-[16px]`}>
+      当前Chain: ${chainId} Market： ${market?.marketId || '--'} - ${market?.chainId || '--'} - ${market?.quoteSymbol} - ${market?.quoteToken} - ${market?.quoteDecimals}
+    </div>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
       <span>{pool?.baseSymbol}{pool?.quoteSymbol}</span>

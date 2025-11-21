@@ -283,7 +283,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
           let _price = ''
           try {
             const bigintBalance = await getBalanceOf(item.chainId, account as Address, item?.basePoolToken)
-            const _balance = formatUnits(bigintBalance, Market[chainId].lpDecimals)
+            const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
             if (rs) {
               _price = formatUnits(rs, COMMON_PRICE_DECIMALS)
             }

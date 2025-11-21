@@ -76,7 +76,7 @@ export const TpSL = ({className = ''}: {className?: string}) => {
     if (!poolId || !account) return
     if (pool?.quoteToken && account) {
       const bigintBalance = await getBalanceOf(chainId, account, pool?.basePoolToken)
-      const _balance = formatUnits(bigintBalance, Market[chainId].lpDecimals)
+      const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
       setBasePoolBalance(_balance)
     }
   }
@@ -86,7 +86,7 @@ export const TpSL = ({className = ''}: {className?: string}) => {
     if (!poolId || !account) return
     if (pool?.quoteToken && account) {
       const bigintBalance = await getBalanceOf(chainId, account, pool?.quotePoolToken)
-      const _balance = formatUnits(bigintBalance,Market[chainId].lpDecimals)
+      const _balance = formatUnits(bigintBalance,COMMON_LP_AMOUNT_DECIMALS)
       setQuotePoolBalance(_balance)
     }
   }*/

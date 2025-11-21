@@ -1,13 +1,13 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { parseUnits } from "ethers";
-import { Market } from "@/config/market";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import { ChainId } from "@/config/chain";
 import { MarketPoolState } from "@/api/type";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { getPoolInfo } from "@/lp/getPoolInfo";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
 
 
 export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {
@@ -24,7 +24,7 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     
     const account = await getAccount (chainId);
     const chainInfo =  CHAIN_INFO[chainId];
-    const decimals = Market[chainId].lpDecimals
+    const decimals = COMMON_LP_AMOUNT_DECIMALS
     
     await checkParams({chainId, amount,account, decimals, tokenAddress: fromPool.quotePoolToken})
     
