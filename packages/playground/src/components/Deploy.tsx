@@ -6,21 +6,21 @@ import { message } from "antd";
 
 export const Deploy = ({className = ''}:{className?:string}) => {
   const { refetch,chainId} = useContext(PoolContext);
-  const {pools} = useContext(PoolContext);
+  const {pools, marketId} = useContext(PoolContext);
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
   const onHandleDeploy = useCallback(async () => {
     console.log("Deploying...", address);
     
-    if (!address) return;
+    if (!address || !marketId) return;
     if (pools?.map(pool => pool.baseToken.toLowerCase()).includes(address.toLowerCase())) {
       message.error('Invalid base token address');
       return;
     }
     try {
       setIsLoading(true);
-      const poolId = await pool.createPool({chainId,  baseToken: address });
+      const poolId = await pool.createPool({chainId,  baseToken: address, marketId });
       if (!poolId) return;
       /*await quote.deposit({
         poolId,
