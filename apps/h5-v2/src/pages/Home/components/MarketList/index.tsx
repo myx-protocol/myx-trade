@@ -6,6 +6,7 @@ import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import clsx from 'clsx'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const MARKET_LIST = ['Favorites', 'Hot', 'Gainers', 'New']
 
@@ -29,9 +30,11 @@ export const MarketList = () => {
             </div>
           ))}
         </div>
-        <div role=" button" className="shrink-0">
-          <ArrowRight size={18} />
-        </div>
+        <Link to="/rank">
+          <div role=" button" className="shrink-0">
+            <ArrowRight size={18} />
+          </div>
+        </Link>
       </div>
 
       {/* list header */}

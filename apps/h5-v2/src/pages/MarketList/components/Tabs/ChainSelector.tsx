@@ -1,0 +1,49 @@
+import clsx from 'clsx'
+import { useMemo, useState } from 'react'
+import ChainAllIcon from '@/components/Icon/set/ChainAll'
+import { getSupportedChainIdsByEnv } from '@/config/chain'
+import { getChainInfo } from '@/config/chainInfo'
+
+export const ChainSelector = () => {
+  const [selectedChain, setSelectedChain] = useState<'all' | number>('all')
+  const chainInfoList = useMemo(() => {
+    return getSupportedChainIdsByEnv().map((chainId) => ({
+      ...getChainInfo(chainId),
+      chainId,
+    }))
+  }, [])
+  return (
+    <div className="mt-[12px] px-[12px]">
+      <div className="flex w-full items-center justify-start gap-[12px] overflow-x-auto">
+        <div
+          className={clsx(
+            'flex min-w-fit items-center gap-[2px] rounded-[6px] py-[6px] pr-[10px] pl-[8px]',
+            {
+              'bg-[#202129] text-white': selectedChain === 'all',
+              'text-[#6D7180]': selectedChain !== 'all',
+            },
+          )}
+          onClick={() => setSelectedChain('all')}
+        >
+          <ChainAllIcon size={14} />
+          <p className="text-[12px]">All</p>
+        </div>
+
+        {chainInfoList.map((chainInfo) => (
+          <div
+            className={clsx(
+              'flex min-w-fit items-center gap-[2px] rounded-[6px] py-[6px] pr-[10px] pl-[8px]',
+              {
+                'bg-[#202129] text-white': selectedChain === chainInfo.chainId,
+                'text-[#6D7180]': selectedChain !== chainInfo.chainId,
+              },
+            )}
+            onClick={() => setSelectedChain(chainInfo.chainId)}
+          >
+            <p className="text-[12px]">{chainInfo.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
