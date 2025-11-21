@@ -307,7 +307,7 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
   
   return <header className={`border-1 text-[12px] p-[16px] flex flex-col gap-[10px] sticky top-0 z-[10] bg-[#fff] ${className}`}>
     <div className={`flex flex-col gap-[16px]`}>
-      当前Chain: ${chainId} Market： ${market?.marketId || '--'} - ${market?.chainId || '--'} - ${market?.quoteSymbol} - ${market?.quoteToken} - ${market?.quoteDecimals}
+      当前Chain: {chainId} Market： {market?.marketId || '--'} - {market?.chainId || '--'} - {market?.quoteSymbol} - {market?.quoteToken} - {market?.quoteDecimals}
     </div>
     <div className={'flex items-center gap-[4px]'}>
       当前Pool：
