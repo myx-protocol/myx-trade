@@ -35,7 +35,7 @@ import {
   COMMON_PRICE_DECIMALS,
   formatUnits,
   getBalanceOf,
-  Market,
+  COMMON_LP_AMOUNT_DECIMALS,
   quote as Quote,
 } from '@myx-trade/sdk'
 import { SearchContext } from '@/pages/Earn/context.ts'
@@ -325,7 +325,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               account as Address,
               item?.quotePoolToken,
             )
-            balance = formatUnits(bigintBalance, Market[item.chainId].lpDecimals)
+            balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
             console.log(balance)
           } catch (_e) {
             console.error(_e)
