@@ -63,7 +63,7 @@ export class Order {
       console.log("createIncreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
-        userPositionSalt: params.userPositionSalt,
+        positionId: params.positionId,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
@@ -83,10 +83,9 @@ export class Order {
         useAccountBalance: false,
       });
 
-      const gasLimit = await brokerContract.placeOrder.estimateGas({
+      const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), {
         user: params.address,
         poolId: params.poolId,
-        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
@@ -106,11 +105,10 @@ export class Order {
         useAccountBalance: false,
       });
 
-      const transaction = await brokerContract.placeOrder(
+      const transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
         {
           user: params.address,
           poolId: params.poolId,
-          userPositionSalt: params.userPositionSalt,
           orderType: params.orderType,
           triggerType: params.triggerType,
           operation: OperationType.INCREASE,
@@ -196,7 +194,7 @@ export class Order {
       console.log("createDecreaseOrder params--->", {
         user: params.address,
         poolId: params.poolId,
-        userPositionSalt: params.userPositionSalt,
+        positionId: params.positionId,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.DECREASE,
@@ -211,10 +209,9 @@ export class Order {
         leverage: params.leverage,
       });
 
-      const gasLimit = await brokerContract.placeOrder.estimateGas({
+      const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), {
         user: params.address,
         poolId: params.poolId,
-        userPositionSalt: params.userPositionSalt,
         orderType: params.orderType,
         triggerType: params.triggerType,
         operation: OperationType.DECREASE,
@@ -234,11 +231,10 @@ export class Order {
         useAccountBalance: false,
       });
 
-      const transaction = await brokerContract.placeOrder(
+      const transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
         {
           user: params.address,
           poolId: params.poolId,
-          userPositionSalt: params.userPositionSalt,
           orderType: params.orderType,
           triggerType: params.triggerType,
           operation: OperationType.DECREASE,
@@ -320,7 +316,6 @@ export class Order {
             {
               user: params.address,
               poolId: params.poolId,
-              userPositionSalt: params.userPositionSalt,
               orderType: OrderType.STOP,
               triggerType: params.tpTriggerType,
               operation: OperationType.DECREASE,
@@ -342,7 +337,6 @@ export class Order {
             {
               user: params.address,
               poolId: params.poolId,
-              userPositionSalt: params.userPositionSalt,
               orderType: OrderType.STOP,
               triggerType: params.slTriggerType,
               operation: OperationType.DECREASE,
@@ -365,9 +359,9 @@ export class Order {
 
           console.log("createPositionTpSlOrder data--->", data);
 
-          const gasLimit = await brokerContract.placeOrders.estimateGas(data);
+          const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas([params.positionId.toString(),params.positionId.toString()], data);
 
-          const transaction = await brokerContract.placeOrders(data, {
+          const transaction = await brokerContract.placeOrdersWithPosition([params.positionId.toString(),params.positionId.toString()], data, {
             gasLimit: (gasLimit * 120n) / 100n,
           });
 
@@ -410,7 +404,6 @@ export class Order {
         const data = {
           user: params.address,
           poolId: params.poolId,
-          userPositionSalt: params.userPositionSalt,
           orderType: OrderType.STOP,
           triggerType:
             params.tpSize !== "0" ? params.tpTriggerType : params.slTriggerType,
@@ -437,9 +430,9 @@ export class Order {
 
         console.log("createPositionTpSlOrder data--->", data);
 
-        const gasLimit = await brokerContract.placeOrder.estimateGas(data);
+        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), data);
 
-        const transaction = await brokerContract.placeOrder(data, {
+        const transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(), data, {
           gasLimit: (gasLimit * 120n) / 100n,
         });
         this.logger.info("Transaction sent:", transaction.hash);

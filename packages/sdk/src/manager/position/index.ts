@@ -288,7 +288,7 @@ export class Position {
        * call broker contract
        */
       const brokerContract = getContract(
-        contractAddress.BROKER,
+        config.brokerAddress,
         brokerAbi,
         config.signer
       );
