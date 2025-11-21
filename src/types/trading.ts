@@ -94,7 +94,7 @@ export interface PlaceOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: string;
   orderType: OrderType;
   triggerType: TriggerType;
   direction: Direction;
@@ -116,7 +116,7 @@ export interface PositionTpSlOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: string;
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;
