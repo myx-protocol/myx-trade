@@ -6,10 +6,10 @@ import {
 } from "@/common/tradingGas";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { Market } from "@/config/market";
 import { checkParams } from "@/common/checkParams";
 import { getTpSlParams } from "@/common/getTpSlParams";
 import { getPoolInfo } from "@/lp/getPoolInfo";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
 
 
 export const addTpSl = async (params:AddTpSLParams) => {
@@ -21,7 +21,7 @@ export const addTpSl = async (params:AddTpSLParams) => {
       throw new Error(Errors[ErrorCode.Invalid_Params])
     }
     
-    const decimals = Market[chainId].lpDecimals
+    const decimals = COMMON_LP_AMOUNT_DECIMALS
     const quoteDecimals = pool.quoteDecimals
     
     const tpslParams = getTpSlParams(slippage, tpsl, decimals, quoteDecimals);

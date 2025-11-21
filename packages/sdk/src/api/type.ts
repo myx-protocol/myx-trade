@@ -80,6 +80,7 @@ export type MarketPool = {
   oracleType?: number | null;
   feedId?: number | null;
   activeTime: number;
+  poolPreTime: number;
 };
 export interface MarketPoolResponse extends BaseResponse {
   data: MarketPool[];
@@ -338,4 +339,20 @@ export interface MarketDetailResponse {
   capType: MarketCapType;
   baseReserveRatio: string
   quoteReserveRatio: string
+}
+
+
+export interface MarketInfo {
+  chainId: number;
+  marketId: string;
+  poolId: string;
+  quoteSymbol: string;
+  quoteDecimals: number;
+  quoteToken: string;
+  baseReserveRatio: number;
+  quoteReserveRatio: number;
+  oracleFeeUsd:number,
+  oracleRefundFeeUsd:number,
+  poolPrimeThreshold: number,
+  decimals: number,
 }

@@ -58,7 +58,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   useMount(() => {
     const options: MyxClientConfig = {
       chainId: ChainId.ARB_TESTNET,
-      brokerAddress: '0x461A33C5E75c292A45f8c961ab816060a94AfbA0',
+      brokerAddress: '0xB3DaeFF433c005e214D6cd73C35cD4bBCe7f94fD',
       isTestnet: true,
       logLevel: 'error',
     }

@@ -4,8 +4,7 @@ import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } fro
 import { CHAIN_INFO } from "@/config/chains/index";
 import { getOraclePrice } from "@/api";
 import { parseUnits } from "ethers";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { Market } from "@/config/market";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { checkParams } from "@/common/checkParams";
 import { getErrorTextFormError } from "@/config/error";
 
@@ -63,7 +62,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
       }
     }
     const chainInfo =  CHAIN_INFO[chainId];
-    const decimals = Market[chainId as keyof typeof Market].lpDecimals;
+    const decimals = COMMON_LP_AMOUNT_DECIMALS;
     
     await checkParams ({
       // tokenAddress: lpAddress,

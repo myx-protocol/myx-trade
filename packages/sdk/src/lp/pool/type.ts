@@ -3,8 +3,8 @@ import { ChainId } from "@/config/chain";
 
 export interface CreatePoolRequest {
   chainId: ChainId;
-  marketId?: string;
   baseToken: AddressLike;
+  marketId: string;
 }
 export enum PoolType {
   Base = 0,
