@@ -20,7 +20,7 @@ export const SearchHistory = () => {
   }
 
   return (
-    <div className="mb-[32px] px-[28px]">
+    <div className="mb-[24px] px-[28px]">
       {/* 标题 */}
       <h3 className="mb-[16px] text-[14px] leading-[1] font-medium text-white">
         {t`Search History`}
@@ -32,7 +32,7 @@ export const SearchHistory = () => {
         {recentHistory.map((item, index) => (
           <div
             key={`${item}-${index}`}
-            className="cursor-pointer rounded-[5px] bg-[#202129] px-[12px] py-[10px] text-[14px] leading-[1] font-medium text-white"
+            className="cursor-pointer rounded-[5px] bg-[#202129] px-[12px] py-[10px] text-[12px] font-medium text-white"
             onClick={() => handleItemClick(item)}
           >
             {item}

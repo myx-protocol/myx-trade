@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
+  console.log('isOPen', isOpen)
   useEffect(() => {
     if (tabbarActiveItem) {
       document.documentElement.style.setProperty('--tabbar-height', '60px')

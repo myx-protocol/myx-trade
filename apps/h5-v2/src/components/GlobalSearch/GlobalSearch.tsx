@@ -1,4 +1,4 @@
-import { Dialog } from '@mui/material'
+import { Dialog, Drawer } from '@mui/material'
 import { GlobalSearchHeader } from './GlobalSearchHeader'
 import { SearchHistory } from './SearchHistory'
 import { SearchList } from './SearchList/SearchList'
@@ -8,15 +8,16 @@ import { useGlobalSearchStore } from './store'
 export const GlobalSearch = () => {
   const { isOpen, close } = useGlobalSearchStore()
   return (
-    <Dialog
+    <Drawer
       open={isOpen}
       onClose={close}
+      anchor="bottom"
       sx={{
-        '& .MuiDialog-paper': {
-          width: '770px',
+        '& .MuiDrawer-paper': {
+          width: '100%',
           backgroundColor: '#18191F',
           borderRadius: '16px',
-          maxWidth: '770px',
+          height: 'calc(var(--vh, 1vh) * 70)',
         },
       }}
     >
@@ -26,6 +27,6 @@ export const GlobalSearch = () => {
         <SearchTabs />
         <SearchList />
       </div>
-    </Dialog>
+    </Drawer>
   )
 }

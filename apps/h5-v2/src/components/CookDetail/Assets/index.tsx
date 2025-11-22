@@ -28,7 +28,12 @@ import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { encryptionAddress } from '@/utils'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { base as Base, COMMON_PRICE_DECIMALS, formatUnits, Market } from '@myx-trade/sdk'
+import {
+  base as Base,
+  COMMON_LP_AMOUNT_DECIMALS,
+  COMMON_PRICE_DECIMALS,
+  formatUnits,
+} from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { Empty } from '@/components/Empty.tsx'
@@ -165,7 +170,7 @@ export const Assets = () => {
               account: account as `0x${string}`,
             })
             if (rs) {
-              rewards = formatUnits(rs, Market?.[item.chainId].decimals)
+              rewards = formatUnits(rs, COMMON_LP_AMOUNT_DECIMALS)
             }
           } catch (_e) {
             console.error(_e)

@@ -86,16 +86,10 @@ export const FuturesList = () => {
   return (
     <div className="flex min-h-0 flex-[1_1_0%] flex-col">
       {/* header */}
-      <div className="flex justify-between gap-[64.67px] px-[12px] py-[8px] text-[12px] leading-[1] font-normal text-[#6D7180]">
+      <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] text-[#6D7180]">
         {/* pair */}
         <div className="w-[210px]">
           <span>{t`交易对`}</span>
-        </div>
-        {/* volume */}
-        <div className="flex w-[105px] justify-end">
-          <span>
-            {t`TVL`}/{t`市值`}
-          </span>
         </div>
         {/* change 24h */}
         <div className="flex w-[103px] justify-end">

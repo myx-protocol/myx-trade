@@ -120,16 +120,10 @@ export const AllList = () => {
         <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
           <Trans>合约</Trans>
         </p>
-        <div className="flex justify-between gap-[64.67px] px-[12px] py-[8px] text-[12px] leading-[1] font-normal text-[#6D7180]">
+        <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
           {/* pair */}
           <div className="w-[210px]">
             <span>{t`交易对`}</span>
-          </div>
-          {/* volume */}
-          <div className="flex w-[105px] justify-end">
-            <span>
-              {t`TVL`}/{t`市值`}
-            </span>
           </div>
           {/* change 24h */}
           <div className="flex w-[103px] justify-end">
@@ -160,12 +154,9 @@ export const AllList = () => {
           <Trans>Cook</Trans>
         </p>
         <div>
-          <div className="flex justify-between gap-[64.67px] px-[12px] py-[8px] text-[12px] leading-[1] font-normal text-[#6D7180]">
+          <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
             <div className="w-[210px]">
               <span>{t`交易对`}</span>
-            </div>
-            <div className="flex w-[105px] justify-end">
-              <span>{t`TVL/市值`}</span>
             </div>
             <div className="flex w-[103px] justify-end">
               <span>{t`最新价/24h涨跌幅`}</span>
@@ -195,15 +186,12 @@ export const AllList = () => {
           <Trans>Earn</Trans>
         </p>
         <div>
-          <div className="flex justify-between gap-[64.67px] px-[12px] py-[8px] text-[12px] leading-[1] font-normal text-[#6D7180]">
+          <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
             <div className="w-[210px]">
               <span>{t`交易对`}</span>
             </div>
-            <div className="flex w-[105px] justify-end">
-              <span>{t`TVL/市值`}</span>
-            </div>
             <div className="flex w-[103px] justify-end">
-              <span>{t`APY`}</span>
+              <span>{t`APR`}</span>
             </div>
           </div>
           {searchResult?.earnInfo.list?.slice(0, previewLimit).map((item) => (

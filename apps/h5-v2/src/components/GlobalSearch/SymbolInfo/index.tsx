@@ -42,7 +42,7 @@ export const SymbolInfo = ({
     }
   }
   return (
-    <div className="flex items-center gap-[12px] leading-[1]">
+    <div className="flex items-center gap-[8px] leading-[1]">
       {/* star */}
       {showFavoriteIcon && (
         <div
@@ -59,6 +59,8 @@ export const SymbolInfo = ({
           quoteLogo={quoteTokenLogo}
           baseSymbol={baseSymbol}
           quoteSymbol={quoteSymbol}
+          baseLogoSize={24}
+          quoteLogoSize={8}
         />
         <div>
           {/* symbol name */}
@@ -79,7 +81,7 @@ export const SymbolInfo = ({
           <div className="text-normal mt-[2px] flex items-center gap-[8px] text-[12px] text-[#848E9C]">
             <p className="line-clamp-1 leading-[1.2]">{coinName}</p>
             <div className="flex items-center gap-[4px]">
-              <p>{truncateAddress(tokenAddress || '--')}</p>
+              <p>{truncateAddress(tokenAddress || '--', 6, 4)}</p>
               <Copy className="" content={tokenAddress}></Copy>
             </div>
           </div>
