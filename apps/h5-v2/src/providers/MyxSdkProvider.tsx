@@ -1,5 +1,5 @@
 import { ChainId } from '@/config/chain'
-import { MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
+import { getMarketList, type MarketInfo, MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { BrowserProvider } from 'ethers'
 import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
@@ -9,12 +9,14 @@ import CryptoJS from 'crypto-js'
 import { getAccessToken } from '@/api'
 import { useRef } from 'react'
 import { appPubSub } from '@/utils/pubsub'
+import { useQuery } from '@tanstack/react-query'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 
 interface MyxSdkContextValue {
   client?: MyxClient
   clientIsAuthenticated: boolean
   setClient: (client: MyxClient) => void
+  markets?: MarketInfo[]
 }
 
 const myxSdkContext = createContext<MyxSdkContextValue>({} as MyxSdkContextValue)
@@ -58,7 +60,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   useMount(() => {
     const options: MyxClientConfig = {
       chainId: ChainId.ARB_TESTNET,
-      brokerAddress: '0xB3DaeFF433c005e214D6cd73C35cD4bBCe7f94fD',
+      brokerAddress: '0x461A33C5E75c292A45f8c961ab816060a94AfbA0',
       isTestnet: true,
       logLevel: 'error',
     }
@@ -141,13 +143,22 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
     }
   })
 
+  const { data: markets } = useQuery({
+    queryKey: [{ key: 'getMarkets' }],
+    queryFn: async () => {
+      const result = await getMarketList()
+      return result?.data || ([] as MarketInfo[])
+    },
+  })
+
   const contextValue: MyxSdkContextValue = useMemo(
     () => ({
       client: client ?? undefined,
       setClient,
       clientIsAuthenticated,
+      markets,
     }),
-    [client, setClient, clientIsAuthenticated],
+    [client, setClient, clientIsAuthenticated, markets],
   )
   return <myxSdkContext.Provider value={contextValue}>{children}</myxSdkContext.Provider>
 }
