@@ -16,10 +16,15 @@ export const CoinIcon = ({ icon, size = 24, className, style, symbol = '' }: Coi
   return (
     <div
       className={clsx(
-        `h-[${size}px] w-[${size}px] min-w-[${size}px] flex items-center justify-center overflow-hidden rounded-[9999px] bg-[#202129] text-[#848E9C]`,
+        'flex items-center justify-center overflow-hidden rounded-[9999px] bg-[#202129] text-[#848E9C]',
         className,
       )}
-      style={style}
+      style={{
+        height: `${size}px`,
+        width: `${size}px`,
+        minWidth: `${size}px`,
+        ...style,
+      }}
     >
       {isShowIconIfNotError && (
         <img

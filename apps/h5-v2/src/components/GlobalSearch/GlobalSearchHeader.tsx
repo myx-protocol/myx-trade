@@ -188,12 +188,12 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
     setChainSelectOpen(false)
   }
   return (
-    <div className="sticky top-0 left-0 z-10 flex items-center justify-between rounded-t-[16px] bg-[#18191F] px-[16px] pt-[16px] pb-[20px]">
+    <div className="sticky top-0 left-0 z-10 flex items-center justify-between rounded-t-[16px] bg-[#18191F] p-[16px]">
       {/* left */}
       <div className="flex-[1_1_0%] px-[12px] py-[4px]">
         <div className="flex w-full items-center gap-[8px]">
           <Search
-            size={16}
+            size={14}
             color={isFocused ? '#fff' : '#848E9C'}
             onClick={() => inputRef.current?.focus()}
           />
@@ -209,7 +209,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
             onBlur={() => {
               setIsFocusedFalse()
             }}
-            className="flex-1 bg-transparent text-[16px] leading-[1] font-normal text-white caret-[#00E3A5] outline-none placeholder:text-[#6D7180]"
+            className="flex-1 bg-transparent text-[14px] leading-[1] font-normal text-white caret-[#00E3A5] outline-none placeholder:text-[#6D7180]"
           />
           {/* Clear button - only show when focused and has value */}
           <div

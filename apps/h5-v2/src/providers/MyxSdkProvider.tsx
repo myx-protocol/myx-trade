@@ -79,7 +79,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
         .then((signer) => {
           options.signer = signer
           options.getAccessToken = createGetAccessTokenMethod(address ?? '')
-          options.walletClient = walletClient
+          options.walletClient = walletClient as any
           const client = new MyxClient(options)
           setClient(client)
           myxSdkClientRef.current = client
@@ -123,7 +123,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       .then((signer) => {
         myxSdkClientRef.current?.auth({
           signer,
-          walletClient: walletClient,
+          walletClient: walletClient as any,
           getAccessToken: createGetAccessTokenMethod(address ?? ''),
         })
         setClientIsAuthenticated(true)
