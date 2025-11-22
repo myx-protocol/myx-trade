@@ -3,7 +3,12 @@ import { Trans } from '@lingui/react/macro'
 import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { WalletLine } from '@/components/Icon'
 import { Tips } from '@/pages/Market/components/tips.tsx'
-import { formatUnits, Market, market as _Market, pool as Pool } from '@myx-trade/sdk'
+import {
+  COMMON_LP_AMOUNT_DECIMALS,
+  formatUnits,
+  market as _Market,
+  pool as Pool,
+} from '@myx-trade/sdk'
 import { useCallback, useContext, useState } from 'react'
 import { TokenContext } from '@/pages/Market/context.ts'
 import { useQuery } from '@tanstack/react-query'
@@ -19,15 +24,21 @@ import { formatNumber } from '@/utils/number.ts'
 
 export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
   const { chainId } = useParams()
-  const { poolId } = useContext(TokenContext)
+  const { poolId, market } = useContext(TokenContext)
   const [loading, setLoading] = useState<boolean>(false)
+  // const market = useMemo(() => {
+  //   if(chainId) {
+  //     return markets?.find(_market => _market.chainId === )
+  //   }
+  // }, [chainId, markets])
   const { data: fee } = useQuery({
-    queryKey: [{ key: 'market_fee_Info' }, chainId],
+    queryKey: [{ key: 'market_fee_Info' }, chainId, market],
+    enabled: !!market?.marketId,
     queryFn: async () => {
-      if (!chainId) return null
-      const result = await _Market.getOracleFee(+chainId, Market[+chainId].marketId)
+      if (!chainId || !market?.marketId) return null
+      const result = await _Market.getOracleFee(+chainId, market?.marketId)
 
-      return result ? formatUnits(result, Market[+chainId].decimals) : undefined
+      return result ? formatUnits(result, COMMON_LP_AMOUNT_DECIMALS) : undefined
     },
   })
   const { data: quoteLpDetail } = useQuery({
@@ -44,9 +55,9 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
 
   const onReprime = useCallback(async () => {
     try {
-      if (!poolId || !chainId) return
+      if (!poolId || !chainId || !market) return
       setLoading(true)
-      await Pool.reprime(+chainId, poolId)
+      await Pool.reprime(+chainId, poolId, market?.marketId)
       toast.success(t`Pool reprime`)
       onNext?.()
     } catch (e) {
@@ -55,7 +66,7 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
     } finally {
       setLoading(false)
     }
-  }, [poolId, chainId])
+  }, [poolId, chainId, market, onNext])
   return (
     <Box className={'flex flex-1 flex-col'}>
       <h2 className={'text-[24px] leading-[1] font-[700] text-white'}>

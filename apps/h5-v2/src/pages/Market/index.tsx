@@ -12,20 +12,15 @@ import { isAddress, zeroAddress } from 'viem'
 import { TokenContext } from './context'
 import type { Token } from '@/pages/Market/type.ts'
 import { useQuery } from '@tanstack/react-query'
-import {
-  getTokenInfo,
-  market,
-  Market as Markets,
-  type MarketInfo,
-  MarketPoolState,
-  pool,
-} from '@myx-trade/sdk'
+import { getTokenInfo, MarketPoolState, pool } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { getAccountHoldings } from '@/request'
+// import { getAccountHoldings } from '@/request'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 
 const Market = () => {
-  const [loading, setLoading] = useState(false)
-  const { address: account } = useWalletConnection()
+  const { markets } = useMyxSdkClient()
+  // const [loading, setLoading] = useState(false)
+  // const { address: account } = useWalletConnection()
   const navigate = useNavigate()
   const { chainId, address } = useParams()
   const [step, setStep] = useState<number>(-1)
@@ -61,14 +56,17 @@ const Market = () => {
   })
 
   const { data: marketInfo } = useQuery({
-    queryKey: [{ key: 'getContractMarketInfo' }, chainId],
-    enabled: !!chainId,
+    queryKey: [{ key: 'getContractMarketInfo' }, chainId, markets],
+    enabled: !!chainId && !!markets,
     queryFn: async () => {
       if (!chainId) return undefined
-      const marketId = Markets?.[Number(chainId)]?.marketId
+      const market = markets?.filter((_market) => _market.chainId === +chainId)?.[0]
+
+      const marketId = market?.marketId
       if (!marketId) return undefined
-      const result = await market.getMarket(+chainId, marketId)
-      return result as unknown as MarketInfo
+      // const result = await market.getMarket(+chainId, marketId)
+      // return result as unknown as MarketInfo
+      return market
     },
   })
 
@@ -90,11 +88,15 @@ const Market = () => {
 
   const onNext = useCallback(async () => {
     try {
-      if (!chainId) return
+      if (!chainId || !marketInfo) return
       // check marketId.
       if (token?.address) {
         // const marketId = marketInfo.marketId
-        const poolId = await pool.getMarketPoolId({ chainId: +chainId, baseToken: token.address })
+        const poolId = await pool.getMarketPoolId({
+          chainId: +chainId,
+          baseToken: token.address,
+          marketId: marketInfo?.marketId,
+        })
 
         if (poolId) {
           setPoolId(poolId)
@@ -106,7 +108,11 @@ const Market = () => {
           }
           // todo error pool yi created
         } else {
-          const poolId = await pool.createPool({ chainId: +chainId, baseToken: token.address })
+          const poolId = await pool.createPool({
+            chainId: +chainId,
+            baseToken: token.address,
+            marketId: marketInfo?.marketId,
+          })
           if (poolId) {
             setPoolId(poolId)
             setStep(2)
@@ -116,7 +122,7 @@ const Market = () => {
     } catch (e) {
       console.error(e)
     }
-  }, [token, chainId])
+  }, [token, chainId, marketInfo])
 
   useEffect(() => {
     /*console.info(
