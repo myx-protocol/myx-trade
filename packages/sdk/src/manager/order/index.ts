@@ -739,7 +739,11 @@ export class Order {
 
       const receipt = await request?.wait();
       this.logger.info("updateOrderTpSl receipt", receipt);
-      return receipt;
+      return {
+        code: 0,
+        data: receipt,
+        message: "update order success",
+      };
     } catch (error) {
       this.logger.error("Error updating order:", error);
       return {
