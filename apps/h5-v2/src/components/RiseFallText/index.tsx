@@ -12,6 +12,8 @@ export interface RiseFallTextProps {
   /** 自定义渲染函数 */
   render?: (value: BigSource) => ReactNode
   renderOptions?: NumberFormatOptions
+  prefix?: ReactNode
+  suffix?: ReactNode
 }
 
 export const RiseFallText = ({
@@ -19,6 +21,8 @@ export const RiseFallText = ({
   className = '',
   render,
   renderOptions,
+  prefix,
+  suffix,
 }: RiseFallTextProps) => {
   const renderWrapper = useCallback(
     (value: BigSource) => {
@@ -47,11 +51,19 @@ export const RiseFallText = ({
           className,
         )}
       >
+        {prefix}
         {renderWrapper(value)}
+        {suffix}
       </span>
     )
   } catch {
     // 处理无效数字
-    return <span className={clsx(className)}>{renderWrapper(value)}</span>
+    return (
+      <span className={clsx(className)}>
+        {prefix}
+        {renderWrapper(value)}
+        {suffix}
+      </span>
+    )
   }
 }
