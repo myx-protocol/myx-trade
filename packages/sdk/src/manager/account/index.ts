@@ -100,13 +100,11 @@ export class Account {
       config.signer
     );
 
-
-
     try {
       const account = await config.signer?.getAddress() ?? ''
 
       console.log("withdraw", account, amount, poolId);
-      const rs = await accountContract.withdraw(poolId, account, amount);
+      const rs = await accountContract.withdraw(poolId, account, true, amount);
       const receipt = await rs?.wait(1);
 
       return {

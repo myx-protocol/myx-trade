@@ -95,10 +95,11 @@ export class Order {
         useAccountBalance: false,
       }
 
+      this.logger.info("positionId", params.positionId);
       let transaction;
 
       if (!params.positionId) {
-        const positionId = await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
+        const positionId = 1 //await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
 
         this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionId });
 
@@ -299,7 +300,7 @@ export class Order {
 
       let transaction;
       if (!params.positionId) {
-        const positionId = await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
+        const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
         this.logger.info("createDecreaseOrder salt position params--->", { ...data, positionId: positionId });
         const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(positionId.toString(), {
           user: params.address,
@@ -506,7 +507,7 @@ export class Order {
           if (!params.positionId) {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
-            const positionId = await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
+            const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
             const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas([positionId.toString(), positionId.toString()], data);
 
             transaction = await brokerContract.placeOrdersWithSalt([positionId.toString(), positionId.toString()], data, {
@@ -587,10 +588,10 @@ export class Order {
         let transaction;
         if (!params.positionId) {
           this.logger.info("createPositionTpOrSlOrder salt position data--->", data);
-          const positionId = await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
-          const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), data);
+          const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
+          const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), data);
 
-          transaction = await brokerContract.placeOrderWithPosition(positionId.toString(), data, {
+          transaction = await brokerContract.placeOrderWithSalt(positionId.toString(), data, {
             gasLimit: (gasLimit * 120n) / 100n,
           });
         } else {

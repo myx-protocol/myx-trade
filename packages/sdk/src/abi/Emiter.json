@@ -77,33 +77,6 @@
   {
     "type": "event",
     "anonymous": false,
-    "name": "AddOnFeeTierUpdated",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "broker",
-        "indexed": false
-      },
-      {
-        "type": "uint8",
-        "name": "tier",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "takerFeeRate",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "makerFeeRate",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
     "name": "BlockHeader",
     "inputs": [
       {
@@ -176,7 +149,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -287,7 +260,7 @@
         "indexed": false
       },
       {
-        "type": "int16",
+        "type": "int32",
         "name": "tradingFeeRate",
         "indexed": false
       },
@@ -443,6 +416,11 @@
         "type": "bytes32",
         "name": "poolId",
         "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "reason",
+        "indexed": false
       }
     ]
   },
@@ -501,6 +479,11 @@
       {
         "type": "uint256",
         "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId",
         "indexed": false
       },
       {
@@ -595,7 +578,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -647,6 +630,21 @@
       {
         "type": "int256",
         "name": "fundingFee",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "executionFeeToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executionFeeAmount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "keeper",
         "indexed": false
       }
     ]
@@ -709,7 +707,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -1334,7 +1332,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -1381,7 +1379,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -1438,7 +1436,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -1467,6 +1465,43 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "PositionNFTMinted",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "oldPositionId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "newPositionId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "owner",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "PositionTransfer",
     "inputs": [
       {
@@ -1480,7 +1515,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       }
@@ -1502,7 +1537,7 @@
         "indexed": false
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId",
         "indexed": false
       },
@@ -1702,6 +1737,43 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "TradingFeeTierUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "feeType",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "tier",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "takerFeeRate",
+        "indexed": false
+      },
+      {
+        "type": "int32",
+        "name": "makerFeeRate",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "isEnabled",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Upgraded",
     "inputs": [
       {
@@ -1796,6 +1868,33 @@
     ]
   },
   {
+    "type": "event",
+    "anonymous": false,
+    "name": "UserSpecialFeeTierUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "oldTier",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "newTier",
+        "indexed": false
+      }
+    ]
+  },
+  {
     "type": "function",
     "name": "UPGRADE_INTERFACE_VERSION",
     "constant": true,
@@ -1807,37 +1906,6 @@
         "type": "string"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "emitAddOnFeeTierUpdated",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "address",
-            "name": "broker"
-          },
-          {
-            "type": "uint8",
-            "name": "tier"
-          },
-          {
-            "type": "uint32",
-            "name": "takerFeeRate"
-          },
-          {
-            "type": "uint32",
-            "name": "makerFeeRate"
-          }
-        ]
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",
@@ -1872,6 +1940,45 @@
           {
             "type": "uint256",
             "name": "totalBaseCollateral"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitCollateralAdjusted",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "bytes32",
+            "name": "positionId"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "beforeCollateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "afterCollateralAmount"
           }
         ]
       }
@@ -2051,6 +2158,10 @@
           {
             "type": "bytes32",
             "name": "poolId"
+          },
+          {
+            "type": "string",
+            "name": "reason"
           }
         ]
       }
@@ -2117,6 +2228,10 @@
           {
             "type": "uint256",
             "name": "orderId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
           },
           {
             "type": "address",
@@ -2220,7 +2335,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -2262,6 +2377,18 @@
           {
             "type": "int256",
             "name": "fundingFee"
+          },
+          {
+            "type": "address",
+            "name": "executionFeeToken"
+          },
+          {
+            "type": "uint256",
+            "name": "executionFeeAmount"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
           }
         ]
       }
@@ -2330,7 +2457,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -2979,7 +3106,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -3026,7 +3153,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -3073,7 +3200,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -3099,6 +3226,45 @@
   },
   {
     "type": "function",
+    "name": "emitPositionNFTMinted",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "bytes32",
+            "name": "oldPositionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "newPositionId"
+          },
+          {
+            "type": "uint256",
+            "name": "tokenId"
+          },
+          {
+            "type": "address",
+            "name": "owner"
+          },
+          {
+            "type": "address",
+            "name": "recipient"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "emitPositionTransfer",
     "constant": false,
     "payable": false,
@@ -3116,7 +3282,7 @@
             "name": "to"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           }
         ]
@@ -3143,7 +3309,7 @@
             "name": "owner"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -3334,6 +3500,45 @@
   },
   {
     "type": "function",
+    "name": "emitTradingFeeTierUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "broker"
+          },
+          {
+            "type": "uint8",
+            "name": "feeType"
+          },
+          {
+            "type": "uint8",
+            "name": "tier"
+          },
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          },
+          {
+            "type": "int32",
+            "name": "makerFeeRate"
+          },
+          {
+            "type": "bool",
+            "name": "isEnabled"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "emitUserFeeDataUpdated",
     "constant": false,
     "payable": false,
@@ -3414,7 +3619,7 @@
             "name": "fundingFee"
           },
           {
-            "type": "int16",
+            "type": "int32",
             "name": "tradingFeeRate"
           },
           {
@@ -3456,6 +3661,37 @@
   },
   {
     "type": "function",
+    "name": "emitUserSpecialFeeTierUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "address",
+            "name": "broker"
+          },
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "uint8",
+            "name": "oldTier"
+          },
+          {
+            "type": "uint8",
+            "name": "newTier"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "getAddressManager",
     "constant": true,
     "stateMutability": "view",
@@ -3482,24 +3718,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
       }
     ]
   },
@@ -3575,19 +3793,6 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "sequencer",
     "constant": true,
     "stateMutability": "view",
@@ -3598,36 +3803,6 @@
         "type": "uint256"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "update",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",
