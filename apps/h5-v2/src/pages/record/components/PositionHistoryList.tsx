@@ -1,10 +1,10 @@
-import { OpenOrderItem } from '@/components/Record/Items/OpenOrders'
+import { PositionHistoryItem } from '@/components/Record/Items/PositionHistoryItem'
 
 export const PositionHistoryList = () => {
   return (
     <>
       {new Array(10).fill(0).map((_, index) => (
-        <OpenOrderItem key={index} />
+        <PositionHistoryItem key={index} />
       ))}
     </>
   )
