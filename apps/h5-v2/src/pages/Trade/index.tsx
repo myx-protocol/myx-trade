@@ -55,17 +55,17 @@ export const Trade = () => {
 
   return (
     <>
-      <div className="flex flex-[1_1_0%] justify-between gap-x-[4px] bg-[var(--bg-plus)]">
+      <Tables />
+      {/* <div className="flex flex-[1_1_0%] justify-between gap-x-[4px] bg-[var(--bg-plus)]">
         <div className="mt-[4px] flex flex-[1_1_0%] flex-col overflow-x-auto">
           <CurrentMarket />
-          {/* <MarketSwiper /> */}
           <Charts />
           <Tables />
         </div>
         <div className="mt-[4px] w-[325px] self-stretch bg-[#101114] p-[16px]">
           <TradePanel />
         </div>
-      </div>
+      </div> */}
       <LeverageDialog />
     </>
   )

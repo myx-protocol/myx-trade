@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react'
 import { ArrowRight } from '../Icon'
 import { useNavigate } from 'react-router-dom'
 interface SecondHeaderProps {
-  title?: string
+  title?: ReactNode
   onBack?: () => void
   left?: React.ReactNode
   right?: React.ReactNode
@@ -12,12 +13,12 @@ export const SecondHeader = ({ title, onBack, left, right }: SecondHeaderProps) 
   const handleBack = () => {
     if (onBack) {
       onBack()
-    } else {
+    } else if (onBack !== null || title !== null) {
       navigate(-1)
     }
   }
   return (
-    <div className="bg-deep sticky top-0 left-0 z-20 flex h-[52px] items-center justify-center px-[12px]">
+    <div className="bg-deep sticky top-0 left-0 z-20 flex h-[52px] shrink-0 items-center justify-center px-[12px]">
       <div className="absolute top-0 left-[12px] flex h-full items-center" role="button">
         {left || (
           <div role="button" onClick={handleBack} className="flex items-center justify-center">

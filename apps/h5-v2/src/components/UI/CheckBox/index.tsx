@@ -13,7 +13,8 @@ export const CheckBox = ({
     <MuiCheckbox
       sx={{
         padding: 0,
-        color: '#848E9C',
+        borderRadius: '2px',
+        color: '#4D515C',
         '&.Mui-checked': {
           color: '#00E3A5',
         },
