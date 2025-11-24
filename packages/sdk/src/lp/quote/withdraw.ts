@@ -87,7 +87,7 @@ export const withdraw = async (params: WithdrawParams) => {
     const _gasLimit = await contract["withdrawQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas (price, data, { value })
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract["withdrawQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"]([], data, {
+    const request = await contract["withdrawQuote((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"](price, data, {
       gasLimit,
       gasPrice,
       value,
