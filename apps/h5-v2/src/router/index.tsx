@@ -12,6 +12,9 @@ import ErrorPage from '@/ErrorPage'
 import NotFound from '@/404'
 import { MarketList } from '@/pages/MarketList'
 import { Rank } from '@/pages/rank'
+import { lazy } from 'react'
+
+const Record = lazy(() => import('@/pages/record'))
 
 const router = createBrowserRouter([
   {
@@ -70,6 +73,10 @@ const router = createBrowserRouter([
       {
         path: 'earn/:chainId/:poolId',
         element: <EarnDetail />,
+      },
+      {
+        path: 'record',
+        element: <Record />,
       },
       {
         path: '*',

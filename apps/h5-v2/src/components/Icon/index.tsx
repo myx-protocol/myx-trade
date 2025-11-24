@@ -30,7 +30,8 @@ import CheckBoxIcon from './set/CheckBoxIcon.tsx'
 import CheckBoxOutline from './set/CheckBoxOutline.tsx'
 import Pause from './set/Pause.tsx'
 import ChartBar from './set/ChartBar.tsx'
-
+import Record from './set/Record.tsx'
+import Share from './set/Share.tsx'
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
 for (const path in modules) {
@@ -82,6 +83,8 @@ export {
   ChartLine,
   Pause,
   ChartBar,
+  Record,
+  Share,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

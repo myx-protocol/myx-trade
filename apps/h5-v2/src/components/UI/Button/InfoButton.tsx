@@ -30,6 +30,7 @@ const InfoButton = ({
     fontWeight: '400',
     textTransform: 'none',
     whiteSpace: 'nowrap',
+    lineHeight: 1,
     px: '12px',
     position: 'relative',
     '&:hover': {
