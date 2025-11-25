@@ -302,7 +302,7 @@ export class Order {
       if (!params.positionId) {
         const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
         this.logger.info("createDecreaseOrder salt position params--->", { ...data, positionId: positionId });
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(positionId.toString(), {
+        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), {
           user: params.address,
           poolId: params.poolId,
           orderType: params.orderType,
@@ -324,7 +324,7 @@ export class Order {
           useAccountBalance: false,
         });
 
-        transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
+        transaction = await brokerContract.placeOrderWithSalt(params.positionId.toString(),
           {
             user: params.address,
             poolId: params.poolId,
