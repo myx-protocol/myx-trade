@@ -1,4 +1,5 @@
 import { $fetch } from "./request";
+import type { MarketPoolResponse } from "@/api/type.ts";
 
 const baseUrl= "https://api-test.myx.cash"
 
@@ -23,7 +24,7 @@ const baseUrl= "https://api-test.myx.cash"
 //   "feedId": null,
 //   "activeTime": null
 // }
-export const getPools = async () => {
+export const getPools = async (): Promise<MarketPoolResponse> => {
   return await $fetch("GET", `${baseUrl}/v2/mx-scan/market/list`);
 }
 
