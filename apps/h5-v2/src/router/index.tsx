@@ -7,7 +7,7 @@ import { CookDetail } from '@/pages/Cook/detail/index'
 import EarnList from '@/pages/Earn/List.tsx'
 import EarnDetail from '@/pages/Earn/Detail.tsx'
 import { Home } from '@/pages/Home'
-import { DEFAULT_PAIR_PATH } from '@/config/trade'
+import { DEFAULT_PRICE_PATH, DEFAULT_PAIR_PATH } from '@/config/trade'
 import ErrorPage from '@/ErrorPage'
 import NotFound from '@/404'
 import { MarketList } from '@/pages/MarketList'
@@ -15,6 +15,7 @@ import { Rank } from '@/pages/rank'
 import { lazy } from 'react'
 
 const Record = lazy(() => import('@/pages/record'))
+const Price = lazy(() => import('@/pages/Price'))
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,14 @@ const router = createBrowserRouter([
       {
         path: 'rank',
         element: <Rank />,
+      },
+      {
+        path: 'price',
+        element: <Navigate to={DEFAULT_PRICE_PATH} />,
+      },
+      {
+        path: 'price/:chainId/:poolId',
+        element: <Price />,
       },
       {
         path: 'trade',

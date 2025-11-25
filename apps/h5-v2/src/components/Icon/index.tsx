@@ -32,6 +32,10 @@ import Pause from './set/Pause.tsx'
 import ChartBar from './set/ChartBar.tsx'
 import Record from './set/Record.tsx'
 import Share from './set/Share.tsx'
+import ArrowLeftLong from './set/ArrowLeftLong.tsx'
+import SortDown from './set/SortDown.tsx'
+import Star from './set/Star.tsx'
+
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
 for (const path in modules) {
@@ -85,6 +89,9 @@ export {
   ChartBar,
   Record,
   Share,
+  ArrowLeftLong,
+  SortDown,
+  Star,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
