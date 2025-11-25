@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 
 export interface CoinIconProps {
-  icon: string
+  icon?: string
   size?: number
   className?: string
   style?: React.CSSProperties

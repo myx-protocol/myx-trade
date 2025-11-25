@@ -1,2 +1,5 @@
 export const DEFAULT_PAIR_PATH =
   '/trade/421614/0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d'
+
+export const DEFAULT_PRICE_PATH =
+  '/detail/421614/0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d'

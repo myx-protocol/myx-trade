@@ -7,6 +7,7 @@ interface PriceProps {
   value: BigSource
   showUnit?: boolean
   decimals?: number
+  className?: string
 }
 
 enum PriceChangeMode {
@@ -19,7 +20,7 @@ enum PriceChangeMode {
  * cache price value and mode
  */
 
-export const Price = ({ value, showUnit = false, decimals }: PriceProps) => {
+export const Price = ({ className, value, showUnit = false, decimals }: PriceProps) => {
   const priceValueRef = useRef<BigSource>(value)
   const modeRef = useRef<PriceChangeMode>(PriceChangeMode.None)
   useEffect(() => {
@@ -34,10 +35,14 @@ export const Price = ({ value, showUnit = false, decimals }: PriceProps) => {
   }, [value])
   return (
     <span
-      className={clsx('text-white', {
-        'text-rise': modeRef.current === PriceChangeMode.Rise,
-        'text-fall': modeRef.current === PriceChangeMode.Fall,
-      })}
+      className={clsx(
+        'text-white',
+        {
+          'text-rise': modeRef.current === PriceChangeMode.Rise,
+          'text-fall': modeRef.current === PriceChangeMode.Fall,
+        },
+        className,
+      )}
     >
       {formatNumber(value, {
         showUnit,
