@@ -7,7 +7,6 @@ export const OrderSettingsButton = ({ record, myxClient, poolList }: { record: a
   const [tpSlLoading, setTpSlLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
-  console.log('record', record)
 
   const executeTpSlOrder = async (values: any) => {
     

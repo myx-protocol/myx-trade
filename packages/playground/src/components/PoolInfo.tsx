@@ -156,8 +156,19 @@ export const PoolInfo = ({className = ''}:{className?:string}) => {
       if (!chainId) return null
       const result = await _Market.getOracleFee(chainId, marketId!);
       
-      
+      console.log('market fee is: ', result)
       return result ? formatUnits(result, COMMON_LP_AMOUNT_DECIMALS) : undefined
+    },
+  })
+  useQuery({
+    queryKey: [{key: 'marketInfo'},chainId, marketId],
+    enabled: !!marketId,
+    queryFn: async () => {
+      if (!chainId) return null
+      const result = await _Market.getMarket(chainId, marketId!);
+      
+      console.log('market info is: ', result)
+      return result
     },
   })
   
