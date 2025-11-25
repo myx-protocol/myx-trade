@@ -41,7 +41,17 @@
   },
   {
     "type": "error",
+    "name": "InvalidParameter",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InvalidQuoteTokenAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidRatioParams",
     "inputs": []
   },
   {
@@ -146,8 +156,8 @@
         "name": "params",
         "components": [
           {
-            "type": "string",
-            "name": "chainName"
+            "type": "uint64",
+            "name": "chainId"
           },
           {
             "type": "address",
@@ -162,11 +172,11 @@
             "name": "quoteReserveRatio"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleFeeUsd"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleRefundFeeUsd"
           },
           {
@@ -211,24 +221,6 @@
   },
   {
     "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getImplementation",
     "constant": true,
     "stateMutability": "view",
@@ -257,10 +249,6 @@
         "type": "tuple",
         "components": [
           {
-            "type": "bytes32",
-            "name": "marketId"
-          },
-          {
             "type": "address",
             "name": "quoteToken"
           },
@@ -273,11 +261,11 @@
             "name": "quoteReserveRatio"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleFeeUsd"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "oracleRefundFeeUsd"
           },
           {
@@ -362,49 +350,6 @@
         "type": "bytes32"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "update",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",
