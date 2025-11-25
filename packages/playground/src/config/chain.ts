@@ -5,3 +5,5 @@ export const ChainId = {
 } as const;
 
 export type ChainId = typeof ChainId[keyof typeof ChainId];
+
+export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_TESTNET]
