@@ -1,14 +1,15 @@
 import { http, createConfig } from 'wagmi'
-import { arbitrumSepolia } from 'wagmi/chains'
+import { arbitrumSepolia, lineaSepolia } from 'wagmi/chains'
 import { metaMask } from 'wagmi/connectors'
 
 export const config = createConfig({
-  chains: [arbitrumSepolia],
+  chains: [arbitrumSepolia, lineaSepolia],
   connectors: [
     metaMask(),
   ],
   transports: {
     [arbitrumSepolia.id]: http(),
+    [lineaSepolia.id]: http()
   },
 })
 

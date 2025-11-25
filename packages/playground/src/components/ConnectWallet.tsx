@@ -1,12 +1,31 @@
 import React, { useState } from 'react';
-import { useAccount, useConnect, useDisconnect, useBalance } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useBalance, useSwitchChain } from 'wagmi';
 import { formatEther, formatUnits } from 'viem';
+import { Dropdown, type MenuProps } from "antd";
+import { ChainId, SupportedChainIds } from "@config/chain.ts";
+import { getChainInfo } from "@config/chains";
+
+
 
 export const ConnectWallet: React.FC = () => {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const { switchChain } = useSwitchChain()
   const [showConnectors, setShowConnectors] = useState(false);
+  
+  const menu: MenuProps['items'] = SupportedChainIds.map((item) =>  {
+    return {
+      key: item,
+      label: (
+        <div  className={'text-[#000]'} onClick={async () => {
+          switchChain({ chainId: item })
+        }}>
+          {getChainInfo(item as ChainId)?.label}
+        </div>
+      ),
+    }
+  })
 
   // 调试信息
   // console.log('Wallet state:', { address, isConnected, connectorsLength: connectors.length, isPending });
@@ -54,10 +73,18 @@ export const ConnectWallet: React.FC = () => {
           </div>
 
           {/* 网络显示 */}
-          <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
-            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-            <span>Arbitrum Sepolia</span>
-          </div>
+          {/*<div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">*/}
+          {/*  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>*/}
+          {/*  <span>{chain?.name || '--'}</span>*/}
+          {/*</div>*/}
+          <Dropdown menu={{ items: menu }}>
+            <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+              <span>
+                  { chain?.name || '--'}
+              </span>
+            </div>
+          </Dropdown>
 
           {/* 地址按钮 */}
           <button
