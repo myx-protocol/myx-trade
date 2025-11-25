@@ -1,3 +1,5 @@
+import { MarketPoolState } from "@myx-trade/sdk";
+
 export interface ObjectType<T> {
   [key: string]: T;
 }
@@ -40,4 +42,29 @@ export type DashboardType = {
 
 export interface StatDashBoardResponse extends BaseResponse {
   data: DashboardType;
+}
+
+
+export type MarketPool = {
+  chainId: number;
+  marketId: string;
+  poolId: string;
+  oracleId?: number | null;
+  globalId: number;
+  state: MarketPoolState;
+  baseSymbol: string;
+  quoteSymbol: string;
+  baseDecimals: number;
+  quoteDecimals: number;
+  baseToken: string;
+  quoteToken: string;
+  basePoolToken: string;
+  quotePoolToken: string;
+  oracleType?: number | null;
+  feedId?: number | null;
+  activeTime: number;
+  poolPreTime: number;
+};
+export interface MarketPoolResponse extends BaseResponse {
+  data: MarketPool[];
 }

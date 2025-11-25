@@ -55,6 +55,11 @@
   },
   {
     "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotDependencyManager",
     "inputs": []
   },
@@ -264,6 +269,19 @@
   },
   {
     "type": "function",
+    "name": "__ERC2771ContextUpgradeable_init",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "trustedForwarder_"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "deposit",
     "constant": false,
     "payable": false,
@@ -316,24 +334,6 @@
   },
   {
     "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getImplementation",
     "constant": true,
     "stateMutability": "view",
@@ -368,6 +368,28 @@
       {
         "type": "uint256"
       },
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUserAsset",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": [
       {
         "type": "uint256"
       }
@@ -413,6 +435,24 @@
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "isTrustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "forwarder"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
   },
   {
     "type": "function",
@@ -480,19 +520,6 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "releaseFromProfitUnlock",
     "constant": false,
     "payable": false,
@@ -527,8 +554,66 @@
         "name": "user"
       },
       {
-        "type": "bytes32",
-        "name": "poolId"
+        "type": "tuple",
+        "name": "pool",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "state"
+          },
+          {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          },
+          {
+            "type": "uint16",
+            "name": "maxPriceDeviation"
+          },
+          {
+            "type": "bool",
+            "name": "compoundEnabled"
+          },
+          {
+            "type": "uint64",
+            "name": "windowCapUsd"
+          },
+          {
+            "type": "address",
+            "name": "poolVault"
+          },
+          {
+            "type": "address",
+            "name": "settler"
+          },
+          {
+            "type": "address",
+            "name": "tradingVault"
+          }
+        ]
       },
       {
         "type": "uint256",
@@ -551,16 +636,16 @@
   },
   {
     "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
+    "name": "trustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
     "payable": false,
-    "inputs": [
+    "inputs": [],
+    "outputs": [
       {
-        "type": "bytes32[]",
-        "name": "identifiers"
+        "type": "address"
       }
-    ],
-    "outputs": []
+    ]
   },
   {
     "type": "function",
@@ -611,6 +696,10 @@
       {
         "type": "address",
         "name": "receiver"
+      },
+      {
+        "type": "bool",
+        "name": "isQuoteToken"
       },
       {
         "type": "uint256",

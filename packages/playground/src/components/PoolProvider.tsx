@@ -15,15 +15,15 @@ export const PoolProvider = ({ children }: { children?: ReactNode }) => {
   // const { data: walletClient } = useWalletClient();
   
   const {data: pools, isLoading, refetch} = useQuery({
-    queryKey: ['getMarketPoolList'],
+    queryKey: [{key:'getMarketPoolList'}, chainId],
     queryFn: async () => {
       const response = await getPools()
-      return response.data || []
+      return (response.data || []).filter(pool => pool.chainId === chainId)
     }
   })
   
   const {data: markets} = useQuery({
-    queryKey: [{key: "markets"}],
+    queryKey: [{key: "markets"}, chainId],
     queryFn: async () => {
       const result = await getMarketList();
       return (result?.data || []).filter(m => m.chainId === chainId);

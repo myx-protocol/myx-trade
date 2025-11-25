@@ -10,7 +10,8 @@ import {
   TriggerType,
 } from "../config/con";
 import { ChainId } from "../config/chain";
-import { MyxClient, type PositionTpSlOrderParams } from "@myx-trade/sdk";
+import { MyxClient } from "@myx-trade/sdk";
+// import { MyxClient, type PositionTpSlOrderParams } from "@myx-trade/sdk";
 
 import useSWR from "swr";
 import {
@@ -539,17 +540,19 @@ const TradePage: React.FC = () => {
           message.error("Position ID is required");
           return;
         }
-        const position = positionsList.find(item => item.positionId === parseInt(values.positionId ?? '0'));
-        if (!position) {
-          message.error("Position not found");
-          return;
-        }
+        // todo @JC error
+        /*
+        const position = positionsList.find(item => item.positionId === values.positionId);
+        // if (!position) {
+        //   message.error("Position not found");
+        //   return;
+        // }
         const orderData: PositionTpSlOrderParams = {
           direction: position.direction as Direction,
           chainId: ChainId.ARB_TESTNET,
           address: address as `0x${string}`,
           poolId: selectedPool.poolId,
-          positionId: values.positionId ? parseInt(values.positionId) : 0,
+          positionId: '',
           // orderType: OrderType.STOP,
           tpTriggerType: values.tpTriggerType as TriggerType,
           slTriggerType: values.slTriggerType as TriggerType,
@@ -569,44 +572,46 @@ const TradePage: React.FC = () => {
         };
         const rs = await myxClient.order.createPositionTpSlOrder(orderData);
         console.log("Order placed:", rs);
+        */
         return;
       }
       if (values.operation === OperationType.INCREASE) {
-        const orderData = {
-          chainId: ChainId.ARB_TESTNET,
-          address: address as `0x${string}`,
-          poolId: selectedPool.poolId,
-          positionId: values.positionId ? parseInt(values.positionId) : 0,
-          orderType: values.orderType as OrderType,
-          triggerType: values.triggerType as TriggerType,
-          direction: values.direction as Direction,
-          collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
-          size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
-          price: values.price
-            ? ethers.parseUnits(values.price.toString(), 30).toString()
-            : "0",  //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
-          timeInForce: values.timeInForce as TimeInForce,
-          postOnly: values.postOnly,
-          slippagePct: ethers.parseUnits(values.slippagePct.toString(), 4).toString(), // 转换为精度4位
-          executionFeeToken: selectedPool.quoteToken,
-          leverage: values.leverage,
-          tpSize: values.tpSize
-            ? ethers.parseUnits(values.tpSize.toString(), selectedPool.baseDecimals).toString()
-            : "0",
-          tpPrice: values.tpPrice
-            ? ethers.parseUnits(values.tpPrice.toString(), 30).toString()
-            : "0",
-          slSize: values.slSize
-            ? ethers.parseUnits(values.slSize.toString(), selectedPool.baseDecimals).toString()
-            : "0",
-          slPrice: values.slPrice
-            ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
-            : "0",
-        };
-
-        const rs = await myxClient.order.createIncreaseOrder(orderData);
-
-        console.log("Order placed:", rs);
+        // todo @JC error
+        /*
+         const orderData = {
+           chainId: ChainId.ARB_TESTNET,
+           address: address as `0x${string}`,
+           poolId: selectedPool.poolId,
+           positionId: values.positionId ? parseInt(values.positionId) : 0,
+           orderType: values.orderType as OrderType,
+           triggerType: values.triggerType as TriggerType,
+           direction: values.direction as Direction,
+           collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
+           size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
+           price: values.price
+             ? ethers.parseUnits(values.price.toString(), 30).toString()
+             : "0",  //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
+           timeInForce: values.timeInForce as TimeInForce,
+           postOnly: values.postOnly,
+           slippagePct: ethers.parseUnits(values.slippagePct.toString(), 4).toString(), // 转换为精度4位
+           executionFeeToken: selectedPool.quoteToken,
+           leverage: values.leverage,
+           tpSize: values.tpSize
+             ? ethers.parseUnits(values.tpSize.toString(), selectedPool.baseDecimals).toString()
+             : "0",
+           tpPrice: values.tpPrice
+             ? ethers.parseUnits(values.tpPrice.toString(), 30).toString()
+             : "0",
+           slSize: values.slSize
+             ? ethers.parseUnits(values.slSize.toString(), selectedPool.baseDecimals).toString()
+             : "0",
+           slPrice: values.slPrice
+             ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
+             : "0",
+         };
+          const rs = await myxClient.order.createIncreaseOrder(orderData);
+ 
+         console.log("Order placed:", rs);*/
       } else {
         // 平仓操作
         const orderData = {
@@ -630,10 +635,11 @@ const TradePage: React.FC = () => {
         };
 
         console.log("orderData-->", orderData);
+        // todo @JC error
 
-        const rs = await myxClient.order.createDecreaseOrder(orderData);
+    /*     const rs = await myxClient.order.createDecreaseOrder(orderData);
 
-        console.log("Order placed:", rs);
+        console.log("Order placed:", rs);*/
       }
     } catch (error) {
       console.error("Error placing order:", error);
