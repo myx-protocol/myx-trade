@@ -5,7 +5,8 @@ import { parseUnits } from "ethers";
 import { COMMON_CONFIG_DECIMALS } from "@/config/decimals";
 
 export const bigintTradingGasToRatioCalculator = (gas: bigint, ratio: Number) => {
-  return gas *  parseUnits(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** (COMMON_CONFIG_DECIMALS) )
+  
+  return BigInt(gas) *  parseUnits(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** (COMMON_CONFIG_DECIMALS) )
 }
 
 export const bigintTradingGasPriceWithRatio = async (chainId:ChainId) => {
@@ -18,7 +19,7 @@ export const bigintTradingGasPriceWithRatio = async (chainId:ChainId) => {
       throw new Error('Network Error')
     }
     // console.log("gasPrice", gasPrice)
-    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio)
+    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(BigInt(gasPrice), chainInfo.gasPriceRatio)
     // console.log('gasPriceWithRatio--->', gasPriceWithRatio)
     return {
       gasPrice: gasPriceWithRatio,
