@@ -124,6 +124,7 @@ export const getPoolTokenContract = async (chainId: ChainId, lpTokenAddress: str
 export const getMarketManageContract = async (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = Address[chainId as keyof typeof Address];
   const address = addresses.MARKET_MANAGER;
+  console.log(addresses.MARKET_MANAGER);
   const provider = type === ProviderType.JSON ? getJSONProvider(chainId as number) : (await getSignerProvider(chainId as number));
 
   return getContract(address, MarketManager_ABI, provider) as unknown as MarketManager
