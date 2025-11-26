@@ -324,7 +324,8 @@ export class Seamless {
       }, retryOptions)
 
       try {
-        await promise
+        const rs = await promise
+        return rs
       } catch (err) {
         if (err instanceof TimeoutError) {
           throw new MyxSDKError(MyxErrorCode.Timeout, "Your request timed out, please try again");
@@ -461,36 +462,27 @@ export class Seamless {
 
       const apiKey = encrypted.toString()
 
-      const isAuthorized = await this.onCheckRelayer(account, wallet.address)
+      let isAuthorized = await this.onCheckRelayer(account, wallet.address)
 
       this.seamlessWallet = wallet;
       this.seamlessWalletAuthorized = isAuthorized;
       this.seamlessWalletApikey = apiKey;
-      const forwarderContract = await getForwarderContract(config.chainId)
 
-      const approvalResult = await this.utils.approveAuthorization({
-        quoteAddress: '0x7e248ec1721639413a280d9e82e2862cae2e6e28',
+      const forwarderContract = await getForwarderContract(config.chainId)
+      const erc20Address = getContractAddressByChainId(config.chainId).ERC20
+
+      await this.utils.approveAuthorization({
+        quoteAddress: erc20Address,
         amount: ethers.MaxUint256.toString(),
         spenderAddress: forwarderContract.target as string,
       });
 
-      console.log('approvalResult-->', approvalResult)
-      if (!isAuthorized) {
-        await this.authorizeSeamlessAccount({
-          seamlessAddress: wallet.address,
-          approve: true,
-        })
-      }
-
-      // const seamlessAccount: SeamlessAccount = {
-      //   loginTime: Date.now(),
-      //   apikey,
-      //   enable: true,
-      //   address: wallet.address,
-      //   masterAddress: account,
-      //   authorize: {
-      //     [config.chainId]: isAuthorized,
-      //   },
+      // console.log('approvalResult-->', approvalResult)
+      // if (!isAuthorized) {
+      // const authorizeResult = await this.authorizeSeamlessAccount({
+      //     seamlessAddress: wallet.address,
+      //     approve: true,
+      //   })
       // }
 
       return {
