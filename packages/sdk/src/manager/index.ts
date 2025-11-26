@@ -7,8 +7,9 @@ import { Position } from "./position";
 import { Order } from "./order";
 import { Utils } from "./utils";
 import { Account } from "./account";
-import { BrowserProvider } from "ethers";
+
 import { MxSDK } from "@/web3";
+import { Seamless } from "./seamless";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -30,6 +31,7 @@ export class MyxClient {
   public order: Order;
   public utils: Utils;
   public account: Account;
+  public seamless: Seamless;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -70,6 +72,9 @@ export class MyxClient {
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
+
+    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
+
 
     const lp = MxSDK.getInstance();
     // if (options.walletClient?.transport) {

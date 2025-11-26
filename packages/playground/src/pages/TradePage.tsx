@@ -343,6 +343,7 @@ const TradePage: React.FC = () => {
 
   const [positionsList, setPositionsList] = useState<any[]>([]);
   const [ordersList, setOrdersList] = useState<any[]>([]);
+  const [seamlessPassword, setSeamlessPassword] = useState<string>('')
 
   // 调整保证金弹窗相关状态
   const [cancelAllLoading, setCancelAllLoading] = useState(false);
@@ -415,7 +416,6 @@ const TradePage: React.FC = () => {
 
     if (res?.code === 0) {
       const positions: any[] = res?.data ?? [];
-      console.log('positions-->', positions);
       setPositionsList(positions);
     } else {
       console.error('Failed to fetch positions:', res?.message);
@@ -433,7 +433,6 @@ const TradePage: React.FC = () => {
 
     if (res?.code === 0) {
       const orders: any[] = res?.data ?? [];
-      console.log('orders-->', orders);
       setOrdersList(orders);
     } else {
       console.error('Failed to fetch orders:', res?.message);
@@ -1492,6 +1491,11 @@ const TradePage: React.FC = () => {
         </Col>
       </Row>
 
+      <Input value={seamlessPassword} onChange={(e) => setSeamlessPassword(e.target.value)} />
+      <Button onClick={async () => {
+        const rs = await myxClient?.seamless.createSeamless({ password: seamlessPassword })
+        console.log('rs-->', rs)
+      }}>创建无感账号</Button>
     </div>
   );
 };
