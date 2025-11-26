@@ -298,8 +298,7 @@ export class Order {
           useAccountBalance: false,
         }
       })
-      this.logger.info("closeAllPositions positionIds--->", positionIds);
-      this.logger.info("closeAllPositions dataMap--->", dataMap);
+
       const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(positionIds, dataMap);
       const transaction = await brokerContract.placeOrdersWithPosition(positionIds, dataMap, {
         gasLimit: (gasLimit * 120n) / 100n,
