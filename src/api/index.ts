@@ -23,6 +23,7 @@ import { addQueryParams } from "./utils";
 // todo @JC
 export const baseUrl = "https://api-test.myx.cash";
 
+export const forwardUrl = "https://api-test.myx.cash/v2/agent";
 
 
 export const getOraclePrice = async (
@@ -327,3 +328,5 @@ export const getMarketList = async () => {
 export * from "./type";
 
 export * from './account'
+
+export * from './seamless'

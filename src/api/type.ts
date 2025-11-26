@@ -21,9 +21,10 @@ export enum ErrorCode {
   INVALID_PARAMETER = 9901,
   NETWORK_ERROR = "ERR_NETWORK",
 }
-export interface BaseResponse {
+export interface BaseResponse<T = any> {
   code: ErrorCode;
   msg: string | null;
+  data?: T
 }
 
 export type DashboardType = {
@@ -355,4 +356,20 @@ export interface MarketInfo {
   oracleRefundFeeUsd:number,
   poolPrimeThreshold: number,
   decimals: number,
+}
+
+
+export type SeamlessAccount = {
+  /** 登录时间戳 */
+  loginTime: number
+  /** 无感账户私钥 */
+  apikey: string
+  /** 无感账户地址 */
+  address: string
+  /** 主账户地址 */
+  masterAddress: string
+  /** 是否开启 */
+  enable: boolean
+  /** 授权状态 */
+  authorize: Partial<Record<ChainId, boolean>>,
 }

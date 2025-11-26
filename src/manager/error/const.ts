@@ -6,6 +6,10 @@ export enum MyxErrorCode {
   InvalidAccessToken = "INVALID_ACCESS_TOKEN",
   RequestFailed = "REQUEST_FAILED",
   InvalidSigner = "INVALID_SIGNER",
+  InvalidPrivateKey = "INVALID_PRIVATE_KEY",
+  InsufficientBalance = "INSUFFICIENT_BALANCE",
+  Timeout = "TIMEOUT",
+  OperationFailed = "OPERATION_FAILED",
 }
 
 export class MyxSDKError extends Error {
