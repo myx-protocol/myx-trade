@@ -358,18 +358,3 @@ export interface MarketInfo {
   decimals: number,
 }
 
-
-export type SeamlessAccount = {
-  /** 登录时间戳 */
-  loginTime: number
-  /** 无感账户私钥 */
-  apikey: string
-  /** 无感账户地址 */
-  address: string
-  /** 主账户地址 */
-  masterAddress: string
-  /** 是否开启 */
-  enable: boolean
-  /** 授权状态 */
-  authorize: Partial<Record<ChainId, boolean>>,
-}
