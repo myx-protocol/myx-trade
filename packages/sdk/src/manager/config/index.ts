@@ -55,6 +55,13 @@ export class ConfigManager {
     };
   }
 
+  public startSeamlessMode(open: boolean) {
+    this.config = {
+      ...this.config,
+      seamlessMode: open
+    };
+  }
+
   public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
     // before auth, clear the accessToken and accessTokenExpiry
     this.clear();

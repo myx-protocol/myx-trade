@@ -424,6 +424,16 @@ export class Seamless {
     }
   }
 
+  async startSeamlessMode({ open }: { open: boolean }) {
+    this.configManager.startSeamlessMode(open)
+    return {
+      code: 0,
+      data: {
+        open,
+      },
+    }
+  }
+
   async createSeamless({ password }: { password: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const signer = config.signer;
