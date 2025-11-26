@@ -21,9 +21,6 @@ import { Account } from "../account";
 import { getContractAddressByChainId } from "@/config/address/index";
 import { getContract } from "@/web3";
 import accountAbi from "@/abi/Account.json";
-import { encodeFunctionData } from "viem";
-import brokerAbi from "@/abi/Broker.json";
-import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
 export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -131,32 +128,9 @@ export class Order {
       }
 
       const contractAddresses = getContractAddressByChainId(params.chainId);
-      const eip7702DelegationAddress = contractAddresses.EIP7702Delegation;
-      const brokerAddress = contractAddresses.BROKER;
       const accountAddress = contractAddresses.Account;
 
-
-      // 检查 walletClient（EIP-7702 必需）
-      if (!config.walletClient) {
-        throw new Error('EIP-7702 交易需要 walletClient，请在配置中提供 walletClient');
-      }
-
-      const userAddress = await config.signer.getAddress();
-
-      // 使用 walletClient.signAuthorization 签名授权（根据 EIP-7702 文档）
-      const authorization = await config.walletClient.signAuthorization({
-        account: userAddress as `0x${string}`,
-        contractAddress: eip7702DelegationAddress as `0x${string}`,
-      });
-
-      console.log('authorization--->', authorization);
-
-      const authorizationList = [authorization];
-
-      // 2️⃣ 构造批量执行参数数组
-      const bundleParams = [];
-
-      // 如果需要转账，先添加 deposit 操作
+      // 如果需要转账，先执行 deposit 交易
       if (transferAmount > 0) {
         // 检查是否需要授权
         const needApproval = await this.utils.needsApproval(
@@ -165,7 +139,6 @@ export class Order {
           accountAddress,
         );
 
-        console.log('needApproval--->', needApproval);
         if (needApproval) {
           const approvalResult = await this.utils.approveAuthorization({
             quoteAddress: params.executionFeeToken,
@@ -178,13 +151,14 @@ export class Order {
           }
         }
 
-        // 估算 deposit 的 gas
+        // 执行 deposit 交易
         const accountContract = getContract(
           accountAddress,
           accountAbi,
           config.signer
         );
         console.log('transferAmount-->', transferAmount);
+
         const depositGasLimit = await accountContract.deposit.estimateGas(
           params.address,
           params.poolId,
@@ -193,78 +167,58 @@ export class Order {
 
         console.log("depositGasLimit--->", depositGasLimit);
 
-        // 编码 deposit 调用数据
-        const depositData = encodeFunctionData({
-          abi: accountAbi,
-          functionName: 'deposit',
-          args: [params.address, params.poolId, transferAmount.toString()],
-        });
+        const depositTx = await accountContract.deposit(
+          params.address,
+          params.poolId,
+          transferAmount,
+          {
+            gasLimit: (depositGasLimit * 120n) / 100n,
+          }
+        );
 
-        // 添加 deposit 操作到批量执行参数（先执行）
-        bundleParams.push({
-          target: accountAddress,
-          value: 0n,
-          gas: (depositGasLimit * 120n) / 100n, // 添加 gas 字段
-          data: depositData as `0x${string}`,
-        });
+        this.logger.info("Deposit transaction sent:", depositTx.hash);
+
+        // 等待 deposit 交易确认
+        const depositReceipt = await depositTx.wait();
+        this.logger.info("Deposit confirmed in block:", depositReceipt?.blockNumber);
       }
 
-      let orderData = []
-      let functionName = ''
+      // 执行 placeOrder 交易
+      let transaction;
       if (!params.positionId) {
-        orderData = ['1', data]
-        functionName = 'placeOrderWithSalt'
-        this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionSalt: '1' });
+        const positionSalt = '1';
+        this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionSalt });
+
+        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionSalt, data);
+
+        transaction = await brokerContract.placeOrderWithSalt(
+          positionSalt,
+          data,
+          {
+            gasLimit: (gasLimit * 120n) / 100n,
+          }
+        );
       } else {
-        functionName = 'placeOrderWithPosition'
-        orderData = [params.positionId.toString(), data]
         this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
+
+        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(
+          params.positionId.toString(),
+          data
+        );
+
+        transaction = await brokerContract.placeOrderWithPosition(
+          params.positionId.toString(),
+          data,
+          {
+            gasLimit: (gasLimit * 120n) / 100n,
+          }
+        );
       }
 
-      this.logger.info("createIncreaseOrder orderData--->", orderData, functionName);
-
-      // // 估算 placeOrder 的 gas
-      // // @ts-ignore
-      // const placeOrderGasLimit = await brokerContract[functionName].estimateGas(...orderData);
-      // console.log("placeOrderGasLimit--->", placeOrderGasLimit);
-
-      const placeOrderData = encodeFunctionData({
-        abi: brokerAbi,
-        functionName,
-        args: orderData
-      });
-      
-      this.logger.info("createIncreaseOrder placeOrderData--->", placeOrderData);
-
-      bundleParams.push({
-        target: brokerAddress,
-        value: 0n,
-        gas: 1000000, // 添加 gas 字段
-        data: placeOrderData as `0x${string}`,
-      });
-
-      const batchExecuteData = encodeFunctionData({
-        abi: eip7702DelegationAbi,
-        functionName: 'batchSelfExecute',
-        args: [bundleParams],
-      });
-
-      this.logger.info("createIncreaseOrder batchExecuteData--->", batchExecuteData);
-
-      // 根据 EIP-7702 文档发送交易
-      const hash = await config.walletClient.sendTransaction({
-        account: userAddress as `0x${string}`,
-        to: userAddress as `0x${string}`,
-        data: batchExecuteData as `0x${string}`,
-        authorizationList,
-        chain: null,
-      });
-
-      this.logger.info("EIP-7702 Batch transaction sent:", hash);
+      this.logger.info("Transaction sent:", transaction.hash);
       this.logger.info("Waiting for confirmation...");
 
-      // 8️⃣ 等待交易确认
-      const receipt = await config.signer.provider?.waitForTransaction(hash as `0x${string}`);
+      const receipt = await transaction.wait();
       this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       this.logger.info("createIncreaseOrder receipt--->", receipt);
@@ -273,7 +227,7 @@ export class Order {
       const result = {
         success: true,
         orderId,
-        transactionHash: hash,
+        transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
         status: receipt?.status === 1 ? "success" : "failed",
