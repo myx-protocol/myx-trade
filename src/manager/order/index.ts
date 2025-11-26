@@ -17,15 +17,23 @@ import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, keccak256 } from "ethers";
 import { Address, encodeAbiParameters, parseAbiParameters } from "viem";
-
+import { Account } from "../account";
+import { getContractAddressByChainId } from "@/config/address/index";
+import { getContract } from "@/web3";
+import accountAbi from "@/abi/Account.json";
+import { encodeFunctionData } from "viem";
+import brokerAbi from "@/abi/Broker.json";
+import eip7702DelegationAbi from "@/abi/EIP7702Delegation.json";
 export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
+  private account: Account;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
+    this.account = account;
   }
 
   async createPositionId(poolId: string, user: Address, direction: Direction, salt: bigint) {
@@ -73,6 +81,33 @@ export class Order {
         }
       }
 
+      const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
+      const walletBalanceRes = await this.account.getWalletQuoteTokenBalance();
+      console.log("marginAccountBalance--->", marginAccountBalanceRes);
+      console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
+      const marginAccountBalance = marginAccountBalanceRes?.data;
+      const walletBalance = walletBalanceRes?.data;
+
+      if (marginAccountBalanceRes.code !== 0 || walletBalanceRes.code !== 0) {
+        return {
+          code: -1,
+          message: "Failed to get tradable amount or wallet balance",
+        };
+      }
+
+      let useAccountBalance = false
+      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
+      let transferAmount = 0n
+
+
+
+      if (totalBalance > 0) {
+        useAccountBalance = true
+        transferAmount = collateralWithNetworkFee - totalBalance
+      }
+
+      console.log('transferAmount-->', transferAmount)
+
       const data = {
         user: params.address,
         poolId: params.poolId,
@@ -80,130 +115,157 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
         direction: params.direction,
-        collateralAmount: collateralWithNetworkFee,
+        collateralAmount: collateralWithNetworkFee.toString(),
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
-        postOnly: params.postOnly,
-        slippagePct: params.slippagePct,
+        postOnly: params.postOnly ?? false,
+        slippagePct: params.slippagePct ?? "0",
         executionFeeToken: params.executionFeeToken,
-        leverage: params.leverage,
-        tpSize: params.tpSize ? params.tpSize : 0,
-        tpPrice: params.tpPrice ? params.tpPrice : 0,
-        slSize: params.slSize ? params.slSize : 0,
-        slPrice: params.slPrice ? params.slPrice : 0,
-        useAccountBalance: false,
+        leverage: params.leverage ?? 0,
+        tpSize: params.tpSize ?? "0",
+        tpPrice: params.tpPrice ?? "0",
+        slSize: params.slSize ?? "0",
+        slPrice: params.slPrice ?? "0",
+        useAccountBalance,
       }
 
-      this.logger.info("positionId", params.positionId);
-      let transaction;
+      const contractAddresses = getContractAddressByChainId(params.chainId);
+      const eip7702DelegationAddress = contractAddresses.EIP7702Delegation;
+      const brokerAddress = contractAddresses.BROKER;
+      const accountAddress = contractAddresses.Account;
 
-      if (!params.positionId) {
-        const positionId = 1 //await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
 
-        this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionId });
+      // 检查 walletClient（EIP-7702 必需）
+      if (!config.walletClient) {
+        throw new Error('EIP-7702 交易需要 walletClient，请在配置中提供 walletClient');
+      }
 
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), {
-          user: params.address,
-          poolId: params.poolId,
-          orderType: params.orderType,
-          triggerType: params.triggerType,
-          operation: OperationType.INCREASE,
-          direction: params.direction,
-          collateralAmount: collateralWithNetworkFee,
-          size: params.size,
-          price: params.price,
-          timeInForce: TIME_IN_FORCE,
-          postOnly: params.postOnly,
-          slippagePct: params.slippagePct,
-          executionFeeToken: params.executionFeeToken,
-          leverage: params.leverage,
-          tpSize: params.tpSize ? params.tpSize : 0,
-          tpPrice: params.tpPrice ? params.tpPrice : 0,
-          slSize: params.slSize ? params.slSize : 0,
-          slPrice: params.slPrice ? params.slPrice : 0,
-          useAccountBalance: false,
-        });
+      const userAddress = await config.signer.getAddress();
 
-        transaction = await brokerContract.placeOrderWithSalt(positionId.toString(),
-          {
-            user: params.address,
-            poolId: params.poolId,
-            orderType: params.orderType,
-            triggerType: params.triggerType,
-            operation: OperationType.INCREASE,
-            direction: params.direction,
-            collateralAmount: collateralWithNetworkFee,
-            size: params.size,
-            price: params.price,
-            timeInForce: TIME_IN_FORCE,
-            postOnly: params.postOnly,
-            slippagePct: params.slippagePct,
-            executionFeeToken: params.executionFeeToken,
-            leverage: params.leverage,
-            tpSize: params.tpSize ? params.tpSize : 0,
-            tpPrice: params.tpPrice ? params.tpPrice : 0,
-            slSize: params.slSize ? params.slSize : 0,
-            slPrice: params.slPrice ? params.slPrice : 0,
-            useAccountBalance: false,
-          },
-          {
-            gasLimit: (gasLimit * 120n) / 100n,
-          }
+      // 使用 walletClient.signAuthorization 签名授权（根据 EIP-7702 文档）
+      const authorization = await config.walletClient.signAuthorization({
+        account: userAddress as `0x${string}`,
+        contractAddress: eip7702DelegationAddress as `0x${string}`,
+      });
+
+      console.log('authorization--->', authorization);
+
+      const authorizationList = [authorization];
+
+      // 2️⃣ 构造批量执行参数数组
+      const bundleParams = [];
+
+      // 如果需要转账，先添加 deposit 操作
+      if (transferAmount > 0) {
+        // 检查是否需要授权
+        const needApproval = await this.utils.needsApproval(
+          params.executionFeeToken,
+          transferAmount.toString(),
+          accountAddress,
         );
-      } else {
-        this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), {
-          user: params.address,
-          poolId: params.poolId,
-          orderType: params.orderType,
-          triggerType: params.triggerType,
-          operation: OperationType.INCREASE,
-          direction: params.direction,
-          collateralAmount: collateralWithNetworkFee,
-          size: params.size,
-          price: params.price,
-          timeInForce: TIME_IN_FORCE,
-          postOnly: params.postOnly,
-          slippagePct: params.slippagePct,
-          executionFeeToken: params.executionFeeToken,
-          leverage: params.leverage,
-          tpSize: params.tpSize ? params.tpSize : 0,
-          tpPrice: params.tpPrice ? params.tpPrice : 0,
-          slSize: params.slSize ? params.slSize : 0,
-          slPrice: params.slPrice ? params.slPrice : 0,
-          useAccountBalance: false,
+
+        console.log('needApproval--->', needApproval);
+        if (needApproval) {
+          const approvalResult = await this.utils.approveAuthorization({
+            quoteAddress: params.executionFeeToken,
+            amount: ethers.MaxUint256.toString(),
+            spenderAddress: accountAddress,
+          });
+
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
+
+        // 估算 deposit 的 gas
+        const accountContract = getContract(
+          accountAddress,
+          accountAbi,
+          config.signer
+        );
+        console.log('transferAmount-->', transferAmount);
+        const depositGasLimit = await accountContract.deposit.estimateGas(
+          params.address,
+          params.poolId,
+          transferAmount
+        );
+
+        console.log("depositGasLimit--->", depositGasLimit);
+
+        // 编码 deposit 调用数据
+        const depositData = encodeFunctionData({
+          abi: accountAbi,
+          functionName: 'deposit',
+          args: [params.address, params.poolId, transferAmount.toString()],
         });
 
-        transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
-          {
-            user: params.address,
-            poolId: params.poolId,
-            orderType: params.orderType,
-            triggerType: params.triggerType,
-            operation: OperationType.INCREASE,
-            direction: params.direction,
-            collateralAmount: collateralWithNetworkFee,
-            size: params.size,
-            price: params.price,
-            timeInForce: TIME_IN_FORCE,
-            postOnly: params.postOnly,
-            slippagePct: params.slippagePct,
-            executionFeeToken: params.executionFeeToken,
-            leverage: params.leverage,
-            tpSize: params.tpSize ? params.tpSize : 0,
-            tpPrice: params.tpPrice ? params.tpPrice : 0,
-            slSize: params.slSize ? params.slSize : 0,
-            slPrice: params.slPrice ? params.slPrice : 0,
-            useAccountBalance: false,
-          },
-          {
-            gasLimit: (gasLimit * 120n) / 100n,
-          }
-        )
+        // 添加 deposit 操作到批量执行参数（先执行）
+        bundleParams.push({
+          target: accountAddress,
+          value: 0n,
+          gas: (depositGasLimit * 120n) / 100n, // 添加 gas 字段
+          data: depositData as `0x${string}`,
+        });
       }
 
-      const receipt = await transaction.wait();
+      let orderData = []
+      let functionName = ''
+      if (!params.positionId) {
+        orderData = ['1', data]
+        functionName = 'placeOrderWithSalt'
+        this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionSalt: '1' });
+      } else {
+        functionName = 'placeOrderWithPosition'
+        orderData = [params.positionId.toString(), data]
+        this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
+      }
+
+      this.logger.info("createIncreaseOrder orderData--->", orderData, functionName);
+
+      // // 估算 placeOrder 的 gas
+      // // @ts-ignore
+      // const placeOrderGasLimit = await brokerContract[functionName].estimateGas(...orderData);
+      // console.log("placeOrderGasLimit--->", placeOrderGasLimit);
+
+      const placeOrderData = encodeFunctionData({
+        abi: brokerAbi,
+        functionName,
+        args: orderData
+      });
+      
+      this.logger.info("createIncreaseOrder placeOrderData--->", placeOrderData);
+
+      bundleParams.push({
+        target: brokerAddress,
+        value: 0n,
+        gas: 1000000, // 添加 gas 字段
+        data: placeOrderData as `0x${string}`,
+      });
+
+      const batchExecuteData = encodeFunctionData({
+        abi: eip7702DelegationAbi,
+        functionName: 'batchSelfExecute',
+        args: [bundleParams],
+      });
+
+      this.logger.info("createIncreaseOrder batchExecuteData--->", batchExecuteData);
+
+      // 根据 EIP-7702 文档发送交易
+      const hash = await config.walletClient.sendTransaction({
+        account: userAddress as `0x${string}`,
+        to: userAddress as `0x${string}`,
+        data: batchExecuteData as `0x${string}`,
+        authorizationList,
+        chain: null,
+      });
+
+      this.logger.info("EIP-7702 Batch transaction sent:", hash);
+      this.logger.info("Waiting for confirmation...");
+
+      // 8️⃣ 等待交易确认
+      const receipt = await config.signer.provider?.waitForTransaction(hash as `0x${string}`);
+      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       this.logger.info("createIncreaseOrder receipt--->", receipt);
       const orderId = this.utils.getOrderIdFromTransaction(receipt);
@@ -211,7 +273,7 @@ export class Order {
       const result = {
         success: true,
         orderId,
-        transactionHash: transaction.hash,
+        transactionHash: hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
         status: receipt?.status === 1 ? "success" : "failed",
