@@ -6,7 +6,7 @@ import { Utils } from "../utils";
 import { getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
-import { ForwarderGetStatus, SeamlessAccount, fetchForwarderGetApi, forwarderTxApi } from "@/api";
+import { ForwarderGetStatus, fetchForwarderGetApi, forwarderTxApi } from "@/api";
 import { getForwarderContract } from "@/web3/providers";
 import { Account } from "../account";
 import dayjs from "dayjs";
@@ -466,12 +466,21 @@ export class Seamless {
       this.seamlessWallet = wallet;
       this.seamlessWalletAuthorized = isAuthorized;
       this.seamlessWalletApikey = apiKey;
-      // if (!isAuthorized) {
-      //   await this.authorizeSeamlessAccount({
-      //     seamlessAddress: wallet.address,
-      //     approve: true,
-      //   })
-      // }
+      const forwarderContract = await getForwarderContract(config.chainId)
+
+      const approvalResult = await this.utils.approveAuthorization({
+        quoteAddress: '0x7e248ec1721639413a280d9e82e2862cae2e6e28',
+        amount: ethers.MaxUint256.toString(),
+        spenderAddress: forwarderContract.target as string,
+      });
+
+      console.log('approvalResult-->', approvalResult)
+      if (!isAuthorized) {
+        await this.authorizeSeamlessAccount({
+          seamlessAddress: wallet.address,
+          approve: true,
+        })
+      }
 
       // const seamlessAccount: SeamlessAccount = {
       //   loginTime: Date.now(),
