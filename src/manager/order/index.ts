@@ -256,25 +256,6 @@ export class Order {
       const collateralWithNetworkFee =
         BigInt(params.collateralAmount) + BigInt(networkFee);
 
-      console.log("createDecreaseOrder", params);
-
-      console.log("createDecreaseOrder params--->", {
-        user: params.address,
-        poolId: params.poolId,
-        positionId: params.positionId,
-        orderType: params.orderType,
-        triggerType: params.triggerType,
-        operation: OperationType.DECREASE,
-        direction: params.direction,
-        collateralAmount: collateralWithNetworkFee,
-        size: params.size,
-        price: params.price,
-        timeInForce: TIME_IN_FORCE,
-        postOnly: params.postOnly,
-        slippagePct: params.slippagePct,
-        executionFeeToken: params.executionFeeToken,
-        leverage: params.leverage,
-      });
 
       const data = {
         user: params.address,
@@ -300,108 +281,27 @@ export class Order {
 
       let transaction;
       if (!params.positionId) {
-        const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
-        this.logger.info("createDecreaseOrder salt position params--->", { ...data, positionId: positionId });
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), {
-          user: params.address,
-          poolId: params.poolId,
-          orderType: params.orderType,
-          triggerType: params.triggerType,
-          operation: OperationType.DECREASE,
-          direction: params.direction,
-          collateralAmount: collateralWithNetworkFee,
-          size: params.size,
-          price: params.price,
-          timeInForce: TIME_IN_FORCE,
-          postOnly: params.postOnly,
-          slippagePct: params.slippagePct,
-          executionFeeToken: params.executionFeeToken,
-          leverage: params.leverage,
-          tpSize: 0,
-          tpPrice: 0,
-          slSize: 0,
-          slPrice: 0,
-          useAccountBalance: false,
-        });
+        const positionId = 1
+        this.logger.info("createDecreaseOrder salt position params--->", [positionId, { data }]);
+        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), data);
 
-        transaction = await brokerContract.placeOrderWithSalt(params.positionId.toString(),
-          {
-            user: params.address,
-            poolId: params.poolId,
-            orderType: params.orderType,
-            triggerType: params.triggerType,
-            operation: OperationType.DECREASE,
-            direction: params.direction,
-            collateralAmount: collateralWithNetworkFee,
-            size: params.size,
-            price: params.price,
-            timeInForce: TIME_IN_FORCE,
-            postOnly: false,
-            slippagePct: params.slippagePct,
-            executionFeeToken: params.executionFeeToken,
-            leverage: params.leverage,
-            tpSize: 0,
-            tpPrice: 0,
-            slSize: 0,
-            slPrice: 0,
-            useAccountBalance: false,
-          },
+        transaction = await brokerContract.placeOrderWithSalt(positionId.toString(),
+          data,
           {
             gasLimit: (gasLimit * 130n) / 100n,
           }
         );
       } else {
-        this.logger.info("createDecreaseOrder nft position params--->", { ...data, positionId: params.positionId });
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), {
-          user: params.address,
-          poolId: params.poolId,
-          orderType: params.orderType,
-          triggerType: params.triggerType,
-          operation: OperationType.DECREASE,
-          direction: params.direction,
-          collateralAmount: collateralWithNetworkFee,
-          size: params.size,
-          price: params.price,
-          timeInForce: TIME_IN_FORCE,
-          postOnly: params.postOnly,
-          slippagePct: params.slippagePct,
-          executionFeeToken: params.executionFeeToken,
-          leverage: params.leverage,
-          tpSize: 0,
-          tpPrice: 0,
-          slSize: 0,
-          slPrice: 0,
-          useAccountBalance: false,
-        });
+        this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, { data }]);
+        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), data);
 
         transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
-          {
-            user: params.address,
-            poolId: params.poolId,
-            orderType: params.orderType,
-            triggerType: params.triggerType,
-            operation: OperationType.DECREASE,
-            direction: params.direction,
-            collateralAmount: collateralWithNetworkFee,
-            size: params.size,
-            price: params.price,
-            timeInForce: TIME_IN_FORCE,
-            postOnly: false,
-            slippagePct: params.slippagePct,
-            executionFeeToken: params.executionFeeToken,
-            leverage: params.leverage,
-            tpSize: 0,
-            tpPrice: 0,
-            slSize: 0,
-            slPrice: 0,
-            useAccountBalance: false,
-          },
+          data,
           {
             gasLimit: (gasLimit * 130n) / 100n,
           }
         );
       }
-
 
       this.logger.info("Transaction sent:", transaction.hash);
       this.logger.info("Waiting for confirmation...");
