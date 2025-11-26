@@ -299,14 +299,19 @@ export class Seamless {
           requestId: txRs.data?.requestId,
         })
 
-        console.log('getRs-->', getRs)
+        this.logger.info('authorizeSeamlessAccount result-->', getRs)
 
         if (getRs.data?.status === ForwarderGetStatus.EXECUTED) {
           if (getRs.data?.txHash) {
             txRs.data.txHash = getRs.data.txHash
-            return
+            return {
+              code: 0,
+              data: {
+                seamlessAccount: seamlessAddress,
+                authorized: approve,
+              },
+            }
           } else {
-
             throw new MyxSDKError(MyxErrorCode.OperationFailed, "Operation failed, please try again later");
           }
         } else if (
@@ -328,8 +333,6 @@ export class Seamless {
         }
       }
     }
-
-    return txRs
   }
 
   async unLockSeamlessWallet({ masterAddress, password, apiKey }: { masterAddress: string, password: string, apiKey: string }) {
