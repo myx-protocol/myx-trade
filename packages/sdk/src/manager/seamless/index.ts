@@ -5,7 +5,7 @@ import CryptoJS from 'crypto-js'
 import { Utils } from "../utils";
 import { getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes } from 'ethers'
+import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { ForwarderGetStatus, SeamlessAccount, fetchForwarderGetApi, forwarderTxApi } from "@/api";
 import { getForwarderContract } from "@/web3/providers";
 import { Account } from "../account";
@@ -210,7 +210,7 @@ export class Seamless {
     const config: MyxClientConfig = this.configManager.getConfig();
     const forwarderContract = await getForwarderContract(config.chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
-    console.log('forwarderJsonRpcContractDomain-->', forwarderJsonRpcContractDomain)
+
     const domain = {
       name: forwarderJsonRpcContractDomain.name,
       version: forwarderJsonRpcContractDomain.version,
@@ -281,7 +281,6 @@ export class Seamless {
       permitParams,
     ])
 
-    console.log('masterAddress-->', masterAddress)
     const txRs = await this.forwarderTx({
       from: masterAddress ?? '',
       to: forwarderContract?.target as string,
@@ -333,6 +332,95 @@ export class Seamless {
     return txRs
   }
 
+  async unLockSeamlessWallet({ masterAddress, password, apiKey }: { masterAddress: string, password: string, apiKey: string }) {
+    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const iv = getIvMapString()
+    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+      iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const wallet = new ethers.Wallet(privateKey)
+    this.seamlessWallet = wallet;
+    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address)
+    this.seamlessWalletAuthorized = isAuthorized;
+    return {
+      code: 0,
+      data: {
+        masterAddress: masterAddress,
+        seamlessAccount: wallet.address,
+        authorized: isAuthorized,
+      },
+    }
+  }
+
+  async exportSeamlessPrivateKey({ password, apiKey }: { password: string, apiKey: string }) {
+    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const iv = getIvMapString()
+    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+      iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+
+    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const wallet = new ethers.Wallet(privateKey)
+
+    if (wallet.address !== this.seamlessWallet?.address) {
+      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
+    }
+
+    return {
+      code: 0,
+      data: {
+        privateKey: privateKey,
+      },
+    }
+  }
+
+  async importSeamlessPrivateKey({ privateKey, password }: { privateKey: string, password: string }) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+    if (!ethers.isHexString(privateKey, 32)) {
+      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
+    }
+
+    const wallet = new ethers.Wallet(privateKey)
+    const forwarderContract = await getForwarderContract(config.chainId)
+    const masterAddress = await forwarderContract.originAccount(wallet.address)
+
+    if (masterAddress === ZeroAddress) {
+      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "The private key is not a senseless account");
+    }
+
+    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address)
+
+    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const iv = getIvMapString()
+
+    const encrypted = CryptoJS.AES.encrypt(privateKey, key, {
+      iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7,
+    })
+
+    const apiKey = encrypted.toString()
+
+    this.seamlessWallet = wallet;
+    this.seamlessWalletAuthorized = isAuthorized;
+    this.seamlessWalletApikey = apiKey;
+
+    return {
+      code: 0,
+      data: {
+        masterAddress: masterAddress,
+        seamlessAccount: wallet.address,
+        authorized: isAuthorized,
+        apiKey
+      },
+    }
+  }
+
   async createSeamless({ password }: { password: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const signer = config.signer;
@@ -358,13 +446,13 @@ export class Seamless {
         padding: CryptoJS.pad.Pkcs7,
       })
 
-      const apikey = encrypted.toString()
+      const apiKey = encrypted.toString()
 
       const isAuthorized = await this.onCheckRelayer(account, wallet.address)
 
       this.seamlessWallet = wallet;
       this.seamlessWalletAuthorized = isAuthorized;
-      this.seamlessWalletApikey = apikey;
+      this.seamlessWalletApikey = apiKey;
       // if (!isAuthorized) {
       //   await this.authorizeSeamlessAccount({
       //     seamlessAddress: wallet.address,
@@ -386,8 +474,10 @@ export class Seamless {
       return {
         code: 0,
         data: {
+          masterAddress: account,
           seamlessAccount: wallet.address,
-          authorized: isAuthorized
+          authorized: isAuthorized,
+          apiKey
         },
       }
     } catch (error) {
