@@ -18,9 +18,9 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, keccak256 } from "ethers";
 import { Address, encodeAbiParameters, parseAbiParameters } from "viem";
 import { Account } from "../account";
-import { getContractAddressByChainId } from "@/config/address/index";
-import { getContract } from "@/web3";
-import accountAbi from "@/abi/Account.json";
+// import { getContractAddressByChainId } from "@/config/address/index";
+// import { getContract } from "@/web3";
+// import accountAbi from "@/abi/Account.json";
 export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -127,61 +127,61 @@ export class Order {
         useAccountBalance,
       }
 
-      const contractAddresses = getContractAddressByChainId(params.chainId);
-      const accountAddress = contractAddresses.Account;
+      // const contractAddresses = getContractAddressByChainId(params.chainId);
+      // const accountAddress = contractAddresses.Account;
 
       // 如果需要转账，先执行 deposit 交易
-      if (transferAmount > 0) {
-        // 检查是否需要授权
-        const needApproval = await this.utils.needsApproval(
-          params.executionFeeToken,
-          transferAmount.toString(),
-          accountAddress,
-        );
+      // if (transferAmount > 0) {
+      //   // 检查是否需要授权
+      //   const needApproval = await this.utils.needsApproval(
+      //     params.executionFeeToken,
+      //     transferAmount.toString(),
+      //     accountAddress,
+      //   );
 
-        if (needApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            quoteAddress: params.executionFeeToken,
-            amount: ethers.MaxUint256.toString(),
-            spenderAddress: accountAddress,
-          });
+      //   if (needApproval) {
+      //     const approvalResult = await this.utils.approveAuthorization({
+      //       quoteAddress: params.executionFeeToken,
+      //       amount: ethers.MaxUint256.toString(),
+      //       spenderAddress: accountAddress,
+      //     });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+      //     if (approvalResult.code !== 0) {
+      //       throw new Error(approvalResult.message);
+      //     }
+      //   }
 
-        // 执行 deposit 交易
-        const accountContract = getContract(
-          accountAddress,
-          accountAbi,
-          config.signer
-        );
-        console.log('transferAmount-->', transferAmount);
+      //   // 执行 deposit 交易
+      //   const accountContract = getContract(
+      //     accountAddress,
+      //     accountAbi,
+      //     config.signer
+      //   );
+      //   console.log('transferAmount-->', transferAmount);
 
-        const depositGasLimit = await accountContract.deposit.estimateGas(
-          params.address,
-          params.poolId,
-          transferAmount
-        );
+      //   const depositGasLimit = await accountContract.deposit.estimateGas(
+      //     params.address,
+      //     params.poolId,
+      //     transferAmount
+      //   );
 
-        console.log("depositGasLimit--->", depositGasLimit);
+      //   console.log("depositGasLimit--->", depositGasLimit);
 
-        const depositTx = await accountContract.deposit(
-          params.address,
-          params.poolId,
-          transferAmount,
-          {
-            gasLimit: (depositGasLimit * 120n) / 100n,
-          }
-        );
+      //   const depositTx = await accountContract.deposit(
+      //     params.address,
+      //     params.poolId,
+      //     transferAmount,
+      //     {
+      //       gasLimit: (depositGasLimit * 120n) / 100n,
+      //     }
+      //   );
 
-        this.logger.info("Deposit transaction sent:", depositTx.hash);
+      //   this.logger.info("Deposit transaction sent:", depositTx.hash);
 
-        // 等待 deposit 交易确认
-        const depositReceipt = await depositTx.wait();
-        this.logger.info("Deposit confirmed in block:", depositReceipt?.blockNumber);
-      }
+      //   // 等待 deposit 交易确认
+      //   const depositReceipt = await depositTx.wait();
+      //   this.logger.info("Deposit confirmed in block:", depositReceipt?.blockNumber);
+      // }
 
       // 执行 placeOrder 交易
       let transaction;
