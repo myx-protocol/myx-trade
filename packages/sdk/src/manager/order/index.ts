@@ -256,6 +256,85 @@ export class Order {
     }
   }
 
+  async closeAllPositions(chainId: number, params: PlaceOrderParams[]) {
+    try {
+      const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+
+      const brokerContract = await getBrokerSingerContract(
+        chainId,
+      );
+
+      const networkFee = await this.utils.getNetworkFee(
+        params[0].executionFeeToken
+      );
+
+      const positionIds = params.map((param: PlaceOrderParams) => param.positionId.toString());
+
+      const dataMap = params.map((param: PlaceOrderParams) => {
+        const collateralWithNetworkFee = BigInt(param.collateralAmount) + BigInt(networkFee);
+
+        return {
+          user: param.address,
+          poolId: param.poolId,
+          orderType: param.orderType,
+          triggerType: param.triggerType,
+          operation: OperationType.DECREASE,
+          direction: param.direction,
+          collateralAmount: collateralWithNetworkFee,
+          size: param.size,
+          price: param.price,
+          timeInForce: TIME_IN_FORCE,
+          postOnly: param.postOnly,
+          slippagePct: param.slippagePct,
+          executionFeeToken: param.executionFeeToken,
+          leverage: param.leverage,
+          tpSize: 0,
+          tpPrice: 0,
+          slSize: 0,
+          slPrice: 0,
+          useAccountBalance: false,
+        }
+      })
+      this.logger.info("closeAllPositions positionIds--->", positionIds);
+      this.logger.info("closeAllPositions dataMap--->", dataMap);
+      const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(positionIds, dataMap);
+      const transaction = await brokerContract.placeOrdersWithPosition(positionIds, dataMap, {
+        gasLimit: (gasLimit * 120n) / 100n,
+      });
+
+      this.logger.info("Transaction sent:", transaction.hash);
+      this.logger.info("Waiting for confirmation...");
+
+      const receipt = await transaction.wait();
+      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+
+      this.logger.info("closeAllPositions receipt--->", receipt);
+      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+
+      return {
+        code: 0,
+        message: "close all positions success",
+        data: orderId,
+        transactionHash: transaction.hash,
+        blockNumber: receipt?.blockNumber,
+        gasUsed: receipt?.gasUsed?.toString(),
+        status: receipt?.status === 1 ? "success" : "failed",
+        confirmations: 1,
+        timestamp: Date.now(),
+        receipt,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        // @ts-ignore
+        message: error?.message,
+      };
+    }
+  }
+
   async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
@@ -269,9 +348,7 @@ export class Order {
         params.executionFeeToken
       );
 
-      const collateralWithNetworkFee =
-        BigInt(params.collateralAmount) + BigInt(networkFee);
-
+      const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
 
       const data = {
         user: params.address,
