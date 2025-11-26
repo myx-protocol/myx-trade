@@ -118,6 +118,8 @@ export class Seamless {
   private utils: Utils;
   private account: Account
   private seamlessWallet: ethers.Wallet | null
+  private seamlessWalletAuthorized: boolean
+  private seamlessWalletApikey: string
 
   constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
     this.configManager = configManager;
@@ -125,6 +127,8 @@ export class Seamless {
     this.utils = utils;
     this.account = account;
     this.seamlessWallet = null;
+    this.seamlessWalletAuthorized = false;
+    this.seamlessWalletApikey = '';
   }
 
   async onCheckRelayer(account: string, relayer: string) {
@@ -358,27 +362,33 @@ export class Seamless {
 
       const isAuthorized = await this.onCheckRelayer(account, wallet.address)
 
-      if (!isAuthorized) {
-        await this.authorizeSeamlessAccount({
-          seamlessAddress: wallet.address,
-          approve: true,
-        })
-      }
+      this.seamlessWallet = wallet;
+      this.seamlessWalletAuthorized = isAuthorized;
+      this.seamlessWalletApikey = apikey;
+      // if (!isAuthorized) {
+      //   await this.authorizeSeamlessAccount({
+      //     seamlessAddress: wallet.address,
+      //     approve: true,
+      //   })
+      // }
 
-      const seamlessAccount: SeamlessAccount = {
-        loginTime: Date.now(),
-        apikey,
-        enable: true,
-        address: wallet.address,
-        masterAddress: account,
-        authorize: {
-          [config.chainId]: isAuthorized,
-        },
-      }
+      // const seamlessAccount: SeamlessAccount = {
+      //   loginTime: Date.now(),
+      //   apikey,
+      //   enable: true,
+      //   address: wallet.address,
+      //   masterAddress: account,
+      //   authorize: {
+      //     [config.chainId]: isAuthorized,
+      //   },
+      // }
 
       return {
         code: 0,
-        data: seamlessAccount,
+        data: {
+          seamlessAccount: wallet.address,
+          authorized: isAuthorized
+        },
       }
     } catch (error) {
       return {
