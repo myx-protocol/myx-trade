@@ -27,8 +27,8 @@ export interface MyxClientConfig {
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
-    | (() => Promise<AccessTokenResponse | undefined>)
-    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
+  | (() => Promise<AccessTokenResponse | undefined>)
+  | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
 }
 
 export class ConfigManager {
