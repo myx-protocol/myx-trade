@@ -48,6 +48,8 @@ export class MyxClient {
      */
     this.utils = new Utils(this.configManager, this.logger);
 
+    this.account = new Account(this.configManager, this.logger, this.utils);
+
     /**
      * initialize markets
      */
@@ -58,12 +60,12 @@ export class MyxClient {
      */
     this.position = new Position(this.configManager, this.logger, this.utils);
 
+    
     /**
      * initialize orders
      */
-    this.order = new Order(this.configManager, this.logger, this.utils);
+    this.order = new Order(this.configManager, this.logger, this.utils, this.account);
 
-    this.account = new Account(this.configManager, this.logger, this.utils);
     /**
      * initialize subscription
      */
