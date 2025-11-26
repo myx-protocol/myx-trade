@@ -24,8 +24,6 @@ export interface MyxClientConfig {
   isTestnet?: boolean;
   poolingInterval?: number;
   seamlessMode?: boolean;
-  seamlessKeyPath?: string;
-  seamlessKeyPassword?: string;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:

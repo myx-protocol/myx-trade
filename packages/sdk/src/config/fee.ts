@@ -3,3 +3,6 @@ export const GAS_FEE_RESERVED_RATIO = 10
 
 // 转发合约的 pledge fee 系数（2 倍）
 export const FORWARD_PLEDGE_FEE_RADIO = 2
+
+
+export const SEAMLESS_ACCOUNT_GAS_LIMIT = 5000000
