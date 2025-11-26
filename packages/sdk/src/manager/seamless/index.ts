@@ -282,7 +282,7 @@ export class Seamless {
       from: masterAddress ?? '',
       to: forwarderContract?.target as string,
       value: '0',
-      gas: gas.toString(),
+      gas: '350000',//gas.toString(),
       nonce: nonce.toString(),
       data: functionHash,
       deadline,
