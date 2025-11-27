@@ -706,6 +706,34 @@ export class Order {
     }
   }
 
+
+  async cancelAllOrders(orderIds: string[]) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+    try {
+      const config: MyxClientConfig = this.configManager.getConfig();
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+      const brokerContract = await getBrokerSingerContract(
+        config.chainId,
+        this.configManager.getConfig().brokerAddress
+      );
+
+      const tx = await brokerContract.cancelOrders(orderIds);
+      await tx.wait();
+      return {
+        code: 0,
+        message: "cancel all orders success",
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        // @ts-ignore
+        message: error?.message,
+      };
+    }
+  }
+
   async cancelOrder(orderId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
@@ -721,7 +749,7 @@ export class Order {
       await tx.wait();
       return {
         code: 0,
-        message: "Approval success",
+        message: "cancel order success",
       };
     } catch (error) {
       return {
@@ -811,8 +839,6 @@ export class Order {
   }
 
   async getOrders() {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -823,7 +849,7 @@ export class Order {
     }
 
     try {
-      const res = await getOrders(accessToken, config.chainId);
+      const res = await getOrders(accessToken);
       return {
         code: 0,
         data: res.data,
