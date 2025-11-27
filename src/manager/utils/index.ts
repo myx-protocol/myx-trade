@@ -11,6 +11,9 @@ import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
+import { getForwarderContract } from "@/web3/providers";
+import { getJSONProvider } from "@/web3";
+import ERC20Token_ABI from "@/abi/ERC20Token.json";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -315,5 +318,27 @@ export class Utils {
     } catch (error: any) {
       return error?.message ?? error?.toString() ?? fallbackErrorMessage;
     }
+  }
+
+  async checkSeamlessGas(userAddress: string) {
+    const config = this.configManager.getConfig();
+    const forwarderContract = await getForwarderContract(config.chainId);
+    const relayFee = await forwarderContract.getRelayFee()
+    const provider = await getJSONProvider(config.chainId)
+    // const { gasPrice } = await provider.getFeeData()
+    const contractAddress = getContractAddressByChainId(config.chainId);
+    
+    const erc20Contract = new ethers.Contract(
+      contractAddress.ERC20,
+      ERC20Token_ABI,
+      provider
+    );
+    const balance = await erc20Contract.balanceOf(userAddress);
+   
+    if(BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
+      return false
+    }
+
+    return true
   }
 }

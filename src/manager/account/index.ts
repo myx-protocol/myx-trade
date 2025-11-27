@@ -149,8 +149,6 @@ export class Account {
         }
       }
 
-
-
       const rs = await accountContract.deposit(account, poolId, amount);
       const receipt = await rs?.wait(1);
 
