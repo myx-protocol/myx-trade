@@ -371,6 +371,7 @@ export class Seamless {
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
+    this.logger.info('export verify seamless wallet-->', wallet.address, this.seamlessWallet)
     if (wallet.address !== this.seamlessWallet?.address) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
     }
