@@ -89,9 +89,8 @@ export const getBasePoolContract = async (chainId: ChainId, type: ProviderType =
   return getContract(address, BasePool_ABI, provider) as unknown as BasePool;
 }
 
-export const getBrokerSingerContract = async (chainId: ChainId) => {
-  const addresses = Address[chainId as keyof typeof Address];
-  const address = addresses.BROKER;
+export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: string) => {
+  const address = brokerAddress;
   const provider = await getSignerProvider(chainId as number);
 
   return getContract(address, Broker_ABI, provider) as unknown as Broker;

@@ -53,6 +53,7 @@ export class Order {
 
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
+        this.configManager.getConfig().brokerAddress
       );
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken
@@ -65,7 +66,6 @@ export class Order {
         params.executionFeeToken,
         collateralWithNetworkFee.toString(),
       );
-
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
@@ -95,8 +95,6 @@ export class Order {
       let useAccountBalance = false
       const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
       let transferAmount = 0n
-
-
 
       if (totalBalance > 0) {
         useAccountBalance = true
@@ -265,6 +263,7 @@ export class Order {
 
       const brokerContract = await getBrokerSingerContract(
         chainId,
+        this.configManager.getConfig().brokerAddress
       );
 
       const networkFee = await this.utils.getNetworkFee(
@@ -342,6 +341,7 @@ export class Order {
       }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
+        this.configManager.getConfig().brokerAddress
       );
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken
@@ -443,6 +443,7 @@ export class Order {
       }
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
+        this.configManager.getConfig().brokerAddress
       );
       try {
         const networkFee = await this.utils.getNetworkFee(
@@ -651,7 +652,8 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId
+        config.chainId,
+        this.configManager.getConfig().brokerAddress
       );
 
       const tx = await brokerContract.cancelOrder(orderId);
@@ -676,7 +678,8 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId
+        config.chainId,
+        this.configManager.getConfig().brokerAddress
       );
       const tx = await brokerContract.cancelOrders(orderIds);
       await tx.wait();
@@ -701,7 +704,8 @@ export class Order {
     }
 
     const brokerContract = await getBrokerSingerContract(
-      config.chainId
+      config.chainId,
+      this.configManager.getConfig().brokerAddress
     );
 
     const data = {
