@@ -89,11 +89,15 @@ export const getBasePoolContract = async (chainId: ChainId, type: ProviderType =
   return getContract(address, BasePool_ABI, provider) as unknown as BasePool;
 }
 
-export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: string) => {
+export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: string,) => {
   const address = brokerAddress;
   const provider = await getSignerProvider(chainId as number);
 
   return getContract(address, Broker_ABI, provider) as unknown as Broker;
+}
+
+export const getSeamlessBrokerContract = async (brokerAddress: string, singer: Signer) => {
+  return getContract(brokerAddress, Broker_ABI, singer) as unknown as Broker;
 }
 
 

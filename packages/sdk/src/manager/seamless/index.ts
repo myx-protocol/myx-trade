@@ -117,7 +117,7 @@ export class Seamless {
   private logger: Logger;
   private utils: Utils;
   private account: Account
-  private seamlessWallet: ethers.Wallet | null
+  public seamlessWallet: ethers.Wallet | null
   private seamlessWalletAuthorized: boolean
   private seamlessWalletApikey: string
 
@@ -138,7 +138,6 @@ export class Seamless {
 
     const checkRelayerResult = await forwarderContract.isUserRelayerEnabled(account, relayer)
 
-    console.log('checkRelayerResult-->', checkRelayerResult)
     return checkRelayerResult
   }
 
@@ -187,7 +186,6 @@ export class Seamless {
     } catch (error) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
-    return
   }
 
   async forwarderTx({
@@ -210,7 +208,7 @@ export class Seamless {
     const config: MyxClientConfig = this.configManager.getConfig();
     const forwarderContract = await getForwarderContract(config.chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
-
+    
     const domain = {
       name: forwarderJsonRpcContractDomain.name,
       version: forwarderJsonRpcContractDomain.version,
@@ -502,4 +500,6 @@ export class Seamless {
       }
     }
   }
+
+
 }

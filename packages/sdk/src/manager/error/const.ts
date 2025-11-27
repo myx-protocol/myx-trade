@@ -10,6 +10,7 @@ export enum MyxErrorCode {
   InsufficientBalance = "INSUFFICIENT_BALANCE",
   Timeout = "TIMEOUT",
   OperationFailed = "OPERATION_FAILED",
+  InvalidSeamlessWallet = "INVALID_SEAMLESS_WALLET",
 }
 
 export class MyxSDKError extends Error {
