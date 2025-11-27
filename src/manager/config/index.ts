@@ -62,6 +62,13 @@ export class ConfigManager {
     };
   }
 
+  public updateClientChainId(chainId: number) {
+    this.config = {
+      ...this.config,
+      chainId
+    };
+  }
+
   public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
     // before auth, clear the accessToken and accessTokenExpiry
     this.clear();

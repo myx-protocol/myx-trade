@@ -97,7 +97,9 @@ export class MyxClient {
   ) {
     this.configManager.auth(params);
   }
-
+  public updateClientChainId(chainId: number) {
+    this.configManager.updateClientChainId(chainId);
+  }
   /**
    * close the client
    */

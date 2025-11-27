@@ -19,6 +19,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, Signer } from "ethers";
 import { Account } from "../account";
 import { Seamless } from "../seamless";
+import dayjs from "dayjs";
 // import { getContractAddressByChainId } from "@/config/address/index";
 // import { getContract } from "@/web3";
 // import accountAbi from "@/abi/Account.json";
@@ -69,7 +70,7 @@ export class Order {
       }
 
       const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
-      const walletBalanceRes = await this.account.getWalletQuoteTokenBalance();
+      const walletBalanceRes = await this.account.getWalletQuoteTokenBalance(params.address);
       console.log("marginAccountBalance--->", marginAccountBalanceRes);
       console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
       const marginAccountBalance = marginAccountBalanceRes?.data;
@@ -161,14 +162,14 @@ export class Order {
           to: this.configManager.getConfig().brokerAddress,
           value: '0',
           gas: '350000',
-          deadline: Date.now() * 60 * 60 * 24,
+          deadline: dayjs().add(60, 'minute').unix(),
           data: functionHash,
           nonce: nonce.toString(),
         }
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, this.seamless.seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
