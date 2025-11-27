@@ -7,6 +7,7 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
+import { getJSONProvider } from "@/web3";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -17,7 +18,7 @@ export class Account {
     this.utils = utils;
   }
 
-  async getWalletQuoteTokenBalance() {
+  async getWalletQuoteTokenBalance(address?: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(
@@ -25,13 +26,15 @@ export class Account {
         "Invalid signer"
       );
     }
+    
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Token_ABI,
-      config.signer
+      provider
     );
-    const balance = await erc20Contract.balanceOf(config.signer.getAddress());
+    const balance = await erc20Contract.balanceOf(address || config.signer.getAddress());
     return {
       code: 0,
       data: balance,

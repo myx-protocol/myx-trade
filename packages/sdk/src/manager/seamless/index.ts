@@ -204,11 +204,11 @@ export class Seamless {
     deadline: number;
     data: string;
     nonce: string;
-  }) {
+  }, provider?: ethers.Signer) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const forwarderContract = await getForwarderContract(config.chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
-    
+
     const domain = {
       name: forwarderJsonRpcContractDomain.name,
       version: forwarderJsonRpcContractDomain.version,
@@ -216,7 +216,7 @@ export class Seamless {
       verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
     }
 
-    const walletProvider = await getSignerProvider(config.chainId)
+    const walletProvider = provider ?? await getSignerProvider(config.chainId)
 
     const signature = await walletProvider.signTypedData(domain, contractTypes, {
       from,
@@ -243,7 +243,7 @@ export class Seamless {
     const masterAddress = await config.signer?.getAddress() ?? ''
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance()
+      const balanceRes = await this.account.getWalletQuoteTokenBalance(masterAddress)
       const balance = balanceRes.data
       const forwarderContract = await getForwarderContract(config.chainId)
 
