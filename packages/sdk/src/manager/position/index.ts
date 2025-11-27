@@ -27,8 +27,6 @@ export class Position {
   }
 
   async listPositions() {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -39,7 +37,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken, config.chainId);
+      const res = await getPositions(accessToken);
       return {
         code: 0,
         data: res.data,
@@ -208,6 +206,7 @@ export class Position {
   //     };
   //   }
   // }
+
 
   async adjustCollateral({
     poolId,
