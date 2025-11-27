@@ -52,6 +52,8 @@ export class MyxClient {
 
     this.account = new Account(this.configManager, this.logger, this.utils);
 
+    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
+
     /**
      * initialize markets
      */
@@ -62,18 +64,16 @@ export class MyxClient {
      */
     this.position = new Position(this.configManager, this.logger, this.utils);
 
-    
     /**
      * initialize orders
      */
-    this.order = new Order(this.configManager, this.logger, this.utils, this.account);
+    this.order = new Order(this.configManager, this.logger, this.utils, this.account, this.seamless);
 
     /**
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
 
-    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
 
 
     const lp = MxSDK.getInstance();

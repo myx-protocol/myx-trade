@@ -3,6 +3,8 @@ import { Logger } from "@/logger";
 import { getHistoryOrders, GetHistoryOrdersParams, getOrders } from "@/api";
 import {
   getBrokerSingerContract,
+  getForwarderContract,
+  getSeamlessBrokerContract,
 } from "@/web3/providers";
 import { TIME_IN_FORCE } from "@/config/con";
 import {
@@ -10,14 +12,13 @@ import {
   OperationType,
   OrderType,
   PositionTpSlOrderParams,
-  Direction,
 } from "@/types/trading";
 import { Utils } from "../utils";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { ethers, keccak256 } from "ethers";
-import { Address, encodeAbiParameters, parseAbiParameters } from "viem";
+import { ethers, Signer } from "ethers";
 import { Account } from "../account";
+import { Seamless } from "../seamless";
 // import { getContractAddressByChainId } from "@/config/address/index";
 // import { getContract } from "@/web3";
 // import accountAbi from "@/abi/Account.json";
@@ -26,22 +27,13 @@ export class Order {
   private logger: Logger;
   private utils: Utils;
   private account: Account;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
+  private seamless: Seamless;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, seamless: Seamless) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.account = account;
-  }
-
-  async createPositionId(poolId: string, user: Address, direction: Direction, salt: bigint) {
-    const encoded = encodeAbiParameters(parseAbiParameters('bytes32 poolId, address user, uint8 direction, uint64 salt'), [
-      poolId as `0x${string}`,
-      user,
-      direction,
-      salt,
-    ]);
-
-    return keccak256(encoded);
+    this.seamless = seamless;
   }
 
   async createIncreaseOrder(params: PlaceOrderParams) {
@@ -51,16 +43,14 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
-      const brokerContract = await getBrokerSingerContract(
-        params.chainId,
-        this.configManager.getConfig().brokerAddress
-      );
+
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken
       );
 
       const collateralWithNetworkFee =
         BigInt(params.collateralAmount) + BigInt(networkFee);
+
 
       const needsApproval = await this.utils.needsApproval(
         params.executionFeeToken,
@@ -83,7 +73,6 @@ export class Order {
       console.log("marginAccountBalance--->", marginAccountBalanceRes);
       console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
       const marginAccountBalance = marginAccountBalanceRes?.data;
-      const walletBalance = walletBalanceRes?.data;
 
       if (marginAccountBalanceRes.code !== 0 || walletBalanceRes.code !== 0) {
         return {
@@ -124,6 +113,77 @@ export class Order {
         slPrice: params.slPrice ?? "0",
         useAccountBalance,
       }
+
+      this.logger.info("createIncreaseOrder position params--->", data);
+
+      if (config.seamlessMode) {
+        const seamlessWallet = this.seamless.seamlessWallet
+        if (!seamlessWallet) {
+          throw new MyxSDKError(MyxErrorCode.InvalidSeamlessWallet, "Invalid seamless wallet");
+        }
+        console.log('seamlessWallet-->', seamlessWallet)
+
+        const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+
+        console.log('isEnoughGas-->', isEnoughGas)
+
+        const forwarderContract = await getForwarderContract(params.chainId)
+
+        const brokerContract = await getSeamlessBrokerContract(
+          this.configManager.getConfig().brokerAddress,
+          this.seamless.seamlessWallet as Signer
+        );
+        let functionHash = ''
+        if (!params.positionId) {
+          this.logger.info("createIncreaseOrder placeOrderWithSalt data --->", [
+            '1',
+            data
+          ])
+          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
+            '1',
+            data
+          ])
+          this.logger.info("createIncreaseOrder placeOrderWithSalt function hash --->", functionHash)
+        } else {
+          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithPosition', [
+            params.positionId.toString(),
+            data
+          ])
+        }
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: this.seamless.seamlessWallet?.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '350000',
+          deadline: Date.now() * 60 * 60 * 24,
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
+
+        const rs = await this.seamless.forwarderTx(forwardTxParams);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "create increase order success",
+          data: rs,
+        };
+      }
+
+      const brokerContract = await getBrokerSingerContract(
+        params.chainId,
+        this.configManager.getConfig().brokerAddress
+      );
+
+
 
       // const contractAddresses = getContractAddressByChainId(params.chainId);
       // const accountAddress = contractAddresses.Account;
