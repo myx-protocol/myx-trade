@@ -6,9 +6,6 @@ export enum ChainId {
   LINEA_MAINNET = 59144,
   ARB_TESTNET = 421614,
   ARB_MAINNET = 42161,
-  OPBNB_TESTNET = 5611,
-  OPBNB_MAINNET = 204,
-  SCROLL_MAINNET = 534352,
   BSC_TESTNET = 97,
   BSC_MAINNET = 56,
 }
@@ -17,8 +14,6 @@ export const MAINNET_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
   ChainId.LINEA_MAINNET,
   ChainId.ARB_MAINNET,
-  ChainId.SCROLL_MAINNET,
-  ChainId.OPBNB_MAINNET,
 ] as const
 
 export const PROD_ENV_CHAIN_IDS = [
@@ -45,7 +40,6 @@ export const OKX_BRIDGE_CHAIN_IDS = [ChainId.LINEA_MAINNET, ChainId.ARB_MAINNET]
 export const DEV_ENV_CHAIN_IDS = [
   ChainId.LINEA_SEPOLIA,
   ChainId.ARB_TESTNET,
-  ChainId.OPBNB_TESTNET,
   ChainId.BSC_TESTNET,
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
@@ -85,10 +79,8 @@ export function isSupportedSeamlessAccountChain(chainId?: number | null | ChainI
     [
       ChainId.LINEA_SEPOLIA,
       ChainId.ARB_TESTNET,
-      ChainId.OPBNB_TESTNET,
       ChainId.ARB_MAINNET,
       ChainId.LINEA_MAINNET,
-      ChainId.OPBNB_MAINNET,
       ChainId.BSC_TESTNET,
       ChainId.BSC_MAINNET,
     ].includes(chainId)
