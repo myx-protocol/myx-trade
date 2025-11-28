@@ -7,8 +7,9 @@ import { Position } from "./position";
 import { Order } from "./order";
 import { Utils } from "./utils";
 import { Account } from "./account";
-import { BrowserProvider } from "ethers";
+
 import { MxSDK } from "@/web3";
+import { Seamless } from "./seamless";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -30,6 +31,7 @@ export class MyxClient {
   public order: Order;
   public utils: Utils;
   public account: Account;
+  public seamless: Seamless;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -48,6 +50,10 @@ export class MyxClient {
      */
     this.utils = new Utils(this.configManager, this.logger);
 
+    this.account = new Account(this.configManager, this.logger, this.utils);
+
+    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
+
     /**
      * initialize markets
      */
@@ -61,13 +67,14 @@ export class MyxClient {
     /**
      * initialize orders
      */
-    this.order = new Order(this.configManager, this.logger, this.utils);
+    this.order = new Order(this.configManager, this.logger, this.utils, this.seamless);
 
-    this.account = new Account(this.configManager, this.logger, this.utils);
     /**
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
+
+
 
     const lp = MxSDK.getInstance();
     // if (options.walletClient?.transport) {
@@ -90,7 +97,9 @@ export class MyxClient {
   ) {
     this.configManager.auth(params);
   }
-
+  public updateClientChainId(chainId: number, brokerAddress: string) {
+    this.configManager.updateClientChainId(chainId, brokerAddress);
+  }
   /**
    * close the client
    */
