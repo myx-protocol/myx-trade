@@ -121,6 +121,7 @@ export interface PositionTpSlOrderParams {
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;
   direction: Direction; // position direction
+  leverage: number;
   tpSize?: string;
   tpPrice?: string;
   slSize?: string;

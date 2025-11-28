@@ -26,7 +26,7 @@ export class Account {
         "Invalid signer"
       );
     }
-    
+
     const contractAddress = getContractAddressByChainId(config.chainId);
     const provider = await getJSONProvider(config.chainId)
     const erc20Contract = new ethers.Contract(
@@ -53,13 +53,15 @@ export class Account {
       );
     }
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
-      config.signer
+      provider
     );
     try {
-      const assets = await accountContract.getTradableAmount(config.signer.getAddress(), poolId);
+      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+      const assets = await accountContract.getTradableAmount(targetAddress, poolId);
       const data = {
         profitIsReleased: assets[0],
         freeAmount: assets[1],
