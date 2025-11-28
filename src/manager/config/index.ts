@@ -17,6 +17,9 @@ interface GetAccessTokenQueueItem {
 }
 
 export interface MyxClientConfig {
+  /**
+   * @deprecated 为了更灵活的执行操作应该在具体方法中由外部传入chainId，这个字段将在未来版本中废弃
+   */
   chainId: number;
   signer?: Signer;
   walletClient?: WalletClient;
