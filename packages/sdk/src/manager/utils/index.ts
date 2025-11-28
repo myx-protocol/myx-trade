@@ -200,14 +200,18 @@ export class Utils {
   async getUserTradingFeeRate(assetClass: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
-    const brokerContract = new ethers.Contract(
-      brokerAddress,
-      Broker_ABI,
-      config.signer
-    );
+
     try {
+      const provider = await getJSONProvider(config.chainId)
+      const brokerContract = new ethers.Contract(
+        brokerAddress,
+        Broker_ABI,
+        provider
+      )
+      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+
       const userFeeRate = await brokerContract.getUserFeeRate(
-        config.signer?.getAddress(),
+        targetAddress,
         assetClass
       );
       return {
@@ -234,10 +238,11 @@ export class Utils {
     const orderManagerAddress = getContractAddressByChainId(
       config.chainId
     ).ORDER_MANAGER;
+    const provider = await getJSONProvider(config.chainId)
     const orderManagerContract = new ethers.Contract(
       orderManagerAddress,
       OrderManager_ABI,
-      config.signer
+      provider
     );
 
     try {
@@ -327,15 +332,15 @@ export class Utils {
     const provider = await getJSONProvider(config.chainId)
     // const { gasPrice } = await provider.getFeeData()
     const contractAddress = getContractAddressByChainId(config.chainId);
-    
+
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Token_ABI,
       provider
     );
     const balance = await erc20Contract.balanceOf(userAddress);
-   
-    if(BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
+
+    if (BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
       return false
     }
 

@@ -117,18 +117,18 @@ export class Seamless {
   private logger: Logger;
   private utils: Utils;
   private account: Account
-  public seamlessWallet: ethers.Wallet | null
-  private seamlessWalletAuthorized: boolean
-  private seamlessWalletApikey: string
+  // public seamlessWallet: ethers.Wallet | null
+  // private seamlessWalletAuthorized: boolean
+  // private seamlessWalletApikey: string
 
   constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.account = account;
-    this.seamlessWallet = null;
-    this.seamlessWalletAuthorized = false;
-    this.seamlessWalletApikey = '';
+    // this.seamlessWallet = null;
+    // this.seamlessWalletAuthorized = false;
+    // this.seamlessWalletApikey = '';
   }
 
   async onCheckRelayer(account: string, relayer: string) {
@@ -344,9 +344,13 @@ export class Seamless {
     })
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
-    this.seamlessWallet = wallet;
+
     const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address)
-    this.seamlessWalletAuthorized = isAuthorized;
+    this.configManager.updateSeamlessWallet({
+      masterAddress: masterAddress,
+      wallet: wallet,
+      authorized: isAuthorized,
+    })
     return {
       code: 0,
       data: {
@@ -369,15 +373,14 @@ export class Seamless {
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
-    this.logger.info('export verify seamless wallet-->', wallet.address, this.seamlessWallet)
-    if (wallet.address !== this.seamlessWallet?.address) {
+    if (wallet.address !== this.configManager.getConfig().seamlessAccount?.wallet?.address) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
     }
 
     return {
       code: 0,
       data: {
-        privateKey: privateKey,
+        privateKey,
       },
     }
   }
@@ -409,9 +412,11 @@ export class Seamless {
 
     const apiKey = encrypted.toString()
 
-    this.seamlessWallet = wallet;
-    this.seamlessWalletAuthorized = isAuthorized;
-    this.seamlessWalletApikey = apiKey;
+    this.configManager.updateSeamlessWallet({
+      masterAddress: masterAddress,
+      wallet: wallet,
+      authorized: isAuthorized,
+    })
 
     return {
       code: 0,
@@ -463,9 +468,11 @@ export class Seamless {
 
       let isAuthorized = await this.onCheckRelayer(account, wallet.address)
 
-      this.seamlessWallet = wallet;
-      this.seamlessWalletAuthorized = isAuthorized;
-      this.seamlessWalletApikey = apiKey;
+      this.configManager.updateSeamlessWallet({
+        masterAddress: account,
+        wallet: wallet,
+        authorized: isAuthorized,
+      })
 
       const forwarderContract = await getForwarderContract(config.chainId)
       const erc20Address = getContractAddressByChainId(config.chainId).ERC20
