@@ -786,15 +786,15 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams) {
+  async updateOrderTpSl(params: UpdateOrderParams, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
 
     const brokerContract = await getBrokerSingerContract(
-      config.chainId,
-      this.configManager.getConfig().brokerAddress
+      chainId,
+      config.brokerAddress
     );
 
     const data = {
