@@ -17,7 +17,6 @@ import { Utils } from "../utils";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, Signer } from "ethers";
-import { Account } from "../account";
 import { Seamless } from "../seamless";
 import dayjs from "dayjs";
 // import { getContractAddressByChainId } from "@/config/address/index";
@@ -27,13 +26,11 @@ export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private account: Account;
   private seamless: Seamless;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, seamless: Seamless) {
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
-    this.account = account;
     this.seamless = seamless;
   }
 
@@ -69,27 +66,27 @@ export class Order {
         }
       }
 
-      const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
-      const walletBalanceRes = await this.account.getWalletQuoteTokenBalance(params.address);
-      console.log("marginAccountBalance--->", marginAccountBalanceRes);
-      console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
-      const marginAccountBalance = marginAccountBalanceRes?.data;
+      // const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
+      // const walletBalanceRes = getBalanceOf(config.chainId, params.address, params.executionFeeToken);   await this.account.getWalletQuoteTokenBalance(params.address);
+      // console.log("marginAccountBalance--->", marginAccountBalanceRes);
+      // console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
+      // const marginAccountBalance = marginAccountBalanceRes?.data;
 
-      if (marginAccountBalanceRes.code !== 0 || walletBalanceRes.code !== 0) {
-        return {
-          code: -1,
-          message: "Failed to get tradable amount or wallet balance",
-        };
-      }
+      // if (marginAccountBalanceRes.code !== 0) {
+      //   return {
+      //     code: -1,
+      //     message: "Failed to get tradable amount or wallet balance",
+      //   };
+      // }
 
-      let useAccountBalance = false
-      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
-      let transferAmount = 0n
+      // let useAccountBalance = false
+      // const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
+      // let transferAmount = 0n
 
-      if (totalBalance > 0) {
-        useAccountBalance = true
-        transferAmount = collateralWithNetworkFee - totalBalance
-      }
+      // if (totalBalance > 0) {
+      //   useAccountBalance = true
+      //   transferAmount = collateralWithNetworkFee - totalBalance
+      // }
 
       // console.log('transferAmount-->', transferAmount)
 
