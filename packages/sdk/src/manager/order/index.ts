@@ -91,7 +91,7 @@ export class Order {
         transferAmount = collateralWithNetworkFee - totalBalance
       }
 
-      console.log('transferAmount-->', transferAmount)
+      // console.log('transferAmount-->', transferAmount)
 
       const data = {
         user: params.address,
@@ -112,7 +112,7 @@ export class Order {
         tpPrice: params.tpPrice ?? "0",
         slSize: params.slSize ?? "0",
         slPrice: params.slPrice ?? "0",
-        useAccountBalance,
+        useAccountBalance: false,
       }
 
       this.logger.info("createIncreaseOrder position params--->", data);
