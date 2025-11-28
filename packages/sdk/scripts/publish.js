@@ -82,11 +82,17 @@ async function publish() {
     });
 
     // 4. commit and push
+    console.log('\n🔄 提交并推送...');
     execSync('git add package.json', {
       stdio: 'inherit',
       cwd: path.join(__dirname, '..')
     });
     execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..')
+    });
+
+    execSync('git push', {
       stdio: 'inherit',
       cwd: path.join(__dirname, '..')
     });
