@@ -4,6 +4,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
 import { WalletClient } from "viem";
+import { ethers } from "ethers";
 
 interface AccessTokenResponse {
   accessToken: string;
@@ -22,6 +23,11 @@ export interface MyxClientConfig {
    */
   chainId: number;
   signer?: Signer;
+  seamlessAccount?: {
+    masterAddress: string;
+    wallet: ethers.Wallet | null;
+    authorized: boolean;
+  };
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
@@ -62,6 +68,17 @@ export class ConfigManager {
     this.config = {
       ...this.config,
       seamlessMode: open
+    };
+  }
+
+  public updateSeamlessWallet({ wallet, authorized, masterAddress }: { wallet?: ethers.Wallet, authorized?: boolean, masterAddress?: string }) {
+    this.config = {
+      ...this.config,
+      seamlessAccount: {
+        masterAddress: masterAddress ?? '',
+        wallet: wallet ?? null,
+        authorized: authorized ?? false,
+      }
     };
   }
 

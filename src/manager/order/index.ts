@@ -17,7 +17,6 @@ import { Utils } from "../utils";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, Signer } from "ethers";
-import { Account } from "../account";
 import { Seamless } from "../seamless";
 import dayjs from "dayjs";
 // import { getContractAddressByChainId } from "@/config/address/index";
@@ -27,13 +26,11 @@ export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private account: Account;
   private seamless: Seamless;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, seamless: Seamless) {
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
-    this.account = account;
     this.seamless = seamless;
   }
 
@@ -69,27 +66,27 @@ export class Order {
         }
       }
 
-      const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
-      const walletBalanceRes = await this.account.getWalletQuoteTokenBalance(params.address);
-      console.log("marginAccountBalance--->", marginAccountBalanceRes);
-      console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
-      const marginAccountBalance = marginAccountBalanceRes?.data;
+      // const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
+      // const walletBalanceRes = getBalanceOf(config.chainId, params.address, params.executionFeeToken);   await this.account.getWalletQuoteTokenBalance(params.address);
+      // console.log("marginAccountBalance--->", marginAccountBalanceRes);
+      // console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
+      // const marginAccountBalance = marginAccountBalanceRes?.data;
 
-      if (marginAccountBalanceRes.code !== 0 || walletBalanceRes.code !== 0) {
-        return {
-          code: -1,
-          message: "Failed to get tradable amount or wallet balance",
-        };
-      }
+      // if (marginAccountBalanceRes.code !== 0) {
+      //   return {
+      //     code: -1,
+      //     message: "Failed to get tradable amount or wallet balance",
+      //   };
+      // }
 
-      let useAccountBalance = false
-      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
-      let transferAmount = 0n
+      // let useAccountBalance = false
+      // const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
+      // let transferAmount = 0n
 
-      if (totalBalance > 0) {
-        useAccountBalance = true
-        transferAmount = collateralWithNetworkFee - totalBalance
-      }
+      // if (totalBalance > 0) {
+      //   useAccountBalance = true
+      //   transferAmount = collateralWithNetworkFee - totalBalance
+      // }
 
       // console.log('transferAmount-->', transferAmount)
 
@@ -116,14 +113,9 @@ export class Order {
       }
 
       this.logger.info("createIncreaseOrder position params--->", data);
-
-      if (config.seamlessMode) {
-        const seamlessWallet = this.seamless.seamlessWallet
-        if (!seamlessWallet) {
-          throw new MyxSDKError(MyxErrorCode.InvalidSeamlessWallet, "Invalid seamless wallet");
-        }
-        console.log('seamlessWallet-->', seamlessWallet)
-
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+      if (config.seamlessMode && authorized && seamlessWallet) {
         const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
 
         if (!isEnoughGas) {
@@ -136,7 +128,7 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          this.seamless.seamlessWallet as Signer
+          seamlessWallet as Signer
         );
         let functionHash = ''
         if (!params.positionId) {
@@ -158,7 +150,7 @@ export class Order {
         const nonce = await forwarderContract.nonces(seamlessWallet.address)
 
         const forwardTxParams = {
-          from: this.seamless.seamlessWallet?.address ?? '',
+          from: seamlessWallet.address ?? '',
           to: this.configManager.getConfig().brokerAddress,
           value: '0',
           gas: '350000',
@@ -169,7 +161,7 @@ export class Order {
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, this.seamless.seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
@@ -527,7 +519,7 @@ export class Order {
               postOnly: false,
               slippagePct: "0",
               executionFeeToken: params.executionFeeToken,
-              leverage: 0,
+              leverage: params.leverage,
               tpSize: "0",
               tpPrice: "0",
               slSize: "0",
@@ -548,7 +540,7 @@ export class Order {
               postOnly: false,
               slippagePct: "0",
               executionFeeToken: params.executionFeeToken,
-              leverage: 0,
+              leverage: params.leverage,
               tpSize: "0",
               tpPrice: "0",
               slSize: "0",
