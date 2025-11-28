@@ -62,10 +62,11 @@ export class ConfigManager {
     };
   }
 
-  public updateClientChainId(chainId: number) {
+  public updateClientChainId(chainId: number, brokerAddress: string) {
     this.config = {
       ...this.config,
-      chainId
+      chainId,
+      brokerAddress
     };
   }
 
