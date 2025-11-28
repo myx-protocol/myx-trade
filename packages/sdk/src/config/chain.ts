@@ -118,21 +118,22 @@ export interface RpcRetryOption {
 }
 
 export interface ContractAddress {
-  readonly Account:Address,
-  readonly POOL_MANAGER:Address,
-  readonly POSITION_MANAGER:Address,
-  readonly ORDER_MANAGER:Address,
-  readonly PYTH:Address,
-  readonly ERC20:Address,
-  readonly LIQUIDITY_ROUTER:Address,
-  readonly BASE_POOL:Address,
-  readonly QUOTE_POOL:Address,
-  readonly BROKER:Address, //
-  readonly ORACLE:Address,
-  readonly EIP7702Delegation:Address,
+  readonly USDC: Address,
+  readonly Account: Address,
+  readonly POOL_MANAGER: Address,
+  readonly POSITION_MANAGER: Address,
+  readonly ORDER_MANAGER: Address,
+  readonly PYTH: Address,
+  readonly ERC20: Address,
+  readonly LIQUIDITY_ROUTER: Address,
+  readonly BASE_POOL: Address,
+  readonly QUOTE_POOL: Address,
+  readonly ORACLE: Address,
+  readonly EIP7702Delegation: Address,
   readonly MARKET_MANAGER: Address,
   readonly DATA_PROVIDER: Address,
   readonly ORACLE_RESERVE: Address,
+  readonly FORWARDER: Address,
 }
 
 export interface ChainInfo {
