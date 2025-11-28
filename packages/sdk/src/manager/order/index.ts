@@ -116,14 +116,9 @@ export class Order {
       }
 
       this.logger.info("createIncreaseOrder position params--->", data);
-
-      if (config.seamlessMode) {
-        const seamlessWallet = this.seamless.seamlessWallet
-        if (!seamlessWallet) {
-          throw new MyxSDKError(MyxErrorCode.InvalidSeamlessWallet, "Invalid seamless wallet");
-        }
-        console.log('seamlessWallet-->', seamlessWallet)
-
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+      if (config.seamlessMode && authorized && seamlessWallet) {
         const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
 
         if (!isEnoughGas) {
@@ -136,7 +131,7 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          this.seamless.seamlessWallet as Signer
+          seamlessWallet as Signer
         );
         let functionHash = ''
         if (!params.positionId) {
@@ -158,7 +153,7 @@ export class Order {
         const nonce = await forwarderContract.nonces(seamlessWallet.address)
 
         const forwardTxParams = {
-          from: this.seamless.seamlessWallet?.address ?? '',
+          from: seamlessWallet.address ?? '',
           to: this.configManager.getConfig().brokerAddress,
           value: '0',
           gas: '350000',
@@ -169,7 +164,7 @@ export class Order {
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, this.seamless.seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
