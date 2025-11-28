@@ -21,9 +21,10 @@ export enum ErrorCode {
   INVALID_PARAMETER = 9901,
   NETWORK_ERROR = "ERR_NETWORK",
 }
-export interface BaseResponse {
+export interface BaseResponse<T = any> {
   code: ErrorCode;
   msg: string | null;
+  data?: T
 }
 
 export type DashboardType = {
@@ -356,3 +357,4 @@ export interface MarketInfo {
   poolPrimeThreshold: number,
   decimals: number,
 }
+

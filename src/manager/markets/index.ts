@@ -53,15 +53,13 @@ export class Markets {
   async getKlineList({
     interval,
     ...params
-  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime"> & {
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | 'chainId'> & {
     interval: KlineResolution;
   }) {
-    const config = this.configManager.getConfig();
     return (
       await getKlineData({
         ...params,
         interval: this.utils.transferKlineResolutionToInterval(interval),
-        chainId: config?.chainId,
       })
     ).data;
   }
@@ -69,15 +67,13 @@ export class Markets {
   async getKlineLatestBar({
     interval,
     ...params
-  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime"> & {
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | 'chainId'> & {
     interval: KlineResolution;
   }) {
-    const config = this.configManager.getConfig();
     return (
       await getKlineLatestBar({
         ...params,
         interval: this.utils.transferKlineResolutionToInterval(interval),
-        chainId: config?.chainId,
       })
     ).data;
   }
@@ -88,13 +84,9 @@ export class Markets {
   /**
    * ticker start
    */
-  async getTickerList(params: Omit<GetTickerDataParams, "chainId">) {
-    const config = this.configManager.getConfig();
+  async getTickerList(params: GetTickerDataParams) {
     return (
-      await getTickerData({
-        ...params,
-        chainId: config?.chainId,
-      })
+      await getTickerData(params)
     ).data;
   }
 

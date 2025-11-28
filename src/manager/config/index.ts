@@ -4,6 +4,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
 import { WalletClient } from "viem";
+import { ethers } from "ethers";
 
 interface AccessTokenResponse {
   accessToken: string;
@@ -17,20 +18,26 @@ interface GetAccessTokenQueueItem {
 }
 
 export interface MyxClientConfig {
+  /**
+   * @deprecated 为了更灵活的执行操作应该在具体方法中由外部传入chainId，这个字段将在未来版本中废弃
+   */
   chainId: number;
   signer?: Signer;
+  seamlessAccount?: {
+    masterAddress: string;
+    wallet: ethers.Wallet | null;
+    authorized: boolean;
+  };
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
   poolingInterval?: number;
   seamlessMode?: boolean;
-  seamlessKeyPath?: string;
-  seamlessKeyPassword?: string;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
-    | (() => Promise<AccessTokenResponse | undefined>)
-    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
+  | (() => Promise<AccessTokenResponse | undefined>)
+  | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
 }
 
 export class ConfigManager {
@@ -54,6 +61,32 @@ export class ConfigManager {
       ...this.config,
       signer: undefined,
       getAccessToken: undefined,
+    };
+  }
+
+  public startSeamlessMode(open: boolean) {
+    this.config = {
+      ...this.config,
+      seamlessMode: open
+    };
+  }
+
+  public updateSeamlessWallet({ wallet, authorized, masterAddress }: { wallet?: ethers.Wallet, authorized?: boolean, masterAddress?: string }) {
+    this.config = {
+      ...this.config,
+      seamlessAccount: {
+        masterAddress: masterAddress ?? '',
+        wallet: wallet ?? null,
+        authorized: authorized ?? false,
+      }
+    };
+  }
+
+  public updateClientChainId(chainId: number, brokerAddress: string) {
+    this.config = {
+      ...this.config,
+      chainId,
+      brokerAddress
     };
   }
 
