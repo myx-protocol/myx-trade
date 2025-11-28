@@ -67,7 +67,7 @@ export class MyxClient {
     /**
      * initialize orders
      */
-    this.order = new Order(this.configManager, this.logger, this.utils, this.account, this.seamless);
+    this.order = new Order(this.configManager, this.logger, this.utils, this.seamless);
 
     /**
      * initialize subscription
