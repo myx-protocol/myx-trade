@@ -320,6 +320,10 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
+      console.log("closeAllPositions params--->",chainId, params);
+
+      console.log('getNetworkFee--->', params[0].executionFeeToken, chainId);
+
       const networkFee = await this.utils.getNetworkFee(
         params[0].executionFeeToken,
         chainId
