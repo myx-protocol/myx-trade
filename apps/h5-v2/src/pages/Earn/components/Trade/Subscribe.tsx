@@ -1,16 +1,15 @@
 import { Trans } from '@lingui/react/macro'
 import { Box, Button } from '@mui/material'
-import { TipsFill, WalletLine } from '@/components/Icon'
+import { Refresh, TipsFill, WalletLine } from '@/components/Icon'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import ArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
-import { Describe, DescribeItem } from '@/components/Describe.tsx'
+import { Describe } from '@/components/Describe.tsx'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Card } from '@/pages/Earn/components/Trade/Card.tsx'
 import { t } from '@lingui/core/macro'
 import { quote as Quote, getBalanceOf, formatUnits, MarketPoolState } from '@myx-trade/sdk'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount } from 'wagmi'
 import { PoolContext } from '../../context'
 import { useQuery } from '@tanstack/react-query'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
@@ -22,12 +21,17 @@ import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { isSafeNumber } from '@/utils'
 import toast from 'react-hot-toast'
 import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { Tooltips } from '@/components/UI/Tooltips'
+import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
   const { pool, quoteLpDetail } = useContext(PoolContext)
-  const { address: account } = useAccount()
+  const { address: account } = useWalletConnection()
   const { slippage, setSlippage } = useContext(TradeContext)
+  const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -71,6 +75,8 @@ export const Subscribe = () => {
     try {
       setLoading(true)
       if (!chainId || !poolId || !amount) return
+      const checked = await onAction()
+      if (!checked) return
       await Quote.deposit({
         chainId: +chainId,
         poolId,
@@ -119,7 +125,7 @@ export const Subscribe = () => {
             {pool?.quoteSymbol && (
               <Box
                 className={
-                  'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px]'
+                  'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
                 }
               >
                 <img
@@ -135,18 +141,23 @@ export const Subscribe = () => {
 
         <Box
           className={
-            'bg-deep border-dark-border absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
+            'bg-base border-deep absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
           }
         >
           <ArrowDownLong size={22} />
         </Box>
 
         <Card
+          className={'border-base border-1 bg-transparent'}
           title={
             <>
               <Box className={'flex items-center gap-[4px]'}>
                 <Trans>24h Estimated Earnings</Trans>
-                <TipsFill size={14} />
+                <Tooltips
+                  title={t`Estimated 24h yield based on pool trading activity over the last 24 hours. For reference only; returns are not guaranteed.`}
+                >
+                  <TipsFill size={14} className={'cursor-pointer'} />
+                </Tooltips>
               </Box>
             </>
           }
@@ -196,6 +207,7 @@ export const Subscribe = () => {
             }
             loading={loading}
             onClick={onHandleSubscribe}
+            loadingPosition="start" // 图标显示在文字前面
           >
             <Trans>Subscribe</Trans>
           </TradeButton>
@@ -206,21 +218,7 @@ export const Subscribe = () => {
 
         <PriceImpact slippage={slippage} setSlippage={setSlippage} />
 
-        <DescribeItem
-          title={
-            <span className={'underline decoration-dashed underline-offset-2'}>
-              <Trans>Fee</Trans>
-            </span>
-          }
-        >
-          <Box
-            className={
-              'bg-brand-10 text-green border-green flex rounded-[20px] border-[0.5px] px-[8px] py-[4px]'
-            }
-          >
-            <Trans>Free forever</Trans>
-          </Box>
-        </DescribeItem>
+        <Fee />
       </Describe>
     </Box>
   )

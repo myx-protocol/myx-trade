@@ -30,7 +30,7 @@ export const EstRate = () => {
   }, [direction, _rate])
 
   return (
-    <div className="mt-[8px] flex items-center justify-between text-[12px] font-normal text-white">
+    <div className="mt-[8px] flex h-[18px] items-center justify-between text-[12px] font-normal text-white">
       <div className="flex items-center text-[#848E9C]">
         <p>
           <Trans>Est. Rate</Trans>

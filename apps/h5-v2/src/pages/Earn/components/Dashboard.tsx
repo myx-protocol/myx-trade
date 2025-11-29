@@ -19,6 +19,7 @@ import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { useContext } from 'react'
 import { SearchContext } from '@/pages/Earn/context.ts'
+import { Change } from '@/components/Change.tsx'
 
 interface Column<T> {
   key: keyof T
@@ -87,7 +88,11 @@ const DashboardTable = <T,>({ columns, data, isLoading }: TableProps<T>) => {
         <TableHead>
           <TableRow>
             {columns.map((c) => (
-              <StyledTableCell key={String(c.key)} align={c.align || 'left'} width={c.width}>
+              <StyledTableCell
+                key={String(c.key)}
+                align={c.align || 'left'}
+                width={c.width || '33.3333%'}
+              >
                 {c.label}
               </StyledTableCell>
             ))}
@@ -100,7 +105,13 @@ const DashboardTable = <T,>({ columns, data, isLoading }: TableProps<T>) => {
               onClick={() => navigate(`/earn/${(row as Vault).chainId}/${(row as Vault).poolId}`)}
             >
               {columns.map((c) => (
-                <StyledTableCell key={String(c.key)} align={c.align || 'left'}>
+                <StyledTableCell
+                  key={String(c.key)}
+                  align={c.align || 'left'}
+                  className={
+                    '[&:nth-child(1)]:rounded-l-[6px] [&:nth-last-child(1)]:rounded-r-[6px]'
+                  }
+                >
                   {isLoading ? <Skeleton /> : c.render ? c.render(row) : String(row[c.key])}
                 </StyledTableCell>
               ))}
@@ -149,11 +160,7 @@ export const Dashboard = () => {
       label: <Trans>APR</Trans>,
       align: 'right',
       render: (row: Vault) => {
-        return (
-          <span className={Number(row?.apr) > 0 ? 'text-rise' : 'text-fall'}>
-            {formatNumberPercent(row?.apr)}
-          </span>
-        )
+        return <Change change={row?.apr}>{formatNumberPercent(row?.apr)}</Change>
       },
     },
   ]

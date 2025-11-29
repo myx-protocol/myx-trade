@@ -344,3 +344,15 @@ export interface LpAssetsResponse extends BaseResponse {
 }
 
 export type PriceMapType = { [poolId: string]: string }
+
+export interface MarketPoolStateData {
+  chainId: number
+  poolId: string
+  string: string
+  state: MarketPoolState
+  baseToken: string
+}
+
+export interface MarketPoolStateDataResponse extends BaseResponse {
+  data: MarketPoolStateData[]
+}

@@ -7,7 +7,7 @@ import { usePoolContext } from '@/pages/Cook/hook'
 export const TokenInfo = () => {
   const { baseLpDetail } = usePoolContext()
   return (
-    <Collapse title={<Trans>Token Info</Trans>}>
+    <Collapse title={<Trans>Token Info</Trans>} defaultOpen={true}>
       <div className="flex flex-col gap-[16px] text-[12px] font-normal text-white">
         <FlexRowLayout
           left={

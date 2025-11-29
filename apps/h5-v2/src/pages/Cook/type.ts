@@ -4,7 +4,11 @@ export enum CookType {
   Cook,
   Trench,
 }
-
+export enum CookListType {
+  Sniper,
+  New,
+  Soon,
+}
 export type Token = {
   icon: string
   name: string
@@ -30,3 +34,5 @@ export enum TrenchType {
   APR = TrenchSortField.apr,
   Eligible = TrenchSortField.tvl,
 }
+
+export type FilterInputType = [string, string]
