@@ -21,6 +21,18 @@ export enum OperationEnum {
   Decrease = 1,
 }
 
+export enum TradeFlowTypeEnum {
+  Increase = 0,
+  Decrease = 1,
+  AddMargin = 2,
+  RemoveMargin = 3,
+  CancelOrder = 4,
+  ADL = 5,
+  Liquidation = 6,
+  MarketClose = 7,
+  EarlyClose = 8,
+}
+
 export enum TriggerTypeEnum {
   Unknown = 0,
   GTE = 1,
@@ -161,7 +173,7 @@ export interface TradeFlowItem {
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
   executionFee: string; // execution fee
-  type: OperationEnum; // operation type
+  type: TradeFlowTypeEnum; // operation type
 }
 export const getTradeFlow = async ({
   accessToken,
