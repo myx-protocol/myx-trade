@@ -3,7 +3,6 @@ import { Logger } from "@/logger";
 
 import { getContractAddressByChainId } from "@/config/address/index";
 import { ethers } from "ethers";
-import oracleAbi from "@/abi/MYXOracle.json";
 import {
   GetHistoryOrdersParams,
   getPositionHistory,
@@ -214,12 +213,14 @@ export class Position {
     adjustAmount,
     quoteToken,
     poolOracleType,
+    chainId
   }: {
     poolId: string;
     positionId: string;
     adjustAmount: string;
     quoteToken: string;
-    poolOracleType: OracleType
+    poolOracleType: OracleType,
+    chainId: number
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
@@ -248,19 +249,19 @@ export class Position {
         oracleType: poolOracleType,
       };
 
-      const contractAddress = getContractAddressByChainId(config.chainId);
+      const contractAddress = getContractAddressByChainId(chainId);
 
       // adjust collateral check and approve
       if (Number(adjustAmount) > 0) {
         this.logger.debug("adjust collateral check and approve-->", {
           quoteToken,
           adjustAmount,
-          spenderAddress: contractAddress.POSITION_MANAGER,
+          spenderAddress: contractAddress.Account,
         });
         const needsApproval = await this.utils.needsApproval(
+          chainId,
           quoteToken,
           adjustAmount,
-          contractAddress.POSITION_MANAGER
         );
         this.logger.debug("adjust collateral needs approval-->", {
           needsApproval,
@@ -270,12 +271,13 @@ export class Position {
           this.logger.debug("adjust collateral approve-->", {
             quoteToken,
             amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.POSITION_MANAGER,
+            spenderAddress: contractAddress.Account,
           });
           const approvalResult = await this.utils.approveAuthorization({
+            chainId,
             quoteAddress: quoteToken,
             amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.POSITION_MANAGER,
+            spenderAddress: contractAddress.Account,
           });
           if (approvalResult.code !== 0) {
             throw new Error(approvalResult.message);
@@ -299,11 +301,20 @@ export class Position {
         useAccountBalance: false,
       });
 
+      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
+
+      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+
+      const depositData = {
+        token: quoteToken,
+        amount: depositAmount.toString()
+      }
+
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
+        depositData,
         positionId,
         adjustAmount,
-        false,
         {
           value: BigInt(priceData?.value ?? "1"),
           gas: 10000000n,

@@ -439,7 +439,7 @@ export class Seamless {
     }
   }
 
-  async createSeamless({ password }: { password: string }) {
+  async createSeamless({ password, chainId }: { password: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const signer = config.signer;
     const account = await signer?.getAddress() ?? ''
@@ -478,18 +478,11 @@ export class Seamless {
       const erc20Address = getContractAddressByChainId(config.chainId).ERC20
 
       await this.utils.approveAuthorization({
+        chainId,
         quoteAddress: erc20Address,
         amount: ethers.MaxUint256.toString(),
         spenderAddress: forwarderContract.target as string,
       });
-
-      // console.log('approvalResult-->', approvalResult)
-      // if (!isAuthorized) {
-      // const authorizeResult = await this.authorizeSeamlessAccount({
-      //     seamlessAddress: wallet.address,
-      //     approve: true,
-      //   })
-      // }
 
       return {
         code: 0,

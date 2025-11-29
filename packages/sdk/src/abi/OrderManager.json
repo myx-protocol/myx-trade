@@ -85,6 +85,11 @@
   },
   {
     "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotDependencyManager",
     "inputs": []
   },
@@ -259,40 +264,46 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
-        "name": "orderId"
-      },
-      {
-        "type": "uint256",
-        "name": "positionId"
-      },
-      {
-        "type": "address",
-        "name": "keeper"
-      },
-      {
-        "type": "uint256",
-        "name": "fillSize"
-      },
-      {
-        "type": "uint256",
-        "name": "fillPrice"
-      },
-      {
-        "type": "int256",
-        "name": "realizedPnl"
-      },
-      {
-        "type": "int256",
-        "name": "tradingFee"
-      },
-      {
-        "type": "int256",
-        "name": "fundingFee"
-      },
-      {
-        "type": "bool",
-        "name": "forceClose"
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "bytes32",
+            "name": "positionId"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
+          },
+          {
+            "type": "uint256",
+            "name": "fillSize"
+          },
+          {
+            "type": "uint256",
+            "name": "fillPrice"
+          },
+          {
+            "type": "int256",
+            "name": "realizedPnl"
+          },
+          {
+            "type": "int256",
+            "name": "tradingFee"
+          },
+          {
+            "type": "int256",
+            "name": "fundingFee"
+          },
+          {
+            "type": "bool",
+            "name": "forceClose"
+          }
+        ]
       }
     ],
     "outputs": [
@@ -334,24 +345,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
       }
     ]
   },
@@ -403,15 +396,11 @@
         "type": "tuple",
         "components": [
           {
-            "type": "address",
-            "name": "user"
-          },
-          {
             "type": "bytes32",
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -424,15 +413,15 @@
           },
           {
             "type": "uint256",
-            "name": "orderPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "triggerPrice"
+            "name": "price"
           },
           {
             "type": "uint256",
             "name": "filledSize"
+          },
+          {
+            "type": "address",
+            "name": "user"
           },
           {
             "type": "uint8",
@@ -488,17 +477,7 @@
     ],
     "outputs": [
       {
-        "type": "tuple",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
+        "type": "uint256"
       }
     ]
   },
@@ -527,12 +506,8 @@
             "name": "tpPrice"
           },
           {
-            "type": "address",
-            "name": "tpExecutionFeeToken"
-          },
-          {
             "type": "uint256",
-            "name": "tpExecutionFeeAmount"
+            "name": "tpExecutionFee"
           },
           {
             "type": "uint256",
@@ -543,12 +518,8 @@
             "name": "slPrice"
           },
           {
-            "type": "address",
-            "name": "slExecutionFeeToken"
-          },
-          {
             "type": "uint256",
-            "name": "slExecutionFeeAmount"
+            "name": "slExecutionFee"
           }
         ]
       }
@@ -571,15 +542,11 @@
         "type": "tuple",
         "components": [
           {
-            "type": "address",
-            "name": "user"
-          },
-          {
             "type": "bytes32",
             "name": "poolId"
           },
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -592,15 +559,15 @@
           },
           {
             "type": "uint256",
-            "name": "orderPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "triggerPrice"
+            "name": "price"
           },
           {
             "type": "uint256",
             "name": "filledSize"
+          },
+          {
+            "type": "address",
+            "name": "user"
           },
           {
             "type": "uint8",
@@ -652,12 +619,8 @@
             "name": "tpPrice"
           },
           {
-            "type": "address",
-            "name": "tpExecutionFeeToken"
-          },
-          {
             "type": "uint256",
-            "name": "tpExecutionFeeAmount"
+            "name": "tpExecutionFee"
           },
           {
             "type": "uint256",
@@ -668,12 +631,8 @@
             "name": "slPrice"
           },
           {
-            "type": "address",
-            "name": "slExecutionFeeToken"
-          },
-          {
             "type": "uint256",
-            "name": "slExecutionFeeAmount"
+            "name": "slExecutionFee"
           }
         ]
       }
@@ -738,10 +697,14 @@
   },
   {
     "type": "function",
-    "name": "placeOrder",
+    "name": "placeOrderWithPosition",
     "constant": false,
     "payable": false,
     "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
       {
         "type": "tuple",
         "name": "params",
@@ -753,10 +716,6 @@
           {
             "type": "bytes32",
             "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "positionId"
           },
           {
             "type": "uint8",
@@ -784,11 +743,7 @@
           },
           {
             "type": "uint256",
-            "name": "orderPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "triggerPrice"
+            "name": "price"
           },
           {
             "type": "uint8",
@@ -803,8 +758,96 @@
             "name": "slippagePct"
           },
           {
+            "type": "uint16",
+            "name": "leverage"
+          },
+          {
+            "type": "uint256",
+            "name": "tpSize"
+          },
+          {
+            "type": "uint256",
+            "name": "tpPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "slSize"
+          },
+          {
+            "type": "uint256",
+            "name": "slPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "orderId"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "placeOrderWithSalt",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "userPositionSalt"
+      },
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
             "type": "address",
-            "name": "executionFeeToken"
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "orderType"
+          },
+          {
+            "type": "uint8",
+            "name": "triggerType"
+          },
+          {
+            "type": "uint8",
+            "name": "operation"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "collateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint8",
+            "name": "timeInForce"
+          },
+          {
+            "type": "bool",
+            "name": "postOnly"
+          },
+          {
+            "type": "uint16",
+            "name": "slippagePct"
           },
           {
             "type": "uint16",
@@ -851,13 +894,13 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
+    "name": "removePositionOrders",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32[]",
-        "name": "identifiers"
+        "type": "bytes32",
+        "name": "positionId"
       }
     ],
     "outputs": []
@@ -877,7 +920,7 @@
         "name": "poolId"
       },
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       },
       {
@@ -961,19 +1004,6 @@
   },
   {
     "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "updateOrder",
     "constant": false,
     "payable": false,
@@ -988,27 +1018,33 @@
           },
           {
             "type": "uint256",
-            "name": "tpSize"
+            "name": "size"
           },
           {
             "type": "uint256",
-            "name": "tpPrice"
+            "name": "price"
           },
           {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          },
-          {
-            "type": "address",
-            "name": "executionFeeToken"
-          },
-          {
-            "type": "bool",
-            "name": "useOrderCollateral"
+            "type": "tuple",
+            "name": "tpsl",
+            "components": [
+              {
+                "type": "uint256",
+                "name": "tpSize"
+              },
+              {
+                "type": "uint256",
+                "name": "tpPrice"
+              },
+              {
+                "type": "uint256",
+                "name": "slSize"
+              },
+              {
+                "type": "uint256",
+                "name": "slPrice"
+              }
+            ]
           }
         ]
       }

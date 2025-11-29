@@ -92,6 +92,7 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
+    chainId: number,
     quoteAddress: string,
     spenderAddress?: string
   ) {
@@ -112,7 +113,7 @@ export class Utils {
 
       const spender =
         spenderAddress ??
-        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
+        getContractAddressByChainId(chainId).Account;
 
       const tokenContract = new ethers.Contract(
         quoteAddress,
@@ -135,12 +136,14 @@ export class Utils {
   }
 
   async needsApproval(
+    chainId: number,
     quoteAddress: string,
     requiredAmount: string,
     spenderAddress?: string
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
+        chainId,
         quoteAddress,
         spenderAddress
       );
@@ -158,10 +161,12 @@ export class Utils {
   }
 
   async approveAuthorization({
+    chainId,
     quoteAddress,
     amount,
     spenderAddress,
   }: {
+    chainId: number;
     quoteAddress: string;
     amount?: string;
     spenderAddress?: string;
@@ -180,7 +185,7 @@ export class Utils {
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ??
-        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
+        getContractAddressByChainId(chainId).Account;
       const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
