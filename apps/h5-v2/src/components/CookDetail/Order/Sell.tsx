@@ -11,14 +11,13 @@ import { CheckBox } from '@/components/UI/CheckBox'
 import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useCallback, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
 import {
   getBalanceOf,
   base as Base,
   formatUnits,
-  COMMON_LP_AMOUNT_DECIMALS,
   pool as Pool,
+  COMMON_LP_AMOUNT_DECIMALS,
 } from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -27,14 +26,17 @@ import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from 'react-hot-toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
-import { OrderTips } from '@/components/CookDetail/Order/OrderTips'
 import { Big } from 'big.js'
 import { TipsFill } from '@/components/Icon'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { Tooltips } from '@/components/UI/Tooltips'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
   const { pool, baseLpDetail, chainId, poolId } = usePoolContext()
-  const { address: account } = useAccount()
+  const { address: account } = useWalletConnection()
+  const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   // const [balance, setBalance] = useState<string>('')
@@ -133,6 +135,8 @@ export const Sell = () => {
     try {
       setLoading(true)
       if (!chainId || !poolId || !amount) return
+      const checked = await onAction()
+      if (!checked) return
       await Base.withdraw({
         chainId: +chainId,
         poolId,
@@ -151,7 +155,7 @@ export const Sell = () => {
 
   return (
     <div className="mt-[12px]">
-      <div className="relative rounded-[16px] bg-[#18191F] px-[12px] py-[20px] leading-[1]">
+      <div className="bg-base relative rounded-[10px] px-[12px] py-[20px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <p className="text-[14px] font-normal text-[#CED1D9]">
@@ -169,7 +173,7 @@ export const Sell = () => {
 
         {/* form input wrap */}
         <div className="mt-[12px] flex items-center">
-          <div className="w-[166px]">
+          <div className="flex-1">
             <NumericInputWithAdornment
               className={'flex-1'}
               placeholder={t`Amount`}
@@ -179,7 +183,7 @@ export const Sell = () => {
             />
           </div>
           {/* action */}
-          <div className="ml-[12px] flex items-center gap-[12px]">
+          <div className="ml-[6px] flex items-center gap-[12px]">
             <div
               role="button"
               className="text-[14px] font-medium text-[#00E3A5]"
@@ -198,16 +202,20 @@ export const Sell = () => {
         </div>
       </div>
 
-      <div className="mt-[4px] rounded-[16px] bg-[#18191F] px-[12px] py-[20px] leading-[1]">
+      <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <p className="text-[14px] font-normal text-[#CED1D9]">
               <Trans>Receive</Trans>
             </p>
-            <span className="ml-[4px] flex">
-              <IconHelp size={14} />
-            </span>
+            <Tooltips
+              title={t`Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations.`}
+            >
+              <span className="ml-[4px] flex cursor-pointer">
+                <IconHelp size={14} />
+              </span>
+            </Tooltips>
           </div>
         </div>
 
@@ -229,16 +237,18 @@ export const Sell = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[4px] rounded-[16px] bg-[#18191F] px-[12px] py-[20px] leading-[1]">
+      <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <p className="text-[14px] font-normal text-[#CED1D9]">
               <Trans>Profit</Trans>
             </p>
-            <span className="ml-[4px] flex">
-              <IconHelp size={14} />
-            </span>
+            <Tooltips title={t`Estimated realized PnL for this redemption.`}>
+              <span className="ml-[4px] flex cursor-pointer">
+                <IconHelp size={14} />
+              </span>
+            </Tooltips>
           </div>
         </div>
 
@@ -273,9 +283,13 @@ export const Sell = () => {
               <p>
                 <Trans>保留创世LP份额</Trans>
               </p>
-              <span className="ml-[4px] flex">
-                <IconHelp size={12} />
-              </span>
+              <Tooltips
+                title={t`When checked, the system will only redeem your regular LP shares.`}
+              >
+                <span className="ml-[4px] flex cursor-pointer">
+                  <IconHelp size={12} />
+                </span>
+              </Tooltips>
             </div>
           }
         />
@@ -290,7 +304,7 @@ export const Sell = () => {
       )}
 
       {burned && Number(burned) > 0 && (
-        <Box className={'border-base mt-[4px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>
+        <Box className={'border-base mt-[8px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>
           <Box className={'text-third mt-[2px]'}>
             <TipsFill size={14} />
           </Box>

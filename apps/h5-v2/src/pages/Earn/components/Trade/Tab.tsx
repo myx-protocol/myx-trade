@@ -24,7 +24,7 @@ export const TradeTabBar = () => {
           return (
             <li
               key={i}
-              className={`cursor-pointer rounded-[8px] px-[12px] py-[8px] transition ${tab.value === side ? 'bg-brand-10 text-green' : ''}`}
+              className={`cursor-pointer rounded-[40px] px-[12px] py-[8px] transition ${tab.value === side ? 'bg-brand-10 text-green' : ''}`}
               onClick={() => setSide(tab.value)}
             >
               {tab.label}

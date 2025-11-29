@@ -10,7 +10,7 @@ export const LatestPrice = () => {
   return (
     <div className="ml-[48px] leading-[1]">
       {/* price */}
-      <p className="text-[16px] font-bold">
+      <p className="text-[20px] font-bold">
         <Tooltips title="Market Price">
           <span className="border-b-[1px] border-dashed border-b-[#848E9C] text-white select-none">
             ${formatNumberPrecision(price, COMMON_PRICE_DISPLAY_DECIMALS)}

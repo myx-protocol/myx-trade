@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { usePoolContext } from '@/pages/Cook/hook/index.ts'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import Big from 'big.js'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 
 export const useExchangeRate = () => {
   const { poolId, price } = usePoolContext()

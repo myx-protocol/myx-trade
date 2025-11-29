@@ -14,15 +14,15 @@ export const TokenInfo = () => {
         <PairLogo
           baseLogoSize={48}
           quoteLogoSize={16}
-          baseLogo={token?.icon ?? ''}
+          baseLogo={token?.logo ?? ''}
           quoteLogo={CHAIN_INFO?.[token?.chainId as keyof typeof CHAIN_INFO]?.logoUrl ?? ''}
           baseSymbol={token?.name ?? ''}
         />
       </Box>
       <Box className={'flex flex-col gap-[6px] leading-[1]'}>
         <Box className={'flex items-center gap-[4px]'}>
-          <h3 className={'text-[20px] font-[700] text-white'}>{token?.name || '--'}</h3>
-          <span className={''}>{token?.symbol || '--'}</span>
+          <h3 className={'text-[20px] font-[700] text-white'}>{token?.symbol || '--'}</h3>
+          <span className={''}>{token?.name || '--'}</span>
         </Box>
         <Box className={'flex items-center gap-[4px]'}>
           <span className={''}>{token?.address ? encryptionAddress(token?.address) : '--'}</span>
