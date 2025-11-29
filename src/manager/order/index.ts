@@ -43,7 +43,8 @@ export class Order {
 
 
       const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken
+        params.executionFeeToken,
+        params.chainId
       );
 
       const collateralWithNetworkFee =
@@ -320,8 +321,11 @@ export class Order {
       );
 
       const networkFee = await this.utils.getNetworkFee(
-        params[0].executionFeeToken
+        params[0].executionFeeToken,
+        chainId
       );
+
+      console.log("closeAllPositions networkFee--->", networkFee);
 
       const positionIds = params.map((param: PlaceOrderParams) => param.positionId.toString());
 
@@ -350,6 +354,8 @@ export class Order {
           useAccountBalance: false,
         }
       })
+
+      this.logger.info("closeAllPositions params--->", positionIds, dataMap);
 
       const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(positionIds, dataMap);
       const transaction = await brokerContract.placeOrdersWithPosition(positionIds, dataMap, {
@@ -397,7 +403,8 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
       const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken
+        params.executionFeeToken,
+        params.chainId
       );
 
       const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
@@ -500,7 +507,8 @@ export class Order {
       );
       try {
         const networkFee = await this.utils.getNetworkFee(
-          params.executionFeeToken
+          params.executionFeeToken,
+          params.chainId
         );
 
         if (params.tpSize !== "0" && params.slSize !== "0") {
