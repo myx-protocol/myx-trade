@@ -11,6 +11,9 @@ import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
+import { getForwarderContract } from "@/web3/providers";
+import { getJSONProvider } from "@/web3";
+import ERC20Token_ABI from "@/abi/ERC20Token.json";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -89,6 +92,7 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
+    chainId: number,
     quoteAddress: string,
     spenderAddress?: string
   ) {
@@ -109,7 +113,7 @@ export class Utils {
 
       const spender =
         spenderAddress ??
-        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
+        getContractAddressByChainId(chainId).Account;
 
       const tokenContract = new ethers.Contract(
         quoteAddress,
@@ -132,12 +136,14 @@ export class Utils {
   }
 
   async needsApproval(
+    chainId: number,
     quoteAddress: string,
     requiredAmount: string,
     spenderAddress?: string
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
+        chainId,
         quoteAddress,
         spenderAddress
       );
@@ -155,10 +161,12 @@ export class Utils {
   }
 
   async approveAuthorization({
+    chainId,
     quoteAddress,
     amount,
     spenderAddress,
   }: {
+    chainId: number;
     quoteAddress: string;
     amount?: string;
     spenderAddress?: string;
@@ -177,7 +185,7 @@ export class Utils {
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ??
-        getContractAddressByChainId(config.chainId).ORDER_MANAGER;
+        getContractAddressByChainId(chainId).Account;
       const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
@@ -197,14 +205,18 @@ export class Utils {
   async getUserTradingFeeRate(assetClass: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
-    const brokerContract = new ethers.Contract(
-      brokerAddress,
-      Broker_ABI,
-      config.signer
-    );
+
     try {
+      const provider = await getJSONProvider(config.chainId)
+      const brokerContract = new ethers.Contract(
+        brokerAddress,
+        Broker_ABI,
+        provider
+      )
+      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+
       const userFeeRate = await brokerContract.getUserFeeRate(
-        config.signer?.getAddress(),
+        targetAddress,
         assetClass
       );
       return {
@@ -226,15 +238,15 @@ export class Utils {
     }
   }
 
-  async getNetworkFee(quoteAddress: string) {
-    const config: MyxClientConfig = this.configManager.getConfig();
+  async getNetworkFee(quoteAddress: string, chainId: number) {
     const orderManagerAddress = getContractAddressByChainId(
-      config.chainId
+      chainId,
     ).ORDER_MANAGER;
+    const provider = await getJSONProvider(chainId)
     const orderManagerContract = new ethers.Contract(
       orderManagerAddress,
       OrderManager_ABI,
-      config.signer
+      provider
     );
 
     try {
@@ -315,5 +327,27 @@ export class Utils {
     } catch (error: any) {
       return error?.message ?? error?.toString() ?? fallbackErrorMessage;
     }
+  }
+
+  async checkSeamlessGas(userAddress: string) {
+    const config = this.configManager.getConfig();
+    const forwarderContract = await getForwarderContract(config.chainId);
+    const relayFee = await forwarderContract.getRelayFee()
+    const provider = await getJSONProvider(config.chainId)
+    // const { gasPrice } = await provider.getFeeData()
+    const contractAddress = getContractAddressByChainId(config.chainId);
+
+    const erc20Contract = new ethers.Contract(
+      contractAddress.ERC20,
+      ERC20Token_ABI,
+      provider
+    );
+    const balance = await erc20Contract.balanceOf(userAddress);
+
+    if (BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
+      return false
+    }
+
+    return true
   }
 }

@@ -55,6 +55,16 @@
   },
   {
     "type": "error",
+    "name": "NotActiveBroker",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "NotAddressManager",
     "inputs": []
   },
@@ -123,11 +133,6 @@
         "indexed": false
       },
       {
-        "type": "bytes32",
-        "name": "poolId",
-        "indexed": false
-      },
-      {
         "type": "address",
         "name": "token",
         "indexed": false
@@ -167,13 +172,8 @@
         "indexed": false
       },
       {
-        "type": "bytes32",
-        "name": "poolId",
-        "indexed": false
-      },
-      {
         "type": "address",
-        "name": "quoteToken",
+        "name": "token",
         "indexed": false
       },
       {
@@ -205,7 +205,7 @@
       },
       {
         "type": "address",
-        "name": "quoteToken",
+        "name": "token",
         "indexed": false
       },
       {
@@ -235,11 +235,6 @@
       {
         "type": "address",
         "name": "account",
-        "indexed": false
-      },
-      {
-        "type": "bytes32",
-        "name": "poolId",
         "indexed": false
       },
       {
@@ -288,11 +283,32 @@
     "inputs": [
       {
         "type": "address",
-        "name": "user"
+        "name": "account"
       },
       {
-        "type": "bytes32",
-        "name": "poolId"
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "depositFromBroker",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "address",
+        "name": "token"
       },
       {
         "type": "uint256",
@@ -385,13 +401,14 @@
         "name": "account"
       },
       {
-        "type": "bytes32",
-        "name": "marketId"
+        "type": "address",
+        "name": "token"
       }
     ],
     "outputs": [
       {
-        "type": "uint256"
+        "type": "uint256",
+        "name": "amount"
       }
     ]
   },
@@ -461,12 +478,12 @@
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32",
-        "name": "poolId"
+        "type": "address",
+        "name": "account"
       },
       {
         "type": "address",
-        "name": "account"
+        "name": "token"
       },
       {
         "type": "uint256",
@@ -488,6 +505,10 @@
       {
         "type": "address",
         "name": "account"
+      },
+      {
+        "type": "address",
+        "name": "token"
       },
       {
         "type": "uint256",
@@ -526,7 +547,7 @@
     "inputs": [
       {
         "type": "address",
-        "name": "user"
+        "name": "account"
       },
       {
         "type": "bytes32",
@@ -551,7 +572,7 @@
     "inputs": [
       {
         "type": "address",
-        "name": "user"
+        "name": "account"
       },
       {
         "type": "tuple",
@@ -649,6 +670,31 @@
   },
   {
     "type": "function",
+    "name": "updateAndWithdraw",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "receiver"
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "bool",
+        "name": "isQuoteToken"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "upgradeTo",
     "constant": false,
     "stateMutability": "payable",
@@ -690,16 +736,12 @@
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32",
-        "name": "poolId"
-      },
-      {
         "type": "address",
         "name": "receiver"
       },
       {
-        "type": "bool",
-        "name": "isQuoteToken"
+        "type": "address",
+        "name": "token"
       },
       {
         "type": "uint256",
