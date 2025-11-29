@@ -1,3 +1,4 @@
+/*
 import { OracleType, type MarketPool, type MyxClient } from "@myx-trade/sdk";
 import {
   Button,
@@ -143,3 +144,8 @@ export const AdjustCollateral = ({
     </>
   );
 };
+*/
+
+export const AdjustCollateral = () => {
+  return <></>
+}
