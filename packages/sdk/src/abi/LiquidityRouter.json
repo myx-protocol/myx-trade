@@ -226,6 +226,19 @@
   },
   {
     "type": "function",
+    "name": "__ERC2771ContextUpgradeable_init",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "trustedForwarder_"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "addTpsl",
     "constant": false,
     "payable": false,
@@ -925,24 +938,6 @@
   },
   {
     "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getImplementation",
     "constant": true,
     "stateMutability": "view",
@@ -1035,6 +1030,24 @@
   },
   {
     "type": "function",
+    "name": "isTrustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "forwarder"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "migrateLiquidity",
     "constant": false,
     "payable": false,
@@ -1079,46 +1092,16 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
+    "name": "trustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
     "payable": false,
-    "inputs": [
+    "inputs": [],
+    "outputs": [
       {
-        "type": "bytes32[]",
-        "name": "identifiers"
+        "type": "address"
       }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "update",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
-      }
-    ],
-    "outputs": []
+    ]
   },
   {
     "type": "function",
