@@ -233,10 +233,11 @@ export class Utils {
     }
   }
 
-  async getNetworkFee(quoteAddress: string) {
+  async getNetworkFee(quoteAddress: string, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
+
     const orderManagerAddress = getContractAddressByChainId(
-      config.chainId
+      chainId,
     ).ORDER_MANAGER;
     const provider = await getJSONProvider(config.chainId)
     const orderManagerContract = new ethers.Contract(
