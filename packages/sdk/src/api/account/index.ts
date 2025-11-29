@@ -155,13 +155,11 @@ export interface TradeFlowItem {
   fundingFee: string;
   tradingFee: string;
   charge: string;
-  beforeCollateralAmount: string;
-  afterCollateralAmount: string;
+  collateralAmount: string;
   txHash: string;
   txTime: number;
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
-  userLeverage: number; // leverage
   executionFee: string; // execution fee
   type: OperationEnum; // operation type
 }
