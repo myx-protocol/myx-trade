@@ -388,16 +388,26 @@
     "payable": false,
     "inputs": [
       {
+        "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
+      {
         "type": "bytes32",
         "name": "positionId"
       },
       {
         "type": "int256",
         "name": "adjustAmount"
-      },
-      {
-        "type": "bool",
-        "name": "useAccountBalance"
       }
     ],
     "outputs": []
@@ -766,99 +776,17 @@
       },
       {
         "type": "tuple",
-        "name": "orderParams",
+        "name": "depositParams",
         "components": [
           {
             "type": "address",
-            "name": "user"
-          },
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "orderType"
-          },
-          {
-            "type": "uint8",
-            "name": "triggerType"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint8",
-            "name": "direction"
+            "name": "token"
           },
           {
             "type": "uint256",
-            "name": "collateralAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "uint8",
-            "name": "timeInForce"
-          },
-          {
-            "type": "bool",
-            "name": "postOnly"
-          },
-          {
-            "type": "uint16",
-            "name": "slippagePct"
-          },
-          {
-            "type": "address",
-            "name": "executionFeeToken"
-          },
-          {
-            "type": "uint16",
-            "name": "leverage"
-          },
-          {
-            "type": "uint256",
-            "name": "tpSize"
-          },
-          {
-            "type": "uint256",
-            "name": "tpPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          },
-          {
-            "type": "bool",
-            "name": "useAccountBalance"
+            "name": "amount"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "placeOrderWithSalt",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "uint64",
-        "name": "userPositionSalt"
       },
       {
         "type": "tuple",
@@ -913,8 +841,106 @@
             "name": "slippagePct"
           },
           {
+            "type": "uint16",
+            "name": "leverage"
+          },
+          {
+            "type": "uint256",
+            "name": "tpSize"
+          },
+          {
+            "type": "uint256",
+            "name": "tpPrice"
+          },
+          {
+            "type": "uint256",
+            "name": "slSize"
+          },
+          {
+            "type": "uint256",
+            "name": "slPrice"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "placeOrderWithSalt",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "userPositionSalt"
+      },
+      {
+        "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
             "type": "address",
-            "name": "executionFeeToken"
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
+      {
+        "type": "tuple",
+        "name": "orderParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "user"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "orderType"
+          },
+          {
+            "type": "uint8",
+            "name": "triggerType"
+          },
+          {
+            "type": "uint8",
+            "name": "operation"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint256",
+            "name": "collateralAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint8",
+            "name": "timeInForce"
+          },
+          {
+            "type": "bool",
+            "name": "postOnly"
+          },
+          {
+            "type": "uint16",
+            "name": "slippagePct"
           },
           {
             "type": "uint16",
@@ -935,10 +961,6 @@
           {
             "type": "uint256",
             "name": "slPrice"
-          },
-          {
-            "type": "bool",
-            "name": "useAccountBalance"
           }
         ]
       }
@@ -952,6 +974,20 @@
     "stateMutability": "payable",
     "payable": true,
     "inputs": [
+      {
+        "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
       {
         "type": "bytes32[]",
         "name": "positionIds"
@@ -1009,10 +1045,6 @@
             "name": "slippagePct"
           },
           {
-            "type": "address",
-            "name": "executionFeeToken"
-          },
-          {
             "type": "uint16",
             "name": "leverage"
           },
@@ -1031,10 +1063,6 @@
           {
             "type": "uint256",
             "name": "slPrice"
-          },
-          {
-            "type": "bool",
-            "name": "useAccountBalance"
           }
         ]
       }
@@ -1048,6 +1076,20 @@
     "stateMutability": "payable",
     "payable": true,
     "inputs": [
+      {
+        "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
       {
         "type": "uint64[]",
         "name": "userPositionSalts"
@@ -1105,10 +1147,6 @@
             "name": "slippagePct"
           },
           {
-            "type": "address",
-            "name": "executionFeeToken"
-          },
-          {
             "type": "uint16",
             "name": "leverage"
           },
@@ -1127,10 +1165,6 @@
           {
             "type": "uint256",
             "name": "slPrice"
-          },
-          {
-            "type": "bool",
-            "name": "useAccountBalance"
           }
         ]
       }
@@ -1398,6 +1432,20 @@
     "inputs": [
       {
         "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
+      {
+        "type": "tuple",
         "name": "params",
         "components": [
           {
@@ -1431,14 +1479,6 @@
               {
                 "type": "uint256",
                 "name": "slPrice"
-              },
-              {
-                "type": "address",
-                "name": "executionFeeToken"
-              },
-              {
-                "type": "uint8",
-                "name": "paymentType"
               }
             ]
           }
@@ -1481,16 +1521,26 @@
         ]
       },
       {
+        "type": "tuple",
+        "name": "depositParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "token"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          }
+        ]
+      },
+      {
         "type": "bytes32",
         "name": "positionId"
       },
       {
         "type": "int256",
         "name": "adjustAmount"
-      },
-      {
-        "type": "bool",
-        "name": "useAccountBalance"
       }
     ],
     "outputs": []
