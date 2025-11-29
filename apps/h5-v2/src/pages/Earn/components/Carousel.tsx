@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { CoinIcon } from '@/components/UI/CoinIcon'
+import { Change } from '@/components/Change.tsx'
 
 type Token = {
   icon: string
@@ -33,20 +34,18 @@ const CardContainer = ({ children }: { children?: ReactNode }) => {
 const TokenInfo = ({ token }: { token?: Token }) => {
   return (
     <Box className={'flex items-center gap-[18px]'}>
-      <Box className={'relative h-[40px] w-[40px] min-w-[40px] rounded-full'}>
+      <Box className={'relative rounded-full'}>
         {token ? (
           <CoinIcon size={40} icon={token.icon ?? ''} />
         ) : (
           <Skeleton width={40} height={40} />
         )}
 
-        <Box
-          className={'absolute right-[-10px] bottom-0 h-[20px] w-[20px] rounded-full bg-[#282C34]'}
-        >
+        <Box className={'absolute right-[-10px] bottom-0 rounded-full bg-[#282C34]'}>
           {token ? (
-            <CoinIcon size={20} icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''} />
+            <CoinIcon size={16} icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''} />
           ) : (
-            <Skeleton width={20} height={20} />
+            <Skeleton width={16} height={20} />
           )}
         </Box>
       </Box>
@@ -106,11 +105,9 @@ const Card = ({ item }: { item?: QuoteAprTop }) => {
       <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
         {item ? (
           <>
-            <span
-              className={`text-green text-[28px] ${Number(item.apr) > 0 ? 'text-rise' : 'text-fall'} `}
-            >
+            <Change className={'text-[28px] text-white'} change={item?.apr}>
               {formatNumberPercent(item?.apr)}
-            </span>
+            </Change>
             <span className={'text-[16px] text-white'}>24h APR</span>
           </>
         ) : (

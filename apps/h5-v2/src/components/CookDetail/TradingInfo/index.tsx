@@ -9,7 +9,7 @@ import { formatNumber } from '@/utils/number.ts'
 export const TradingInfo = () => {
   const { baseLpDetail } = usePoolContext()
   return (
-    <Collapse title={<Trans>Perp Trading Info</Trans>}>
+    <Collapse title={<Trans>Perp Trading Info</Trans>} defaultOpen={true}>
       <div className="flex flex-col gap-[16px] text-[12px] font-normal text-white">
         <FlexRowLayout
           left={

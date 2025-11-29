@@ -5,7 +5,25 @@ import { useQuery } from '@tanstack/react-query'
 import { MarketPoolState, pool } from '@myx-trade/sdk'
 import { useParams } from 'react-router-dom'
 import { TokenContext } from '@/pages/Market/context.ts'
+import { styled } from '@mui/material'
+import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 
+const StyledNumericInputWithAdornment = styled(NumericInputWithAdornment)`
+  .MuiInputBase-root {
+    font-size: 24px;
+    padding: 2px 0;
+    height: 28px;
+  }
+  & .MuiInputBase-input {
+    height: 24px;
+    line-height: 24px;
+  }
+
+  & .MuiInputAdornment-root {
+    margin-left: 2px;
+    color: var(--regular-text);
+  }
+`
 export const ConfirmToken = ({ onNext }: { onNext: () => void }) => {
   const { chainId } = useParams()
   const { poolId } = useContext(TokenContext)

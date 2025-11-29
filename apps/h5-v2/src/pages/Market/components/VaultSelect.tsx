@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import Box from '@mui/material/Box'
 import { TipsOutLine, WalletLine } from '@/components/Icon'
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { memo, useCallback, useContext, useMemo, useState } from 'react'
 import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { t } from '@lingui/core/macro'
 import { Tips } from '@/pages/Market/components/tips.tsx'
@@ -18,23 +18,166 @@ import {
 import { useParams } from 'react-router-dom'
 import { getOraclePrice } from '@/request/price'
 import { parseUnits } from 'ethers'
-import { Button } from '@mui/material'
+import { Button, styled } from '@mui/material'
 import { toast } from 'react-hot-toast'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { formatNumber } from '@/utils/number.ts'
+import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput'
+import { isSafeNumber } from '@/utils'
+import { MAX_SLIPPING_PERCENT, MIN_SLIPPING_PERCENT } from '@/constant/slippage.ts'
+import { getMarketData } from '@/request'
+import { formatNumberPrecision, formatNumberString } from '@/utils/formatNumber.ts'
+import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { getAssetIcon } from '@/utils/coin.tsx'
+import { Tooltips } from '@/components/UI/Tooltips'
 
 enum VaultType {
   Base,
   Quote,
 }
+
+const StyledNumericInputWithAdornment = styled(NumericInputWithAdornment)`
+  .MuiInputBase-root {
+    font-size: 24px;
+    padding: 2px 0;
+    height: 28px;
+  }
+  & .MuiInputBase-input {
+    height: 24px;
+    line-height: 24px;
+  }
+
+  & .MuiInputAdornment-root {
+    margin-left: 2px;
+    color: var(--regular-text);
+  }
+`
+export const BaseVaultInput = memo(
+  ({
+    value,
+    amount,
+    balance,
+    onChange,
+  }: {
+    value?: string
+    amount: string
+    balance?: string
+    onChange: (value: string) => void
+  }) => {
+    const { market, quote, token, poolId } = useContext(TokenContext)
+    const onValueChange = useCallback(
+      ({ floatValue, value }: { value: string; floatValue?: number }) => {
+        onChange(value)
+      },
+      [onChange],
+    )
+    return (
+      <Box
+        className={
+          'bg-base-bg mt-[6px] flex flex-col gap-[12px] rounded-[12px] px-[16px] py-[20px]'
+        }
+      >
+        <Box className={'flex items-center gap-[10px]'}>
+          <StyledNumericInputWithAdornment
+            autoFocus
+            placeholder={t`Amount`}
+            className={'flex-1'}
+            value={amount}
+            onValueChange={onValueChange}
+          />
+          <Box className={'flex items-center gap-[4px]'}>
+            <img className={'aspect-square h-[20px] w-[20px] rounded-full'} src={token?.logo} />
+            <span className={'text-[16px] leading-[1] font-[500] text-white'}>{token?.symbol}</span>
+          </Box>
+        </Box>
+        <Box className={'flex items-center justify-between gap-[8px]'}>
+          <Box className={'flex-1 font-[500]'}>
+            ${formatNumberPrecision(value, COMMON_BASE_DISPLAY_DECIMALS)}
+          </Box>
+          <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
+            <WalletLine size={14} />
+            <span className={'font-[500]'}>
+              {formatNumberPrecision(balance, COMMON_BASE_DISPLAY_DECIMALS)}
+            </span>
+            <span className={'font-[500]'}>{token?.symbol}</span>
+          </Box>
+        </Box>
+      </Box>
+    )
+  },
+)
+
+export const QuoteVaultInput = memo(
+  ({
+    value,
+    amount,
+    balance,
+    onChange,
+  }: {
+    value?: string
+    amount: string
+    balance?: string
+    onChange: (value: string) => void
+  }) => {
+    const { market, quote, token, poolId } = useContext(TokenContext)
+    const onValueChange = useCallback(
+      ({ floatValue, value }: { value: string; floatValue?: number }) => {
+        onChange(value)
+      },
+      [onChange],
+    )
+    return (
+      <Box
+        className={
+          'bg-base-bg mt-[6px] flex flex-col gap-[12px] rounded-[12px] px-[16px] py-[20px]'
+        }
+      >
+        <Box className={'flex items-center gap-[10px]'}>
+          <StyledNumericInputWithAdornment
+            autoFocus
+            placeholder={t`Amount`}
+            className={'flex-1'}
+            value={amount}
+            onValueChange={onValueChange}
+          />
+          <Box className={'flex items-center gap-[4px]'}>
+            <img
+              className={'aspect-square h-[20px] w-[20px] rounded-full'}
+              src={quote?.logo || quote?.symbol ? getAssetIcon(quote?.symbol) : ''}
+            />
+            <span className={'text-[16px] leading-[1] font-[500] text-white'}>{quote?.symbol}</span>
+          </Box>
+        </Box>
+        <Box className={'flex items-center justify-between gap-[8px]'}>
+          <Box className={'flex-1 font-[500]'}>
+            ${formatNumberPrecision(value, COMMON_PRICE_DISPLAY_DECIMALS)}
+          </Box>
+          <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
+            <WalletLine size={14} />
+            <span className={'font-[500]'}>
+              {formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
+            </span>
+            <span className={'font-[500]'}>{quote?.symbol}</span>
+          </Box>
+        </Box>
+      </Box>
+    )
+  },
+)
+
 export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
   const { chainId } = useParams()
   const { market, quote, token, poolId } = useContext(TokenContext)
+  const { chainId: curChainId } = useWalletConnection()
+  const onAction = useWalletActions()
   const [type, setType] = useState<VaultType>(VaultType.Base)
   const { address: account } = useAccount()
   const [isLoading, setIsLoading] = useState(false)
-  const [amount, setAmount] = useState<string>('0.0001')
+  const [baseAmount, setBaseAmount] = useState<string>('')
+  const [quoteAmount, setQuoteAmount] = useState<string>('')
   const [slippage] = useState<string>('0.01')
-
-  const Token = useMemo(() => (type === VaultType.Base ? token : quote), [type])
 
   const { data: balance } = useQuery({
     queryKey: [{ key: 'balance' }, type, account, chainId],
@@ -54,13 +197,13 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
   })
 
   const { data: price } = useQuery({
-    queryKey: [{ key: 'pirce' }, poolId],
-    enabled: !!poolId,
+    queryKey: [{ key: 'price' }, token?.address, chainId],
+    enabled: !!token?.address && !!chainId,
     queryFn: async () => {
-      if (!poolId || !chainId) return
-      const result = await getOraclePrice(+chainId, [poolId])
+      if (!token?.address || !chainId) return
+      const result = await getMarketData({ asset: token.address, chainId: +chainId })
       if (result) {
-        return result?.data?.[0]?.price
+        return result?.data?.price
       }
       return
     },
@@ -69,22 +212,29 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
 
   const value = useMemo(() => {
     if (type === VaultType.Quote) {
-      return balance
+      return quoteAmount
     } else if (type === VaultType.Base) {
-      if (token && price && balance && Number(balance) > 0) {
+      if (token && price && baseAmount && Number(baseAmount) > 0) {
         return formatUnits(
-          parseUnits(price, COMMON_PRICE_DECIMALS) * parseUnits(balance, token?.decimals),
+          parseUnits(price.toString(), COMMON_PRICE_DECIMALS) *
+            parseUnits(baseAmount, token?.decimals),
           COMMON_PRICE_DECIMALS + token?.decimals,
         )
       }
       return ''
     }
-  }, [price, type, balance])
+  }, [price, type, quoteAmount, baseAmount])
+
+  const amount = useMemo(() => {
+    return type === VaultType.Base ? baseAmount : quoteAmount
+  }, [type, baseAmount, quoteAmount])
 
   const onConfirm = useCallback(async () => {
     try {
       setIsLoading(true)
       if (!poolId || !amount || !slippage || !chainId) return
+      const checked = await onAction()
+      if (!checked) return
       if (type === VaultType.Base) {
         await Base.deposit({
           chainId: +chainId,
@@ -108,15 +258,15 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
     } finally {
       setIsLoading(false)
     }
-  }, [type, poolId, amount, slippage, chainId])
+  }, [type, poolId, amount, slippage, chainId, curChainId])
 
   const isInsufficient = useMemo(() => {
-    if (!value) return true
-    if (Number(value) < Number(market?.poolPrimeThreshold)) return true
+    console.log(111111)
+    if (!amount) return false
     if (Number(amount) >= Number(balance)) return true
-    if (Number(amount) < Number(market?.poolPrimeThreshold)) return true
+    // if () return true
     return false
-  }, [market, value])
+  }, [market, value, amount, balance])
 
   return (
     <Box className={'flex flex-1 flex-col'}>
@@ -137,7 +287,9 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
       >
         <TokenInfo />
         <Box className={'flex flex-col items-end gap-[4px] leading-[1]'}>
-          <h3 className={'text-[20px] font-[700] text-white'}>$2.34K</h3>
+          <h3 className={'text-[20px] font-[700] text-white'}>
+            ${token?.mca ? formatNumber(Number(token?.mca)) : '--'}
+          </h3>
           <span>mcap</span>
         </Box>
       </Box>
@@ -150,67 +302,57 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
           <Box
             className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[16px] leading-[1] font-[500] ${type === VaultType.Base ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
             onClick={() => {
-              setAmount('0.001')
               setType(VaultType.Base)
+              setBaseAmount('')
+              setQuoteAmount('')
             }}
           >
             <Trans>{token?.symbol} Vault</Trans>
-            <TipsOutLine size={16} className={'text-secondary'} />
+            <Tooltips title={t`Deposit underlying assets, gain price exposure, and earn fees.`}>
+              <TipsOutLine size={16} className={'text-secondary cursor-pointer'} />
+            </Tooltips>
           </Box>
 
           <Box
             className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[16px] leading-[1] font-[500] ${type === VaultType.Quote ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
             onClick={() => {
-              setAmount(Number(market?.poolPrimeThreshold).toString())
               setType(VaultType.Quote)
+              setBaseAmount('')
+              setQuoteAmount('')
             }}
           >
             <Trans>{quote?.symbol} Vault</Trans>
           </Box>
         </Box>
-
-        <Box
-          className={
-            'bg-base-bg mt-[6px] flex flex-col gap-[12px] rounded-[12px] px-[16px] py-[20px]'
-          }
-        >
-          <Box className={'flex items-center gap-[10px]'}>
-            <input
-              placeholder={t`Amount`}
-              className={'flex-1'}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <Box className={'flex items-center gap-[4px]'}>
-              <img className={'aspect-square h-[20px] w-[20px] rounded-full'} src={quote?.icon} />
-              <span className={'text-[16px] leading-[1] font-[500] text-white'}>
-                {quote?.symbol}
-              </span>
-            </Box>
-          </Box>
-          <Box className={'flex items-center justify-between gap-[8px]'}>
-            <Box className={'flex-1 font-[500]'}>${value || '--'}</Box>
-            <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
-              <WalletLine size={14} />
-              <span className={'font-[500]'}>{balance || '--'}</span>
-              <span className={'font-[500]'}>{Token?.symbol}</span>
-            </Box>
-          </Box>
-        </Box>
-
-        {isInsufficient && (
-          <Box className={'mt-[12px] text-[14px] leading-[1]'}>
-            <p className={'text-wrong'}>
-              <Trans>Insufficient balance</Trans>
-            </p>
-          </Box>
-        )}
       </Box>
+
+      {type === VaultType.Base ? (
+        <BaseVaultInput
+          amount={baseAmount}
+          value={value}
+          balance={balance}
+          onChange={setBaseAmount}
+        />
+      ) : (
+        <QuoteVaultInput
+          amount={quoteAmount}
+          value={value}
+          balance={balance}
+          onChange={setQuoteAmount}
+        />
+      )}
+      {isInsufficient && (
+        <Box className={'mt-[12px] text-[14px] leading-[1]'}>
+          <p className={'text-wrong'}>
+            <Trans>Insufficient balance</Trans>
+          </p>
+        </Box>
+      )}
 
       <Tips className={'mt-[12px]'}>
         <Trans>
           The market will activate immediately once total liquidity reaches $
-          {Number(market?.poolPrimeThreshold)}.
+          {market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'}.
         </Trans>
       </Tips>
 
@@ -219,6 +361,13 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
           className={'gradient primary long mx-auto w-full rounded'}
           loading={isLoading}
           onClick={onConfirm}
+          disabled={
+            isLoading ||
+            isInsufficient ||
+            !market ||
+            Number(value) < Number(market?.poolPrimeThreshold)
+          }
+          loadingPosition={'start'}
         >
           <Trans>Create Market</Trans>
         </Button>

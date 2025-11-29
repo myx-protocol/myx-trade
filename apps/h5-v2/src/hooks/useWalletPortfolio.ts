@@ -11,9 +11,11 @@ export interface Asset {
   logo: string
   name: string
   symbol: string
-  price: number | string
-  change: number | string
-  balance: number | string
+  price?: number | string
+  change?: number | string
+  balance?: number | string
+  liq?: number | string
+  mca?: number | string
 }
 export const useWalletPortfolio = () => {
   const { address: account } = useWalletConnection()
@@ -31,17 +33,26 @@ export const useWalletPortfolio = () => {
             : [chainId],
         )
         return (result?.data?.assets || []).map((item: any) => {
+          console.log(item)
+          const address = item.asset.contracts.filter(
+            (_address: string) =>
+              _address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+          )?.[0]
+          const asset = item.contracts_balances.find(
+            (s: { address: string }) => s.address === address,
+          )
           const token = {
-            chainId: Number(item.asset?.blockchains?.[0].replace('evm:', '')),
-            address: item.asset.contracts[0],
-            decimals: item.asset.decimals[0],
+            chainId: Number(asset.chainId.replace('evm:', '')),
+            address,
+            decimals: asset.decimals,
             logo: item.asset.logo,
             name: item.asset.name,
             symbol: item.asset.symbol,
             price: item.price,
-            change: item.price_change_24h,
-            balance: item.token_balance,
+            change: item.price_change_24h * 100,
+            balance: asset.balance.toString(),
           } as Asset
+          console.log(token)
           return token
         })
       } catch (error) {

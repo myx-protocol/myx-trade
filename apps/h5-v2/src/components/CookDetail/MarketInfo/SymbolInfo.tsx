@@ -22,7 +22,7 @@ export const SymbolInfo = () => {
       <div className="pl-[4px]">
         {/* top */}
         <div className="flex items-center">
-          <p className="text-[16px] font-bold text-white">
+          <p className="text-[20px] font-bold text-white">
             {baseLpDetail?.mBaseQuoteSymbol || '--'}
           </p>
           <p className="ml-[4px] text-[14px] font-normal text-[#848E9C]">

@@ -4,5 +4,5 @@ export type Token = {
   decimals: number
   address: string
   chainId: number
-  icon: string
+  logo: string
 }

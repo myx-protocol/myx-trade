@@ -10,6 +10,7 @@ import { base as Base } from '@myx-trade/sdk'
 import { toast } from 'react-hot-toast'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
 
 interface ClaimRewardsDialogProps {
   open: boolean
@@ -28,10 +29,13 @@ export const ClaimRewardsDialog = ({
 }: ClaimRewardsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false)
   const { address: account } = useWalletConnection()
+  const { checkWalletChainId } = useWalletChainCheck()
+
   const onHandleClaim = useCallback(async () => {
     if (!lpAsset?.poolId || !account || !reward) return
     try {
       setLoading(true)
+      await checkWalletChainId(lpAsset.chainId)
       await Base.claimBasePoolRebate({ chainId: lpAsset.chainId, poolId: lpAsset.poolId })
       toast.success('Claim successfully claimed')
       refetch?.()
@@ -40,7 +44,7 @@ export const ClaimRewardsDialog = ({
     } finally {
       setLoading(false)
     }
-  }, [lpAsset?.chainId, lpAsset?.poolId, account, refetch])
+  }, [lpAsset?.chainId, lpAsset?.poolId, account, refetch, checkWalletChainId])
   return (
     <DialogBase title={t`领取收益`} open={open} onClose={onClose} width={390}>
       <div className="mt-[16px] leading-[1]">

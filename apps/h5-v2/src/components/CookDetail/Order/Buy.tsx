@@ -21,11 +21,15 @@ import { toast } from 'react-hot-toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { Tooltips } from '@/components/UI/Tooltips'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId, price } = usePoolContext()
-  const { address: account } = useAccount()
+  const { chainId, baseLpDetail, pool, poolId } = usePoolContext()
+  const { address: account } = useWalletConnection()
+  const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -69,6 +73,8 @@ export const Buy = () => {
     try {
       setLoading(true)
       if (!chainId || !poolId || !amount) return
+      const checked = await onAction()
+      if (!checked) return
       await Base.deposit({
         chainId: +chainId,
         poolId,
@@ -88,7 +94,7 @@ export const Buy = () => {
   return (
     <>
       <Box className="mt-[12px]">
-        <div className="relative rounded-[16px] bg-[#18191F] px-[12px] py-[20px] leading-[1]">
+        <div className="bg-base relative rounded-[10px] px-[12px] py-[20px] leading-[1]">
           {/* title */}
           <div className="flex items-center justify-between">
             <p className="text-[14px] font-normal text-[#CED1D9]">
@@ -106,7 +112,7 @@ export const Buy = () => {
 
           {/* form input wrap */}
           <div className="mt-[12px] flex items-center">
-            <div className="w-[166px]">
+            <div className="flex-1">
               <NumericInputWithAdornment
                 className={'flex-1'}
                 placeholder={t`Amount`}
@@ -116,7 +122,7 @@ export const Buy = () => {
               />
             </div>
             {/* action */}
-            <div className="ml-[12px] flex items-center gap-[12px]">
+            <div className="ml-[10px] flex items-center gap-[12px]">
               <div
                 role="button"
                 className="text-[14px] font-medium text-[#00E3A5]"
@@ -135,16 +141,20 @@ export const Buy = () => {
           </div>
         </div>
 
-        <div className="mt-[4px] rounded-[16px] bg-[#18191F] px-[12px] py-[20px] leading-[1]">
+        <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
           {/* title */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <p className="text-[14px] font-normal text-[#CED1D9]">
                 <Trans>Receive</Trans>
               </p>
-              <span className="ml-[4px] flex">
-                <IconHelp size={14} />
-              </span>
+              <Tooltips
+                title={t`The estimated LP token shares you will receive after adding liquidity.`}
+              >
+                <span className="ml-[4px] flex cursor-pointer">
+                  <IconHelp size={14} />
+                </span>
+              </Tooltips>
             </div>
           </div>
 

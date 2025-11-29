@@ -3,7 +3,6 @@ import ArbitrumLogo from '@/assets/icon/commons/chain/logo/arbitrum.png'
 import OpbnbLogo from '@/assets/icon/commons/chain/logo/opbnb.png'
 import LineaLogo from '@/assets/icon/commons/chain/logo/linea.png'
 
-import { ScrollMainnet } from './chains/ScrollMainnet'
 import { ChainId } from './chain'
 import { GAS_FEE_RESERVED_RATIO } from './fee'
 
@@ -29,29 +28,12 @@ export interface BaseChainInfo {
     symbol: string // e.g. 'gorETH',
     decimals: number // e.g. 18,
   }
+  readonly usdAddress: string
 }
 
 export type ChainInfoMap = { readonly [chainId: number]: BaseChainInfo }
 
 export const CHAIN_INFO: ChainInfoMap = {
-  [ChainId.MYX_DEV]: {
-    label: 'MYX Dev',
-    explorer: 'http://export.myx.cash/',
-    chainSymbol: 'MYX Dev',
-    privateJsonRPCUrl: 'https://dev-rpc.myx.cash',
-    publicJsonRPCUrl: ['https://dev-rpc.myx.cash'],
-    explorerOfTX: 'http://export.myx.cash/tx/',
-    faucetUrl: '',
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasFeeReservedForCollateral: (0 + 0) * GAS_FEE_RESERVED_RATIO,
-    gasAmountRatio: 2,
-    nativeCurrency: {
-      name: 'MYX Ether',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-  },
   [ChainId.LINEA_SEPOLIA]: {
     explorer: 'https://sepolia.lineascan.build/',
     explorerOfTX: 'https://sepolia.lineascan.build/tx/',
@@ -72,6 +54,7 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'ETH',
       decimals: 18,
     },
+    usdAddress: '',
   },
   [ChainId.LINEA_MAINNET]: {
     label: 'Linea Mainnet',
@@ -93,6 +76,7 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'ETH',
       decimals: 18,
     },
+    usdAddress: '0x176211869cA2b568f2A7D4EE941E073a821EE1ff',
   },
   [ChainId.ARB_TESTNET]: {
     privateJsonRPCUrl: '',
@@ -112,6 +96,7 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'ETH',
       decimals: 18,
     },
+    usdAddress: '',
   },
   [ChainId.ARB_MAINNET]: {
     privateJsonRPCUrl: '',
@@ -130,46 +115,9 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'ETH',
       decimals: 18,
     },
+    usdAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', //
   },
-  [ChainId.SCROLL_MAINNET]: ScrollMainnet.chainInfo,
 
-  [ChainId.OPBNB_TESTNET]: {
-    privateJsonRPCUrl: '',
-    publicJsonRPCUrl: ['https://opbnb-testnet-rpc.bnbchain.org'],
-    label: ' opBNB Testnet',
-    chainSymbol: 'opBNB Testnet',
-    explorer: 'https://testnet.opbnbscan.com/',
-    explorerOfTX: 'https://testnet.opbnbscan.com/tx/',
-    faucetUrl: 'https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/',
-    logoUrl: OpbnbLogo,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.0005 + 1) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: 'Test BNB',
-      symbol: 'BNB',
-      decimals: 18,
-    },
-  },
-  [ChainId.OPBNB_MAINNET]: {
-    privateJsonRPCUrl: '',
-    publicJsonRPCUrl: ['https://opbnb-mainnet-rpc.bnbchain.org'],
-    label: 'opBNB Mainnet',
-    chainSymbol: 'opBNB Mainnet',
-    explorer: 'https://opbnbscan.com/',
-    explorerOfTX: 'https://opbnbscan.com/tx/',
-    logoUrl: OpbnbLogo,
-    gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
-    gasAmountRatio: 2,
-    gasFeeReservedForCollateral: (0.0005 + 0.175) * GAS_FEE_RESERVED_RATIO,
-    nativeCurrency: {
-      name: 'BNB',
-      symbol: 'BNB',
-      decimals: 18,
-    },
-  },
   [ChainId.BSC_TESTNET]: {
     privateJsonRPCUrl: '',
     publicJsonRPCUrl: ['https://bsc-testnet-dataseed.bnbchain.org'],
@@ -188,6 +136,7 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'BNB',
       decimals: 18,
     },
+    usdAddress: '',
   },
   [ChainId.BSC_MAINNET]: {
     privateJsonRPCUrl: '',
@@ -207,11 +156,16 @@ export const CHAIN_INFO: ChainInfoMap = {
       symbol: 'BNB',
       decimals: 18,
     },
+    usdAddress: '0x55d398326f99059fF775485246999027B3197955',
   },
 }
 
 export function getChainInfo(chainId: ChainId) {
   const chainInfo = CHAIN_INFO[chainId]
 
-  return chainInfo || null
+  if (!chainInfo) {
+    throw new Error(t`Could not find information with chain id ${chainId}`)
+  }
+
+  return chainInfo
 }

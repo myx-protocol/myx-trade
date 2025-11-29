@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { DialogTheme, DialogTitleTheme, type DialogBaseProps } from '@/components/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import { DialogSuspense } from '@/components/Loading'
@@ -6,14 +6,42 @@ import { Box, Button } from '@mui/material'
 import { NumericInput } from '@/components/Dialog/NumberInput.tsx'
 import { t } from '@lingui/core/macro'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
+
+type FilterField = [string, string]
 interface FilterItemProps {
   // disabled?: boolean,
   value: [string, string]
   label: string | React.ReactNode
   onChange: (value: [string, string]) => void
   endAdornment?: React.ReactNode
+  max?: number
+  min?: number
 }
-const FilterItem = ({ label, endAdornment, value = ['', ''], onChange }: FilterItemProps) => {
+export interface FilterFields {
+  age: FilterField
+  mc: FilterField
+  progress: FilterField
+  change: FilterField
+  liq: FilterField
+  holders: FilterField
+}
+
+export interface DialogFilters {
+  open: boolean
+  data?: FilterFields
+  showCloseIcon: boolean
+  onClose: (e?: React.MouseEvent<HTMLButtonElement>, data?: FilterFields) => void
+  isShowProgress?: boolean
+}
+
+const FilterItem = ({
+  label,
+  endAdornment,
+  value = ['', ''],
+  onChange,
+  max: maxValue,
+  min: minValue,
+}: FilterItemProps) => {
   const [min = '', max = ''] = value
   return (
     <Box className={'flex items-center gap-[12px]'}>
@@ -22,6 +50,8 @@ const FilterItem = ({ label, endAdornment, value = ['', ''], onChange }: FilterI
         <NumericInput
           placeholder={t`Min`}
           value={min}
+          max={maxValue}
+          min={minValue || 0}
           onValueChange={({ formattedValue }) => onChange([formattedValue, max])}
           endAdornment={endAdornment}
         />
@@ -30,6 +60,8 @@ const FilterItem = ({ label, endAdornment, value = ['', ''], onChange }: FilterI
         <NumericInput
           placeholder={t`Max`}
           value={max}
+          max={maxValue}
+          min={minValue || 0}
           onValueChange={({ formattedValue }) => onChange([min, formattedValue])}
           endAdornment={endAdornment}
         />
@@ -38,13 +70,26 @@ const FilterItem = ({ label, endAdornment, value = ['', ''], onChange }: FilterI
   )
 }
 
-const FiltersDialogContent = ({ onClose }: DialogBaseProps) => {
-  const [age, setAge] = useState<[string, string]>(['', ''])
-  const [mc, setMC] = useState<[string, string]>(['', ''])
-  const [progress, setProgress] = useState<[string, string]>(['', ''])
-  const [change, setChange] = useState<[string, string]>(['', ''])
-  const [liq, setLiq] = useState<[string, string]>(['', ''])
-  const [holders, setHolders] = useState<[string, string]>(['', ''])
+const FiltersDialogContent = ({
+  data,
+  onClose,
+  isShowProgress = true,
+}: Omit<DialogFilters, 'showCloseIcon'>) => {
+  const [age, setAge] = useState<[string, string]>([data?.age?.[0] || '', data?.age?.[1] || ''])
+  const [mc, setMC] = useState<[string, string]>([data?.mc?.[0] || '', data?.mc?.[1] || ''])
+  const [progress, setProgress] = useState<[string, string]>([
+    data?.progress?.[0] || '',
+    data?.progress?.[1] || '',
+  ])
+  const [change, setChange] = useState<[string, string]>([
+    data?.change?.[0] || '',
+    data?.change?.[1] || '',
+  ])
+  const [liq, setLiq] = useState<[string, string]>([data?.liq?.[0] || '', data?.liq?.[1] || ''])
+  const [holders, setHolders] = useState<[string, string]>([
+    data?.holders?.[0] || '',
+    data?.holders?.[1] || '',
+  ])
 
   const reset = () => {
     setAge(['', ''])
@@ -53,11 +98,20 @@ const FiltersDialogContent = ({ onClose }: DialogBaseProps) => {
     setChange(['', ''])
     setLiq(['', ''])
     setHolders(['', ''])
+
+    onClose?.(undefined, {
+      age: ['', ''],
+      mc: ['', ''],
+      progress: ['', ''],
+      change: ['', ''],
+      liq: ['', ''],
+      holders: ['', ''],
+    })
   }
 
   const confirm = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      onClose?.(e)
+      onClose?.(e, { age, mc, progress, change, liq, holders })
     },
     [age, mc, progress, change, liq, holders],
   )
@@ -73,11 +127,14 @@ const FiltersDialogContent = ({ onClose }: DialogBaseProps) => {
 
         <FilterItem label={<Trans>MC</Trans>} value={mc} onChange={(value) => setMC(value)} />
 
-        <FilterItem
-          label={<Trans>Progress</Trans>}
-          value={progress}
-          onChange={(value) => setProgress(value)}
-        />
+        {isShowProgress && (
+          <FilterItem
+            label={<Trans>Progress</Trans>}
+            value={progress}
+            max={100}
+            onChange={(value) => setProgress(value)}
+          />
+        )}
 
         <FilterItem
           label={<Trans>Change</Trans>}
@@ -115,24 +172,31 @@ const FiltersDialogContent = ({ onClose }: DialogBaseProps) => {
   )
 }
 
-export const DialogFilters = memo(({ open, onClose }: DialogBaseProps) => {
-  return (
-    <DialogTheme
-      onClose={onClose}
-      open={open}
-      sx={{
-        '.MuiPaper-root': {
-          maxWidth: '390px',
-        },
-      }}
-    >
-      <DialogTitleTheme onClose={onClose}>
-        <Trans>Custom Filters</Trans>
-      </DialogTitleTheme>
+export const DialogFilters = memo(
+  ({ open, onClose, data, isShowProgress = true }: DialogFilters) => {
+    return (
+      <DialogTheme
+        onClose={() => onClose()}
+        open={open}
+        sx={{
+          '.MuiPaper-root': {
+            maxWidth: '390px',
+          },
+        }}
+      >
+        <DialogTitleTheme onClose={onClose}>
+          <Trans>Custom Filters</Trans>
+        </DialogTitleTheme>
 
-      <DialogSuspense>
-        <FiltersDialogContent onClose={onClose} open={open} />
-      </DialogSuspense>
-    </DialogTheme>
-  )
-})
+        <DialogSuspense>
+          <FiltersDialogContent
+            isShowProgress={isShowProgress}
+            data={data}
+            onClose={onClose}
+            open={open}
+          />
+        </DialogSuspense>
+      </DialogTheme>
+    )
+  },
+)

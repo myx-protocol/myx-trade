@@ -38,6 +38,7 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { Empty } from '@/components/Empty.tsx'
 import { useAccessToken } from '@/hooks/useAccessToken.ts'
+import { t } from '@lingui/core/macro'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -514,7 +515,7 @@ export const Assets = () => {
                       },
                     }}
                   >
-                    <Tooltips title="Unclaimed Fees">
+                    <Tooltips title={t`Unclaimed earnings from genesis liquidity`}>
                       <span className="border-b-[#848E9C border-b-[1px] border-dashed">
                         <Trans>Unclaimed Fees</Trans>
                       </span>
@@ -524,7 +525,11 @@ export const Assets = () => {
               </TableCell>
 
               {/* operation */}
-              <TableCell align="right"></TableCell>
+              <TableCell align="right">
+                <span>
+                  <Trans>Action</Trans>
+                </span>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

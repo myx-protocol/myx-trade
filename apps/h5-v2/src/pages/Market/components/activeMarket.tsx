@@ -6,6 +6,7 @@ import { Tips } from '@/pages/Market/components/tips.tsx'
 import {
   COMMON_LP_AMOUNT_DECIMALS,
   formatUnits,
+  getBalanceOf,
   market as _Market,
   pool as Pool,
 } from '@myx-trade/sdk'
@@ -19,12 +20,19 @@ import { t } from '@lingui/core/macro'
 import type { QuoteLpDetail } from '@/request/lp/type.ts'
 import { getQuoteLPDetail } from '@/request'
 import { formatNumber } from '@/utils/number.ts'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { getAssetIcon } from '@/utils/coin.tsx'
 // import { useContext } from 'react'
 // import { TokenContext } from '@/pages/Market/context.ts'
 
 export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
   const { chainId } = useParams()
+  const { address: account } = useWalletConnection()
   const { poolId, market } = useContext(TokenContext)
+  const onAction = useWalletActions()
   const [loading, setLoading] = useState<boolean>(false)
   // const market = useMemo(() => {
   //   if(chainId) {
@@ -53,10 +61,28 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
     },
   })
 
+  const { data: balance } = useQuery({
+    queryKey: [{ key: 'balance' }, account, chainId, quoteLpDetail?.quoteToken],
+    queryFn: async () => {
+      const address = quoteLpDetail?.quoteToken
+
+      if (!address || !account || !chainId) return
+      try {
+        const bigintBalance = await getBalanceOf(+chainId, account, address)
+        const _balance = formatUnits(bigintBalance, quoteLpDetail?.quoteDecimals)
+        return _balance
+      } catch (e) {
+        console.error(e)
+      }
+    },
+  })
+
   const onReprime = useCallback(async () => {
     try {
       if (!poolId || !chainId || !market) return
       setLoading(true)
+      const checked = await onAction()
+      if (!checked) return
       await Pool.reprime(+chainId, poolId, market?.marketId)
       toast.success(t`Pool reprime`)
       onNext?.()
@@ -89,7 +115,7 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
 
       <Box className={'mt-[40px] flex flex-col'}>
         <label className={'text-regular flex items-center gap-[4px]'}>
-          <Trans>Pay with USDT</Trans>
+          <Trans>Pay with {quoteLpDetail?.quoteSymbol}</Trans>
         </label>
 
         <Box
@@ -100,20 +126,37 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
           <Box className={'flex items-center justify-between gap-[10px]'}>
             <span className={'text-[24px] leading-[1] font-[700] text-white'}>{fee}</span>
             <Box className={'flex items-center gap-[4px]'}>
-              <img className={'aspect-square h-[20px] w-[20px] rounded-full'} src={''} />
-              <span className={'text-[16px] leading-[1] font-[500] text-white'}>USDT</span>
+              <img
+                className={'aspect-square h-[20px] w-[20px] rounded-full'}
+                src={quoteLpDetail?.quoteSymbol ? getAssetIcon(quoteLpDetail?.quoteSymbol) : ''}
+              />
+              <span className={'text-[16px] leading-[1] font-[500] text-white'}>
+                {quoteLpDetail?.quoteSymbol}
+              </span>
             </Box>
           </Box>
           <Box className={'flex items-center justify-between gap-[8px]'}>
-            <Box className={'flex-1 font-[500]'}>$100</Box>
+            <Box className={'flex-1 font-[500]'}>
+              ${formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
+            </Box>
             <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
               <WalletLine size={14} />
-              <span className={'font-[500]'}>100</span>
-              <span className={'font-[500]'}>USDT</span>
+              <span className={'font-[500]'}>
+                {formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
+              </span>
+              <span className={'font-[500]'}>{quoteLpDetail?.quoteSymbol}</span>
             </Box>
           </Box>
         </Box>
       </Box>
+
+      {Number(balance) < Number(fee) && (
+        <Box className={'mt-[12px] text-[14px] leading-[1]'}>
+          <p className={'text-wrong'}>
+            <Trans>Insufficient balance</Trans>
+          </p>
+        </Box>
+      )}
 
       <Tips className={'mt-[12px]'}>
         <Trans>
@@ -127,6 +170,8 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
           loading={loading}
           className={'gradient primary long mx-auto w-full rounded'}
           onClick={onReprime}
+          loadingPosition="start"
+          disabled={loading || Number(balance) < Number(fee)}
         >
           <Trans>Activate Market</Trans>
         </Button>
