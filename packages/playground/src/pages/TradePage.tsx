@@ -1,3 +1,4 @@
+/*
 import React, { useContext, useEffect, useState } from "react";
 import { getOraclePrice, getPools } from "../api";
 import { useAccount, useWalletClient, useChainId } from "wagmi";
@@ -61,9 +62,11 @@ interface TradeFormValues {
   slTriggerType?: number;
   positionId?: string; // 仓位ID，仅在操作类型为DECREASE时使用
 }
+*/
 
 const TradePage: React.FC = () => {
-  const { address, isConnected } = useAccount();
+  return <></>
+/*  const { address, isConnected } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
   const [price, setPrice] = useState<string>('0');
@@ -540,7 +543,7 @@ const TradePage: React.FC = () => {
           return;
         }
         // todo @JC error
-        /*
+        /!*
         const position = positionsList.find(item => item.positionId === values.positionId);
         // if (!position) {
         //   message.error("Position not found");
@@ -571,7 +574,7 @@ const TradePage: React.FC = () => {
         };
         const rs = await myxClient.order.createPositionTpSlOrder(orderData);
         console.log("Order placed:", rs);
-        */
+        *!/
         return;
       }
       if (values.operation === OperationType.INCREASE) {
@@ -635,9 +638,9 @@ const TradePage: React.FC = () => {
         console.log("orderData-->", orderData);
         // todo @JC error
 
-        /*     const rs = await myxClient.order.createDecreaseOrder(orderData);
+        /!*     const rs = await myxClient.order.createDecreaseOrder(orderData);
     
-            console.log("Order placed:", rs);*/
+            console.log("Order placed:", rs);*!/
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -708,7 +711,7 @@ const TradePage: React.FC = () => {
                     size="small"
                   >
                     <div className="space-y-3">
-                      {/* 交易对名称 */}
+                      {/!* 交易对名称 *!/}
                       <div className="text-center">
                         <div className="text-xl font-bold text-gray-800 mb-1">
                           {pool.baseSymbol}/{pool.quoteSymbol}
@@ -720,7 +723,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 基本信息 */}
+                      {/!* 基本信息 *!/}
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-gray-500">基础资产:</span>
@@ -742,7 +745,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 合约地址 */}
+                      {/!* 合约地址 *!/}
                       <div className="space-y-1 text-xs">
                         <div>
                           <span className="text-gray-500">基础代币:</span>
@@ -758,7 +761,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Pool ID */}
+                      {/!* Pool ID *!/}
                       <div className="text-xs">
                         <span className="text-gray-500">Pool ID:</span>
                         <div className="font-mono text-gray-600 break-all">
@@ -766,7 +769,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Level 配置信息 */}
+                      {/!* Level 配置信息 *!/}
                       {pool.levelData && pool.levelData.levelConfig && (
                         <div className="space-y-1 text-xs bg-gray-50 p-2 rounded">
                           <div className="font-semibold text-gray-700 mb-1">
@@ -813,7 +816,7 @@ const TradePage: React.FC = () => {
                         </div>
                       )}
 
-                      {/* 其他参数 */}
+                      {/!* 其他参数 *!/}
                       {pool.maxLeverage && (
                         <div className="text-xs">
                           <span className="text-gray-500">最大杠杆:</span>
@@ -1497,7 +1500,7 @@ const TradePage: React.FC = () => {
         console.log('rs-->', rs)
       }}>创建无感账号</Button>
     </div>
-  );
+  );*/
 };
 
 export default TradePage;
