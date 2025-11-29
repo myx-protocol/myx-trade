@@ -173,6 +173,18 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "EnterDispute",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Exchanged",
     "inputs": [
       {
@@ -235,6 +247,18 @@
       {
         "type": "uint256",
         "name": "price",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExitDispute",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
         "indexed": false
       }
     ]
@@ -366,6 +390,38 @@
       {
         "type": "uint64",
         "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidityLockUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "windowAnchor",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "priceFloor",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "priceCeiling",
+        "indexed": false
+      },
+      {
+        "type": "int256",
+        "name": "openInterest",
         "indexed": false
       }
     ]
@@ -522,6 +578,31 @@
         "type": "address",
         "name": "quoteToken",
         "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "baseReserveRatio",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "quoteReserveRatio",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "oracleFeeUsd",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "oracleRefundFeeUsd",
+        "indexed": false
+      },
+      {
+        "type": "uint128",
+        "name": "poolPrimeThreshold",
+        "indexed": false
       }
     ]
   },
@@ -630,11 +711,6 @@
       {
         "type": "int256",
         "name": "fundingFee",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "executionFeeToken",
         "indexed": false
       },
       {
@@ -764,11 +840,6 @@
       {
         "type": "uint16",
         "name": "slippagePct",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "executionFeeToken",
         "indexed": false
       },
       {
@@ -1502,6 +1573,50 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "PositionRiskControlDataMigrated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "from",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "to",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PositionRiskControlDataUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "freeAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "lockedAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "PositionTransfer",
     "inputs": [
       {
@@ -1987,6 +2102,19 @@
   },
   {
     "type": "function",
+    "name": "emitEnterDispute",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "emitExchanged",
     "constant": false,
     "payable": false,
@@ -2061,6 +2189,19 @@
   },
   {
     "type": "function",
+    "name": "emitExitDispute",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "emitFundingRateUpdated",
     "constant": false,
     "payable": false,
@@ -2100,6 +2241,41 @@
           {
             "type": "uint256",
             "name": "price"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitLiquidityLockUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint64",
+            "name": "windowAnchor"
+          },
+          {
+            "type": "uint256",
+            "name": "priceFloor"
+          },
+          {
+            "type": "uint256",
+            "name": "priceCeiling"
+          },
+          {
+            "type": "int256",
+            "name": "openInterest"
           }
         ]
       }
@@ -2271,6 +2447,26 @@
           {
             "type": "address",
             "name": "quoteToken"
+          },
+          {
+            "type": "uint32",
+            "name": "baseReserveRatio"
+          },
+          {
+            "type": "uint32",
+            "name": "quoteReserveRatio"
+          },
+          {
+            "type": "uint64",
+            "name": "oracleFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "oracleRefundFeeUsd"
+          },
+          {
+            "type": "uint128",
+            "name": "poolPrimeThreshold"
           }
         ]
       }
@@ -2377,10 +2573,6 @@
           {
             "type": "int256",
             "name": "fundingFee"
-          },
-          {
-            "type": "address",
-            "name": "executionFeeToken"
           },
           {
             "type": "uint256",
@@ -2503,10 +2695,6 @@
           {
             "type": "uint16",
             "name": "slippagePct"
-          },
-          {
-            "type": "address",
-            "name": "executionFeeToken"
           },
           {
             "type": "uint256",
@@ -3257,6 +3445,60 @@
           {
             "type": "address",
             "name": "recipient"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionRiskControlDataMigrated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "from"
+          },
+          {
+            "type": "bytes32",
+            "name": "to"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "emitPositionRiskControlDataUpdated",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "bytes32",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "freeAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "lockedAmount"
           }
         ]
       }

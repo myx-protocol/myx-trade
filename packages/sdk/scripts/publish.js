@@ -81,6 +81,22 @@ async function publish() {
       cwd: path.join(__dirname, '..')
     });
 
+    // 4. commit and push
+    console.log('\n🔄 提交并推送...');
+    execSync('git add package.json', {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..')
+    });
+    execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..')
+    });
+
+    execSync('git push', {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..')
+    });
+    
     console.log('\n✅ 发布成功！');
   } catch (error) {
     console.error('\n❌ 发布失败:', error.message);
