@@ -19,6 +19,8 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { ethers, Signer } from "ethers";
 import { Seamless } from "../seamless";
 import dayjs from "dayjs";
+import { Account } from "../account";
+import { ChainId } from "@/config/chain";
 // import { getContractAddressByChainId } from "@/config/address/index";
 // import { getContract } from "@/web3";
 // import accountAbi from "@/abi/Account.json";
@@ -27,11 +29,13 @@ export class Order {
   private logger: Logger;
   private utils: Utils;
   private seamless: Seamless;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
+  private account: Account
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
+    this.account = account
   }
 
   async createIncreaseOrder(params: PlaceOrderParams) {
@@ -41,23 +45,20 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
-
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken,
         params.chainId
       );
 
-      const collateralWithNetworkFee =
-        BigInt(params.collateralAmount) + BigInt(networkFee);
-
-
       const needsApproval = await this.utils.needsApproval(
+        params.chainId,
         params.executionFeeToken,
-        collateralWithNetworkFee.toString(),
+        params.collateralAmount,
       );
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
+          chainId: params.chainId,
           quoteAddress: params.executionFeeToken,
           amount: ethers.MaxUint256.toString(),
         });
@@ -67,29 +68,28 @@ export class Order {
         }
       }
 
-      // const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
-      // const walletBalanceRes = getBalanceOf(config.chainId, params.address, params.executionFeeToken);   await this.account.getWalletQuoteTokenBalance(params.address);
-      // console.log("marginAccountBalance--->", marginAccountBalanceRes);
-      // console.log("createIncreaseOrder walletBalance--->", walletBalanceRes);
-      // const marginAccountBalance = marginAccountBalanceRes?.data;
+      const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
 
-      // if (marginAccountBalanceRes.code !== 0) {
-      //   return {
-      //     code: -1,
-      //     message: "Failed to get tradable amount or wallet balance",
-      //   };
-      // }
+      const marginAccountBalance = marginAccountBalanceRes?.data;
 
-      // let useAccountBalance = false
-      // const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0)
-      // let transferAmount = 0n
+      if (marginAccountBalanceRes.code !== 0) {
+        return {
+          code: -1,
+          message: "Failed to get tradable amount or wallet balance",
+        };
+      }
 
-      // if (totalBalance > 0) {
-      //   useAccountBalance = true
-      //   transferAmount = collateralWithNetworkFee - totalBalance
-      // }
+      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0) + (marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
+      let depositAmount = BigInt(0)
 
-      // console.log('transferAmount-->', transferAmount)
+      if (totalBalance > 0) {
+        depositAmount = BigInt(params.collateralAmount) - totalBalance
+      }
+
+      const depositData = {
+        token: params.executionFeeToken,
+        amount: depositAmount > BigInt(0) ? (depositAmount + BigInt(networkFee)).toString() : networkFee
+      }
 
       const data = {
         user: params.address,
@@ -98,7 +98,7 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
         direction: params.direction,
-        collateralAmount: collateralWithNetworkFee.toString(),
+        collateralAmount: params.collateralAmount,
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
@@ -110,7 +110,6 @@ export class Order {
         tpPrice: params.tpPrice ?? "0",
         slSize: params.slSize ?? "0",
         slPrice: params.slPrice ?? "0",
-        useAccountBalance: false,
       }
 
       this.logger.info("createIncreaseOrder position params--->", data);
@@ -122,8 +121,6 @@ export class Order {
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
         }
-
-        console.log('isEnoughGas-->', isEnoughGas)
 
         const forwarderContract = await getForwarderContract(params.chainId)
 
@@ -139,12 +136,14 @@ export class Order {
           ])
           functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
             '1',
+            { ...depositData },
             data
           ])
           this.logger.info("createIncreaseOrder placeOrderWithSalt function hash --->", functionHash)
         } else {
           functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithPosition', [
             params.positionId.toString(),
+            { ...depositData },
             data
           ])
         }
@@ -177,74 +176,17 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-
-
-      // const contractAddresses = getContractAddressByChainId(params.chainId);
-      // const accountAddress = contractAddresses.Account;
-
-      // 如果需要转账，先执行 deposit 交易
-      // if (transferAmount > 0) {
-      //   // 检查是否需要授权
-      //   const needApproval = await this.utils.needsApproval(
-      //     params.executionFeeToken,
-      //     transferAmount.toString(),
-      //     accountAddress,
-      //   );
-
-      //   if (needApproval) {
-      //     const approvalResult = await this.utils.approveAuthorization({
-      //       quoteAddress: params.executionFeeToken,
-      //       amount: ethers.MaxUint256.toString(),
-      //       spenderAddress: accountAddress,
-      //     });
-
-      //     if (approvalResult.code !== 0) {
-      //       throw new Error(approvalResult.message);
-      //     }
-      //   }
-
-      //   // 执行 deposit 交易
-      //   const accountContract = getContract(
-      //     accountAddress,
-      //     accountAbi,
-      //     config.signer
-      //   );
-      //   console.log('transferAmount-->', transferAmount);
-
-      //   const depositGasLimit = await accountContract.deposit.estimateGas(
-      //     params.address,
-      //     params.poolId,
-      //     transferAmount
-      //   );
-
-      //   console.log("depositGasLimit--->", depositGasLimit);
-
-      //   const depositTx = await accountContract.deposit(
-      //     params.address,
-      //     params.poolId,
-      //     transferAmount,
-      //     {
-      //       gasLimit: (depositGasLimit * 120n) / 100n,
-      //     }
-      //   );
-
-      //   this.logger.info("Deposit transaction sent:", depositTx.hash);
-
-      //   // 等待 deposit 交易确认
-      //   const depositReceipt = await depositTx.wait();
-      //   this.logger.info("Deposit confirmed in block:", depositReceipt?.blockNumber);
-      // }
-
       // 执行 placeOrder 交易
       let transaction;
       if (!params.positionId) {
         const positionSalt = '1';
-        this.logger.info("createIncreaseOrder salt position params--->", { ...data, positionSalt });
+        this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionSalt, data);
+        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionSalt, { ...depositData }, data);
 
         transaction = await brokerContract.placeOrderWithSalt(
           positionSalt,
+          { ...depositData },
           data,
           {
             gasLimit: (gasLimit * 120n) / 100n,
@@ -255,11 +197,13 @@ export class Order {
 
         const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(
           params.positionId.toString(),
+          { ...depositData },
           data
         );
 
         transaction = await brokerContract.placeOrderWithPosition(
           params.positionId.toString(),
+          { ...depositData },
           data,
           {
             gasLimit: (gasLimit * 120n) / 100n,
@@ -320,22 +264,40 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      console.log("closeAllPositions params--->",chainId, params);
-
-      console.log('getNetworkFee--->', params[0].executionFeeToken, chainId);
 
       const networkFee = await this.utils.getNetworkFee(
         params[0].executionFeeToken,
         chainId
       );
 
-      console.log("closeAllPositions networkFee--->", networkFee);
+      const depositAmount = BigInt(params.length) * BigInt(networkFee);
+
+      const needsApproval = await this.utils.needsApproval(
+        chainId,
+        params[0].executionFeeToken,
+        depositAmount.toString(),
+      );
+
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId: chainId,
+          quoteAddress: params[0].executionFeeToken,
+          amount: ethers.MaxUint256.toString(),
+        });
+
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
+
+      const depositData = {
+        token: params[0].executionFeeToken,
+        amount: depositAmount.toString()
+      };
 
       const positionIds = params.map((param: PlaceOrderParams) => param.positionId.toString());
 
       const dataMap = params.map((param: PlaceOrderParams) => {
-        const collateralWithNetworkFee = BigInt(param.collateralAmount) + BigInt(networkFee);
-
         return {
           user: param.address,
           poolId: param.poolId,
@@ -343,7 +305,7 @@ export class Order {
           triggerType: param.triggerType,
           operation: OperationType.DECREASE,
           direction: param.direction,
-          collateralAmount: collateralWithNetworkFee,
+          collateralAmount: param.collateralAmount,
           size: param.size,
           price: param.price,
           timeInForce: TIME_IN_FORCE,
@@ -355,14 +317,13 @@ export class Order {
           tpPrice: 0,
           slSize: 0,
           slPrice: 0,
-          useAccountBalance: false,
         }
       })
 
-      this.logger.info("closeAllPositions params--->", positionIds, dataMap);
+      this.logger.info("closeAllPositions params--->", depositData, positionIds, dataMap);
 
-      const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(positionIds, dataMap);
-      const transaction = await brokerContract.placeOrdersWithPosition(positionIds, dataMap, {
+      const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, positionIds, dataMap);
+      const transaction = await brokerContract.placeOrdersWithPosition(depositData, positionIds, dataMap, {
         gasLimit: (gasLimit * 120n) / 100n,
       });
 
@@ -411,8 +372,6 @@ export class Order {
         params.chainId
       );
 
-      const collateralWithNetworkFee = BigInt(params.collateralAmount) + BigInt(networkFee);
-
       const data = {
         user: params.address,
         poolId: params.poolId,
@@ -420,7 +379,7 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.DECREASE,
         direction: params.direction,
-        collateralAmount: collateralWithNetworkFee,
+        collateralAmount: params.collateralAmount,
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
@@ -432,16 +391,44 @@ export class Order {
         tpPrice: 0,
         slSize: 0,
         slPrice: 0,
-        useAccountBalance: false,
+      }
+
+
+      const depositData = {
+        token: params.executionFeeToken,
+        amount: networkFee
+      }
+
+      const needsApproval = await this.utils.needsApproval(
+        params.chainId,
+        params.executionFeeToken,
+        networkFee.toString(),
+      );
+
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId: params.chainId,
+          quoteAddress: params.executionFeeToken,
+          amount: ethers.MaxUint256.toString(),
+        });
+
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
       }
 
       let transaction;
       if (!params.positionId) {
+        const depositData = {
+          token: params.executionFeeToken,
+          amount: networkFee
+        }
         const positionId = 1
         this.logger.info("createDecreaseOrder salt position params--->", [positionId, { data }]);
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), data);
+        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
 
         transaction = await brokerContract.placeOrderWithSalt(positionId.toString(),
+          depositData,
           data,
           {
             gasLimit: (gasLimit * 130n) / 100n,
@@ -449,9 +436,10 @@ export class Order {
         );
       } else {
         this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, { data }]);
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), data);
+        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
 
         transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
+          depositData,
           data,
           {
             gasLimit: (gasLimit * 130n) / 100n,
@@ -524,7 +512,7 @@ export class Order {
               triggerType: params.tpTriggerType,
               operation: OperationType.DECREASE,
               direction: params.direction,
-              collateralAmount: networkFee,
+              collateralAmount: '0',
               size: params.tpSize ?? "0",
               price: params.tpPrice ?? "0",
               timeInForce: TIME_IN_FORCE,
@@ -536,7 +524,6 @@ export class Order {
               tpPrice: "0",
               slSize: "0",
               slPrice: "0",
-              useAccountBalance: false,
             },
             {
               user: params.address,
@@ -545,7 +532,7 @@ export class Order {
               triggerType: params.slTriggerType,
               operation: OperationType.DECREASE,
               direction: params.direction,
-              collateralAmount: networkFee,
+              collateralAmount: '0',
               size: params.slSize ?? "0",
               price: params.slPrice ?? "0",
               timeInForce: TIME_IN_FORCE,
@@ -557,25 +544,43 @@ export class Order {
               tpPrice: "0",
               slSize: "0",
               slPrice: "0",
-              useAccountBalance: false,
             },
           ];
+
+          const depositAmount = BigInt(networkFee) * BigInt(2)
+
+          const needsApproval = await this.utils.needsApproval(
+            params.chainId,
+            params.executionFeeToken,
+            depositAmount.toString(),
+          );
+
+          if (needsApproval) {
+            const approvalResult = await this.utils.approveAuthorization({
+              chainId: params.chainId,
+              quoteAddress: params.executionFeeToken,
+              amount: ethers.MaxUint256.toString(),
+            });
+
+            if (approvalResult.code !== 0) {
+              throw new Error(approvalResult.message);
+            }
+          }
 
           let transaction
           if (!params.positionId) {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
-            const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
-            const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas([positionId.toString(), positionId.toString()], data);
+            const positionId = 1
+            const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithSalt([positionId.toString(), positionId.toString()], data, {
+            transaction = await brokerContract.placeOrdersWithSalt({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data, {
               gasLimit: (gasLimit * 120n) / 100n,
             });
           } else {
-            this.logger.info("createPositionTpSlOrder nft position data--->", data);
-            const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas([params.positionId.toString(), params.positionId.toString()], data);
+            const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithPosition([params.positionId.toString(), params.positionId.toString()], data, {
+            transaction = await brokerContract.placeOrdersWithPosition({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data, {
               gasLimit: (gasLimit * 120n) / 100n,
             });
           }
@@ -624,7 +629,7 @@ export class Order {
             params.tpSize !== "0" ? params.tpTriggerType : params.slTriggerType,
           operation: OperationType.DECREASE,
           direction: params.direction,
-          collateralAmount: networkFee,
+          collateralAmount: '0',
           size:
             params.tpSize !== "0" ? params.tpSize ?? "0" : params.slSize ?? "0",
           price:
@@ -640,22 +645,44 @@ export class Order {
           tpPrice: "0",
           slSize: "0",
           slPrice: "0",
-          useAccountBalance: false,
         };
+
+        const depositData = {
+          token: params.executionFeeToken,
+          amount: networkFee
+        }
+
+        const needsApproval = await this.utils.needsApproval(
+          params.chainId,
+          params.executionFeeToken,
+          networkFee.toString(),
+        );
+
+        if (needsApproval) {
+          const approvalResult = await this.utils.approveAuthorization({
+            chainId: params.chainId,
+            quoteAddress: params.executionFeeToken,
+            amount: ethers.MaxUint256.toString(),
+          });
+
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
 
         let transaction;
         if (!params.positionId) {
           this.logger.info("createPositionTpOrSlOrder salt position data--->", data);
           const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
-          const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), data);
+          const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
 
-          transaction = await brokerContract.placeOrderWithSalt(positionId.toString(), data, {
+          transaction = await brokerContract.placeOrderWithSalt(positionId.toString(), depositData, data, {
             gasLimit: (gasLimit * 120n) / 100n,
           });
         } else {
           this.logger.info("createPositionTpOrSlOrder nft position data--->", data);
-          const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), data);
-          transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(), data, {
+          const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
+          transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(), depositData, data, {
             gasLimit: (gasLimit * 120n) / 100n,
           });
         }
@@ -711,15 +738,14 @@ export class Order {
   }
 
 
-  async cancelAllOrders(orderIds: string[]) {
-    const config: MyxClientConfig = this.configManager.getConfig();
+  async cancelAllOrders(orderIds: string[], chainId: ChainId) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId,
+        chainId,
         this.configManager.getConfig().brokerAddress
       );
 
@@ -738,14 +764,14 @@ export class Order {
     }
   }
 
-  async cancelOrder(orderId: string) {
+  async cancelOrder(orderId: string, chainId: ChainId) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId,
+        chainId,
         this.configManager.getConfig().brokerAddress
       );
 
@@ -764,14 +790,14 @@ export class Order {
     }
   }
 
-  async cancelOrders(orderIds: string[]) {
+  async cancelOrders(orderIds: string[], chainId: ChainId) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
-        config.chainId,
+        chainId,
         this.configManager.getConfig().brokerAddress
       );
       const tx = await brokerContract.cancelOrders(orderIds);
@@ -790,11 +816,13 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams, chainId: number) {
+  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number,) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
+
+    const networkFee = await this.utils.getNetworkFee(quoteAddress, chainId)
 
     const brokerContract = await getBrokerSingerContract(
       chainId,
@@ -812,17 +840,40 @@ export class Order {
         slPrice: params.slPrice,
         executionFeeToken: params.executionFeeToken,
         useOrderCollateral: true,
-        useAccountBalance: false,
         paymentType: 0,
       },
     };
+    const depositData = {
+      token: quoteAddress,
+      amount: networkFee.toString()
+    }
 
     this.logger.info("updateOrderTpSl params", data);
 
-    try {
-      const gasLimit = await brokerContract.updateOrder.estimateGas(data);
 
-      const request = await brokerContract.updateOrder(data, {
+
+    try {
+      const needsApproval = await this.utils.needsApproval(
+        chainId,
+        params.executionFeeToken,
+        networkFee.toString(),
+      );
+
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId: chainId,
+          quoteAddress: params.executionFeeToken,
+          amount: ethers.MaxUint256.toString(),
+        });
+
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
+
+      const gasLimit = await brokerContract.updateOrder.estimateGas(depositData, data);
+
+      const request = await brokerContract.updateOrder(depositData, data, {
         gasLimit: (gasLimit * 120n) / 100n,
       });
 
