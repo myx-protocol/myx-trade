@@ -7,6 +7,7 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
+import { getJSONProvider } from "@/web3";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -17,7 +18,7 @@ export class Account {
     this.utils = utils;
   }
 
-  async getWalletQuoteTokenBalance() {
+  async getWalletQuoteTokenBalance(address?: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(
@@ -25,13 +26,15 @@ export class Account {
         "Invalid signer"
       );
     }
+
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Token_ABI,
-      config.signer
+      provider
     );
-    const balance = await erc20Contract.balanceOf(config.signer.getAddress());
+    const balance = await erc20Contract.balanceOf(address || config.signer.getAddress());
     return {
       code: 0,
       data: balance,
@@ -50,13 +53,15 @@ export class Account {
       );
     }
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
-      config.signer
+      provider
     );
     try {
-      const assets = await accountContract.getTradableAmount(config.signer.getAddress(), poolId);
+      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+      const assets = await accountContract.getTradableAmount(targetAddress, poolId);
       const data = {
         profitIsReleased: assets[0],
         freeAmount: assets[1],
@@ -103,7 +108,6 @@ export class Account {
     try {
       const account = await config.signer?.getAddress() ?? ''
 
-      console.log("withdraw", account, amount, poolId);
       const rs = await accountContract.withdraw(poolId, account, true, amount);
       const receipt = await rs?.wait(1);
 
@@ -119,7 +123,7 @@ export class Account {
     }
   }
 
-  async deposit({ poolId, amount, tokenAddress }: { poolId: string, amount: string, tokenAddress: string }) {
+  async deposit({ poolId, amount, tokenAddress, chainId }: { poolId: string, amount: string, tokenAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const account = await config.signer?.getAddress() ?? ''
     console.log("deposit", account, poolId, amount);
@@ -132,6 +136,7 @@ export class Account {
 
     try {
       const needApproval = await this.utils.needsApproval(
+        chainId,
         tokenAddress,
         amount,
         contractAddress.Account,
@@ -139,6 +144,7 @@ export class Account {
 
       if (needApproval) {
         const approvalResult = await this.utils.approveAuthorization({
+          chainId,
           quoteAddress: tokenAddress,
           amount: ethers.MaxUint256.toString(),
           spenderAddress: contractAddress.Account,
@@ -148,8 +154,6 @@ export class Account {
           throw new Error(approvalResult.message);
         }
       }
-
-
 
       const rs = await accountContract.deposit(account, poolId, amount);
       const receipt = await rs?.wait(1);
