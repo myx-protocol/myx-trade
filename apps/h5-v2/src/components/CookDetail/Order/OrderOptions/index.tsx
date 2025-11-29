@@ -4,6 +4,7 @@ import { Box } from '@mui/material'
 
 import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
+import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 
 export const OrderOptions = () => {
   const { slippage, setSlippage } = useCookOrderStore()
@@ -20,19 +21,8 @@ export const OrderOptions = () => {
       </Box>
 
       {/* fee */}
-      <div className="mt-[8px] flex items-center justify-between text-[12px] font-normal text-white">
-        <div className="flex items-center text-[#848E9C]">
-          <p className="border-b-[1px] border-dashed border-b-[#848E9C]">
-            <Trans>Fee</Trans>
-          </p>
-        </div>
-
-        <div className="flex items-center">
-          {/* Free forever */}
-          <p className="rounded-[9999px] border-[1px] border-[#00E3A5] bg-[rgba(0,227,165,0.1)] px-[8px] py-[4px] text-[10px] font-medium text-[#00E3A5]">
-            <Trans>Free forever</Trans>
-          </p>
-        </div>
+      <div className="mt-[8px]">
+        <Fee />
       </div>
     </div>
   )

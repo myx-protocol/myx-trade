@@ -9,10 +9,15 @@ import { SafeList } from '@/components/SafeList'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
-
+import { useSecurityInfo } from '@/api'
 export const MarketData = () => {
   const { baseLpDetail, pool, poolId } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
+
+  const { data: securityInfo } = useSecurityInfo({
+    address: baseLpDetail?.baseToken || '',
+    chainId: baseLpDetail?.chainId as number,
+  })
 
   return (
     <div className="ml-[48px] flex flex-nowrap items-center gap-[48px] leading-[1] whitespace-nowrap">
@@ -74,31 +79,40 @@ export const MarketData = () => {
       </div>
 
       {/* safe  */}
-      <Popover
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: '12px',
+      {securityInfo?.count && securityInfo.count > 0 && (
+        <Popover
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: '12px',
+              },
             },
-          },
-        }}
-        trigger={
-          <div className="flex-shrink-0" role="button">
-            <p className="flex items-center whitespace-nowrap text-[#9397A3]">
-              <span>{t`Safe`}</span>
-              <b className="ml-[4px] inline-flex rotate-[-90deg]">
-                <ArrowDown color="#9397A3" size={12} />
-              </b>
-            </p>
-            <p className="mt-[5px] flex items-center whitespace-nowrap text-[#00E3A5]">
-              <Security color="#00E3A5" size={13} />
-              <span className="ml-[4px]">4/4</span>
-            </p>
-          </div>
-        }
-      >
-        <SafeList />
-      </Popover>
+          }}
+          trigger={
+            <div className="flex-shrink-0" role="button">
+              <p className="flex items-center whitespace-nowrap text-[#9397A3]">
+                <span className={'text-[12px]'}>
+                  <Trans>Safe</Trans>
+                </span>
+                <b className="ml-[4px] inline-flex rotate-[-90deg]">
+                  <ArrowDown color="#9397A3" size={12} />
+                </b>
+              </p>
+              <p className="mt-[8px] flex items-center whitespace-nowrap text-[#00E3A5]">
+                <Security color="#00E3A5" size={13} />
+                <span className="ml-[4px] text-[13px] leading-[1] font-[500]">
+                  {securityInfo?.count}/{securityInfo?.count}
+                </span>
+              </p>
+            </div>
+          }
+        >
+          <SafeList
+            chainId={baseLpDetail?.chainId as number}
+            address={baseLpDetail?.baseToken || ''}
+          />
+        </Popover>
+      )}
     </div>
   )
 }

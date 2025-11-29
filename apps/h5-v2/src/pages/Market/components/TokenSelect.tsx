@@ -6,16 +6,20 @@ import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { TokenContext } from '@/pages/Market/context.ts'
 import { DialogTokenSelect } from '@/components/Dialog/DialogTokenSelect.tsx'
 import { Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { Tooltips } from '@/components/UI/Tooltips'
+import { t } from '@lingui/core/macro'
 
 export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
-  const { token, quote } = useContext(TokenContext)
+  const navigate = useNavigate()
+  const { token, quote, market } = useContext(TokenContext)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const onHandleClick = useCallback(async () => {
     try {
       setLoading(true)
-      onNext?.()
+      await onNext?.()
     } finally {
       setLoading(false)
     }
@@ -33,7 +37,12 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
 
         <Box className={'mt-[40px] flex flex-col gap-[10px]'}>
           <label className={'flex items-center gap-[4px]'}>
-            <Trans>选择您的资产</Trans> <TipsOutLine size={16} />
+            <Trans>选择您的资产</Trans>
+            <Tooltips
+              title={t`Select the asset that will be the subject of the contract (e.g., a Meme token).`}
+            >
+              <TipsOutLine size={16} className={'cursor-pointer'} />
+            </Tooltips>
           </label>
           <Box
             className={
@@ -55,7 +64,10 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
 
         <Box className={'mt-[32px] flex flex-col gap-[10px]'}>
           <label className={'flex items-center gap-[4px]'}>
-            <Trans>选择合约计价资产</Trans> <TipsOutLine size={16} />
+            <Trans>选择合约计价资产</Trans>
+            <Tooltips title={t`Select the currency used for pricing and settling contract PnL`}>
+              <TipsOutLine size={16} className={'cursor-pointer'} />
+            </Tooltips>
           </label>
           <Box
             className={
@@ -63,7 +75,7 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             }
           >
             <span className={'text-[18px] leading-[1.2] font-[500] text-white'}>
-              {quote?.symbol || 'USD'}
+              {quote?.symbol || 'USDC'}
             </span>
             <ArrowDown size={20} className={'text-regular'} />
           </Box>
@@ -73,14 +85,23 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
           <Button
             loading={loading}
             className={'gradient primary long w-full rounded'}
-            disabled={!token}
+            disabled={!token || !market}
             onClick={onHandleClick}
+            loadingPosition="start"
           >
             <Trans>Next</Trans>
           </Button>
         </Box>
       </Box>
-      <DialogTokenSelect open={open} onClose={() => setOpen(false)} />
+      <DialogTokenSelect
+        open={open}
+        onClose={(_, asset) => {
+          setOpen(false)
+          if (asset) {
+            navigate(`/market/${asset?.chainId}/${asset.address}`, { replace: true })
+          }
+        }}
+      />
     </>
   )
 }

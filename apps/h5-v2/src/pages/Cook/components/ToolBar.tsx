@@ -15,12 +15,12 @@ const Tabs = ({ value, onChange }: { value: CookType; onChange: (value: CookType
     },
   ]
   return (
-    <Box className={'flex items-end gap-[32px] text-center'}>
+    <Box className={'flex items-end gap-[20px] text-center'}>
       {tabs.map((tab) => {
         return (
           <span
             key={tab.value}
-            className={`cursor-pointer leading-[1] transition-all ${value === tab.value ? 'text-[32px] font-[900] text-white' : 'text-secondary text-[24px] font-[700]'}`}
+            className={`cursor-pointer leading-[1] transition-all ${value === tab.value ? 'text-[18px] font-[700] text-white' : 'text-secondary text-[18px] font-[700]'}`}
             onClick={() => onChange(tab.value)}
           >
             {tab.label}
@@ -34,13 +34,11 @@ const Tabs = ({ value, onChange }: { value: CookType; onChange: (value: CookType
 export const ToolBar = ({ children }: { children?: ReactNode }) => {
   const { type, setType } = useContext(CookContext)
   return (
-    <Box
-      className={
-        'bg-deep sticky top-[66px] z-[3] flex h-[56px] w-screen items-center justify-between px-[36px] py-[8px]'
-      }
-    >
-      <Tabs value={type} onChange={setType}></Tabs>
-      <Box className={'flex items-center gap-[4px] p-[12px]'}>{children}</Box>
-    </Box>
+    <>
+      <Box className={'flex h-[34px] w-screen items-center justify-between px-[16px] py-[8px]'}>
+        <Tabs value={type} onChange={setType}></Tabs>
+      </Box>
+      <Box>{children}</Box>
+    </>
   )
 }

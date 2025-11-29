@@ -72,7 +72,7 @@ export const OrderTips = () => {
   if (baseLpDetail?.state === MarketPoolState.Cook && !data) return <></>
 
   return (
-    <div className="bg-warning-10 text-regular mt-[8px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">
+    <div className="bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">
       <IconHelp size={14} className="flex-shrink-0 translate-y-[2px]" />
       <p className="text-[12px] leading-[1.5] text-[#CED1D9]">
         {baseLpDetail?.state === MarketPoolState.Cook && (
