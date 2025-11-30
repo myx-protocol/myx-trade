@@ -79,12 +79,16 @@ export class Order {
         };
       }
 
-      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + BigInt(marginAccountBalance?.tradeableProfit.toString() ?? 0) + (marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
-      let depositAmount = BigInt(0)
+      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
+      let depositAmount = BigInt(networkFee) + BigInt(params.collateralAmount)
+
 
       if (totalBalance > 0) {
-        depositAmount = BigInt(params.collateralAmount) - totalBalance
+        depositAmount = depositAmount - totalBalance
       }
+
+      this.logger.info('params.collateralAmount->', params.collateralAmount)
+      this.logger.info('depositAmount-->', depositAmount)
 
       const depositData = {
         token: params.executionFeeToken,
