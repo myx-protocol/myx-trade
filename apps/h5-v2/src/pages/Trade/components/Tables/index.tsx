@@ -95,7 +95,7 @@ export const Tables = () => {
   }
   return (
     <>
-      <div className="flex w-full items-center justify-between gap-[20px] px-[16px]">
+      <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
         <div className="flex-[1_1_0%]">
           <TradeRecordTabs
             value={activeTab}
