@@ -9,14 +9,14 @@ import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getCookSoonList } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { CookType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import dayjs from 'dayjs'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import { Empty } from '@/components/Empty.tsx'
 
 export const Soon = ({ chainId }: { chainId?: number }) => {
   const navigate = useNavigate()
-  const { type } = useContext(CookContext)
+  const { type, cookType } = useContext(CookContext)
   const {
     age,
     setAge,
@@ -34,8 +34,19 @@ export const Soon = ({ chainId }: { chainId?: number }) => {
   } = useCookFilter()
 
   const { data = [], isLoading } = useQuery({
-    queryKey: [{ key: 'CookSoonList' }, type, chainId, age, mc, progress, change, liq, holders],
-    enabled: type === CookType.Cook,
+    queryKey: [
+      { key: 'CookSoonList' },
+      type,
+      chainId,
+      cookType,
+      age,
+      mc,
+      progress,
+      change,
+      liq,
+      holders,
+    ],
+    enabled: type === CookType.Cook && cookType === CookListType.Soon,
     queryFn: async () => {
       const result = await getCookSoonList({
         chainId,

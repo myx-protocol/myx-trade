@@ -36,7 +36,7 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
     () =>
       getAreaChartOptions(interval, data, {
         grid: {
-          bottom: '24px',
+          bottom: '16px',
           left: '0',
           right: '0',
           show: false,
@@ -46,8 +46,8 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
   )
 
   return (
-    <div className="relative px-[10px]">
-      <EChartsReact option={option} className="h-[280px]" />
+    <div className="relative !h-[140px] px-[16px]">
+      <EChartsReact option={option} className="!h-[140px]" />
 
       {isLoading && (
         <Box
@@ -62,7 +62,7 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
       {data.length === 0 && isPending && (
         <Box
           className={
-            'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center py-[58px]'
+            'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center'
           }
         >
           <Box className={'text-dark-border'}>
