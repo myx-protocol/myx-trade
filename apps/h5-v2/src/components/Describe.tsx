@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 const Describe = ({ className = '', children }: { className?: string; children?: ReactNode }) => {
   return (
-    <Box className={`flex flex-col gap-[8px] ${className} text-[12px] leading-[1] font-[400]`}>
+    <Box className={`flex flex-col gap-[16px] ${className} text-[12px] leading-[1] font-[400]`}>
       {children}
     </Box>
   )

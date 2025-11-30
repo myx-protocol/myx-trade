@@ -1,27 +1,35 @@
-import { Card, CardTitle } from '@/pages/Cook/components/Card.tsx'
-import { Trans } from '@lingui/react/macro'
+import { Card } from '@/pages/Cook/components/Card.tsx'
 import { Token } from '@/pages/Cook/components/Token.tsx'
 import { Box } from '@mui/material'
-import Star from '@/assets/icon/lp/star.png'
-import { useContext, useState } from 'react'
-import { DialogFilters } from '@/components/Dialog/DialogFilters.tsx'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getTokenSniperList } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { CookType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import dayjs from 'dayjs'
 import { Empty } from '@/components/Empty.tsx'
 
 export const Sniper = ({ chainId }: { chainId?: number }) => {
   const navigate = useNavigate()
-  const { type } = useContext(CookContext)
+  const { type, cookType } = useContext(CookContext)
   const { age, mc, progress, change, liq, holders } = useCookFilter()
 
   const { data = [], isLoading } = useQuery({
-    queryKey: [{ key: 'TokenSniperList' }, type, chainId, age, mc, progress, change, liq, holders],
-    enabled: type === CookType.Cook,
+    queryKey: [
+      { key: 'TokenSniperList' },
+      type,
+      cookType,
+      chainId,
+      age,
+      mc,
+      progress,
+      change,
+      liq,
+      holders,
+    ],
+    enabled: type === CookType.Cook && cookType === CookListType.Sniper,
     queryFn: async () => {
       const result = await getTokenSniperList({
         chainId,

@@ -4,14 +4,16 @@ import { useState } from 'react'
 import { CookListType, CookType, TrenchType } from '@/pages/Cook/type.ts'
 import { Box } from '@mui/material'
 import { TrenchTabBar } from '@/pages/Cook/components/TrenchTabBar.tsx'
-import { TrenchTable } from '@/pages/Cook/components/TrenchTable.tsx'
-import { ChainSelector } from '@/pages/Cook/components/ChainSelector.tsx'
-import { IntervalSelector } from '@/pages/Cook/components/IntervalSelector.tsx'
 import { Interval } from '@/request/type.ts'
 import { SearchBar } from '@/components/SearchBar.tsx'
 import { Banner } from '@/pages/Cook/components/Banner.tsx'
 import { CookSubBar } from '@/pages/Cook/components/CookSubBar.tsx'
 import { ChainsBar } from './components/ChainsBar'
+import { CookTabs } from '@/pages/Cook/components/CookTabs.tsx'
+import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
+import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
+import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
+import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
@@ -28,7 +30,7 @@ const Cook = () => {
   const [holders, setHolders] = useState<[string, string]>(['', ''])
 
   return (
-    <>
+    <Box className={'overflow-x w-full pb-[var(--tabbar-height)]'}>
       <SearchBar />
       <Banner />
       <CookContext.Provider
@@ -60,23 +62,22 @@ const Cook = () => {
             </>
           ) : (
             <>
-              <TrenchTabBar type={trenchType} onTypeChange={(_type) => setTrenchType(_type)}>
-                <Box className={'flex items-center gap-[12px]'}>
-                  <IntervalSelector
-                    interval={interval}
-                    setInterval={(_value) => setInterval(_value as Interval)}
-                  />
-                  <ChainSelector chainId={chainId} setChainId={(id) => setChainId(id)} />
-                </Box>
-              </TrenchTabBar>
-              <Box className={'bg-deep sticky top-[186px] w-full px-[24px]'}>
-                <TrenchTable sortField={trenchType} interval={interval} chainId={chainId} />
-              </Box>
+              <TrenchTabBar type={trenchType} onTypeChange={(_type) => setTrenchType(_type)} />
+
+              <TrenchSubBar>
+                <IntervalList interval={interval} setInterval={setInterval} />
+                <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+              </TrenchSubBar>
             </>
           )}
         </Box>
+        {type === CookType.Cook ? (
+          <CookTabs chainId={chainId} />
+        ) : (
+          <TrenchList sortField={trenchType} interval={interval} chainId={chainId} />
+        )}
       </CookContext.Provider>
-    </>
+    </Box>
   )
 }
 

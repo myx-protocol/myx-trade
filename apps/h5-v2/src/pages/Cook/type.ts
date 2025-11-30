@@ -36,3 +36,14 @@ export enum TrenchType {
 }
 
 export type FilterInputType = [string, string]
+
+export enum DetailTabType {
+  Price,
+  Trade,
+  Info,
+}
+
+export enum Mode {
+  Rise,
+  Fall,
+}

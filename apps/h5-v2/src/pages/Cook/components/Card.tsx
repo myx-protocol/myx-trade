@@ -12,7 +12,7 @@ export const Card = ({
   className?: string
   onFilter?: () => void
 }) => {
-  return <Box className={`flex flex-col rounded-[6px] bg-[#14151A] ${className}`}>{children}</Box>
+  return <Box className={`flex flex-col rounded-[6px] ${className}`}>{children}</Box>
 }
 
 export const CardTitle = ({
