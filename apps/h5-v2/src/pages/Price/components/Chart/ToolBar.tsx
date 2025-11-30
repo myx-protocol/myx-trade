@@ -4,7 +4,7 @@ import { Resolution } from '@/components/Trade/Charts/Toolbar/Resolution'
 import { usePriceStore } from '../../store'
 import clsx from 'clsx'
 import type { ResolutionString } from '@public/charting_library/charting_library'
-import { ArrowDown, SortDown } from '@/components/Icon'
+import { ArrowDown, ChartStudy, SortDown } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { Popover } from '@/components/UI/Popover'
 import { useState } from 'react'
@@ -86,6 +86,10 @@ export const ToolBar = () => {
             ))}
           </div>
         </Popover>
+      </div>
+
+      <div className="shrink-0" role="button">
+        <ChartStudy size={16} color="#fff" />
       </div>
     </div>
   )

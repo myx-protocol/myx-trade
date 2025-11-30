@@ -1,4 +1,4 @@
-import './tailwindcss.css'
+import './css/tailwindcss.css'
 import { createRoot } from 'react-dom/client'
 import { ICON_KEYS, getIcon } from '@/components/Icon'
 import { useState } from 'react'
