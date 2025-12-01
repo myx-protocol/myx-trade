@@ -52,8 +52,6 @@ export class Order {
         params.collateralAmount,
       );
 
-      
-
       const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
 
       const marginAccountBalance = marginAccountBalanceRes?.data;
