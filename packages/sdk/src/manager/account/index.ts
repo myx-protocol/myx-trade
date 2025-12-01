@@ -100,7 +100,7 @@ export class Account {
   }
 
 
-  async withdraw({ chainId, receiver, tokenAddress, amount }: { chainId: number, receiver: string, tokenAddress: string, amount: string }) {
+  async withdraw({ chainId, receiver, amount, poolId }: { chainId: number, receiver: string, amount: string, poolId: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(chainId);
@@ -122,11 +122,11 @@ export class Account {
           Account_ABI,
           seamlessWallet as Signer
         );
-        const functionHash = accountContract.interface.encodeFunctionData('withdraw', [receiver, tokenAddress, amount])
+        const functionHash = accountContract.interface.encodeFunctionData('updateAndWithdraw', [receiver, poolId, true, amount])
         const nonce = await forwarderContract.nonces(seamlessWallet.address)
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
-          to: this.configManager.getConfig().brokerAddress,
+          to: contractAddress.Account,
           value: '0',
           gas: '350000',
           deadline: dayjs().add(60, 'minute').unix(),
@@ -136,7 +136,7 @@ export class Account {
 
         this.logger.info("withdraw forward tx params --->", forwardTxParams)
 
-        const rs = await this.client.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
@@ -152,7 +152,7 @@ export class Account {
         config.signer
       );
 
-      const rs = await accountContract.withdraw(receiver, tokenAddress, amount);
+      const rs = await accountContract.updateAndWithdraw(receiver, poolId, true, amount);
       const receipt = await rs?.wait(1);
 
       return {
@@ -201,7 +201,7 @@ export class Account {
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
-          to: this.configManager.getConfig().brokerAddress,
+          to: contractAddress.Account,
           value: '0',
           gas: '350000',
           deadline: dayjs().add(60, 'minute').unix(),
@@ -211,7 +211,7 @@ export class Account {
 
         this.logger.info("deposit forward tx params --->", forwardTxParams)
 
-        const rs = await this.client.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
