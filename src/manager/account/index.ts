@@ -8,7 +8,7 @@ import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
-import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
+import { getForwarderContract } from "@/web3/providers";
 import { MyxClient } from "..";
 import dayjs from "dayjs";
 export class Account {
@@ -185,6 +185,20 @@ export class Account {
 
       if (config.seamlessMode && authorized && seamlessWallet) {
         const isEnoughGas = await this.utils.checkSeamlessGas(account)
+
+        if (needApproval) {
+          const approvalResult = await this.utils.approveAuthorization({
+            chainId,
+            quoteAddress: tokenAddress,
+            amount: ethers.MaxUint256.toString(),
+            spenderAddress: contractAddress.Account,
+            signer: seamlessWallet as Signer,
+          });
+
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
