@@ -6,7 +6,7 @@ import { baseUrl } from "..";
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
-  poolId?: string
+  poolId?: string;
 }
 
 export enum OrderTypeEnum {
@@ -51,10 +51,15 @@ export enum OrderStatusEnum {
 }
 
 export enum ExecTypeEnum {
-  UserEntrust = 0,
-  Liquidation = 1,
-  Adl = 2,
-  AdlTrigger = 3,
+  Market = 1, // market order
+  Limit = 2, // limit order
+  TP = 3, // take profit order
+  SL = 4, // stop loss order
+  ADL = 5, // auto deleverage order
+  ADLTrigger = 6, // auto deleverage trigger order
+  Liquidation = 7, // liquidation order
+  EarlyClose = 8, // early close order
+  MarketClose = 9, // market close order
 }
 
 export interface HistoryOrderItem {
@@ -83,6 +88,7 @@ export interface HistoryOrderItem {
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
   userLeverage: number; // leverage
+  cancelReason?: string; // cancel reason
 }
 
 /**
