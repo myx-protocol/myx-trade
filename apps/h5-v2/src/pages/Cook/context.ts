@@ -1,4 +1,4 @@
-import { CookListType, CookType, type FilterInputType } from './type.ts'
+import { CookListType, CookType, type FilterInputType, Mode } from './type.ts'
 import { createContext, useMemo } from 'react'
 import type { MarketPool } from '@myx-trade/sdk'
 import type { BaseLpDetail } from '@/request/lp/type.ts'
@@ -33,6 +33,7 @@ export interface PoolContextValue {
   price?: string
   baseLpDetail?: BaseLpDetail
   refetch: () => void
+  mode: Mode
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)

@@ -1,29 +1,30 @@
 import { Box, styled, Tab, Tabs } from '@mui/material'
-import type { ReactNode } from 'react'
+import { memo, type ReactNode } from 'react'
 
-interface SubTabItem {
+interface SubTabItem<T> {
   label: ReactNode
-  value: number | string
+  value: T
 }
-interface SubTabBarProps {
+interface SubTabBarProps<T> {
   className?: string
-  items: SubTabItem[]
-  value: number | string
+  items: SubTabItem<T>[]
+  value: T
   end?: ReactNode
-  handleChange: (value: number | string) => void
+  handleChange: (value: T) => void
 }
 
-interface StyledTabsProps {
+interface StyledTabsProps<T> {
   className?: string
   children?: React.ReactNode
-  value: number | string
-  onChange: (event: React.SyntheticEvent, newValue: number) => void
+  value: T
+  onChange: (event: React.SyntheticEvent, newValue: T) => void
 }
 
-interface StyledTabProps {
+interface StyledTabProps<T> {
   label: ReactNode
+  value: T
 }
-const StyledTabs = styled((props: StyledTabsProps) => (
+const StyledTabs = styled((props: StyledTabsProps<any>) => (
   <Tabs {...props} TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }} />
 ))({
   backgroundColor: 'transparent',
@@ -42,7 +43,7 @@ const StyledTabs = styled((props: StyledTabsProps) => (
   },
 })
 
-const StyledTab = styled((props: StyledTabProps) => <Tab disableRipple {...props} />)(() => ({
+const StyledTab = styled((props: StyledTabProps<any>) => <Tab disableRipple {...props} />)(() => ({
   textTransform: 'none',
   fontWeight: 500,
   fontSize: 14,
@@ -60,19 +61,21 @@ const StyledTab = styled((props: StyledTabProps) => <Tab disableRipple {...props
   },
 }))
 
-export const SubTabBar = ({ value, handleChange, items, className = '', end }: SubTabBarProps) => {
-  return (
-    <Box className={`border-base flex items-center justify-between border-b-1 ${className}`}>
-      <StyledTabs
-        value={value}
-        onChange={(_, value) => handleChange(value)}
-        aria-label="basic tabs example"
-      >
-        {items.map((item, index) => {
-          return <StyledTab key={item.value} label={item.label} />
-        })}
-      </StyledTabs>
-      {end}
-    </Box>
-  )
-}
+export const SubTabBar = memo(
+  <T,>({ value, handleChange, items, className = '', end }: SubTabBarProps<T>) => {
+    return (
+      <Box className={`border-base flex items-center justify-between border-b-1 ${className}`}>
+        <StyledTabs
+          value={value}
+          onChange={(_, value) => handleChange(value)}
+          aria-label="basic tabs example"
+        >
+          {items.map((item, index) => {
+            return <StyledTab key={index} label={item.label} value={item.value} />
+          })}
+        </StyledTabs>
+        {end}
+      </Box>
+    )
+  },
+)

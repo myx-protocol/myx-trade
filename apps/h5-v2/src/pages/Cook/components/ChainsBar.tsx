@@ -15,11 +15,12 @@ export const ChainsBar = ({
 }) => {
   return (
     <ul
-      className={`flex w-full items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] ${className}`}
+      className={`no-scrollbar flex w-full snap-x snap-mandatory items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] ${className}`}
+      style={{ WebkitOverflowScrolling: 'touch' }}
     >
       <li
         key={'all'}
-        className={`flex items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] ${chainId === undefined ? 'bg-base text-white' : 'text-secondary'}`}
+        className={`flex shrink-0 snap-start items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] transition-all ${chainId === undefined ? 'bg-base text-white' : 'text-secondary'}`}
         onClick={() => setChainId(undefined)}
       >
         <Box className={'h-[12px] w-[12px]'}>
@@ -34,7 +35,7 @@ export const ChainsBar = ({
         return (
           <li
             key={_chainId}
-            className={`flex items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] ${chainId === _chainId ? 'bg-base text-white' : 'text-secondary'}`}
+            className={`flex shrink-0 snap-start items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] ${chainId === _chainId ? 'bg-base text-white' : 'text-secondary'}`}
             onClick={() => setChainId(_chainId)}
           >
             <Box className={''}>
