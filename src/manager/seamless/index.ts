@@ -198,9 +198,8 @@ export class Seamless {
     deadline: number;
     data: string;
     nonce: string;
-  }, provider?: ethers.Signer) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-    const forwarderContract = await getForwarderContract(config.chainId)
+  }, chainId: number, provider?: ethers.Signer) {
+    const forwarderContract = await getForwarderContract(chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
 
     const domain = {
@@ -210,7 +209,7 @@ export class Seamless {
       verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
     }
 
-    const walletProvider = provider ?? await getSignerProvider(config.chainId)
+    const walletProvider = provider ?? await getSignerProvider(chainId)
 
     const signature = await walletProvider.signTypedData(domain, contractTypes, {
       from,
@@ -222,12 +221,12 @@ export class Seamless {
       data
     })
 
-    const txRs = await forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, config.chainId)
+    const txRs = await forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId)
     return txRs
   }
 
-  async authorizeSeamlessAccount({ approve, seamlessAddress }: { approve: boolean, seamlessAddress: string }) {
-    console.log('authorizeSeamlessAccount-->', approve, seamlessAddress)
+  async authorizeSeamlessAccount({ approve, seamlessAddress, chainId }: { approve: boolean, seamlessAddress: string, chainId: number }) {
+    console.log('authorizeSeamlessAccount-->', approve, seamlessAddress, chainId)
     const config: MyxClientConfig = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -277,11 +276,11 @@ export class Seamless {
       from: masterAddress ?? '',
       to: forwarderContract?.target as string,
       value: '0',
-      gas: '350000',//gas.toString(),
+      gas: '800000',//gas.toString(),
       nonce: nonce.toString(),
       data: functionHash,
       deadline,
-    })
+    }, chainId)
 
     if (!txRs.data?.txHash) {
       const retryOptions = { n: 10, minWait: 250, maxWait: 1000 }
