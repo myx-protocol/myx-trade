@@ -338,6 +338,7 @@ export interface LpAsset {
   lastTotal: string
   token: string
   globalId: number
+  marketId: string
 }
 export interface LpAssetsResponse extends BaseResponse {
   data: LpAsset[]

@@ -89,7 +89,7 @@ export const Buy = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId])
+  }, [chainId, amount, slippage, poolId, onAction])
 
   return (
     <>
