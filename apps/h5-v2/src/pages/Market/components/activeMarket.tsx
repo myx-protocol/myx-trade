@@ -92,7 +92,7 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
     } finally {
       setLoading(false)
     }
-  }, [poolId, chainId, market, onNext])
+  }, [poolId, chainId, market, onNext, onAction])
   return (
     <Box className={'flex flex-1 flex-col'}>
       <h2 className={'text-[24px] leading-[1] font-[700] text-white'}>

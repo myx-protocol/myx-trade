@@ -151,7 +151,7 @@ export const Sell = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId])
+  }, [chainId, amount, slippage, poolId, onAction])
 
   return (
     <div className="mt-[12px]">
