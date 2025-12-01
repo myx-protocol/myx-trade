@@ -135,7 +135,6 @@ ${symbolInfo?.baseSymbol ?? ''}${symbolInfo?.quoteSymbol ?? ''} Available Margin
           }
           right={
             <p>
-              {}
               {!accountBalance?.profitIsReleased
                 ? formatNumber(
                     parseBigNumber(accountBalance?.tradeableProfit.toString())
