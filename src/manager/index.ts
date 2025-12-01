@@ -50,7 +50,7 @@ export class MyxClient {
      */
     this.utils = new Utils(this.configManager, this.logger);
 
-    this.account = new Account(this.configManager, this.logger, this.utils);
+    this.account = new Account(this.configManager, this.logger, this.utils, this);
 
     this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
 
