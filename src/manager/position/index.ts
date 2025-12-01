@@ -175,7 +175,7 @@ export class Position {
           from: seamlessWallet.address ?? '',
           to: this.configManager.getConfig().brokerAddress,
           value: '0',
-          gas: '350000',
+          gas: '800000',
           deadline: dayjs().add(60, 'minute').unix(),
           data: functionHash,
           nonce: nonce.toString(),
