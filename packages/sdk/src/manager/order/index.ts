@@ -52,17 +52,7 @@ export class Order {
         params.collateralAmount,
       );
 
-      if (needsApproval) {
-        const approvalResult = await this.utils.approveAuthorization({
-          chainId: params.chainId,
-          quoteAddress: params.executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
-        });
-
-        if (approvalResult.code !== 0) {
-          throw new Error(approvalResult.message);
-        }
-      }
+      
 
       const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
 
