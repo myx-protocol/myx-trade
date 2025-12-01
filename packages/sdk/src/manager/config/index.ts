@@ -69,6 +69,8 @@ export class ConfigManager {
       ...this.config,
       seamlessMode: open
     };
+
+    return this.config;
   }
 
   public updateSeamlessWallet({ wallet, authorized, masterAddress }: { wallet?: ethers.Wallet, authorized?: boolean, masterAddress?: string }) {

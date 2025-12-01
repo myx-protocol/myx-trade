@@ -117,18 +117,12 @@ export class Seamless {
   private logger: Logger;
   private utils: Utils;
   private account: Account
-  // public seamlessWallet: ethers.Wallet | null
-  // private seamlessWalletAuthorized: boolean
-  // private seamlessWalletApikey: string
 
   constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.account = account;
-    // this.seamlessWallet = null;
-    // this.seamlessWalletAuthorized = false;
-    // this.seamlessWalletApikey = '';
   }
 
   async onCheckRelayer(account: string, relayer: string) {
@@ -323,6 +317,7 @@ export class Seamless {
 
       try {
         const rs = await promise
+
         return rs
       } catch (err) {
         if (err instanceof TimeoutError) {
@@ -430,7 +425,8 @@ export class Seamless {
   }
 
   async startSeamlessMode({ open }: { open: boolean }) {
-    this.configManager.startSeamlessMode(open)
+    const config = this.configManager.startSeamlessMode(open)
+
     return {
       code: 0,
       data: {
