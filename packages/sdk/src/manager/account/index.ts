@@ -1,21 +1,26 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
 import { Utils } from "../utils";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
+import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
+import { MyxClient } from "..";
+import dayjs from "dayjs";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
+  private client: MyxClient;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, client: MyxClient) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
+    this.client = client;
   }
 
   async getWalletQuoteTokenBalance(address?: string) {
@@ -99,13 +104,53 @@ export class Account {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(chainId);
-    const accountContract = new ethers.Contract(
-      contractAddress.Account,
-      Account_ABI,
-      config.signer
-    );
 
     try {
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(receiver)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const accountContract = new ethers.Contract(
+          contractAddress.Account,
+          Account_ABI,
+          seamlessWallet as Signer
+        );
+        const functionHash = accountContract.interface.encodeFunctionData('withdraw', [receiver, tokenAddress, amount])
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("withdraw forward tx params --->", forwardTxParams)
+
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "withdraw success",
+          data: rs,
+        };
+
+      }
+      const accountContract = new ethers.Contract(
+        contractAddress.Account,
+        Account_ABI,
+        config.signer
+      );
 
       const rs = await accountContract.withdraw(receiver, tokenAddress, amount);
       const receipt = await rs?.wait(1);
@@ -125,12 +170,7 @@ export class Account {
   async deposit({ amount, tokenAddress, chainId }: { amount: string, tokenAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const account = await config.signer?.getAddress() ?? ''
-    const contractAddress = getContractAddressByChainId(config.chainId);
-    const accountContract = new ethers.Contract(
-      contractAddress.Account,
-      Account_ABI,
-      config.signer
-    );
+    const contractAddress = getContractAddressByChainId(chainId);
 
     try {
       const needApproval = await this.utils.needsApproval(
@@ -139,6 +179,47 @@ export class Account {
         amount,
         contractAddress.Account,
       );
+
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(account)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const accountContract = new ethers.Contract(
+          contractAddress.Account,
+          Account_ABI,
+          seamlessWallet as Signer
+        );
+        const functionHash = accountContract.interface.encodeFunctionData('deposit', [account, tokenAddress, amount])
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("deposit forward tx params --->", forwardTxParams)
+
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "deposit success",
+          data: rs,
+        };
+      }
 
       if (needApproval) {
         const approvalResult = await this.utils.approveAuthorization({
@@ -152,6 +233,13 @@ export class Account {
           throw new Error(approvalResult.message);
         }
       }
+
+
+      const accountContract = new ethers.Contract(
+        contractAddress.Account,
+        Account_ABI,
+        config.signer
+      );
 
       const rs = await accountContract.deposit(account, tokenAddress, amount);
       const receipt = await rs?.wait(1);

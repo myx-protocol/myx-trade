@@ -83,9 +83,6 @@ export class Order {
         depositAmount = depositAmount - totalBalance
       }
 
-      this.logger.info('params.collateralAmount->', params.collateralAmount)
-      this.logger.info('depositAmount-->', depositAmount)
-
       const depositData = {
         token: params.executionFeeToken,
         amount: depositAmount > BigInt(0) ? (depositAmount + BigInt(networkFee)).toString() : networkFee
@@ -285,8 +282,6 @@ export class Order {
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
-
-
 
       const networkFee = await this.utils.getNetworkFee(
         params[0].executionFeeToken,
