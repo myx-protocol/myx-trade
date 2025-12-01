@@ -95,10 +95,10 @@ export class Account {
   }
 
 
-  async withdraw({ poolId, amount }: { poolId: string, amount: string }) {
+  async withdraw({ chainId, receiver, tokenAddress, amount }: { chainId: number, receiver: string, tokenAddress: string, amount: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const contractAddress = getContractAddressByChainId(config.chainId);
+    const contractAddress = getContractAddressByChainId(chainId);
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
@@ -106,9 +106,8 @@ export class Account {
     );
 
     try {
-      const account = await config.signer?.getAddress() ?? ''
 
-      const rs = await accountContract.withdraw(poolId, account, true, amount);
+      const rs = await accountContract.withdraw(receiver, tokenAddress, amount);
       const receipt = await rs?.wait(1);
 
       return {
@@ -123,10 +122,9 @@ export class Account {
     }
   }
 
-  async deposit({ poolId, amount, tokenAddress, chainId }: { poolId: string, amount: string, tokenAddress: string, chainId: number }) {
+  async deposit({ amount, tokenAddress, chainId }: { amount: string, tokenAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const account = await config.signer?.getAddress() ?? ''
-    console.log("deposit", account, poolId, amount);
     const contractAddress = getContractAddressByChainId(config.chainId);
     const accountContract = new ethers.Contract(
       contractAddress.Account,
@@ -155,7 +153,7 @@ export class Account {
         }
       }
 
-      const rs = await accountContract.deposit(account, poolId, amount);
+      const rs = await accountContract.deposit(account, tokenAddress, amount);
       const receipt = await rs?.wait(1);
 
       return {
