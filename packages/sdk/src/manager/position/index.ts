@@ -1,8 +1,7 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
 
-import { getContractAddressByChainId } from "@/config/address/index";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import {
   GetHistoryOrdersParams,
   getPositionHistory,
@@ -13,16 +12,20 @@ import { Utils } from "../utils";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { Seamless } from "../seamless";
+import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
+import dayjs from "dayjs";
 
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
+  private seamless: Seamless;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
+    this.seamless = seamless;
   }
 
   async listPositions() {
@@ -81,9 +84,7 @@ export class Position {
     chainId: number
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    if (!config.signer) {
-      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-    }
+
 
     this.logger.debug("adjustCollateral params-->", {
       poolId,
@@ -108,43 +109,94 @@ export class Position {
         oracleType: poolOracleType,
       };
 
-      const contractAddress = getContractAddressByChainId(chainId);
+      let needsApproval = false;
 
-      // adjust collateral check and approve
       if (Number(adjustAmount) > 0) {
-        this.logger.debug("adjust collateral check and approve-->", {
-          quoteToken,
-          adjustAmount,
-          spenderAddress: contractAddress.Account,
-        });
-        const needsApproval = await this.utils.needsApproval(
+        needsApproval = await this.utils.needsApproval(
           chainId,
           quoteToken,
           adjustAmount,
         );
+      }
 
-        this.logger.debug("adjust collateral needs approval-->", {
-          needsApproval,
-        });
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
+      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
+
+      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+
+      const depositData = {
+        token: quoteToken,
+        amount: depositAmount.toString()
+      }
+
+
+      if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
-          this.logger.debug("adjust collateral approve-->", {
-            quoteToken,
-            amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.Account,
-          });
           const approvalResult = await this.utils.approveAuthorization({
-            chainId,
+            chainId: chainId,
             quoteAddress: quoteToken,
             amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.Account,
+            signer: seamlessWallet as Signer,
           });
+
           if (approvalResult.code !== 0) {
             throw new Error(approvalResult.message);
           }
         }
+
+        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const brokerContract = await getSeamlessBrokerContract(
+          this.configManager.getConfig().brokerAddress,
+          seamlessWallet as Signer
+        );
+        const functionHash = brokerContract.interface.encodeFunctionData('updatePriceAndAdjustCollateral', [
+          [updateParams],
+          depositData,
+          positionId,
+          adjustAmount,
+          // {
+          //   value: BigInt(priceData?.value ?? "1"),
+          //   gas: 10000000n,
+          // }
+        ])
+
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("adjust collateral forward tx params --->", forwardTxParams)
+
+        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "adjust collateral success",
+          data: rs,
+        };
       }
 
+
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       /**
        * call broker contract
        */
@@ -154,33 +206,18 @@ export class Position {
         config.signer
       );
 
-      this.logger.debug("updatePriceAndAdjustCollateral-->", {
-        updateParams,
-        positionId,
-        adjustAmount,
-      });
 
-      this.logger.debug("adjust collateral network fee-->", {
-        quoteToken,
-        chainId,
-      });
-      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
+      if (needsApproval) {
 
-      this.logger.debug("adjust collateral network fee result-->", {
-        networkFee,
-      });
-      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
-      this.logger.debug("adjust collateral deposit amount-->", {
-        depositAmount,
-      });
-      const depositData = {
-        token: quoteToken,
-        amount: depositAmount.toString()
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId,
+          quoteAddress: quoteToken,
+          amount: ethers.MaxUint256.toString(),
+        });
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
       }
-
-      this.logger.debug("adjust collateral deposit data-->", {
-        depositData,
-      });
 
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
