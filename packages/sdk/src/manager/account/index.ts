@@ -100,7 +100,7 @@ export class Account {
   }
 
 
-  async withdraw({ chainId, receiver, tokenAddress, amount }: { chainId: number, receiver: string, tokenAddress: string, amount: string }) {
+  async withdraw({ chainId, receiver, tokenAddress, amount, poolId }: { chainId: number, receiver: string, tokenAddress: string, amount: string, poolId: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(chainId);
@@ -122,7 +122,7 @@ export class Account {
           Account_ABI,
           seamlessWallet as Signer
         );
-        const functionHash = accountContract.interface.encodeFunctionData('withdraw', [receiver, tokenAddress, amount])
+        const functionHash = accountContract.interface.encodeFunctionData('updateAndWithdraw', [receiver, poolId, true, amount])
         const nonce = await forwarderContract.nonces(seamlessWallet.address)
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -152,7 +152,7 @@ export class Account {
         config.signer
       );
 
-      const rs = await accountContract.withdraw(receiver, tokenAddress, amount);
+      const rs = await accountContract.updateAndWithdraw(receiver, poolId, true, amount);
       const receipt = await rs?.wait(1);
 
       return {
