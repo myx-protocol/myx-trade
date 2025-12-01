@@ -85,13 +85,13 @@ export class Position {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
 
-    this.logger.debug("adjustCollateral-->", {
+    this.logger.debug("adjustCollateral params-->", {
       poolId,
       positionId,
       adjustAmount,
       quoteToken,
     });
-    
+
     try {
       /**
        * fetch oracle price
@@ -122,6 +122,7 @@ export class Position {
           quoteToken,
           adjustAmount,
         );
+
         this.logger.debug("adjust collateral needs approval-->", {
           needsApproval,
         });
@@ -157,17 +158,29 @@ export class Position {
         updateParams,
         positionId,
         adjustAmount,
-        useAccountBalance: false,
       });
 
+      this.logger.debug("adjust collateral network fee-->", {
+        quoteToken,
+        chainId,
+      });
       const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
 
+      this.logger.debug("adjust collateral network fee result-->", {
+        networkFee,
+      });
       const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
-
+      this.logger.debug("adjust collateral deposit amount-->", {
+        depositAmount,
+      });
       const depositData = {
         token: quoteToken,
         amount: depositAmount.toString()
       }
+
+      this.logger.debug("adjust collateral deposit data-->", {
+        depositData,
+      });
 
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
