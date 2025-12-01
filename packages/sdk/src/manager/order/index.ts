@@ -75,7 +75,7 @@ export class Order {
         };
       }
 
-      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
+      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
       let depositAmount = BigInt(networkFee) + BigInt(params.collateralAmount)
 
 
