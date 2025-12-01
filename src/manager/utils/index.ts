@@ -165,11 +165,13 @@ export class Utils {
     quoteAddress,
     amount,
     spenderAddress,
+    signer
   }: {
     chainId: number;
     quoteAddress: string;
     amount?: string;
     spenderAddress?: string;
+    signer?: ethers.Signer;
   }) {
     try {
       const erc20Abi = [
@@ -180,7 +182,7 @@ export class Utils {
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
-        config.signer
+        signer ?? config.signer
       );
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
