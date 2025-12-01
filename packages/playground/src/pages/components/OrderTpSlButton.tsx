@@ -1,3 +1,4 @@
+/*
 import type { MyxClient } from "@myx-trade/sdk";
 import { Button, message, Modal, Form, Row, Col, Tag, Card, InputNumber } from "antd"
 import { ethers } from "ethers";
@@ -70,7 +71,7 @@ export const OrderSettingsButton = ({ record, myxClient, poolList }: { record: a
       >
         订单设置
       </Button>
-      {/* 订单修改和止盈止损设置弹窗 / Order Modification & TP/SL Setting Modal */}
+      {/!* 订单修改和止盈止损设置弹窗 / Order Modification & TP/SL Setting Modal *!/}
       <Modal
         title="修改订单和设置止盈止损 / Modify Order & Set TP/SL"
         open={open}
@@ -115,7 +116,7 @@ export const OrderSettingsButton = ({ record, myxClient, poolList }: { record: a
               layout="vertical"
               onFinish={async (values) => await executeTpSlOrder(values)}
             >
-              {/* 基础订单信息设置 / Basic Order Settings */}
+              {/!* 基础订单信息设置 / Basic Order Settings *!/}
               <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
                 <Col span={12}>
                   <Card title="订单基础设置 / Basic Order Settings" size="small">
@@ -212,4 +213,8 @@ export const OrderSettingsButton = ({ record, myxClient, poolList }: { record: a
       </Modal>
     </>
   )
+}*/
+
+export const OrderSettingsButton = () => {
+
 }

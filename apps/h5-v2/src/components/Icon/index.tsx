@@ -31,6 +31,7 @@ import CheckBoxOutline from './set/CheckBoxOutline.tsx'
 import Pause from './set/Pause.tsx'
 import ChartBar from './set/ChartBar.tsx'
 import GlobalLine from './set/GlobalLine.tsx'
+import BackIcon from './set/BackIcon.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -84,6 +85,7 @@ export {
   Pause,
   ChartBar,
   GlobalLine,
+  BackIcon,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

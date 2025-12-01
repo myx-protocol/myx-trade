@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getCookNews } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { CookType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import { Pause } from '@/components/Icon'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import dayjs from 'dayjs'
@@ -18,12 +18,23 @@ import { Empty } from '@/components/Empty.tsx'
 
 export const New = ({ chainId }: { chainId?: number }) => {
   const navigate = useNavigate()
-  const { type } = useContext(CookContext)
+  const { type, cookType } = useContext(CookContext)
   const { age, mc, progress, change, liq, holders } = useCookFilter()
 
   const { data = [], isLoading } = useQuery({
-    queryKey: [{ key: 'TokenNewList' }, type, chainId, age, mc, progress, change, liq, holders],
-    enabled: type === CookType.Cook,
+    queryKey: [
+      { key: 'TokenNewList' },
+      type,
+      cookType,
+      chainId,
+      age,
+      mc,
+      progress,
+      change,
+      liq,
+      holders,
+    ],
+    enabled: type === CookType.Cook && cookType === CookListType.New,
     queryFn: async () => {
       const result = await getCookNews({
         chainId,

@@ -7,6 +7,21 @@ import { FilterLine } from '@/components/Icon'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import { DialogFilters } from '@/components/Dialog/DialogFilters.tsx'
 
+const items = [
+  {
+    label: <Trans>Token Sniper</Trans>,
+    value: CookListType.Sniper,
+  },
+  {
+    label: <Trans>New</Trans>,
+    value: CookListType.New,
+  },
+  {
+    label: <Trans>Soon</Trans>,
+    value: CookListType.Soon,
+  },
+]
+
 export const CookSubBar = ({ className, end }: { className?: string; end?: ReactNode }) => {
   const { cookType, setCookType } = useContext(CookContext)
   const {
@@ -26,23 +41,10 @@ export const CookSubBar = ({ className, end }: { className?: string; end?: React
     clear,
   } = useCookFilter()
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const items = [
-    {
-      label: <Trans>Token Sniper</Trans>,
-      value: CookListType.Sniper,
-    },
-    {
-      label: <Trans>New</Trans>,
-      value: CookListType.New,
-    },
-    {
-      label: <Trans>Soon</Trans>,
-      value: CookListType.Soon,
-    },
-  ]
+
   return (
     <>
-      <SubTabBar
+      <SubTabBar<CookListType>
         items={items}
         value={cookType}
         className={className}
