@@ -141,6 +141,7 @@ export class Order {
         if (!params.positionId) {
           this.logger.info("createIncreaseOrder placeOrderWithSalt data --->", [
             '1',
+            { ...depositData },
             data
           ])
           functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
@@ -169,7 +170,7 @@ export class Order {
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
@@ -374,7 +375,7 @@ export class Order {
 
         this.logger.info("cancel all positions forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
@@ -542,7 +543,7 @@ export class Order {
 
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
@@ -764,7 +765,7 @@ export class Order {
 
             this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
-            const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+            const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
             console.log('rs-->', rs)
 
             return {
@@ -932,7 +933,7 @@ export class Order {
 
           this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
-          const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+          const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
           console.log('rs-->', rs)
 
           return {
@@ -1059,7 +1060,7 @@ export class Order {
 
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {

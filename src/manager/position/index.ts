@@ -183,7 +183,7 @@ export class Position {
 
         this.logger.info("adjust collateral forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
         console.log('rs-->', rs)
 
         return {
