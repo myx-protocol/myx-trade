@@ -186,7 +186,7 @@ const Market = () => {
         toast.error(JSON.stringify(e))
       }
     }
-  }, [token, chainId, marketInfo])
+  }, [token, chainId, marketInfo, onAction])
 
   useEffect(() => {
     /*console.info(

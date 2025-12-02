@@ -156,7 +156,7 @@ export const Redeem = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId])
+  }, [chainId, amount, slippage, poolId, onAction])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''

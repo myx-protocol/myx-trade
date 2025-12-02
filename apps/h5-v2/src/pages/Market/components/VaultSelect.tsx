@@ -258,7 +258,7 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
     } finally {
       setIsLoading(false)
     }
-  }, [type, poolId, amount, slippage, chainId, curChainId])
+  }, [type, poolId, amount, slippage, chainId, curChainId, onAction])
 
   const isInsufficient = useMemo(() => {
     console.log(111111)
