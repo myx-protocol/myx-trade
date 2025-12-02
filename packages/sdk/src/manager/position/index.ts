@@ -162,11 +162,7 @@ export class Position {
           [updateParams],
           depositData,
           positionId,
-          adjustAmount,
-          // {
-          //   value: BigInt(priceData?.value ?? "1"),
-          //   gas: 10000000n,
-          // }
+          adjustAmount
         ])
 
         const nonce = await forwarderContract.nonces(seamlessWallet.address)
@@ -174,8 +170,8 @@ export class Position {
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
           to: this.configManager.getConfig().brokerAddress,
-          value: '0',
-          gas: '800000',
+          value: (priceData?.value ?? "1").toString(),
+          gas: '10000000',
           deadline: dayjs().add(60, 'minute').unix(),
           data: functionHash,
           nonce: nonce.toString(),
