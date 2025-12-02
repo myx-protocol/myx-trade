@@ -91,7 +91,7 @@ export const Subscribe = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId])
+  }, [chainId, amount, slippage, poolId, onAction])
   return (
     <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
       <Box className={'relative z-[1] flex flex-col gap-[6px]'}>

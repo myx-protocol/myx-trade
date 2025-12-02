@@ -12,7 +12,7 @@ import {
   Box,
   Paper,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import SortDown from '@/components/Icon/set/SortDown'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { Copy } from '@/components/Copy'
@@ -39,6 +39,8 @@ import { calculationPnl } from '@/utils/pnl.ts'
 import { Empty } from '@/components/Empty.tsx'
 import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { t } from '@lingui/core/macro'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -78,6 +80,8 @@ export const Assets = () => {
   const [openClaimRewardsDialog, setOpenClaimRewardsDialog] = useState(false)
   const { address: account } = useWalletConnection()
   const [lpAsset, setLpAsset] = useState<LpAsset | undefined>(undefined)
+  const { markets } = useMyxSdkClient()
+  const onAction = useWalletActions()
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -106,6 +110,7 @@ export const Assets = () => {
       return {
         poolId: item.poolId,
         chainId: item.chainId,
+        marketId: item.marketId,
       }
     })
   }, [data])
@@ -156,11 +161,20 @@ export const Assets = () => {
     }
   }, [poolId, price, priceMap])
 
+  const onClaim = useCallback(
+    async (lpAsset: LpAsset) => {
+      const checked = await onAction(lpAsset.chainId)
+      if (!checked) return
+      setOpenClaimRewardsDialog(true)
+    },
+    [setOpenClaimRewardsDialog, onAction],
+  )
+
   const { data: rewardsMap = {} as RewardsMapType, refetch } = useQuery({
-    queryKey: [{ key: 'getBaseLpAssetRewards' }, rewardsQueryParams, account],
-    enabled: !!rewardsQueryParams.length && !!account,
+    queryKey: [{ key: 'getBaseLpAssetRewards' }, rewardsQueryParams, account, markets],
+    enabled: !!rewardsQueryParams?.length && !!account && !!markets?.length,
     queryFn: async () => {
-      if (!rewardsQueryParams.length) return {} as RewardsMapType
+      if (!rewardsQueryParams?.length) return {} as RewardsMapType
       const result = await Promise.all(
         rewardsQueryParams.map(async (item) => {
           let rewards = ''
@@ -170,8 +184,19 @@ export const Assets = () => {
               chainId: item.chainId,
               account: account as `0x${string}`,
             })
-            if (rs) {
-              rewards = formatUnits(rs, COMMON_LP_AMOUNT_DECIMALS)
+            // base.getRewards({
+            //   poolId,
+            //   chainId,
+            //   account
+            // })
+            console.log('Base.getRewards', item.poolId, item.chainId, account, rs)
+            if (rs === 0n) {
+              rewards = '0'
+            } else if (rs) {
+              const marketInfo = markets?.find((market) => market.marketId === item?.marketId)
+              if (marketInfo?.quoteDecimals) {
+                rewards = formatUnits(rs, marketInfo?.quoteDecimals)
+              }
             }
           } catch (_e) {
             console.error(_e)
@@ -179,19 +204,20 @@ export const Assets = () => {
           return {
             poolId: item.poolId,
             chainId: item.chainId,
-            price: rewards,
+            rewards,
           }
         }),
       )
 
+      console.log(result)
+
       return (result || []).reduce((acc, cur) => {
         return {
           ...acc,
-          [cur.poolId]: cur.price,
+          [cur.poolId]: cur.rewards,
         }
       }, {} as RewardsMapType)
     },
-    refetchInterval: 5000,
   })
 
   // 格式化数字显示
@@ -627,9 +653,10 @@ export const Assets = () => {
                       <div
                         className="w-[fit-content] rounded-[999px] bg-[#202129] px-[12px] py-[6px] leading-[1.2] font-normal text-white"
                         role="button"
-                        onClick={() => {
+                        onClick={async () => {
                           setLpAsset(row)
-                          setOpenClaimRewardsDialog(true)
+                          await onClaim(row)
+                          // setOpenClaimRewardsDialog(true)
                         }}
                       >
                         <Trans>Claim Rewards</Trans>

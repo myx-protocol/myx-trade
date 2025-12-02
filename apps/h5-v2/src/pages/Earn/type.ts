@@ -19,3 +19,14 @@ export const ChartIntervalValue: Record<ChartInterval, { value: PriceInterval; l
     limit: 365,
   },
 }
+
+export enum DetailTabType {
+  Price,
+  Trade,
+  Introduction,
+}
+
+export enum Mode {
+  Rise,
+  Fall,
+}

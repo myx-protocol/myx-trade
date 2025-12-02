@@ -3,6 +3,7 @@ import { createContext } from 'react'
 export enum TradeSide {
   Subscribe = 1,
   Redeem,
+  Claim,
 }
 export interface TradeContextValue {
   side: TradeSide

@@ -5,6 +5,7 @@ import { Redeem } from './Redeem'
 import { TradeContext, TradeSide } from '@/pages/Earn/components/Trade/Context.ts'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Claim } from '@/pages/Earn/components/Trade/Claim.tsx'
 
 export const TradingForm = () => {
   const [searchParams] = useSearchParams()
@@ -23,7 +24,9 @@ export const TradingForm = () => {
     <TradeContext.Provider value={{ side, setSide, slippage, setSlippage }}>
       <Box className={'flex flex-col'}>
         <TradeTabBar />
-        {side === TradeSide.Subscribe ? <Subscribe /> : <Redeem />}
+        {side === TradeSide.Subscribe && <Subscribe />}
+        {side === TradeSide.Redeem && <Redeem />}
+        {side === TradeSide.Claim && <Claim />}
       </Box>
     </TradeContext.Provider>
   )
