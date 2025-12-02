@@ -1,64 +1,83 @@
 import { ToolBar } from '@/pages/Cook/components/ToolBar.tsx'
 import { CookContext } from '@/pages/Cook/context.ts'
 import { useState } from 'react'
-import { CookType, TrenchType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType, TrenchType } from '@/pages/Cook/type.ts'
 import { Box } from '@mui/material'
-import { Sniper } from '@/pages/Cook/components/Sniper.tsx'
-import { New } from '@/pages/Cook/components/New.tsx'
-import { Soon } from '@/pages/Cook/components/Soon.tsx'
 import { TrenchTabBar } from '@/pages/Cook/components/TrenchTabBar.tsx'
-import { TrenchTable } from '@/pages/Cook/components/TrenchTable.tsx'
-import { ChainSelector } from '@/pages/Cook/components/ChainSelector.tsx'
-import { IntervalSelector } from '@/pages/Cook/components/IntervalSelector.tsx'
-import { Interval, TrenchSortField } from '@/request/type.ts'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { Interval } from '@/request/type.ts'
+import { SearchBar } from '@/components/SearchBar.tsx'
+import { Banner } from '@/pages/Cook/components/Banner.tsx'
+import { CookSubBar } from '@/pages/Cook/components/CookSubBar.tsx'
+import { ChainsBar } from './components/ChainsBar'
+import { CookTabs } from '@/pages/Cook/components/CookTabs.tsx'
+import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
+import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
+import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
+import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
 
 const Cook = () => {
-  const { chainId: curChainId } = useWalletConnection()
   const [type, setType] = useState<CookType>(CookType.Cook)
-  const [chainId, setChainId] = useState<number | undefined>(curChainId ?? undefined)
+  const [cookType, setCookType] = useState<CookListType>(CookListType.Sniper)
+  const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
   const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Latest)
-  // const { data = null } = useQuery({
-  //   queryKey: [{ key: 'PoolOpenOrders' }, chainId],
-  //   queryFn: async () => {
-  //     const result = await Pool.getOpenOrders(chainId)
-  //     console.log(result)
-  //     return result
-  //   },
-  // })
+
+  const [age, setAge] = useState<[string, string]>(['', ''])
+  const [mc, setMC] = useState<[string, string]>(['', ''])
+  const [progress, setProgress] = useState<[string, string]>(['', ''])
+  const [change, setChange] = useState<[string, string]>(['', ''])
+  const [liq, setLiq] = useState<[string, string]>(['', ''])
+  const [holders, setHolders] = useState<[string, string]>(['', ''])
+
   return (
-    <CookContext.Provider value={{ type, setType }}>
-      <ToolBar>
-        {type === CookType.Cook ? (
-          <ChainSelector chainId={chainId} setChainId={(id) => setChainId(id)} />
-        ) : (
-          <></>
-        )}
-      </ToolBar>
-      {type === CookType.Cook ? (
-        <Box className={'relative z-[1] grid grid-cols-3 gap-[4px] px-[12px]'}>
-          <Sniper />
-          <New />
-          <Soon />
+    <Box className={'overflow-x w-full pb-[var(--tabbar-height)]'}>
+      <SearchBar />
+      <Banner />
+      <CookContext.Provider
+        value={{
+          type,
+          setType,
+          cookType,
+          setCookType,
+          age,
+          setAge,
+          mc,
+          setMC,
+          progress,
+          setProgress,
+          change,
+          setChange,
+          liq,
+          setLiq,
+          holders,
+          setHolders,
+        }}
+      >
+        <Box className={'bg-deep sticky top-[0] z-[1]'}>
+          <ToolBar />
+          {type === CookType.Cook ? (
+            <>
+              <CookSubBar className={'mt-[-4px]'} />
+              <ChainsBar className={'mt-[4px]'} setChainId={setChainId} chainId={chainId} />
+            </>
+          ) : (
+            <>
+              <TrenchTabBar type={trenchType} onTypeChange={(_type) => setTrenchType(_type)} />
+
+              <TrenchSubBar>
+                <IntervalList interval={interval} setInterval={setInterval} />
+                <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+              </TrenchSubBar>
+            </>
+          )}
         </Box>
-      ) : (
-        <>
-          <TrenchTabBar type={trenchType} onTypeChange={(_type) => setTrenchType(_type)}>
-            <Box className={'flex items-center gap-[12px]'}>
-              <IntervalSelector
-                interval={interval}
-                setInterval={(_value) => setInterval(_value as Interval)}
-              />
-              <ChainSelector chainId={chainId} setChainId={(id) => setChainId(id)} />
-            </Box>
-          </TrenchTabBar>
-          <Box className={'bg-deep sticky top-[186px] w-full px-[24px]'}>
-            <TrenchTable sortField={trenchType} interval={interval} chainId={chainId} />
-          </Box>
-        </>
-      )}
-    </CookContext.Provider>
+        {type === CookType.Cook ? (
+          <CookTabs chainId={chainId} />
+        ) : (
+          <TrenchList sortField={trenchType} interval={interval} chainId={chainId} />
+        )}
+      </CookContext.Provider>
+    </Box>
   )
 }
 

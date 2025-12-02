@@ -32,10 +32,10 @@ import { t } from '@lingui/core/macro'
 import type { PriceMapType, QuotePool } from '@/request/lp/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
 import {
+  COMMON_LP_AMOUNT_DECIMALS,
   COMMON_PRICE_DECIMALS,
   formatUnits,
   getBalanceOf,
-  COMMON_LP_AMOUNT_DECIMALS,
   quote as Quote,
 } from '@myx-trade/sdk'
 import { SearchContext } from '@/pages/Earn/context.ts'
@@ -43,8 +43,8 @@ import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { type Address, PageDirection } from '@/request/type.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { calculationPnl } from '@/utils/pnl.ts'
-import { Price } from '@/components/Price'
 import { encodeSortValue } from '@/utils/sort.ts'
+import { Change } from '@/components/Change'
 
 interface Vault {
   name: string
@@ -495,9 +495,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
                     />
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <span className={Number(row?.apr) > 0 ? 'text-rise' : 'text-fall'}>
-                      {formatNumberPercent(row?.apr)}
-                    </span>
+                    <Change change={row?.apr}>{formatNumberPercent(row?.apr)}</Change>
                   </StyledTableCell>
                   <StyledTableCell align="right">
                     {row.tvl ? formatNumber(row.tvl) : '--'}

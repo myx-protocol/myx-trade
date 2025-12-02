@@ -6,7 +6,7 @@ import { baseUrl } from "..";
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
-  poolId?: string
+  poolId?: string;
 }
 
 export enum OrderTypeEnum {
@@ -19,6 +19,18 @@ export enum OrderTypeEnum {
 export enum OperationEnum {
   Increase = 0,
   Decrease = 1,
+}
+
+export enum TradeFlowTypeEnum {
+  Increase = 0,
+  Decrease = 1,
+  AddMargin = 2,
+  RemoveMargin = 3,
+  CancelOrder = 4,
+  ADL = 5,
+  Liquidation = 6,
+  MarketClose = 7,
+  EarlyClose = 8,
 }
 
 export enum TriggerTypeEnum {
@@ -39,10 +51,15 @@ export enum OrderStatusEnum {
 }
 
 export enum ExecTypeEnum {
-  UserEntrust = 0,
-  Liquidation = 1,
-  Adl = 2,
-  AdlTrigger = 3,
+  Market = 1, // market order
+  Limit = 2, // limit order
+  TP = 3, // take profit order
+  SL = 4, // stop loss order
+  ADL = 5, // auto deleverage order
+  ADLTrigger = 6, // auto deleverage trigger order
+  Liquidation = 7, // liquidation order
+  EarlyClose = 8, // early close order
+  MarketClose = 9, // market close order
 }
 
 export interface HistoryOrderItem {
@@ -71,6 +88,7 @@ export interface HistoryOrderItem {
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
   userLeverage: number; // leverage
+  cancelReason?: string; // cancel reason
 }
 
 /**
@@ -155,15 +173,13 @@ export interface TradeFlowItem {
   fundingFee: string;
   tradingFee: string;
   charge: string;
-  beforeCollateralAmount: string;
-  afterCollateralAmount: string;
+  collateralAmount: string;
   txHash: string;
   txTime: number;
   baseSymbol: string; // base symbol
   quoteSymbol: string; // quote symbol
-  userLeverage: number; // leverage
   executionFee: string; // execution fee
-  type: OperationEnum; // operation type
+  type: TradeFlowTypeEnum; // operation type
 }
 export const getTradeFlow = async ({
   accessToken,

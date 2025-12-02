@@ -16,11 +16,12 @@ import type {
   QuotePoolTokenTopResponse,
   LpAssetsRequest,
   LpAssetsResponse,
+  MarketPoolStateDataResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
 import { addQueryParams } from '../utils'
-import type { FilterRequest, TimeInterval } from '@/request/type.ts'
+import type { BaseResponse, CookRequest, TimeInterval } from '@/request/type.ts'
 
 export const getMarketTokenSniper = async (chainId: ChainId, limit: number = DEFAULT_LIMIT) => {
   return await http.get<TokenSniperResponse>(
@@ -32,7 +33,7 @@ export const getMarketTokenSniper = async (chainId: ChainId, limit: number = DEF
 }
 
 export const getCookNews = async (
-  params: FilterRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
+  params: CookRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
   return await http.get<CookNewsResponse>(
     `${baseUrl}/openapi/gateway/scan/market/cook-new${addQueryParams(params)}`,
@@ -40,7 +41,7 @@ export const getCookNews = async (
 }
 
 export const getCookSoonList = async (
-  params: FilterRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
+  params: CookRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
   return await http.get<CookSoonResponse>(
     `${baseUrl}/openapi/gateway/scan/market/cook-soon${addQueryParams(params)}`,
@@ -48,10 +49,15 @@ export const getCookSoonList = async (
 }
 
 export const getTokenSniperList = async (
-  params: FilterRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
+  params: CookRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
+  const { limit, sortOrder, ...reset } = params
   return await http.get<TokenSniperResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/token-sniper${addQueryParams(params)}`,
+    `${baseUrl}/openapi/gateway/scan/market/token-sniper${addQueryParams({
+      limit: limit ?? DEFAULT_LIMIT,
+      sortOrder: sortOrder ?? 'desc',
+      ...reset,
+    })}`,
   )
 }
 
@@ -137,22 +143,65 @@ export const getAccountHoldings = async (
   period = '30d',
 ) => {
   console.log(chainIds.map((chainId) => `evm:${chainId}`).join(','))
-  return await http.get(
-    `https://demo-api.mobula.io/api/1/wallet/portfolio${addQueryParams({
-      wallet: account,
-      period,
-      pnl: 'true',
-      // test: 'true',
-      // blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
-    })}`,
-  )
+  return await http
+    .get(
+      `${baseUrl}/openapi/gateway/scan/mobula/wallet/portfolio${addQueryParams({
+        wallet: account,
+        period,
+        pnl: 'true',
+        test: 'true',
+        // blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
+      })}`,
+    )
+    .then((result) => {
+      return JSON.parse(result.data)
+    })
 }
 
-export const getTokenHolders = async (asset: string, chainId?: number) => {
-  return await http.get(
-    `https://demo-api.mobula.io/api/1/market/token/holders${addQueryParams({
-      asset,
-      blockchain: asset.startsWith('0x') ? undefined : chainId,
-    })}`,
-  )
+export const getTokenDetails = async (address: string, chainId?: number) => {
+  return await http
+    .get(
+      `${baseUrl}/openapi/gateway/scan/mobula/tokenDetails${addQueryParams({
+        address,
+        blockchain: `evm:${chainId}`,
+        // test: 'true',
+      })}`,
+    )
+    .then((result) => {
+      console.log('result', JSON.parse(result.data))
+      return JSON.parse(result.data)
+    })
+}
+
+//35. 获取实时TVL
+export const getMarketTvl = async (params: {
+  chainId: number
+  poolId: string
+}): Promise<BaseResponse & { data: string }> => {
+  return await http.get(`${baseUrl}/openapi/gateway/scan/market/tvl${addQueryParams(params)}`)
+}
+
+type AssetParams = { asset: string; chainId?: number }
+type SymbolParams = { symbol: string; chainId?: number }
+
+export type MarketDataSearchParams = AssetParams | SymbolParams
+
+export const getMarketData = async (params: MarketDataSearchParams) => {
+  const query = {
+    asset: 'asset' in params ? params.asset : undefined,
+    symbol: 'symbol' in params ? params.symbol : undefined,
+    blockchain: params?.chainId,
+  }
+  return await http
+    .get(`${baseUrl}/openapi/gateway/scan/mobula/getMarketData${addQueryParams(query)}`)
+    .then((result) => {
+      console.log('result', JSON.parse(result.data))
+      return JSON.parse(result.data)
+    })
+}
+
+export const getMarketPoolStateData = async (
+  params: { chainId: number; address: string }[],
+): Promise<MarketPoolStateDataResponse> => {
+  return await http.post(`${baseUrl}/openapi/gateway/scan/market/state`, params)
 }

@@ -1,7 +1,8 @@
+/*
 import React, { useContext, useEffect, useState } from "react";
 import { getOraclePrice, getPools } from "../api";
 import { useAccount, useWalletClient, useChainId } from "wagmi";
-import {  ethers } from "ethers";
+import { ethers } from "ethers";
 import {
   Direction,
   OperationType,
@@ -61,9 +62,11 @@ interface TradeFormValues {
   slTriggerType?: number;
   positionId?: string; // 仓位ID，仅在操作类型为DECREASE时使用
 }
+*/
 
 const TradePage: React.FC = () => {
-  const { address, isConnected } = useAccount();
+  return <></>
+/*  const { address, isConnected } = useAccount();
   const currentChainId = useChainId();
   const { data: walletClient } = useWalletClient();
   const [price, setPrice] = useState<string>('0');
@@ -343,11 +346,12 @@ const TradePage: React.FC = () => {
 
   const [positionsList, setPositionsList] = useState<any[]>([]);
   const [ordersList, setOrdersList] = useState<any[]>([]);
+  const [seamlessPassword, setSeamlessPassword] = useState<string>('')
 
   // 调整保证金弹窗相关状态
   const [cancelAllLoading, setCancelAllLoading] = useState(false);
 
-  const {myxClient} = useContext(MyxClientContext);
+  const { myxClient } = useContext(MyxClientContext);
   // 处理取消订单操作
   const handleCancelOrder = async (orderId: string) => {
     Modal.confirm({
@@ -374,7 +378,7 @@ const TradePage: React.FC = () => {
     });
   };
 
- 
+
 
   const { data: poolList } = useSWR(myxClient ? { key: "getPoolList", myxClient } : null, async () => {
     if (!myxClient) return [];
@@ -415,7 +419,6 @@ const TradePage: React.FC = () => {
 
     if (res?.code === 0) {
       const positions: any[] = res?.data ?? [];
-      console.log('positions-->', positions);
       setPositionsList(positions);
     } else {
       console.error('Failed to fetch positions:', res?.message);
@@ -433,7 +436,6 @@ const TradePage: React.FC = () => {
 
     if (res?.code === 0) {
       const orders: any[] = res?.data ?? [];
-      console.log('orders-->', orders);
       setOrdersList(orders);
     } else {
       console.error('Failed to fetch orders:', res?.message);
@@ -541,7 +543,7 @@ const TradePage: React.FC = () => {
           return;
         }
         // todo @JC error
-        /*
+        /!*
         const position = positionsList.find(item => item.positionId === values.positionId);
         // if (!position) {
         //   message.error("Position not found");
@@ -572,46 +574,45 @@ const TradePage: React.FC = () => {
         };
         const rs = await myxClient.order.createPositionTpSlOrder(orderData);
         console.log("Order placed:", rs);
-        */
+        *!/
         return;
       }
       if (values.operation === OperationType.INCREASE) {
         // todo @JC error
-        /*
-         const orderData = {
-           chainId: ChainId.ARB_TESTNET,
-           address: address as `0x${string}`,
-           poolId: selectedPool.poolId,
-           positionId: values.positionId ? parseInt(values.positionId) : 0,
-           orderType: values.orderType as OrderType,
-           triggerType: values.triggerType as TriggerType,
-           direction: values.direction as Direction,
-           collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
-           size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
-           price: values.price
-             ? ethers.parseUnits(values.price.toString(), 30).toString()
-             : "0",  //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
-           timeInForce: values.timeInForce as TimeInForce,
-           postOnly: values.postOnly,
-           slippagePct: ethers.parseUnits(values.slippagePct.toString(), 4).toString(), // 转换为精度4位
-           executionFeeToken: selectedPool.quoteToken,
-           leverage: values.leverage,
-           tpSize: values.tpSize
-             ? ethers.parseUnits(values.tpSize.toString(), selectedPool.baseDecimals).toString()
-             : "0",
-           tpPrice: values.tpPrice
-             ? ethers.parseUnits(values.tpPrice.toString(), 30).toString()
-             : "0",
-           slSize: values.slSize
-             ? ethers.parseUnits(values.slSize.toString(), selectedPool.baseDecimals).toString()
-             : "0",
-           slPrice: values.slPrice
-             ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
-             : "0",
-         };
-          const rs = await myxClient.order.createIncreaseOrder(orderData);
- 
-         console.log("Order placed:", rs);*/
+        const orderData = {
+          chainId: ChainId.ARB_TESTNET,
+          address: address as `0x${string}`,
+          poolId: selectedPool.poolId,
+          positionId: '',
+          orderType: values.orderType as OrderType,
+          triggerType: values.triggerType as TriggerType,
+          direction: values.direction as Direction,
+          collateralAmount: ethers.parseUnits(values.collateralAmount.toString(), selectedPool.quoteDecimals).toString(),
+          size: ethers.parseUnits(values.size.toString(), selectedPool.baseDecimals).toString(),
+          price: values.price
+            ? ethers.parseUnits(values.price.toString(), 30).toString()
+            : "0",  //values.orderPrice ? ethers.parseUnits(values.orderPrice.toString(), 30).toString() : '0',
+          timeInForce: values.timeInForce as TimeInForce,
+          postOnly: values.postOnly,
+          slippagePct: ethers.parseUnits(values.slippagePct.toString(), 4).toString(), // 转换为精度4位
+          executionFeeToken: selectedPool.quoteToken,
+          leverage: values.leverage,
+          tpSize: values.tpSize
+            ? ethers.parseUnits(values.tpSize.toString(), selectedPool.baseDecimals).toString()
+            : "0",
+          tpPrice: values.tpPrice
+            ? ethers.parseUnits(values.tpPrice.toString(), 30).toString()
+            : "0",
+          slSize: values.slSize
+            ? ethers.parseUnits(values.slSize.toString(), selectedPool.baseDecimals).toString()
+            : "0",
+          slPrice: values.slPrice
+            ? ethers.parseUnits(values.slPrice.toString(), 30).toString()
+            : "0",
+        };
+        const rs = await myxClient.order.createIncreaseOrder(orderData);
+
+        console.log("Order placed:", rs);
       } else {
         // 平仓操作
         const orderData = {
@@ -637,9 +638,9 @@ const TradePage: React.FC = () => {
         console.log("orderData-->", orderData);
         // todo @JC error
 
-    /*     const rs = await myxClient.order.createDecreaseOrder(orderData);
-
-        console.log("Order placed:", rs);*/
+        /!*     const rs = await myxClient.order.createDecreaseOrder(orderData);
+    
+            console.log("Order placed:", rs);*!/
       }
     } catch (error) {
       console.error("Error placing order:", error);
@@ -710,7 +711,7 @@ const TradePage: React.FC = () => {
                     size="small"
                   >
                     <div className="space-y-3">
-                      {/* 交易对名称 */}
+                      {/!* 交易对名称 *!/}
                       <div className="text-center">
                         <div className="text-xl font-bold text-gray-800 mb-1">
                           {pool.baseSymbol}/{pool.quoteSymbol}
@@ -722,7 +723,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 基本信息 */}
+                      {/!* 基本信息 *!/}
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <span className="text-gray-500">基础资产:</span>
@@ -744,7 +745,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* 合约地址 */}
+                      {/!* 合约地址 *!/}
                       <div className="space-y-1 text-xs">
                         <div>
                           <span className="text-gray-500">基础代币:</span>
@@ -760,7 +761,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Pool ID */}
+                      {/!* Pool ID *!/}
                       <div className="text-xs">
                         <span className="text-gray-500">Pool ID:</span>
                         <div className="font-mono text-gray-600 break-all">
@@ -768,7 +769,7 @@ const TradePage: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Level 配置信息 */}
+                      {/!* Level 配置信息 *!/}
                       {pool.levelData && pool.levelData.levelConfig && (
                         <div className="space-y-1 text-xs bg-gray-50 p-2 rounded">
                           <div className="font-semibold text-gray-700 mb-1">
@@ -815,7 +816,7 @@ const TradePage: React.FC = () => {
                         </div>
                       )}
 
-                      {/* 其他参数 */}
+                      {/!* 其他参数 *!/}
                       {pool.maxLeverage && (
                         <div className="text-xs">
                           <span className="text-gray-500">最大杠杆:</span>
@@ -1078,330 +1079,330 @@ const TradePage: React.FC = () => {
           </Card>
         </Col>
 
-          <Col span={24}>
-            <Card title="开仓 / 平仓 Open & Close" loading={!selectedPool}>
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-                disabled={!canTrade}
-              >
-                <Row gutter={[16, 16]}>
-                  <Col span={12}>
-                    <Card
-                      title="订单基础信息 / Order Basic Info"
-                      size="small"
-                      style={{ height: "100%" }}
-                    >
-                      <Form.Item label="订单类型 / Order Type" name="orderType">
-                        <Select>
-                          <Option value={OrderType.MARKET}>
-                            市价单 / Market Order
-                          </Option>
-                          <Option value={OrderType.LIMIT}>
-                            限价单 / Limit Order
-                          </Option>
-                          <Option value={OrderType.STOP}>
-                            止盈止损 / TPSL
-                          </Option>
-                          <Option value={OrderType.CONDITIONAL}>
-                            条件单 / Conditional Order
-                          </Option>
-                        </Select>
-                      </Form.Item>
-                      <Form.Item dependencies={['orderType']} className="mb-0">
-                        {
-                          ({ getFieldValue }) => {
-                            const orderType = getFieldValue('orderType');
+        <Col span={24}>
+          <Card title="开仓 / 平仓 Open & Close" loading={!selectedPool}>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              disabled={!canTrade}
+            >
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Card
+                    title="订单基础信息 / Order Basic Info"
+                    size="small"
+                    style={{ height: "100%" }}
+                  >
+                    <Form.Item label="订单类型 / Order Type" name="orderType">
+                      <Select>
+                        <Option value={OrderType.MARKET}>
+                          市价单 / Market Order
+                        </Option>
+                        <Option value={OrderType.LIMIT}>
+                          限价单 / Limit Order
+                        </Option>
+                        <Option value={OrderType.STOP}>
+                          止盈止损 / TPSL
+                        </Option>
+                        <Option value={OrderType.CONDITIONAL}>
+                          条件单 / Conditional Order
+                        </Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item dependencies={['orderType']} className="mb-0">
+                      {
+                        ({ getFieldValue }) => {
+                          const orderType = getFieldValue('orderType');
 
-                            const disabled = orderType === OrderType.STOP;
+                          const disabled = orderType === OrderType.STOP;
 
-                            return <Form.Item
-                              label="操作类型 / Operation Type"
-                              name="operation"
-                            >
-                              <Select disabled={disabled}>
-                                <Option value={OperationType.INCREASE}>
-                                  开仓 / Increase
-                                </Option>
-                                <Option value={OperationType.DECREASE}>
-                                  平仓 / Decrease
-                                </Option>
-                              </Select>
-                            </Form.Item>
-                          }
+                          return <Form.Item
+                            label="操作类型 / Operation Type"
+                            name="operation"
+                          >
+                            <Select disabled={disabled}>
+                              <Option value={OperationType.INCREASE}>
+                                开仓 / Increase
+                              </Option>
+                              <Option value={OperationType.DECREASE}>
+                                平仓 / Decrease
+                              </Option>
+                            </Select>
+                          </Form.Item>
                         }
-                      </Form.Item>
-                      <Form.Item
-                        label="触发类型 / Trigger Type"
-                        name="triggerType"
-                      >
-                        <Select>
-                          <Option value={TriggerType.NONE}>无 / None</Option>
-                          <Option value={TriggerType.GTE}>
-                            大于等于 / Greater Than or Equal
-                          </Option>
-                          <Option value={TriggerType.LTE}>
-                            小于等于 / Less Than or Equal
-                          </Option>
-                        </Select>
-                      </Form.Item>
-                      <Form.Item
-                        label="仓位ID / Position ID"
-                        name="positionId"
-                      >
-                        <Input placeholder="请输入仓位ID / Enter Position ID" />
-                      </Form.Item>
-                    </Card>
-                  </Col>
-
-                  <Col span={12}>
-                    <Card
-                      title="数量和价格 / Quantity and Price"
-                      size="small"
-                      style={{ height: "100%" }}
-                    >
-                      <Form.Item dependencies={['orderType']}>
-                        {
-                          ({ getFieldValue }) => {
-                            const orderType = getFieldValue('orderType');
-
-                            const disabled = orderType === OrderType.STOP;
-
-                            return (
-                              <div>
-                                <Form.Item
-                                  label={`保证金数量 / Collateral Amount (${selectedPool?.quoteSymbol || "USDT"
-                                    })`}
-                                  name="collateralAmount"
-                                >
-                                  <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
-                                </Form.Item>
-                                <Form.Item
-                                  label={`交易数量 / Trade Size (${selectedPool?.baseSymbol || "Token"
-                                    })`}
-                                  name="size"
-                                >
-                                  <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
-                                </Form.Item>
-
-                                <Space className="flex items-center gap-[10px]">
-                                  <Form.Item
-                                    label={`价格 / Price (${selectedPool?.quoteSymbol || "USDT"
-                                      })`}
-                                    name="price"
-                                  >
-                                    <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
-                                  </Form.Item>
-                                  <Button type="primary" onClick={() => {
-                                    form.setFieldsValue({
-                                      price: price as unknown as number,
-                                    });
-                                  }}>
-                                    同步价格
-                                  </Button>
-                                </Space>
-                                <Form.Item label="方向 / Direction" name="direction">
-                                  <Select disabled={disabled}>
-                                    <Option value={Direction.LONG}>做多 / Long</Option>
-                                    <Option value={Direction.SHORT}>做空 / Short</Option>
-                                  </Select>
-                                </Form.Item>
-                              </div>
-                            )
-                          }
-                        }
-                      </Form.Item>
-                    </Card>
-                  </Col>
-
-                  <Col span={12}>
-                    <Card
-                      title="高级设置 / Advanced Settings"
-                      size="small"
-                      style={{ height: "100%" }}
-                    >
-                      <Form.Item dependencies={['orderType']}>
-                        {
-                          ({ getFieldValue }) => {
-                            const orderType = getFieldValue('orderType');
-
-                            const disabled = orderType === OrderType.STOP;
-
-                            return (
-                              <div>
-                                <Form.Item
-                                  label="时间有效性 / Time In Force"
-                                  name="timeInForce"
-                                >
-                                  <Select disabled={disabled}>
-                                    <Option value={TimeInForce.IOC}>IOC</Option>
-                                  </Select>
-                                </Form.Item>
-
-                                <Form.Item
-                                  label="仅挂单 / Post Only"
-                                  name="postOnly"
-                                  valuePropName="checked"
-                                >
-                                  <Switch disabled={disabled} />
-                                </Form.Item>
-
-                                <Form.Item label="滑点 / Slippage" name="slippagePct">
-                                  <InputNumber
-                                    style={{ width: "100%" }}
-                                    min={0}
-                                    max={100}
-                                    step={0.1}
-                                    disabled={disabled}
-                                  />
-                                </Form.Item>
-
-                                <Form.Item label="杠杆倍数 / Leverage" name="leverage">
-                                  <InputNumber
-                                    style={{ width: "100%" }}
-                                    min={1}
-                                    max={100}
-                                    disabled={disabled}
-                                  />
-                                </Form.Item>
-                              </div>
-                            )
-                          }
-                        }
-                      </Form.Item>
-                    </Card>
-                  </Col>
-                  <Col span={12}>
-                    <Card
-                      title="止盈止损 / Take Profit & Stop Loss"
-                      size="small"
-                      style={{ height: "100%" }}
-                    >
-                      <Form.Item dependencies={['orderType']} className="mb-0">
-                        {
-                          ({ getFieldValue }) => {
-                            const orderType = getFieldValue('orderType');
-
-                            const disabled = orderType !== OrderType.STOP;
-
-                            return <Form.Item
-                              label="止盈触发类型 / TP Trigger Type"
-                              name="tpTriggerType"
-                            >
-                              <Select disabled={disabled}>
-                                <Option value={TriggerType.NONE}>无 / None</Option>
-                                <Option value={TriggerType.GTE}>
-                                  大于等于 / Greater Than or Equal
-                                </Option>
-                                <Option value={TriggerType.LTE}>
-                                  小于等于 / Less Than or Equal
-                                </Option>
-                              </Select>
-                            </Form.Item>
-                          }
-                        }
-                      </Form.Item>
-
-                      <Form.Item
-                        label={`止盈数量 / TP Size (${selectedPool?.baseSymbol || "Token"
-                          })`}
-                        name="tpSize"
-                      >
-                        <InputNumber style={{ width: "100%" }} min={0} />
-                      </Form.Item>
-
-                      <Form.Item
-                        label={`止盈价格 / TP Price (${selectedPool?.quoteSymbol || "USDT"
-                          })`}
-                        name="tpPrice"
-                      >
-                        <InputNumber style={{ width: "100%" }} min={0} />
-                      </Form.Item>
-                      <Form.Item dependencies={['orderType']} className="mb-0">
-                        {
-                          ({ getFieldValue }) => {
-                            const orderType = getFieldValue('orderType');
-
-                            const disabled = orderType !== OrderType.STOP;
-
-                            return <Form.Item
-                              label="止损触发类型 / SL Trigger Type"
-                              name="slTriggerType"
-                            >
-                              <Select disabled={disabled}>
-                                <Option value={TriggerType.NONE}>无 / None</Option>
-                                <Option value={TriggerType.GTE}>
-                                  大于等于 / Greater Than or Equal
-                                </Option>
-                                <Option value={TriggerType.LTE}>
-                                  小于等于 / Less Than or Equal
-                                </Option>
-                              </Select>
-                            </Form.Item>
-                          }
-                        }
-                      </Form.Item>
-                      <Form.Item
-                        label={`止损数量 / SL Size (${selectedPool?.baseSymbol || "Token"
-                          })`}
-                        name="slSize"
-                      >
-                        <InputNumber style={{ width: "100%" }} min={0} />
-                      </Form.Item>
-
-                      <Form.Item
-                        label={`止损价格 / SL Price (${selectedPool?.quoteSymbol || "USDT"
-                          })`}
-                        name="slPrice"
-                      >
-                        <InputNumber style={{ width: "100%" }} min={0} />
-                      </Form.Item>
-                    </Card>
-                  </Col>
-                </Row>
-
-                <Divider />
-
-                <Form.Item>
-                  <Space>
-                    <Button
-                      type="primary"
-                      onClick={handleApproval}
-                      loading={approving}
-                      disabled={
-                        !selectedPool || !walletClient || !isNetworkCorrect
                       }
-                      size="large"
+                    </Form.Item>
+                    <Form.Item
+                      label="触发类型 / Trigger Type"
+                      name="triggerType"
                     >
-                      授权 USDC / Approve USDC
-                    </Button>
-
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={loading}
-                      disabled={!canTrade}
-                      size="large"
+                      <Select>
+                        <Option value={TriggerType.NONE}>无 / None</Option>
+                        <Option value={TriggerType.GTE}>
+                          大于等于 / Greater Than or Equal
+                        </Option>
+                        <Option value={TriggerType.LTE}>
+                          小于等于 / Less Than or Equal
+                        </Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      label="仓位ID / Position ID"
+                      name="positionId"
                     >
-                      提交订单 / Submit Order
-                    </Button>
+                      <Input placeholder="请输入仓位ID / Enter Position ID" />
+                    </Form.Item>
+                  </Card>
+                </Col>
 
-                    <Button size="large" onClick={() => form.resetFields()}>
-                      重置表单 / Reset Form
-                    </Button>
+                <Col span={12}>
+                  <Card
+                    title="数量和价格 / Quantity and Price"
+                    size="small"
+                    style={{ height: "100%" }}
+                  >
+                    <Form.Item dependencies={['orderType']}>
+                      {
+                        ({ getFieldValue }) => {
+                          const orderType = getFieldValue('orderType');
 
-                    {!isNetworkCorrect && (
-                      <Text type="danger">
-                        请切换到 Arbitrum Sepolia 测试网 / Please switch to
-                        Arbitrum Sepolia testnet
-                      </Text>
-                    )}
-                  </Space>
-                </Form.Item>
-              </Form>
-            </Card>
-          </Col>
+                          const disabled = orderType === OrderType.STOP;
+
+                          return (
+                            <div>
+                              <Form.Item
+                                label={`保证金数量 / Collateral Amount (${selectedPool?.quoteSymbol || "USDT"
+                                  })`}
+                                name="collateralAmount"
+                              >
+                                <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
+                              </Form.Item>
+                              <Form.Item
+                                label={`交易数量 / Trade Size (${selectedPool?.baseSymbol || "Token"
+                                  })`}
+                                name="size"
+                              >
+                                <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
+                              </Form.Item>
+
+                              <Space className="flex items-center gap-[10px]">
+                                <Form.Item
+                                  label={`价格 / Price (${selectedPool?.quoteSymbol || "USDT"
+                                    })`}
+                                  name="price"
+                                >
+                                  <InputNumber style={{ width: "100%" }} min={0} disabled={disabled} />
+                                </Form.Item>
+                                <Button type="primary" onClick={() => {
+                                  form.setFieldsValue({
+                                    price: price as unknown as number,
+                                  });
+                                }}>
+                                  同步价格
+                                </Button>
+                              </Space>
+                              <Form.Item label="方向 / Direction" name="direction">
+                                <Select disabled={disabled}>
+                                  <Option value={Direction.LONG}>做多 / Long</Option>
+                                  <Option value={Direction.SHORT}>做空 / Short</Option>
+                                </Select>
+                              </Form.Item>
+                            </div>
+                          )
+                        }
+                      }
+                    </Form.Item>
+                  </Card>
+                </Col>
+
+                <Col span={12}>
+                  <Card
+                    title="高级设置 / Advanced Settings"
+                    size="small"
+                    style={{ height: "100%" }}
+                  >
+                    <Form.Item dependencies={['orderType']}>
+                      {
+                        ({ getFieldValue }) => {
+                          const orderType = getFieldValue('orderType');
+
+                          const disabled = orderType === OrderType.STOP;
+
+                          return (
+                            <div>
+                              <Form.Item
+                                label="时间有效性 / Time In Force"
+                                name="timeInForce"
+                              >
+                                <Select disabled={disabled}>
+                                  <Option value={TimeInForce.IOC}>IOC</Option>
+                                </Select>
+                              </Form.Item>
+
+                              <Form.Item
+                                label="仅挂单 / Post Only"
+                                name="postOnly"
+                                valuePropName="checked"
+                              >
+                                <Switch disabled={disabled} />
+                              </Form.Item>
+
+                              <Form.Item label="滑点 / Slippage" name="slippagePct">
+                                <InputNumber
+                                  style={{ width: "100%" }}
+                                  min={0}
+                                  max={100}
+                                  step={0.1}
+                                  disabled={disabled}
+                                />
+                              </Form.Item>
+
+                              <Form.Item label="杠杆倍数 / Leverage" name="leverage">
+                                <InputNumber
+                                  style={{ width: "100%" }}
+                                  min={1}
+                                  max={100}
+                                  disabled={disabled}
+                                />
+                              </Form.Item>
+                            </div>
+                          )
+                        }
+                      }
+                    </Form.Item>
+                  </Card>
+                </Col>
+                <Col span={12}>
+                  <Card
+                    title="止盈止损 / Take Profit & Stop Loss"
+                    size="small"
+                    style={{ height: "100%" }}
+                  >
+                    <Form.Item dependencies={['orderType']} className="mb-0">
+                      {
+                        ({ getFieldValue }) => {
+                          const orderType = getFieldValue('orderType');
+
+                          const disabled = orderType !== OrderType.STOP;
+
+                          return <Form.Item
+                            label="止盈触发类型 / TP Trigger Type"
+                            name="tpTriggerType"
+                          >
+                            <Select disabled={disabled}>
+                              <Option value={TriggerType.NONE}>无 / None</Option>
+                              <Option value={TriggerType.GTE}>
+                                大于等于 / Greater Than or Equal
+                              </Option>
+                              <Option value={TriggerType.LTE}>
+                                小于等于 / Less Than or Equal
+                              </Option>
+                            </Select>
+                          </Form.Item>
+                        }
+                      }
+                    </Form.Item>
+
+                    <Form.Item
+                      label={`止盈数量 / TP Size (${selectedPool?.baseSymbol || "Token"
+                        })`}
+                      name="tpSize"
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+
+                    <Form.Item
+                      label={`止盈价格 / TP Price (${selectedPool?.quoteSymbol || "USDT"
+                        })`}
+                      name="tpPrice"
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                    <Form.Item dependencies={['orderType']} className="mb-0">
+                      {
+                        ({ getFieldValue }) => {
+                          const orderType = getFieldValue('orderType');
+
+                          const disabled = orderType !== OrderType.STOP;
+
+                          return <Form.Item
+                            label="止损触发类型 / SL Trigger Type"
+                            name="slTriggerType"
+                          >
+                            <Select disabled={disabled}>
+                              <Option value={TriggerType.NONE}>无 / None</Option>
+                              <Option value={TriggerType.GTE}>
+                                大于等于 / Greater Than or Equal
+                              </Option>
+                              <Option value={TriggerType.LTE}>
+                                小于等于 / Less Than or Equal
+                              </Option>
+                            </Select>
+                          </Form.Item>
+                        }
+                      }
+                    </Form.Item>
+                    <Form.Item
+                      label={`止损数量 / SL Size (${selectedPool?.baseSymbol || "Token"
+                        })`}
+                      name="slSize"
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+
+                    <Form.Item
+                      label={`止损价格 / SL Price (${selectedPool?.quoteSymbol || "USDT"
+                        })`}
+                      name="slPrice"
+                    >
+                      <InputNumber style={{ width: "100%" }} min={0} />
+                    </Form.Item>
+                  </Card>
+                </Col>
+              </Row>
+
+              <Divider />
+
+              <Form.Item>
+                <Space>
+                  <Button
+                    type="primary"
+                    onClick={handleApproval}
+                    loading={approving}
+                    disabled={
+                      !selectedPool || !walletClient || !isNetworkCorrect
+                    }
+                    size="large"
+                  >
+                    授权 USDC / Approve USDC
+                  </Button>
+
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    disabled={!canTrade}
+                    size="large"
+                  >
+                    提交订单 / Submit Order
+                  </Button>
+
+                  <Button size="large" onClick={() => form.resetFields()}>
+                    重置表单 / Reset Form
+                  </Button>
+
+                  {!isNetworkCorrect && (
+                    <Text type="danger">
+                      请切换到 Arbitrum Sepolia 测试网 / Please switch to
+                      Arbitrum Sepolia testnet
+                    </Text>
+                  )}
+                </Space>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
         <Col span={24}>
           <Card title="仓位管理 / Position Management" size="default">
             <Row gutter={[16, 16]}>
@@ -1493,8 +1494,13 @@ const TradePage: React.FC = () => {
         </Col>
       </Row>
 
+      <Input value={seamlessPassword} onChange={(e) => setSeamlessPassword(e.target.value)} />
+      <Button onClick={async () => {
+        const rs = await myxClient?.seamless.createSeamless({ password: seamlessPassword })
+        console.log('rs-->', rs)
+      }}>创建无感账号</Button>
     </div>
-  );
+  );*/
 };
 
 export default TradePage;

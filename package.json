@@ -11,13 +11,16 @@
     "build:sdk": "pnpm --filter @myx-trade/sdk build",
     "install:sdk": "cd packages/sdk && pnpm install",
     "install:playground": "cd packages/playground && pnpm install",
+    "install:h5": "cd apps/h5-v2 && pnpm install",
     "dev:playground": "cd packages/playground && pnpm dev",
+    "dev:h5": "cd apps/h5-v2 && pnpm dev",
     "build:playground": "cd packages/playground && pnpm build",
     "gen:abi": "pnpm --filter @myx-trade/sdk run gen:abi",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "type-check": "turbo run type-check",
-    "dev:sdk": "pnpm --filter @myx-trade/sdk dev"
+    "dev:sdk": "pnpm --filter @myx-trade/sdk dev",
+    "publish:sdk": "pnpm --filter @myx-trade/sdk publish:patch"
   },
   "author": "",
   "license": "ISC",

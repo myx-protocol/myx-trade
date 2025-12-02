@@ -1,4 +1,4 @@
-import { type ReactNode, useRef } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { PoolContext } from '@/pages/Cook/context.ts'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -9,12 +9,15 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription.ts'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling.tsx'
 import { useUpdateEffect } from 'ahooks'
+import { Mode } from '../type'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
   const { client } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
+  const prevPriceRef = useRef<string | undefined>(undefined)
+  const [mode, setMode] = useState<Mode>(Mode.Rise)
   const { data: price } = useQuery({
     queryKey: [{ key: 'getBasePoolPrice' }, poolId, chainId],
     enabled: !!poolId,
@@ -29,6 +32,14 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
     },
     refetchInterval: 5000,
   })
+
+  useEffect(() => {
+    if (price !== prevPriceRef.current) {
+      setMode(Number(price) >= Number(prevPriceRef.current || '') ? Mode.Rise : Mode.Fall)
+    }
+    prevPriceRef.current = price
+  }, [price])
+
   const { data: pool } = useQuery({
     queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId],
     queryFn: async () => {
@@ -81,6 +92,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         price,
         baseLpDetail,
         refetch,
+        mode,
       }}
     >
       {children}

@@ -55,17 +55,26 @@ export async function getErrorTextFormError(error: any) {
     const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
     if (errorKey) {
       return {
-        error: customErrorMapping[errorKey] ,
+        error:{
+          code:  errorKey,
+          message:  customErrorMapping[errorKey]
+        },
       }
     }
     return {
-      error: error?.reason || decodeErrorResult.reason || error.message || error?.code,
+      error: {
+        code: error?.code,
+        message: error?.reason || decodeErrorResult.reason || error.message
+      },
     }
   }
   
-  console.error(error)
+  // console.error(error)
   
   return {
-    error: decodeErrorResult.reason,
+    error: {
+      code: decodeErrorResult.type,
+      message: decodeErrorResult.reason
+    },
   }
 }

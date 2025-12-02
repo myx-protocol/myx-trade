@@ -10,6 +10,8 @@ import { base as Base } from '@myx-trade/sdk'
 import { toast } from 'react-hot-toast'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
 
 interface ClaimRewardsDialogProps {
   open: boolean
@@ -28,19 +30,23 @@ export const ClaimRewardsDialog = ({
 }: ClaimRewardsDialogProps) => {
   const [loading, setLoading] = useState<boolean>(false)
   const { address: account } = useWalletConnection()
+  const onAction = useWalletActions()
+
   const onHandleClaim = useCallback(async () => {
     if (!lpAsset?.poolId || !account || !reward) return
     try {
       setLoading(true)
+      const checked = onAction(lpAsset.chainId)
+      if (!checked) return
       await Base.claimBasePoolRebate({ chainId: lpAsset.chainId, poolId: lpAsset.poolId })
-      toast.success('Claim successfully claimed')
+      toast.success(t`Claim successfully claimed`)
       refetch?.()
     } catch (e) {
       toast.error(JSON.stringify(e))
     } finally {
       setLoading(false)
     }
-  }, [lpAsset?.chainId, lpAsset?.poolId, account, refetch])
+  }, [lpAsset?.chainId, lpAsset?.poolId, reward, account, refetch, onAction])
   return (
     <DialogBase title={t`领取收益`} open={open} onClose={onClose} width={390}>
       <div className="mt-[16px] leading-[1]">
@@ -79,7 +85,7 @@ export const ClaimRewardsDialog = ({
       </div>*/}
       <PrimaryButton
         loading={loading}
-        disabled={!reward}
+        disabled={!reward || Number(reward) <= 0}
         className="mt-[20px]! h-[44px] w-full rounded-[999px]! text-[14px]! font-medium!"
         onClick={onHandleClaim}
       >

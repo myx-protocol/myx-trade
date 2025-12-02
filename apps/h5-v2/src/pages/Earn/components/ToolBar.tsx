@@ -15,7 +15,7 @@ export const ToolBar = () => {
   return (
     <Box className={'bg-deep flex h-[88px] w-full items-center justify-between py-[24px]'}>
       <h2 className={'text-[32px] leading-[1] font-[700] text-white'}>
-        🔥<Trans>Vaults</Trans>
+        <Trans>Vaults</Trans>
       </h2>
       <Box className={'flex items-center gap-[10px]'}>
         <IntervalSelector

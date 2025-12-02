@@ -58,6 +58,20 @@ export const baseFilter: FilterRequest = {
   sortOrder: 'desc',
 }
 
+export interface CookRequest extends FilterRequest {
+  chainId?: number
+  marketCapMin?: string
+  marketCapMax?: string
+  priceChangeMin?: string
+  priceChangeMax?: string
+  tokenCreateTimeMin?: number
+  tokenCreateTimeMax?: number
+  holdersMin?: string
+  holdersMax?: string
+  liquidityMin?: string
+  liquidityMax?: string
+}
+
 export enum PageDirection {
   Next = 'next',
   Prev = 'prev',

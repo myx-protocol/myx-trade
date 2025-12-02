@@ -18,8 +18,8 @@ import {
   formatUnits,
   getBalanceOf,
   quote as Quote,
-  COMMON_LP_AMOUNT_DECIMALS,
   pool as Pool,
+  COMMON_LP_AMOUNT_DECIMALS,
 } from '@myx-trade/sdk'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -32,6 +32,9 @@ import { getLpAssets } from '@/request'
 import { PoolType } from '@/request/type.ts'
 import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { Big } from 'big.js'
+import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
+import { Tooltips } from '@/components/UI/Tooltips'
 
 export const Redeem = () => {
   const { pool, quoteLpDetail, chainId, poolId, price } = useContext(PoolContext)
@@ -41,6 +44,7 @@ export const Redeem = () => {
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const { accessToken } = useAccessToken()
+  const onAction = useWalletActions()
 
   const { data: balance, refetch } = useQuery({
     queryKey: [{ key: 'getQuoteBalance' }, chainId, poolId, account],
@@ -135,6 +139,8 @@ export const Redeem = () => {
     try {
       setLoading(true)
       if (!chainId || !poolId || !amount) return
+      const checked = await onAction()
+      if (!checked) return
       await Quote.withdraw({
         chainId: +chainId,
         poolId,
@@ -150,7 +156,7 @@ export const Redeem = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId])
+  }, [chainId, amount, slippage, poolId, onAction])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''
@@ -192,7 +198,7 @@ export const Redeem = () => {
             </Box>
             <Box
               className={
-                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px]'
+                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
               }
             >
               <img
@@ -209,13 +215,14 @@ export const Redeem = () => {
 
         <Box
           className={
-            'bg-deep border-dark-border absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
+            'bg-base border-deep absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
           }
         >
           <ArrowDownLong size={22} />
         </Box>
 
         <Card
+          className={'border-base border-1 bg-transparent'}
           title={
             <>
               <Box className={'flex items-center gap-[4px]'}>
@@ -237,7 +244,7 @@ export const Redeem = () => {
             </Box>
             <Box
               className={
-                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px]'
+                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
               }
             >
               <img
@@ -263,7 +270,11 @@ export const Redeem = () => {
                 }}
               />
 
-              <TipsFill size={14} />
+              <Tooltips
+                title={t`When checked, the system will only redeem your regular LP shares.`}
+              >
+                <TipsFill size={14} className={'cursor-pointer'} />
+              </Tooltips>
             </Box>
 
             {burned && Number(burned) > 0 && (
@@ -302,6 +313,7 @@ export const Redeem = () => {
             disabled={!amount || isInsufficient}
             loading={loading}
             onClick={onHandleRedeem}
+            loadingPosition="start"
           >
             <Trans>Redeem</Trans>
           </TradeButton>
@@ -309,34 +321,19 @@ export const Redeem = () => {
       </Box>
       <Describe>
         <DescribeItem title={<Trans>Total PnL</Trans>}>
-          <span>
-            {' '}
+          <div className={'flex h-[18px] items-center gap-[0.5em]'}>
             <span className={Number(pnl) > 0 ? 'text-rise' : Number(pnl) < 0 ? 'text-fall' : ''}>
               {formatNumberPrecision(pnl, COMMON_BASE_DISPLAY_DECIMALS)}
-            </span>{' '}
+            </span>
             {quoteLpDetail?.quoteSymbol}
-          </span>
+          </div>
         </DescribeItem>
 
         <EstRate />
 
         <PriceImpact slippage={slippage} setSlippage={setSlippage} />
 
-        <DescribeItem
-          title={
-            <span className={'underline decoration-dashed underline-offset-2'}>
-              <Trans>Fee</Trans>
-            </span>
-          }
-        >
-          <Box
-            className={
-              'bg-brand-10 text-green border-green flex rounded-[20px] border-[0.5px] px-[8px] py-[4px]'
-            }
-          >
-            <Trans>Free forever</Trans>
-          </Box>
-        </DescribeItem>
+        <Fee />
       </Describe>
     </Box>
   )

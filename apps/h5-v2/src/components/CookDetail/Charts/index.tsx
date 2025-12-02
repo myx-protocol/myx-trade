@@ -16,9 +16,9 @@ export const Charts = () => {
   const [resolution, setResolution] = useState<ChartInterval>(ChartInterval.all)
 
   return (
-    <div className="mt-[4px] bg-[#101114]">
+    <div className="bg-[#101114]">
       {/* title */}
-      <div className="p-[20px]">
+      <div className="px-[16px]">
         {/* resolution selector */}
         <div
           className={clsx(

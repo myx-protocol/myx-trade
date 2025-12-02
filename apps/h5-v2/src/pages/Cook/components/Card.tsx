@@ -5,22 +5,26 @@ import { Trans } from '@lingui/react/macro'
 export const Card = ({
   children,
   className = '',
+  count = 0,
 }: {
   children: React.ReactNode
+  count?: number
   className?: string
   onFilter?: () => void
 }) => {
-  return <Box className={`flex flex-col rounded-[6px] bg-[#14151A] ${className}`}>{children}</Box>
+  return <Box className={`flex flex-col rounded-[6px] ${className}`}>{children}</Box>
 }
 
 export const CardTitle = ({
   children,
   className,
   onFilter = () => {},
+  count = 0,
 }: {
   children: React.ReactNode
   className?: string
   onFilter?: () => void
+  count?: number
 }) => {
   return (
     <Box
@@ -37,13 +41,15 @@ export const CardTitle = ({
         <span>
           <Trans>Filter</Trans>
         </span>
-        <Box
-          className={
-            'bg-green flex h-[14px] w-[14px] items-center justify-center rounded-full text-[10px] leading-[1] font-[500]'
-          }
-        >
-          2
-        </Box>
+        {count > 0 && (
+          <Box
+            className={
+              'bg-deep-gradient flex h-[14px] w-[14px] items-center justify-center rounded-full text-[10px] leading-[1] font-[500]'
+            }
+          >
+            {count}
+          </Box>
+        )}
       </Box>
     </Box>
   )

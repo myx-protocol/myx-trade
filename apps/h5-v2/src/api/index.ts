@@ -1,5 +1,7 @@
 import { baseUrl } from '@/request'
 import { http } from '@/request/http'
+import type { ApiResponse } from './type'
+import { useQuery } from '@tanstack/react-query'
 
 export const getAccessToken = async (
   appId: string,
@@ -73,4 +75,66 @@ export const getPools = async () => {
       data: null,
     }
   }
+}
+
+interface GetSecurityInfoParams {
+  chainId: number
+  address: string
+}
+
+interface GetSecurityInfoResponse {
+  is_mintable: '0' | '1'
+  is_blacklisted: '0' | '1' // is blacklisted
+  is_whitelisted: '0' | '1'
+  buy_tax: '0' | '1' // buy tax
+  sell_tax: '0' | '1' // sell tax
+  top10_holders_percentage: string // top 10 holders percentage
+  is_open_source: '0' | '1' // is open source
+  is_proxy: '0' | '1' // is proxy
+}
+
+export const getSecurityInfo = async (
+  params: GetSecurityInfoParams,
+): Promise<ApiResponse<GetSecurityInfoResponse>> =>
+  http.get(`${baseUrl}/openapi/gateway/scan/market/go-plus`, params)
+
+export const useSecurityInfo = (params: GetSecurityInfoParams) => {
+  return useQuery({
+    queryKey: ['securityInfo', params],
+    queryFn: async () => {
+      const res = await getSecurityInfo(params)
+      const validKeys = Object.keys(res.data).filter((key) => {
+        const value = res.data[key as keyof GetSecurityInfoResponse]
+        return value !== undefined && value !== null && value !== ''
+      })
+      const total = validKeys.length
+      let dangerCount = 0
+      for (let i = 0; i < validKeys.length; i++) {
+        const key = validKeys[i] as keyof GetSecurityInfoResponse
+        if (key === 'top10_holders_percentage') {
+          continue
+        } else if (res.data[key] === '1') {
+          dangerCount++
+        }
+      }
+
+      if (res.code === 9200) {
+        return {
+          ...res.data,
+          count: total,
+          security_count: total - dangerCount,
+          danger_count: dangerCount,
+        }
+      } else {
+        return {
+          ...res.data,
+          count: 0,
+          security_count: 0,
+          danger_count: 0,
+        }
+      }
+    },
+    enabled: !!params.address && !!params.chainId,
+    refetchOnWindowFocus: false,
+  })
 }

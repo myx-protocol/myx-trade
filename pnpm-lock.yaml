@@ -432,6 +432,9 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@ethersproject/bytes':
+        specifier: ^5.8.0
+        version: 5.8.0
       '@ethersproject/providers':
         specifier: ^5.8.0
         version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -441,6 +444,9 @@ importers:
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.19
       ethers:
         specifier: ^6.15.0
         version: 6.15.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
