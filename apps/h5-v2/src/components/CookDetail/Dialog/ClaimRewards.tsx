@@ -1,17 +1,16 @@
 import { PrimaryButton } from '@/components/UI/Button'
 import { DialogBase } from '@/components/UI/DialogBase'
-import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import type { LpAsset } from '@/request/lp/type.ts'
 import { useCallback, useState } from 'react'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { base as Base } from '@myx-trade/sdk'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { showErrorToast } from '@/config/error'
 
 interface ClaimRewardsDialogProps {
   open: boolean
@@ -39,10 +38,10 @@ export const ClaimRewardsDialog = ({
       const checked = onAction(lpAsset.chainId)
       if (!checked) return
       await Base.claimBasePoolRebate({ chainId: lpAsset.chainId, poolId: lpAsset.poolId })
-      toast.success(t`Claim successfully claimed`)
+      toast.success({ title: t`Claim successfully claimed` })
       refetch?.()
     } catch (e) {
-      toast.error(JSON.stringify(e))
+      showErrorToast(e)
     } finally {
       setLoading(false)
     }

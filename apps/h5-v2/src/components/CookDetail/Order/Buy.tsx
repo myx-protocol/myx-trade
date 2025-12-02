@@ -7,7 +7,6 @@ import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { OrderOptions } from '@/components/CookDetail/Order/OrderOptions'
 import { Box } from '@mui/material'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
-import { useAccount } from 'wagmi'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { formatUnits, getBalanceOf, base as Base, MarketPoolState } from '@myx-trade/sdk'
@@ -17,13 +16,14 @@ import { usePoolContext } from '@/pages/Cook/hook'
 import { isSafeNumber } from '@/utils'
 import { formatNumber } from '@/utils/number.ts'
 import { useExchangeRate } from '@/pages/Cook/hook/rate.ts'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
+import { showErrorToast } from '@/config/error'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
@@ -81,11 +81,11 @@ export const Buy = () => {
         amount: Number(amount),
         slippage: Number(slippage),
       })
-      toast.success(t`Successfully buy`)
+      toast.success({ title: t`Successfully buy` })
       await refetch()
       setAmount('')
     } catch (e) {
-      toast.error(JSON.stringify(e))
+      showErrorToast(e)
     } finally {
       setLoading(false)
     }

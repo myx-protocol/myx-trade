@@ -1,18 +1,18 @@
 import { Box } from '@mui/material'
 import { Card } from '@/pages/Earn/components/Trade/Card.tsx'
 import { Trans } from '@lingui/react/macro'
-import ArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
 import { useCallback, useContext, useState } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
 import { quote as Quote, formatUnits } from '@myx-trade/sdk'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { useQuery } from '@tanstack/react-query'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { showErrorToast } from '@/config/error'
+import { t } from '@lingui/core/macro'
 
 export const Claim = () => {
   const { quoteLpDetail, poolId, chainId } = useContext(PoolContext)
@@ -55,10 +55,10 @@ export const Claim = () => {
         return
       }
       await Quote.claimQuotePoolRebate({ chainId: chainId, poolId: poolId })
-      toast.success('Claim successfully claimed')
+      toast.success({ title: t`Claim successfully claimed` })
       refetch?.()
     } catch (e) {
-      toast.error(JSON.stringify(e))
+      showErrorToast(e)
     } finally {
       setLoading(false)
     }
