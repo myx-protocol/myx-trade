@@ -19,7 +19,8 @@
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky",
     "type-check": "turbo run type-check",
-    "dev:sdk": "pnpm --filter @myx-trade/sdk dev"
+    "dev:sdk": "pnpm --filter @myx-trade/sdk dev",
+    "publish:sdk": "pnpm --filter @myx-trade/sdk publish:patch"
   },
   "author": "",
   "license": "ISC",
