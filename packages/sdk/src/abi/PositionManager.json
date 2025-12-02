@@ -11,6 +11,11 @@
   },
   {
     "type": "error",
+    "name": "AlreadyMinted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "ERC1967InvalidImplementation",
     "inputs": [
       {
@@ -121,7 +126,7 @@
     "name": "ExceedMaxLeverage",
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       }
     ]
@@ -138,22 +143,18 @@
   },
   {
     "type": "error",
-    "name": "InsufficientCollateral",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "positionId"
-      },
-      {
-        "type": "uint256",
-        "name": "totalCollateral"
-      }
-    ]
+    "name": "InvalidInitialization",
+    "inputs": []
   },
   {
     "type": "error",
-    "name": "InvalidInitialization",
-    "inputs": []
+    "name": "InvalidPosition",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      }
+    ]
   },
   {
     "type": "error",
@@ -167,12 +168,22 @@
   },
   {
     "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotDependencyManager",
     "inputs": []
   },
   {
     "type": "error",
     "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotPositionOwner",
     "inputs": []
   },
   {
@@ -199,8 +210,12 @@
     "name": "PositionNotHealthy",
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
+      },
+      {
+        "type": "uint256",
+        "name": "marginRatio"
       }
     ]
   },
@@ -209,7 +224,7 @@
     "name": "PositionNotInitialized",
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       }
     ]
@@ -349,38 +364,17 @@
   },
   {
     "type": "function",
-    "name": "addOrderToPosition",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "positionId"
-      },
-      {
-        "type": "uint256",
-        "name": "orderId"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "adjustCollateral",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       },
       {
         "type": "int256",
         "name": "adjustAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "price"
       }
     ],
     "outputs": []
@@ -427,11 +421,66 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
+      },
+      {
+        "type": "tuple",
+        "name": "position",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "entryPrice"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRateIndex"
+          },
+          {
+            "type": "uint256",
+            "name": "earlyClosePrice"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint64",
+            "name": "lastUpdateTime"
+          }
+        ]
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      },
+      {
+        "type": "bool",
+        "name": "isLiquidation"
       }
     ],
-    "outputs": []
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "returnBaseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "returnQuoteAmount"
+      }
+    ]
   },
   {
     "type": "function",
@@ -444,7 +493,7 @@
         "name": "params",
         "components": [
           {
-            "type": "uint256",
+            "type": "bytes32",
             "name": "positionId"
           },
           {
@@ -474,7 +523,20 @@
         ]
       }
     ],
-    "outputs": []
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "tradingFee"
+      },
+      {
+        "type": "int256",
+        "name": "fundingFee"
+      },
+      {
+        "type": "int256",
+        "name": "realizedPnl"
+      }
+    ]
   },
   {
     "type": "function",
@@ -522,24 +584,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
       }
     ]
   },
@@ -600,7 +644,7 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       }
     ],
@@ -638,7 +682,55 @@
           },
           {
             "type": "uint64",
-            "name": "entryTime"
+            "name": "lastUpdateTime"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPositionByTokenId",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "size"
+          },
+          {
+            "type": "uint256",
+            "name": "entryPrice"
+          },
+          {
+            "type": "int256",
+            "name": "fundingRateIndex"
+          },
+          {
+            "type": "uint256",
+            "name": "earlyClosePrice"
+          },
+          {
+            "type": "uint8",
+            "name": "direction"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
           },
           {
             "type": "uint64",
@@ -656,13 +748,35 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       }
     ],
     "outputs": [
       {
         "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUserPoolPositionIds",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32[]"
       }
     ]
   },
@@ -698,6 +812,50 @@
     "outputs": [
       {
         "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "isPositionExists",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "mintPositionNFT",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": "newPositionId"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
       }
     ]
   },
@@ -739,12 +897,78 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
+        "type": "bytes32",
         "name": "positionId"
       },
       {
-        "type": "uint256",
-        "name": "orderId"
+        "type": "tuple",
+        "name": "pool",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "state"
+          },
+          {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          },
+          {
+            "type": "uint16",
+            "name": "maxPriceDeviation"
+          },
+          {
+            "type": "bool",
+            "name": "compoundEnabled"
+          },
+          {
+            "type": "uint64",
+            "name": "windowCapUsd"
+          },
+          {
+            "type": "address",
+            "name": "poolVault"
+          },
+          {
+            "type": "address",
+            "name": "settler"
+          },
+          {
+            "type": "address",
+            "name": "tradingVault"
+          }
+        ]
+      },
+      {
+        "type": "uint8",
+        "name": "direction"
+      },
+      {
+        "type": "address",
+        "name": "user"
       },
       {
         "type": "uint256",
@@ -794,10 +1018,6 @@
           },
           {
             "type": "uint64",
-            "name": "entryTime"
-          },
-          {
-            "type": "uint64",
             "name": "lastUpdateTime"
           }
         ]
@@ -816,36 +1036,6 @@
         "type": "bytes32"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "removeOrderFromPosition",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "positionId"
-      },
-      {
-        "type": "uint256",
-        "name": "orderId"
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",
@@ -976,62 +1166,6 @@
       {
         "type": "uint256",
         "name": "tokenId"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "updateUserPosition",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "uint256",
-            "name": "positionId"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint256",
-            "name": "executeSize"
-          },
-          {
-            "type": "uint256",
-            "name": "executePrice"
-          },
-          {
-            "type": "uint256",
-            "name": "orderId"
-          },
-          {
-            "type": "address",
-            "name": "broker"
-          },
-          {
-            "type": "address",
-            "name": "keeper"
-          }
-        ]
       }
     ],
     "outputs": []

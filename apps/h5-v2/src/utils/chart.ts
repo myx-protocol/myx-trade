@@ -47,6 +47,39 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
   list: T[] = [],
   options: EChartsOption = {},
 ) => {
+  let now = dayjs().utc().valueOf()
+  const ONE_DAY = 24 * 60 * 60 * 1000
+  const ONE_WEEK = 7 * 24 * 60 * 60 * 1000
+  const ONE_MONTH = 30 * 24 * 60 * 60 * 1000
+
+  let minTime: number | 'dataMin' = 'dataMin'
+  let maxTime: number | 'dataMax' = 'dataMax'
+
+  // 只有一个点 → 锁定在该点时间
+  if (list.length === 1) {
+    now = dayjs(list[0].time * 1000)
+      .utc()
+      .valueOf()
+    // maxTime = list[0].time * 1000;
+  }
+
+  // 一周
+  if (interval === ChartInterval.week) {
+    maxTime = list.length === 1 ? now + ONE_WEEK : now
+    minTime = list.length === 1 ? now : now - ONE_WEEK
+  }
+
+  // 一个月
+  if (interval === ChartInterval.day) {
+    maxTime = list.length === 1 ? now + ONE_DAY : now
+    minTime = list.length === 1 ? now : now - ONE_DAY
+  }
+
+  if (interval === ChartInterval.all) {
+    maxTime = list.length === 1 ? now + ONE_MONTH : now
+    minTime = list.length === 1 ? now : now - ONE_MONTH
+  }
+
   return {
     grid: {
       bottom: '0',
@@ -59,7 +92,8 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       // boundaryGap: [0, '100%'],
       show: false,
       splitLine: { show: false },
-      min: (value: AxisExtent) => (Math.floor((value.min * 1000) / 10) * 10) / 1000,
+      min: (value: AxisExtent) =>
+        value.min < 1 ? 0 : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
       max: (value: AxisExtent) => (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
     },
     tooltip: {
@@ -83,8 +117,13 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
           color: '#848E9C',
           fontSize: '12px',
         },
+        min: minTime,
+        max: maxTime,
         axisLabel: {
-          interval,
+          // interval: ,
+          showMinLabel: true,
+          showMaxLabel: true,
+          interval: interval === ChartInterval.all ? 5 : 'auto',
           formatter: (value: number) =>
             dayjs(value)
               .utc()
@@ -95,35 +134,38 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
         },
         axisTick: {
           alignWithLabel: true,
-          interval,
+          // interval,
           show: false,
         },
       },
     ],
     series: [
       {
-        type: 'line',
+        type: list.length > 1 ? 'line' : 'scatter', // 单点用 scatter,
         showSymbol: false,
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              {
-                offset: 0,
-                color: 'rgba(0, 227, 165, 0.3)',
-              },
-              {
-                offset: 1,
-                color: 'rgba(0, 227, 165, 0)',
-              },
-            ],
-            global: false,
-          },
-        },
+        areaStyle:
+          list.length > 1
+            ? {
+                color: {
+                  type: 'linear',
+                  x: 0,
+                  y: 0,
+                  x2: 0,
+                  y2: 1,
+                  colorStops: [
+                    {
+                      offset: 0,
+                      color: 'rgba(0, 227, 165, 0.3)',
+                    },
+                    {
+                      offset: 1,
+                      color: 'rgba(0, 227, 165, 0)',
+                    },
+                  ],
+                  global: false,
+                },
+              }
+            : undefined,
         itemStyle: {
           normal: {
             symbol: 'emptyCircle',

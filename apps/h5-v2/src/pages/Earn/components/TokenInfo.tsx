@@ -73,9 +73,7 @@ export const TokenInfo = () => {
           <span className={'text-secondary'}>
             <Trans>Traders</Trans>
           </span>
-          <span className={'text-white'}>
-            {formatNumberPrecision(quoteLpDetail?.traders, COMMON_PRICE_DISPLAY_DECIMALS)}
-          </span>
+          <span className={'text-white'}>{formatNumberPrecision(quoteLpDetail?.traders, 0)}</span>
         </Box>
 
         <Box className={'flex items-center justify-between'}>

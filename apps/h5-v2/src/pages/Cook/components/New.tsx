@@ -7,70 +7,84 @@ import Leaf from '@/assets/icon/lp/leaf.png'
 import { useContext, useState } from 'react'
 import { DialogFilters } from '@/components/Dialog/DialogFilters.tsx'
 import { useQuery } from '@tanstack/react-query'
-import { getCookNews } from '@/request'
+import { DEFAULT_LIMIT, getCookNews } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { CookType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import { Pause } from '@/components/Icon'
+import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
+import dayjs from 'dayjs'
+import { Empty } from '@/components/Empty.tsx'
 
 export const New = ({ chainId }: { chainId?: number }) => {
   const navigate = useNavigate()
-  const { type } = useContext(CookContext)
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const { type, cookType } = useContext(CookContext)
+  const { age, mc, progress, change, liq, holders } = useCookFilter()
 
   const { data = [], isLoading } = useQuery({
-    queryKey: [{ key: 'TokenNewList' }, type, chainId],
-    enabled: type === CookType.Cook,
+    queryKey: [
+      { key: 'TokenNewList' },
+      type,
+      cookType,
+      chainId,
+      age,
+      mc,
+      progress,
+      change,
+      liq,
+      holders,
+    ],
+    enabled: type === CookType.Cook && cookType === CookListType.New,
     queryFn: async () => {
-      const result = await getCookNews()
-      console.log(result)
+      const result = await getCookNews({
+        chainId,
+        limit: DEFAULT_LIMIT,
+        sortOrder: 'desc',
+        marketCapMin: mc?.[0] || undefined,
+        marketCapMax: mc?.[1] || undefined,
+        priceChangeMin: change?.[0] || undefined,
+        priceChangeMax: change?.[1] || undefined,
+        tokenCreateTimeMin: age?.[1] ? dayjs().subtract(Number(age[1]), 'm').unix() : undefined,
+        tokenCreateTimeMax: age?.[0] ? dayjs().subtract(Number(age[0]), 'm').unix() : undefined,
+        holdersMin: holders[0] || undefined,
+        holdersMax: holders[1] || undefined,
+      })
+      // console.log(result)
       return result?.data || []
     },
   })
 
   return (
     <>
-      <Card className={'position flex h-min flex-col'}>
-        <CardTitle className={'sticky flex items-center'} onFilter={() => setFiltersOpen(true)}>
-          <Box className={'flex items-center gap-[8px]'}>
-            <Box className={'flex items-center gap-[4px]'}>
-              <Box className={'h-[20px] w-[20px] min-w-[20px]'}>
-                <img className={'block h-[20px] w-[20px]'} src={Leaf} alt="New" />
-              </Box>
-              <Trans>NEW</Trans>
-            </Box>
-
-            <Tag type={'warning'}>
-              <Pause size={11} />
-              <Trans>Paused</Trans>
-            </Tag>
-          </Box>
-        </CardTitle>
+      <Card className={'position flex flex-col'}>
         <Box className={'flex-1 overflow-y-auto'}>
-          {isLoading
-            ? Array.from({ length: 5 }).map((item, i) => <Token key={i} isLoading />)
-            : (data || []).map((item) => {
-                return (
-                  <Token
-                    key={item.poolId}
-                    icon={item.tokenIcon}
-                    address={item.baseToken}
-                    label={item.symbol}
-                    name={item.symbolName}
-                    mc={item.marketCap}
-                    liq={item.liquidity}
-                    chainId={item.chainId}
-                    holder={item.holders}
-                    change={'0'}
-                    time={item.tokenCreateTime}
-                    progress={item.progress}
-                    onClick={() => navigate(`/cook/${item.chainId}/${item.poolId}`)}
-                  />
-                )
-              })}
+          {isLoading ? (
+            Array.from({ length: 5 }).map((item, i) => <Token key={i} isLoading />)
+          ) : data?.length > 0 ? (
+            (data || []).map((item) => {
+              return (
+                <Token
+                  key={item.poolId}
+                  icon={item.tokenIcon}
+                  address={item.baseToken}
+                  label={item.symbol}
+                  name={item.symbolName}
+                  mc={item.marketCap}
+                  liq={item.liquidity}
+                  chainId={item.chainId}
+                  holder={item.holders}
+                  change={'0'}
+                  time={item.tokenCreateTime}
+                  progress={item.progress}
+                  onClick={() => navigate(`/cook/${item.chainId}/${item.poolId}`)}
+                />
+              )
+            })
+          ) : (
+            <Empty />
+          )}
         </Box>
       </Card>
-      <DialogFilters open={filtersOpen} showCloseIcon onClose={() => setFiltersOpen(false)} />
     </>
   )
 }

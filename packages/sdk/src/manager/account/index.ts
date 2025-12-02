@@ -1,23 +1,29 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
 import { Utils } from "../utils";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index";
 import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
+import { getJSONProvider } from "@/web3";
+import { getForwarderContract } from "@/web3/providers";
+import { MyxClient } from "..";
+import dayjs from "dayjs";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
+  private client: MyxClient;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, client: MyxClient) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
+    this.client = client;
   }
 
-  async getWalletQuoteTokenBalance() {
+  async getWalletQuoteTokenBalance(address?: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(
@@ -25,13 +31,15 @@ export class Account {
         "Invalid signer"
       );
     }
+
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Token_ABI,
-      config.signer
+      provider
     );
-    const balance = await erc20Contract.balanceOf(config.signer.getAddress());
+    const balance = await erc20Contract.balanceOf(address || config.signer.getAddress());
     return {
       code: 0,
       data: balance,
@@ -50,13 +58,15 @@ export class Account {
       );
     }
     const contractAddress = getContractAddressByChainId(config.chainId);
+    const provider = await getJSONProvider(config.chainId)
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
-      config.signer
+      provider
     );
     try {
-      const assets = await accountContract.getTradableAmount(config.signer.getAddress(), poolId);
+      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+      const assets = await accountContract.getTradableAmount(targetAddress, poolId);
       const data = {
         profitIsReleased: assets[0],
         freeAmount: assets[1],
@@ -90,21 +100,59 @@ export class Account {
   }
 
 
-  async withdraw({ poolId, amount }: { poolId: string, amount: string }) {
+  async withdraw({ chainId, receiver, amount, poolId }: { chainId: number, receiver: string, amount: string, poolId: string }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const contractAddress = getContractAddressByChainId(config.chainId);
-    const accountContract = new ethers.Contract(
-      contractAddress.Account,
-      Account_ABI,
-      config.signer
-    );
+    const contractAddress = getContractAddressByChainId(chainId);
 
     try {
-      const account = await config.signer?.getAddress() ?? ''
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
-      console.log("withdraw", account, amount, poolId);
-      const rs = await accountContract.withdraw(poolId, account, true, amount);
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(receiver)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const accountContract = new ethers.Contract(
+          contractAddress.Account,
+          Account_ABI,
+          seamlessWallet as Signer
+        );
+        const functionHash = accountContract.interface.encodeFunctionData('updateAndWithdraw', [receiver, poolId, true, amount])
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: contractAddress.Account,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("withdraw forward tx params --->", forwardTxParams)
+
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "withdraw success",
+          data: rs,
+        };
+
+      }
+      const accountContract = new ethers.Contract(
+        contractAddress.Account,
+        Account_ABI,
+        config.signer
+      );
+
+      const rs = await accountContract.updateAndWithdraw(receiver, poolId, true, amount);
       const receipt = await rs?.wait(1);
 
       return {
@@ -119,26 +167,77 @@ export class Account {
     }
   }
 
-  async deposit({ poolId, amount, tokenAddress }: { poolId: string, amount: string, tokenAddress: string }) {
+  async deposit({ amount, tokenAddress, chainId }: { amount: string, tokenAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const account = await config.signer?.getAddress() ?? ''
-    console.log("deposit", account, poolId, amount);
-    const contractAddress = getContractAddressByChainId(config.chainId);
-    const accountContract = new ethers.Contract(
-      contractAddress.Account,
-      Account_ABI,
-      config.signer
-    );
+    const contractAddress = getContractAddressByChainId(chainId);
 
     try {
       const needApproval = await this.utils.needsApproval(
+        chainId,
         tokenAddress,
         amount,
         contractAddress.Account,
       );
 
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(account)
+
+        if (needApproval) {
+          const approvalResult = await this.utils.approveAuthorization({
+            chainId,
+            quoteAddress: tokenAddress,
+            amount: ethers.MaxUint256.toString(),
+            spenderAddress: contractAddress.Account,
+            signer: seamlessWallet as Signer,
+          });
+
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const accountContract = new ethers.Contract(
+          contractAddress.Account,
+          Account_ABI,
+          seamlessWallet as Signer
+        );
+        const functionHash = accountContract.interface.encodeFunctionData('deposit', [account, tokenAddress, amount])
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: contractAddress.Account,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("deposit forward tx params --->", forwardTxParams)
+
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "deposit success",
+          data: rs,
+        };
+      }
+
       if (needApproval) {
         const approvalResult = await this.utils.approveAuthorization({
+          chainId,
           quoteAddress: tokenAddress,
           amount: ethers.MaxUint256.toString(),
           spenderAddress: contractAddress.Account,
@@ -150,8 +249,13 @@ export class Account {
       }
 
 
+      const accountContract = new ethers.Contract(
+        contractAddress.Account,
+        Account_ABI,
+        config.signer
+      );
 
-      const rs = await accountContract.deposit(account, poolId, amount);
+      const rs = await accountContract.deposit(account, tokenAddress, amount);
       const receipt = await rs?.wait(1);
 
       return {

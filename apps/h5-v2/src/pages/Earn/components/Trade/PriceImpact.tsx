@@ -10,6 +10,8 @@ import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/Numeric
 import { isSafeNumber } from '@/utils'
 import { MAX_SLIPPING_PERCENT, MIN_SLIPPING_PERCENT } from '@/constant/slippage.ts'
 import Yes from '@/components/Icon/set/Yes.tsx'
+import { Tooltips } from '@/components/UI/Tooltips'
+import { t } from '@lingui/core/macro'
 
 const StyledNumericInputWithAdornment = styled(NumericInputWithAdornment)`
   .MuiInputBase-root {
@@ -58,11 +60,19 @@ export const PriceImpact = ({
       title={
         <span className={'text-Secondary flex items-center gap-[4px] text-[12px] leading-[1]'}>
           <Trans>Price Impact</Trans>
-          <TipsOutLine size={12} />
+          <Tooltips
+            title={t`The estimated deviation of your execution price from the current market price.`}
+          >
+            <TipsOutLine size={12} className={'cursor-pointer'} />
+          </Tooltips>
         </span>
       }
     >
-      <Box className={'text-regular flex flex-1 cursor-pointer items-center justify-end gap-[2px]'}>
+      <Box
+        className={
+          'text-regular flex h-[18px] flex-1 cursor-pointer items-center justify-end gap-[2px]'
+        }
+      >
         {!isEdit ? (
           <>
             <span className={'text-regular text-[12px] leading-[1] font-[500]'}>

@@ -23,6 +23,7 @@ import { addQueryParams } from "./utils";
 // todo @JC
 export const baseUrl = "https://api-test.myx.cash";
 
+export const forwardUrl = "https://api-test.myx.cash/v2/agent";
 
 
 export const getOraclePrice = async (
@@ -90,10 +91,9 @@ export const getPoolDetail = async (
 
 export const getPositions = async (
   accessToken: string,
-  chainId: ChainId
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/gateway/scan/position/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/position/open`,
     undefined, // params
     {
       headers: {
@@ -105,10 +105,9 @@ export const getPositions = async (
 
 export const getOrders = async (
   accessToken: string,
-  chainId: ChainId
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/gateway/scan/order/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/order/open`,
     undefined,
     { headers: { myx_openapi_access_token: accessToken } }
   );
@@ -327,3 +326,5 @@ export const getMarketList = async () => {
 export * from "./type";
 
 export * from './account'
+
+export * from './seamless'

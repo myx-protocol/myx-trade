@@ -14,9 +14,9 @@ export const Empty = ({
 }) => {
   return (
     <>
-      <Box className={`flex flex-col items-center justify-center ${className}`}>
+      <Box className={`flex flex-col items-center justify-center py-[100px] ${className}`}>
         <img src={EmptyPng} alt="empty" className="h-[56px] w-[56px]" />
-        <div className="mt-[16px] text-[12px] font-medium text-[#848E9C]">
+        <div className="mt-[16px] leading-[1] font-medium text-[#848E9C] text-[12x]">
           {emptyText ? <> {emptyText} </> : t`No results found`}
         </div>
         {children}

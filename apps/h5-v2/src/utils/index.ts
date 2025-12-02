@@ -98,3 +98,6 @@ export const sleep = (ms: number) => {
 }
 
 export * from './url'
+
+export const enumValues = <T extends object>(enu: T): Array<T[keyof T]> =>
+  Object.values(enu).filter((v) => typeof v !== 'string') as any

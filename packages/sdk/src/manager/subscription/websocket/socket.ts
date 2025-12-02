@@ -423,7 +423,7 @@ export class MyxWebSocketClient {
       // update last message time
       this.lastMessageTime = Date.now();
       if (data.type === "ping") {
-        this.logger.debug("Ping Message received");
+        // this.logger.debug("Ping Message received");
         // reply pong message by microtask
         queueMicrotask(() => {
           this.pong(data.data as string);
@@ -495,7 +495,7 @@ export class MyxWebSocketClient {
     let dataParsed = messageTransform(data);
 
     const subscriptionId = dataParsed.type;
-    this.logger.debug(`handle subscription message: ${subscriptionId}`);
+    // this.logger.debug(`handle subscription message: ${subscriptionId}`);
 
     const subscription = this.subscriptions.get(subscriptionId);
     // if subscription not found, return

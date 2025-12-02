@@ -1,9 +1,7 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
 
-import { getContractAddressByChainId } from "@/config/address/index";
-import { ethers } from "ethers";
-import oracleAbi from "@/abi/MYXOracle.json";
+import { ethers, Signer } from "ethers";
 import {
   GetHistoryOrdersParams,
   getPositionHistory,
@@ -14,21 +12,23 @@ import { Utils } from "../utils";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { Seamless } from "../seamless";
+import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
+import dayjs from "dayjs";
 
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils) {
+  private seamless: Seamless;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
+    this.seamless = seamless;
   }
 
   async listPositions() {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -39,7 +39,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken, config.chainId);
+      const res = await getPositions(accessToken);
       return {
         code: 0,
         data: res.data,
@@ -67,147 +67,6 @@ export class Position {
       data: res.data,
     };
   }
-  /**
-   * @desc temp skip eip7702
-   * @todo adjustCollateral 调整保证金
-   */
-  // async adjustCollateral({ poolId, positionId, adjustAmount }: { poolId: string, positionId: string, adjustAmount: string }) {
-  //   const config: MyxClientConfig = this.configManager.getConfig();
-
-  //   console.log("adjustCollateral-->", { poolId, positionId, adjustAmount })
-  //   try {
-  //     const oraclePrice = await this.utils.getOraclePrice(poolId);
-  //     console.log("oraclePrice-->", oraclePrice);
-
-  //     const eip7702DelegationAddress = getContractAddressByChainId(
-  //       config.chainId
-  //     ).EIP7702Delegation;
-
-  //     const oracleAddress = getContractAddressByChainId(
-  //       config.chainId
-  //     ).ORACLE;
-
-  //     const brokerAddress = getContractAddressByChainId(
-  //       config.chainId
-  //     ).BROKER;
-
-  //     // 获取用户地址
-  //     const userAddress = await config.signer.getAddress();
-  //     const nonce = await config.signer.getNonce();
-
-  //     // 1️⃣ 构造签名消息
-  //     const message = {
-  //       chainId: config.chainId,
-  //       delegate: eip7702DelegationAddress,
-  //       nonce: nonce,
-  //     };
-
-  //     const signature = await config.signer.signMessage(JSON.stringify(message));
-
-  //     // 3️⃣ 构造 authorizationList
-  //     const sig = signature.slice(2);
-  //     const r = `0x${sig.slice(0, 64)}` as `0x${string}`;
-  //     const s = `0x${sig.slice(64, 128)}` as `0x${string}`;
-  //     const v = parseInt(sig.slice(128, 130), 16);
-
-  //     const authorizationList = [
-  //       {
-  //         chainId: config.chainId,
-  //         address: eip7702DelegationAddress as `0x${string}`,
-  //         nonce: Number(nonce),
-  //         r,
-  //         s,
-  //         yParity: v === 27 ? 0 : 1,
-  //       }
-  //     ];
-
-  //     const oracleContract = new ethers.Contract(
-  //       oracleAddress,
-  //       oracleAbi,
-  //       config.signer
-  //     );
-
-  //     const updatePricesGasLimit = await oracleContract.updatePrices.estimateGas([{
-  //       poolId: poolId,
-  //       referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
-  //       oracleUpdateData: oraclePrice?.vaa ?? '0',
-  //       publishTime: oraclePrice.publishTime,
-  //     }], {
-  //       value: oraclePrice.value ?? 1n,
-  //     });
-
-  //     // 构造更新价格的数据
-  //     const updateParams = {
-  //       poolId: poolId,
-  //       referencePrice: ethers.parseUnits(oraclePrice?.price ?? '0', 30),
-  //       oracleUpdateData: oraclePrice?.vaa ?? '0',
-  //       publishTime: oraclePrice.publishTime,
-  //     }
-
-  //     const updatePriceData = {
-  //       target: oracleAddress,
-  //       gas: updatePricesGasLimit,
-  //       data: encodeFunctionData({
-  //         abi: oracleAbi,
-  //         functionName: 'updatePrices',
-  //         args: [[updateParams]],
-  //       }),
-  //       value: oraclePrice.value ?? 1n,
-  //     }
-
-  //     // 构造调整保证金的数据
-  //     const adjustCollateralData = {
-  //       target: brokerAddress,
-  //       gas: 10000000n,
-  //       data: encodeFunctionData({
-  //         abi: brokerAbi,
-  //         functionName: 'adjustCollateral',
-  //         args: [positionId, adjustAmount],
-  //       }),
-  //       value: '0'
-  //     }
-
-  //     // 编码批量执行的数据
-  //     const batchExecuteData = encodeFunctionData({
-  //       abi: eip7702DelegationAbi,
-  //       functionName: 'updatePriceAndBatchExecute',
-  //       args: [[updatePriceData, adjustCollateralData]],
-  //     });
-
-  //     // 4️⃣ 发送交易
-  //     let hash: string;
-
-  //     if (config.walletClient) {
-  //       hash = await config.walletClient.sendTransaction({
-  //         account: userAddress as `0x${string}`,
-  //         to: userAddress as `0x${string}`,
-  //         data: batchExecuteData as `0x${string}`,
-  //         value: BigInt(oraclePrice?.value ?? 1n),
-  //         gas: 10000000n,
-  //         authorizationList,
-  //         type: 'eip7702',
-  //       } as any);
-  //     } else {
-  //       throw new Error('EIP-7702 交易目前只支持使用 walletClient，请在配置中提供 walletClient');
-  //     }
-
-  //     console.log("Transaction hash->", hash);
-
-  //     return {
-  //       code: 0,
-  //       data: { hash },
-  //       message: "调整保证金交易已提交"
-  //     };
-
-  //   } catch (error) {
-  //     console.log('error-->', error)
-  //     return {
-  //       code: -1,
-  //       // @ts-ignore
-  //       message: error?.message,
-  //     };
-  //   }
-  // }
 
   async adjustCollateral({
     poolId,
@@ -215,24 +74,25 @@ export class Position {
     adjustAmount,
     quoteToken,
     poolOracleType,
+    chainId
   }: {
     poolId: string;
     positionId: string;
     adjustAmount: string;
     quoteToken: string;
-    poolOracleType: OracleType
+    poolOracleType: OracleType,
+    chainId: number
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    if (!config.signer) {
-      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-    }
 
-    this.logger.debug("adjustCollateral-->", {
+
+    this.logger.debug("adjustCollateral params-->", {
       poolId,
       positionId,
       adjustAmount,
       quoteToken,
     });
+
     try {
       /**
        * fetch oracle price
@@ -249,41 +109,90 @@ export class Position {
         oracleType: poolOracleType,
       };
 
-      const contractAddress = getContractAddressByChainId(config.chainId);
+      let needsApproval = false;
 
-      // adjust collateral check and approve
       if (Number(adjustAmount) > 0) {
-        this.logger.debug("adjust collateral check and approve-->", {
+        needsApproval = await this.utils.needsApproval(
+          chainId,
           quoteToken,
           adjustAmount,
-          spenderAddress: contractAddress.POSITION_MANAGER,
-        });
-        const needsApproval = await this.utils.needsApproval(
-          quoteToken,
-          adjustAmount,
-          contractAddress.POSITION_MANAGER
         );
-        this.logger.debug("adjust collateral needs approval-->", {
-          needsApproval,
-        });
+      }
 
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
+      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
+
+      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+
+      const depositData = {
+        token: quoteToken,
+        amount: depositAmount.toString()
+      }
+
+
+      if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
-          this.logger.debug("adjust collateral approve-->", {
-            quoteToken,
-            amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.POSITION_MANAGER,
-          });
           const approvalResult = await this.utils.approveAuthorization({
+            chainId: chainId,
             quoteAddress: quoteToken,
             amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.POSITION_MANAGER,
+            signer: seamlessWallet as Signer,
           });
+
           if (approvalResult.code !== 0) {
             throw new Error(approvalResult.message);
           }
         }
+
+        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const brokerContract = await getSeamlessBrokerContract(
+          this.configManager.getConfig().brokerAddress,
+          seamlessWallet as Signer
+        );
+        const functionHash = brokerContract.interface.encodeFunctionData('updatePriceAndAdjustCollateral', [
+          [updateParams],
+          depositData,
+          positionId,
+          adjustAmount
+        ])
+
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: (priceData?.value ?? "1").toString(),
+          gas: '10000000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("adjust collateral forward tx params --->", forwardTxParams)
+
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        console.log('rs-->', rs)
+
+        return {
+          code: 0,
+          message: "adjust collateral success",
+          data: rs,
+        };
       }
 
+
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
       /**
        * call broker contract
        */
@@ -293,18 +202,24 @@ export class Position {
         config.signer
       );
 
-      this.logger.debug("updatePriceAndAdjustCollateral-->", {
-        updateParams,
-        positionId,
-        adjustAmount,
-        useAccountBalance: false,
-      });
+
+      if (needsApproval) {
+
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId,
+          quoteAddress: quoteToken,
+          amount: ethers.MaxUint256.toString(),
+        });
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
 
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
+        depositData,
         positionId,
         adjustAmount,
-        false,
         {
           value: BigInt(priceData?.value ?? "1"),
           gas: 10000000n,

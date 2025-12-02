@@ -338,9 +338,22 @@ export interface LpAsset {
   lastTotal: string
   token: string
   globalId: number
+  marketId: string
 }
 export interface LpAssetsResponse extends BaseResponse {
   data: LpAsset[]
 }
 
 export type PriceMapType = { [poolId: string]: string }
+
+export interface MarketPoolStateData {
+  chainId: number
+  poolId: string
+  string: string
+  state: MarketPoolState
+  baseToken: string
+}
+
+export interface MarketPoolStateDataResponse extends BaseResponse {
+  data: MarketPoolStateData[]
+}

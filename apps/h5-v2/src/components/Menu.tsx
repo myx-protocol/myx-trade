@@ -18,20 +18,19 @@ export const StyledMenu = styled((props: MenuProps) => (
   '& .MuiPaper-root': {
     borderRadius: 8,
     border: '1px solid var(--dark-border)',
-    marginTop: theme.spacing(1),
-    minWidth: 180,
+    minWidth: 106,
     color: 'var(--basic-white)',
     backgroundColor: `var(--bg-plus)`,
     '& .MuiMenu-list': {
-      padding: '4px 8px',
+      padding: '4px 0',
     },
     '& .MuiMenuItem-root': {
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: 500,
-      padding: '12px 9px',
+      padding: '12px 10px',
       display: 'flex',
       alignItems: 'center',
-      gap: '12px',
+      gap: '8px',
       borderRadius: 6,
 
       '&:hover': {

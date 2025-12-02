@@ -30,7 +30,7 @@ export const EstRate = () => {
 
   return (
     <DescribeItem title={<Trans>Est. Rate</Trans>}>
-      <Box className={'flex items-center gap-[2px]'}>
+      <Box className={'flex h-[18px] items-center gap-[2px]'}>
         {/*<Refresh size={12} className={'cursor-pointer'} />*/}
         <span>
           1{direction === Direction.LpToU ? quoteLpDetail?.mQuoteBaseSymbol : pool?.quoteSymbol}
