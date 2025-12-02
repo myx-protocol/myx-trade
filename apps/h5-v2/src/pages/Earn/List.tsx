@@ -13,15 +13,7 @@ const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
   const [interval, setInterval] = useState<Interval>()
   return (
-    <Container className={'flex !w-[1190px] !min-w-[1190px] flex-col px-[40px] pt-[32px]'}>
-      <Box className={'flex flex-col gap-[16px] px-[32px] pt-[24px] leading-[1.1]'}>
-        <h1 className={'text-[56px] font-[700] text-white'}>
-          <Trans>Liquidity Earning</Trans>
-        </h1>
-        <p className={'text-regular text-[20px] font-[500]'}>
-          <Trans>Generate stable returns by providing USD liquidity</Trans>
-        </p>
-      </Box>
+    <Box className={''}>
       <Box className={'mt-[48px] h-[172px]'}>
         <Carousel />
       </Box>
@@ -30,7 +22,7 @@ const EarnList = () => {
         <Dashboard />
         <Vaults className={'mt-[24px]'} />
       </SearchContext.Provider>
-    </Container>
+    </Box>
   )
 }
 

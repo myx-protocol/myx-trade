@@ -23,7 +23,7 @@ import { formatNumberPrecision } from '@/utils/formatNumber'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import { Big } from 'big.js'
@@ -31,6 +31,7 @@ import { TipsFill } from '@/components/Icon'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
+import { showErrorToast } from '@/config/error'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
@@ -143,11 +144,11 @@ export const Sell = () => {
         amount: Number(amount),
         slippage: Number(slippage),
       })
-      toast.success(t`Successfully sell`)
+      toast.success({ title: t`Successfully sell` })
       await refetch()
       setAmount('')
     } catch (e) {
-      toast.error(JSON.stringify(e))
+      showErrorToast(e)
     } finally {
       setLoading(false)
     }

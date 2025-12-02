@@ -157,3 +157,33 @@ Button.gradient {
     color: var(--basic-white);
   }
 }
+
+
+.MuiDialog-container.MuiDialog-scrollPaper {
+  overflow: hidden;
+
+  .scroll-y-auto {
+    overflow-y: scroll;
+  }
+  /*-webkit-overflow-scrolling: touch;*/
+  ::-webkit-scrollbar {
+    width: 6px
+  }
+
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #464852;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: content-box
+  }
+
+  ::-webkit-scrollbar-thumb :hover {
+    background-color: #464852;
+  }
+
+}
