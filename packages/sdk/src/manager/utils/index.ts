@@ -115,10 +115,11 @@ export class Utils {
         spenderAddress ??
         getContractAddressByChainId(chainId).Account;
 
+      const provider = await getJSONProvider(chainId)
       const tokenContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
-        config.signer
+        provider
       );
 
       const allowance = await tokenContract.allowance(owner, spender);
