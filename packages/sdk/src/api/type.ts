@@ -24,7 +24,7 @@ export enum ErrorCode {
 export interface BaseResponse<T = any> {
   code: ErrorCode;
   msg: string | null;
-  data?: T
+  data?: T;
 }
 
 export type DashboardType = {
@@ -223,9 +223,11 @@ export interface SearchResultContractItem {
   liquidity: string;
   basePrice: string;
   priceChange: string;
-  tvl: string
-  marketCap: string
-  globalId: number
+  tvl: string;
+  marketCap: string;
+  globalId: number;
+  baseSymbol: string;
+  quoteSymbol: string;
 }
 
 export interface SearchResultCookItem {
@@ -338,10 +340,9 @@ export interface MarketDetailResponse {
   feedId: string;
   activeTime: number;
   capType: MarketCapType;
-  baseReserveRatio: string
-  quoteReserveRatio: string
+  baseReserveRatio: string;
+  quoteReserveRatio: string;
 }
-
 
 export interface MarketInfo {
   chainId: number;
@@ -352,9 +353,8 @@ export interface MarketInfo {
   quoteToken: string;
   baseReserveRatio: number;
   quoteReserveRatio: number;
-  oracleFeeUsd:number,
-  oracleRefundFeeUsd:number,
-  poolPrimeThreshold: number,
-  decimals: number,
+  oracleFeeUsd: number;
+  oracleRefundFeeUsd: number;
+  poolPrimeThreshold: number;
+  decimals: number;
 }
-
