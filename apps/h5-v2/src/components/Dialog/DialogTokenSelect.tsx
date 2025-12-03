@@ -82,7 +82,7 @@ const TokenItem = ({ disabled = false, asset }: TokenItemProps) => {
       </Box>
       <Box className={'flex flex-col items-end gap-[6px] text-right leading-[1]'}>
         <Box className={'text-[14px] font-[500] text-white'}>
-          {asset ? formatNumber(asset.balance) : <Skeleton width={60} />}
+          {asset?.balance ? formatNumber(asset?.balance) : <Skeleton width={60} />}
         </Box>
         <Box className={'text-secondary text-[12px] font-[500]'}>
           {asset ? (

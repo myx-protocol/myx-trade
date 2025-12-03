@@ -15,7 +15,7 @@ import { TokenContext } from '@/pages/Market/context.ts'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { Button } from '@mui/material'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import type { QuoteLpDetail } from '@/request/lp/type.ts'
 import { getQuoteLPDetail } from '@/request'
@@ -25,6 +25,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
+import { showErrorToast } from '@/config/error'
 // import { useContext } from 'react'
 // import { TokenContext } from '@/pages/Market/context.ts'
 
@@ -84,11 +85,11 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
       const checked = await onAction()
       if (!checked) return
       await Pool.reprime(+chainId, poolId, market?.marketId)
-      toast.success(t`Pool reprime`)
+      toast.success({ title: t`Pool reprime` })
       onNext?.()
     } catch (e) {
       console.error(e)
-      toast.error(JSON.stringify(e))
+      showErrorToast(e)
     } finally {
       setLoading(false)
     }
