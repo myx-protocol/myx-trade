@@ -36,21 +36,29 @@ export class Order {
     this.account = account
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams) {
+  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-
 
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken,
         params.chainId
       );
 
+      let totalNetWorkFee = BigInt(networkFee)
+      if(params.tpSize) {
+        totalNetWorkFee += BigInt(networkFee)
+      }
+      if(params.slSize) {
+        totalNetWorkFee += BigInt(networkFee)
+      }
+
       const needsApproval = await this.utils.needsApproval(
         params.chainId,
         params.executionFeeToken,
         params.collateralAmount,
       );
+
 
       const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
 
@@ -63,17 +71,20 @@ export class Order {
         };
       }
 
-      const totalBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
-      let depositAmount = BigInt(networkFee) + BigInt(params.collateralAmount)
+      const availableAccountMarginBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
 
+      const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee 
+      let depositAmount = BigInt(0)
 
-      if (totalBalance > 0) {
-        depositAmount = depositAmount - totalBalance
+      const diff = needAmount - availableAccountMarginBalance
+
+      if (diff > BigInt(0)) {
+        depositAmount = diff
       }
 
       const depositData = {
         token: params.executionFeeToken,
-        amount: depositAmount > BigInt(0) ? (depositAmount + BigInt(networkFee)).toString() : networkFee
+        amount: depositAmount.toString()
       }
 
       const data = {
