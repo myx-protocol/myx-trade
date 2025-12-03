@@ -41,7 +41,7 @@ const DEFAULT_CONFIG: WebSocketConfig = {
   heartbeatInterval: 10000,
   heartbeatMessage: "ping",
   noMessageTimeout: 5000,
-  connectionTimeout: 1000,
+  connectionTimeout: 10000,
 };
 
 export class MyxWebSocketClient {
