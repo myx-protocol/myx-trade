@@ -46,10 +46,10 @@ export class Order {
       );
 
       let totalNetWorkFee = BigInt(networkFee)
-      if(params.tpSize) {
+      if (params.tpSize) {
         totalNetWorkFee += BigInt(networkFee)
       }
-      if(params.slSize) {
+      if (params.slSize) {
         totalNetWorkFee += BigInt(networkFee)
       }
 
@@ -58,22 +58,9 @@ export class Order {
         params.executionFeeToken,
         params.collateralAmount,
       );
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
-
-      const marginAccountBalanceRes = await this.account.getTradableAmount({ poolId: params.poolId });
-
-      const marginAccountBalance = marginAccountBalanceRes?.data;
-
-      if (marginAccountBalanceRes.code !== 0) {
-        return {
-          code: -1,
-          message: "Failed to get tradable amount or wallet balance",
-        };
-      }
-
-      const availableAccountMarginBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
-
-      const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee 
+      const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee
       let depositAmount = BigInt(0)
 
       const diff = needAmount - availableAccountMarginBalance
@@ -276,19 +263,24 @@ export class Order {
     }
   }
 
-  async closeAllPositions(chainId: number, params: PlaceOrderParams[]) {
+  async closeAllPositions(chainId: number, params: PlaceOrderParams[], tradingFee: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-      if (!config.signer) {
-        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-      }
+
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params[0].poolId, chainId, address: params[0].address });
 
       const networkFee = await this.utils.getNetworkFee(
         params[0].executionFeeToken,
         chainId
       );
 
-      const depositAmount = BigInt(params.length) * BigInt(networkFee);
+      const tradingFeeAmount = BigInt(tradingFee) * BigInt(params.length)
+      const needAmount = tradingFeeAmount + BigInt(params.length) * BigInt(networkFee)
+
+      let depositAmount = BigInt(0)
+      if (availableAccountMarginBalance < needAmount) {
+        depositAmount = needAmount - availableAccountMarginBalance
+      }
 
       const needsApproval = await this.utils.needsApproval(
         chainId,
@@ -327,7 +319,6 @@ export class Order {
       })
 
       this.logger.info("closeAllPositions params--->", depositData, positionIds, dataMap);
-
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
@@ -384,6 +375,10 @@ export class Order {
         };
       }
 
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+
       const brokerContract = await getBrokerSingerContract(
         chainId,
         this.configManager.getConfig().brokerAddress
@@ -400,7 +395,6 @@ export class Order {
           throw new Error(approvalResult.message);
         }
       }
-
 
 
       const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, positionIds, dataMap);
@@ -438,18 +432,22 @@ export class Order {
     }
   }
 
-  async createDecreaseOrder(params: PlaceOrderParams) {
+  async createDecreaseOrder(params: PlaceOrderParams, tradingFee: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
-      const brokerContract = await getBrokerSingerContract(
-        params.chainId,
-        this.configManager.getConfig().brokerAddress
-      );
       const networkFee = await this.utils.getNetworkFee(
         params.executionFeeToken,
         params.chainId
       );
+
+      let depositAmount = BigInt(0)
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+
+      const needAmount = BigInt(tradingFee) + BigInt(networkFee)
+      if (availableAccountMarginBalance < needAmount) {
+        depositAmount = needAmount - availableAccountMarginBalance
+      }
 
       const data = {
         user: params.address,
@@ -474,13 +472,13 @@ export class Order {
 
       const depositData = {
         token: params.executionFeeToken,
-        amount: networkFee
+        amount: depositAmount.toString()
       }
 
       const needsApproval = await this.utils.needsApproval(
         params.chainId,
         params.executionFeeToken,
-        networkFee.toString(),
+        depositAmount.toString(),
       );
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
@@ -543,7 +541,6 @@ export class Order {
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
         const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
@@ -551,6 +548,11 @@ export class Order {
           data: rs,
         };
       }
+
+      const brokerContract = await getBrokerSingerContract(
+        params.chainId,
+        this.configManager.getConfig().brokerAddress
+      );
 
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
@@ -570,10 +572,6 @@ export class Order {
 
       let transaction;
       if (!params.positionId) {
-        const depositData = {
-          token: params.executionFeeToken,
-          amount: networkFee
-        }
         const positionId = 1
         this.logger.info("createDecreaseOrder salt position params--->", [positionId, { data }]);
         const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
@@ -648,8 +646,6 @@ export class Order {
         params.chainId,
         this.configManager.getConfig().brokerAddress
       );
-
-
 
       try {
         const networkFee = await this.utils.getNetworkFee(
