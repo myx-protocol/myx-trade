@@ -138,7 +138,11 @@ export class Seamless {
   async getUSDPermitParams(deadline: number, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const masterAddress = config.signer?.getAddress()
+    if (!config.signer) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
+    }
+
+    const masterAddress = await config.signer.getAddress()
     const brokerAddress = config.brokerAddress
     const contractAddress = getContractAddressByChainId(chainId);
     const erc20Contract = new ethers.Contract(
@@ -147,18 +151,15 @@ export class Seamless {
       config.signer
     );
 
-    const walletProvider = await getWalletProvider(chainId)
-
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
       const brokerSignPermit = await signPermit(
-        // @ts-ignore
-        walletProvider,
+        config.signer,  // 使用 signer 而不是 provider
         erc20Contract,
         masterAddress,
         brokerAddress,
-        ethers.MaxUint256,
-        nonces,
+        ethers.MaxUint256.toString(),
+        nonces.toString(),
         deadline.toString(),
         chainId
       )
@@ -179,6 +180,7 @@ export class Seamless {
       return [brokerSeamlessUSDPermitParams]
 
     } catch (error) {
+      this.logger.error('getUSDPermitParams error-->', error)
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
