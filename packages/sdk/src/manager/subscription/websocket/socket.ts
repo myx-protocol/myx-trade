@@ -235,14 +235,14 @@ export class MyxWebSocketClient {
     const subscriptionList = Array.isArray(subscription)
       ? subscription
       : [subscription];
-      console.log('sinscribes:', subscriptionList)
-    this.logger.debug('subscriptionList:', subscriptionList)
+      // console.log('sinscribes:', subscriptionList)
+    // this.logger.debug('subscriptionList:', subscriptionList)
     const newSubscriptionIds: string[] = [];
     // track processed subscriptionIds to avoid duplicate processing
     const processedIds = new Set<string>();
     subscriptionList.forEach((subscriptionItem) => {
       const subscriptionId = generateListenerId(subscriptionItem);
-      this.logger.debug('subscriptionId:', subscriptionId)
+      // this.logger.debug('subscriptionId:', subscriptionId)
       // skip if already processed in this batch
       if (processedIds.has(subscriptionId)) {
         return;
@@ -253,9 +253,9 @@ export class MyxWebSocketClient {
         // if the subscription already exists, only add the new callback
         const existingSubscription = this.subscriptions.get(subscriptionId)!;
         existingSubscription.callbacks.add(callback);
-        this.logger.debug(
-          `add callback to existing subscription: ${subscriptionId}`
-        );
+        // this.logger.debug(
+        //   `add callback to existing subscription: ${subscriptionId}`
+        // );
       } else {
         // create new subscription
         const subscriptionObj: Subscription = {

@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getTokenInfo, MarketPoolState, pool } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { getTokenDetails } from '@/request'
@@ -21,6 +21,7 @@ import { isProdMode } from '@/utils/env.ts'
 import { isProdChainId, isSupportedChainId } from '@/pages/Market/untils'
 import type { Asset } from '@/hooks/useWalletPortfolio.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
+import { showErrorToast } from '@/config/error'
 
 const Market = () => {
   const { markets: Markets } = useMyxSdkClient()
@@ -57,7 +58,7 @@ const Market = () => {
 
   useEffect(() => {
     if (chainId && address && Markets?.length && !marketInfo) {
-      toast.error(t`Invalid Market`)
+      toast.error({ title: t`Invalid Market` })
     }
   }, [marketInfo, chainId, address, Markets?.length])
 
@@ -145,7 +146,7 @@ const Market = () => {
       if (token?.address) {
         // const marketId = marketInfo.marketId
         if (token.address === quoteToken) {
-          toast.error(t`Invalid token address`)
+          toast.error({ title: t`Invalid token address` })
           return
         }
 
@@ -164,7 +165,7 @@ const Market = () => {
             return
           }
           if (_pool) {
-            toast.success(t`market is created`)
+            toast.success({ title: t`market is created` })
             navigate(`/cook/${_pool.chainId}/${_pool.poolId}`)
             // todo error pool yi created
           }
@@ -183,7 +184,7 @@ const Market = () => {
     } catch (e) {
       console.error(e)
       if (e) {
-        toast.error(JSON.stringify(e))
+        showErrorToast(e)
       }
     }
   }, [token, chainId, marketInfo, onAction])

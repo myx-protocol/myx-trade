@@ -16,6 +16,9 @@ import { SuspenseLoading } from '@/components/Loading'
 import { echarts, getAreaChartOptions } from '@/utils/chart.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
 import { SearchTypeEnum } from '@myx-trade/sdk'
+import { Change } from '@/components/Change'
+import { Tooltips } from '@/components/UI/Tooltips'
+import { t } from '@lingui/core/macro'
 
 interface ChartProps {
   className?: string
@@ -149,10 +152,21 @@ const ChartHeader = () => {
           <span className={'text-secondary text-[16px] leading-[1] font-[500]'}>
             <Trans>APR</Trans>
           </span>
-          <span
-            className={`text-[24px] leading-[1] font-[700] ${Number(quoteLpDetail?.apr) > 0 ? 'text-rise' : 'text-fall'}`}
-          >
-            {quoteLpDetail?.apr ? formatNumberPercent(quoteLpDetail?.apr) : '--'}
+          <span className={`text-[24px] leading-[1] font-[700]`}>
+            {quoteLpDetail?.apr === null ? (
+              <Tooltips
+                title={t`Insufficient data for calculation
+(pool age < 24h)`}
+              >
+                <span className={'cursor-pointer underline decoration-dashed underline-offset-2'}>
+                  --
+                </span>
+              </Tooltips>
+            ) : (
+              <Change change={quoteLpDetail?.apr}>
+                {quoteLpDetail?.apr ? formatNumberPercent(quoteLpDetail?.apr) : '--'}
+              </Change>
+            )}
           </span>
         </Box>
       </Box>
