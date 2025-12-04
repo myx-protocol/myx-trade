@@ -174,6 +174,8 @@ export class Seamless {
         s: brokerSignPermit.s,
       }
 
+      console.log('brokerSeamlessUSDPermitParams-->', brokerSeamlessUSDPermitParams)
+
       return [brokerSeamlessUSDPermitParams]
 
     } catch (error) {
@@ -256,6 +258,8 @@ export class Seamless {
         permitParams = []
       }
     }
+
+    console.log('permitParams-->', permitParams)
 
     const forwarderContract = await getForwarderContract(config.chainId)
     const nonce = await forwarderContract.nonces(masterAddress)
