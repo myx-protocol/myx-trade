@@ -2,6 +2,7 @@ import { ArrowRight } from '@/components/Icon'
 import { MarketListRow } from '@/components/MarketList/MarketListRow'
 import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
 import { SymbolInfo } from '@/components/MarketList/SymbolInfo'
+import { ChainId } from '@/config/chain'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import clsx from 'clsx'
@@ -53,7 +54,7 @@ export const MarketList = () => {
               <SymbolInfo
                 symbol="BTC"
                 baseTokenLogo="https://assets.coingecko.com/coins/images/1/large/bitcoin.png"
-                chainId={1}
+                chainId={ChainId.ARB_TESTNET}
               />,
               <p className="text-[14px] font-medium text-[#fff]">
                 {formatNumber(1123, {
