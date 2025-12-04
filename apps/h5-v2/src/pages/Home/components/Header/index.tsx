@@ -23,7 +23,7 @@ export const Header = ({ isConnected }: HeaderProps) => {
     )
   }
   return (
-    <div className="left-0w-full sticky top-0 z-20 bg-[#101114] px-[16px] pt-[10px] pb-[5px]">
+    <div className="sticky top-0 left-0 z-20 w-full bg-[#101114] px-[16px] pt-[10px] pb-[5px]">
       <div role="button">
         <MenuIcon size={22} color="#fff" />
       </div>
