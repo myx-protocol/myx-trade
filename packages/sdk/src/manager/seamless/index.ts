@@ -125,41 +125,41 @@ export class Seamless {
     this.account = account;
   }
 
-  async onCheckRelayer(account: string, relayer: string) {
+  async onCheckRelayer(account: string, relayer: string, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const forwarderContract = await getForwarderContract(config.chainId)
+    const forwarderContract = await getForwarderContract(chainId)
 
     const checkRelayerResult = await forwarderContract.isUserRelayerEnabled(account, relayer)
 
     return checkRelayerResult
   }
 
-  async getUSDPermitParams(deadline: number) {
+  async getUSDPermitParams(deadline: number, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const chainId = config.chainId;
 
-    const masterAddress = config.signer?.getAddress()
+    if (!config.signer) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
+    }
+
+    const masterAddress = await config.signer.getAddress()
     const brokerAddress = config.brokerAddress
-    const contractAddress = getContractAddressByChainId(config.chainId);
+    const contractAddress = getContractAddressByChainId(chainId);
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
       config.signer
     );
 
-    const walletProvider = await getWalletProvider(chainId)
-
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
       const brokerSignPermit = await signPermit(
-        // @ts-ignore
-        walletProvider,
+        config.signer,  // 使用 signer 而不是 provider
         erc20Contract,
         masterAddress,
         brokerAddress,
-        ethers.MaxUint256,
-        nonces,
+        ethers.MaxUint256.toString(),
+        nonces.toString(),
         deadline.toString(),
         chainId
       )
@@ -174,6 +174,7 @@ export class Seamless {
         r: brokerSignPermit.r,
         s: brokerSignPermit.s,
       }
+
 
       return [brokerSeamlessUSDPermitParams]
 
@@ -226,7 +227,6 @@ export class Seamless {
   }
 
   async authorizeSeamlessAccount({ approve, seamlessAddress, chainId }: { approve: boolean, seamlessAddress: string, chainId: number }) {
-    console.log('authorizeSeamlessAccount-->', approve, seamlessAddress, chainId)
     const config: MyxClientConfig = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -251,20 +251,21 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        // @ts-ignore
-        permitParams = await this.getUSDPermitParams(deadline)
+        console.log('getUSDPermitParams')
+        permitParams = await this.getUSDPermitParams(deadline, chainId)
+        console.log('permitParams result-->', permitParams)
       } catch (error) {
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
 
-    const forwarderContract = await getForwarderContract(config.chainId)
+    const forwarderContract = await getForwarderContract(chainId)
     const nonce = await forwarderContract.nonces(masterAddress)
-    const gasLimit = SEAMLESS_ACCOUNT_GAS_LIMIT
-    const provider = await getJSONProvider(config.chainId)
-    const { gasPrice } = await provider.getFeeData()
-    const gas = BigInt(gasLimit) * BigInt(120) * BigInt(gasPrice ?? 0) / BigInt(100)
+    // const gasLimit = SEAMLESS_ACCOUNT_GAS_LIMIT
+    // const provider = await getJSONProvider(config.chainId)
+    // const { gasPrice } = await provider.getFeeData()
+    // const gas = BigInt(gasLimit) * BigInt(120) * BigInt(gasPrice ?? 0) / BigInt(100)
 
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
@@ -289,8 +290,6 @@ export class Seamless {
         const getRs = await fetchForwarderGetApi({
           requestId: txRs.data?.requestId,
         })
-
-        this.logger.info('authorizeSeamlessAccount result-->', getRs)
 
         if (getRs.data?.status === ForwarderGetStatus.EXECUTED) {
           if (getRs.data?.txHash) {
@@ -328,7 +327,7 @@ export class Seamless {
     }
   }
 
-  async unLockSeamlessWallet({ masterAddress, password, apiKey }: { masterAddress: string, password: string, apiKey: string }) {
+  async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
     const key = CryptoJS.enc.Utf8.parse(charFill(password))
     const iv = getIvMapString()
     const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
@@ -339,7 +338,7 @@ export class Seamless {
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
-    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address)
+    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
     this.configManager.updateSeamlessWallet({
       masterAddress: masterAddress,
       wallet: wallet,
@@ -379,7 +378,7 @@ export class Seamless {
     }
   }
 
-  async importSeamlessPrivateKey({ privateKey, password }: { privateKey: string, password: string }) {
+  async importSeamlessPrivateKey({ privateKey, password , chainId }: { privateKey: string, password: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!ethers.isHexString(privateKey, 32)) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
@@ -393,7 +392,7 @@ export class Seamless {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "The private key is not a senseless account");
     }
 
-    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address)
+    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
     const key = CryptoJS.enc.Utf8.parse(charFill(password))
     const iv = getIvMapString()
@@ -461,7 +460,7 @@ export class Seamless {
 
       const apiKey = encrypted.toString()
 
-      let isAuthorized = await this.onCheckRelayer(account, wallet.address)
+      let isAuthorized = await this.onCheckRelayer(account, wallet.address, chainId)
 
       this.configManager.updateSeamlessWallet({
         masterAddress: account,
@@ -469,8 +468,8 @@ export class Seamless {
         authorized: isAuthorized,
       })
 
-      const forwarderContract = await getForwarderContract(config.chainId)
-      const erc20Address = getContractAddressByChainId(config.chainId).ERC20
+      const forwarderContract = await getForwarderContract(chainId)
+      const erc20Address = getContractAddressByChainId(chainId).ERC20
 
       await this.utils.approveAuthorization({
         chainId,

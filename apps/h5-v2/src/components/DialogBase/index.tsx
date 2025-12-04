@@ -38,6 +38,12 @@ export const DialogThemeStyles = styled(Dialog)`
   .MuiDialog-container {
     padding-left: 20px;
     padding-right: 20px;
+
+    &.MuiDialog-scrollPaper {
+      .MuiDialog-paper {
+        max-height: 70vh;
+      }
+    }
   }
 
   .MuiPaper-root {

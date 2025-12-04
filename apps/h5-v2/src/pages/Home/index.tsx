@@ -8,13 +8,13 @@ import { MarketList } from './components/MarketList'
 export const Home = () => {
   const isConnected = false
   return (
-    <div>
+    <>
       <Header isConnected={isConnected} />
       {!isConnected && <Banner />}
       {isConnected && <AccountInfo />}
       {isConnected && <ExpressMenu />}
       <ActivitySwiper />
       <MarketList />
-    </div>
+    </>
   )
 }
