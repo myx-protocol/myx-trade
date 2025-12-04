@@ -251,8 +251,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        // @ts-ignore
-        permitParams = await this.getUSDPermitParams(deadline)
+        permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
