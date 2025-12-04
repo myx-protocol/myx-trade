@@ -251,21 +251,21 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
+        console.log('getUSDPermitParams')
         permitParams = await this.getUSDPermitParams(deadline, chainId)
+        console.log('permitParams result-->', permitParams)
       } catch (error) {
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
 
-    console.log('permitParams-->', permitParams)
-
-    const forwarderContract = await getForwarderContract(config.chainId)
+    const forwarderContract = await getForwarderContract(chainId)
     const nonce = await forwarderContract.nonces(masterAddress)
-    const gasLimit = SEAMLESS_ACCOUNT_GAS_LIMIT
-    const provider = await getJSONProvider(config.chainId)
-    const { gasPrice } = await provider.getFeeData()
-    const gas = BigInt(gasLimit) * BigInt(120) * BigInt(gasPrice ?? 0) / BigInt(100)
+    // const gasLimit = SEAMLESS_ACCOUNT_GAS_LIMIT
+    // const provider = await getJSONProvider(config.chainId)
+    // const { gasPrice } = await provider.getFeeData()
+    // const gas = BigInt(gasLimit) * BigInt(120) * BigInt(gasPrice ?? 0) / BigInt(100)
 
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
