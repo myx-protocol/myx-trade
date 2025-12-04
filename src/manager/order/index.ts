@@ -549,14 +549,14 @@ export class Order {
         };
       }
 
+      if (!config.signer) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+
       const brokerContract = await getBrokerSingerContract(
         params.chainId,
         this.configManager.getConfig().brokerAddress
       );
-
-      if (!config.signer) {
-        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-      }
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
@@ -569,6 +569,9 @@ export class Order {
           throw new Error(approvalResult.message);
         }
       }
+
+      console.log('depositData-->', depositData)
+      console.log('data-->', data)
 
       let transaction;
       if (!params.positionId) {
