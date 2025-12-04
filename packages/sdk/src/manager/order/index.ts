@@ -58,6 +58,8 @@ export class Order {
         params.executionFeeToken,
         params.collateralAmount,
       );
+
+      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
       const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee
@@ -81,7 +83,7 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
         direction: params.direction,
-        collateralAmount: params.collateralAmount,
+        collateralAmount: totalCollateralAmount.toString(),
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
