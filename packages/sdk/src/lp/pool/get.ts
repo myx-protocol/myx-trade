@@ -110,7 +110,7 @@ export const getPoolInfo = async (
         poolEntryPrice: request.oi.poolEntryPrice,
       },
     };
-    console.log(info);
+    // console.log(info);
     return info;
   } catch (error) {
     console.error(error);
