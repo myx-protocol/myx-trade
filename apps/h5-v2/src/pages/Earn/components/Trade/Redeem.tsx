@@ -21,7 +21,7 @@ import {
   pool as Pool,
   COMMON_LP_AMOUNT_DECIMALS,
 } from '@myx-trade/sdk'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
@@ -37,7 +37,7 @@ import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
 
 export const Redeem = () => {
-  const { pool, quoteLpDetail, chainId, poolId, price } = useContext(PoolContext)
+  const { pool, quoteLpDetail, chainId, poolId, price, genesisFeeRate } = useContext(PoolContext)
   const { slippage, setSlippage } = useContext(TradeContext)
   const { address: account } = useWalletConnection()
   const [retainLPShare, setRetailLpShare] = useState(true)
@@ -82,12 +82,12 @@ export const Redeem = () => {
   })
 
   const { data: asset } = useQuery({
-    queryKey: [{ key: 'userQuoteLpAsset' }, accessToken, poolId, pool?.quotePoolToken],
-    enabled: !!accessToken,
+    queryKey: [{ key: 'userQuoteLpAsset' }, account, accessToken, poolId, pool?.quotePoolToken],
+    enabled: !!account && !!accessToken,
     queryFn: async () => {
       // console.log(poolId , pool , accessToken)
-      if (!poolId || !pool || !accessToken) return null
-      const request = await getLpAssets(accessToken, {
+      if (!poolId || !pool || !account || !accessToken) return null
+      const request = await getLpAssets(account, accessToken, {
         poolType: PoolType.quote,
         poolId: poolId,
         poolToken: pool?.quotePoolToken,
@@ -291,7 +291,11 @@ export const Redeem = () => {
                       {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
                     </span>{' '}
                     {quoteLpDetail?.mQuoteBaseSymbol} and you will permanently forfeit the right to
-                    your <span className={'text-warning'}>2%</span> share of trading fees.
+                    your{' '}
+                    <span className={'text-warning'}>
+                      {formatNumberPercent(genesisFeeRate, 0, false)}
+                    </span>{' '}
+                    share of trading fees.
                   </Trans>
                 </p>
               </Box>

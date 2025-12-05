@@ -17,6 +17,7 @@ import type {
   LpAssetsRequest,
   LpAssetsResponse,
   MarketPoolStateDataResponse,
+  MarketPoolRiskLevelConfigResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -93,7 +94,7 @@ export const getACQuoteLpList = async (
     {
       headers: {
         myx_openapi_access_token: accessToken,
-        // myx_openapi_account: ''
+        myx_openapi_account: account,
       },
     },
   )
@@ -222,4 +223,13 @@ export const getMarketPoolStateData = async (
   params: { chainId: number; address: string }[],
 ): Promise<MarketPoolStateDataResponse> => {
   return await http.post(`${baseUrl}/openapi/gateway/scan/market/state`, params)
+}
+
+export const getPoolRiskLevelConfig = async (
+  poolId: string,
+  chainId: number,
+): Promise<MarketPoolRiskLevelConfigResponse> => {
+  return await http.get(
+    `${baseUrl}/openapi/gateway/risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`,
+  )
 }
