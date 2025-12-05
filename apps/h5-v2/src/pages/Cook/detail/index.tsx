@@ -20,7 +20,7 @@ export const CookDetail = () => {
 
   return (
     <PoolProvider>
-      <div className="flex min-h-screen flex-col pt-[4px] pb-[4px]">
+      <div className="bg-deep h-m-[100vh] relative z-30 flex flex-col pt-[4px] pb-[4px]">
         <div className={'bg-deep sticky top-[0] z-[1]'}>
           <NavBar />
           <TabBar value={type} onChange={(value) => setType(value as DetailTabType)} />

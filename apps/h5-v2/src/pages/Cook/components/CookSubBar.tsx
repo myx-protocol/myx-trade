@@ -1,4 +1,4 @@
-import { SubTabBar } from '@/pages/Cook/components/SubTabBar.tsx'
+import { SubTabBar } from '@/components/SubTabBar.tsx'
 import { Trans } from '@lingui/react/macro'
 import { type ReactNode, useContext, useState } from 'react'
 import { CookListType } from '../type'
@@ -44,7 +44,7 @@ export const CookSubBar = ({ className, end }: { className?: string; end?: React
 
   return (
     <>
-      <SubTabBar<CookListType>
+      <SubTabBar
         items={items}
         value={cookType}
         className={className}
