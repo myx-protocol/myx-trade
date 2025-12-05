@@ -1,18 +1,18 @@
-import { SubTabBar } from '@/pages/Cook/components/SubTabBar.tsx'
-import { TrenchType, DetailTabType } from '@/pages/Cook/type.ts'
+import { SubTabBar } from '@/components/SubTabBar.tsx'
+import { DetailTabType } from '@/pages/Cook/type.ts'
 import { Trans } from '@lingui/react/macro'
 
 const Tabs = [
   {
-    label: <Trans> Price </Trans>,
+    label: <Trans>Price</Trans>,
     value: DetailTabType.Price,
   },
   {
-    label: <Trans> Trade </Trans>,
+    label: <Trans>Trade</Trans>,
     value: DetailTabType.Trade,
   },
   {
-    label: <Trans> Info </Trans>,
+    label: <Trans>Introduction</Trans>,
     value: DetailTabType.Info,
   },
 ]
