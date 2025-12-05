@@ -15,6 +15,10 @@ export const TradeTabBar = () => {
         label: <Trans>Redeem</Trans>,
         value: TradeSide.Redeem,
       },
+      {
+        label: <Trans>Claim</Trans>,
+        value: TradeSide.Claim,
+      },
     ]
   }, [])
   return (

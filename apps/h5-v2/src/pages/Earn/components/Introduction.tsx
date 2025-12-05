@@ -2,23 +2,15 @@ import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { type ReactNode, useContext } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
-const Title = () => {
-  return (
-    <Box className={'flex flex-col'}>
-      <h2 className={'py-[8px] text-[28px] leading-[1] font-[700] text-white'}>
-        <Trans>Introduction</Trans>
-      </h2>
-    </Box>
-  )
-}
+
 const Content = ({ title, children }: { title: ReactNode; children?: ReactNode }) => {
   return (
     <Box
       className={
-        'item text-secondary border-dark-border flex flex-col gap-[12px] py-[32px] text-[14px] leading-[1.1] font-[500] [&+_.item]:border-t-1'
+        'item text-secondary border-dark-border flex flex-col gap-[8px] py-[20px] text-[12px] leading-[1.5] font-[500] [&+_.item]:border-t-1 [&:first-child]:pt-[0px]'
       }
     >
-      <span className={'text-[16px] leading-[1] font-[500] text-white'}>{title}</span>
+      <span className={'text-[12px] leading-[1.3] font-[500] text-white'}>{title}</span>
       {children}
     </Box>
   )
@@ -26,8 +18,7 @@ const Content = ({ title, children }: { title: ReactNode; children?: ReactNode }
 export const Introduction = () => {
   const { quoteLpDetail, pool } = useContext(PoolContext)
   return (
-    <Box className={'flex w-full flex-col pt-[40px]'}>
-      <Title />
+    <Box className={'flex w-full flex-col py-[12px]'}>
       <Content title={<Trans>What is the {quoteLpDetail?.mQuoteBaseSymbol || '--'} Vault?</Trans>}>
         <p className={'leading-[1.5]'}>
           <Trans>

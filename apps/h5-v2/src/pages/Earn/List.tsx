@@ -1,28 +1,61 @@
-import Container from '@/components/Container.tsx'
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { Carousel } from '@/pages/Earn/components/Carousel.tsx'
-import { ToolBar } from '@/pages/Earn/components/ToolBar.tsx'
-import { Dashboard } from './components/Dashboard'
 import { Vaults } from '@/pages/Earn/components/Vaults.tsx'
-import { SearchContext } from '@/pages/Earn/context.ts'
 import { useState } from 'react'
 import { Interval } from '@/request/type.ts'
 import { SearchBar } from '@/components/SearchBar.tsx'
+import { TabBar } from '@/pages/Earn/components/TabBar.tsx'
+import { VaultType, type Vault } from '@/pages/Earn/type.ts'
+import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
+import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
+import { SearchContext } from './context'
+import { Positions } from '@/pages/Earn/components/Positions.tsx'
 
 const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
-  const [interval, setInterval] = useState<Interval>()
+  const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
+  const [type, setType] = useState<VaultType>(VaultType.Vaults)
   return (
     <Box className="overflow-x w-full pb-[var(--tabbar-height)]">
       <SearchBar />
-      <Box className={'mt-[48px] h-[172px]'}>
+      <Box className={'mt-[20px]'}>
         <Carousel />
       </Box>
+      <Box className={'bg-deep sticky top-[0] z-[1] pt-[20px] pb-[4px]'}>
+        <h2 className={'my-[8px] px-[16px] text-[18px] leading-[1] font-[700] text-white'}>
+          <Trans>Vaults</Trans>
+        </h2>
+        <TabBar value={type} setValueType={setType} />
+        <Box className={'mt-[8px] mr-[-8px] flex items-center justify-between px-[16px]'}>
+          <IntervalList interval={interval} setInterval={setInterval} />
+          <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+        </Box>
+        <Box className={'mt-[16px]'}>
+          <Box
+            className={
+              'text-third flex items-center justify-between px-[16px] text-[12px] leading-[1]'
+            }
+          >
+            <span>
+              <Trans>Vault</Trans>
+            </span>
+            <span>
+              {type === VaultType.Positions ? (
+                <>
+                  <Trans>Amount</Trans>/<Trans>24h PnL</Trans>
+                </>
+              ) : (
+                <>
+                  <Trans>TVL</Trans>/<Trans>APR</Trans>
+                </>
+              )}
+            </span>
+          </Box>
+        </Box>
+      </Box>
       <SearchContext.Provider value={{ chainId, setChainId, interval, setInterval }}>
-        <ToolBar />
-        <Dashboard />
-        <Vaults className={'mt-[24px]'} />
+        <Box>{type === VaultType.Positions ? <Positions /> : <Vaults />}</Box>
       </SearchContext.Provider>
     </Box>
   )
