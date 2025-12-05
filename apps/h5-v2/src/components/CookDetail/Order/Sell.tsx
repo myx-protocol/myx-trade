@@ -19,7 +19,7 @@ import {
   pool as Pool,
   COMMON_LP_AMOUNT_DECIMALS,
 } from '@myx-trade/sdk'
-import { formatNumberPrecision } from '@/utils/formatNumber'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
@@ -35,14 +35,14 @@ import { showErrorToast } from '@/config/error'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
-  const { pool, baseLpDetail, chainId, poolId } = usePoolContext()
+  const { pool, baseLpDetail, chainId, poolId, genesisFeeRate, refreshAsset } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   // const [balance, setBalance] = useState<string>('')
 
-  const { data: balance, refetch } = useQuery({
+  const { data: balance, refetch: refetchBalance } = useQuery({
     queryKey: [{ key: 'getQuoteBalance' }, chainId, poolId, account],
     refetchInterval: 5000,
     queryFn: async () => {
@@ -145,7 +145,8 @@ export const Sell = () => {
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully sell` })
-      await refetch()
+      await refetchBalance()
+      refreshAsset()
       setAmount('')
     } catch (e) {
       showErrorToast(e)
@@ -316,7 +317,10 @@ export const Sell = () => {
                 {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
               </span>{' '}
               {baseLpDetail?.mBaseQuoteSymbol} and you will permanently forfeit the right to your{' '}
-              <span className={'text-warning'}>2%</span> share of trading fees.
+              <span className={'text-warning'}>
+                {formatNumberPercent(genesisFeeRate, 0, false)}
+              </span>{' '}
+              share of trading fees.
             </Trans>
           </p>
         </Box>
