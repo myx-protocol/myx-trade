@@ -3,13 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { WalletLine } from '@/components/Icon'
 import { Tips } from '@/pages/Market/components/tips.tsx'
-import {
-  COMMON_LP_AMOUNT_DECIMALS,
-  formatUnits,
-  getBalanceOf,
-  market as _Market,
-  pool as Pool,
-} from '@myx-trade/sdk'
+import { formatUnits, getBalanceOf, market as _Market, pool as Pool } from '@myx-trade/sdk'
 import { useCallback, useContext, useState } from 'react'
 import { TokenContext } from '@/pages/Market/context.ts'
 import { useQuery } from '@tanstack/react-query'
@@ -46,8 +40,9 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
     queryFn: async () => {
       if (!chainId || !market?.marketId) return null
       const result = await _Market.getOracleFee(+chainId, market?.marketId)
+      console.log(result)
 
-      return result ? formatUnits(result, COMMON_LP_AMOUNT_DECIMALS) : undefined
+      return result ? formatUnits(result, market.quoteDecimals) : undefined
     },
   })
   const { data: quoteLpDetail } = useQuery({
@@ -96,7 +91,7 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
   }, [poolId, chainId, market, onNext, onAction])
   return (
     <Box className={'flex flex-1 flex-col'}>
-      <h2 className={'text-[24px] leading-[1] font-[700] text-white'}>
+      <h2 className={'text-[18px] leading-[1] font-[700] text-white'}>
         <Trans>Activate Your Trading Contract</Trans>
       </h2>
 
@@ -107,15 +102,17 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
       >
         <TokenInfo />
         <Box className={'flex flex-col items-end gap-[4px] leading-[1]'}>
-          <h3 className={'text-[20px] font-[700] text-white'}>
+          <h3 className={'text-[14px] font-[700] text-white'}>
             ${quoteLpDetail?.marketCap ? formatNumber(quoteLpDetail?.marketCap) : '--'}
           </h3>
-          <span>mcap</span>
+          <span className={'text-secondary text-[12px]'}>mcap</span>
         </Box>
       </Box>
 
-      <Box className={'mt-[40px] flex flex-col'}>
-        <label className={'text-regular flex items-center gap-[4px]'}>
+      <Box className={'mt-[24px] flex flex-col'}>
+        <label
+          className={'text-regular flex items-center gap-[4px] text-[16px] leading-[1] font-[500]'}
+        >
           <Trans>Pay with {quoteLpDetail?.quoteSymbol}</Trans>
         </label>
 
@@ -132,16 +129,16 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
                 src={quoteLpDetail?.quoteSymbol ? getAssetIcon(quoteLpDetail?.quoteSymbol) : ''}
               />
               <span className={'text-[16px] leading-[1] font-[500] text-white'}>
-                {quoteLpDetail?.quoteSymbol}
+                {quoteLpDetail?.quoteSymbol || '--'}
               </span>
             </Box>
           </Box>
           <Box className={'flex items-center justify-between gap-[8px]'}>
-            <Box className={'flex-1 font-[500]'}>
+            <Box className={'text-regular flex-1 font-[500]'}>
               ${formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
             </Box>
             <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
-              <WalletLine size={14} />
+              <WalletLine className={'text-secondary'} size={14} />
               <span className={'font-[500]'}>
                 {formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
               </span>
