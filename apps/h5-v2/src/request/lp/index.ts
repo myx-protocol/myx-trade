@@ -88,7 +88,7 @@ export const getACQuoteLpList = async (
 ) => {
   if (!accessToken || !account) return await getQuoteLpList(params)
   return await http.get<QuotePoolResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/lp-quote${addQueryParams(params)}`,
+    `${baseUrl}/openapi/gateway/scan/market/ac-lp-quote${addQueryParams(params)}`,
     undefined,
     {
       headers: {
