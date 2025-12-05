@@ -106,7 +106,7 @@ export class Account {
   }
 
 
-  async withdraw({ chainId, receiver, amount, poolId }: { chainId: number, receiver: string, amount: string, poolId: string }) {
+  async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(chainId);
@@ -158,7 +158,7 @@ export class Account {
         config.signer
       );
 
-      const rs = await accountContract.updateAndWithdraw(receiver, poolId, true, amount);
+      const rs = await accountContract.updateAndWithdraw(receiver, poolId, isQuoteToken, amount);
       const receipt = await rs?.wait(1);
 
       return {
