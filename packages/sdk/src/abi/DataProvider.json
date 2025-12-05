@@ -48,6 +48,59 @@
   },
   {
     "type": "function",
+    "name": "getAccountInfo",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "accountInfo",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "availableMargin"
+          },
+          {
+            "type": "uint256",
+            "name": "freeMargin"
+          },
+          {
+            "type": "uint256",
+            "name": "walletBalance"
+          },
+          {
+            "type": "uint256",
+            "name": "freeBaseAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "baseProfit"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteProfit"
+          },
+          {
+            "type": "uint64",
+            "name": "releaseTime"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getAvailableLiquiditySize",
     "constant": true,
     "stateMutability": "view",
