@@ -72,7 +72,7 @@ export class SubScription {
    * tickers subscription methods
    */
   subscribeTickers(globalIds: number | number[], callback: OnTickersCallback) {
-    this.logger.debug(`subscribe tickers ${globalIds}`);
+    // this.logger.debug(`subscribe tickers ${globalIds}`);
     const globalIdsList = Array.isArray(globalIds) ? globalIds : [globalIds];
     this.wsClient.subscribe(
       globalIdsList.map((globalId) => ({
@@ -86,7 +86,7 @@ export class SubScription {
     globalIds: number | number[],
     callback: OnTickersCallback
   ) {
-    this.logger.debug(`unsubscribe tickers ${globalIds}`);
+    // this.logger.debug(`unsubscribe tickers ${globalIds}`);
     const globalIdsList = Array.isArray(globalIds) ? globalIds : [globalIds];
     this.wsClient.unsubscribe(
       globalIdsList.map((globalId) => ({
