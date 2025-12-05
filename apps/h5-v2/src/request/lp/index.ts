@@ -21,7 +21,7 @@ import type {
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
 import { addQueryParams } from '../utils'
-import type { BaseResponse, CookRequest, TimeInterval } from '@/request/type.ts'
+import type { Address, BaseResponse, CookRequest, TimeInterval } from '@/request/type.ts'
 
 export const getMarketTokenSniper = async (chainId: ChainId, limit: number = DEFAULT_LIMIT) => {
   return await http.get<TokenSniperResponse>(
@@ -71,17 +71,29 @@ export const getBaseLPDetail = async (chainId: number, poolId: string) => {
     `${baseUrl}/openapi/gateway/scan/market/base-details${addQueryParams({ chainId, poolId })}`,
   )
 }
+
 export const getQuoteLpList = async (
+  params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
+) => {
+  return await http.get<QuotePoolResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/lp-quote${addQueryParams(params)}`,
+  )
+}
+
+// todo api header
+export const getACQuoteLpList = async (
+  account: Address,
   accessToken: string,
   params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
-  if (!accessToken) return { data: [] }
+  if (!accessToken || !account) return await getQuoteLpList(params)
   return await http.get<QuotePoolResponse>(
     `${baseUrl}/openapi/gateway/scan/market/lp-quote${addQueryParams(params)}`,
     undefined,
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        // myx_openapi_account: ''
       },
     },
   )
@@ -120,13 +132,19 @@ export const getQuoteTokenTop = async (params: {
   )
 }
 
-export const getLpAssets = async (accessToken: string, params: LpAssetsRequest) => {
+// todo api header
+export const getLpAssets = async (
+  account: string,
+  accessToken: string,
+  params: LpAssetsRequest,
+) => {
   return await http.get<LpAssetsResponse>(
     `${baseUrl}/openapi/gateway/scan/market/lp-assets${addQueryParams(params)}`,
     undefined,
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: account,
       },
     },
   )

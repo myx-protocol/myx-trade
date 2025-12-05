@@ -1,4 +1,4 @@
-import { PriceInterval } from '@/request/type.ts'
+import { PriceInterval, type Rating } from '@/request/type.ts'
 
 export enum ChartInterval {
   day,
@@ -40,7 +40,7 @@ export interface Vault {
   name: string
   label: string
   icon: string
-  rating: string
+  rating: Rating
   apr: string
   tvl: number
   deposits: string

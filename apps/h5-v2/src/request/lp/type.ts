@@ -7,6 +7,7 @@ import {
   type TrenchSortField,
   type PriceInterval,
   PoolType,
+  type Rating,
 } from '@/request/type.ts'
 import { type MarketPoolState, pool } from '@myx-trade/sdk'
 
@@ -149,7 +150,7 @@ export interface QuotePool {
   quoteToken: string
   marketId: string
   apr: string
-  rating: string
+  rating: Rating
   avgLpPrice: string
   mQuoteBaseSymbol: string
   symbolName: string
@@ -170,7 +171,7 @@ export interface BaseQuoteTopRequest {
 
 export interface BaseQuoteTop {
   symbol: string
-  rating: string
+  rating: Rating
   apr: string
 }
 export interface BaseQuoteTopResponse extends BaseResponse {
@@ -291,7 +292,7 @@ export interface QuotePoolToken {
   quoteToken: string
   marketId: string
   apr: string
-  rating: number
+  rating: Rating
   avgLpPrice: string
 }
 
@@ -308,7 +309,7 @@ export interface QuotePoolTokenRequest extends PageRequest {
 
 export interface QuotePoolTokenTop {
   mQuoteBaseSymbol: string
-  rating: string
+  rating: Rating
   apr: string
   tokenIcon: string
   poolId: string
