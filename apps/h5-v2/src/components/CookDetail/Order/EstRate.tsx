@@ -39,7 +39,10 @@ export const EstRate = () => {
       <Box className={'flex items-center gap-[2px]'}>
         {/*<Refresh size={12} className={'cursor-pointer'} />*/}
         <span>
-          1{direction === Direction.LpToB ? baseLpDetail?.mBaseQuoteSymbol : pool?.baseSymbol}
+          1{' '}
+          <span className={'text-secondary'}>
+            {direction === Direction.LpToB ? baseLpDetail?.mBaseQuoteSymbol : pool?.baseSymbol}
+          </span>
         </span>
         <Box
           className={'text-green cursor-pointer px-[3px] py-[2px]'}
@@ -50,8 +53,10 @@ export const EstRate = () => {
           <Reverse size={8} />
         </Box>
         <span>
-          {formatNumberPrecision(rate, COMMON_BASE_DISPLAY_DECIMALS)}
-          {direction === Direction.LpToB ? pool?.baseSymbol : baseLpDetail?.mBaseQuoteSymbol}
+          {formatNumberPrecision(rate, COMMON_BASE_DISPLAY_DECIMALS)}{' '}
+          <span className={'text-secondary'}>
+            {direction === Direction.LpToB ? pool?.baseSymbol : baseLpDetail?.mBaseQuoteSymbol}
+          </span>
         </span>
       </Box>
     </div>

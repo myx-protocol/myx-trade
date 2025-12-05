@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useState } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { market, MarketPoolState } from '@myx-trade/sdk'
 import { useQuery } from '@tanstack/react-query'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ import { useCountDown } from 'ahooks'
 import { Big } from 'big.js'
 
 export const BenchWarning = () => {
-  const { quoteLpDetail, refetch } = useContext(PoolContext)
+  const { quoteLpDetail, refetch, genesisFeeRate } = useContext(PoolContext)
   const [targetDate, setTargetDate] = useState<number>()
   // const { data: fee } = useQuery({
   //   queryKey: [{ key: 'market_fee_Info' }, chainId, pool?.state],
@@ -103,7 +103,10 @@ export const BenchWarning = () => {
               ${formatNumberPrecision(data, COMMON_PRICE_DISPLAY_DECIMALS)}
             </span>
             {quoteLpDetail?.mQuoteBaseSymbol || '--'} Genesis Shares are left. Secure your lifetime
-            <span className={'text-warning ml-[0.5em]'}>2%</span> share of all trading fees!
+            <span className={'text-warning ml-[0.5em]'}>
+              {formatNumberPercent(genesisFeeRate, 0, false)}
+            </span>{' '}
+            share of all trading fees!
           </Trans>
         )}
         {quoteLpDetail?.state === MarketPoolState.Primed && (

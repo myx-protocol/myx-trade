@@ -246,6 +246,8 @@ export interface QuoteLpDetail {
   poolPreTime?: number
   baseToken?: string
   totalTvl: string
+  rating: Rating
+  globalId: number
 }
 
 export interface QuoteLpDetailResponse extends BaseResponse {
@@ -357,4 +359,32 @@ export interface MarketPoolStateData {
 
 export interface MarketPoolStateDataResponse extends BaseResponse {
   data: MarketPoolStateData[]
+}
+
+export interface LevelConfig {
+  levelId: number
+  name: Rating
+  minOrderSizeInUsd: string
+  lockSeconds: number
+  lockPriceRate: string
+  lockLiquidity: string
+  fundingFeeSeconds: number
+  slip: string
+  leverage: number
+  maintainCollateralRate: string
+  fundingFeeRate1: string
+  fundingFeeRate1Max: string
+  fundingFeeRate2: string
+  assetClass: number
+  genesisFeeRate: string
+}
+
+export interface MarketPoolRiskLevelConfig {
+  level: number
+  levelConfig: LevelConfig
+  levelName: Rating
+}
+
+export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
+  data: MarketPoolRiskLevelConfig
 }

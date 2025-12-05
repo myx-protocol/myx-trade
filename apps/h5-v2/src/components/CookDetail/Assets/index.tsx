@@ -12,7 +12,7 @@ import {
   Box,
   Paper,
 } from '@mui/material'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import SortDown from '@/components/Icon/set/SortDown'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { Copy } from '@/components/Copy'
@@ -73,7 +73,7 @@ const TableLoading = () => {
 
 export const Assets = () => {
   const { accessToken } = useAccessToken()
-  const { poolId, pool, price } = usePoolContext()
+  const { poolId, pool, price, refreshAssetKey } = usePoolContext()
   const [showAllAssets, setShowAllAssets] = useState(false)
   const [sortField, setSortField] = useState<string>('')
   const [sortOrder, setSortOrder] = useState<SortOrder>(false)
@@ -83,7 +83,11 @@ export const Assets = () => {
   const { markets } = useMyxSdkClient()
   const onAction = useWalletActions()
 
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    refetch: refechAsset,
+  } = useQuery({
     queryKey: [
       { key: 'getMineBaseLpAssets' },
       account,
@@ -154,6 +158,10 @@ export const Assets = () => {
     },
     refetchInterval: 5000,
   })
+
+  useEffect(() => {
+    refechAsset?.()
+  }, [refreshAssetKey])
 
   const PriceMap = useMemo(() => {
     return {
