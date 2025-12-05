@@ -47,3 +47,8 @@ export enum Mode {
   Rise,
   Fall,
 }
+
+export interface PoolInfo {
+  price?: string
+  exchangeRate?: string
+}
