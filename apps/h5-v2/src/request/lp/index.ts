@@ -71,13 +71,22 @@ export const getBaseLPDetail = async (chainId: number, poolId: string) => {
     `${baseUrl}/openapi/gateway/scan/market/base-details${addQueryParams({ chainId, poolId })}`,
   )
 }
-// todo api header
+
 export const getQuoteLpList = async (
+  params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
+) => {
+  return await http.get<QuotePoolResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/lp-quote${addQueryParams(params)}`,
+  )
+}
+
+// todo api header
+export const getACQuoteLpList = async (
   account: Address,
   accessToken: string,
   params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
-  if (!accessToken) return { data: [] }
+  if (!accessToken || !account) return await getQuoteLpList(params)
   return await http.get<QuotePoolResponse>(
     `${baseUrl}/openapi/gateway/scan/market/lp-quote${addQueryParams(params)}`,
     undefined,

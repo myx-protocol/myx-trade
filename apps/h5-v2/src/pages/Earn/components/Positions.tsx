@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { useContext, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DEFAULT_LIMIT, getQuoteLpList } from '@/request'
+import { DEFAULT_LIMIT, getACQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -53,7 +53,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
       const paginatedLimit = limit + 1
       const sortField =
         orderBy === SortField.deposits || orderBy === SortField.pnl ? SortField.tvl : orderBy
-      const result = await getQuoteLpList(account, accessToken, {
+      const result = await getACQuoteLpList(account, accessToken, {
         timeInterval: interval,
         chainId: chainId,
         sortField,
