@@ -49,24 +49,16 @@ export class Account {
   /**
    * get tradable amount
    */
-  async getTradableAmount({ poolId }: { poolId: string }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-    if (!config.signer) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidSigner,
-        "Invalid signer"
-      );
-    }
-    const contractAddress = getContractAddressByChainId(config.chainId);
-    const provider = await getJSONProvider(config.chainId)
+  async getTradableAmount({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
+    const contractAddress = getContractAddressByChainId(chainId);
+    const provider = await getJSONProvider(chainId)
     const accountContract = new ethers.Contract(
       contractAddress.Account,
       Account_ABI,
       provider
     );
     try {
-      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
-      const assets = await accountContract.getTradableAmount(targetAddress, poolId);
+      const assets = await accountContract.getTradableAmount(address, poolId);
       const data = {
         profitIsReleased: assets[0],
         freeAmount: assets[1],
@@ -81,7 +73,20 @@ export class Account {
         code: -1
       }
     }
+  }
 
+  async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
+    const marginAccountBalanceRes = await this.getTradableAmount({ poolId, chainId: chainId, address });
+    const marginAccountBalance = marginAccountBalanceRes?.data;
+    if (marginAccountBalanceRes.code !== 0) {
+      throw new MyxSDKError(
+        MyxErrorCode.InsufficientMarginBalance,
+        "Insufficient margin balance"
+      );
+    }
+    const availableAccountMarginBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
+
+    return availableAccountMarginBalance
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams) {
