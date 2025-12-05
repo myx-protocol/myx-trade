@@ -93,19 +93,9 @@
   --green2: #00996f;
 }
 
-/*Button {
-  display: flex;
-  padding: 0 20px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  text-align: center;
-  position: relative;
-}*/
-
 Button.gradient {
-  background-image: var(--brand-gradient);
+  border: 1px solid var(--green-yellow);
+  background-image: var(--brand-deep-gradient);
   display: inline-flex;
   min-height: 40px;
   padding: 0 20px;
@@ -116,10 +106,10 @@ Button.gradient {
   font-style: normal;
   font-weight: 500;
   line-height: 100%; /* 14px */
-  color: var(--deep-bg);
+  color: var(--basic-white);
   position: relative;
   text-transform: none;
-  gap: 4px;
+  gap: 8px;
 
   &.long {
     display: flex;
@@ -140,17 +130,26 @@ Button.gradient {
 
   &[type='primary'],
   &.primary {
-    background-image: var(--brand-gradient);
+    background-image: var(--brand-deep-gradient);
+    border-color: var(--green-yellow);
   }
   &[disabled] {
     cursor: not-allowed;
-    opacity: 0.4;
+    opacity: 0.6;
+    color: inherit;
   }
 
   &.rounded {
     border-radius: 48px;
   }
+  .MuiButton-loadingIndicator {
+    position: relative;
+    color: inherit;
+    left: auto;
+    transform: none;
+  }
 }
+
 
 .icon-sort.asc {
   .up-arrow {
