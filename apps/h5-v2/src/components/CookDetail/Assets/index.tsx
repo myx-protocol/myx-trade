@@ -86,17 +86,18 @@ export const Assets = () => {
   const { data, isLoading } = useQuery({
     queryKey: [
       { key: 'getMineBaseLpAssets' },
+      account,
       accessToken,
       poolId,
       pool?.basePoolToken,
       showAllAssets,
     ],
-    enabled: !!accessToken,
+    enabled: !!account && !!accessToken,
     queryFn: async () => {
       // console.log(poolId , pool , accessToken)
-      if (!accessToken) return [] as LpAsset[]
+      if (!accessToken || !account) return [] as LpAsset[]
       if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
-      const request = await getLpAssets(accessToken, {
+      const request = await getLpAssets(account, accessToken, {
         poolType: PoolType.base,
         poolId: showAllAssets ? undefined : poolId,
         poolToken: showAllAssets ? undefined : pool?.basePoolToken,
