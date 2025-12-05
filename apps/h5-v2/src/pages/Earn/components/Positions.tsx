@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { useContext, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DEFAULT_LIMIT, getQuoteLpList } from '@/request'
+import { DEFAULT_LIMIT, getACQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -37,6 +37,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
   const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
     queryKey: [
       { key: 'quotePositionList' },
+      account,
       accessToken,
       chainId,
       interval,
@@ -45,14 +46,14 @@ export const Positions = ({ className = '' }: { className?: string }) => {
       orderBy,
       order,
     ],
-    enabled: !!accessToken,
+    enabled: !!account && !!accessToken,
     queryFn: async () => {
-      if (!accessToken) return { data: [], hasNextPage: false, hasPrevPage: false }
+      if (!accessToken || !account) return { data: [], hasNextPage: false, hasPrevPage: false }
       const limit = DEFAULT_LIMIT
       const paginatedLimit = limit + 1
       const sortField =
         orderBy === SortField.deposits || orderBy === SortField.pnl ? SortField.tvl : orderBy
-      const result = await getQuoteLpList(accessToken, {
+      const result = await getACQuoteLpList(account, accessToken, {
         timeInterval: interval,
         chainId: chainId,
         sortField,

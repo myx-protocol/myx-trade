@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro'
-import ArbitrumLogo from '@/assets/icon/commons/chain/logo/arbitrum.png'
-import OpbnbLogo from '@/assets/icon/commons/chain/logo/opbnb.png'
-import LineaLogo from '@/assets/icon/commons/chain/logo/linea.png'
+import ArbitrumLogo from '@/assets/icon/commons/chain/logo/arbitrum.svg'
+import OpbnbLogo from '@/assets/icon/commons/chain/logo/bnb.svg'
+import LineaLogo from '@/assets/icon/commons/chain/logo/linea.svg'
 
 import { ChainId } from './chain'
 import { GAS_FEE_RESERVED_RATIO } from './fee'

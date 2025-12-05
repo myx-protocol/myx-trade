@@ -22,14 +22,12 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
   const [after, setAfter] = useState<string | undefined>(undefined)
 
   const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
-    queryKey: [{ key: 'quotePoolList' }, accessToken, chainId, interval, before, after],
-    enabled: !!accessToken,
+    queryKey: [{ key: 'quotePoolList' }, chainId, interval, before, after],
     queryFn: async () => {
-      if (!accessToken) return { data: [], hasNextPage: false, hasPrevPage: false }
       const limit = DEFAULT_LIMIT
       const paginatedLimit = limit + 1
       const sortField = SortField.tvl
-      const result = await getQuoteLpList(accessToken, {
+      const result = await getQuoteLpList({
         timeInterval: interval,
         chainId: chainId,
         sortField,

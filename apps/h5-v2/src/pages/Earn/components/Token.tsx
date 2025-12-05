@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/UI/Skeleton'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { encryptionAddress } from '@/utils'
 import type { Vault } from '@/pages/Earn/type.ts'
+import { RatingLevel } from '@/components/Rating.tsx'
 
 export const Token = ({ token }: { token?: Vault }) => {
   return (
@@ -33,11 +34,12 @@ export const Token = ({ token }: { token?: Vault }) => {
             <>
               <h3 className={'text-[14px] font-[500] text-white'}>{token?.name || '--'}</h3>
               <span className={'text-secondary'}>{token?.label || '--'}</span>
-              <span
-                className={'bg-brand-10 text-green rounded-[2px] px-[6px] py-[4px] text-[10px]'}
-              >
-                {token?.rating}
-              </span>
+              {/*<span*/}
+              {/*  className={'bg-brand-10 text-green rounded-[2px] px-[6px] py-[4px] text-[10px]'}*/}
+              {/*>*/}
+              {/*  {token?.rating}*/}
+              {/*</span>*/}
+              <RatingLevel rating={token?.rating} />
             </>
           ) : (
             <Skeleton width={93} />
