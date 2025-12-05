@@ -10,7 +10,6 @@ import { getErrorTextFormError } from "@/config/error";
 export const getLpPrice = async (chainId:ChainId,poolId: string) => {
   if (!poolId) return
   try {
-    const pool = await getPoolInfo (chainId,poolId);
     const contract = await getQuotePoolContract(chainId);
     let price = 0n
     // if (!(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)) {

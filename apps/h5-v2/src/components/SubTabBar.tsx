@@ -28,7 +28,7 @@ const StyledTabs = styled((props: StyledTabsProps<any>) => (
   <Tabs {...props} TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }} />
 ))({
   backgroundColor: 'transparent',
-  minHeight: 38,
+  minHeight: 34,
   paddingLeft: 16,
   paddingRight: 16,
   '& .MuiTabs-indicator': {
@@ -51,7 +51,7 @@ const StyledTab = styled((props: StyledTabProps<any>) => <Tab disableRipple {...
   color: 'var(--secondary-text)',
   padding: 0,
   minWidth: 'fit-content',
-  minHeight: 38,
+  minHeight: 34,
   '&.Mui-selected': {
     color: '#fff',
     fontWeight: 700,
