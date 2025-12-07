@@ -10,10 +10,10 @@ import { PositionMode } from './PositionMode'
 import { TPSL } from './TPSL'
 import { useTradePanelStore } from './store'
 import { Slippage } from './Slippage'
-import { MarginAccount } from './MarginAccount'
-import { PoolsInfo } from './PoolsInfo'
-import { TokenInfo } from './TokenInfo'
-import { CollapseGroup } from '../components/Collapse/CollapseGroup'
+// import { MarginAccount } from './MarginAccount'
+// import { PoolsInfo } from './PoolsInfo'
+// import { TokenInfo } from './TokenInfo'
+// import { CollapseGroup } from '../components/Collapse/CollapseGroup'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useEffect } from 'react'
 import {
@@ -23,9 +23,16 @@ import {
   DEFAULT_SLIPPAGE_LEVEL_4,
 } from '@/constant/slippage'
 import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
-import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
+// import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
 import { useGetPoolList } from '../hooks/use-get-pool-list'
 import { useTradePageStore } from '../store/TradePageStore'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { truncateAddress } from '@/utils/string'
+import { useMarketStore } from '../store/MarketStore'
+import { displayAmount } from '@/utils/number'
+import { getChainInfo } from '@/config/chainInfo'
+import type { ChainId } from '@myx-trade/sdk'
+import ArrowDownIconFill from '@/components/UI/Icon/ArrowDownIconFill'
 
 const getSlippage = (level: number) => {
   if (level === 1) {
@@ -44,7 +51,7 @@ export const TradePanel = () => {
   const { poolConfig } = useGetPoolConfig()
   useGetPoolList()
   const {
-    receiveDialogOpen,
+    // receiveDialogOpen,
     openPositionSlippage,
     setOpenPositionSlippage,
     closePositionSlippage,
@@ -75,12 +82,43 @@ export const TradePanel = () => {
   ])
 
   const { symbolInfo } = useTradePageStore()
+  const { address } = useWalletConnection()
+  const { tickerData } = useMarketStore()
+  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
 
   return (
-    <div>
-      <div className="flex h-full gap-[4px]">
-        <PositionMode />
-        <Leverage />
+    <div className="w-full px-[16px] py-[16px]">
+      <div className="flex w-full items-center justify-between">
+        <div>
+          <span className="text-[20px] font-[700] font-medium">
+            {symbolInfo?.baseSymbol}
+            {symbolInfo?.quoteSymbol}
+          </span>
+        </div>
+        <div className="flex items-center gap-[4px]">
+          {symbolInfo?.chainId && (
+            <img src={getChainInfo(symbolInfo?.chainId as ChainId)?.logoUrl} alt="" />
+          )}
+          <span className="text-[12px] leading-[12px] text-[#fff]">
+            {truncateAddress(address || '')}
+          </span>
+          <ArrowDownIconFill size={8} />
+        </div>
+      </div>
+      <div className="mt-[8px] flex items-center justify-between">
+        <span className="text-[22px] font-[700] font-medium">
+          {displayAmount(marketPrice.toString())}
+        </span>
+      </div>
+      <div className="mt-[12px] flex items-center justify-between">
+        <div className="flex">
+          <PositionMode />
+          <Leverage />
+          <Slippage
+            defaultSlippage={getSlippage(poolConfig?.level ?? 1)}
+            direction={positionAction}
+          />
+        </div>
       </div>
       <PositionAction />
       <OrderType />
@@ -96,13 +134,12 @@ export const TradePanel = () => {
         <PlaceOrder />
       </CanSwitchWalletNetwork>
       <MaxTradeAmount />
-      <Slippage defaultSlippage={getSlippage(poolConfig?.level ?? 1)} direction={positionAction} />
-      <MarginAccount />
-      <CollapseGroup className="mt-[20px]">
+      {/* <MarginAccount /> */}
+      {/* <CollapseGroup className="mt-[20px]">
         <PoolsInfo />
         <TokenInfo />
-      </CollapseGroup>
-      {receiveDialogOpen && <ReceiveDialog />}
+      </CollapseGroup> */}
+      {/* {receiveDialogOpen && <ReceiveDialog />} */}
     </div>
   )
 }

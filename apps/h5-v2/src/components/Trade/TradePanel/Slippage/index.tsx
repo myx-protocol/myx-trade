@@ -1,5 +1,3 @@
-import { Trans } from '@lingui/react/macro'
-import EditSimply from '@/components/Icon/set/EditSimply'
 import { SlippageDialog } from '../../Dialog/Slippage'
 import { useState } from 'react'
 import { useTradePanelStore } from '../store'
@@ -16,19 +14,16 @@ export const Slippage = ({
   const { openPositionSlippage, closePositionSlippage } = useTradePanelStore()
   return (
     <>
-      <div className="mt-[20px] flex gap-[4px] text-[14px] leading-[1] font-medium">
-        <p className="text-[#848E9C]">
-          <Trans>Slippage</Trans>
-        </p>
+      <div
+        className="ml-[4px] cursor-pointer rounded-[6px] bg-[#18191F] px-[10px] py-[8px] text-[12px] font-medium text-[#848E9C]"
+        onClick={() => setOpen(true)}
+      >
         <p className="text-[#CED1D9]">
           {direction === PositionActionEnum.OPEN
             ? openPositionSlippage * 100
             : closePositionSlippage * 100}
           %
         </p>
-        <span role="button" className="flex" onClick={() => setOpen(true)}>
-          <EditSimply size={12} color="#CED1D9" />
-        </span>
       </div>
       <SlippageDialog
         defaultSlippage={defaultSlippage}
