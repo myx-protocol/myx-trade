@@ -7,20 +7,18 @@ import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber
 import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { SearchContext } from '@/pages/Earn/context.ts'
-import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { PageDirection } from '@/request/type.ts'
 import { Change } from '@/components/Change'
 import { Empty } from '@/components/Empty.tsx'
 import { SortField, type Vault } from '@/pages/Earn/type.ts'
 import { Token } from './Token'
-import InfiniteScroll from 'react-infinite-scroll-component'
 import { encodeSortValue } from '@/utils/sort'
 import type { QuotePool } from '@/request/lp/type.ts'
-import { Trans } from '@lingui/react/macro'
+import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 
 const sortField = SortField.tvl
 const sortOrder = 'desc'
-const limit = DEFAULT_LIMIT
+const limit = 3
 
 export const Vaults = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
@@ -112,65 +110,55 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
   }, [interval])
 
   return (
-    <InfiniteScroll
+    <InfiniteScrollView
       dataLength={list.length}
-      next={loadMore}
-      hasMore={hasMore} // 自己判断是否还有下一页
-      loader={
-        <Box className={'text-placeholder py-[20px] text-center text-[12px]'}>
-          <Trans>加载中...</Trans>
-        </Box>
-      }
-      endMessage={
-        <Box className={'text-placeholder py-[20px] text-center text-[12px]'}>
-          <Trans>已全部加载完毕</Trans>
-        </Box>
-      }
-      // className="overflow-visible"
+      loadMore={loadMore}
+      hasMore={hasMore}
       scrollableTarget={'scrollView'}
-      // style={{ overflow: 'visible' }}  // 关键！否则不触发滚动
-      scrollThreshold={0.9}
     >
-      {list.map((item, index) => {
-        return (
-          <Box
-            className={
-              'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'
-            }
-            onClick={() => {
-              if (item) {
-                navigate(`/earn/${item.chainId}/${item.poolId}`)
+      {(isLoading ? (Array.from({ length: limit }).fill(null) as Vault[]) : list).map(
+        (item, index) => {
+          return (
+            <Box
+              key={index}
+              className={
+                'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'
               }
-            }}
-          >
-            <Token token={item} />
-            <Box className={'flex flex-col items-end gap-[4px]'}>
-              <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
-                {!item ? (
-                  <Skeleton width={95} />
-                ) : (
-                  <>${formatNumberPrecision(item.tvl, COMMON_BASE_DISPLAY_DECIMALS)}</>
-                )}
-              </Box>
+              onClick={() => {
+                if (item) {
+                  navigate(`/earn/${item?.chainId}/${item?.poolId}`)
+                }
+              }}
+            >
+              <Token token={item} />
+              <Box className={'flex flex-col items-end gap-[4px]'}>
+                <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
+                  {!item ? (
+                    <Skeleton width={95} />
+                  ) : (
+                    <>${formatNumberPrecision(item.tvl, COMMON_BASE_DISPLAY_DECIMALS)}</>
+                  )}
+                </Box>
 
-              <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
-                {!item ? (
-                  <Skeleton width={60} />
-                ) : (
-                  <Change change={item.apr} className={'text-secondary'}>
-                    {formatNumberPercent(item.apr)}
-                  </Change>
-                )}
+                <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
+                  {!item ? (
+                    <Skeleton width={60} />
+                  ) : (
+                    <Change change={item.apr} className={'text-secondary'}>
+                      {formatNumberPercent(item.apr)}
+                    </Change>
+                  )}
+                </Box>
               </Box>
             </Box>
-          </Box>
-        )
-      })}
+          )
+        },
+      )}
       {!hasMore && list?.length === 0 && (
         <Box>
           <Empty />
         </Box>
       )}
-    </InfiniteScroll>
+    </InfiniteScrollView>
   )
 }

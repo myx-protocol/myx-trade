@@ -18,10 +18,7 @@ const EarnList = () => {
   const [type, setType] = useState<VaultType>(VaultType.Vaults)
 
   return (
-    <Box
-      id={'scrollView'}
-      className="flex w-full flex-col overflow-x-hidden overflow-y-auto pb-[var(--tabbar-height)]"
-    >
+    <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
       <SearchBar />
       <Box className={'mt-[20px]'}>
         <Carousel />
