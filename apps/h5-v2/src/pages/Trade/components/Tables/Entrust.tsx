@@ -230,7 +230,7 @@ export const Entrusts = () => {
             fixed: 'right',
             render: (_: string, record: any) => (
               <div className="flex items-center justify-end gap-[4px]">
-                <CancelOrderButton orderId={record.orderId} />
+                <CancelOrderButton order={record} />
               </div>
             ),
           },

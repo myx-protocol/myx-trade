@@ -9,8 +9,8 @@ export const Leverage = () => {
   const leverage = useLeverage(symbolInfo?.poolId)
   return (
     <div
-      className="flex flex-shrink-0 flex-grow-1 items-center justify-center rounded-[6px] bg-[#18191F] px-[16px] py-[8px] text-[12px] leading-[1] font-medium text-[#CED1D9]"
-      role="button"
+      className="ml-[4px] rounded-[6px] bg-[#18191F] px-[10px] py-[8px] text-[12px] font-medium text-[#848E9C]"
+      // role="button"
       onClick={openLeverageDialog}
     >
       <Trans>{leverage}x</Trans>
