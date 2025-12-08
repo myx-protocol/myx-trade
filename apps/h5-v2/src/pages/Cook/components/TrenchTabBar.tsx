@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { type ReactNode } from 'react'
 import { TrenchType } from '../type'
-import { SubTabBar } from '@/pages/Cook/components/SubTabBar.tsx'
+import { SubTabBar } from '@/components/SubTabBar.tsx'
 
 interface TrenchTabBarProps {
   children?: ReactNode

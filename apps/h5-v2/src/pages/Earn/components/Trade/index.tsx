@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Claim } from '@/pages/Earn/components/Trade/Claim.tsx'
 
-export const TradingForm = () => {
+export const TradingForm = ({ className = '' }: { className?: string }) => {
   const [searchParams] = useSearchParams()
   const [side, setSide] = useState<TradeSide>(TradeSide.Subscribe)
   const [slippage, setSlippage] = useState('0.01')
@@ -22,7 +22,7 @@ export const TradingForm = () => {
   }, [searchParams])
   return (
     <TradeContext.Provider value={{ side, setSide, slippage, setSlippage }}>
-      <Box className={'flex flex-col'}>
+      <Box className={`flex flex-col ${className}`}>
         <TradeTabBar />
         {side === TradeSide.Subscribe && <Subscribe />}
         {side === TradeSide.Redeem && <Redeem />}

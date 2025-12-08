@@ -11,6 +11,7 @@ import { getJSONProvider } from "@/web3";
 import { getForwarderContract } from "@/web3/providers";
 import { MyxClient } from "..";
 import dayjs from "dayjs";
+import DataProvider_ABI from "@/abi/DataProvider.json";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -105,7 +106,7 @@ export class Account {
   }
 
 
-  async withdraw({ chainId, receiver, amount, poolId }: { chainId: number, receiver: string, amount: string, poolId: string }) {
+  async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const contractAddress = getContractAddressByChainId(chainId);
@@ -157,7 +158,7 @@ export class Account {
         config.signer
       );
 
-      const rs = await accountContract.updateAndWithdraw(receiver, poolId, true, amount);
+      const rs = await accountContract.updateAndWithdraw(receiver, poolId, isQuoteToken, amount);
       const receipt = await rs?.wait(1);
 
       return {
@@ -266,6 +267,28 @@ export class Account {
       return {
         code: 0,
         data: receipt,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async getAccountInfo(chainId: number, address: string, poolId: string) {
+    const contractAddress = getContractAddressByChainId(chainId);
+    const provider = await getJSONProvider(chainId)
+    const dataProviderContract = new ethers.Contract(
+      contractAddress.DATA_PROVIDER,
+      DataProvider_ABI,
+      provider
+    );
+    try {
+      const accountInfo = await dataProviderContract.getAccountInfo(poolId, address);
+      return {
+        code: 0,
+        data: accountInfo,
       };
     } catch (error) {
       return {

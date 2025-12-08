@@ -27,7 +27,7 @@ import { showErrorToast } from '@/config/error'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId } = usePoolContext()
+  const { chainId, baseLpDetail, pool, poolId, refreshAsset } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
@@ -35,7 +35,7 @@ export const Buy = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const rate = useExchangeRate()
 
-  const { data: balance, refetch } = useQuery({
+  const { data: balance, refetch: refetchBalance } = useQuery({
     queryKey: [{ key: 'getBaseBalance' }, chainId, poolId, account],
     refetchInterval: 5000,
     queryFn: async () => {
@@ -82,7 +82,8 @@ export const Buy = () => {
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully buy` })
-      await refetch()
+      await refetchBalance()
+      refreshAsset()
       setAmount('')
     } catch (e) {
       showErrorToast(e)

@@ -2,7 +2,7 @@ import IconHelp from '@/components/Icon/set/Help'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Trans } from '@lingui/react/macro'
 import { MarketPoolState, market } from '@myx-trade/sdk'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useCountDown } from 'ahooks'
 import { useCallback, useEffect, useState } from 'react'
@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Big } from 'big.js'
 
 export const OrderTips = () => {
-  const { baseLpDetail, refetch } = usePoolContext()
+  const { baseLpDetail, refetch, genesisFeeRate } = usePoolContext()
   const [targetDate, setTargetDate] = useState<number>()
   const [countdown] = useCountDown({
     targetDate,
@@ -82,7 +82,10 @@ export const OrderTips = () => {
               ${formatNumberPrecision(data, COMMON_PRICE_DISPLAY_DECIMALS)}
             </span>
             {baseLpDetail?.mBaseQuoteSymbol || '--'} Genesis Shares are left. Secure your lifetime
-            <span className={'text-warning ml-[0.5em]'}>2%</span> share of all trading fees!
+            <span className={'text-warning ml-[0.5em]'}>
+              {formatNumberPercent(genesisFeeRate, 0, false)}
+            </span>{' '}
+            share of all trading fees!
           </Trans>
         )}
 

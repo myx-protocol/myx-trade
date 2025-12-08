@@ -14,19 +14,19 @@ enum Direction {
 }
 
 export const EstRate = () => {
-  const { quoteLpDetail, pool, price } = useContext(PoolContext)
+  const { quoteLpDetail, pool, exchangeRate } = useContext(PoolContext)
   const [direction, setDirection] = useState<Direction>(Direction.LpToU)
 
   const rate = useMemo(() => {
-    if (direction === Direction.LpToU && price) {
-      return price
+    if (direction === Direction.LpToU && exchangeRate) {
+      return exchangeRate
     }
-    if (direction === Direction.UToLp && price) {
-      const _rate = new Big(1).div(new Big(price)).toFixed(COMMON_BASE_DISPLAY_DECIMALS * 2)
+    if (direction === Direction.UToLp && exchangeRate) {
+      const _rate = new Big(1).div(new Big(exchangeRate)).toFixed(COMMON_BASE_DISPLAY_DECIMALS * 2)
       return formatNumberPrecision(_rate, COMMON_BASE_DISPLAY_DECIMALS)
     }
     return ''
-  }, [direction, price])
+  }, [direction, exchangeRate])
 
   return (
     <DescribeItem title={<Trans>Est. Rate</Trans>}>
