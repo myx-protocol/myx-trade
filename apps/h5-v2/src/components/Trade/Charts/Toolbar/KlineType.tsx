@@ -10,7 +10,7 @@ import IconBaseLine from '@/components/Icon/set/IconBaseLine'
 import { HoverCard } from '@/components/UI/HoverCard'
 import { useTradePageStore } from '../../store/TradePageStore'
 import clsx from 'clsx'
-import { tradePubSub } from '@/utils/pubsub'
+import { klinePubSub, tradePubSub } from '@/utils/pubsub'
 
 const klineTypeOptions = [
   {
@@ -49,7 +49,7 @@ export const KlineType = () => {
   const { klineType, setKlineType } = useTradePageStore()
   const handleKlineTypeChange = (value: KlineTypeEnum) => {
     setKlineType(value)
-    tradePubSub.emit('kline:type:change', value)
+    klinePubSub.emit('kline:type:change', value)
   }
   return (
     <HoverCard

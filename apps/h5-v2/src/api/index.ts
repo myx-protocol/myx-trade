@@ -138,3 +138,38 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
     refetchOnWindowFocus: false,
   })
 }
+
+export type LeaderboardTimeInterval = '10m' | '1h' | '4h' | '12h' | '24h'
+export type LeaderboardSortField =
+  | 'tvl'
+  | 'volume'
+  | 'tokenCreateTime'
+  | 'topGainers'
+  | 'topLosers'
+  | 'marketCap'
+export enum LeaderboardTypeEnum {
+  Bluechip = 1,
+  Alpha = 2,
+}
+interface GetLeaderboardParams {
+  timeInterval?: LeaderboardTimeInterval
+  chainId?: number // 0 is all chains
+  sortField?: LeaderboardSortField
+  type?: LeaderboardTypeEnum
+}
+
+export interface GetLeaderboardItem {
+  baseQuoteSymbol: string
+  basePrice: string
+  priceChange: string
+  chainId: number
+  poolId: string
+  tokenIcon: string
+}
+
+export const getLeaderboard = async (params: GetLeaderboardParams) => {
+  return http.get<ApiResponse<GetLeaderboardItem[]>>(
+    `${baseUrl}/openapi/gateway/scan/market/leaderboard`,
+    params,
+  )
+}

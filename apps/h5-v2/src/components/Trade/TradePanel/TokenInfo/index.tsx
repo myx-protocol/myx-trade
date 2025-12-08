@@ -77,6 +77,45 @@ export const TokenInfo = () => {
           }
           right={<p>$ {formatNumber(baseTokenInfo?.fdv || 0)}</p>}
         />
+
+        <FlexRowLayout
+          left={
+            <p className="font-normal text-[#9397A3]">
+              <Trans>Holders</Trans>
+            </p>
+          }
+          right={
+            <p>
+              {formatNumber(baseTokenInfo?.holders || 0, {
+                decimals: 0,
+              })}
+            </p>
+          }
+        />
+
+        <FlexRowLayout
+          left={
+            <p className="font-normal text-[#9397A3]">
+              <Trans>Traders</Trans>
+            </p>
+          }
+          right={
+            <p>
+              {formatNumber(baseTokenInfo?.traders || 0, {
+                decimals: 0,
+              })}
+            </p>
+          }
+        />
+
+        <FlexRowLayout
+          left={
+            <p className="font-normal text-[#9397A3]">
+              <Trans>Total Spot liq</Trans>
+            </p>
+          }
+          right={<p>{formatNumber(baseTokenInfo?.liquidity || 0)}</p>}
+        />
       </div>
     </Collapse>
   )

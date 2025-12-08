@@ -1,4 +1,8 @@
 import type { KlineTypeEnum } from '@/components/Trade/Charts/type'
+import type {
+  IChartingLibraryWidget,
+  IChartWidgetApi,
+} from '@public/charting_library/charting_library'
 import mitt from 'mitt'
 
 /**
@@ -26,3 +30,18 @@ type AppPubSubEvents = {
 }
 
 export const appPubSub = mitt<AppPubSubEvents>()
+
+/**
+ * kline pubsub events
+ */
+type KlinePubSubEvents = {
+  'kline:type:change': KlineTypeEnum
+  'kline:resolution:change': number | string
+  'kline:ready': IChartingLibraryWidget
+  'kline:show:study:panel': void
+  'kline:show:setting:panel': void
+  'kline:take:screenshot': void
+  'kline:full:screen:toggle': void
+}
+
+export const klinePubSub = mitt<KlinePubSubEvents>()

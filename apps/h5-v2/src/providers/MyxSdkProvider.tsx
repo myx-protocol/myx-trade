@@ -1,25 +1,55 @@
-import { ChainId } from '@/config/chain'
+import { ChainId, getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain'
 import { getMarketList, type MarketInfo, MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
-import { BrowserProvider } from 'ethers'
-import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { BrowserProvider, type Signer } from 'ethers'
+import { useUnmount, useUpdateEffect } from 'ahooks'
 import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import CryptoJS from 'crypto-js'
 import { getAccessToken } from '@/api'
 import { useRef } from 'react'
-import { appPubSub } from '@/utils/pubsub'
 import { useQuery } from '@tanstack/react-query'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import type { WalletClient } from 'viem'
 
 interface MyxSdkContextValue {
-  client?: MyxClient
-  clientIsAuthenticated: boolean
-  setClient: (client: MyxClient) => void
+  client?: Record<number, MyxClient>
+  clientIsAuthenticated: Record<number, boolean>
+  setClient: (chainId: number, client: MyxClient) => void
   markets?: MarketInfo[]
 }
 
 const myxSdkContext = createContext<MyxSdkContextValue>({} as MyxSdkContextValue)
+
+/**
+ * create MyxClient
+ */
+interface CreateMyxClientOptions {
+  chainId: number
+}
+
+const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
+  const validChainId = getAsSupportedChainIdFn(chainId)
+
+  const brokerAddress = brokerAddressMap[chainId]
+  const options: MyxClientConfig = {
+    chainId: validChainId,
+    brokerAddress: brokerAddress,
+    isTestnet: true,
+    logLevel: 'debug',
+  }
+  return new MyxClient(options)
+}
+
+/**
+ * Get Siger
+ */
+
+const getSigner = async (walletClient: WalletClient | undefined) => {
+  if (!walletClient) return null
+  const provider = new BrowserProvider(walletClient?.transport)
+  const signer = await provider.getSigner()
+  return signer as Signer
+}
 
 // 为 SDK 提供的 accessToken 获取方法
 const createGetAccessTokenMethod = (address: string) => {
@@ -47,68 +77,80 @@ const createGetAccessTokenMethod = (address: string) => {
   }
 }
 
+// 使用 Map 存储正在创建的 Promise，确保同一个 chainId 只创建一次
+const creatingClientPromises = new Map<number, Promise<MyxClient>>()
 // eslint-disable-next-line react-refresh/only-export-components
-export const useMyxSdkClient = () => useContext(myxSdkContext)
+export const useMyxSdkClient = (chainId?: number) => {
+  const { client, setClient, clientIsAuthenticated, markets } = useContext(myxSdkContext)
+
+  useEffect(() => {
+    const _chainId = chainId ?? getAsSupportedChainIdFn()
+    if (_chainId && client && isSupportedChainFn(_chainId)) {
+      const _client = client[_chainId]
+      if (!_client) {
+        // 如果已经有正在创建的 Promise，直接等待它
+        let createPromise = creatingClientPromises.get(_chainId)
+
+        if (!createPromise) {
+          // 如果没有正在创建的 Promise，创建一个新的
+          console.log('create client chainId-->', _chainId, Date.now())
+          createPromise = Promise.resolve().then(() => {
+            const newClient = createMyxClient({ chainId: _chainId })
+            setClient(_chainId, newClient)
+            creatingClientPromises.delete(_chainId)
+            return newClient
+          })
+          creatingClientPromises.set(_chainId, createPromise)
+        }
+      }
+    }
+  }, [chainId, client, setClient])
+  return useMemo(() => {
+    const _chainId = chainId ?? getAsSupportedChainIdFn()
+    const _client = client?.[_chainId]
+
+    if (isSupportedChainFn(_chainId) || !_client) {
+      return {
+        client: _client,
+        clientIsAuthenticated: clientIsAuthenticated?.[_chainId] ?? false,
+        markets: markets,
+      }
+    }
+    return {
+      client: _client ?? undefined,
+      clientIsAuthenticated: clientIsAuthenticated?.[_chainId] ?? false,
+      markets: markets,
+    }
+  }, [chainId, client, clientIsAuthenticated, markets])
+}
+
+const brokerAddressMap: Record<number, string> = {
+  [ChainId.ARB_TESTNET]: '0x75c0D6BE13fd8B4fF0AE3F518d6880c1fBf5a012',
+  [ChainId.LINEA_SEPOLIA]: '0xe3FE12120992a31800783B25d432687A3A705cb2',
+}
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
-  const [client, setClient] = useState<MyxClient | null>(null)
-  const [clientIsAuthenticated, setClientIsAuthenticated] = useState(false)
-  const { isWalletConnected, address, chainId } = useWalletConnection()
+  const [client, setClient] = useState<Record<number, MyxClient>>({})
+  const [clientIsAuthenticated, setClientIsAuthenticated] = useState<Record<number, boolean>>({})
+  const { isWalletConnected, address } = useWalletConnection()
   const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
-  const myxSdkClientRef = useRef<MyxClient | null>(null)
-
-  useMount(() => {
-    const options: MyxClientConfig = {
-      chainId: ChainId.ARB_TESTNET,
-      brokerAddress: '0x461A33C5E75c292A45f8c961ab816060a94AfbA0',
-      isTestnet: true,
-      logLevel: 'error',
-    }
-    const createMyxClientFallback = () => {
-      const client = new MyxClient(options)
-      setClient(client)
-      myxSdkClientRef.current = client
-      return client
-    }
-    console.log('provider-->', walletClient, isWalletConnected, 'sdk init')
-
-    if (walletClient && isWalletConnected) {
-      const provider = new BrowserProvider(walletClient?.transport)
-      provider
-        .getSigner()
-        .then((signer) => {
-          options.signer = signer
-          options.getAccessToken = createGetAccessTokenMethod(address ?? '')
-          options.walletClient = walletClient as any
-          const client = new MyxClient(options)
-          setClient(client)
-          myxSdkClientRef.current = client
-        })
-        .catch(createMyxClientFallback)
-    } else {
-      console.log('else-->', isWalletConnected)
-      if (isWalletConnected) {
-        refetchWalletClient().catch((error) => {
-          console.error('Failed to refetch walletClient:', error)
-        })
-      }
-      console.log('createMyxClientFallback-->')
-      createMyxClientFallback()
-    }
-  })
-
-  console.log(walletClient, 'wallctClient')
+  const myxSdkClientRef = useRef<Map<number, MyxClient>>(new Map())
 
   useUpdateEffect(() => {
-    console.log('myxSdkProvider-updateEffect-->', Date.now())
-    if (!isWalletConnected || !address || !myxSdkClientRef.current) {
-      setClientIsAuthenticated(false)
+    const isClientEmpty = myxSdkClientRef.current.size === 0
+    console.log('useUpdateEffect myxSdkClientRef', myxSdkClientRef.current, {
+      isWalletConnected,
+      address,
+      isClientEmpty,
+    })
+    if (!isWalletConnected || !address || isClientEmpty) {
+      setClientIsAuthenticated({})
       return
     }
 
     // 如果 walletClient 为 undefined（比如切换链后），尝试手动重新获取
     if (!walletClient) {
-      setClientIsAuthenticated(false)
+      setClientIsAuthenticated({})
       // 手动触发重新获取 walletClient
       // 使用 setTimeout 避免在 effect 中直接调用异步函数
       refetchWalletClient().catch((error) => {
@@ -117,30 +159,33 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    const provider = new BrowserProvider(walletClient.transport)
-    provider
-      .getSigner()
+    getSigner(walletClient)
       .then((signer) => {
-        myxSdkClientRef.current?.auth({
-          signer,
-          walletClient: walletClient as any,
-          getAccessToken: createGetAccessTokenMethod(address ?? ''),
-        })
-        setClientIsAuthenticated(true)
-        console.log('authed-emit-authenticated-->', Date.now())
-        appPubSub.emit('app:sdk:authenticated')
+        if (signer) {
+          console.log('signer-->', signer)
+          // auth the all clients
+          myxSdkClientRef.current.forEach((_client, chainId) => {
+            _client.auth({
+              signer,
+              walletClient: walletClient,
+              getAccessToken: createGetAccessTokenMethod(address ?? ''),
+            })
+            setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
+            console.log('authed-emit-authenticated-->', Date.now(), chainId)
+          })
+        }
       })
       .catch((error) => {
         console.error('Failed to get signer:', error)
-        setClientIsAuthenticated(false)
+        setClientIsAuthenticated({})
       })
-  }, [walletClient, isWalletConnected, address, chainId, refetchWalletClient])
+  }, [walletClient, isWalletConnected, address, refetchWalletClient, client])
 
   useUnmount(() => {
-    if (myxSdkClientRef.current) {
-      setClientIsAuthenticated(false)
-      myxSdkClientRef.current.close()
-    }
+    setClientIsAuthenticated({})
+    Object.values(myxSdkClientRef.current).forEach((client) => {
+      client.close()
+    })
   })
 
   const { data: markets } = useQuery({
@@ -154,7 +199,10 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   const contextValue: MyxSdkContextValue = useMemo(
     () => ({
       client: client ?? undefined,
-      setClient,
+      setClient: (chainId, client) => {
+        setClient((prev) => ({ ...prev, [chainId]: client }))
+        myxSdkClientRef.current.set(chainId, client)
+      },
       clientIsAuthenticated,
       markets,
     }),

@@ -1,18 +1,33 @@
-import { useTradePageStore } from '../../store/TradePageStore'
-import { usePoolInfo } from '../../hooks/usePoolInfo'
 import { availableLiquiditySizeWad } from '@/utils/liquidity'
 import { Big } from 'big.js'
 import { parseUnits, formatUnits } from 'ethers'
 import { useQuery } from '@tanstack/react-query'
-import { useMarketStore } from '../../store/MarketStore'
+import { usePriceStore } from '../../store'
+import { usePoolInfo } from '@/components/Trade/hooks/usePoolInfo'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
+import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 
 const BASE_RESERVE_RATIO = '100'
 const QUOTE_RESERVE_RATIO = '100'
 export const usePoolLiquidityInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = usePriceStore()
   const { data: poolInfo } = usePoolInfo({
     poolId: symbolInfo?.poolId,
     chainId: symbolInfo?.chainId,
+  })
+  const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
+
+  useMount(() => {
+    if (symbolInfo?.poolId && symbolInfo?.chainId) {
+      subscribeOraclePrice({ poolId: symbolInfo.poolId })
+    }
+  })
+
+  useUnmount(() => {
+    if (symbolInfo?.poolId && symbolInfo?.chainId) {
+      unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
+    }
   })
 
   return useQuery({

@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { Toolbar } from './Toolbar'
 import { TradingView, type TradingViewInstance } from './TradingView'
 import { useMount, useUnmount } from 'ahooks'
-import { tradePubSub } from '@/utils/pubsub'
+import { klinePubSub } from '@/utils/pubsub'
 import { toggleFullScreen } from '@/utils'
 import { useTradePageStore } from '../store/TradePageStore'
 import type { ResolutionString } from '@public/charting_library/charting_library'
@@ -35,23 +35,23 @@ export const Charts = () => {
   }
 
   useMount(() => {
-    tradePubSub.on('kline:full:screen:toggle', onFullScreenToggle)
+    klinePubSub.on('kline:full:screen:toggle', onFullScreenToggle)
     //   setup pubsub
-    tradePubSub.on('kline:resolution:change', onResolutionChange)
-    tradePubSub.on('kline:type:change', onKlineTypeChange)
-    tradePubSub.on('kline:show:study:panel', onShowStudyPanel)
-    tradePubSub.on('kline:show:setting:panel', onShowSettingPanel)
-    tradePubSub.on('kline:take:screenshot', onTakeScreenshot)
+    klinePubSub.on('kline:resolution:change', onResolutionChange)
+    klinePubSub.on('kline:type:change', onKlineTypeChange)
+    klinePubSub.on('kline:show:study:panel', onShowStudyPanel)
+    klinePubSub.on('kline:show:setting:panel', onShowSettingPanel)
+    klinePubSub.on('kline:take:screenshot', onTakeScreenshot)
   })
 
   useUnmount(() => {
-    tradePubSub.off('kline:full:screen:toggle', onFullScreenToggle)
+    klinePubSub.off('kline:full:screen:toggle', onFullScreenToggle)
 
-    tradePubSub.off('kline:resolution:change', onResolutionChange)
-    tradePubSub.off('kline:type:change', onKlineTypeChange)
-    tradePubSub.off('kline:show:study:panel', onShowStudyPanel)
-    tradePubSub.off('kline:show:setting:panel', onShowSettingPanel)
-    tradePubSub.off('kline:take:screenshot', onTakeScreenshot)
+    klinePubSub.off('kline:resolution:change', onResolutionChange)
+    klinePubSub.off('kline:type:change', onKlineTypeChange)
+    klinePubSub.off('kline:show:study:panel', onShowStudyPanel)
+    klinePubSub.off('kline:show:setting:panel', onShowSettingPanel)
+    klinePubSub.off('kline:take:screenshot', onTakeScreenshot)
   })
   return (
     <div
@@ -62,6 +62,9 @@ export const Charts = () => {
       <div className="flex flex-[1_1_0%] flex-col">
         <TradingView
           poolId={symbolInfo?.poolId}
+          chainId={symbolInfo?.chainId}
+          globalId={symbolInfo?.globalId}
+          symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
           defaultInterval={resolutionActive as ResolutionString}
           ref={tradingViewRef}
         />

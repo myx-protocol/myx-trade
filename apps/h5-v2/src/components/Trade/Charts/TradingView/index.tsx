@@ -7,14 +7,15 @@ import { useInitTradingView } from '../hooks/useInitTradingView'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import useGlobalStore from '@/store/globalStore'
 import { useUnmount, useUpdateEffect } from 'ahooks'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { generateDataFeed } from '../lib/datafeed'
 import type { KlineTypeEnum } from '../type'
 import { appStorage } from '@/utils/storage'
 import { Colors } from '../const'
+import { useMarketDetail } from '@/hooks/useMarketDetail'
+import { buildTradingViewSymbol, type TradingViewSymbol } from './utils'
+import { klinePubSub } from '@/utils/pubsub'
 
-interface TradingViewProps {
-  poolId?: string
+type TradingViewProps = Partial<TradingViewSymbol> & {
   defaultInterval?: ResolutionString
   onReady?: () => void
 }
@@ -26,29 +27,36 @@ export interface TradingViewInstance {
   setKlineType: (klineType: KlineTypeEnum) => void
   setShowStudyPanel: () => void
   setShowSettingPanel: () => void
-  setSymbol: (symbol: string) => void
+  setSymbol: (params: TradingViewSymbol) => void
   takeScreenshot: () => void
 }
 
 export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
-  ({ poolId, defaultInterval, onReady }, ref) => {
+  ({ poolId, chainId, globalId, symbol, defaultInterval, onReady }, ref) => {
     const { activeLocale } = useGlobalStore()
     const { initTradingView } = useInitTradingView()
     const widgetRef = useRef<IChartingLibraryWidget>(null)
-    const { client } = useMyxSdkClient()
+    const { getDetail, client } = useMarketDetail()
 
     /**
      * init trading view widget
      */
     useEffect(() => {
-      if (!widgetRef.current && poolId && client) {
+      const templateSymbol = buildTradingViewSymbol({
+        chainId,
+        globalId,
+        poolId,
+        symbol,
+      })
+      if (!widgetRef.current && client && templateSymbol) {
         if (!client.subscription.isConnected) {
           client.subscription.connect()
         }
-        const initPoolId = poolId
+
+        const initPoolId = templateSymbol
         const dataFeed = generateDataFeed(client)
         const { widget } = initTradingView({
-          symbol: initPoolId,
+          symbol: templateSymbol,
           language: activeLocale,
           interval: defaultInterval as ResolutionString,
           containerId: 'tradingview_widget_container',
@@ -102,9 +110,21 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
             currentSymbolRef.current = initPoolId
           }
           widgetRef.current = widget
+          klinePubSub.emit('kline:ready', widget)
         })
       }
-    }, [poolId, defaultInterval, activeLocale, initTradingView, client, onReady])
+    }, [
+      poolId,
+      defaultInterval,
+      activeLocale,
+      initTradingView,
+      client,
+      onReady,
+      getDetail,
+      chainId,
+      globalId,
+      symbol,
+    ])
 
     /**
      * on resolution change
@@ -146,20 +166,33 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
      * set symbol
      */
 
-    const onSymbolChange = (poolId?: string) => {
-      if (widgetRef.current && poolId && poolId !== currentSymbolRef.current) {
-        widgetRef.current?.activeChart().setSymbol(poolId)
-        currentSymbolRef.current = poolId
+    const onSymbolChange = (params: TradingViewSymbol) => {
+      const templateSymbol = buildTradingViewSymbol(params)
+      if (widgetRef.current && templateSymbol && templateSymbol !== currentSymbolRef.current) {
+        widgetRef.current?.activeChart().setSymbol(templateSymbol)
+        currentSymbolRef.current = templateSymbol
       }
     }
 
     /**
      * on symbol change
      */
-    const currentSymbolRef = useRef(poolId)
+    const currentSymbolRef = useRef(
+      buildTradingViewSymbol({
+        chainId,
+        poolId,
+        globalId,
+        symbol,
+      }),
+    )
     useUpdateEffect(() => {
-      onSymbolChange(poolId)
-    }, [poolId])
+      onSymbolChange({
+        chainId,
+        globalId,
+        poolId,
+        symbol,
+      })
+    }, [poolId, chainId, globalId, symbol])
 
     /**
      * take screenshot

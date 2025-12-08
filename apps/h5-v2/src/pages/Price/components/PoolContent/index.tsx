@@ -1,20 +1,21 @@
-import { Trans } from '@lingui/react/macro'
-import { Collapse } from '../../components/Collapse'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Tooltips } from '@/components/UI/Tooltips'
-import { LongShortBar } from '../../components/LongShortBar'
-import { useTradePageStore } from '../../store/TradePageStore'
-import { usePoolLiquidityInfo } from './usePoolLiquidityInfo'
 import { formatNumber } from '@/utils/number'
+import { Trans } from '@lingui/react/macro'
+import { usePriceStore } from '../../store'
+import { LongShortBar } from '@/components/Trade/components/LongShortBar'
 import { t } from '@lingui/core/macro'
+import { usePoolLiquidityInfo } from './usePoolLiquidityInfo'
 
-export const PoolsInfo = () => {
-  const { symbolInfo } = useTradePageStore()
-
+export const PoolContent = () => {
+  const { symbolInfo } = usePriceStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   return (
-    <Collapse title={<Trans>Pools Info</Trans>} defaultOpen={true}>
-      <div className="flex flex-col gap-[14px] text-[12px] font-medium text-white">
+    <div className="px-[16px] py-[24px]">
+      <p className="text-[14px] font-medium text-[#CED1D9]">
+        <Trans>Pools info</Trans>
+      </p>
+      <div className="mt-[20px] flex flex-col gap-[16px] text-[12px] font-medium text-white">
         <FlexRowLayout
           left={
             <Tooltips title={t`当前市场最大可开做多仓位`}>
@@ -101,6 +102,6 @@ export const PoolsInfo = () => {
           }
         />
       </div>
-    </Collapse>
+    </div>
   )
 }

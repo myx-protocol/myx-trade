@@ -1,5 +1,7 @@
 import { styled, Tabs as MuiTabs, Tab as MuiTab } from '@mui/material'
-import { useState } from 'react'
+import { useMarketPageStore } from '../../store'
+import { SearchSecondTypeEnum } from '@myx-trade/sdk'
+import { Trans } from '@lingui/react/macro'
 
 const MarketTabs = styled(MuiTabs)({
   minHeight: 'auto',
@@ -37,13 +39,13 @@ export const MarketTab = styled(MuiTab)({
 })
 
 export const Tabs = () => {
-  const [marketTab, setMarketTab] = useState<'favorites' | 'bluechip' | 'alpha'>('favorites')
+  const { tab, setTab } = useMarketPageStore()
   return (
     <div className="mt-[6px] border-b-[1px] border-[#202129]">
-      <MarketTabs value={marketTab} onChange={(_, newValue) => setMarketTab(newValue)}>
-        <MarketTab value="favorites" label="Favorites" />
-        <MarketTab value="bluechip" label="Blue Chip" />
-        <MarketTab value="alpha" label="Alpha" />
+      <MarketTabs value={tab} onChange={(_, newValue) => setTab(newValue as SearchSecondTypeEnum)}>
+        <MarketTab value={SearchSecondTypeEnum.Favorite} label={<Trans>Favorites</Trans>} />
+        <MarketTab value={SearchSecondTypeEnum.BlueChips} label={<Trans>Blue Chip</Trans>} />
+        <MarketTab value={SearchSecondTypeEnum.Alpha} label={<Trans>Alpha</Trans>} />
       </MarketTabs>
     </div>
   )

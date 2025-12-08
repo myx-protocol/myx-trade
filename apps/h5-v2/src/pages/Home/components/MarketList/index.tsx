@@ -6,13 +6,76 @@ import { ChainId } from '@/config/chain'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { MarketListLoading } from './Loading'
+import { Empty } from '@/components/Empty'
+import { useQuery } from '@tanstack/react-query'
+import { getLeaderboard, type LeaderboardSortField } from '@/api'
+import { useUpdateEffect } from 'ahooks'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 
-const MARKET_LIST = ['Favorites', 'Hot', 'Gainers', 'New']
+type TabMarketValue = 'Favorites' | 'Hot' | 'Gainers' | 'New'
 
 export const MarketList = () => {
-  const [activeMarket, setActiveMarket] = useState('Hot')
+  const MARKET_LIST: Array<{ value: TabMarketValue; label: ReactNode }> = useMemo(() => {
+    return [
+      {
+        value: 'Favorites',
+        label: <Trans>Favorites</Trans>,
+      },
+      {
+        value: 'Hot',
+        label: <Trans>Hot</Trans>,
+      },
+      {
+        value: 'Gainers',
+        label: <Trans>Gainers</Trans>,
+      },
+      {
+        value: 'New',
+        label: <Trans>New</Trans>,
+      },
+    ]
+  }, [])
+  const [activeMarket, setActiveMarket] = useState<TabMarketValue>('Hot')
+  const { isLoading, data } = useQuery({
+    queryKey: ['home-market-list', activeMarket],
+    queryFn: () => {
+      if (activeMarket === 'Favorites') {
+        return null
+      }
+      let sortField: LeaderboardSortField | undefined = undefined
+      switch (activeMarket) {
+        case 'Hot':
+          sortField = 'tokenCreateTime'
+          break
+        case 'Gainers':
+          sortField = 'topGainers'
+          break
+        case 'New':
+          sortField = 'tokenCreateTime'
+          break
+      }
+      if (!sortField) {
+        return null
+      }
+      return getLeaderboard({
+        sortField: sortField as LeaderboardSortField,
+      })
+    },
+  })
+
+  const { client } = useMyxSdkClient()
+  const websocketSubScribe = useSubscription()
+
+  useUpdateEffect(() => {
+    if (data?.data?.length && client) {
+      // subscribe ticker data
+      // websocketSubScribe.subscribeToTicker(data.data.map(item))
+    }
+  }, [client, data])
   return (
     <div className="mt-[24px] w-full px-[16px]">
       {/* header */}
@@ -20,14 +83,14 @@ export const MarketList = () => {
         <div className="flex flex-[1_1_0%] items-center justify-start gap-[24px] overflow-x-auto overflow-y-hidden text-[16px] font-medium text-[#848E9C]">
           {MARKET_LIST.map((item) => (
             <div
-              key={item}
+              key={item.value}
               role="button"
               className={clsx('transition-all duration-100', {
-                'font-bold text-white': activeMarket === item,
+                'font-bold text-white': activeMarket === item.value,
               })}
-              onClick={() => setActiveMarket(item)}
+              onClick={() => setActiveMarket(item.value)}
             >
-              <span>{item}</span>
+              <span>{item.label}</span>
             </div>
           ))}
         </div>
@@ -44,24 +107,27 @@ export const MarketList = () => {
           values={[<Trans>Name</Trans>, <Trans>Last Price</Trans>, <Trans>Change %</Trans>]}
         />
       </div>
+      {isLoading && <MarketListLoading />}
+      {!isLoading && !data?.data?.length && <Empty />}
       {/* list body */}
+      {/* <MarketListLoading /> */}
       <div>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+        {data?.data?.map((item) => (
           <MarketListRow
             className="my-[14px]"
-            key={item}
+            key={item.poolId}
             values={[
               <SymbolInfo
-                symbol="BTC"
-                baseTokenLogo="https://assets.coingecko.com/coins/images/1/large/bitcoin.png"
-                chainId={ChainId.ARB_TESTNET}
+                symbol={item.baseQuoteSymbol}
+                baseTokenLogo={item.tokenIcon}
+                chainId={item.chainId}
               />,
               <p className="text-[14px] font-medium text-[#fff]">
-                {formatNumber(1123, {
+                {formatNumber(item.basePrice, {
                   showUnit: false,
                 })}
               </p>,
-              <PriceChangeBlock value={0.0} />,
+              <PriceChangeBlock value={Number(item.priceChange) || 0} />,
             ]}
           />
         ))}

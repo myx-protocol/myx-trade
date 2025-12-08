@@ -3,7 +3,7 @@ import Big from 'big.js'
 import clsx from 'clsx'
 
 interface PriceChangeBlockProps {
-  value: number
+  value: number | string
   options?: PercentFormatOptions
   className?: string
 }

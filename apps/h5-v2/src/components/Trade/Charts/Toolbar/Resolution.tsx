@@ -4,7 +4,7 @@ import { ArrowDown } from '@/components/Icon'
 import { HoverCard } from '@/components/UI/HoverCard'
 import { dropDownMenuOptions, resolutionDefaultList } from '../const'
 import { formatResolutionToDisplayText } from '../lib/datafeed'
-import { tradePubSub } from '@/utils/pubsub'
+import { klinePubSub, tradePubSub } from '@/utils/pubsub'
 
 const resolutionOptions: Array<{ label: string; value: string | number }> = dropDownMenuOptions.map(
   (item) => ({
@@ -25,7 +25,7 @@ export const Resolution = () => {
 
   const handleResolutionChange = (value: string | number) => {
     setResolutionActive(value)
-    tradePubSub.emit('kline:resolution:change', value)
+    klinePubSub.emit('kline:resolution:change', value)
   }
   return (
     <div className="flex items-center gap-[18px] text-[14px] leading-[1] font-medium text-[#9397A3]">
