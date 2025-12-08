@@ -32,6 +32,7 @@ import Pause from './set/Pause.tsx'
 import ChartBar from './set/ChartBar.tsx'
 import GlobalLine from './set/GlobalLine.tsx'
 import BackIcon from './set/BackIcon.tsx'
+import SuccessFill from './set/SuccessFill.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -86,6 +87,7 @@ export {
   ChartBar,
   GlobalLine,
   BackIcon,
+  SuccessFill,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

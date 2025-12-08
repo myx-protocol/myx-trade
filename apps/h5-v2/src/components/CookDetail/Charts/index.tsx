@@ -13,7 +13,7 @@ export const Charts = () => {
     { label: t`Week`, value: ChartInterval.week },
     { label: t`All`, value: ChartInterval.all },
   ]
-  const [resolution, setResolution] = useState<ChartInterval>(ChartInterval.all)
+  const [resolution, setResolution] = useState<ChartInterval>(ChartInterval.day)
 
   return (
     <div className="bg-[#101114]">

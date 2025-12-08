@@ -4,11 +4,12 @@ import { Trans } from '@lingui/react/macro'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Address } from '@/components/Address.tsx'
 import dayjs from 'dayjs'
-import { formatNumber } from '@/utils/number.ts'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import Security from '@/components/Icon/set/Security.tsx'
 import { useSecurityInfo } from '@/api'
 import type { ReactNode } from 'react'
 import Danger from '@/components/Icon/set/Danger.tsx'
+import Big from 'big.js'
 
 const Yes = ({ children = <Trans>Yes</Trans> }: { children?: ReactNode }) => {
   return (
@@ -32,12 +33,125 @@ const No = ({ children = <Trans>No</Trans> }: { children?: ReactNode }) => {
   )
 }
 
-export const Info = () => {
+const SecurityInfo = () => {
   const { baseLpDetail } = usePoolContext()
   const { data: securityInfo } = useSecurityInfo({
     address: baseLpDetail?.baseToken || '',
     chainId: baseLpDetail?.chainId as number,
   })
+  if (!securityInfo) return <></>
+  return (
+    <Box className={'py-[20px]'}>
+      <Box className={'mb-[16px] text-[14px] leading-[1] font-[500] text-white'}>
+        <Box className={'flex items-center justify-between'}>
+          <span>
+            <Trans>Degen Audit</Trans>
+          </span>
+          <span className={'text-green flex gap-[4px]'}>
+            <Security color="#00E3A5" size={13} />
+            <span>
+              {securityInfo?.count || '--'}/{securityInfo?.count || '--'}
+            </span>
+          </span>
+        </Box>
+      </Box>
+
+      <Describe>
+        {/*<DescribeItem title={<Trans>Risk Rating</Trans>}>*/}
+        {/*  <Yes />*/}
+        {/*</DescribeItem>*/}
+
+        <DescribeItem title={<Trans>Open Source</Trans>}>
+          {securityInfo?.is_open_source === '1' ? <Yes /> : <No />}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Proxy Contract</Trans>}>
+          {securityInfo?.is_proxy === '0' ? (
+            <Yes>
+              <Trans>No</Trans>
+            </Yes>
+          ) : (
+            <No>
+              <Trans>Yes</Trans>
+            </No>
+          )}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Mintable</Trans>}>
+          {securityInfo?.is_mintable === '0' ? (
+            <Yes>
+              <Trans>No</Trans>
+            </Yes>
+          ) : (
+            <No>
+              <Trans>Yes</Trans>
+            </No>
+          )}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Blacklist</Trans>}>
+          {securityInfo?.is_blacklisted === '0' ? (
+            <Yes>
+              <Trans>No</Trans>
+            </Yes>
+          ) : (
+            <No>
+              <Trans>Yes</Trans>
+            </No>
+          )}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Whitelist</Trans>}>
+          {securityInfo?.is_whitelisted === '0' ? (
+            <Yes>
+              <Trans>No</Trans>
+            </Yes>
+          ) : (
+            <No>
+              <Trans>Yes</Trans>
+            </No>
+          )}
+        </DescribeItem>
+
+        {/*<DescribeItem title={<Trans>Fake Token</Trans>}>*/}
+        {/*  {securityInfo ?.is_f === '1' ? <Yes/> : <No /> }*/}
+        {/*</DescribeItem>*/}
+
+        <DescribeItem title={<Trans>Buy Tax</Trans>}>
+          {securityInfo?.buy_tax === '1' ? <Yes /> : <No />}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Sell Tax</Trans>}>
+          {securityInfo?.sell_tax === '1' ? <Yes /> : <No />}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Top 10 Holders</Trans>}>
+          {Big(securityInfo?.top10_holders_percentage).lt(0.5) ? (
+            <Yes>
+              {decimalToPercent(securityInfo.top10_holders_percentage, {
+                decimals: 2,
+                removeTrailingZeros: true,
+                showSign: false,
+              })}
+            </Yes>
+          ) : (
+            <No>
+              {decimalToPercent(securityInfo.top10_holders_percentage, {
+                decimals: 2,
+                removeTrailingZeros: true,
+                showSign: false,
+              })}
+            </No>
+          )}
+        </DescribeItem>
+      </Describe>
+    </Box>
+  )
+}
+
+export const Info = () => {
+  const { baseLpDetail } = usePoolContext()
+
   return (
     <Box className={'px-[16px]'}>
       <Box className={'border-dark-border border-b-1 py-[20px]'}>
@@ -78,55 +192,7 @@ export const Info = () => {
         </Describe>
       </Box>
 
-      <Box className={'py-[20px]'}>
-        <Box className={'mb-[16px] text-[14px] leading-[1] font-[500] text-white'}>
-          <Box className={'flex items-center justify-between'}>
-            <span>
-              <Trans>Degen Audit</Trans>
-            </span>
-            <span className={'text-green flex gap-[4px]'}>
-              <Security color="#00E3A5" size={13} />
-              <span>
-                {securityInfo?.count || '--'}/{securityInfo?.count || '--'}
-              </span>
-            </span>
-          </Box>
-        </Box>
-
-        <Describe>
-          <DescribeItem title={<Trans>Risk Rating</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Open Source</Trans>}>
-            <No />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Proxy Contract</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Mintable</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Blacklist / Whitelist</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Fake Token</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Buy/Sell Tax</Trans>}>
-            <Yes />
-          </DescribeItem>
-
-          <DescribeItem title={<Trans>Top 10 Holders</Trans>}>
-            <Yes>10%</Yes>
-          </DescribeItem>
-        </Describe>
-      </Box>
+      <SecurityInfo />
     </Box>
   )
 }
