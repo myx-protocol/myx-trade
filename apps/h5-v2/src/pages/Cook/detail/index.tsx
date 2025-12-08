@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { TabBar } from './components/TabBar'
 import { PriceTab } from '@/pages/Cook/detail/components/PriceTab.tsx'
 import { Info } from './components/Info'
+import { Assets } from '@/pages/Cook/detail/components/Assets.tsx'
 
 export const CookDetail = () => {
   const { chainId, poolId } = useParams()
@@ -29,7 +30,12 @@ export const CookDetail = () => {
         <div>
           {type === DetailTabType.Price && <PriceTab />}
 
-          {type === DetailTabType.Trade && <Order />}
+          {type === DetailTabType.Trade && (
+            <>
+              <Order />
+              <Assets />
+            </>
+          )}
 
           {type === DetailTabType.Info && <Info />}
         </div>

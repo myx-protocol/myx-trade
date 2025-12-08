@@ -5,6 +5,7 @@ import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { ArrowDown } from '@/components/Icon'
 import { useState } from 'react'
 import { StyledMenu } from '@/components/Menu.tsx'
+import { ChainsDrawer } from '@/components/ChainsDrawer.tsx'
 
 export const ChainDropDownMenu = ({
   chainId,
@@ -16,15 +17,23 @@ export const ChainDropDownMenu = ({
   className?: string
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [open, setOpen] = useState<boolean>(false)
+  // const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
+    // setAnchorEl(event.currentTarget)
+    setOpen(true)
   }
   const handleClose = () => {
-    setAnchorEl(null)
+    // setAnchorEl(null)
+    setOpen(false)
+  }
+
+  const handleChainChange = (chainId?: ChainId) => {
+    setChainId(chainId)
+    handleClose()
   }
   return (
-    <Box>
+    <>
       <Button
         id="basic-button"
         aria-controls={open ? 'basic-menu' : undefined}
@@ -36,39 +45,13 @@ export const ChainDropDownMenu = ({
         {!chainId ? <Trans>All Chain</Trans> : CHAIN_INFO[chainId].chainSymbol}
         <ArrowDown size={16} className={'ml-[2px]'} />
       </Button>
-      <StyledMenu
-        id="basic-menu"
-        anchorEl={anchorEl}
+
+      <ChainsDrawer
+        chainId={chainId}
         open={open}
         onClose={handleClose}
-        slotProps={{
-          list: {
-            'aria-labelledby': 'basic-button',
-          },
-        }}
-      >
-        {getSupportedChainIdsByEnv().map((_chainId) => {
-          const { logoUrl, label, chainSymbol } = CHAIN_INFO[_chainId]
-          return (
-            <MenuItem
-              disableRipple
-              key={_chainId}
-              className={`flex shrink-0 snap-start items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] ${chainId === _chainId ? 'bg-base text-white' : 'text-secondary'}`}
-              onClick={() => {
-                setChainId(_chainId)
-                handleClose()
-              }}
-            >
-              <Box className={'flex items-center gap-[8px] text-[12px] leading-[1] font-[500]'}>
-                <Box className={''}>
-                  <img src={logoUrl} alt="Logo" width={16} height={16} />
-                </Box>
-                <span>{chainSymbol}</span>
-              </Box>
-            </MenuItem>
-          )
-        })}
-      </StyledMenu>
-    </Box>
+        onChainChange={(chainId) => handleChainChange(chainId)}
+      />
+    </>
   )
 }
