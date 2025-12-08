@@ -131,7 +131,7 @@ export const Chart = ({ className = '' }: ChartProps) => {
   const { chainId, poolId, pool: detail } = useContext(PoolContext)
   const lineRef = useRef<any>(null)
   const echartsRef = useRef<echarts.ECharts | null>(null)
-  const [interval, setInterval] = useState<ChartInterval>(ChartInterval.all)
+  const [interval, setInterval] = useState<ChartInterval>(ChartInterval.day)
 
   const { data = [], isLoading } = useQuery({
     queryKey: [{ key: 'QuotePriceHistory' }, chainId, poolId, detail?.quotePoolToken, interval],
