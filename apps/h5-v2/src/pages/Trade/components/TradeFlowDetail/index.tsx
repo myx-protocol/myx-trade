@@ -28,13 +28,14 @@ export const TradeFlowDetail = ({ tradeFlow, trigger }: TradeFlowDetailProps) =>
             />
           </p>
         </div>
+
         <div className="flex items-center justify-between border-b-[1px] border-[#202129] px-[16px] py-[12px] text-[12px] leading-[1] font-normal text-[#9397A3]">
           <p>
             <Trans>保证金</Trans>
           </p>
           <p className="font-medium">
             <RiseFallText
-              value={tradeFlow.beforeCollateralAmount}
+              value={tradeFlow.collateralAmount}
               renderOptions={{
                 showSign: true,
                 showUnit: false,
