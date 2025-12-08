@@ -28,15 +28,19 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
   return (
     <>
       <Box className={'flex flex-1 flex-col'}>
-        <h2 className={'text-[24px] leading-[1] font-[700] text-white'}>
+        <h2 className={'text-[18px] leading-[1] font-[700] text-white'}>
           <Trans>Select token</Trans>
         </h2>
-        <div className={'mt-[8px] leading-[1]'}>
+        <div className={'text-secondary mt-[8px] text-[12px] leading-[1]'}>
           <Trans>Enter the token address for the new perpetuals market.</Trans>
         </div>
 
-        <Box className={'mt-[40px] flex flex-col gap-[10px]'}>
-          <label className={'flex items-center gap-[4px]'}>
+        <Box className={'mt-[24px] flex flex-col gap-[10px]'}>
+          <label
+            className={
+              'text-secondary flex items-center gap-[4px] text-[14px] leading-[1.2] font-[500]'
+            }
+          >
             <Trans>选择您的资产</Trans>
             <Tooltips
               title={t`Select the asset that will be the subject of the contract (e.g., a Meme token).`}
@@ -46,14 +50,14 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
           </label>
           <Box
             className={
-              'bg-base-bg flex min-h-[62px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
+              'bg-base-bg flex min-h-[56px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
             }
             onClick={() => setOpen(true)}
           >
             {token ? (
               <TokenInfo />
             ) : (
-              <span className={'text-[18px] leading-[1.2] font-[500] text-white'}>
+              <span className={'text-[14px] leading-[1] font-[500] text-white'}>
                 <Trans>Select a token</Trans>
               </span>
             )}
@@ -62,8 +66,12 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
           </Box>
         </Box>
 
-        <Box className={'mt-[32px] flex flex-col gap-[10px]'}>
-          <label className={'flex items-center gap-[4px]'}>
+        <Box className={'mt-[24px] flex flex-col gap-[10px]'}>
+          <label
+            className={
+              'text-secondary flex items-center gap-[4px] text-[14px] leading-[1.2] font-[500]'
+            }
+          >
             <Trans>选择合约计价资产</Trans>
             <Tooltips title={t`Select the currency used for pricing and settling contract PnL`}>
               <TipsOutLine size={16} className={'cursor-pointer'} />
@@ -74,14 +82,14 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
               'bg-base-bg flex min-h-[62px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
             }
           >
-            <span className={'text-[18px] leading-[1.2] font-[500] text-white'}>
+            <span className={'text-[14px] leading-[1] font-[500] text-white'}>
               {quote?.symbol || 'USDC'}
             </span>
             <ArrowDown size={20} className={'text-regular'} />
           </Box>
         </Box>
 
-        <Box className={'mx-auto mt-[40px] w-full'}>
+        <Box className={'mx-auto mt-[24px] w-full'}>
           <Button
             loading={loading}
             className={'gradient primary long w-full rounded'}

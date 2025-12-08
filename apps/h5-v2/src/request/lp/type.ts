@@ -7,6 +7,7 @@ import {
   type TrenchSortField,
   type PriceInterval,
   PoolType,
+  type Rating,
 } from '@/request/type.ts'
 import { type MarketPoolState, pool } from '@myx-trade/sdk'
 
@@ -149,7 +150,7 @@ export interface QuotePool {
   quoteToken: string
   marketId: string
   apr: string
-  rating: string
+  rating: Rating
   avgLpPrice: string
   mQuoteBaseSymbol: string
   symbolName: string
@@ -170,7 +171,7 @@ export interface BaseQuoteTopRequest {
 
 export interface BaseQuoteTop {
   symbol: string
-  rating: string
+  rating: Rating
   apr: string
 }
 export interface BaseQuoteTopResponse extends BaseResponse {
@@ -245,6 +246,8 @@ export interface QuoteLpDetail {
   poolPreTime?: number
   baseToken?: string
   totalTvl: string
+  rating: Rating
+  globalId: number
 }
 
 export interface QuoteLpDetailResponse extends BaseResponse {
@@ -291,7 +294,7 @@ export interface QuotePoolToken {
   quoteToken: string
   marketId: string
   apr: string
-  rating: number
+  rating: Rating
   avgLpPrice: string
 }
 
@@ -308,7 +311,7 @@ export interface QuotePoolTokenRequest extends PageRequest {
 
 export interface QuotePoolTokenTop {
   mQuoteBaseSymbol: string
-  rating: string
+  rating: Rating
   apr: string
   tokenIcon: string
   poolId: string
@@ -356,4 +359,32 @@ export interface MarketPoolStateData {
 
 export interface MarketPoolStateDataResponse extends BaseResponse {
   data: MarketPoolStateData[]
+}
+
+export interface LevelConfig {
+  levelId: number
+  name: Rating
+  minOrderSizeInUsd: string
+  lockSeconds: number
+  lockPriceRate: string
+  lockLiquidity: string
+  fundingFeeSeconds: number
+  slip: string
+  leverage: number
+  maintainCollateralRate: string
+  fundingFeeRate1: string
+  fundingFeeRate1Max: string
+  fundingFeeRate2: string
+  assetClass: number
+  genesisFeeRate: string
+}
+
+export interface MarketPoolRiskLevelConfig {
+  level: number
+  levelConfig: LevelConfig
+  levelName: Rating
+}
+
+export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
+  data: MarketPoolRiskLevelConfig
 }
