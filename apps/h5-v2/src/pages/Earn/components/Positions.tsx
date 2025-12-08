@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
-import { useContext, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { DEFAULT_LIMIT, getACQuoteLpList } from '@/request'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { type QueryKey, useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { getACQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -23,97 +23,87 @@ import { Change } from '@/components/Change'
 import { Empty } from '@/components/Empty.tsx'
 import { SortField, type Vault } from '../type'
 import { Token } from './Token'
+import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
+import { encodeSortValue } from '@/utils/sort.ts'
+const sortField = SortField.tvl
+const sortOrder = 'desc'
+const limit = 3
 
 export const Positions = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
   const { accessToken } = useAccessToken()
   const { address: account } = useWalletConnection()
   const { chainId, interval } = useContext(SearchContext)
-  const [orderBy, setOrderBy] = useState<SortField>(SortField.tvl)
-  const [order, setOrder] = useState<'asc' | 'desc' | undefined>(undefined)
-  const [before, setBefore] = useState<string | undefined>(undefined)
-  const [after, setAfter] = useState<string | undefined>(undefined)
 
-  const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
-    queryKey: [
-      { key: 'quotePositionList' },
-      account,
-      accessToken,
-      chainId,
-      interval,
-      before,
-      after,
-      orderBy,
-      order,
-    ],
+  const [isLoading, setIsLoading] = useState(true)
+
+  // const [list, setList] = useState<Vault[]>([])
+
+  const paginatedLimit = limit + 1
+
+  const infiniteQuery = useInfiniteQuery<{ list: Vault[]; nextCursor?: string }>({
+    queryKey: ['quotePositionList', account, accessToken, chainId, interval],
     enabled: !!account && !!accessToken,
-    queryFn: async () => {
-      if (!accessToken || !account) return { data: [], hasNextPage: false, hasPrevPage: false }
-      const limit = DEFAULT_LIMIT
-      const paginatedLimit = limit + 1
-      const sortField =
-        orderBy === SortField.deposits || orderBy === SortField.pnl ? SortField.tvl : orderBy
-      const result = await getACQuoteLpList(account, accessToken, {
+    initialPageParam: undefined,
+    queryFn: async ({ pageParam }) => {
+      const cursor = pageParam as undefined | string
+
+      const result = await getACQuoteLpList(account!, accessToken!, {
         timeInterval: interval,
-        chainId: chainId,
+        chainId,
         sortField,
-        sortOrder: order,
+        sortOrder,
         limit: paginatedLimit,
-        direction: after ? PageDirection.Next : before ? PageDirection.Prev : undefined,
-        cursor: after || before,
+        direction: cursor ? PageDirection.Next : undefined,
+        cursor,
+      })
+      setIsLoading(false)
+
+      const raw = result?.data || []
+      const data = raw.slice(0, limit).map((quote, index) => {
+        return {
+          name: quote.symbolName,
+          symbol: quote.mQuoteBaseSymbol,
+          address: quote.baseToken,
+          time: quote.tokenCreateTime,
+          icon: quote.tokenIcon,
+          rating: quote.rating,
+          apr: quote.apr,
+          tvl: Number(quote?.tvl),
+          deposits: '',
+          pnl: '',
+          chainId: quote.chainId,
+          poolId: quote.poolId,
+          id: quote.id,
+          idx: index,
+          quotePoolToken: quote.quotePoolToken,
+          avgLpPrice: quote.avgLpPrice,
+          sortValue: quote?.tvl,
+        } as Vault
       })
 
-      let hasNextPage = true
-      let hasPrevPage = true
-      if (paginatedLimit) {
-        const hasNoMoreData = (result.data || []).length < paginatedLimit
-
-        if (!after && !before) {
-          hasPrevPage = false
-          if (hasNoMoreData) {
-            hasNextPage = false
-          }
-        } else if (after && hasNoMoreData) {
-          hasNextPage = false
-        } else if (before && hasNoMoreData) {
-          hasPrevPage = false
-        }
-      }
       return {
-        data: (limit ? result.data.slice(0, limit) : result.data).map((quote, index) => {
-          return {
-            name: quote.symbolName,
-            symbol: quote.mQuoteBaseSymbol,
-            address: quote.baseToken,
-            time: quote.tokenCreateTime,
-            icon: quote.tokenIcon,
-            rating: quote.rating,
-            apr: quote.apr,
-            tvl: Number(quote?.tvl),
-            deposits: '',
-            pnl: '',
-            chainId: quote.chainId,
-            poolId: quote.poolId,
-            id: quote.id,
-            idx: index,
-            quotePoolToken: quote.quotePoolToken,
-            avgLpPrice: quote.avgLpPrice,
-          } as Vault
-        }),
-        hasNextPage,
-        hasPrevPage,
+        list: data,
+        nextCursor:
+          raw.length < paginatedLimit ? undefined : encodeSortValue(data?.[data?.length - 1]),
       }
     },
+    placeholderData: (prev) => prev,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
+  const list = useMemo(() => {
+    return infiniteQuery.data?.pages.flatMap((p) => p.list as Vault[]) ?? ([] as Vault[])
+  }, [infiniteQuery.data])
+
   const priceQueryParams = useMemo(() => {
-    return (data.data || []).map((item) => ({
+    return (list as Vault[]).map((item) => ({
       poolId: item.poolId,
       chainId: item.chainId,
       idx: item.idx,
       quotePoolToken: item.quotePoolToken,
     }))
-  }, [data.data])
+  }, [list])
 
   const { data: priceMap } = useQuery({
     queryKey: [{ key: 'getVaultsLpAssetPrice' }, priceQueryParams],
@@ -152,9 +142,9 @@ export const Positions = ({ className = '' }: { className?: string }) => {
 
   const { data: depositMap } = useQuery({
     queryKey: [{ key: 'getVaultsLpDeposit' }, priceQueryParams, account],
-    enabled: !!priceQueryParams.length,
+    enabled: !!priceQueryParams.length && !!account,
     queryFn: async () => {
-      if (!priceQueryParams.length) return {} as PriceMapType
+      if (!priceQueryParams.length || !account) return {} as PriceMapType
       const result = await Promise.all(
         priceQueryParams.map(async (item) => {
           let balance = ''
@@ -190,8 +180,8 @@ export const Positions = ({ className = '' }: { className?: string }) => {
   })
 
   const pnlMap: Record<string, string> = useMemo(() => {
-    if (!data?.data?.length) return {}
-    return (data.data || [])
+    if (!list.length) return {}
+    return (list || [])
       .map((item) => {
         const price = priceMap?.[item.poolId]
         const avgPrice = item.avgLpPrice
@@ -208,71 +198,73 @@ export const Positions = ({ className = '' }: { className?: string }) => {
           [cur.poolId]: cur.pnl,
         }
       }, {})
-  }, [data.data, priceMap, depositMap])
+  }, [list, priceMap, depositMap])
 
   const positions = useMemo(() => {
-    if (!data?.data) return data?.data
-    if (data.data?.length === 0) return [] as Vault[]
+    return list.filter((item) => Number(depositMap?.[item.poolId]) > 0)
+  }, [depositMap, list])
 
-    return data.data.filter((item) => Number(depositMap?.[item.poolId]) > 0)
-  }, [depositMap, data?.data])
+  useEffect(() => {
+    setIsLoading(true)
+  }, [chainId, interval, account, accessToken])
 
   return (
-    <Box className={'flex flex-col'}>
-      <Box>
-        {(isLoading ? (Array.from({ length: 3 }).fill(null) as Vault[]) : positions || []).map(
-          (item, index) => {
-            return (
-              <Box
-                className={
-                  'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'
-                }
-                onClick={() => {
-                  if (item) {
-                    navigate(`/earn/${item.chainId}/${item.poolId}`)
-                  }
-                }}
-              >
-                <Token token={item} />
-                <Box className={'flex flex-col items-end gap-[4px]'}>
-                  <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
-                    {!item ? (
-                      <Skeleton width={95} />
-                    ) : (
-                      <>
-                        $
-                        {formatNumberPrecision(
-                          depositMap?.[item?.poolId],
-                          COMMON_BASE_DISPLAY_DECIMALS,
-                        )}
-                      </>
+    <InfiniteScrollView
+      dataLength={list.length}
+      loadMore={() => infiniteQuery.fetchNextPage()}
+      hasMore={!!infiniteQuery.hasNextPage}
+      scrollableTarget={'scrollView'}
+    >
+      {(isLoading
+        ? (Array.from({ length: limit }).fill(null) as Vault[])
+        : (positions as Vault[]) || ([] as Vault[])
+      ).map((item, index) => {
+        return (
+          <Box
+            key={index}
+            className={
+              'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'
+            }
+            onClick={() => {
+              if (item) {
+                navigate(`/earn/${item.chainId}/${item.poolId}`)
+              }
+            }}
+          >
+            <Token token={item} />
+            <Box className={'flex flex-col items-end gap-[4px]'}>
+              <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
+                {!item ? (
+                  <Skeleton width={95} />
+                ) : (
+                  <>
+                    $
+                    {formatNumberPrecision(
+                      depositMap?.[item?.poolId],
+                      COMMON_BASE_DISPLAY_DECIMALS,
                     )}
-                  </Box>
-
-                  <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
-                    {!item ? (
-                      <Skeleton width={60} />
-                    ) : (
-                      <Change change={pnlMap?.[item?.poolId]}>
-                        $
-                        {formatNumberPrecision(
-                          pnlMap?.[item?.poolId],
-                          COMMON_BASE_DISPLAY_DECIMALS,
-                        )}
-                      </Change>
-                    )}
-                  </Box>
-                </Box>
+                  </>
+                )}
               </Box>
-            )
-          },
-        )}
-        {!isLoading && positions?.length === 0 && (
-          <Box>
-            <Empty />
+
+              <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
+                {!item ? (
+                  <Skeleton width={60} />
+                ) : (
+                  <Change change={pnlMap?.[item?.poolId]}>
+                    ${formatNumberPrecision(pnlMap?.[item?.poolId], COMMON_BASE_DISPLAY_DECIMALS)}
+                  </Change>
+                )}
+              </Box>
+            </Box>
           </Box>
-        )}
-      </Box>
-    </Box>
+        )
+      })}
+      {!isLoading && list?.length === 0 && (
+        <Box>
+          <Empty />
+        </Box>
+      )}
+    </InfiniteScrollView>
   )
 }

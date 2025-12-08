@@ -50,11 +50,24 @@ export type SearchProps = Omit<TextFieldProps, 'value' | 'onChange'> & {
   onChange?: (value: string) => void
   isRounded?: boolean
   children?: React.ReactNode
+  canPaste?: boolean
 }
 
 export const Search = memo(
   forwardRef<HTMLInputElement, SearchProps>(
-    ({ isRounded = true, className = '', value, onChange, onBlur, children, ...reset }, ref) => {
+    (
+      {
+        isRounded = true,
+        className = '',
+        value,
+        onChange,
+        onBlur,
+        children,
+        canPaste = true,
+        ...reset
+      },
+      ref,
+    ) => {
       const onPaste = useCallback(
         async (_e: React.MouseEvent<HTMLDivElement>) => {
           // console.log()
@@ -80,7 +93,7 @@ export const Search = memo(
               slotProps={{
                 input: {
                   startAdornment: <SearchIcon className={'text-third mr-[8px]'} size={14} />,
-                  endAdornment: value ? (
+                  endAdornment: !canPaste ? null : value ? (
                     <InputAdornment position="end">
                       <Box
                         className={'cursor-pointer'}
