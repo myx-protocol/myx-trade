@@ -22,6 +22,7 @@ import { isProdChainId, isSupportedChainId } from '@/pages/Market/untils'
 import type { Asset } from '@/hooks/useWalletPortfolio.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { showErrorToast } from '@/config/error'
+import { TitleBar } from '@/components/TitleBar.tsx'
 
 const Market = () => {
   const { markets: Markets } = useMyxSdkClient()
@@ -139,7 +140,9 @@ const Market = () => {
 
   const onNext = useCallback(async () => {
     try {
-      if (!chainId || !marketInfo) return
+      setStep(2)
+      return
+      /* if (!chainId || !marketInfo) return
       const checked = await onAction()
       if (!checked) return
       // check marketId.
@@ -180,7 +183,7 @@ const Market = () => {
             setStep(2)
           }
         }
-      }
+      }*/
     } catch (e) {
       console.error(e)
       if (e) {
@@ -217,11 +220,15 @@ const Market = () => {
   }, [chainId, address, curChainId])
 
   return (
-    <>
+    <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pb-[50px]">
+      <Box className={'bg-deep sticky top-[0] z-[3]'}>
+        <TitleBar title={<Trans>Create a Contract Market</Trans>} />
+      </Box>
+      {step > 0 && <Step step={step} className={'mt-[12px]'} />}
       {step === -1 && <></>}
       {step === 0 && (
         <Create>
-          <Box className={'mt-[48px] flex w-full items-center'}>
+          <Box className={'flex w-full items-center'}>
             <Button
               className={'gradient primary long !mx-auto mx-auto w-[488px] rounded'}
               onClick={() => setStep(step + 1)}
@@ -235,18 +242,18 @@ const Market = () => {
         <TokenContext.Provider
           value={{ quote, token, setToken, market: marketInfo, poolId, setPoolId }}
         >
-          <Container className={'flex !w-[1040px] !min-w-[1040px] gap-[48px] px-[40px] pt-[32px]'}>
-            <Box className={'w-[360px] min-w-[360px]'}>
-              <Step step={step} />
-            </Box>
+          <div className={'flex w-full gap-[48px] px-[16px] pt-[24px]'}>
+            {/*<Box className={'w-[360px] min-w-[360px]'}>*/}
+            {/*  <Step step={step} />*/}
+            {/*</Box>*/}
 
             {step === 1 && <TokenSelect onNext={onNext} />}
 
             {step === 2 && <ConfirmToken onNext={() => navigate('/cook')} />}
-          </Container>
+          </div>
         </TokenContext.Provider>
       )}
-    </>
+    </div>
   )
 }
 

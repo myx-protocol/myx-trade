@@ -31,9 +31,13 @@ export interface PoolContextValue {
   chainId: number
   poolId: string
   price?: string
+  exchangeRate?: string
   baseLpDetail?: BaseLpDetail
   refetch: () => void
   mode: Mode
+  genesisFeeRate?: string
+  refreshAssetKey: number
+  refreshAsset: () => void
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)

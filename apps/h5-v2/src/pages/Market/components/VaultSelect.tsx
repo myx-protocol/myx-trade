@@ -16,22 +16,19 @@ import {
   getBalanceOf,
 } from '@myx-trade/sdk'
 import { useParams } from 'react-router-dom'
-import { getOraclePrice } from '@/request/price'
 import { parseUnits } from 'ethers'
 import { Button, styled } from '@mui/material'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { formatNumber } from '@/utils/number.ts'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput'
-import { isSafeNumber } from '@/utils'
-import { MAX_SLIPPING_PERCENT, MIN_SLIPPING_PERCENT } from '@/constant/slippage.ts'
 import { getMarketData } from '@/request'
-import { formatNumberPrecision, formatNumberString } from '@/utils/formatNumber.ts'
+import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
+import { showErrorToast } from '@/config/error'
 
 enum VaultType {
   Base,
@@ -250,11 +247,11 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
           slippage: Number(slippage),
         })
       }
-      toast.success(t`Successfully deposited`)
+      toast.success({ title: t`Successfully deposited` })
       onNext()
     } catch (e) {
       // todo error
-      toast.error(t`Failed to deposit`)
+      showErrorToast(e)
     } finally {
       setIsLoading(false)
     }
@@ -270,10 +267,10 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
 
   return (
     <Box className={'flex flex-1 flex-col'}>
-      <h2 className={'text-[24px] leading-[1] font-[700] text-white'}>
+      <h2 className={'text-[18px] leading-[1] font-[700] text-white'}>
         <Trans>Confirm Token Info</Trans>
       </h2>
-      <div className={'mt-[8px] leading-[1]'}>
+      <div className={'text-secondary mt-[6px] text-[12px] leading-[1.5]'}>
         <Trans>
           Become the Genesis LP and exclusively receive a 2% share of this market's trading fees.
           LPs added after market activation are not eligible for this reward.
@@ -287,20 +284,22 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
       >
         <TokenInfo />
         <Box className={'flex flex-col items-end gap-[4px] leading-[1]'}>
-          <h3 className={'text-[20px] font-[700] text-white'}>
+          <h3 className={'text-[14px] font-[700] text-white'}>
             ${token?.mca ? formatNumber(Number(token?.mca)) : '--'}
           </h3>
-          <span>mcap</span>
+          <span className={'text-secondary text-[12px]'}>mcap</span>
         </Box>
       </Box>
 
-      <Box className={'mt-[40px] flex flex-col'}>
-        <label className={'flex items-center gap-[4px]'}>
+      <Box className={'mt-[32px] flex flex-col'}>
+        <label
+          className={'text-regular flex items-center gap-[4px] text-[16px] leading-[1] font-[500]'}
+        >
           <Trans>Select a vault to provide initial liquidity</Trans>
         </label>
         <Box className={'mt-[16px] flex gap-[6px]'}>
           <Box
-            className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[16px] leading-[1] font-[500] ${type === VaultType.Base ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
+            className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[14px] text-[12px] leading-[1] font-[500] ${type === VaultType.Base ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
             onClick={() => {
               setType(VaultType.Base)
               setBaseAmount('')
@@ -314,7 +313,7 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
           </Box>
 
           <Box
-            className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[16px] leading-[1] font-[500] ${type === VaultType.Quote ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
+            className={`flex flex-1 items-center justify-center gap-[4px] rounded-[12px] px-[40px] py-[14px] text-[12px] leading-[1] font-[500] ${type === VaultType.Quote ? 'text-darker bg-white' : 'bg-base-bg text-regular'}`}
             onClick={() => {
               setType(VaultType.Quote)
               setBaseAmount('')

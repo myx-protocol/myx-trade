@@ -1,4 +1,4 @@
-import { SubTabBar } from '@/pages/Cook/components/SubTabBar.tsx'
+import { SubTabBar } from '@/components/SubTabBar.tsx'
 import { TrenchType, DetailTabType } from '@/pages/Cook/type.ts'
 import { Trans } from '@lingui/react/macro'
 

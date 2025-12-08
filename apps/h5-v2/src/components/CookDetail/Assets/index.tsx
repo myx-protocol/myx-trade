@@ -12,7 +12,7 @@ import {
   Box,
   Paper,
 } from '@mui/material'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import SortDown from '@/components/Icon/set/SortDown'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { Copy } from '@/components/Copy'
@@ -73,7 +73,7 @@ const TableLoading = () => {
 
 export const Assets = () => {
   const { accessToken } = useAccessToken()
-  const { poolId, pool, price } = usePoolContext()
+  const { poolId, pool, price, refreshAssetKey } = usePoolContext()
   const [showAllAssets, setShowAllAssets] = useState(false)
   const [sortField, setSortField] = useState<string>('')
   const [sortOrder, setSortOrder] = useState<SortOrder>(false)
@@ -83,20 +83,25 @@ export const Assets = () => {
   const { markets } = useMyxSdkClient()
   const onAction = useWalletActions()
 
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    refetch: refechAsset,
+  } = useQuery({
     queryKey: [
       { key: 'getMineBaseLpAssets' },
+      account,
       accessToken,
       poolId,
       pool?.basePoolToken,
       showAllAssets,
     ],
-    enabled: !!accessToken,
+    enabled: !!account && !!accessToken,
     queryFn: async () => {
       // console.log(poolId , pool , accessToken)
-      if (!accessToken) return [] as LpAsset[]
+      if (!accessToken || !account) return [] as LpAsset[]
       if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
-      const request = await getLpAssets(accessToken, {
+      const request = await getLpAssets(account, accessToken, {
         poolType: PoolType.base,
         poolId: showAllAssets ? undefined : poolId,
         poolToken: showAllAssets ? undefined : pool?.basePoolToken,
@@ -153,6 +158,10 @@ export const Assets = () => {
     },
     refetchInterval: 5000,
   })
+
+  useEffect(() => {
+    refechAsset?.()
+  }, [refreshAssetKey])
 
   const PriceMap = useMemo(() => {
     return {

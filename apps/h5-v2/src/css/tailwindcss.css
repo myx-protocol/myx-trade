@@ -18,6 +18,7 @@
   --color-warning: var(--warning-color);
   --color-brand-10: var(--brand-10);
   --color-warning-10: var(--warning-10);
+  --color-danger-10: var(--danger-10);
   --color-green2: var(--green2);
 }
 
@@ -73,38 +74,33 @@
   --secondary-text: #848e9c;
   --dark-border: #31333d;
   --green-yellow: #80ff95;
+  /*--brand-green: 0, 227, 165;*/
   --brand-green: #00e3a5;
+
   --base-bg: #18191f;
   --regular-text: #ced1d9;
   --third-text: #6d7180;
   --placeholder-text: #4d515c;
   --darker-text: #101114;
+  /*--sell-text: 236, 96, 90;*/
   --sell-text: #ec605a;
   --sell-border: #f66276;
+  /*--warning-color: 242, 157, 57;*/
   --warning-color: #f29d39;
   --brand-gradient: linear-gradient(117deg, var(--green-yellow) 16.86%, #00e5a7 83.14%);
   --border-input-r: 8px;
   --brand-10: rgba(0, 227, 165, 0.1);
   --warning-10: rgba(242, 157, 57, 0.1);
+  --danger-10: rgba(236, 96, 90, 0.1);
   --brand-deep-gradient: linear-gradient(95deg, #3d996b 0%, #00996f 18.58%);
   --sell-gradient: linear-gradient(275deg, #c23749 3.47%, #ba4c47 99.82%);
   --light-bg: #2d3138;
   --green2: #00996f;
 }
 
-/*Button {
-  display: flex;
-  padding: 0 20px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  text-align: center;
-  position: relative;
-}*/
-
 Button.gradient {
-  background-image: var(--brand-gradient);
+  border: 1px solid var(--green-yellow);
+  background-image: var(--brand-deep-gradient);
   display: inline-flex;
   min-height: 40px;
   padding: 0 20px;
@@ -115,10 +111,10 @@ Button.gradient {
   font-style: normal;
   font-weight: 500;
   line-height: 100%; /* 14px */
-  color: var(--deep-bg);
+  color: var(--basic-white);
   position: relative;
   text-transform: none;
-  gap: 4px;
+  gap: 8px;
 
   &.long {
     display: flex;
@@ -139,17 +135,26 @@ Button.gradient {
 
   &[type='primary'],
   &.primary {
-    background-image: var(--brand-gradient);
+    background-image: var(--brand-deep-gradient);
+    border-color: var(--green-yellow);
   }
   &[disabled] {
     cursor: not-allowed;
-    opacity: 0.4;
+    opacity: 0.6;
+    color: inherit;
   }
 
   &.rounded {
     border-radius: 48px;
   }
+  .MuiButton-loadingIndicator {
+    position: relative;
+    color: inherit;
+    left: auto;
+    transform: none;
+  }
 }
+
 
 .icon-sort.asc {
   .up-arrow {

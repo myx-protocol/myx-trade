@@ -24,57 +24,15 @@ interface ChartProps {
   className?: string
 }
 
-const Token = () => {
-  const { open: openGlobalSearch } = useGlobalSearchStore()
-  const { quoteLpDetail, chainId } = useContext(PoolContext)
-  return (
-    <Box className={'flex cursor-pointer items-center gap-[12px]'}>
-      <Box className={'flex items-center gap-[14px]'}>
-        <Box className={'relative h-[32px] w-[32px] min-w-[32px]'}>
-          <CoinIcon
-            size={32}
-            icon={quoteLpDetail?.tokenIcon ?? ''}
-            symbol={quoteLpDetail?.mQuoteBaseSymbol}
-          />
-          <Box
-            className={
-              'absolute right-[-6px] bottom-0 h-[12px] w-[12px] min-w-[12px] overflow-hidden rounded-full'
-            }
-          >
-            <CoinIcon size={12} icon={CHAIN_INFO?.[chainId]?.logoUrl ?? ''} />
-          </Box>
-        </Box>
-        <Box className={'text-[24px] leading-[1] font-[700] text-white'}>
-          {quoteLpDetail?.mQuoteBaseSymbol || '--'}
-        </Box>
-      </Box>
-
-      <span className={'text-secondary text-[16px] leading-[1] font-[500]'}>
-        {quoteLpDetail?.symbolName || '--'}
-      </span>
-
-      <ArrowDown
-        size={20}
-        className={'text-white'}
-        onClick={() => {
-          openGlobalSearch({
-            defaultTab: SearchTypeEnum.Earn,
-          })
-        }}
-      />
-    </Box>
-  )
-}
-
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
   &.MuiToggleButtonGroup-root {
     border-radius: 0;
     .MuiToggleButtonGroup-grouped {
       color: var(--regular-text);
-      font-weight: 700;
+      font-weight: 500;
       font-size: 12px;
       line-height: 1;
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 4px;
       &.Mui-selected {
         color: var(--brand-green);
@@ -146,38 +104,14 @@ const ChartHeader = () => {
 
   return (
     <Box className={'flex w-full flex-col'}>
-      <Box className={'flex items-center justify-between'}>
-        <Token />
-        <Box className={'flex items-end gap-[4px]'}>
-          <span className={'text-secondary text-[16px] leading-[1] font-[500]'}>
-            <Trans>APR</Trans>
-          </span>
-          <span className={`text-[24px] leading-[1] font-[700]`}>
-            {quoteLpDetail?.apr === null ? (
-              <Tooltips
-                title={t`Insufficient data for calculation
-(pool age < 24h)`}
-              >
-                <span className={'cursor-pointer underline decoration-dashed underline-offset-2'}>
-                  --
-                </span>
-              </Tooltips>
-            ) : (
-              <Change change={quoteLpDetail?.apr}>
-                {quoteLpDetail?.apr ? formatNumberPercent(quoteLpDetail?.apr) : '--'}
-              </Change>
-            )}
-          </span>
-        </Box>
-      </Box>
-      <Box className={'mt-[32px] flex w-full items-center justify-between py-[6px]'}>
-        <span>
+      <Box className={'mt-[4px] flex w-full items-center justify-between py-[4px]'}>
+        <span className={'text-secondary text-[12px] leading-[1] font-[500]'}>
           <Trans>Price</Trans>
         </span>
         <IntervalSelector />
       </Box>
-      <Box className={'flex flex-col gap-[8px] py-[8px]'}>
-        <Box className={'text-[32px] leading-[1] font-[700] text-white'}>
+      <Box className={'flex flex-col gap-[4px]'}>
+        <Box className={'text-[24px] leading-[1] font-[700] text-white'}>
           {price ? formatNumberPrecision(price, COMMON_BASE_DISPLAY_DECIMALS) : '--'}
         </Box>
         <Box
@@ -241,12 +175,10 @@ export const Chart = ({ className = '' }: ChartProps) => {
   }, [data, setData])
   return (
     <ChartContext.Provider value={{ period: interval as ChartInterval, setPeriod: setInterval }}>
-      <Box
-        className={`border-dark-border flex h-[430px] w-full flex-col border-b-1 pb-[48px] ${className}`}
-      >
+      <Box className={`flex w-full flex-col ${className}`}>
         <ChartHeader />
         <Box className={'relative flex-1'}>
-          <Box className={'h-full w-full'} ref={lineRef}></Box>
+          <Box className={'!h-[130px] w-full'} ref={lineRef}></Box>
 
           {!isLoading && data.length === 0 && (
             <Box

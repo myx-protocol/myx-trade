@@ -1,4 +1,4 @@
-import { PriceInterval } from '@/request/type.ts'
+import { PriceInterval, type Rating } from '@/request/type.ts'
 
 export enum ChartInterval {
   day,
@@ -29,4 +29,38 @@ export enum DetailTabType {
 export enum Mode {
   Rise,
   Fall,
+}
+
+export enum VaultType {
+  Positions,
+  Vaults,
+}
+
+export interface Vault {
+  name: string
+  label: string
+  icon: string
+  rating: Rating
+  apr: string
+  tvl: number
+  deposits: string
+  pnl: string
+  chainId: number
+  address: string
+  symbol: string
+  time: number
+  poolId: string
+  id: number
+  sortValue: any
+  idx: number
+  quotePoolToken: string
+  avgLpPrice: string
+}
+
+export enum SortField {
+  apr = 'quoteApr',
+  tvl = 'quoteTvl',
+  time = 'tokenCreateTime',
+  deposits = 'deposit',
+  pnl = 'pnl',
 }

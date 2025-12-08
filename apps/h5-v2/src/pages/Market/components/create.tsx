@@ -9,35 +9,34 @@ export const Create = ({ children }: { children?: React.ReactNode }) => {
   const { isWalletConnected } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   return (
-    <Container className={'flex min-h-[calc(100vh-66px-40px)] items-center p-[40px]'}>
-      <div>
-        <h1 className={'text-center text-[32px] leading-[1] font-[700] text-white'}>
-          <Trans>Create a Market</Trans>
-        </h1>
-        <p className={'mt-[16px] text-center text-[20px] leading-[1]'}>
+    <div className={'mt-[12px] flex w-full items-center px-[16px]'}>
+      <div className={'w-full'}>
+        <p className={'text-[14px] leading-[1.2]'}>
           <Trans>Create your own derivatives market to enjoy LP rewards and fee sharing.</Trans>
         </p>
 
-        <ul className={'mt-[48px] flex w-full gap-[20px]'}>
+        <ul className={'mt-[24px] flex w-full flex-col gap-[12px]'}>
           {Items.map((item, index) => {
             return (
               <li
                 key={index}
                 className={
-                  'border-dark-border flex flex-1 flex-col rounded-[16px] border-1 px-[24px] py-[32px]'
+                  'border-dark-border flex flex-1 gap-[16px] rounded-[16px] border-1 p-[24px]'
                 }
               >
-                {item.icon}
-                <div className={'mt-[24px] text-[24px] font-[700] whitespace-nowrap text-white'}>
-                  {item.title}
+                <div className={'w-[36px] flex-shrink-0'}>{item.icon}</div>
+                <div className={'flex flex-col gap-[4px]'}>
+                  <div className={'text-[16px] font-[700] whitespace-nowrap text-white'}>
+                    {item.title}
+                  </div>
+                  <div className={'text-secondary text-[12px] leading-[1.5]'}>{item.content}</div>
                 </div>
-                <div className={'mt-[12px]'}>{item.content}</div>
               </li>
             )
           })}
         </ul>
 
-        <div className={'mt-[48px] w-full'}>
+        <div className={'mt-[24px] w-full'}>
           {isWalletConnected ? (
             children
           ) : (
@@ -50,6 +49,6 @@ export const Create = ({ children }: { children?: React.ReactNode }) => {
           )}
         </div>
       </div>
-    </Container>
+    </div>
   )
 }
