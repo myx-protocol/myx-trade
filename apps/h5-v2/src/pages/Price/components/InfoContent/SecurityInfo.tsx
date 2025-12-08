@@ -1,36 +1,54 @@
+import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Trans } from '@lingui/react/macro'
-import { ArrowDown } from '../Icon'
-import GoplusLogo from '@/assets/images/third/goplus-logo.svg'
-import Security from '../Icon/set/Security'
-import Danger from '../Icon/set/Danger'
+import Security from '@/components/Icon/set/Security'
 import { useSecurityInfo } from '@/api'
-import { formatNumberPercent } from '@/utils/formatNumber'
+import { usePriceStore } from '../../store'
 import { decimalToPercent } from '@/utils/number'
 import Big from 'big.js'
+import GoplusLogo from '@/assets/images/third/goplus-logo.svg'
+import Danger from '@/components/Icon/set/Danger'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
+import WarningLine from '@/components/Icon/set/WarningLine'
 
-interface SafeListProps {
-  chainId: number
-  address: string
-}
-
-export const SafeList = ({ chainId, address }: SafeListProps) => {
-  const { data: securityInfo } = useSecurityInfo({ chainId, address })
-  if (!securityInfo) return null
+export const SecurityInfo = () => {
+  const { symbolInfo } = usePriceStore()
+  const { data: securityInfo } = useSecurityInfo({
+    address: symbolInfo?.baseToken || '',
+    chainId: symbolInfo?.chainId as number,
+  })
+  const { poolConfig } = useGetPoolConfig(symbolInfo?.poolId, symbolInfo?.chainId as number)
   return (
-    <div className="min-w-[240px] p-[20px] leading-[1]">
-      <div className="flex items-center justify-between text-white">
-        <p className="text-[12px] font-medium">
-          <Trans>Degen Audit</Trans>
-        </p>
-        <span className="inline-flex">
-          <ArrowDown size={12} />
-        </span>
-      </div>
-
+    <div>
+      {/* title */}
+      <FlexRowLayout
+        left={
+          <p className="text-[14px] font-medium text-white">
+            <Trans>Degen Audit</Trans>
+          </p>
+        }
+        right={
+          <div className="flex items-center gap-[4px]">
+            <Security color="#00E3A5" className="flex-shrink-0" size={13} />
+            <span className="ml-[4px]">
+              {securityInfo?.security_count}/{securityInfo?.count}
+            </span>
+          </div>
+        }
+      />
       {/* issues */}
-      <div className="mt-[12px] flex flex-col gap-[12px] text-[12px] font-normal text-white">
+      <div className="mt-[16px] flex flex-col gap-[14px] text-[12px] font-normal text-white">
+        {/* risk rating */}
+        <div className="flex items-center justify-between">
+          <p className="text-[#848E9C]">
+            <Trans>Risk Rating</Trans>
+          </p>
+          <div className="flex items-center gap-[4px]">
+            <p className="text-[#F29D39]">{poolConfig?.levelName}</p>
+            <WarningLine size={12} color="#fff" />
+          </div>
+        </div>
         {/* open source */}
-        {securityInfo.is_open_source && (
+        {securityInfo?.is_open_source && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Open Source</Trans>
@@ -51,7 +69,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
         )}
 
         {/* proxy contract */}
-        {securityInfo.is_proxy && (
+        {securityInfo?.is_proxy && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Proxy Contract</Trans>
@@ -70,7 +88,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
         )}
 
         {/* Mintable */}
-        {securityInfo.is_mintable && (
+        {securityInfo?.is_mintable && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Mintable</Trans>
@@ -91,7 +109,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
         )}
 
         {/* Blacklist*/}
-        {securityInfo.is_blacklisted && (
+        {securityInfo?.is_blacklisted && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Blacklist</Trans>
@@ -109,7 +127,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
           </div>
         )}
         {/* Whitelist*/}
-        {securityInfo.is_whitelisted && (
+        {securityInfo?.is_whitelisted && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Whitelist</Trans>
@@ -127,7 +145,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo.buy_tax && (
+        {securityInfo?.buy_tax && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Buy Tax</Trans>
@@ -145,7 +163,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo.sell_tax && (
+        {securityInfo?.sell_tax && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Sell Tax</Trans>
@@ -163,7 +181,7 @@ export const SafeList = ({ chainId, address }: SafeListProps) => {
           </div>
         )}
         {/* Top 10 Holders  */}
-        {securityInfo.top10_holders_percentage && (
+        {securityInfo?.top10_holders_percentage && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Top 10 Holders</Trans>

@@ -11,18 +11,6 @@ const ACTIVITY_LIST = [
     description: 'Create your own derivatives market to enjoy LP rewards and fee sharing.',
     href: '/market/create',
   },
-  {
-    image: CreateMarketPng,
-    title: 'Create Market222',
-    description: 'Create your own derivatives market to enjoy LP rewards and fee sharing.',
-    href: '/market/create',
-  },
-  {
-    image: CreateMarketPng,
-    title: 'Create Market3333',
-    description: 'Create your own derivatives market to enjoy LP rewards and fee sharing.',
-    href: '/market/create',
-  },
 ]
 
 export const ActivitySwiper = () => {

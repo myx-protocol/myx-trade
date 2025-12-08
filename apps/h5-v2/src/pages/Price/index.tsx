@@ -10,6 +10,7 @@ import { DEFAULT_PRICE_PATH } from '@/config/trade'
 import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
 import { PoolContent } from './components/PoolContent'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
+import { InfoContent } from './components/InfoContent'
 
 const Price = () => {
   const { tab, symbolInfo, setSymbolInfo } = usePriceStore()
@@ -70,6 +71,7 @@ const Price = () => {
       <Tabs />
       {tab === PriceTabEnum.Price ? <PriceContent /> : <></>}
       {tab === PriceTabEnum.Pool ? <PoolContent /> : <></>}
+      {tab === PriceTabEnum.Info ? <InfoContent /> : <></>}
     </div>
   )
 }
