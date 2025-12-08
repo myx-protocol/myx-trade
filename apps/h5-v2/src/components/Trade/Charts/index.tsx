@@ -1,12 +1,15 @@
 import { useRef } from 'react'
-import { Toolbar } from './Toolbar'
 import { TradingView, type TradingViewInstance } from './TradingView'
 import { useMount, useUnmount } from 'ahooks'
 import { klinePubSub } from '@/utils/pubsub'
 import { toggleFullScreen } from '@/utils'
 import { useTradePageStore } from '../store/TradePageStore'
-import type { ResolutionString } from '@public/charting_library/charting_library'
+import type {
+  ChartingLibraryWidgetOptions,
+  ResolutionString,
+} from '@public/charting_library/charting_library'
 import type { KlineTypeEnum } from './type'
+import { ToolBar } from './Toolbar/index'
 export const Charts = () => {
   const chartsRoot = useRef<HTMLDivElement>(null)
   const { resolutionActive, symbolInfo } = useTradePageStore()
@@ -53,12 +56,33 @@ export const Charts = () => {
     klinePubSub.off('kline:show:setting:panel', onShowSettingPanel)
     klinePubSub.off('kline:take:screenshot', onTakeScreenshot)
   })
+
+  const overridesChartOptions: Partial<ChartingLibraryWidgetOptions> = {
+    disabled_features: [
+      `header_screenshot`,
+      `header_fullscreen_button`,
+      'header_symbol_search',
+      'header_widget',
+      'header_chart_type',
+      // 'header_settings',
+      'header_saveload',
+      'go_to_date',
+      'header_compare',
+      'popup_hints',
+      'timeframes_toolbar',
+      'header_undo_redo',
+      'header_resolutions',
+      'legend_widget',
+      'create_volume_indicator_by_default',
+      'save_chart_properties_to_local_storage',
+    ],
+  }
   return (
     <div
-      className="mt-[4px] flex h-[528px] w-full flex-col gap-[6px] bg-[#101114]"
+      className="mt-[4px] flex h-[220px] w-full flex-col gap-[6px] bg-[#101114]"
       ref={chartsRoot}
     >
-      <Toolbar />
+      <ToolBar />
       <div className="flex flex-[1_1_0%] flex-col">
         <TradingView
           poolId={symbolInfo?.poolId}
@@ -67,6 +91,7 @@ export const Charts = () => {
           symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
           defaultInterval={resolutionActive as ResolutionString}
           ref={tradingViewRef}
+          overridesChartOptions={overridesChartOptions}
         />
       </div>
     </div>
