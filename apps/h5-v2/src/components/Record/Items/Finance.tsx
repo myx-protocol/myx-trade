@@ -11,10 +11,24 @@ import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Copy } from '@/components/Copy'
 import { truncateString } from '@/utils/string'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import type { TradeFlowItem } from '@myx-trade/sdk'
+import { t } from '@lingui/core/macro'
+import { TradeFlowTypeEnum } from '@myx-trade/sdk'
+import Big from 'big.js'
 
-export const FinanceItem = () => {
+export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
   const [open, setOpen] = useState(false)
+
+  const amountBig = useMemo(
+    () =>
+      Big(item.collateralAmount || '0')
+        .add(item.realizedPnl || '0')
+        .add(item.fundingFee || '0')
+        .add(item.executionFee || '0')
+        .add(item.tradingFee || '0'),
+    [item],
+  )
   return (
     <div className="w-full border-b border-[#202129] p-[16px]">
       <div
@@ -24,23 +38,27 @@ export const FinanceItem = () => {
       >
         {/* symbol info */}
         <div>
-          <p className="text-[14px] font-medium text-white">BTC/USDT</p>
+          <p className="text-[14px] font-medium text-white">
+            {item.baseSymbol}/{item.quoteSymbol}
+          </p>
           <div className="mt-[4px] flex items-center gap-[4px]">
             <Tag type="success">
-              <Trans>Open Position</Trans>
+              <Trans>{item.type === TradeFlowTypeEnum.Increase ? t`开仓` : t`平仓`}</Trans>
             </Tag>
-            <p className="text-[12px] text-[#6D7180]">{dayjs().format('M/D HH:mm:ss')}</p>
+            <p className="text-[12px] text-[#6D7180]">
+              {dayjs.unix(item.txTime).format('M/D HH:mm:ss')}
+            </p>
           </div>
         </div>
         {/* time */}
         <div className="flex shrink-0 flex-col items-end gap-[10px]">
           {/* value */}
           <p className="text-[14px] font-medium text-white">
-            {formatNumber(123123, {
+            {formatNumber(amountBig.toNumber(), {
               showSign: true,
               showUnit: false,
             })}
-            <span className="ml-[2px]">USDT</span>
+            <span className="ml-[2px]">{item.quoteSymbol}</span>
           </p>
           {/* pnl */}
           <div className="flex items-center">
@@ -48,7 +66,14 @@ export const FinanceItem = () => {
               <Trans>PnL</Trans>
             </span>
             <p className="mr-[2px] ml-[8px]">
-              <RiseFallText value={12.12} suffix={<span className="ml-[2px]">USDT</span>} />
+              <RiseFallText
+                value={item.realizedPnl}
+                renderOptions={{
+                  showUnit: false,
+                  showSign: true,
+                }}
+                suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+              />
             </p>
             <span role="button" className="shrink-0">
               <SortDownIcon size={6} color="#848E9C" />
@@ -70,7 +95,14 @@ export const FinanceItem = () => {
             left={<Trans>Funding Fee</Trans>}
             right={
               <p className="font-medium text-white">
-                <RiseFallText value={12.12} suffix={<span className="ml-[2px]">USDT</span>} />
+                <RiseFallText
+                  value={item.fundingFee}
+                  renderOptions={{
+                    showUnit: false,
+                    showSign: true,
+                  }}
+                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                />
               </p>
             }
           />
@@ -78,7 +110,14 @@ export const FinanceItem = () => {
             left={<Trans>Execution Fee</Trans>}
             right={
               <p className="font-medium text-white">
-                <RiseFallText value={-12.12} suffix={<span className="ml-[2px]">USDT</span>} />
+                <RiseFallText
+                  value={item.executionFee}
+                  renderOptions={{
+                    showUnit: false,
+                    showSign: true,
+                  }}
+                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                />
               </p>
             }
           />
@@ -86,7 +125,14 @@ export const FinanceItem = () => {
             left={<Trans>Fee</Trans>}
             right={
               <p className="font-medium text-white">
-                <RiseFallText value={-12.12} suffix={<span className="ml-[2px]">USDT</span>} />
+                <RiseFallText
+                  value={item.tradingFee}
+                  renderOptions={{
+                    showUnit: false,
+                    showSign: true,
+                  }}
+                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                />
               </p>
             }
           />
@@ -94,14 +140,8 @@ export const FinanceItem = () => {
             left={<Trans>Hash</Trans>}
             right={
               <p className="flex items-center gap-[4px] font-medium text-white">
-                <span>
-                  {truncateString(
-                    '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-                    10,
-                    4,
-                  )}
-                </span>
-                <Copy content="0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" />
+                <span>{truncateString(item.txHash || '', 10, 4)}</span>
+                <Copy content={item.txHash || ''} />
               </p>
             }
           />

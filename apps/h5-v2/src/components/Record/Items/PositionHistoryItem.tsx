@@ -3,25 +3,42 @@ import { Tag } from '@/components/Tag/index'
 import { formatNumber } from '@/utils/number'
 import { RiseFallText } from '@/components/RiseFallText'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
+import {
+  CloseTypeEnum,
+  DirectionEnum,
+  type PositionHistoryItem as PositionHistoryItemType,
+} from '@myx-trade/sdk'
+import { t } from '@lingui/core/macro'
+import dayjs from 'dayjs'
 
-export const PositionHistoryItem = () => {
+const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
+  [CloseTypeEnum.PartialClose]: () => t`部分平仓`,
+  [CloseTypeEnum.Liquidation]: () => t`强制平仓`,
+  [CloseTypeEnum.FullClose]: () => t`全部平仓`,
+  [CloseTypeEnum.EarlyClose]: () => t`提前平仓`,
+  [CloseTypeEnum.MarketClose]: () => t`市场平仓`,
+}
+
+export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType }) => {
   return (
     <div className="w-full border-b border-[#202129] px-[16px] pt-[16px] pb-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[14px] font-medium text-white">BTC/USDT</p>
+          <p className="text-[14px] font-medium text-white">
+            {item.baseSymbol}/{item.quoteSymbol}
+          </p>
           <div className="mt-[4px] flex gap-[4px]">
             <Tag type="success">
-              <Trans>Long</Trans>
+              <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
             </Tag>
             <Tag type="info" className="px-[6px]">
-              <Trans>5x</Trans>
+              <Trans>{item.userLeverage}x</Trans>
             </Tag>
           </div>
         </div>
         {/* time */}
-        <p className="text-[12px] text-[#848E9C]">Order Status</p>
+        <p className="text-[12px] text-[#848E9C]">{OrderCloseType[item.closeType]?.()}</p>
       </div>
       {/* info */}
       <div className="mt-[16px]">
@@ -33,7 +50,7 @@ export const PositionHistoryItem = () => {
               <Trans>Avg. Entry Price</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(item.entryPrice, { showUnit: false })}
             </p>
           </div>
           {/* roe */}
@@ -42,7 +59,13 @@ export const PositionHistoryItem = () => {
               <Trans>Realized PnL</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              <RiseFallText value={12.12} prefix="$" />
+              <RiseFallText
+                value={item.realizedPnl}
+                renderOptions={{
+                  showUnit: false,
+                }}
+                prefix="$"
+              />
             </p>
           </div>
           {/* Margin ratio */}
@@ -51,7 +74,7 @@ export const PositionHistoryItem = () => {
               <Trans>Total Amount</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })} BTC
+              {formatNumber(item.size, { showUnit: false })} {item.baseSymbol}
             </p>
           </div>
           {/* size */}
@@ -60,7 +83,7 @@ export const PositionHistoryItem = () => {
               <Trans>Avg. Close Price</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(item.avgClosePrice, { showUnit: false })}
             </p>
           </div>
           {/* entry price */}
@@ -69,7 +92,7 @@ export const PositionHistoryItem = () => {
               <Trans>Roe</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              <RiseFallText value={12.12} prefix="%" />
+              <RiseFallText value={item.realizedPnl} prefix="%" />
             </p>
           </div>
           {/* margin amount */}
@@ -78,7 +101,7 @@ export const PositionHistoryItem = () => {
               <Trans>Closed Amount</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(item.filledSize, { showUnit: false })} {item.baseSymbol}
             </p>
           </div>
         </div>
@@ -86,11 +109,15 @@ export const PositionHistoryItem = () => {
       <div className="mt-[20px] flex flex-col gap-[8px] text-[12px] text-[#848E9C]">
         <FlexRowLayout
           left={<Trans>Open Time</Trans>}
-          right={<p className="text-white">2025/11/24 10:00:00</p>}
+          right={
+            <p className="text-white">{dayjs.unix(item.openTime).format('YYYY/MM/DD HH:mm:ss')}</p>
+          }
         />
         <FlexRowLayout
           left={<Trans>Close Time</Trans>}
-          right={<p className="text-white">2025/11/24 10:00:00</p>}
+          right={
+            <p className="text-white">{dayjs.unix(item.closeTime).format('YYYY/MM/DD HH:mm:ss')}</p>
+          }
         />
       </div>
     </div>
