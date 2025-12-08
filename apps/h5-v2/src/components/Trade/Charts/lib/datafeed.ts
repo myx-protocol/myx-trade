@@ -1,4 +1,9 @@
-import type { KlineDataResponse, KlineResolution, MyxClient } from '@myx-trade/sdk'
+import type {
+  KlineDataResponse,
+  KlineResolution,
+  MarketDetailResponse,
+  MyxClient,
+} from '@myx-trade/sdk'
 import type {
   IBasicDataFeed,
   LibrarySymbolInfo,
@@ -6,6 +11,7 @@ import type {
 } from '@public/charting_library/charting_library'
 import { useTradePageStore } from '../../store/TradePageStore'
 import { resolution } from '../const'
+import { parseTradingViewSymbol } from '../TradingView/utils'
 type SymbolInfo = Omit<LibrarySymbolInfo, 'ticker'> & {
   ticker: string
 }
@@ -63,21 +69,15 @@ export const generateDataFeed = (client: MyxClient) => {
       onResultCallback([])
     },
 
-    resolveSymbol: async (_: string, onSymbolResolvedCallback: any) => {
-      // const ticker = getSymbolTick(symbolName)
-
+    resolveSymbol: async (templateSymbol: string, onSymbolResolvedCallback: any) => {
       const { priceScale = 2, baseVolScale = 2 } = {}
-
-      const symbolInfo = useTradePageStore.getState().symbolInfo
-      if (!symbolInfo) {
-        return
-      }
+      const { symbol } = parseTradingViewSymbol(templateSymbol)
 
       // SymbolInfo validation: timezone must be non-empty string
       const data = {
         type: 'bitcoin',
-        name: `${symbolInfo.baseSymbol}${symbolInfo.quoteSymbol}`,
-        ticker: symbolInfo.poolId,
+        name: symbol,
+        ticker: templateSymbol,
         has_intraday: true,
         has_weekly_and_monthly: true,
         session: '24x7',
@@ -101,9 +101,9 @@ export const generateDataFeed = (client: MyxClient) => {
       const max = 1000
       let lastBar: Bar | null = null
       let count = countBack
-      const poolId = symbolInfo.ticker
 
       const Bars: Bar[] = []
+      const { chainId, poolId } = parseTradingViewSymbol(symbolInfo.ticker)
 
       const setBars = async () => {
         const bars = await client?.markets.getKlineList({
@@ -111,6 +111,7 @@ export const generateDataFeed = (client: MyxClient) => {
           limit: count > max ? max : count,
           endTime: lastBar ? parseInt((lastBar?.time / 1000 - 60).toString()) : to,
           interval: translateResolutionToRequestParams(resolution),
+          chainId: chainId,
         })
         if (bars && bars.length > 0) {
           count -= bars.length
@@ -159,12 +160,13 @@ export const generateDataFeed = (client: MyxClient) => {
       }
     },
 
-    async subscribeBars(_, resolution: string, onRealtimeCallback: any, subscribeUID: string) {
-      const storeSymbolInfo = useTradePageStore.getState().symbolInfo
-      if (!storeSymbolInfo) {
-        throw new Error('Symbol info is required')
-      }
-      const globalId = storeSymbolInfo?.globalId
+    async subscribeBars(
+      symbolInfo,
+      resolution: string,
+      onRealtimeCallback: any,
+      subscribeUID: string,
+    ) {
+      const { globalId } = parseTradingViewSymbol(symbolInfo.ticker as string)
       if (!globalId) {
         throw new Error('Global ID is required')
       }

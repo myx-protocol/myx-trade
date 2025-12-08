@@ -1,4 +1,5 @@
 import type { ResolutionString } from '@public/charting_library/charting_library'
+import type { MarketDetailResponse } from '@myx-trade/sdk'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -17,6 +18,9 @@ interface PriceStore {
   setActiveResolution: (resolution: ResolutionString) => void
   fixedResolution: string
   setFixedResolution: (resolution: string) => void
+
+  symbolInfo: MarketDetailResponse | null
+  setSymbolInfo: (symbolInfo: MarketDetailResponse | null) => void
 }
 
 export const usePriceStore = create<PriceStore>()(
@@ -31,6 +35,9 @@ export const usePriceStore = create<PriceStore>()(
 
         fixedResolution: '1d',
         setFixedResolution: (resolution) => set({ fixedResolution: resolution }),
+
+        symbolInfo: null,
+        setSymbolInfo: (symbolInfo) => set({ symbolInfo }),
       })),
       {
         name: 'MYX_PriceStore',

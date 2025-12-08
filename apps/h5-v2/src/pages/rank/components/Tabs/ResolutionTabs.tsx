@@ -1,7 +1,6 @@
-import clsx from 'clsx'
-import { useMemo, useState } from 'react'
-import { Trans } from '@lingui/react/macro'
 import { styled, Tabs as MuiTabs, Tab as MuiTab } from '@mui/material'
+import { useRankStore } from '../../store'
+import type { LeaderboardTimeInterval } from '@/api'
 
 const Tabs = styled(MuiTabs)({
   minHeight: 'auto',
@@ -31,18 +30,18 @@ export const Tab = styled(MuiTab)({
   },
 })
 
-type ResolutionValue = '10m' | '1h' | '4h' | '1d' | '1w' | '1M'
-
 export const ResolutionTabs = () => {
-  const [selectedResolution, setSelectedResolution] = useState<ResolutionValue>('1h')
+  const { timeInterval, setTimeInterval } = useRankStore()
   return (
-    <Tabs value={selectedResolution} onChange={(_, newValue) => setSelectedResolution(newValue)}>
+    <Tabs
+      value={timeInterval}
+      onChange={(_, newValue) => setTimeInterval(newValue as LeaderboardTimeInterval)}
+    >
       <Tab value="10m" label="10m" />
       <Tab value="1h" label="1h" />
       <Tab value="4h" label="4h" />
-      <Tab value="1d" label="1d" />
-      <Tab value="1w" label="1w" />
-      <Tab value="1M" label="1M" />
+      <Tab value="12h" label="12h" />
+      <Tab value="24h" label="1d" />
     </Tabs>
   )
 }

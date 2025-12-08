@@ -1,13 +1,14 @@
 import { dropDownMenuOptions, resolutionDefaultList } from '@/components/Trade/Charts/const'
 import { formatResolutionToDisplayText } from '@/components/Trade/Charts/lib/datafeed'
-import { Resolution } from '@/components/Trade/Charts/Toolbar/Resolution'
 import { usePriceStore } from '../../store'
 import clsx from 'clsx'
 import type { ResolutionString } from '@public/charting_library/charting_library'
-import { ArrowDown, ChartStudy, SortDown } from '@/components/Icon'
+import { ChartStudy, SortDown } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { Popover } from '@/components/UI/Popover'
 import { useState } from 'react'
+import { klinePubSub } from '@/utils/pubsub'
+import { StudyListDrawer } from '@/components/Trade/Charts/StudyList/StudyListDrawer'
 
 const resolutionOptions: Array<{ label: string; value: string | number }> = dropDownMenuOptions.map(
   (item) => ({
@@ -23,14 +24,15 @@ const fixedResolutionList: Array<{ label: string; value: string | number }> =
   }))
 
 export const ToolBar = () => {
-  const { activeResolution, setActiveResolution, fixedResolution } = usePriceStore()
+  const { activeResolution, setActiveResolution } = usePriceStore()
 
   const handleResolutionChange = (value: string | number) => {
     setActiveResolution(value as ResolutionString)
-    // tradePubSub.emit('kline:resolution:change', value)
+    klinePubSub.emit('kline:resolution:change', value)
   }
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [studyListDrawerOpen, setStudyListDrawerOpen] = useState(false)
   return (
     <div className="flex items-center justify-between px-[16px] pb-[4px]">
       <div className="flex items-center gap-[10px]">
@@ -38,7 +40,7 @@ export const ToolBar = () => {
           <div
             key={item.value}
             role="button"
-            onClick={() => setActiveResolution(item.value as ResolutionString)}
+            onClick={() => handleResolutionChange(item.value as ResolutionString)}
             className={clsx(
               'rounded-[50px] px-[8px] py-[5px] text-[12px] font-normal text-[#848E9C]',
               {
@@ -88,9 +90,10 @@ export const ToolBar = () => {
         </Popover>
       </div>
 
-      <div className="shrink-0" role="button">
+      <div className="shrink-0" role="button" onClick={() => setStudyListDrawerOpen(true)}>
         <ChartStudy size={16} color="#fff" />
       </div>
+      <StudyListDrawer open={studyListDrawerOpen} onClose={() => setStudyListDrawerOpen(false)} />
     </div>
   )
 }

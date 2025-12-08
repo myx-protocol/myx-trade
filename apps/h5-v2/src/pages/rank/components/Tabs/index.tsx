@@ -1,5 +1,7 @@
+import type { LeaderboardSortField } from '@/api'
+import { Trans } from '@lingui/react/macro'
 import { styled, Tabs as MuiTabs, Tab as MuiTab } from '@mui/material'
-import { useState } from 'react'
+import { useRankStore } from '../../store'
 export { ResolutionTabs } from './ResolutionTabs'
 
 const MarketTabs = styled(MuiTabs)({
@@ -38,18 +40,19 @@ export const MarketTab = styled(MuiTab)({
 })
 
 export const Tabs = () => {
-  const [marketTab, setMarketTab] = useState<
-    'hot' | 'new' | 'volume' | 'gainers' | 'losers' | 'marketcap'
-  >('hot')
+  const { tabsType, setTabsType } = useRankStore()
   return (
     <div className="border-b border-[#202129] px-[6px]">
-      <MarketTabs value={marketTab} onChange={(_, newValue) => setMarketTab(newValue)}>
-        <MarketTab value="hot" label="Hot" />
-        <MarketTab value="new" label="New" />
-        <MarketTab value="volume" label="Volume" />
-        <MarketTab value="gainers" label="Gainers" />
-        <MarketTab value="losers" label="Losers" />
-        <MarketTab value="marketcap" label="Market Cap" />
+      <MarketTabs
+        value={tabsType}
+        onChange={(_, newValue) => setTabsType(newValue as LeaderboardSortField)}
+      >
+        <MarketTab value="tvl" label={<Trans>Hot</Trans>} />
+        <MarketTab value="tokenCreateTime" label={<Trans>New</Trans>} />
+        <MarketTab value="volume" label={<Trans>Volume</Trans>} />
+        <MarketTab value="topGainers" label={<Trans>Gainers</Trans>} />
+        <MarketTab value="topLosers" label={<Trans>Losers</Trans>} />
+        <MarketTab value="marketCap" label={<Trans>Market Cap</Trans>} />
       </MarketTabs>
     </div>
   )
