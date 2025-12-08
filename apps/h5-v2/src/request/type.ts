@@ -101,3 +101,5 @@ export enum PoolType {
 }
 
 export type Address = `0x${string}`
+
+export type Rating = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'

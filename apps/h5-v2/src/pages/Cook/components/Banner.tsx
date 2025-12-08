@@ -1,9 +1,11 @@
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
+import { useNavigate } from 'react-router-dom'
 
 export const Banner = () => {
+  const navigate = useNavigate()
   return (
-    <Box className="banner p-[16px]">
+    <Box className="banner cursor-pointer p-[16px]" onClick={() => navigate('/market')}>
       <Box className={'border-base flex items-center gap-[24px] rounded-[10px] border-1 p-[16px]'}>
         <Box className={'logo w-m-[60px] w-[60px]'}></Box>
         <Box className={'flex flex-1 flex-col gap-[8px]'}>
