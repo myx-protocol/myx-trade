@@ -9,6 +9,7 @@ import {
 import { useCallback } from 'react'
 import { Colors } from '../const'
 import { useTradePageStore } from '../../store/TradePageStore'
+import { merge } from 'lodash-es'
 
 interface SetupTradingViewParams {
   language: AVAILABLE_LOCALES
@@ -18,12 +19,13 @@ interface SetupTradingViewParams {
   dataFeed: IBasicDataFeed
 }
 
-
-
 export const useInitTradingView = () => {
   const { klineType } = useTradePageStore()
   const initTradingView = useCallback(
-    (props: SetupTradingViewParams) => {
+    (
+      props: SetupTradingViewParams,
+      overridesChartOptions?: Partial<ChartingLibraryWidgetOptions>,
+    ) => {
       const { language, symbol, interval, containerId, dataFeed } = props
       /**
        * locale translation
@@ -117,7 +119,9 @@ export const useInitTradingView = () => {
        * init widget
        */
 
-      const widget = new window.TradingView.widget(widgetOptions) as IChartingLibraryWidget
+      const widget = new window.TradingView.widget(
+        merge(widgetOptions, overridesChartOptions || {}),
+      ) as IChartingLibraryWidget
 
       /**
        * return widget

@@ -9,6 +9,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
 import { useCallback } from 'react'
+import { Charts } from '@/components/Trade/Charts'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
@@ -56,6 +57,7 @@ export const Trade = () => {
   return (
     <>
       <div className="flex flex-[1_1_0%] justify-between gap-x-[4px] bg-[var(--bg-plus)]">
+        <Charts />
         {/* <div className="mt-[4px] flex flex-[1_1_0%] flex-col overflow-x-auto">
           <CurrentMarket />
           <MarketSwiper />

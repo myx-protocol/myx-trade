@@ -2,6 +2,7 @@ import {
   type IChartingLibraryWidget,
   type ResolutionString,
   type SeriesStyle,
+  type ChartingLibraryWidgetOptions,
 } from '@public/charting_library/charting_library'
 import { useInitTradingView } from '../hooks/useInitTradingView'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
@@ -18,6 +19,7 @@ import { klinePubSub } from '@/utils/pubsub'
 type TradingViewProps = Partial<TradingViewSymbol> & {
   defaultInterval?: ResolutionString
   onReady?: () => void
+  overridesChartOptions?: Partial<ChartingLibraryWidgetOptions>
 }
 
 export interface TradingViewInstance {
@@ -32,7 +34,7 @@ export interface TradingViewInstance {
 }
 
 export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
-  ({ poolId, chainId, globalId, symbol, defaultInterval, onReady }, ref) => {
+  ({ poolId, chainId, globalId, symbol, defaultInterval, onReady, overridesChartOptions }, ref) => {
     const { activeLocale } = useGlobalStore()
     const { initTradingView } = useInitTradingView()
     const widgetRef = useRef<IChartingLibraryWidget>(null)
@@ -124,6 +126,7 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
       chainId,
       globalId,
       symbol,
+      overridesChartOptions,
     ])
 
     /**
