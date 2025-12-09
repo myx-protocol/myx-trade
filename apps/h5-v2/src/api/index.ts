@@ -2,6 +2,7 @@ import { baseUrl } from '@/request'
 import { http } from '@/request/http'
 import type { ApiResponse } from './type'
 import { useQuery } from '@tanstack/react-query'
+import Big from 'big.js'
 
 export const getAccessToken = async (
   appId: string,
@@ -61,7 +62,7 @@ export const getPoolLevelConfig = async (poolId: string, chainId: number) => {
 
 export const getPools = async () => {
   try {
-    const res = await http.get(`${baseUrl}/v2/mx-scan/market/list`)
+    const res = await http.get(`${baseUrl}/openapi/gateway/scan/market/list`)
     return {
       code: 0,
       msg: null,
@@ -111,9 +112,18 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
       let dangerCount = 0
       for (let i = 0; i < validKeys.length; i++) {
         const key = validKeys[i] as keyof GetSecurityInfoResponse
+        // top 10 holders percentage is greater than 0.5 is danger
         if (key === 'top10_holders_percentage') {
-          continue
+          if (Big(res.data[key]).gte(0.5)) {
+            dangerCount++
+          }
+        } else if (key === 'is_open_source') {
+          // open source is 0 is danger
+          if (res.data[key] === '0') {
+            dangerCount++
+          }
         } else if (res.data[key] === '1') {
+          // other is 1 is danger
           dangerCount++
         }
       }
@@ -137,4 +147,40 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
     enabled: !!params.address && !!params.chainId,
     refetchOnWindowFocus: false,
   })
+}
+
+export type LeaderboardTimeInterval = '10m' | '1h' | '4h' | '12h' | '24h'
+export type LeaderboardSortField =
+  | 'tvl'
+  | 'volume'
+  | 'tokenCreateTime'
+  | 'topGainers'
+  | 'topLosers'
+  | 'marketCap'
+export enum LeaderboardTypeEnum {
+  Bluechip = 1,
+  Alpha = 2,
+}
+interface GetLeaderboardParams {
+  timeInterval?: LeaderboardTimeInterval
+  chainId?: number // 0 is all chains
+  sortField?: LeaderboardSortField
+  type?: LeaderboardTypeEnum
+}
+
+export interface GetLeaderboardItem {
+  baseQuoteSymbol: string
+  basePrice: string
+  priceChange: string
+  chainId: number
+  poolId: string
+  tokenIcon: string
+  globalId: number
+}
+
+export const getLeaderboard = async (params: GetLeaderboardParams) => {
+  return http.get<ApiResponse<GetLeaderboardItem[]>>(
+    `${baseUrl}/openapi/gateway/scan/market/leaderboard`,
+    params,
+  )
 }

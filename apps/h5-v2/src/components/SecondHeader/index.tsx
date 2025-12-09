@@ -1,23 +1,32 @@
+import type { ReactNode } from 'react'
 import { ArrowRight } from '../Icon'
 import { useNavigate } from 'react-router-dom'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
 interface SecondHeaderProps {
-  title?: string
+  title?: ReactNode
   onBack?: () => void
   left?: React.ReactNode
   right?: React.ReactNode
+  className?: string
 }
 
-export const SecondHeader = ({ title, onBack, left, right }: SecondHeaderProps) => {
+export const SecondHeader = ({ title, onBack, left, right, className }: SecondHeaderProps) => {
   const navigate = useNavigate()
   const handleBack = () => {
     if (onBack) {
       onBack()
-    } else {
+    } else if (onBack !== null || title !== null) {
       navigate(-1)
     }
   }
   return (
-    <div className="bg-deep sticky top-0 left-0 z-20 flex h-[52px] items-center justify-center px-[12px]">
+    <div
+      className={twMerge(
+        'bg-deep sticky top-0 left-0 z-20 flex h-[52px] shrink-0 items-center justify-center px-[12px]',
+        className,
+      )}
+    >
       <div className="absolute top-0 left-[12px] flex h-full items-center" role="button">
         {left || (
           <div role="button" onClick={handleBack} className="flex items-center justify-center">

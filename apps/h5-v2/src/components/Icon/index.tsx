@@ -30,8 +30,15 @@ import CheckBoxIcon from './set/CheckBoxIcon.tsx'
 import CheckBoxOutline from './set/CheckBoxOutline.tsx'
 import Pause from './set/Pause.tsx'
 import ChartBar from './set/ChartBar.tsx'
+import Record from './set/Record.tsx'
+import Share from './set/Share.tsx'
+import ArrowLeftLong from './set/ArrowLeftLong.tsx'
+import SortDown from './set/SortDown.tsx'
+import Star from './set/Star.tsx'
+import ChartStudy from './set/ChartStudy.tsx'
 import GlobalLine from './set/GlobalLine.tsx'
 import BackIcon from './set/BackIcon.tsx'
+import SuccessFill from './set/SuccessFill.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -84,8 +91,15 @@ export {
   ChartLine,
   Pause,
   ChartBar,
+  Record,
+  Share,
+  ArrowLeftLong,
+  SortDown,
+  Star,
+  ChartStudy,
   GlobalLine,
   BackIcon,
+  SuccessFill,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

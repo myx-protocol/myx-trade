@@ -3,7 +3,7 @@ import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useQuery } from '@tanstack/react-query'
 import { Table } from '@/components/UI/Table'
-import { OperationEnum, type TradeFlowItem } from '@myx-trade/sdk'
+import { TradeFlowTypeEnum, type TradeFlowItem } from '@myx-trade/sdk'
 import { t } from '@lingui/core/macro'
 import dayjs from 'dayjs'
 import { SymbolInfo } from '../SymbolInfo'
@@ -18,9 +18,16 @@ import { TableWongNetwork } from '../TableNoData/TableWongNetwork'
 import { useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 
-const TradeFlowType: Record<OperationEnum, () => string> = {
-  [OperationEnum.Increase]: () => t`开仓`,
-  [OperationEnum.Decrease]: () => t`平仓`,
+const TradeFlowType: Record<TradeFlowTypeEnum, () => string> = {
+  [TradeFlowTypeEnum.Increase]: () => t`开仓`,
+  [TradeFlowTypeEnum.Decrease]: () => t`平仓`,
+  [TradeFlowTypeEnum.AddMargin]: () => t`添加保证金`,
+  [TradeFlowTypeEnum.RemoveMargin]: () => t`减少保证金`,
+  [TradeFlowTypeEnum.CancelOrder]: () => t`取消订单`,
+  [TradeFlowTypeEnum.ADL]: () => t`ADL`,
+  [TradeFlowTypeEnum.Liquidation]: () => t`爆仓`,
+  [TradeFlowTypeEnum.MarketClose]: () => t`市场关闭`,
+  [TradeFlowTypeEnum.EarlyClose]: () => t`提前平仓`,
 }
 
 export const Finance = () => {
@@ -94,7 +101,9 @@ export const Finance = () => {
           minWidth: '100px',
           render: (_, record) => {
             return (
-              <div className="text-[12px]">{TradeFlowType[record.type as OperationEnum]?.()}</div>
+              <div className="text-[12px]">
+                {TradeFlowType[record.type as TradeFlowTypeEnum]?.()}
+              </div>
             )
           },
         },
@@ -116,22 +125,27 @@ export const Finance = () => {
           title: (
             <span className="cursor-pointer text-[12px] leading-[12px] text-[#9397a3] underline decoration-dotted underline-offset-[2px]">{t`资金流水`}</span>
           ),
-          key: 'realizedPnl',
+          key: 'collateralAmount',
           align: 'right',
           width: '150px',
           render: (_, record) => {
+            const amountBig = Big(record.collateralAmount || '0')
+              .add(record.realizedPnl || '0')
+              .add(record.fundingFee || '0')
+              .add(record.executionFee || '0')
+              .add(record.tradingFee || '0')
             return (
               <TradeFlowDetail
                 tradeFlow={record}
                 trigger={
                   <span
                     className={clsx('border-b-[1px] border-dashed text-[12px]', {
-                      'border-green': Big(record.afterCollateralAmount).gt(0),
-                      'border-danger': Big(record.afterCollateralAmount).lt(0),
+                      'border-green': amountBig.gt(0),
+                      'border-danger': amountBig.lt(0),
                     })}
                   >
                     <RiseFallText
-                      value={record.afterCollateralAmount}
+                      value={amountBig.toNumber()}
                       renderOptions={{
                         showUnit: false,
                         showSign: true,

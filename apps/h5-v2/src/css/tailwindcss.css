@@ -57,7 +57,12 @@
     --tabbar-height: 0px;
   }
   .min-h-screen {
-    height: calc(var(--vh, 1vh) * 100 - var(--tabbar-height, 0px));
+    min-height: calc(var(--vh, 1vh) * 100 - var(--tabbar-height, 0px));
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 }
 

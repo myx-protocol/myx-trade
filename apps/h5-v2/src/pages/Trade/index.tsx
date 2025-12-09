@@ -11,6 +11,7 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import type { ChainId } from '@myx-trade/sdk'
+import { Charts } from '@/components/Trade/Charts'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
@@ -101,6 +102,7 @@ export const Trade = () => {
   return (
     <>
       <div className="flex flex-[1_1_0%] justify-between gap-x-[4px]">
+        <Charts />
         <TradePanel />
       </div>
       <LeverageDialog />

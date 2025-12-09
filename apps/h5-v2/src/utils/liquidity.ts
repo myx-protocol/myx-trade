@@ -59,27 +59,27 @@ export function availableLiquiditySizeWad(params: {
   if (isLongBiased) {
     if (isBuy) {
       const unreservedQuoteSize = divPrecision(
-        mulPrecision(unreservedQuote, quoteRatio, precision),
-        price,
-        new Big(1),
+        unreservedQuote,
+        mulPrecision(price, quoteRatio, precision),
+        new Big(10 ** 30),
       )
       availableSize = unreservedBase.plus(unreservedQuoteSize)
     } else {
-      const quoteSize = quoteTotal.div(price)
+      const quoteSize = divPrecision(quoteTotal, price, new Big(10 ** 30))
       const baseSize = divPrecision(baseTotal, baseRatio, precision)
       availableSize = tracker.plus(quoteSize).plus(baseSize)
     }
   } else {
     if (isBuy) {
       const quoteSize = divPrecision(
-        mulPrecision(quoteTotal, quoteRatio, precision),
-        price,
-        new Big(1),
+        quoteTotal,
+        mulPrecision(price, quoteRatio, precision),
+        new Big(10 ** 30),
       )
       const trackerAbs = tracker.abs()
       availableSize = trackerAbs.plus(baseTotal).plus(quoteSize)
     } else {
-      const unreservedQuoteSize = unreservedQuote.div(price)
+      const unreservedQuoteSize = divPrecision(unreservedQuote, price, new Big(10 ** 30))
       const adjustedBase = divPrecision(unreservedBase, baseRatio, precision)
       availableSize = unreservedQuoteSize.plus(adjustedBase)
     }

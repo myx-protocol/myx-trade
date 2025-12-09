@@ -1,3 +1,4 @@
+/*
 import { getOraclePrice } from "@/api";
 import { ChainId } from "@/config/chain";
 import { OrderType, TIME_IN_FORCE, TriggerType } from "@/config/con";
@@ -65,7 +66,7 @@ export const CreateDecreaseOrderButton = ({ record, myxClient, poolList, address
       >
         平仓
       </Button>
-      {/* 平仓弹窗 / Close Position Modal */}
+      {/!* 平仓弹窗 / Close Position Modal *!/}
       {open && <Modal
         title="平仓 / Close Position"
         open={open}
@@ -88,4 +89,7 @@ export const CreateDecreaseOrderButton = ({ record, myxClient, poolList, address
       </Modal>}
     </>
   )
+}*/
+export const CreateDecreaseOrderButton = () => {
+  return <></>
 }

@@ -16,6 +16,10 @@ import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { toast } from 'react-hot-toast'
+import { Record } from '@/components/Icon'
+import { TradeRecordTab, TradeRecordTabs } from '@/components/Record/TradeRecordTabs'
+import { useNavigate } from 'react-router-dom'
+import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
 
 const TabButton = ({
   activeTab,
@@ -57,118 +61,66 @@ const CHAIN_LIST: Array<
 
 export const Tables = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
-  const {
-    hideOthersSymbols,
-    setHideOthersSymbols,
-    selectChainId,
-    setSelectChainId,
-    setCloseAllPositionDialogOpen,
-  } = usePositionStore()
+  const { hideOthersSymbols, setHideOthersSymbols, setCloseAllPositionDialogOpen } =
+    usePositionStore()
   const orders = useGetOrderList()
   const { client } = useMyxSdkClient()
-
+  const navigate = useNavigate()
+  const onCloseAllHandler = () => {
+    if (activeTab === TabType.POSITION) {
+      setCloseAllPositionDialogOpen(true)
+    } else if (activeTab === TabType.ENTRUSTS) {
+      // todo: cancel all orders
+    }
+  }
+  const renderCloseAllButton = () => {
+    if (activeTab === TabType.POSITION || activeTab === TabType.ENTRUSTS) {
+      return (
+        <InfoButton
+          onClick={onCloseAllHandler}
+          style={{
+            padding: '6px 10px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 500,
+            lineHeight: 1,
+            border: 0,
+          }}
+        >
+          <Trans>Close All</Trans>
+        </InfoButton>
+      )
+    }
+    return null
+  }
   return (
-    <div className="mt-[4px] h-[100%] min-h-[503px] flex-[1_1_0%] bg-[#101114]">
-      <div className="overflow-x-auto">
-        <div className="flex h-[50px] min-w-max items-center justify-between gap-[150px] bg-[#101114] px-[16px] py-[19px] whitespace-nowrap">
-          <div className="flex items-center gap-[24px]">
-            <TabButton
-              tabType={TabType.POSITION}
-              activeTab={activeTab}
-              onClick={() => setActiveTab(TabType.POSITION)}
-            >
-              <Trans>Positions</Trans>
-            </TabButton>
-            <TabButton
-              tabType={TabType.ENTRUSTS}
-              activeTab={activeTab}
-              onClick={() => setActiveTab(TabType.ENTRUSTS)}
-            >
-              <Trans>Open Orders</Trans>
-            </TabButton>
-            <TabButton
-              tabType={TabType.POSITION_HISTORY}
-              activeTab={activeTab}
-              onClick={() => setActiveTab(TabType.POSITION_HISTORY)}
-            >
-              <Trans>Position History</Trans>
-            </TabButton>
-            <TabButton
-              tabType={TabType.ORDER_HISTORY}
-              activeTab={activeTab}
-              onClick={() => setActiveTab(TabType.ORDER_HISTORY)}
-            >
-              <Trans>Order History</Trans>
-            </TabButton>
-            <TabButton
-              tabType={TabType.FINANCE}
-              activeTab={activeTab}
-              onClick={() => setActiveTab(TabType.FINANCE)}
-            >
-              <Trans>Finance</Trans>
-            </TabButton>
-          </div>
-          <div className="flex items-center">
-            <Select
-              isSingle
-              value={selectChainId || '0'}
-              onChange={(e) => setSelectChainId(e.target.value as string)}
-              options={[
-                { label: t`All Chains`, value: '0' },
-                ...CHAIN_LIST.map((chain) => ({
-                  label: chain.label,
-                  value: chain.chainId.toString(),
-                  icon: chain.logoUrl as string,
-                })),
-                // { label: 'Arbitrum', value: ChainId, icon: ethIcon },
-              ]}
-            />
-            <div className="mx-[12px] h-[12px] w-[1px] bg-[#31333d]"></div>
-            <div className="flex items-center gap-x-[5px]">
-              <CheckBox
-                checked={hideOthersSymbols}
-                onChange={() => setHideOthersSymbols(!hideOthersSymbols)}
-              />
-              <p className="text-[12px] text-[#CED1D9]">
-                <Trans>Hide Others Symbols</Trans>
-              </p>
-            </div>
-            {/* close all in position or open orders */}
-            {(activeTab === TabType.POSITION || activeTab === TabType.ENTRUSTS) && (
-              <Fragment>
-                <div className="mx-[12px] h-[12px] w-[1px] bg-[#31333d]"></div>
-                <InfoButton
-                  className="h-[28px] px-[12px] py-[8px]"
-                  onClick={async () => {
-                    if (activeTab === TabType.POSITION) {
-                      setCloseAllPositionDialogOpen(true)
-                    } else if (activeTab === TabType.ENTRUSTS) {
-                      if (orders.length === 0) {
-                        return
-                      }
-                      const rs = await client?.order.cancelOrders(
-                        orders.map((item: any) => item.orderId),
-                      )
-                      if (rs?.code === 0) {
-                        toast.success('Close all orders success')
-                      } else {
-                        toast.error('Close all orders failed')
-                      }
-                    }
-                  }}
-                >
-                  <Trans>Close All</Trans>
-                </InfoButton>
-              </Fragment>
-            )}
-          </div>
+    <>
+      <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
+        <div className="flex-[1_1_0%]">
+          <TradeRecordTabs
+            value={activeTab}
+            onChange={(event, value) => setActiveTab(value as TabType)}
+          >
+            <TradeRecordTab value={TabType.POSITION} label={<Trans>Positions(1)</Trans>} />
+            <TradeRecordTab value={TabType.ENTRUSTS} label={<Trans>Open Orders(2)</Trans>} />
+          </TradeRecordTabs>
+        </div>
+        {/* hide outer symbols */}
+        <div className="shrink-0 text-[#848E9C]" role="button" onClick={() => navigate('/record')}>
+          <Record size={18} />
         </div>
       </div>
+      <HideOuterSymbols
+        checked={hideOthersSymbols}
+        onChange={setHideOthersSymbols}
+        right={renderCloseAllButton()}
+      />
       {activeTab === TabType.POSITION && <Position />}
       {activeTab === TabType.ENTRUSTS && <Entrusts />}
-      {activeTab === TabType.POSITION_HISTORY && <PositionHistory />}
-      {activeTab === TabType.ORDER_HISTORY && <OrderHistory />}
-      {activeTab === TabType.FINANCE && <Finance />}
-    </div>
+    </>
+
+    // {activeTab === TabType.POSITION_HISTORY && <PositionHistory />}
+    // {activeTab === TabType.ORDER_HISTORY && <OrderHistory />}
+    // {activeTab === TabType.FINANCE && <Finance />}
   )
 }

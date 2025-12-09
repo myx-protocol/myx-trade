@@ -23,11 +23,11 @@ export const usePoolLiquidityInfo = () => {
       const baseTokenDecimals = symbolInfo.baseDecimals
       const quoteTokenDecimals = symbolInfo.quoteDecimals
       const baseReserveRatio = symbolInfo.baseReserveRatio
-        ? Big(symbolInfo.baseReserveRatio).mul(100).toString()
+        ? Big(symbolInfo.baseReserveRatio).toString()
         : BASE_RESERVE_RATIO
       // get the quote reserve ratio
       const quoteReserveRatio = symbolInfo.quoteReserveRatio
-        ? Big(symbolInfo.quoteReserveRatio).mul(100).toString()
+        ? Big(symbolInfo.quoteReserveRatio).toString()
         : QUOTE_RESERVE_RATIO
       // get the base total amount wad
       const baseTotalAmountWad = Big(
@@ -101,11 +101,18 @@ export const usePoolLiquidityInfo = () => {
         executePrice,
       })
 
-      const longSize = Big((poolInfo?.ioTracker.longSize || 0n).toString()).toString()
-      const shortSize = Big((poolInfo?.ioTracker.shortSize || 0n).toString()).toString()
+      const longSize = Big((poolInfo?.ioTracker.longSize || 0n).toString()).toFixed(
+        0,
+        Big.roundDown,
+      )
+      const shortSize = Big((poolInfo?.ioTracker.shortSize || 0n).toString()).toFixed(
+        0,
+        Big.roundDown,
+      )
 
       const longSizeFormatted = formatUnits(longSize, baseTokenDecimals)
       const shortSizeFormatted = formatUnits(shortSize, baseTokenDecimals)
+
       // base token amount formatted
       const buySizeValueFormatted = formatUnits(buySizeValue, 18)
       // quote token amount formatted
