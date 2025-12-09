@@ -101,10 +101,7 @@ export const Trade = () => {
 
   return (
     <>
-      <div className="flex flex-[1_1_0%] justify-between gap-x-[4px]">
-        <Charts />
-        <TradePanel />
-      </div>
+      <TradePanel />
       <LeverageDialog />
     </>
   )
