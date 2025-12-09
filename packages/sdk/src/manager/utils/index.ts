@@ -354,15 +354,29 @@ export class Utils {
     return true
   }
 
-  async getPoolInfo({
+  async getLiquidityInfo({
     chainId, poolId, marketPrice
   }: {
     chainId: number;
     poolId: string;
     marketPrice: string;
   }) {
-    const dataProviderContract = await getDataProviderContract(chainId);
-    const poolInfo = await dataProviderContract.getPoolInfo(poolId, marketPrice);
+    try {
+      const dataProviderContract = await getDataProviderContract(chainId);
+      const poolInfo = await dataProviderContract.getPoolInfo(poolId, marketPrice);
+
+      return {
+        code: 0,
+        data: poolInfo,
+      };
+    } catch (error) {
+      this.logger.error("Error getting pool info:", error);
+      return {
+        code: -1,
+        // @ts-ignore
+        message: error?.message,
+      };
+    }
 
 
     // return poolInfo;
