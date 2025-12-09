@@ -400,6 +400,20 @@
                 "name": "poolEntryPrice"
               }
             ]
+          },
+          {
+            "type": "tuple",
+            "name": "liquidityInfo",
+            "components": [
+              {
+                "type": "uint256",
+                "name": "windowCaps"
+              },
+              {
+                "type": "int256",
+                "name": "openInterest"
+              }
+            ]
           }
         ]
       }
@@ -528,6 +542,20 @@
               {
                 "type": "uint256",
                 "name": "poolEntryPrice"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "liquidityInfo",
+            "components": [
+              {
+                "type": "uint256",
+                "name": "windowCaps"
+              },
+              {
+                "type": "int256",
+                "name": "openInterest"
               }
             ]
           }
