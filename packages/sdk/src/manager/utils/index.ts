@@ -11,7 +11,7 @@ import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
-import { getForwarderContract } from "@/web3/providers";
+import { getDataProviderContract, getForwarderContract } from "@/web3/providers";
 import { getJSONProvider } from "@/web3";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 
@@ -352,5 +352,19 @@ export class Utils {
     }
 
     return true
+  }
+
+  async getPoolInfo({
+    chainId, poolId, marketPrice
+  }: {
+    chainId: number;
+    poolId: string;
+    marketPrice: string;
+  }) {
+    const dataProviderContract = await getDataProviderContract(chainId);
+    const poolInfo = await dataProviderContract.getPoolInfo(poolId, marketPrice);
+
+
+    // return poolInfo;
   }
 }
