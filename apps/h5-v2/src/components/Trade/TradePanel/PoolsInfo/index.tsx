@@ -6,6 +6,7 @@ import { LongShortBar } from '../../components/LongShortBar'
 import { useTradePageStore } from '../../store/TradePageStore'
 import { usePoolLiquidityInfo } from './usePoolLiquidityInfo'
 import { formatNumber } from '@/utils/number'
+import { t } from '@lingui/core/macro'
 
 export const PoolsInfo = () => {
   const { symbolInfo } = useTradePageStore()
@@ -16,7 +17,7 @@ export const PoolsInfo = () => {
       <div className="flex flex-col gap-[14px] text-[12px] font-medium text-white">
         <FlexRowLayout
           left={
-            <Tooltips title="W=Available Long">
+            <Tooltips title={t`当前市场最大可开做多仓位`}>
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Available Long</Trans>
               </p>
@@ -34,7 +35,7 @@ export const PoolsInfo = () => {
 
         <FlexRowLayout
           left={
-            <Tooltips title="Available Short">
+            <Tooltips title={t`当前市场最大可开做空仓位`}>
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Available Short</Trans>
               </p>
@@ -51,7 +52,7 @@ export const PoolsInfo = () => {
         />
         <FlexRowLayout
           left={
-            <Tooltips title="Open Interest (Long)">
+            <Tooltips title={t`本合约市场上所有多头头寸的总和，反映了市场上投资者的看涨信心`}>
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Open Interest (Long)</Trans>
               </p>
@@ -68,7 +69,7 @@ export const PoolsInfo = () => {
         />
         <FlexRowLayout
           left={
-            <Tooltips title="Open Interest (Short)">
+            <Tooltips title={t`本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。`}>
               <p className="text-tooltip font-normal text-[#9397A3]">
                 <Trans>Open Interest (Short)</Trans>
               </p>
@@ -86,11 +87,9 @@ export const PoolsInfo = () => {
 
         <FlexRowLayout
           left={
-            <Tooltips title="Open Interest (Short)">
-              <p className="text-tooltip font-normal text-[#9397A3]">
-                <Trans>Long-Short Ratio</Trans>
-              </p>
-            </Tooltips>
+            <p className="font-normal text-[#9397A3]">
+              <Trans>Long-Short Ratio</Trans>
+            </p>
           }
           right={
             <div className="w-[95px]">

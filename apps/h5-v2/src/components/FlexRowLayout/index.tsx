@@ -9,9 +9,9 @@ interface FlexRowLayoutProps {
 
 export const FlexRowLayout = ({ left, right, className }: FlexRowLayoutProps) => {
   return (
-    <div className={clsx('flex items-center justify-between leading-[1]', className)}>
-      <div className="max-w-[50%]">{left}</div>
-      <div className="max-w-[50%]">{right}</div>
+    <div className={clsx('flex items-center justify-between gap-[24px] leading-none', className)}>
+      <div className="min-w-fit shrink-0">{left}</div>
+      <div className="flex flex-[1_1_0%] justify-end">{right}</div>
     </div>
   )
 }

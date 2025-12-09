@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Interval } from '@/request/type.ts'
 import { SearchBar } from '@/components/SearchBar.tsx'
 import { TabBar } from '@/pages/Earn/components/TabBar.tsx'
-import { VaultType, type Vault } from '@/pages/Earn/type.ts'
+import { VaultType } from '@/pages/Earn/type.ts'
 import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
 import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
 import { SearchContext } from './context'
@@ -16,8 +16,9 @@ const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
   const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
   const [type, setType] = useState<VaultType>(VaultType.Vaults)
+
   return (
-    <Box className="overflow-x w-full pb-[var(--tabbar-height)]">
+    <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
       <SearchBar />
       <Box className={'mt-[20px]'}>
         <Carousel />
@@ -27,7 +28,7 @@ const EarnList = () => {
           <Trans>Vaults</Trans>
         </h2>
         <TabBar value={type} setValueType={setType} />
-        <Box className={'mt-[8px] mr-[-8px] flex items-center justify-between px-[16px]'}>
+        <Box className={'mt-[8px] flex items-center justify-between pr-[8px] pl-[16px]'}>
           <IntervalList interval={interval} setInterval={setInterval} />
           <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
         </Box>
@@ -55,7 +56,9 @@ const EarnList = () => {
         </Box>
       </Box>
       <SearchContext.Provider value={{ chainId, setChainId, interval, setInterval }}>
-        <Box>{type === VaultType.Positions ? <Positions /> : <Vaults />}</Box>
+        {/*<Box className={'flex-1'}>*/}
+        {type === VaultType.Positions ? <Positions /> : <Vaults />}
+        {/*</Box>*/}
       </SearchContext.Provider>
     </Box>
   )

@@ -44,7 +44,7 @@ export const SelectFavoritesToken = () => {
         <Trans>Select Token</Trans>
       </p>
       <div className="mt-[20px] grid grid-cols-2 gap-[12px]">
-        {new Array(10).fill(0).map((_, index) => (
+        {new Array(4).fill(0).map((_, index) => (
           <FavoriteTokenItem key={index} />
         ))}
       </div>

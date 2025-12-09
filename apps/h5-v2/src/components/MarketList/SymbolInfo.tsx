@@ -35,7 +35,7 @@ export const SymbolInfo = ({
         quoteLogo={chainInfo?.logoUrl}
         baseSymbol={symbol}
       />
-      <div className="flex flex-col items-center justify-start gap-[2px]">
+      <div className="flex flex-col items-start justify-start gap-[2px]">
         <p className="text-[14px] font-medium text-white">{symbol}</p>
         {descriptionText && (
           <div className="text-[12px] leading-[1.2] font-normal text-[#848E9C]">

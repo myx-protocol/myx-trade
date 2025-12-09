@@ -3,9 +3,11 @@ import { useMemo, useState } from 'react'
 import ChainAllIcon from '@/components/Icon/set/ChainAll'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { getChainInfo } from '@/config/chainInfo'
+import { useMarketPageStore } from '../../store'
 
 export const ChainSelector = () => {
-  const [selectedChain, setSelectedChain] = useState<'all' | number>('all')
+  // const [selectedChain, setSelectedChain] = useState<'all' | number>('all')
+  const { chainId, setChainId } = useMarketPageStore()
   const chainInfoList = useMemo(() => {
     return getSupportedChainIdsByEnv().map((chainId) => ({
       ...getChainInfo(chainId),
@@ -19,11 +21,11 @@ export const ChainSelector = () => {
           className={clsx(
             'flex min-w-fit items-center gap-[2px] rounded-[6px] py-[6px] pr-[10px] pl-[8px]',
             {
-              'bg-[#202129] text-white': selectedChain === 'all',
-              'text-[#6D7180]': selectedChain !== 'all',
+              'bg-[#202129] text-white': chainId === 0,
+              'text-[#6D7180]': chainId !== 0,
             },
           )}
-          onClick={() => setSelectedChain('all')}
+          onClick={() => setChainId(0)}
         >
           <ChainAllIcon size={14} />
           <p className="text-[12px]">All</p>
@@ -34,11 +36,11 @@ export const ChainSelector = () => {
             className={clsx(
               'flex min-w-fit items-center gap-[2px] rounded-[6px] py-[6px] pr-[10px] pl-[8px]',
               {
-                'bg-[#202129] text-white': selectedChain === chainInfo.chainId,
-                'text-[#6D7180]': selectedChain !== chainInfo.chainId,
+                'bg-[#202129] text-white': chainId === chainInfo.chainId,
+                'text-[#6D7180]': chainId !== chainInfo.chainId,
               },
             )}
-            onClick={() => setSelectedChain(chainInfo.chainId)}
+            onClick={() => setChainId(chainInfo.chainId)}
           >
             <p className="text-[12px]">{chainInfo.label}</p>
           </div>
