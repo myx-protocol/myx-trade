@@ -104,6 +104,9 @@ export class Account {
         return curr.toString();
       }, '0');
 
+
+      this.logger.info('used-->', used)
+
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -111,11 +114,19 @@ export class Account {
           "Failed to get account info"
         );
       }
+
+      this.logger.info('marginAccountBalanceRes-->', marginAccountBalanceRes)
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeAmount ?? 0))
+
+      this.logger.info('freeAmount-->', freeAmount.toString())
+      this.logger.info('quoteProfit-->', quoteProfit.toString())
       const accountMargin = freeAmount + quoteProfit
+
+      this.logger.info('accountMargin-->', accountMargin.toString())
+
       if (accountMargin < usedMargin) {
         return BigInt(0)
       }
@@ -123,7 +134,6 @@ export class Account {
       const availableAccountMarginBalance = accountMargin - usedMargin;
 
       return availableAccountMarginBalance
-
     } catch (error) {
       this.logger.info('getAvailableMarginBalance error-->', error)
       throw new MyxSDKError(
@@ -147,7 +157,6 @@ export class Account {
       data: res.data,
     };
   }
-
 
   async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
     const config: MyxClientConfig = this.configManager.getConfig();
