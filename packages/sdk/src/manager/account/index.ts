@@ -89,7 +89,9 @@ export class Account {
       const poolList = poolListRes.data;
       const pool = poolList?.find((pool: any) => pool.poolId === poolId);
       const orderRes = await this.client.order.getOrders();
+      this.logger.info('orderRes-->', orderRes)
       if (orderRes.code !== 0) {
+
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
           "Failed to get orders"
