@@ -432,7 +432,7 @@ export class Order {
     }
   }
 
-  async createDecreaseOrder(params: PlaceOrderParams, tradingFee: string) {
+  async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
