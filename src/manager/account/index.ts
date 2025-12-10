@@ -119,7 +119,7 @@ export class Account {
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
-      const freeAmount = BigInt((marginAccountBalance?.freeAmount ?? 0))
+      const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
       this.logger.info('freeAmount-->', freeAmount.toString())
       this.logger.info('quoteProfit-->', quoteProfit.toString())
