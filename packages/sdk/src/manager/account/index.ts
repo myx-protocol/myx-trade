@@ -125,9 +125,10 @@ export class Account {
       return availableAccountMarginBalance
 
     } catch (error) {
+      this.logger.info('getAvailableMarginBalance error-->', error)
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
-        "Failed to get orders"
+        "Failed to get getAvailableMarginBalance"
       );
     }
   }
