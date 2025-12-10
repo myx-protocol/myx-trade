@@ -141,6 +141,9 @@ export class Seamless {
     }
 
     const masterAddress = await config.signer.getAddress()
+    const forwarderContract = await getForwarderContract(chainId)
+    const forwarderAddress = forwarderContract.target
+
     const brokerAddress = config.brokerAddress
     const contractAddress = getContractAddressByChainId(chainId);
     const erc20Contract = new ethers.Contract(
@@ -162,6 +165,17 @@ export class Seamless {
         chainId
       )
 
+      const forwarderSignPermit = await signPermit(
+        config.signer,  // 使用 signer 而不是 provider
+        erc20Contract,
+        masterAddress,
+        forwarderAddress as string,
+        ethers.MaxUint256.toString(),
+        (nonces + 1).toString(),
+        deadline.toString(),
+        chainId
+      )
+
       const brokerSeamlessUSDPermitParams = {
         token: erc20Contract.target,
         owner: masterAddress,
@@ -173,8 +187,18 @@ export class Seamless {
         s: brokerSignPermit.s,
       }
 
+      const forwarderPermitParams = {
+        token: erc20Contract.target,
+        owner: masterAddress,
+        spender: forwarderAddress as string,
+        value: ethers.MaxUint256,
+        deadline,
+        v: forwarderSignPermit.v,
+        r: forwarderSignPermit.r,
+        s: forwarderSignPermit.s,
+      }
 
-      return [brokerSeamlessUSDPermitParams]
+      return [brokerSeamlessUSDPermitParams, forwarderPermitParams]
 
     } catch (error) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
@@ -372,7 +396,7 @@ export class Seamless {
     }
   }
 
-  async importSeamlessPrivateKey({ privateKey, password , chainId }: { privateKey: string, password: string, chainId: number }) {
+  async importSeamlessPrivateKey({ privateKey, password, chainId }: { privateKey: string, password: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!ethers.isHexString(privateKey, 32)) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
@@ -462,15 +486,15 @@ export class Seamless {
         authorized: isAuthorized,
       })
 
-      const forwarderContract = await getForwarderContract(chainId)
-      const erc20Address = getContractAddressByChainId(chainId).ERC20
+      // const forwarderContract = await getForwarderContract(chainId)
+      // const erc20Address = getContractAddressByChainId(chainId).ERC20
 
-      await this.utils.approveAuthorization({
-        chainId,
-        quoteAddress: erc20Address,
-        amount: ethers.MaxUint256.toString(),
-        spenderAddress: forwarderContract.target as string,
-      });
+      // await this.utils.approveAuthorization({
+      //   chainId,
+      //   quoteAddress: erc20Address,
+      //   amount: ethers.MaxUint256.toString(),
+      //   spenderAddress: forwarderContract.target as string,
+      // });
 
       return {
         code: 0,
