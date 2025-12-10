@@ -2,7 +2,6 @@ import { PoolContext } from '@/pages/Earn/context.ts'
 import {
   COMMON_PRICE_DECIMALS,
   formatUnits,
-  quote as Quote,
   pool as Pool,
   parseUnits,
   COMMON_LP_AMOUNT_DECIMALS,
@@ -11,8 +10,8 @@ import { useQuery } from '@tanstack/react-query'
 import type { QuoteLpDetail } from '@/request/lp/type.ts'
 import { getPoolRiskLevelConfig, getQuoteLPDetail } from '@/request'
 import { useParams } from 'react-router-dom'
-import { type ReactNode, useRef } from 'react'
-import type { PoolInfo } from '@/pages/Cook/type.ts'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { Mode, type PoolInfo } from '@/pages/Cook/type.ts'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import { useUpdateEffect } from 'ahooks'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
@@ -23,6 +22,8 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { client } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
+  const prevPriceRef = useRef<string | undefined>(undefined)
+  const [mode, setMode] = useState<Mode>(Mode.Rise)
 
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
@@ -131,6 +132,13 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [poolId, client, quoteLpDetail?.globalId])
 
+  useEffect(() => {
+    if (poolInfo?.price !== prevPriceRef.current) {
+      setMode(Number(poolInfo?.price) >= Number(prevPriceRef.current || '') ? Mode.Rise : Mode.Fall)
+      prevPriceRef.current = poolInfo?.price
+    }
+  }, [poolInfo?.price])
+
   return (
     <PoolContext.Provider
       value={{
@@ -142,6 +150,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         refetch,
         genesisFeeRate,
         exchangeRate: poolInfo?.exchangeRate,
+        mode,
       }}
     >
       {children}
