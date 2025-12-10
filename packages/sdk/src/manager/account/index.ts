@@ -99,10 +99,11 @@ export class Account {
       const orders = orderRes.data;
       const openOrders = orders?.filter((order: any) => order.poolId === poolId);
       const used = openOrders?.reduce((acc: string, order: any) => {
-        const prev = BigInt(acc)
-        const curr = BigInt(order.collateralAmount ?? 0) + prev
+        const prev = BigInt(ethers.parseUnits(acc, pool?.quoteDecimals ?? 6))
+        const curr = BigInt(ethers.parseUnits(order.collateralAmount ?? '0', pool?.quoteDecimals ?? 6)) + prev
         return curr.toString();
       }, '0');
+
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -111,7 +112,7 @@ export class Account {
         );
       }
       const marginAccountBalance = marginAccountBalanceRes.data;
-      const usedMargin = ethers.parseUnits(used ?? '0', pool?.quoteDecimals ?? 6);
+      const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeAmount ?? 0))
       const accountMargin = freeAmount + quoteProfit
