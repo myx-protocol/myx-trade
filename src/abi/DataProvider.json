@@ -69,10 +69,6 @@
         "components": [
           {
             "type": "uint256",
-            "name": "availableMargin"
-          },
-          {
-            "type": "uint256",
             "name": "freeMargin"
           },
           {
