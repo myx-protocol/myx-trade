@@ -80,7 +80,7 @@ export class Account {
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
       const poolListRes = await getPoolList();
-      if (poolListRes.code !== 0) {
+      if (poolListRes.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
           "Failed to get pool list"
