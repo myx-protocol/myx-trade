@@ -89,7 +89,6 @@ export class Account {
       const poolList = poolListRes.data;
       const pool = poolList?.find((pool: any) => pool.poolId === poolId);
       const orderRes = await this.client.order.getOrders();
-      this.logger.info('orderRes-->', orderRes)
       if (orderRes.code !== 0) {
 
         throw new MyxSDKError(
@@ -114,7 +113,7 @@ export class Account {
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = ethers.parseUnits(used ?? '0', pool?.quoteDecimals ?? 6);
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
-      const freeAmount = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0)
+      const freeAmount = BigInt((marginAccountBalance?.freeAmount ?? 0))
       const accountMargin = freeAmount + quoteProfit
       if (accountMargin < usedMargin) {
         return BigInt(0)
