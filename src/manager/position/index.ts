@@ -28,7 +28,7 @@ export class Position {
     this.seamless = seamless;
   }
 
-  async listPositions() {
+  async listPositions(address: string) {
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -39,7 +39,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken);
+      const res = await getPositions(accessToken, address);
       return {
         code: 0,
         data: res.data,
@@ -53,7 +53,7 @@ export class Position {
     }
   }
 
-  async getPositionHistory(params: GetHistoryOrdersParams) {
+  async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -61,7 +61,7 @@ export class Position {
         "Invalid access token"
       );
     }
-    const res = await getPositionHistory({ accessToken, ...params });
+    const res = await getPositionHistory({ accessToken, ...params, address: address });
     return {
       code: 0,
       data: res.data,
