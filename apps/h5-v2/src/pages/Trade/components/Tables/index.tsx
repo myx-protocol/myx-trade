@@ -46,7 +46,7 @@ export const Tables = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
   const { hideOthersSymbols, setHideOthersSymbols, setCloseAllPositionDialogOpen } =
     usePositionStore()
-  const { setCancelAllOrdersDialogOpen, cancelAllOrdersDialogOpen } = useGlobalStore()
+  const { setCancelAllOrdersDialogOpen } = useGlobalStore()
   const orderList = useGetOrderList()
   const positionList = useGetPositionList()
 
@@ -108,7 +108,6 @@ export const Tables = () => {
       />
       {activeTab === TabType.POSITION && <Position />}
       {activeTab === TabType.ENTRUSTS && <Entrusts />}
-      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
     </>
     // {activeTab === TabType.POSITION_HISTORY && <PositionHistory />}
     // {activeTab === TabType.ORDER_HISTORY && <OrderHistory />}

@@ -96,6 +96,7 @@ export interface HistoryOrderItem {
  */
 export const getHistoryOrders = async ({
   accessToken,
+  address,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<HistoryOrderItem[]>>(
@@ -103,6 +104,7 @@ export const getHistoryOrders = async ({
     params,
     {
       headers: {
+        myx_openapi_account: address,
         myx_openapi_access_token: accessToken,
       },
     }
@@ -148,6 +150,7 @@ export interface PositionHistoryItem {
 
 export const getPositionHistory = async ({
   accessToken,
+  address,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<PositionHistoryItem[]>>(
@@ -155,6 +158,7 @@ export const getPositionHistory = async ({
     params,
     {
       headers: {
+        myx_openapi_account: address,
         myx_openapi_access_token: accessToken,
       },
     }
@@ -183,6 +187,7 @@ export interface TradeFlowItem {
 }
 export const getTradeFlow = async ({
   accessToken,
+  address,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<TradeFlowItem[]>>(
@@ -191,6 +196,7 @@ export const getTradeFlow = async ({
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
