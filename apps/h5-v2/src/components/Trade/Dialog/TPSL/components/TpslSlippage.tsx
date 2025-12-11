@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import YesIcon from '@/components/Icon/set/Yes'
 import CloseIcon from '@/components/Icon/set/CloseIcon'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
-import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 export const TpslSlippage = () => {
@@ -51,7 +51,12 @@ export const TpslSlippage = () => {
               role="button"
               onClick={() => {
                 if (value) {
-                  setTpSlSlippage(value / 100)
+                  setSlippage({
+                    chainId: symbolInfo?.chainId ?? 0,
+                    poolId: symbolInfo?.poolId ?? '',
+                    type: SlippageTypeEnum.TPSL,
+                    slippage: value / 100,
+                  })
                 }
 
                 setIsEdit(false)
@@ -66,7 +71,7 @@ export const TpslSlippage = () => {
             role="button"
             onClick={() => setIsEdit(true)}
           >
-            <p className="font-medium text-white">{tpSlSlippage * 100}%</p>
+            <p className="font-medium text-white">{tpSlSlippage ? tpSlSlippage * 100 : '--'}%</p>
             <EditSimply size={12} color="#fff" />
           </div>
         )}
