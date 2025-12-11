@@ -1,28 +1,45 @@
 import { SecondHeader } from '@/components/SecondHeader'
 import { Trans } from '@lingui/react/macro'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { RecordTab } from './components/RecordTab'
 import { TabType } from '../Trade/types'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
 import { InfoButton } from '@/components/UI/Button'
-import { usePositionStore } from '@/store/position/createStore'
+// import { usePositionStore } from '@/store/position/createStore'
 import { PositionList } from './components/PositionList'
 import { OpenOrderList } from './components/OpenOrderList'
 import { OrderHistoryList } from './components/OrderHistoryList'
 import { PositionHistoryList } from './components/PositionHistoryList'
 import { FinanceList } from './components/FinanceList'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import { useLocation, useSearchParams } from 'react-router-dom'
+import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
 
 const Record = () => {
   const [tab, setTab] = React.useState<TabType>(TabType.POSITION)
   const [hideOuterSymbols, setHideOuterSymbols] = React.useState(false)
-  const { setCloseAllPositionDialogOpen } = usePositionStore()
-  const { symbolInfo } = useTradePageStore()
-  console.log('symbolInfo-->', symbolInfo)
+  // const { setCloseAllPositionDialogOpen } = usePositionStore()
+  const { search } = useLocation()
+  const { setSymbolInfo } = useTradePageStore()
+  console.log('search-->', search)
+  const params = new URLSearchParams(search)
+  const chainId = params.get('chainId') ?? ''
+  const poolId = params.get('poolId') ?? ''
+
+  const { getDetail } = useMarketDetail({
+    poolId: poolId || '',
+    chainId: chainId ? parseInt(chainId) : undefined,
+  })
+
+  useEffect(() => {
+    getDetail().then((marketDetail) => {
+      setSymbolInfo(marketDetail)
+    })
+  }, [getDetail, setSymbolInfo])
 
   const onCloseAllHandler = () => {
     if (tab === TabType.POSITION) {
-      setCloseAllPositionDialogOpen(true)
+      // setCloseAllPositionDialogOpen(true)
     } else if (tab === TabType.ENTRUSTS) {
       // todo: cancel all orders
     }

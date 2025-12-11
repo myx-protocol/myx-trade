@@ -4,6 +4,7 @@ import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import IconEdit from '@/components/Icon/set/EditSimply'
 import { DialogConfirmFooter } from '../components/DialogConfirmFooter'
+import useGlobalStore from '@/store/globalStore'
 
 export const MarketCloseConfirmDialog = ({
   open,
@@ -12,6 +13,7 @@ export const MarketCloseConfirmDialog = ({
   open: boolean
   onClose: () => void
 }) => {
+  const { setShowMarketCloseConfirmDialog, showMarketCloseConfirmDialog } = useGlobalStore()
   return (
     <DialogTheme open={open} onClose={onClose}>
       <DialogTitleTheme onClose={onClose} className="pb-[20px]!">
@@ -84,7 +86,11 @@ export const MarketCloseConfirmDialog = ({
           />
         </div>
         <div className="mt-[20px]">
-          <DialogConfirmFooter onConfirm={() => {}} showDontShowAgain />
+          <DialogConfirmFooter
+            onConfirm={() => {}}
+            showDontShowAgain={!showMarketCloseConfirmDialog}
+            setDontShowAgain={(show) => setShowMarketCloseConfirmDialog(show)}
+          />
         </div>
       </div>
     </DialogTheme>

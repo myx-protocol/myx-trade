@@ -1,7 +1,9 @@
 import { Toaster as HotToast, ToastBar, resolveValue, toast } from 'react-hot-toast'
 import { useEffect } from 'react'
 import type { Renderable, Toast } from 'react-hot-toast'
-import { SuccessIcon, InfoIcon, WrongIcon } from '@/components/UI/Icon'
+import { InfoIcon } from '@/components/UI/Icon'
+import errorIcon from '@/assets/icon/commons/error.svg'
+import successIcon from '@/assets/icon/commons/success.svg'
 
 export const Toaster = () => {
   return (
@@ -13,20 +15,13 @@ export const Toaster = () => {
           maxWidth: '379px',
           background: '#2D3138',
           borderRadius: '12px',
-          height: '70px',
-          minHeight: '70px',
+          height: '73px',
+          minHeight: '73px',
           boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.20)',
           color: 'white',
           margin: 0,
+          padding: '4px',
         },
-        className: 'p-4px',
-        // success: {
-        //   icon: <div className='w-36px h-36px bg-brand' />,
-        // },
-        // error: {
-        //   icon: <div className='w-36px h-36px bg-trade-sell' />,
-        // },
-
         duration: 5000,
         position: 'top-right',
       }}
@@ -62,9 +57,9 @@ function ToastBarContent({
   }, [toaster.duration, toaster.id])
 
   return (
-    <div className="flex h-[70px] w-full items-center py-[4px]">
+    <div className="flex h-[65px] w-full items-center">
       <div
-        className="flex h-[70px] w-[48px] items-center justify-center"
+        className="flex h-[65px] w-[46px] items-center justify-center"
         style={{
           background:
             toaster.type === 'success'
@@ -77,14 +72,19 @@ function ToastBarContent({
       >
         {/* {content.icon} */}
         {toaster.type === 'success' ? (
-          <SuccessIcon className="w-28px h-28px" />
+          <div>
+            <img src={successIcon} alt="success" className="w-8px h-8px" />
+          </div>
         ) : toaster.type === 'error' ? (
-          <WrongIcon className="w-28px h-28px" />
+          <div>
+            <img src={errorIcon} alt="error" className="w-8px h-8px" />
+          </div>
         ) : (
-          <InfoIcon className="w-28px h-28px" />
+          <div>
+            <InfoIcon className="w-16px h-16px" />
+          </div>
         )}
       </div>
-      {/* <div style={{ padding: '4px 8px' }}>{content.message}</div> */}
       {resolveValue(content.message, content)}
 
       <div className="text-text-secondary" onClick={() => toast.dismiss(toaster.id)}>

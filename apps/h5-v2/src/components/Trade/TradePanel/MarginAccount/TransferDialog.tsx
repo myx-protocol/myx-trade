@@ -33,6 +33,7 @@ type TransferType = (typeof TransferType)[keyof typeof TransferType]
 
 export const TransferDialogButton = () => {
   const [loading, setLoading] = useState(false)
+
   const [open, setOpen] = useState(false)
   const { symbolInfo } = useTradePageStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
@@ -59,9 +60,9 @@ export const TransferDialogButton = () => {
 
   return (
     <>
-      <InfoButton className="w-full" onClick={handleTransfer} loading={isSwitchNetwork}>
+      <PrimaryButton className="w-full" onClick={handleTransfer} loading={isSwitchNetwork}>
         <Trans>Transfer</Trans>
-      </InfoButton>
+      </PrimaryButton>
       {open && (
         <DialogBase
           title={t`Transfer` + ' '}

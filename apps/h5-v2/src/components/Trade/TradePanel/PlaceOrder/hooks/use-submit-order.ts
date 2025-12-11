@@ -301,12 +301,12 @@ export const useSubmitOrder = () => {
       try {
         setLoading(true)
         if (positionAction === PositionActionEnum.OPEN) {
+          console.log('tradingFee-->', tradingFee)
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
           if (rs?.code === 0) {
             resetStore()
             toast.success('Submit open order success')
             setPlaceOrderConfirmDialogOpen(false)
-            // wait backend sync data
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
@@ -317,11 +317,11 @@ export const useSubmitOrder = () => {
             ...orderData,
             collateralAmount: '0',
           } as any)
+          console.log('rs-->', rs)
           if (rs?.code === 0) {
             toast.success('Submit close order success')
             setCloseOrderConfirmDialogOpen(false)
             resetStore()
-            // wait backend sync data
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {

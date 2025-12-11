@@ -7,7 +7,6 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import Up from '@/components/Icon/set/Up'
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { t } from '@lingui/core/macro'
-import EditIcon from '@/components/UI/Icon/EditIcon'
 import { DirectionEnum, OracleType } from '@myx-trade/sdk'
 import clsx from 'clsx'
 import { parseBigNumber } from '@/utils/bn'
@@ -237,12 +236,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
       return {}
     }
 
-    console.log(
-      accountAssets?.walletBalance?.toString(),
-      accountAssets?.quoteProfit?.toString(),
-      adjustMargin,
-      accountAssets.freeMargin,
-    )
     const walletBalance = parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0')
     const quoteProfit = parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0')
     const freeMargin = parseBigNumber(accountAssets.freeMargin ?? '0')
@@ -277,19 +270,18 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
   return (
     <>
-      <div className="ml-[4px] cursor-pointer" role="button" onClick={() => setOpen(true)}>
-        <InfoButton
-          style={{
-            width: '100%',
-            padding: '10px 16px',
-            borderRadius: '6px',
-            fontWeight: 500,
-            lineHeight: 1,
-          }}
-        >
-          <Trans>Margin</Trans>
-        </InfoButton>
-      </div>
+      <InfoButton
+        onClick={() => setOpen(true)}
+        style={{
+          width: '100%',
+          padding: '10px 16px',
+          borderRadius: '6px',
+          fontWeight: 500,
+          lineHeight: 1,
+        }}
+      >
+        <Trans>Margin</Trans>
+      </InfoButton>
       {open && (
         <DialogBase title={t`Adjust Margin`} open={open} onClose={() => setOpen(false)}>
           {/* pair level info */}
