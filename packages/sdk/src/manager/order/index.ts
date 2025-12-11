@@ -58,22 +58,30 @@ export class Order {
         params.executionFeeToken,
         params.collateralAmount,
       );
+      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
+
+
 
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
-      const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee
+
+      this.logger.info("createIncreaseOrder availableAccountMarginBalance-->", availableAccountMarginBalance)
+      const needAmount = totalCollateralAmount + totalNetWorkFee
+      this.logger.info("createIncreaseOrder needAmount-->", needAmount)
       let depositAmount = BigInt(0)
 
       const diff = needAmount - availableAccountMarginBalance
+      this.logger.info("createIncreaseOrder diff-->", diff)
       if (diff > BigInt(0)) {
         depositAmount = diff
       }
+      this.logger.info("createIncreaseOrder depositAmount-->", depositAmount)
 
       const depositData = {
         token: params.executionFeeToken,
         amount: depositAmount.toString()
       }
 
+      this.logger.info("createIncreaseOrder depositData-->", depositData)
       const data = {
         user: params.address,
         poolId: params.poolId,
