@@ -147,6 +147,7 @@ export interface PoolOpenOrdersResponse extends BaseResponse {
 
 export interface AccessTokenRequest {
   accessToken: string;
+  address: string;
 }
 
 export enum HttpKlineIntervalEnum {

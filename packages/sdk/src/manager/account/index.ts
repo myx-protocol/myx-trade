@@ -88,7 +88,7 @@ export class Account {
       }
       const poolList = poolListRes.data;
       const pool = poolList?.find((pool: any) => pool.poolId === poolId);
-      const orderRes = await this.client.order.getOrders();
+      const orderRes = await this.client.order.getOrders(address);
       if (orderRes.code !== 0) {
 
         throw new MyxSDKError(
@@ -137,7 +137,7 @@ export class Account {
     }
   }
 
-  async getTradeFlow(params: GetHistoryOrdersParams) {
+  async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -145,7 +145,7 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params });
+    const res = await getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,

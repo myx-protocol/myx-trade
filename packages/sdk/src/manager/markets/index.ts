@@ -99,7 +99,7 @@ export class Markets {
    * (only for authenticated users)
    *
    */
-  async searchMarketAuth(params: SearchMarketParams) {
+  async searchMarketAuth(params: SearchMarketParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -109,6 +109,7 @@ export class Markets {
     }
     return (
       await searchMarketAuth({
+        address: address,
         ...params,
         accessToken: accessToken,
       })
@@ -126,7 +127,7 @@ export class Markets {
    * get favorites list
    * (only for authenticated users)
    */
-  async getFavoritesList(params: FavoritesListParams) {
+  async getFavoritesList(params: FavoritesListParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -137,6 +138,7 @@ export class Markets {
     return (
       await getFavoritesList({
         ...params,
+        address: address,
         accessToken: accessToken,
       })
     ).data;
@@ -144,7 +146,7 @@ export class Markets {
   /**
    * favorite
    */
-  async addFavorite(params: AddFavoriteParams) {
+  async addFavorite(params: AddFavoriteParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -155,12 +157,13 @@ export class Markets {
     return (
       await addFavorite({
         ...params,
+        address: address,
         accessToken: accessToken,
       })
     ).data;
   }
 
-  async removeFavorite(params: RemoveFavoriteParams) {
+  async removeFavorite(params: RemoveFavoriteParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -171,6 +174,7 @@ export class Markets {
     return (
       await removeFavorite({
         ...params,
+        address: address,
         accessToken: accessToken,
       })
     ).data;
