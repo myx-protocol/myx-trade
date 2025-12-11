@@ -23,12 +23,15 @@ export const FavoritesList = () => {
     queryKey: ['home-market-list-favorites', address, isWalletConnected],
     enabled: Boolean(isWalletConnected && address && client && clientIsAuthenticated),
     queryFn: () => {
-      return client?.markets.searchMarketAuth({
-        chainId: 0,
-        searchType: SearchTypeEnum.Contract,
-        type: SearchSecondTypeEnum.Favorite,
-        searchKey: '',
-      })
+      return client?.markets.searchMarketAuth(
+        {
+          chainId: 0,
+          searchType: SearchTypeEnum.Contract,
+          type: SearchSecondTypeEnum.Favorite,
+          searchKey: '',
+        },
+        address ?? '',
+      )
     },
   })
   const { subscribeToTicker } = useSubscription()

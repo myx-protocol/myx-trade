@@ -42,10 +42,13 @@ export const OrderHistory = () => {
     ),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
-      const res = await client.order.getOrderHistory({
-        chainId: selectChainId === '0' ? 0 : Number(selectChainId),
-        poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
-      })
+      const res = await client.order.getOrderHistory(
+        {
+          chainId: selectChainId === '0' ? 0 : Number(selectChainId),
+          poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
+        },
+        address ?? '',
+      )
       return res.data
     },
   })

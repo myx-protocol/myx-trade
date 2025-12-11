@@ -38,7 +38,7 @@ const CHAIN_LIST: Array<
 
 export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
   const { client } = useMyxSdkClient()
-
+  const { address } = useWalletConnection()
   // chain select
   const [chainSelectOpen, setChainSelectOpen] = useState(false)
 
@@ -110,7 +110,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
 
         let res: SearchResultResponse | null
         if (isWalletConnected) {
-          res = await client.markets.searchMarketAuth(params)
+          res = await client.markets.searchMarketAuth(params, address ?? '')
         } else {
           res = await client.markets.searchMarket(params)
         }

@@ -46,7 +46,7 @@ export const ClaimTotalRewardsDialog = ({
 }: ClaimTotalRewardsDialogProps) => {
   const [value, setValue] = useState<string>('1')
   return (
-    <DialogBase title={t`领取全部收益`} open={open} onClose={onClose} width={390}>
+    <DialogBase title={t`领取全部收益`} open={open} onClose={onClose}>
       <RewardListSelector value={value} onChange={setValue} />
       <PrimaryButton
         className="mt-[20px]! h-[44px] w-full rounded-[999px]! text-[14px]! font-medium!"

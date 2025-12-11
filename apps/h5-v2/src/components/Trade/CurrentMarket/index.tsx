@@ -24,6 +24,7 @@ export const CurrentMarket = () => {
       currentSymbolGlobalIdRef.current = symbolInfo.globalId
       client.markets
         .getTickerList({
+          chainId: symbolInfo.chainId,
           poolIds: [symbolInfo.poolId],
         })
         .then((res) => {

@@ -24,7 +24,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
   const { isWalletConnected } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const tickerData = useMarketStore((state) => state.tickerData[item.poolId])
-
+  const { address } = useWalletConnection()
   useMount(() => {
     console.log('mounted-item', item.poolId)
   })
@@ -42,10 +42,13 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
     const isFavorite = item.favorites === 1
     if (isFavorite) {
       client?.markets
-        .removeFavorite({
-          chainId: item.chainId,
-          poolId: item.poolId,
-        })
+        .removeFavorite(
+          {
+            chainId: item.chainId,
+            poolId: item.poolId,
+          },
+          address ?? '',
+        )
         .then(() => {
           tradePubSub.emit('global:search:update')
         })
@@ -54,10 +57,13 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
         })
     } else {
       client?.markets
-        .addFavorite({
-          chainId: item.chainId,
-          poolId: item.poolId,
-        })
+        .addFavorite(
+          {
+            chainId: item.chainId,
+            poolId: item.poolId,
+          },
+          address ?? '',
+        )
         .then(() => {
           tradePubSub.emit('global:search:update')
         })

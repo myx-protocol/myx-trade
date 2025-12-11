@@ -2,120 +2,191 @@ import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { usePoolLiquidityInfo } from '@/components/Trade/TradePanel/PoolsInfo/usePoolLiquidityInfo'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
-import { useMemo } from 'react'
-import { ethers } from 'ethers'
 import { parseBigNumber } from '@/utils/bn'
-import { useTotalAvailableBalance } from '../balance/use-total-available-balance'
-import { useGetAccountPoolAssets } from '../balance/use-get-account-pool-Assets'
+import { useGetAccountAssets } from '../balance/use-get-account-assets'
+import { useGetLiquidityInfo } from './use-get-liquidity-info'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { ethers } from 'ethers'
+import { useMemo, useRef } from 'react'
+import { displayAmount } from '@/utils/number'
+
+// 自定义 hook：保留之前的有效值（在渲染时同步更新，不使用 useEffect）
+function useStableValue<T>(value: T, isValid: (val: T) => boolean): T {
+  const ref = useRef<T>(value)
+
+  // 在渲染时立即判断和更新，不等到 useEffect
+  if (isValid(value)) {
+    ref.current = value
+  }
+
+  return ref.current
+}
 
 export const useGetOpenAvailable = () => {
+  const { symbolInfo, poolConfig } = useTradePageStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
-  const { symbolInfo } = useTradePageStore()
   const leverage = useLeverage(symbolInfo?.poolId)
   const { autoMarginMode, collateralAmount, price } = useTradePanelStore()
-  const walletBalance = useTotalAvailableBalance()
-  const accountPoolAssets = useGetAccountPoolAssets(symbolInfo?.poolId as string)
 
-  const maxOpenLongAmount = useMemo(() => {
-    if (parseBigNumber(price).eq(0)) {
-      return {
-        quoteAmount: '0',
-        baseAmount: '0',
-      }
-    }
+  const { liquidityInfo } = useGetLiquidityInfo()
 
-    const freeAmountAmount = accountPoolAssets.freeAmount ?? '0'
-    const tradeableProfitAmount = accountPoolAssets.tradeableProfit ?? '0'
-    const walletBalanceAmount = parseBigNumber(walletBalance)
-      .plus(parseBigNumber(freeAmountAmount))
-      .plus(parseBigNumber(tradeableProfitAmount))
-      .toString()
-    const walletBalanceString = ethers.formatUnits(
-      walletBalanceAmount.toString(),
-      symbolInfo?.quoteDecimals ?? 6,
+  const slipValue = useMemo(() => {
+    if (!poolConfig) return 1
+    return Number(poolConfig?.levelConfig?.slip ?? 1)
+  }, [poolConfig])
+
+  const {
+    maxOpenLongByConfigRatio: longByConfigRatio,
+    maxOpenShortByConfigRatio: shortByConfigRatio,
+  } = useMemo(() => {
+    const openSlippage =
+      getSlippage({
+        chainId: symbolInfo?.chainId ?? 0,
+        poolId: symbolInfo?.poolId ?? '',
+        type: SlippageTypeEnum.OPEN,
+      }) ?? 1
+
+    const ratio = openSlippage / slipValue
+    const maxOpenByConfigRatio = Math.log(ratio)
+    const configTotalRatio = parseBigNumber(1).plus(maxOpenByConfigRatio)
+
+    // 确保 windowCaps 和 openInterest 是字符串，避免每次都重新计算
+    const windowCapsStr = liquidityInfo?.windowCaps ?? '0'
+    const openInterestStr = liquidityInfo?.openInterest ?? '0'
+
+    const windowCaps = parseBigNumber(
+      ethers.formatUnits(windowCapsStr, symbolInfo?.quoteDecimals).toString(),
+    )
+    const openInterest = parseBigNumber(
+      ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals).toString(),
     )
 
-    const collateralAmountValue = autoMarginMode
-      ? parseBigNumber(walletBalanceString).mul(parseBigNumber(leverage))
+    // 计算并固定精度，避免浮点数精度问题
+    const longRatio = windowCaps.mul(configTotalRatio).minus(openInterest)
+    const shortRatio = windowCaps.mul(configTotalRatio).plus(openInterest)
+
+    return {
+      maxOpenLongByConfigRatio: longRatio.toFixed(18),
+      maxOpenShortByConfigRatio: shortRatio.toFixed(18),
+    }
+  }, [
+    liquidityInfo?.windowCaps,
+    liquidityInfo?.openInterest,
+    slipValue,
+    symbolInfo?.chainId,
+    symbolInfo?.poolId,
+    symbolInfo?.quoteDecimals,
+    symbolInfo?.baseDecimals,
+  ])
+
+  // 使用 useStableValue 保留有效值，避免计算结果变成 0 或负数
+  const maxOpenLongByConfigRatio = useStableValue(longByConfigRatio, (val) => {
+    const numVal = parseFloat(val)
+    return !isNaN(numVal) && numVal > 0
+  })
+  const maxOpenShortByConfigRatio = useStableValue(shortByConfigRatio, (val) => {
+    const numVal = parseFloat(val)
+    return !isNaN(numVal) && numVal > 0
+  })
+
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+
+  const safePrice = useMemo(() => {
+    return !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
+  }, [price])
+
+  const collateralAmountValue = useMemo(() => {
+    const value = autoMarginMode
+      ? parseBigNumber(accountAssets?.availableMargin?.toString() ?? '0').mul(
+          parseBigNumber(leverage),
+        )
       : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
-    const maxOpenLongQuoteAmountByLiquidityString = poolLiquidityInfo?.buySizeValue
-      ? ethers
-          .formatUnits(poolLiquidityInfo.buySizeValue, symbolInfo?.quoteDecimals ?? 6)
+    return value.toString()
+  }, [autoMarginMode, accountAssets?.availableMargin, leverage, collateralAmount])
+
+  // 使用 useStableValue 保留有效值，避免 refetch 期间的空值
+  const stableBuySizeValue = useStableValue(
+    poolLiquidityInfo?.buySizeValueFormatedQuote,
+    (val) => val !== undefined && val !== null && val !== '0',
+  )
+  const stableSellSizeValue = useStableValue(
+    poolLiquidityInfo?.sellSizeValueFormatedQuote,
+    (val) => val !== undefined && val !== null && val !== '0',
+  )
+
+  const maxOpenLongQuoteAmountByLiquidityString = useMemo(() => {
+    return stableBuySizeValue ?? '0'
+  }, [stableBuySizeValue])
+
+  const maxOpenShortQuoteAmountByLiquidityString = useMemo(() => {
+    return stableSellSizeValue ?? '0'
+  }, [stableSellSizeValue])
+
+  return useMemo(() => {
+    const collateralValue = parseBigNumber(collateralAmountValue)
+    let longQuoteAmount = collateralAmountValue
+    let longBaseAmount = collateralValue.div(parseBigNumber(safePrice)).toString()
+
+    if (collateralValue.gte(parseBigNumber(maxOpenLongQuoteAmountByLiquidityString))) {
+      if (
+        parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).gte(
+          parseBigNumber(maxOpenLongByConfigRatio),
+        )
+      ) {
+        longQuoteAmount = maxOpenLongByConfigRatio
+        longBaseAmount = parseBigNumber(maxOpenLongByConfigRatio)
+          .div(parseBigNumber(safePrice))
           .toString()
-      : '0'
+      } else {
+        longQuoteAmount = parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).toString()
+        longBaseAmount = parseBigNumber(maxOpenLongQuoteAmountByLiquidityString)
+          .div(parseBigNumber(safePrice))
+          .toString()
+      }
+    }
 
-    if (collateralAmountValue.gte(parseBigNumber(maxOpenLongQuoteAmountByLiquidityString))) {
-      return {
-        quoteAmount: parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).toString(),
-        baseAmount: parseBigNumber(maxOpenLongQuoteAmountByLiquidityString)
-          .div(parseBigNumber(price))
-          .toString(),
+    let shortQuoteAmount = collateralAmountValue
+    let shortBaseAmount = collateralValue.div(parseBigNumber(safePrice)).toString()
+
+    if (collateralValue.gte(parseBigNumber(maxOpenShortQuoteAmountByLiquidityString))) {
+      if (
+        parseBigNumber(maxOpenShortQuoteAmountByLiquidityString).gte(
+          parseBigNumber(maxOpenShortByConfigRatio),
+        )
+      ) {
+        shortQuoteAmount = maxOpenShortByConfigRatio
+        shortBaseAmount = parseBigNumber(maxOpenShortByConfigRatio)
+          .div(parseBigNumber(safePrice))
+          .toString()
+      } else {
+        shortQuoteAmount = parseBigNumber(maxOpenShortQuoteAmountByLiquidityString).toString()
+        shortBaseAmount = parseBigNumber(maxOpenShortQuoteAmountByLiquidityString)
+          .div(parseBigNumber(safePrice))
+          .toString()
       }
     }
 
     return {
-      quoteAmount: collateralAmountValue.toString(),
-      baseAmount: collateralAmountValue.div(parseBigNumber(price)).toString(),
+      maxOpenLong: {
+        quoteAmount: longQuoteAmount ?? '0',
+        baseAmount: longBaseAmount ?? '0',
+      },
+      maxOpenShort: {
+        quoteAmount: shortQuoteAmount ?? '0',
+        baseAmount: shortBaseAmount ?? '0',
+      },
+      // 格式化后的显示值
+      maxOpenLongDisplayQuote: displayAmount(longQuoteAmount ?? '0'),
+      maxOpenLongDisplayBase: displayAmount(longBaseAmount ?? '0'),
+      maxOpenShortDisplayQuote: displayAmount(shortQuoteAmount ?? '0'),
+      maxOpenShortDisplayBase: displayAmount(shortBaseAmount ?? '0'),
     }
   }, [
-    poolLiquidityInfo,
-    leverage,
-    autoMarginMode,
-    collateralAmount,
-    walletBalance,
-    symbolInfo,
-    price,
-    autoMarginMode,
-    walletBalance,
+    collateralAmountValue,
+    safePrice,
+    maxOpenLongQuoteAmountByLiquidityString,
+    maxOpenShortQuoteAmountByLiquidityString,
+    maxOpenLongByConfigRatio,
+    maxOpenShortByConfigRatio,
   ])
-
-  const maxOpenShortAmount = useMemo(() => {
-    if (parseBigNumber(price).eq(0)) {
-      return {
-        quoteAmount: '0',
-        baseAmount: '0',
-      }
-    }
-    const walletBalanceString = ethers.formatUnits(walletBalance, symbolInfo?.quoteDecimals ?? 6)
-    const collateralAmountValue = autoMarginMode
-      ? parseBigNumber(walletBalanceString).mul(parseBigNumber(leverage))
-      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
-    const maxOpenLongQuoteAmountByLiquidityString = poolLiquidityInfo?.shortSize
-      ? ethers.formatUnits(poolLiquidityInfo.shortSize, symbolInfo?.quoteDecimals ?? 6).toString()
-      : '0'
-    if (collateralAmountValue.gte(parseBigNumber(maxOpenLongQuoteAmountByLiquidityString))) {
-      return {
-        quoteAmount: parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).toString(),
-        baseAmount: parseBigNumber(maxOpenLongQuoteAmountByLiquidityString)
-          .div(parseBigNumber(price))
-          .toString(),
-      }
-    }
-
-    return {
-      quoteAmount: collateralAmountValue.toString(),
-      baseAmount: collateralAmountValue.div(parseBigNumber(price)).toString(),
-    }
-  }, [
-    poolLiquidityInfo,
-    leverage,
-    autoMarginMode,
-    collateralAmount,
-    walletBalance,
-    symbolInfo,
-    autoMarginMode,
-    price,
-    walletBalance,
-  ])
-
-  return {
-    maxOpenLong: {
-      quoteAmount: maxOpenLongAmount.quoteAmount ?? '0',
-      baseAmount: maxOpenLongAmount.baseAmount ?? '0',
-    },
-    maxOpenShort: {
-      quoteAmount: maxOpenShortAmount.quoteAmount ?? '0',
-      baseAmount: maxOpenShortAmount.baseAmount ?? '0',
-    },
-  }
 }

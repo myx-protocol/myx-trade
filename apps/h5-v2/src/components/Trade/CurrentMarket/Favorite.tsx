@@ -21,10 +21,13 @@ export const Favorite = () => {
     queryFn: async () => {
       if (!symbolInfo?.poolId || !symbolInfo.chainId || !client || !clientIsAuthenticated)
         return null
-      const favorite = await client.markets.getFavoritesList({
-        poolId: symbolInfo.poolId,
-        chainId: symbolInfo.chainId,
-      })
+      const favorite = await client.markets.getFavoritesList(
+        {
+          poolId: symbolInfo.poolId,
+          chainId: symbolInfo.chainId,
+        },
+        address ?? '',
+      )
       setIsFavorite(favorite?.[0]?.favorites === 1)
       return favorite?.[0]
     },
@@ -55,10 +58,13 @@ export const Favorite = () => {
     setIsFavorite(!valueOrigin)
     if (isFavorite) {
       client?.markets
-        .removeFavorite({
-          poolId: symbolInfo.poolId,
-          chainId: symbolInfo.chainId,
-        })
+        .removeFavorite(
+          {
+            poolId: symbolInfo.poolId,
+            chainId: symbolInfo.chainId,
+          },
+          address ?? '',
+        )
         .catch(() => {
           setIsFavorite(valueOrigin)
         })
@@ -68,10 +74,13 @@ export const Favorite = () => {
         })
     } else {
       client?.markets
-        .addFavorite({
-          poolId: symbolInfo.poolId,
-          chainId: symbolInfo.chainId,
-        })
+        .addFavorite(
+          {
+            poolId: symbolInfo.poolId,
+            chainId: symbolInfo.chainId,
+          },
+          address ?? '',
+        )
         .catch(() => {
           setIsFavorite(valueOrigin)
         })
