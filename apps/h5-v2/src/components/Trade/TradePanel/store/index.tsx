@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { AmountUnitEnum, PositionActionEnum, TpSlTypeEnum } from '../../type'
-import { OrderType } from '@myx-trade/sdk'
+import { Direction, OrderType } from '@myx-trade/sdk'
 
 export interface TradePanelStore {
   /**
@@ -24,8 +24,8 @@ export interface TradePanelStore {
   /**
    * tpsl open
    */
-  tpslOpen: boolean
-  setTpslOpen: (tpslOpen: boolean) => void
+  tpSlOpen: boolean
+  setTpSlOpen: (tpslOpen: boolean) => void
 
   /**
    * tp
@@ -42,14 +42,14 @@ export interface TradePanelStore {
   /**
    * tp value
    */
-  tpValue: number
-  setTpValue: (tpValue: number) => void
+  tpValue: string
+  setTpValue: (tpValue: string) => void
 
   /**
    * sl value
    */
-  slValue: number
-  setSlValue: (slValue: number) => void
+  slValue: string
+  setSlValue: (slValue: string) => void
 
   /**
    * price
@@ -79,26 +79,20 @@ export interface TradePanelStore {
   setAmountUnit: (amountUnit: AmountUnitEnum) => void
 
   /**
-   * open position slippage
-   */
-  openPositionSlippage: number
-  setOpenPositionSlippage: (openPositionSlippage: number) => void
-  /**
-   * close position slippage
-   */
-  closePositionSlippage: number
-  setClosePositionSlippage: (closePositionSlippage: number) => void
-  /**
-   * tp sl slippage
-   */
-  tpSlSlippage: number
-  setTpSlSlippage: (tpSlSlippage: number) => void
-
-  /**
    * chain id
    */
   receiveDialogOpen: boolean
   setReceiveDialogOpen: (receiveDialogOpen: boolean) => void
+
+  amountSliderValue: number
+  setAmountSliderValue: (amountSliderValue: number) => void
+  /**
+   * reset store
+   */
+  resetStore: () => void
+
+  tempInputValue: string
+  setTempInputValue: (tempInputValue: string) => void
 }
 
 export const useTradePanelStore = create<TradePanelStore>((set) => ({
@@ -115,8 +109,8 @@ export const useTradePanelStore = create<TradePanelStore>((set) => ({
   /**
    * tpsl
    */
-  tpslOpen: false,
-  setTpslOpen: (tpslOpen: boolean) => set({ tpslOpen }),
+  tpSlOpen: false,
+  setTpSlOpen: (tpSlOpen: boolean) => set({ tpSlOpen }),
 
   tpType: TpSlTypeEnum.PRICE,
   setTpType: (tpType: TpSlTypeEnum) => set({ tpType }),
@@ -124,11 +118,11 @@ export const useTradePanelStore = create<TradePanelStore>((set) => ({
   slType: TpSlTypeEnum.PRICE,
   setSlType: (slType: TpSlTypeEnum) => set({ slType }),
 
-  tpValue: 0,
-  setTpValue: (tpValue: number) => set({ tpValue }),
+  tpValue: '',
+  setTpValue: (tpValue: string) => set({ tpValue }),
 
-  slValue: 0,
-  setSlValue: (slValue: number) => set({ slValue }),
+  slValue: '',
+  setSlValue: (slValue: string) => set({ slValue }),
   collateralAmount: '0',
   setCollateralAmount: (collateralAmount: string) => set({ collateralAmount }),
   longSize: '0',
@@ -137,12 +131,18 @@ export const useTradePanelStore = create<TradePanelStore>((set) => ({
   setShortSize: (shortSize: string) => set({ shortSize }),
   amountUnit: AmountUnitEnum.BASE,
   setAmountUnit: (amountUnit: AmountUnitEnum) => set({ amountUnit }),
-  openPositionSlippage: 0,
-  setOpenPositionSlippage: (openPositionSlippage: number) => set({ openPositionSlippage }),
-  closePositionSlippage: 0,
-  setClosePositionSlippage: (closePositionSlippage: number) => set({ closePositionSlippage }),
-  tpSlSlippage: 0,
-  setTpSlSlippage: (tpSlSlippage: number) => set({ tpSlSlippage }),
   receiveDialogOpen: false,
   setReceiveDialogOpen: (receiveDialogOpen: boolean) => set({ receiveDialogOpen }),
+  direction: Direction.LONG,
+  amountSliderValue: 0,
+  setAmountSliderValue: (amountSliderValue: number) => set({ amountSliderValue }),
+  tempInputValue: '',
+  setTempInputValue: (tempInputValue: string) => set({ tempInputValue }),
+  resetStore: () =>
+    set({
+      amountSliderValue: 0,
+      tempInputValue: '',
+      longSize: '0',
+      shortSize: '0',
+    }),
 }))

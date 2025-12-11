@@ -1,23 +1,28 @@
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { DialogBase } from '@/components/UI/DialogBase'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTradePageStore } from '../../store/TradePageStore'
 import { t } from '@lingui/core/macro'
 import ChangePosition from '@/components/Icon/set/ChangePosition'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
-import { useGetWalletBalance } from '@/hooks/balance/use-get-wallet-balance'
+
 import { ethers } from 'ethers'
 import { displayAmount } from '@/utils/number'
 import { InfoIcon } from '@/components/UI/Icon'
-import { toast } from 'react-hot-toast'
-import { useGetAccountPoolAssets } from '@/hooks/balance/use-get-account-pool-Assets'
+import { toast } from '@/components/UI/Toast'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { parseBigNumber } from '@/utils/bn'
 import usdcIcon from '@/assets/icon/chainIcon/usdc.svg'
 import usdtIcon from '@/assets/icon/chainIcon/usdt.svg'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { useBoolean } from 'ahooks'
+import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
+import { AmountUnitEnum } from '../../type'
+import { MenuItem, Select } from '@mui/material'
+import { useGetPoolList } from '../../hooks/use-get-pool-list'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -28,26 +33,23 @@ type TransferType = (typeof TransferType)[keyof typeof TransferType]
 
 export const TransferDialogButton = () => {
   const [loading, setLoading] = useState(false)
-  const { client } = useMyxSdkClient()
   const [open, setOpen] = useState(false)
   const { symbolInfo } = useTradePageStore()
-  const [transferType, setTransferType] = useState<TransferType>(TransferType.Wallet)
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { address } = useWalletConnection()
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+  const [transferType, setTransferType] = useState<TransferType>(TransferType.Account)
   const [amount, setAmount] = useState<string>('')
-  const walletBalance = useGetWalletBalance()
-  const accountPoolAssets = useGetAccountPoolAssets(symbolInfo?.poolId as string)
-  const walletBalanceString = useMemo(() => {
-    return ethers.formatUnits(walletBalance, symbolInfo?.quoteDecimals ?? 6)
-  }, [walletBalance, symbolInfo?.quoteDecimals])
-  const accountPoolAssetsString = useMemo(() => {
-    return ethers.formatUnits(accountPoolAssets.freeAmount, symbolInfo?.quoteDecimals ?? 6)
-  }, [accountPoolAssets.freeAmount, symbolInfo?.quoteDecimals])
+  const { poolList } = useGetPoolList()
+  const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
+  const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
 
   const { checkWalletChainId } = useWalletChainCheck()
 
   const [isSwitchNetwork, { setTrue: setIsSwitchNetworkTrue, setFalse: setIsSwitchNetworkFalse }] =
     useBoolean(false)
   const handleTransfer = async () => {
-    if (!symbolInfo?.chainId) return
+    if (!symbolInfo?.chainId || !client) return
     setIsSwitchNetworkTrue()
     checkWalletChainId(symbolInfo.chainId).then(() => {
       setIsSwitchNetworkFalse()
@@ -126,44 +128,216 @@ export const TransferDialogButton = () => {
                 <ChangePosition size={14} color="white" />
               </div>
             </div>
-            <div className="mt-[8px] rounded-[16px] bg-[#202129] p-[16px]">
+            <div className="mt-[8px] h-[80px] rounded-[16px] bg-[#202129] p-[16px]">
               <p className="text-[14px] font-[500] text-[#848E9C]">
                 <Trans>Asset</Trans>
               </p>
-              <div className="mt-[15px] flex items-center gap-[4px]">
-                <img
-                  src={symbolInfo?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
-                  alt=""
-                  className="h-[20px] w-[20px]"
-                />
-                <span className="text-[white]">{symbolInfo?.quoteSymbol}</span>
-              </div>
+              {transferType === TransferType.Wallet ? (
+                <div className="mt-[12px] flex items-center gap-[8px]">
+                  <img
+                    src={symbolInfo?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
+                    alt=""
+                    className="h-[20px] w-[20px]"
+                  />
+                  <span className="text-[14px] font-[500] text-[white]">
+                    {symbolInfo?.quoteSymbol}
+                  </span>
+                </div>
+              ) : (
+                <Select
+                  className="mt-[13px] w-full"
+                  value={tokenType}
+                  onChange={(e) => setTokenType(e.target.value)}
+                  renderValue={(value) => {
+                    const isQuote = value === AmountUnitEnum.QUOTE
+
+                    return (
+                      <div className="flex h-[20px] items-center gap-[8px]">
+                        <img
+                          src={
+                            isQuote
+                              ? pool?.quoteSymbol === 'USDT'
+                                ? usdtIcon
+                                : usdcIcon
+                              : pool?.baseTokenIcon
+                          }
+                          alt=""
+                          className="h-[20px] w-[20px] rounded-full"
+                        />
+                        <span className="text-[14px] font-[500] text-white">
+                          {isQuote ? pool?.quoteSymbol : pool?.baseSymbol}
+                        </span>
+                      </div>
+                    )
+                  }}
+                  sx={{
+                    border: 'none',
+                    backgroundColor: 'transparent',
+                    height: '20px',
+                    minHeight: '20px',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none',
+                    },
+                    '& .MuiSelect-icon': {
+                      color: 'white',
+                      right: 0,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                    },
+                    '& .MuiSelect-select': {
+                      padding: '0',
+                      paddingRight: '24px !important',
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: '20px !important',
+                    },
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        width: '356px',
+                        backgroundColor: '#202129',
+                        borderRadius: '16px',
+                        marginTop: '8px',
+                        padding: '4px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                        '& .MuiList-root': {
+                          padding: 0,
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem
+                    value={AmountUnitEnum.QUOTE}
+                    sx={{
+                      borderRadius: '12px',
+                      padding: '12px 16px',
+                      '&:hover': {
+                        backgroundColor: '#2A2B33',
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: '#2A2B33',
+                        '&:hover': {
+                          backgroundColor: '#2A2B33',
+                        },
+                      },
+                    }}
+                  >
+                    <div className="flex h-[44px] w-full items-center justify-between">
+                      <div className="flex items-center gap-[12px]">
+                        <img
+                          src={pool?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
+                          alt=""
+                          className="h-[20px] w-[20px]"
+                        />
+                        <span className="text-[14px] font-[500] text-white">
+                          {pool?.quoteSymbol}
+                        </span>
+                      </div>
+                      {tokenType === AmountUnitEnum.QUOTE && (
+                        <div className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#00E3A5]">
+                          <svg
+                            width="8"
+                            height="6"
+                            viewBox="0 0 14 10"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 5L5 9L13 1"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </MenuItem>
+                  <MenuItem
+                    value={AmountUnitEnum.BASE}
+                    sx={{
+                      borderRadius: '12px',
+                      padding: '12px 16px',
+                      marginTop: '4px',
+                      '&:hover': {
+                        backgroundColor: '#2A2B33',
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: '#2A2B33',
+                        '&:hover': {
+                          backgroundColor: '#2A2B33',
+                        },
+                      },
+                    }}
+                  >
+                    <div className="flex h-[44px] w-full items-center justify-between">
+                      <div className="flex items-center gap-[12px]">
+                        <img
+                          src={pool?.baseTokenIcon}
+                          alt=""
+                          className="h-[20px] w-[20px] rounded-full"
+                        />
+                        <span className="text-[14px] font-[500] text-white">
+                          {pool?.baseSymbol}
+                        </span>
+                      </div>
+                      {tokenType === AmountUnitEnum.BASE && (
+                        <div className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-[#00E3A5]">
+                          <svg
+                            width="8"
+                            height="6"
+                            viewBox="0 0 14 10"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 5L5 9L13 1"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </MenuItem>
+                </Select>
+              )}
             </div>
-            <div className="mt-[8px] rounded-[16px] bg-[#202129] p-[16px]">
+            <div className="mt-[8px] h-[80px] rounded-[16px] bg-[#202129] p-[16px]">
               <p className="text-[14px] font-[500] text-[#848E9C]">
                 <Trans>Amount</Trans>
               </p>
-              <div className="mt-[15px] flex items-center gap-[4px]">
+              <div className="flex items-center gap-[4px]">
                 <NumberInputPrimitive
                   className="text-[24px] font-[500] text-[white]"
                   value={amount}
                   placeholder={t`Please Enter`}
                   inputMode="decimal"
-                  decimalScale={2}
+                  decimalScale={symbolInfo?.quoteDecimals ?? 6}
                   thousandSeparator=","
                   decimalSeparator="."
-                  onValueChange={(e) => setAmount(e.value)}
+                  onValueChange={(values, sourceInfo) => {
+                    if (sourceInfo.source === NumberInputSourceType.EVENT) {
+                      setAmount(values.value)
+                    }
+                  }}
                 />
                 <span
                   className="cursor-pointer text-[14px] font-[500] text-[#00E3A5]"
                   onClick={() => {
                     if (transferType === TransferType.Wallet) {
-                      const walletBalanceString = ethers
-                        .formatUnits(walletBalance, symbolInfo?.quoteDecimals ?? 6)
-                        .toString()
-                      setAmount(walletBalanceString)
+                      setAmount(accountAssets?.walletBalance?.toString() ?? '0')
                     } else {
-                      setAmount(accountPoolAssetsString)
+                      if (tokenType === AmountUnitEnum.QUOTE) {
+                        setAmount(accountAssets?.freeMargin?.toString() ?? '0')
+                      } else {
+                        setAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')
+                      }
                     }
                   }}
                 >
@@ -175,14 +349,24 @@ export const TransferDialogButton = () => {
               <span className="text-[14px] font-[500] text-[#848E9C]">
                 <Trans>Available</Trans>
               </span>
-              <div className="flex items-center gap-[8px]">
+              <div className="flex items-center gap-[8px] text-[12px]">
                 {transferType === 'wallet' ? (
                   <span className="text-[white]">
-                    {displayAmount(walletBalanceString)} {symbolInfo?.quoteSymbol}
+                    {displayAmount(
+                      accountAssets?.walletBalance?.toString() ?? '0',
+                      symbolInfo?.quoteDecimals ?? 6,
+                    )}{' '}
+                    {symbolInfo?.quoteSymbol}
                   </span>
                 ) : (
                   <span className="text-[white]">
-                    {displayAmount(accountPoolAssetsString)} {symbolInfo?.quoteSymbol}
+                    {displayAmount(
+                      tokenType === AmountUnitEnum.QUOTE
+                        ? (accountAssets?.freeMargin?.toString() ?? '0')
+                        : (accountAssets?.freeBaseAmount?.toString() ?? '0'),
+                      symbolInfo?.quoteDecimals ?? 6,
+                    )}{' '}
+                    {symbolInfo?.quoteSymbol}
                   </span>
                 )}
                 <InfoIcon className="h-[16px] w-[16px]" />
@@ -194,61 +378,80 @@ export const TransferDialogButton = () => {
                 className="w-full rounded-[44px]"
                 style={{
                   height: '44px',
+                  fontSize: '14px',
                   borderRadius: '44px',
                   fontWeight: '500',
                 }}
                 onClick={async () => {
                   if (amount === '') {
-                    toast.error(t`Please Enter Amount`)
+                    toast.error({ title: t`Please Enter Amount` })
                     return
                   }
-                  const formatAmount = ethers.parseUnits(amount, symbolInfo?.quoteDecimals ?? 6)
+
+                  if (parseBigNumber(amount).lte(0)) {
+                    toast.error({ title: t`Amount must be greater than 0` })
+                    return
+                  }
 
                   try {
                     setLoading(true)
                     if (transferType === TransferType.Wallet) {
                       if (
-                        parseBigNumber(amount.toString()).gt(parseBigNumber(walletBalanceString))
-                      ) {
-                        toast.error(t`Insufficient Balance`)
-                        return
-                      }
-                      const rs = await client?.account.deposit({
-                        poolId: symbolInfo?.poolId as string,
-                        amount: formatAmount.toString(),
-                        tokenAddress: symbolInfo?.quoteToken as string,
-                      })
-                      if (rs?.code === 0) {
-                        toast.success(t`Transfer Success`)
-                        setOpen(false)
-                      } else {
-                        console.log('rs-->', rs)
-                        toast.error(t`Transfer Failed`)
-                      }
-                    } else {
-                      if (
                         parseBigNumber(amount.toString()).gt(
-                          parseBigNumber(accountPoolAssetsString),
+                          parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0'),
                         )
                       ) {
-                        toast.error(t`Insufficient Balance`)
+                        toast.error({ title: t`Insufficient Balance` })
+                        return
+                      }
+                      const formatAmount = ethers.parseUnits(amount, symbolInfo?.quoteDecimals ?? 6)
+
+                      const rs = await client?.account.deposit({
+                        amount: formatAmount.toString(),
+                        tokenAddress: symbolInfo?.quoteToken as string,
+                        chainId: symbolInfo?.chainId as number,
+                      })
+                      if (rs?.code === 0) {
+                        toast.success({ title: t`Transfer Success` })
+                        setOpen(false)
+                      } else {
+                        toast.error({ title: t`Transfer Failed` })
+                      }
+                    } else {
+                      const formatAmount = ethers.parseUnits(
+                        amount,
+                        tokenType === AmountUnitEnum.QUOTE
+                          ? (symbolInfo?.quoteDecimals ?? 6)
+                          : (symbolInfo?.baseDecimals ?? 6),
+                      )
+                      let maxAmount = '0'
+                      if (tokenType === AmountUnitEnum.QUOTE) {
+                        maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                      } else {
+                        maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                      }
+                      if (parseBigNumber(amount.toString()).gt(parseBigNumber(maxAmount))) {
+                        toast.error({ title: t`Insufficient Balance` })
                         return
                       }
                       const rs = await client?.account.withdraw({
                         poolId: symbolInfo?.poolId as string,
+                        chainId: symbolInfo?.chainId as number,
+                        receiver: address as string,
                         amount: formatAmount.toString(),
+                        isQuoteToken: tokenType === AmountUnitEnum.QUOTE,
                       })
                       if (rs?.code === 0) {
-                        toast.success(t`Transfer Success`)
+                        toast.success({ title: t`Transfer Success` })
                         setOpen(false)
                       } else {
                         console.log('rs-->', rs)
-                        toast.error(t`Transfer Failed`)
+                        toast.error({ title: t`Transfer Failed` })
                       }
                     }
                   } catch (e) {
                     console.log(e)
-                    toast.error(t`Transfer Failed`)
+                    toast.error({ title: t`Transfer Failed` })
                   } finally {
                     setLoading(false)
                   }

@@ -6,11 +6,12 @@ import { useWalletConnection } from '../wallet/useWalletConnection'
 import { useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 
-export const useGetOrderList = () => {
+export const useGetOrderList = (filter = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { symbolInfo } = useTradePageStore()
   const { isWrongNetwork } = useWalletConnection()
   const { hideOthersSymbols } = usePositionStore()
+  const { selectChainId } = usePositionStore()
 
   const { data, mutate } = useSWR(
     client && clientIsAuthenticated && !isWrongNetwork
@@ -20,6 +21,8 @@ export const useGetOrderList = () => {
           hideOthersSymbols,
           clientIsAuthenticated,
           isWrongNetwork,
+          selectChainId,
+          filter,
         }
       : null,
     async () => {
@@ -27,11 +30,19 @@ export const useGetOrderList = () => {
 
       const orders = rs.data ?? []
 
+      if (!filter) {
+        return orders
+      }
+
       const filteredOrders = orders.filter((item: any) =>
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      return filteredOrders
+      const positionByChainId = filteredOrders.filter((item: any) => {
+        return item.chainId === Number(selectChainId) || selectChainId === '0'
+      })
+
+      return positionByChainId
     },
     {
       refreshInterval: 5000,

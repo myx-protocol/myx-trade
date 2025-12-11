@@ -12,6 +12,7 @@ import { getForwarderContract } from "@/web3/providers";
 import { MyxClient } from "..";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
+import { getPoolList } from "@/api/pool";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -77,20 +78,66 @@ export class Account {
   }
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
-    const marginAccountBalanceRes = await this.getTradableAmount({ poolId, chainId: chainId, address });
-    const marginAccountBalance = marginAccountBalanceRes?.data;
-    if (marginAccountBalanceRes.code !== 0) {
+    try {
+      const poolListRes = await getPoolList();
+      if (poolListRes.code !== 9200) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Failed to get pool list"
+        );
+      }
+      const poolList = poolListRes.data;
+      const pool = poolList?.find((pool: any) => pool.poolId === poolId);
+      const orderRes = await this.client.order.getOrders(address);
+      if (orderRes.code !== 0) {
+
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Failed to get orders"
+        );
+      }
+      const orders = orderRes.data;
+      const openOrders = orders?.filter((order: any) => order.poolId === poolId);
+      const used = openOrders?.reduce((acc: string, order: any) => {
+        const prev = BigInt(ethers.parseUnits(acc, pool?.quoteDecimals ?? 6))
+        const curr = BigInt(ethers.parseUnits(order.collateralAmount ?? '0', pool?.quoteDecimals ?? 6)) + prev
+        return curr.toString();
+      }, '0');
+
+
+      const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
+      if (marginAccountBalanceRes.code !== 0) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Failed to get account info"
+        );
+      }
+
+      const marginAccountBalance = marginAccountBalanceRes.data;
+      const usedMargin = BigInt(used ?? '0');
+      const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
+      const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
+
+      const accountMargin = freeAmount + quoteProfit
+
+
+      if (accountMargin < usedMargin) {
+        return BigInt(0)
+      }
+
+      const availableAccountMarginBalance = accountMargin - usedMargin;
+
+      return availableAccountMarginBalance
+    } catch (error) {
+      this.logger.info('getAvailableMarginBalance error-->', error)
       throw new MyxSDKError(
-        MyxErrorCode.InsufficientMarginBalance,
-        "Insufficient margin balance"
+        MyxErrorCode.RequestFailed,
+        "Failed to get getAvailableMarginBalance"
       );
     }
-    const availableAccountMarginBalance = BigInt(marginAccountBalance?.freeAmount.toString() ?? 0) + (!marginAccountBalance?.tradeableProfit ? BigInt(marginAccountBalance?.tradeableProfit) : BigInt(0))
-
-    return availableAccountMarginBalance
   }
 
-  async getTradeFlow(params: GetHistoryOrdersParams) {
+  async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -98,13 +145,12 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params });
+    const res = await getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,
     };
   }
-
 
   async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
     const config: MyxClientConfig = this.configManager.getConfig();

@@ -8,12 +8,17 @@ import { displayAmount } from '@/utils/number'
 import { AmountUnitEnum } from '../../type'
 import { parseBigNumber } from '@/utils/bn'
 import { Direction } from '@myx-trade/sdk'
+import useGlobalStore from '@/store/globalStore'
+import { t } from '@lingui/core/macro'
+import { toast } from '@/components/UI/Toast'
+import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 
 export const ClosePosition = () => {
   const { shortSize, longSize, amountUnit } = useTradePanelStore()
+  const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { symbolInfo } = useTradePageStore()
   const { submitOrder } = useSubmitOrder()
-
+  const { showCloseOrderConfirmDialog, setCloseOrderConfirmDialogOpen } = useGlobalStore()
   const displayLongSize = useMemo(() => {
     return `${displayAmount(longSize ?? '0')} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
   }, [longSize, amountUnit, symbolInfo])
@@ -34,7 +39,27 @@ export const ClosePosition = () => {
           borderRadius: '8px',
           height: '44px',
         }}
-        onClick={() => submitOrder(Direction.SHORT)}
+        onClick={() => {
+          if (parseBigNumber(longSize).lte(0)) {
+            toast.error({
+              title: t`close  amount must be greater than 0`,
+            })
+            return
+          }
+
+          if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.quoteAmount))) {
+            toast.error({
+              title: t`close amount must be less than ${displayAmount(maxCloseLong.quoteAmount)}`,
+            })
+            return
+          }
+
+          if (showCloseOrderConfirmDialog) {
+            setCloseOrderConfirmDialogOpen('LONG')
+            return
+          }
+          submitOrder(Direction.LONG)
+        }}
       >
         <div>
           <p>
@@ -57,7 +82,26 @@ export const ClosePosition = () => {
           borderRadius: '8px',
           height: '44px',
         }}
-        onClick={() => submitOrder(Direction.SHORT)}
+        onClick={() => {
+          if (parseBigNumber(shortSize).lte(0)) {
+            toast.error({
+              title: t`close  amount must be greater than 0`,
+            })
+            return
+          }
+          if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.quoteAmount))) {
+            toast.error({
+              title: t`close  amount must be less than ${displayAmount(maxCloseShort.quoteAmount)}`,
+            })
+            return
+          }
+
+          if (showCloseOrderConfirmDialog) {
+            setCloseOrderConfirmDialogOpen('SHORT')
+            return
+          }
+          submitOrder(Direction.SHORT)
+        }}
       >
         <div>
           <p>

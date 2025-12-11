@@ -1,10 +1,23 @@
 import Big, { type BigSource } from 'big.js'
 
+Big.RM = Big.roundDown
+
 const subscriptDigits = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']
 
-const isSuperDecimal = (value: number | string) => {
+export const isSuperDecimal = (value: number | string) => {
   const valueBig = new Big(value)
   return valueBig.abs().lt(0.000001) && valueBig.abs().gt(0)
+}
+
+export const getSuperDecimalScale = (value: number) => {
+  const valueBig = new Big(value)
+  const isNegative = valueBig.lt(0)
+  const absValue = isNegative ? valueBig.abs() : valueBig
+
+  const decimalPart = new Big(absValue).toFixed(30).split('.')[1] || ''
+  const firstNonZeroIndex = decimalPart.search(/[1-9]/)
+
+  return firstNonZeroIndex === -1 ? 6 : firstNonZeroIndex + 1 + 4
 }
 
 const formatSuperDecimal = (
@@ -48,7 +61,7 @@ const formatSuperDecimal = (
   return formatted
 }
 
-const autoDecimals = (value: number) => {
+export const autoPriceDecimals = (value: number) => {
   if (value >= 1000) {
     return 2
   }
@@ -71,6 +84,7 @@ export interface NumberFormatOptions {
   showUnit?: boolean
   /** 是否为正数添加+号，默认为false */
   showSign?: boolean
+  fallback?: string
 }
 
 /**
@@ -79,14 +93,19 @@ export interface NumberFormatOptions {
  * @param options 格式化选项
  * @returns 格式化后的字符串
  */
-export const formatNumber = (num: BigSource, options: NumberFormatOptions = {}): string => {
+export const formatNumber = (num?: BigSource, options: NumberFormatOptions = {}): string => {
   const {
     decimals = undefined,
     showThousandsSeparator = true,
     thousandsSeparator = ',',
     showUnit = true,
     showSign = false,
+    fallback = '--',
   } = options
+
+  if (num === null || num === undefined || num === '' || Number.isNaN(Number(num))) {
+    return fallback
+  }
 
   let decimalsValue = decimals
 
@@ -107,7 +126,7 @@ export const formatNumber = (num: BigSource, options: NumberFormatOptions = {}):
   if (isSuperDecimal(bigValue.toNumber())) {
     return formatSuperDecimal(bigValue.toNumber(), { showSign })
   } else if (decimalsValue === undefined) {
-    decimalsValue = autoDecimals(bigValue.abs().toNumber())
+    decimalsValue = autoPriceDecimals(bigValue.abs().toNumber())
   }
   // 处理负数
   const isNegative = bigValue.lt(0)
@@ -389,4 +408,16 @@ export const decimalToPercent = (decimal: Big.BigSource, options?: PercentFormat
   }
   // add percent sign
   return result + '%'
+}
+
+/**
+ * format base token amount
+ */
+
+export const formatNumberWithBaseToken = (number: BigSource, options?: NumberFormatOptions) => {
+  const decimals = options?.decimals || 4
+  return formatNumber(number, {
+    ...options,
+    decimals,
+  })
 }

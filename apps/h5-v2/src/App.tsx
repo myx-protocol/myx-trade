@@ -13,7 +13,8 @@ import { SetPasswordDialog } from './components/Seamless/SetPasswordDialog'
 import { ImportDialog } from './components/Seamless/ImportDialog'
 import { ExportInfoDialog } from './components/Seamless/ExportInfoDialog'
 import { ExportDialog } from './components/Seamless/ExportDialog'
-import { useMount, useUpdateEffect } from 'ahooks'
+import { useUpdateEffect } from 'ahooks'
+import { CancelAllOrdersDialog } from './pages/Trade/components/CancelAllOrdersDialog'
 
 function App() {
   const { closeAllPositionDialogOpen } = usePositionStore()
@@ -25,6 +26,7 @@ function App() {
     importSeamlessKeyDialogOpen,
     exportSeamlessInfoDialogOpen,
     exportSeamlessKeyDialogOpen,
+    cancelAllOrdersDialogOpen,
   } = useGlobalStore()
 
   useUpdateEffect(() => {
@@ -53,7 +55,7 @@ function App() {
       {importSeamlessKeyDialogOpen && <ImportDialog />}
       {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
       {exportSeamlessKeyDialogOpen && <ExportDialog />}
-
+      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
       <Toaster />
     </>
   )

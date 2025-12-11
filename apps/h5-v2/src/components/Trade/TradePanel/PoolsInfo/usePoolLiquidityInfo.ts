@@ -3,7 +3,7 @@ import { usePoolInfo } from '../../hooks/usePoolInfo'
 import { availableLiquiditySizeWad } from '@/utils/liquidity'
 import { Big } from 'big.js'
 import { parseUnits, formatUnits } from 'ethers'
-import { useQuery } from '@tanstack/react-query'
+import useSWR from 'swr'
 import { useMarketStore } from '../../store/MarketStore'
 
 const BASE_RESERVE_RATIO = '100'
@@ -15,9 +15,11 @@ export const usePoolLiquidityInfo = () => {
     chainId: symbolInfo?.chainId,
   })
 
-  return useQuery({
-    queryKey: ['availableLiquiditySizeWad', symbolInfo?.poolId, symbolInfo?.chainId],
-    queryFn: () => {
+  const { data, isLoading } = useSWR(
+    symbolInfo?.poolId && symbolInfo?.chainId && poolInfo
+      ? ['availableLiquiditySizeWad', symbolInfo?.poolId, symbolInfo?.chainId]
+      : null,
+    async () => {
       if (!symbolInfo?.poolId || !symbolInfo?.chainId || !poolInfo) return null
       // get the base reserve ratio
       const baseTokenDecimals = symbolInfo.baseDecimals
@@ -144,6 +146,11 @@ export const usePoolLiquidityInfo = () => {
         shortSizeValueFormatedQuote,
       }
     },
-    refetchInterval: 3000,
-  })
+    {
+      refreshInterval: 3000,
+      keepPreviousData: true, // 关键：保留之前的数据，避免闪烁
+    },
+  )
+
+  return { data, isLoading }
 }
