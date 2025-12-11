@@ -46,10 +46,10 @@ export class Order {
       );
 
       let totalNetWorkFee = BigInt(networkFee)
-      if (params.tpSize) {
+      if (params.tpSize && BigInt(params.tpSize) > 0) {
         totalNetWorkFee += BigInt(networkFee)
       }
-      if (params.slSize) {
+      if (params.slSize && BigInt(params.slSize) > 0) {
         totalNetWorkFee += BigInt(networkFee)
       }
 
