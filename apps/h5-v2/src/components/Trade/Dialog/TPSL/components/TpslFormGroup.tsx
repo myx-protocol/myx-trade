@@ -6,12 +6,11 @@ import { Trans } from '@lingui/react/macro'
 import { Slider } from '@mui/material'
 import clsx from 'clsx'
 import { debounce } from 'lodash-es'
-import { useTradePageStore } from '../../../store/TradePageStore'
 import { parseBigNumber } from '@/utils/bn'
 import { usePositionTPSLStore } from '../store'
 import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { t } from '@lingui/core/macro'
-import { formatNumber } from '@/utils/number'
+import { displayAmount, formatNumber } from '@/utils/number'
 import { Direction } from '@myx-trade/sdk'
 
 const AmountSliderMarks = [
@@ -36,21 +35,72 @@ const renderTargetUnit = (type: TpSlTypeEnum, symbol: string) => {
   }
 }
 
-export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 'sl' }) => {
-  const [tpslType, setTpslType] = useState<TpSlTypeEnum>(TpSlTypeEnum.PRICE)
-  const [sliderValue, setSliderValue] = useState<number>(0)
-  const { symbolInfo } = useTradePageStore()
-  const { tpSize, slSize, setTpSize, setSlSize, setTpPrice, setSlPrice } = usePositionTPSLStore()
+export const TpslFormGroup = ({
+  position,
+  type,
+}: {
+  position: any
+  type: 'tp' | 'sl'
+  autoFocus?: boolean
+}) => {
+  const [tpslType, setTpslType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
+  const [sliderValue, setSliderValue] = useState<number>(position?.size ?? 0)
+  const { tpSize, slSize, setTpSize, setSlSize, setTpPrice, setSlPrice, tpPrice, slPrice } =
+    usePositionTPSLStore()
   const [targetPrice, setTargetPrice] = useState<string>('')
   const [targetRate, setTargetRate] = useState<string>('')
+
+  // 初始化默认值为 100%
+  useEffect(() => {
+    if (position?.size) {
+      setSliderValue(position.size)
+      if (type === 'tp') {
+        setTpSize(position.size.toString())
+      } else {
+        setSlSize(position.size.toString())
+      }
+    }
+  }, [position?.size, type, setTpSize, setSlSize])
+
+  useEffect(() => {
+    if (!targetPrice || parseBigNumber(targetPrice).eq(0)) {
+      setTargetRate('')
+      return
+    }
+
+    const triggerPrice = parseBigNumber(targetPrice)
+    const entryPrice = parseBigNumber(position.entryPrice)
+    const diff =
+      position.direction === Direction.LONG
+        ? triggerPrice.minus(entryPrice)
+        : entryPrice.minus(triggerPrice)
+    const collateralAmount = parseBigNumber(position.collateralAmount)
+
+    if (tpslType === TpSlTypeEnum.PRICE) {
+      setTargetRate(diff.toString())
+    } else if (tpslType === TpSlTypeEnum.ROI) {
+      const radio = diff.div(collateralAmount).mul(100).toFixed(2)
+      setTargetRate(radio)
+    } else if (tpslType === TpSlTypeEnum.Change) {
+      const radio = diff.div(entryPrice).mul(100).toFixed(2)
+      setTargetRate(radio)
+    } else if (tpslType === TpSlTypeEnum.Pnl) {
+      const size = type === 'tp' ? tpSize : slSize
+      console.log('size-->', size)
+      const pnl = diff.mul(parseBigNumber(type === 'tp' ? tpSize : slSize)).toString()
+      setTargetRate(pnl)
+    }
+  }, [targetPrice, tpSize, slSize, tpslType])
 
   // 创建防抖函数
   const debouncedUpdateSize = useMemo(
     () =>
       debounce((value: number) => {
         if (type === 'tp') {
+          console.log('tp value==>', value)
           setTpSize(value.toString())
         } else {
+          console.log('sl value==>', value)
           setSlSize(value.toString())
         }
       }, 300),
@@ -70,18 +120,21 @@ export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 
     if (!targetPrice || parseBigNumber(type === 'tp' ? tpSize : slSize).eq(0)) return '--'
 
     if (parseBigNumber(targetPrice).gt(parseBigNumber(position.entryPrice))) {
-      return `>=${parseBigNumber(targetPrice).toString()} ${symbolInfo?.quoteSymbol ?? ''}`
+      return `>=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
     }
 
-    return `<=${parseBigNumber(targetPrice).toString()} ${symbolInfo?.quoteSymbol ?? ''}`
-  }, [targetPrice, symbolInfo?.quoteSymbol, targetPrice, position.entryPrice, tpSize, slSize])
+    return `<=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
+  }, [targetPrice, position?.quoteSymbol, targetPrice, position.entryPrice, tpSize, slSize, type])
 
   const totalPnl = useMemo(() => {
     const size = type === 'tp' ? tpSize : slSize
     if (parseBigNumber(size).eq(0)) return '0'
     if (!targetPrice) return '0'
 
-    const diff = parseBigNumber(targetPrice).minus(parseBigNumber(position.entryPrice))
+    const diff =
+      position.direction === Direction.LONG
+        ? parseBigNumber(targetPrice).minus(parseBigNumber(position.entryPrice))
+        : parseBigNumber(position.entryPrice).minus(parseBigNumber(targetPrice))
     const pnl = diff.mul(parseBigNumber(size)).toString()
 
     return pnl
@@ -96,72 +149,90 @@ export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 
           setTargetPrice('')
           setTargetRate('')
         }}
-        quoteToken={symbolInfo?.quoteSymbol ?? ''}
+        quoteToken={position?.quoteSymbol ?? ''}
       />
       {/* price & type value */}
       <div className="mt-[4px] flex items-center justify-between gap-[8px]">
         {/* trigger price */}
         <div className="flex min-h-[46px] w-[202px] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
-            // allowNegative={tpslType !== TpSlTypeEnum.PRICE}
             className="flex-1 text-left"
-            placeholder={t`Trigger Price`}
+            placeholder={t`触发价格`}
+            autoFocus={type === 'tp'}
             value={targetPrice}
+            allowLeadingZeros
             onValueChange={({ value }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
-                if (parseBigNumber(value).eq(0)) {
-                  setTargetPrice('')
+                // 将中文小数点转换为英文小数点
+                const normalizedValue = value.replace(/。/g, '.')
+                setTargetPrice(normalizedValue)
+
+                // 如果输入为空或0，清空关联的计算值
+                if (!normalizedValue || parseBigNumber(normalizedValue).eq(0)) {
                   setTargetRate('')
+                  if (type === 'tp') {
+                    setTpPrice(normalizedValue)
+                  } else {
+                    setSlPrice(normalizedValue)
+                  }
                   return
                 }
-                setTargetPrice(value)
-                const triggerPrice = parseBigNumber(value)
-                const entryPrice = parseBigNumber(position.entryPrice)
-                const diff =
-                  position.direction === Direction.LONG
-                    ? triggerPrice.minus(entryPrice)
-                    : entryPrice.minus(triggerPrice)
-                const collateralAmount = parseBigNumber(position.collateralAmount)
-                if (type === 'tp') {
-                  setTpPrice(value)
-                } else {
-                  setSlPrice(value)
-                }
 
-                if (tpslType === TpSlTypeEnum.PRICE) {
-                  setTargetRate(diff.toString())
-                } else if (tpslType === TpSlTypeEnum.ROI) {
-                  const radio = diff.div(collateralAmount).mul(100).toFixed(2)
-                  setTargetRate(radio)
-                } else if (tpslType === TpSlTypeEnum.Change) {
-                  const radio = diff.div(entryPrice).mul(100).toFixed(2)
-                  setTargetRate(radio)
-                } else if (tpslType === TpSlTypeEnum.Pnl) {
-                  const radio = diff.div(collateralAmount).mul(100).toFixed(2)
-                  setTargetRate(radio)
+                if (type === 'tp') {
+                  setTpPrice(normalizedValue)
+                } else {
+                  setSlPrice(normalizedValue)
                 }
-                return
               }
             }}
           />
-          <p className="text flex-shrink-0">{symbolInfo?.quoteSymbol ?? ''}</p>
+          <p className="text flex-shrink-0">{position?.quoteSymbol ?? ''}</p>
         </div>
         {/* type value */}
         <div className="flex min-h-[46px] w-[140px] flex-[1_1_0%] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
             allowNegative={true}
             value={targetRate}
-            onValueChange={({ value }, { source }) => {
+            onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
-                setTargetRate(value)
-                return
+                setTargetRate(floatValue?.toString() ?? '')
+                if (tpslType === TpSlTypeEnum.ROI) {
+                  const radio = parseBigNumber(floatValue ?? 0).div(100)
+                  const totalPnl = parseBigNumber(position.collateralAmount).mul(radio)
+                  const averagePnl = totalPnl
+                    .div(parseBigNumber(position.size))
+                    .mul(position.direction === Direction.LONG ? 1 : -1)
+                  const targetPrice = parseBigNumber(position.entryPrice)
+                    .plus(averagePnl)
+                    .toFixed(6)
+                  setTargetPrice(targetPrice)
+                } else if (tpslType === TpSlTypeEnum.Change) {
+                  const radio = parseBigNumber(1).plus(parseBigNumber(floatValue ?? 0).div(100))
+                  const targetPrice = parseBigNumber(position.entryPrice).mul(radio).toFixed(6)
+                  setTargetPrice(targetPrice)
+                } else if (tpslType === TpSlTypeEnum.Pnl) {
+                  const totalPnl = parseBigNumber(floatValue ?? 0)
+                  const averagePnl = totalPnl
+                    .div(parseBigNumber(position.size))
+                    .mul(position.direction === Direction.LONG ? 1 : -1)
+                  const targetPrice = parseBigNumber(position.entryPrice)
+                    .plus(averagePnl)
+                    .toFixed(6)
+
+                  setTargetPrice(targetPrice)
+                }
+                if (type === 'tp') {
+                  setTpPrice(targetPrice)
+                } else {
+                  setSlPrice(targetPrice)
+                }
               }
             }}
             className="flex-1 text-left"
-            placeholder={t`Change`}
+            placeholder={renderTargetUnit(tpslType, position?.quoteSymbol ?? '')}
           />
           <p className="text flex-shrink-0">
-            {renderTargetUnit(tpslType, symbolInfo?.quoteSymbol ?? '')}
+            {renderTargetUnit(tpslType, position?.quoteSymbol ?? '')}
           </p>
         </div>
       </div>
@@ -169,24 +240,44 @@ export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 
         <NumberInputPrimitive
           value={type === 'tp' ? tpSize : slSize}
           className="flex-1 text-left"
-          placeholder="Amount"
-          onValueChange={({ value }, { source }) => {
+          placeholder={t`数量`}
+          allowLeadingZeros
+          onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
+              // 将中文小数点转换为英文小数点
+              const normalizedValue = value.replace(/。/g, '.')
+
+              // 输入时不做限制，直接保存用户输入的值
               if (type === 'tp') {
-                setTpSize(value)
+                setTpSize(normalizedValue)
               } else {
-                setSlSize(value)
+                setSlSize(normalizedValue)
               }
-              const sliderValue = parseBigNumber(value)
-                .div(parseBigNumber(position.size))
-                .div(100)
-                .toNumber()
-              setSliderValue(sliderValue)
+
+              // 更新滑块位置（滑块的值是实际数量，不是百分比）
+              const numValue = floatValue ?? 0
+              setSliderValue(numValue)
               return
             }
           }}
+          onBlur={() => {
+            // 失去焦点时检查是否超过最大值
+            const currentValue = type === 'tp' ? tpSize : slSize
+            const inputValue = Number(currentValue)
+            const maxSize = Number(position.size)
+
+            if (inputValue > maxSize) {
+              const finalValue = maxSize.toString()
+              if (type === 'tp') {
+                setTpSize(finalValue)
+              } else {
+                setSlSize(finalValue)
+              }
+              setSliderValue(maxSize)
+            }
+          }}
         />
-        <p className="text flex-shrink-0">{symbolInfo?.baseSymbol ?? ''}</p>
+        <p className="text flex-shrink-0">{position?.baseSymbol ?? ''}</p>
       </div>
       <div className="mt-[8px]">
         <div className="px-[8px]">
@@ -228,26 +319,29 @@ export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 
           />
         </div>
         <div className="mt-[6px] flex justify-between">
-          {AmountSliderMarks.map((m) => (
-            <p
-              key={m.value}
-              className={clsx(
-                'text-center text-[10px] font-medium',
-                sliderValue >= m.value ? 'text-white' : 'text-[#4D515C]',
-              )}
-            >
-              {m.label}
-            </p>
-          ))}
+          {AmountSliderMarks.map((m) => {
+            // 计算当前滑块值对应的百分比
+            const currentPercentage = (sliderValue / Number(position.size)) * 100
+            return (
+              <p
+                key={m.value}
+                className={clsx(
+                  'text-center text-[10px] font-medium',
+                  currentPercentage >= m.value ? 'text-white' : 'text-[#4D515C]',
+                )}
+              >
+                {m.label}
+              </p>
+            )
+          })}
         </div>
       </div>
       {/* tips */}
       <p className="mt-[8px] text-[12px] leading-[1.5] font-medium text-[#848E9C]">
         <Trans>
-          当最新价格 <span className="text-white">{displayTargetPrice}</span> 时，将以{' '}
-          {parseBigNumber(targetPrice).toString()} {symbolInfo?.quoteSymbol ?? ''} 平仓, 数量
-          {type === 'tp' ? formatNumber(tpSize) : formatNumber(slSize)}{' '}
-          {symbolInfo?.baseSymbol ?? ''},预期收益
+          当最新价格 <span className="text-white">{displayTargetPrice}</span> 时，将以市价平仓, 数量
+          {type === 'tp' ? formatNumber(tpSize) : formatNumber(slSize)} {position?.baseSymbol ?? ''}
+          ,预期收益
           <span
             className="ml-[2px]"
             style={{
@@ -258,8 +352,7 @@ export const TpslFormGroup = ({ position, type }: { position: any; type: 'tp' | 
                   : '#EC605A',
             }}
           >
-            {formatNumber(totalPnl)}
-            {symbolInfo?.quoteSymbol ?? ''}
+            {formatNumber(totalPnl)} {position?.quoteSymbol ?? ''}
           </span>
         </Trans>
       </p>

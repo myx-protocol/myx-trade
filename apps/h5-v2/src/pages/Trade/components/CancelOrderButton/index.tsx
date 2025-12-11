@@ -4,14 +4,23 @@ import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useState } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { toast } from '@/components/UI/Toast'
+import { t } from '@lingui/core/macro'
 
-export const CancelOrderButton = ({ orderId }: { orderId: number }) => {
-  const { client } = useMyxSdkClient()
+export const CancelOrderButton = ({ orderId, chainId }: { orderId: number; chainId: number }) => {
+  const { client } = useMyxSdkClient(Number(chainId))
   const [loading, setLoading] = useState(false)
   const [cancelOrderDialogOpen, setCancelOrderDialogOpen] = useState(false)
   return (
     <>
       <InfoButton
+        style={{
+          width: '100%',
+          padding: '10px 16px',
+          borderRadius: '6px',
+          fontWeight: 500,
+          lineHeight: 1,
+        }}
         onClick={async () => {
           setCancelOrderDialogOpen(true)
         }}
@@ -31,9 +40,10 @@ export const CancelOrderButton = ({ orderId }: { orderId: number }) => {
             onClick={async () => {
               try {
                 setLoading(true)
-                await client?.order.cancelOrder(orderId.toString())
-                // todo toast
-                console.log('cancel success')
+                await client?.order.cancelOrder(orderId.toString(), Number(chainId))
+                toast.success({
+                  title: t`Cancel all orders success`,
+                })
                 setCancelOrderDialogOpen(false)
               } catch (e) {
                 console.log(e)

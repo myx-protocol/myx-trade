@@ -1,14 +1,19 @@
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { OpenOrderItem } from '@/components/Record/Items/OpenOrders'
+import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 
 export const Entrusts = () => {
   const orders = useGetOrderList()
-  const { isWrongNetwork } = useWalletConnection()
+  const { poolList } = useGetPoolList()
+
   return (
     <>
-      {new Array(10).fill(0).map((_, index) => (
-        <OpenOrderItem key={index} />
+      {orders.map((item: any, index: number) => (
+        <OpenOrderItem
+          key={index}
+          order={item}
+          pool={poolList.find((pool: any) => pool.poolId === item.poolId)}
+        />
       ))}
     </>
   )
