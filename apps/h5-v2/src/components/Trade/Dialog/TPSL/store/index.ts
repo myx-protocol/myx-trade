@@ -12,6 +12,7 @@ export interface PositionTPSLStore {
   setTpPrice: (tpPrice: string) => void
   slPrice: string
   setSlPrice: (slPrice: string) => void
+  reset: () => void
 }
 
 export const usePositionTPSLStore = create<PositionTPSLStore>((set) => ({
@@ -25,4 +26,5 @@ export const usePositionTPSLStore = create<PositionTPSLStore>((set) => ({
   setSlPrice: (slPrice: string) => set({ slPrice }),
   activeTab: TpSlTabTypeEnum.TPOrSL,
   setActiveTab: (activeTab: TpSlTabTypeEnum) => set({ activeTab }),
+  reset: () => set({ tpSize: '', slSize: '', tpPrice: '', slPrice: '' }),
 }))

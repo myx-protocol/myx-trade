@@ -1,32 +1,43 @@
-import { RiseFallText } from '@/components/RiseFallText'
-import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { Tag } from '@/components/Tag/index'
+import { OrderTpSlButton } from '@/components/Trade/Dialog/OrderTpSl'
 import { InfoButton } from '@/components/UI/Button'
+import { CancelOrderButton } from '@/pages/Trade/components/CancelOrderButton'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
+import { DirectionEnum, OrderTypeEnum } from '@myx-trade/sdk'
 import dayjs from 'dayjs'
 
-export const OpenOrderItem = () => {
+export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
   return (
     <div className="w-full border-b border-[#202129] px-[16px] py-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[16px] font-semibold text-white">BTC/USDT</p>
+          <p className="text-[16px] font-semibold text-white">
+            {order.baseSymbol}/{order.quoteSymbol}
+          </p>
           <div className="mt-[4px] flex gap-[4px]">
-            <Tag type="success">
-              <Trans>Long</Trans>
+            <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
+              {order.direction === DirectionEnum.Long ? <Trans>Long</Trans> : <Trans>Short</Trans>}
             </Tag>
             <Tag type="info">
-              <Trans>Limit</Trans>
+              {order.orderType === OrderTypeEnum.Limit ? (
+                <Trans>Limit</Trans>
+              ) : order.orderType === OrderTypeEnum.Market ? (
+                <Trans>Market</Trans>
+              ) : (
+                <Trans>TPSL</Trans>
+              )}
             </Tag>
             <Tag type="info">
-              <Trans>Isolated 5x</Trans>
+              <Trans>Isolated {order.userLeverage}x</Trans>
             </Tag>
           </div>
         </div>
         {/* time */}
-        <p className="text-[12px] text-[#848E9C]">{dayjs().format('YYYY/MM/DD HH:mm:ss')}</p>
+        <p className="text-[12px] text-[#848E9C]">
+          {dayjs.unix(order.txTime).format('YYYY/MM/DD HH:mm:ss')}
+        </p>
       </div>
       {/* info */}
       <div className="mt-[20px]">
@@ -35,10 +46,10 @@ export const OpenOrderItem = () => {
           {/* margin */}
           <div>
             <p>
-              <Trans>Margin(USDT)</Trans>
+              <Trans>Margin({order.quoteSymbol})</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(order.collateralAmount, { showUnit: false })}
             </p>
           </div>
           {/* amount */}
@@ -47,7 +58,7 @@ export const OpenOrderItem = () => {
               <Trans>Amount</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(order.size, { showUnit: false })}
             </p>
           </div>
           {/* price */}
@@ -56,7 +67,7 @@ export const OpenOrderItem = () => {
               <Trans>Price</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(12.12, { showUnit: false })}
+              {formatNumber(order.price, { showUnit: false })}
             </p>
           </div>
         </div>
@@ -64,28 +75,8 @@ export const OpenOrderItem = () => {
 
       {/* buttons */}
       <div className="mt-[20px] flex justify-center gap-[8px]">
-        <InfoButton
-          style={{
-            width: '100%',
-            padding: '10px 16px',
-            borderRadius: '6px',
-            fontWeight: 500,
-            lineHeight: 1,
-          }}
-        >
-          <Trans>Edit</Trans>
-        </InfoButton>
-        <InfoButton
-          style={{
-            width: '100%',
-            padding: '10px 16px',
-            borderRadius: '6px',
-            fontWeight: 500,
-            lineHeight: 1,
-          }}
-        >
-          <Trans>Cancel</Trans>
-        </InfoButton>
+        <OrderTpSlButton order={order} poolInfo={pool} />
+        <CancelOrderButton orderId={order.orderId} chainId={order.chainId} />
       </div>
     </div>
   )

@@ -9,8 +9,8 @@ import { useTradePageStore } from '../../store/TradePageStore'
 
 export const TPSL = () => {
   const {
-    tpslOpen,
-    setTpslOpen,
+    tpSlOpen,
+    setTpSlOpen,
     tpType,
     setTpType,
     tpValue,
@@ -48,8 +48,16 @@ export const TPSL = () => {
       <FormControlLabel
         control={
           <Checkbox
-            checked={tpslOpen}
-            onChange={() => setTpslOpen(!tpslOpen)}
+            checked={tpSlOpen}
+            onChange={(e) => {
+              setTpSlOpen(e.target.checked)
+              if (!e.target.checked) {
+                setTpType(TpSlTypeEnum.PRICE)
+                setSlType(TpSlTypeEnum.PRICE)
+                setTpValue('')
+                setSlValue('')
+              }
+            }}
             sx={{
               p: 0,
               mr: 0,
@@ -72,7 +80,7 @@ export const TPSL = () => {
       />
 
       {/* tpsl */}
-      {tpslOpen && (
+      {tpSlOpen && (
         <div className="mt-[10px] flex gap-[8px]">
           <TPSLInput
             quoteToken={symbolInfo?.quoteSymbol ?? ''}
@@ -89,6 +97,7 @@ export const TPSL = () => {
             onChange={setSlValue}
             onTypeChange={setSlType}
             placeHolder={slPlaceHolder}
+            inputPrefix={slType === TpSlTypeEnum.Pnl ? '-' : ''}
           />
         </div>
       )}

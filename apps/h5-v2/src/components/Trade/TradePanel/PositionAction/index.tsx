@@ -9,12 +9,25 @@ const PositionActionButton = ({
 }: PropsWithChildren & {
   value: PositionActionEnum
 }) => {
-  const { positionAction, setPositionAction } = useTradePanelStore()
+  const {
+    positionAction,
+    setPositionAction,
+    setTempInputValue,
+    setLongSize,
+    setShortSize,
+    setAmountSliderValue,
+  } = useTradePanelStore()
   return (
     <div
       className={`w-[50%] p-[12px] text-center text-[12px] leading-[1] font-medium ${positionAction === value ? 'text-[#FFFFFF]' : 'text-[#848E9C]'}`}
       role="button"
-      onClick={() => setPositionAction(value)}
+      onClick={() => {
+        setPositionAction(value)
+        setTempInputValue('')
+        setLongSize('0')
+        setShortSize('0')
+        setAmountSliderValue(0)
+      }}
     >
       {children}
     </div>

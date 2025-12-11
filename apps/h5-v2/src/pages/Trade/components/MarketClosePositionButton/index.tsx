@@ -11,6 +11,7 @@ import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 
 export const MarketClosePositionButton = ({
   position,
@@ -24,7 +25,11 @@ export const MarketClosePositionButton = ({
   const { client } = useMyxSdkClient()
   const [loading, setLoading] = useState(false)
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
-  const { closePositionSlippage } = useTradePanelStore()
+  const closePositionSlippage = getSlippage({
+    chainId: position?.chainId ?? 0,
+    poolId: position?.poolId ?? '',
+    type: SlippageTypeEnum.CLOSE,
+  })
   const { address } = useWalletConnection()
   const closeAmount =
     formatNumber(parseBigNumber(position.size).mul(parseBigNumber(marketPrice)).toString() ?? '0', {
@@ -94,7 +99,9 @@ export const MarketClosePositionButton = ({
           <p className="text-[16px] leading-[16px] text-[#848E9C]">
             <Trans>Est. Slippage</Trans>
           </p>
-          <p className="text-[16px] leading-[16px] text-[white]">{closePositionSlippage * 100}%</p>
+          <p className="text-[16px] leading-[16px] text-[white]">
+            {closePositionSlippage ? closePositionSlippage * 100 : '--'}%
+          </p>
         </div>
         <div className="mt-[12px] flex items-center justify-between">
           <p className="text-[16px] leading-[16px] text-[#848E9C]">
@@ -129,7 +136,9 @@ export const MarketClosePositionButton = ({
                   price: ethers.parseUnits(marketPrice.toString(), 30).toString(),
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
-                  slippagePct: ethers.parseUnits(closePositionSlippage.toString(), 4).toString(), // 转换为精度4位
+                  slippagePct: ethers
+                    .parseUnits(closePositionSlippage?.toString() ?? '0', 4)
+                    .toString(), // 转换为精度4位
                   executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
                 })

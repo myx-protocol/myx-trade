@@ -4,11 +4,13 @@ import { parseBigNumber } from '@/utils/bn'
 import { Trans } from '@lingui/react/macro'
 import { useTradePanelStore } from '../../store'
 import { formatNumber } from '@/utils/number'
-import { useTotalAvailableBalance } from '@/hooks/balance/use-total-available-balance'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 
 export const MarginAmountInput = () => {
   const { collateralAmount, setCollateralAmount } = useTradePanelStore()
-  const totalBalance = useTotalAvailableBalance()
+  const { symbolInfo } = useTradePageStore()
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   return (
     <InputWrapper
@@ -30,7 +32,7 @@ export const MarginAmountInput = () => {
     >
       <div className="flex justify-between gap-[12px] leading-[1]">
         <NumberInputPrimitive
-          value={collateralAmount}
+          value={collateralAmount === '0' ? '' : collateralAmount}
           onValueChange={(e) => {
             setCollateralAmount(e.value)
           }}
@@ -40,11 +42,11 @@ export const MarginAmountInput = () => {
           <p
             className="text-[12px] text-[#00E3A5]"
             role="button"
-            onClick={() => setCollateralAmount(totalBalance)}
+            onClick={() => setCollateralAmount(accountAssets?.availableMargin?.toString() ?? '0')}
           >
             <Trans>Max</Trans>
           </p>
-          <p className="ml-[12px] text-[12px] text-white">USDC</p>
+          <p className="ml-[12px] text-[12px] text-white">{symbolInfo?.quoteSymbol}</p>
         </div>
       </div>
     </InputWrapper>

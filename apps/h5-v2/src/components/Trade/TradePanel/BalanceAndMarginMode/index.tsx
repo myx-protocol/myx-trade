@@ -1,34 +1,17 @@
-import { formatNumber } from '@/utils/number'
+import { formatNumberWithBaseToken } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import Reverse from '@/components/Icon/set/ReverseV2'
 import { ArrowDown } from '@/components/Icon'
 import { useTradePanelStore } from '../store'
 import clsx from 'clsx'
-import { useGetWalletBalance } from '@/hooks/balance/use-get-wallet-balance'
 import { useTradePageStore } from '../../store/TradePageStore'
-import { ethers } from 'ethers'
-import { useGetAccountPoolAssets } from '@/hooks/balance/use-get-account-pool-Assets'
-import { useMemo } from 'react'
-import { parseBigNumber } from '@/utils/bn'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 
 const Balance = () => {
   const { symbolInfo } = useTradePageStore()
-  const tokenBalanceString = useGetWalletBalance()
-  const walletBalance =
-    ethers.formatUnits(tokenBalanceString, symbolInfo?.quoteDecimals ?? 6) ?? '0'
-  const accountPoolAssets = useGetAccountPoolAssets(symbolInfo?.poolId as string)
   const { setReceiveDialogOpen } = useTradePanelStore()
-
-  const totalBalance = useMemo(() => {
-    const freeAmount =
-      ethers.formatUnits(accountPoolAssets?.freeAmount ?? '0', symbolInfo?.quoteDecimals ?? 6) ??
-      '0'
-
-    return parseBigNumber(walletBalance ?? 0)
-      .plus(parseBigNumber(freeAmount))
-      .toString()
-  }, [walletBalance, accountPoolAssets, symbolInfo?.quoteDecimals])
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   const { checkWalletChainId } = useWalletChainCheck()
 
@@ -44,9 +27,8 @@ const Balance = () => {
       <p className="flex-shrink-0 text-[#848E9C]">
         <Trans>Balance</Trans>
       </p>
-      <p className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-white">
-        {formatNumber(totalBalance, {
-          decimals: 2,
+      <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-white">
+        {formatNumberWithBaseToken(accountAssets?.availableMargin?.toString() ?? '0', {
           showUnit: false,
         })}
       </p>
@@ -64,7 +46,10 @@ const MarginMode = () => {
     <div
       className="flex items-center text-[12px] leading-[1] font-medium"
       role="button"
-      onClick={() => setAutoMarginMode(!autoMarginMode)}
+      onClick={() => {
+        console.log('autoMarginMode-->', autoMarginMode)
+        setAutoMarginMode(!autoMarginMode)
+      }}
     >
       <p className="text-white">
         {autoMarginMode ? <Trans>Auto Margin</Trans> : <Trans>Manual Margin</Trans>}

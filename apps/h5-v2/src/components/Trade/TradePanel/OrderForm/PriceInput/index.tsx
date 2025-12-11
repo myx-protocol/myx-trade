@@ -1,6 +1,5 @@
 import { InputWrapper } from '@/components/Trade/components/InputWrapper'
 import { TradeSelect } from '@/components/Trade/components/Select'
-import { OrderTypeEnum } from '@/components/Trade/type'
 import { useTradePanelStore } from '../../store'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { Trans } from '@lingui/react/macro'
@@ -18,9 +17,9 @@ export const PriceInput = () => {
 
   useEffect(() => {
     if (orderType === OrderType.MARKET) {
-      setPrice(tickerData?.price?.toString() ?? '0')
+      setPrice(marketPrice?.toString() ?? '0')
     }
-  }, [orderType, marketPrice])
+  }, [orderType, marketPrice, setPrice])
 
   return (
     <InputWrapper
@@ -34,14 +33,28 @@ export const PriceInput = () => {
       }
     >
       <div className="flex justify-between gap-[12px] leading-[1]">
-        <NumberInputPrimitive
-          onValueChange={(e) => {
-            setPrice(e.value)
-          }}
-          disabled={orderType === OrderType.MARKET}
-          value={orderType === OrderType.MARKET ? marketPrice : price}
-          className="w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
-        />
+        {orderType === OrderType.MARKET ? (
+          // MARKET 模式：显示格式化后的价格（只读展示）
+          <>
+            <p className="h-[22px] w-full flex-grow-[1] text-[20px] leading-[22px] font-bold text-[#6D7180]">
+              <Trans>Market price</Trans>
+            </p>
+            <NumberInputPrimitive
+              disabled={true}
+              value={price}
+              className="hidden w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
+            />
+          </>
+        ) : (
+          // LIMIT 模式：正常输入框
+          <NumberInputPrimitive
+            onValueChange={(e) => {
+              setPrice(e.value)
+            }}
+            value={price}
+            className="w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
+          />
+        )}
         <div className="flex flex-shrink-0 items-center font-medium">
           {OrderType.MARKET !== orderType && (
             <p

@@ -1,5 +1,5 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useTradePanelStore } from '../../store'
 import { Direction, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -13,13 +13,31 @@ import { toast } from 'react-hot-toast'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { sleep } from '@/utils'
 import { tradePubSub } from '@/utils/pubsub'
+import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
+import { useGetPositionList } from '@/hooks/position/use-get-position-list'
+import { getSlippage } from '@/utils/slippage'
+import { SlippageTypeEnum } from '@/utils/slippage'
+import useGlobalStore from '@/store/globalStore'
+import { verifyTpSlPrice } from '@/utils/verify'
 
 export const useSubmitOrder = () => {
-  const { client } = useMyxSdkClient()
+  const [loading, setLoading] = useState(false)
   const { chainId, address } = useWalletConnection()
+  const positionList = useGetPositionList()
   const { symbolInfo } = useTradePageStore()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { oraclePriceData } = useMarketStore()
+  const { setCloseOrderConfirmDialogOpen, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
   const { checkWalletChainId } = useWalletChainCheck()
+  const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
+  const { poolConfig } = useGetPoolConfig(
+    symbolInfo?.poolId as string,
+    symbolInfo?.chainId as number,
+  )
+
+  const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
+
   const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
   const {
     longSize,
@@ -28,30 +46,25 @@ export const useSubmitOrder = () => {
     price,
     orderType,
     collateralAmount,
-    openPositionSlippage,
     autoMarginMode,
-    closePositionSlippage,
     positionAction,
     tpValue,
     slValue,
     tpType,
     slType,
+    resetStore,
+    tpSlOpen,
   } = useTradePanelStore()
 
   const leverage = useLeverage(symbolInfo?.poolId ?? '')
 
   const submitOrder = useCallback(
     async (direction: Direction) => {
-      if (!symbolInfo) return
+      if (!symbolInfo || !client) return
 
       await checkWalletChainId(symbolInfo.chainId as number)
 
-      let size = '0'
-      if (direction === Direction.LONG) {
-        size = longSize
-      } else {
-        size = shortSize ?? '0'
-      }
+      const size = direction === Direction.LONG ? longSize : shortSize
 
       let formatTriggerType: TriggerType = TriggerType.NONE
 
@@ -77,19 +90,23 @@ export const useSubmitOrder = () => {
           .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
           .toFixed(0)
         if (autoMarginMode) {
-          formatCollateralAmount = parseBigNumber(size)
-            .mul(parseBigNumber(price))
-            .div(leverage)
-            .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
-            .toFixed(0)
+          if (amountUnit === AmountUnitEnum.BASE) {
+            formatCollateralAmount = parseBigNumber(size)
+              .mul(parseBigNumber(price))
+              .div(leverage)
+              .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+              .toFixed(0)
+          } else {
+            formatCollateralAmount = parseBigNumber(size)
+              .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+              .toFixed(0)
+          }
         }
       }
 
       let formatSize = '0'
-      console.log('amountUnit-->', amountUnit, longSize, shortSize)
 
       if (amountUnit === AmountUnitEnum.BASE) {
-        console.log('size-->', size)
         formatSize = parseBigNumber(size)
           .mul(10 ** (symbolInfo?.baseDecimals ?? 1))
           .toFixed(0)
@@ -100,90 +117,170 @@ export const useSubmitOrder = () => {
           .toFixed(0)
       }
 
+      const openPositionSlippage = getSlippage({
+        chainId: symbolInfo?.chainId ?? 0,
+        poolId: symbolInfo?.poolId ?? '',
+        type: SlippageTypeEnum.OPEN,
+      })
+      const closePositionSlippage = getSlippage({
+        chainId: symbolInfo?.chainId ?? 0,
+        poolId: symbolInfo?.poolId ?? '',
+        type: SlippageTypeEnum.CLOSE,
+      })
+
+      const tradingFeeString = await getTradingFee({
+        size: ethers.formatUnits(formatSize, symbolInfo?.baseDecimals ?? 1),
+        price,
+        assetClass,
+      })
+
+      const tradingFee = parseBigNumber(tradingFeeString)
+        .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+        .toFixed(0)
+
       const slippagePct = ethers
         .parseUnits(
           positionAction === PositionActionEnum.OPEN
-            ? openPositionSlippage.toString()
-            : closePositionSlippage.toString(),
+            ? parseBigNumber(openPositionSlippage ?? '0')
+                .toFixed(4)
+                .toString()
+            : parseBigNumber(closePositionSlippage ?? '0')
+                .toFixed(4)
+                .toString(),
           4,
         )
         .toString()
 
-      let formatTpValue = ethers.parseUnits(tpValue.toString(), 30).toString()
-      let formatSlValue = ethers.parseUnits(slValue.toString(), 30).toString()
+      let formatTpValue = '0'
+      let formatSlValue = '0'
       let formatTpSize = '0'
       let formatSlSize = '0'
+      if (positionAction === PositionActionEnum.OPEN) {
+        formatTpValue = tpValue
+          ? ethers.parseUnits((tpValue ?? '0').toString(), 30).toString()
+          : '0'
+        formatSlValue = slValue
+          ? ethers.parseUnits((slValue ?? '0').toString(), 30).toString()
+          : '0'
+        formatTpSize = '0'
+        formatSlSize = '0'
 
-      if (tpValue && !parseBigNumber(tpValue).eq(0)) {
-        formatTpSize = formatSize
-        if (tpType === TpSlTypeEnum.Change) {
-          const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100)) //new BigNumber(1).plus(new BigNumber(tp).div(100))
-          formatTpValue = parseBigNumber(price).mul(radio).toString()
-        } else if (tpType === TpSlTypeEnum.ROI) {
-          const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
-          const targetCollateral = parseBigNumber(collateralAmount).mul(radio)
-          const totalPnl = targetCollateral.minus(parseBigNumber(collateralAmount))
-          const averagePnl = totalPnl.div(parseBigNumber(size))
-          const targetPrice = parseBigNumber(price).plus(
-            direction === Direction.LONG ? averagePnl : averagePnl.mul(-1),
-          )
-          formatTpValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
-        } else if (tpType === TpSlTypeEnum.Pnl) {
-          const totalPnl = parseBigNumber(tpValue)
-          const averagePnl = totalPnl.div(parseBigNumber(size))
-          if (direction === Direction.LONG) {
+        if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
+          formatTpSize = formatSize
+          if (tpType === TpSlTypeEnum.Change) {
+            const radio = parseBigNumber(1).plus(
+              parseBigNumber(tpValue)
+                .div(100)
+                .mul(direction === Direction.LONG ? 1 : -1),
+            )
+            const targetPrice = parseBigNumber(price).mul(radio).toString()
+            formatTpValue = ethers.parseUnits(targetPrice, 30).toString()
+          } else if (tpType === TpSlTypeEnum.ROI) {
+            const radio = parseBigNumber(tpValue).div(100)
+            const targetCollateral = parseBigNumber(
+              ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
+            )
+            const totalPnl = targetCollateral.mul(radio).mul(direction === Direction.LONG ? 1 : -1)
+
+            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
             const targetPrice = parseBigNumber(price).plus(averagePnl)
             formatTpValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
-          } else {
-            const targetPrice = parseBigNumber(price).minus(averagePnl)
-            formatTpValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
+          } else if (tpType === TpSlTypeEnum.Pnl) {
+            const totalPnl = parseBigNumber(tpValue)
+            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+            if (direction === Direction.LONG) {
+              const targetPrice = parseBigNumber(price).plus(averagePnl)
+              formatTpValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
+            } else {
+              const targetPrice = parseBigNumber(price).minus(averagePnl)
+              formatTpValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
+            }
           }
         }
-      }
 
-      if (slValue && !parseBigNumber(slValue).eq(0)) {
-        formatSlSize = formatSize
-        if (slType === TpSlTypeEnum.Change) {
-          const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
-          const targetPrice = parseBigNumber(price).mul(radio).gt(0)
-            ? parseBigNumber(price).mul(radio).toString()
-            : '0'
-          formatSlValue = ethers.parseUnits(targetPrice, 30).toString()
-        } else if (slType === TpSlTypeEnum.ROI) {
-          let radio = parseBigNumber(1)
-          if (direction === Direction.LONG) {
-            radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
-          } else {
-            radio = parseBigNumber(1).minus(parseBigNumber(slValue).div(100))
-          }
-
-          const targetCollateral = parseBigNumber(collateralAmount).mul(radio)
-          const totalPnl = targetCollateral.minus(parseBigNumber(collateralAmount))
-          const averagePnl = totalPnl.div(parseBigNumber(size))
-          const targetPrice = parseBigNumber(price).plus(averagePnl)
-          formatSlValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
-        } else if (slType === TpSlTypeEnum.Pnl) {
-          const totalPnl = parseBigNumber(slValue)
-          const averagePnl = totalPnl.div(parseBigNumber(size))
-          if (direction === Direction.LONG) {
-            const targetPrice = parseBigNumber(price).minus(averagePnl)
-            formatSlValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+        if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
+          formatSlSize = formatSize
+          if (slType === TpSlTypeEnum.Change) {
+            const radio = parseBigNumber(1).plus(
+              parseBigNumber(slValue)
+                .div(100)
+                .mul(direction === Direction.LONG ? -1 : 1),
+            )
+            const targetPrice = parseBigNumber(price).mul(radio).gt(0)
+              ? parseBigNumber(price).mul(radio).toString()
               : '0'
-          } else {
+            formatSlValue = ethers.parseUnits(targetPrice, 30).toString()
+          } else if (slType === TpSlTypeEnum.ROI) {
+            const radio = parseBigNumber(slValue).div(100)
+
+            const totalPnl = parseBigNumber(
+              ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
+            )
+              .mul(radio)
+              .mul(direction === Direction.LONG ? -1 : 1)
+            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
             const targetPrice = parseBigNumber(price).plus(averagePnl)
             formatSlValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
+          } else if (slType === TpSlTypeEnum.Pnl) {
+            const totalPnl = parseBigNumber(slValue)
+            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+
+            if (direction === Direction.LONG) {
+              const targetPrice = parseBigNumber(price).minus(averagePnl)
+              formatSlValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            } else {
+              const targetPrice = parseBigNumber(price).plus(averagePnl)
+              formatSlValue = ethers.parseUnits(targetPrice.toString(), 30).toString()
+            }
+          }
+        }
+
+        if (parseBigNumber(formatTpSize).gt(0)) {
+          const tpVerify = verifyTpSlPrice(
+            ethers.parseUnits(price, 30).toString(),
+            formatTpValue,
+            direction,
+            'tp',
+          )
+          if (!tpVerify) {
+            return
+          }
+        }
+
+        if (parseBigNumber(formatSlSize).gt(0)) {
+          const slVerify = verifyTpSlPrice(
+            ethers.parseUnits(price, 30).toString(),
+            formatSlValue,
+            direction,
+            'sl',
+          )
+          if (!slVerify) {
+            return
           }
         }
       }
 
-      // return
+      const position = positionList?.find(
+        (position: any) =>
+          position.poolId === symbolInfo?.poolId && position.direction === direction,
+      )
+      let positionId = ''
+
+      if (position && position.tokenId) {
+        positionId = position.positionId
+      }
 
       const orderData = {
         chainId: symbolInfo.chainId as number,
         address: address as `0x${string}`,
         poolId: symbolInfo?.poolId as string,
-        userPositionSalt: 1,
+        positionId,
         orderType: orderType as OrderType,
         triggerType: formatTriggerType as TriggerType,
         direction: direction,
@@ -196,33 +293,46 @@ export const useSubmitOrder = () => {
         executionFeeToken: symbolInfo?.quoteToken as string,
         leverage: leverage,
         tpSize: formatTpSize,
-        tpPrice: ethers.parseUnits(formatTpValue, 30).toString(),
+        tpPrice: formatTpValue,
         slSize: formatSlSize,
-        slPrice: ethers.parseUnits(formatSlValue, 30).toString(),
+        slPrice: formatSlValue,
       }
 
-      if (positionAction === PositionActionEnum.OPEN) {
-        const rs = await client?.order.createIncreaseOrder(orderData)
-        console.log('rs-->', rs)
-        if (rs?.code === 0) {
-          toast.success('Submit open order success')
-          // wait backend sync data
-          await sleep(1500)
-          tradePubSub.emit('place:order:success')
+      try {
+        setLoading(true)
+        if (positionAction === PositionActionEnum.OPEN) {
+          const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
+          if (rs?.code === 0) {
+            resetStore()
+            toast.success('Submit open order success')
+            setPlaceOrderConfirmDialogOpen(false)
+            // wait backend sync data
+            await sleep(1500)
+            tradePubSub.emit('place:order:success')
+          } else {
+            toast.error('Submit open order failed')
+          }
         } else {
-          toast.error('Submit open order failed')
+          const rs = await client?.order.createDecreaseOrder({
+            ...orderData,
+            collateralAmount: '0',
+          } as any)
+          if (rs?.code === 0) {
+            toast.success('Submit close order success')
+            setCloseOrderConfirmDialogOpen(false)
+            resetStore()
+            // wait backend sync data
+            await sleep(1500)
+            tradePubSub.emit('place:order:success')
+          } else {
+            console.log('rs-->', rs)
+            toast.error('Submit close order failed')
+          }
         }
-      } else {
-        const rs = await client?.order.createDecreaseOrder(orderData)
-        console.log('rs-->', rs)
-        if (rs?.code === 0) {
-          toast.success('Submit close order success')
-          // wait backend sync data
-          await sleep(1500)
-          tradePubSub.emit('place:order:success')
-        } else {
-          toast.error('Submit close order failed')
-        }
+      } catch (error) {
+        console.log('error-->', error)
+      } finally {
+        setLoading(false)
       }
     },
     [
@@ -245,10 +355,13 @@ export const useSubmitOrder = () => {
       tpType,
       slType,
       checkWalletChainId,
+      resetStore,
+      tpSlOpen,
     ],
   )
 
   return {
     submitOrder,
+    submitLoading: loading,
   }
 }
