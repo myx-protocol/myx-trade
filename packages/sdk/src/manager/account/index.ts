@@ -105,8 +105,6 @@ export class Account {
       }, '0');
 
 
-      this.logger.info('used-->', used)
-
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -115,17 +113,13 @@ export class Account {
         );
       }
 
-      this.logger.info('marginAccountBalanceRes-->', marginAccountBalanceRes)
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
-      this.logger.info('freeAmount-->', freeAmount.toString())
-      this.logger.info('quoteProfit-->', quoteProfit.toString())
       const accountMargin = freeAmount + quoteProfit
 
-      this.logger.info('accountMargin-->', accountMargin.toString())
 
       if (accountMargin < usedMargin) {
         return BigInt(0)
