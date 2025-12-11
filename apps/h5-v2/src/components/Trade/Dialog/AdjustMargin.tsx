@@ -5,7 +5,7 @@ import { MenuItem, Select as MuiSelect } from '@mui/material'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { Tooltips } from '@/components/UI/Tooltips'
 import Up from '@/components/Icon/set/Up'
-import { PrimaryButton } from '@/components/UI/Button'
+import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { t } from '@lingui/core/macro'
 import EditIcon from '@/components/UI/Icon/EditIcon'
 import { DirectionEnum, OracleType } from '@myx-trade/sdk'
@@ -97,9 +97,17 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
   return (
     <>
-      <div className="ml-[4px] cursor-pointer" role="button" onClick={() => setOpen(true)}>
-        <EditIcon onClick={() => setOpen(true)} />
-      </div>
+      <InfoButton
+        style={{
+          width: '100%',
+          padding: '10px 16px',
+          borderRadius: '6px',
+          fontWeight: 500,
+        }}
+        onClick={() => setOpen(true)}
+      >
+        <Trans>Margin</Trans>
+      </InfoButton>
       {open && (
         <DialogBase title={t`Adjust Margin`} open={open} onClose={() => setOpen(false)}>
           {/* pair level info */}
@@ -243,6 +251,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     .toString(),
                   quoteToken: pool?.quotePoolToken ?? '',
                   poolOracleType: OracleType.Chainlink,
+                  chainId: position.chainId,
                 }
 
                 const rs = await client?.position.adjustCollateral(data)

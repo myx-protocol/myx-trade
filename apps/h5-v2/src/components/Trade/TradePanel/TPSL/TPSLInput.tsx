@@ -13,13 +13,15 @@ export const TPSLInput = ({
   onTypeChange,
   placeHolder,
   quoteToken,
+  inputPrefix,
 }: {
-  value: number
+  value: string
   type: TpSlTypeEnum
-  onChange: (value: number) => void
+  onChange: (value: string) => void
   onTypeChange: (type: TpSlTypeEnum) => void
   placeHolder?: string
   quoteToken: string
+  inputPrefix?: string
 }) => {
   const [isFocused, setIsFocused] = useState(false)
   const [open, setOpen] = useState(false)
@@ -49,10 +51,11 @@ export const TPSLInput = ({
         placeholder={placeHolder ?? ''}
         value={value}
         onValueChange={(values) => {
-          onChange(values.floatValue ?? 0)
+          onChange(values.value ?? '')
         }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        prefix={inputPrefix}
       />
       <div
         className="flex flex-shrink-0 items-center gap-[4px]"
@@ -64,28 +67,6 @@ export const TPSLInput = ({
           <SortDownIcon size={6} color="#848E9C" />
         </span>
       </div>
-      {/* <TradeSelect
-        value={type}
-        onChange={(value) => onTypeChange(value.target.value as TpSlTypeEnum)}
-        options={[
-          {
-            label: <Trans>Price</Trans>,
-            value: TpSlTypeEnum.PRICE,
-          },
-          {
-            label: <Trans>ROI</Trans>,
-            value: TpSlTypeEnum.ROI,
-          },
-          {
-            label: <Trans>Change</Trans>,
-            value: TpSlTypeEnum.Change,
-          },
-          {
-            label: <Trans>PnL</Trans>,
-            value: TpSlTypeEnum.Pnl,
-          },
-        ]}
-      /> */}
       <TPSLTypeSelectDialog
         quoteToken={quoteToken}
         open={open}

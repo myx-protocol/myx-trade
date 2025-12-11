@@ -5,6 +5,11 @@ import type {
 } from '@public/charting_library/charting_library'
 import mitt from 'mitt'
 
+interface TradeSlippageChangeEvent {
+  chainId: number
+  poolId: string
+}
+
 /**
  * trade page pubsub events
  */
@@ -18,6 +23,7 @@ type TradePagePubSubEvents = {
   'kline:full:screen:toggle': void
   'global:search:update': void
   'place:order:success': void
+  'trade:slippage:change': TradeSlippageChangeEvent
 }
 
 export const tradePubSub = mitt<TradePagePubSubEvents>()
