@@ -113,19 +113,24 @@ export class Account {
         );
       }
 
+      this.logger.info("getAvailableMarginBalance used-->", used)
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
+      this.logger.info("getAvailableMarginBalance quoteProfit-->", quoteProfit.toString)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
+      this.logger.info("getAvailableMarginBalance freeAmount-->", freeAmount.toString())
 
       const accountMargin = freeAmount + quoteProfit
 
+      this.logger.info("getAvailableMarginBalance accountMargin-->", accountMargin.toString())
 
       if (accountMargin < usedMargin) {
         return BigInt(0)
       }
 
       const availableAccountMarginBalance = accountMargin - usedMargin;
+      this.logger.info("getAvailableMarginBalance availableAccountMarginBalance-->", availableAccountMarginBalance.toString())
 
       return availableAccountMarginBalance
     } catch (error) {
