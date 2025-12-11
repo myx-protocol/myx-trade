@@ -221,13 +221,13 @@ export class Order {
         );
       }
 
-      this.logger.info("Transaction sent:", transaction.hash);
-      this.logger.info("Waiting for confirmation...");
+      // this.logger.info("Transaction sent:", transaction.hash);
+      // this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
-      this.logger.info("createIncreaseOrder receipt--->", receipt);
+      // this.logger.info("createIncreaseOrder receipt--->", receipt);
       const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
@@ -434,18 +434,18 @@ export class Order {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
-      // const networkFee = await this.utils.getNetworkFee(
-      //   params.executionFeeToken,
-      //   params.chainId
-      // );
+      const networkFee = await this.utils.getNetworkFee(
+        params.executionFeeToken,
+        params.chainId
+      );
 
-      // const depositAmount = BigInt(0)
-      // const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+      let depositAmount = BigInt(0)
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
-      // const needAmount = BigInt(tradingFee) + BigInt(networkFee)
-      // if (availableAccountMarginBalance < needAmount) {
-      //   depositAmount = needAmount - availableAccountMarginBalance
-      // }
+      const needAmount = BigInt(networkFee)
+      if (availableAccountMarginBalance < needAmount) {
+        depositAmount = needAmount - availableAccountMarginBalance
+      }
 
       const data = {
         user: params.address,
@@ -469,14 +469,14 @@ export class Order {
 
       const depositData = {
         token: params.executionFeeToken,
-        amount: '0'
+        amount: depositAmount.toString()
       }
 
-      // const needsApproval = await this.utils.needsApproval(
-      //   params.chainId,
-      //   params.executionFeeToken,
-      //   '0',
-      // );
+      const needsApproval = await this.utils.needsApproval(
+        params.chainId,
+        params.executionFeeToken,
+        depositAmount.toString(),
+      );
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
@@ -541,24 +541,23 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      // if (needsApproval) {
-      //   const approvalResult = await this.utils.approveAuthorization({
-      //     chainId: params.chainId,
-      //     quoteAddress: params.executionFeeToken,
-      //     amount: ethers.MaxUint256.toString(),
-      //   });
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId: params.chainId,
+          quoteAddress: params.executionFeeToken,
+          amount: ethers.MaxUint256.toString(),
+        });
 
-      //   if (approvalResult.code !== 0) {
-      //     throw new Error(approvalResult.message);
-      //   }
-      // }
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
 
-      console.log('data-->', data)
 
       let transaction;
       if (!params.positionId) {
         const positionId = 1
-        this.logger.info("createDecreaseOrder salt position params--->", [positionId, { data }]);
+        this.logger.info("createDecreaseOrder salt position params--->", [positionId, depositData, { data }]);
         const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
 
         transaction = await brokerContract.placeOrderWithSalt(positionId.toString(),
@@ -569,7 +568,7 @@ export class Order {
           }
         );
       } else {
-        this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, { data }]);
+        this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, depositData, { data }]);
         const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
 
         transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
@@ -581,13 +580,13 @@ export class Order {
         );
       }
 
-      this.logger.info("Transaction sent:", transaction.hash);
-      this.logger.info("Waiting for confirmation...");
+      // this.logger.info("Transaction sent:", transaction.hash);
+      // this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
-      this.logger.info("createDecreaseOrder receipt--->", receipt);
+      // this.logger.info("createDecreaseOrder receipt--->", receipt);
       const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
