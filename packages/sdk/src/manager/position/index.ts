@@ -15,17 +15,21 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { Seamless } from "../seamless";
 import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
 import dayjs from "dayjs";
+import { Account } from "../account";
+
 
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
   private seamless: Seamless;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
+  private account: Account;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
+    this.account = account;
   }
 
   async listPositions(address: string) {
@@ -74,7 +78,8 @@ export class Position {
     adjustAmount,
     quoteToken,
     poolOracleType,
-    chainId
+    chainId,
+    address
   }: {
     poolId: string;
     positionId: string;
@@ -82,6 +87,7 @@ export class Position {
     quoteToken: string;
     poolOracleType: OracleType,
     chainId: number
+    address: string
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
@@ -124,13 +130,20 @@ export class Position {
 
       const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
 
-      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+      let depositAmount = BigInt(0)
+
+      const used = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId, chainId, address });
+      let diff = BigInt(0)
+      if (availableAccountMarginBalance < used) {
+        diff = used - availableAccountMarginBalance
+        depositAmount = diff
+      }
 
       const depositData = {
         token: quoteToken,
         amount: depositAmount.toString()
       }
-
 
       if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
