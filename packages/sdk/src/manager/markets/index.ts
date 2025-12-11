@@ -23,6 +23,7 @@ import {
 import { KlineResolution } from "../subscription/types";
 import { Utils } from "../utils";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { getPoolSymbolAll } from "@/api/pool";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -35,7 +36,6 @@ export class Markets {
   getMarkets() {
     return Promise.resolve([]);
   }
-  
 
   async getPoolLevelConfig(poolId: string) {
     const config = this.configManager.getConfig();
@@ -53,7 +53,7 @@ export class Markets {
   async getKlineList({
     interval,
     ...params
-  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | 'chainId'> & {
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | "chainId"> & {
     interval: KlineResolution;
   }) {
     return (
@@ -67,7 +67,7 @@ export class Markets {
   async getKlineLatestBar({
     interval,
     ...params
-  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | 'chainId'> & {
+  }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | "chainId"> & {
     interval: KlineResolution;
   }) {
     return (
@@ -85,9 +85,7 @@ export class Markets {
    * ticker start
    */
   async getTickerList(params: GetTickerDataParams) {
-    return (
-      await getTickerData(params)
-    ).data;
+    return (await getTickerData(params)).data;
   }
 
   /**
@@ -188,5 +186,12 @@ export class Markets {
    */
   async getMarketDetail(params: GetMarketDetailParams) {
     return (await getMarketDetail(params)).data;
+  }
+
+  /**
+   * get pool symbol all
+   */
+  async getPoolSymbolAll() {
+    return (await getPoolSymbolAll()).data;
   }
 }
