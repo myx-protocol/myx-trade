@@ -59,14 +59,12 @@ export class Order {
         params.collateralAmount,
       );
 
-      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-
+      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee
       let depositAmount = BigInt(0)
 
       const diff = needAmount - availableAccountMarginBalance
-
       if (diff > BigInt(0)) {
         depositAmount = diff
       }
@@ -432,22 +430,22 @@ export class Order {
     }
   }
 
-  async createDecreaseOrder(params: PlaceOrderParams, tradingFee: string) {
+  async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
-      const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken,
-        params.chainId
-      );
+      // const networkFee = await this.utils.getNetworkFee(
+      //   params.executionFeeToken,
+      //   params.chainId
+      // );
 
-      let depositAmount = BigInt(0)
-      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+      // const depositAmount = BigInt(0)
+      // const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
-      const needAmount = BigInt(tradingFee) + BigInt(networkFee)
-      if (availableAccountMarginBalance < needAmount) {
-        depositAmount = needAmount - availableAccountMarginBalance
-      }
+      // const needAmount = BigInt(tradingFee) + BigInt(networkFee)
+      // if (availableAccountMarginBalance < needAmount) {
+      //   depositAmount = needAmount - availableAccountMarginBalance
+      // }
 
       const data = {
         user: params.address,
@@ -471,32 +469,18 @@ export class Order {
 
       const depositData = {
         token: params.executionFeeToken,
-        amount: depositAmount.toString()
+        amount: '0'
       }
 
-      const needsApproval = await this.utils.needsApproval(
-        params.chainId,
-        params.executionFeeToken,
-        depositAmount.toString(),
-      );
+      // const needsApproval = await this.utils.needsApproval(
+      //   params.chainId,
+      //   params.executionFeeToken,
+      //   '0',
+      // );
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
       if (config.seamlessMode && authorized && seamlessWallet) {
-
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: params.chainId,
-            quoteAddress: params.executionFeeToken,
-            amount: ethers.MaxUint256.toString(),
-            signer: seamlessWallet as Signer,
-          });
-
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
-
         const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
 
         if (!isEnoughGas) {
@@ -557,19 +541,18 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      if (needsApproval) {
-        const approvalResult = await this.utils.approveAuthorization({
-          chainId: params.chainId,
-          quoteAddress: params.executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
-        });
+      // if (needsApproval) {
+      //   const approvalResult = await this.utils.approveAuthorization({
+      //     chainId: params.chainId,
+      //     quoteAddress: params.executionFeeToken,
+      //     amount: ethers.MaxUint256.toString(),
+      //   });
 
-        if (approvalResult.code !== 0) {
-          throw new Error(approvalResult.message);
-        }
-      }
+      //   if (approvalResult.code !== 0) {
+      //     throw new Error(approvalResult.message);
+      //   }
+      // }
 
-      console.log('depositData-->', depositData)
       console.log('data-->', data)
 
       let transaction;

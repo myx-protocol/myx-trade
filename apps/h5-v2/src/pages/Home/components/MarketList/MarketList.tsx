@@ -10,12 +10,14 @@ import { SymbolInfo } from '@/components/MarketList/SymbolInfo'
 import { formatNumber } from '@/utils/number'
 import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { useNavigate } from 'react-router-dom'
 
 interface MarketListProps {
   activeMarket: 'Favorites' | 'Hot' | 'Gainers' | 'New'
 }
 
 export const MarketList = ({ activeMarket }: MarketListProps) => {
+  const navigate = useNavigate()
   const { isLoading, data } = useQuery({
     queryKey: ['home-market-list', activeMarket],
     queryFn: () => {
@@ -77,6 +79,9 @@ export const MarketList = ({ activeMarket }: MarketListProps) => {
         <MarketListRow
           className="my-[14px]"
           key={item.poolId}
+          onClick={() => {
+            navigate(`/price/${item.chainId}/${item.poolId}`)
+          }}
           values={[
             <SymbolInfo
               symbol={item.baseQuoteSymbol}

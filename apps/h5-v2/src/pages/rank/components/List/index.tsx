@@ -12,8 +12,10 @@ import { Loading } from './Loading'
 import { useRankStore } from '../../store'
 import { useQuery } from '@tanstack/react-query'
 import { getLeaderboard } from '@/api'
+import { useNavigate } from 'react-router-dom'
 
 export const List = () => {
+  const navigate = useNavigate()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { timeInterval, type, chainId, tabsType } = useRankStore()
@@ -74,6 +76,9 @@ export const List = () => {
               <MarketListRow
                 key={item.index}
                 className="h-[58px] px-[16px] py-[8px] text-[12px] leading-[1.2] text-[#6D7180]"
+                onClick={() => {
+                  navigate(`/price/${item.data.chainId}/${item.data.poolId}`)
+                }}
                 values={[
                   <div className="flex items-center gap-[8px]">
                     <p
@@ -89,6 +94,7 @@ export const List = () => {
                       descriptionText={formatNumber(123123123123)}
                       baseLogoSize={28}
                       quoteTokenSize={10}
+                      baseTokenLogo={item.data.tokenIcon}
                     />
                   </div>,
                   <div className="flex flex-col items-end justify-center">

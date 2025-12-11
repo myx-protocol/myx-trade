@@ -57,7 +57,7 @@ export const Drawer = ({
             <Box
               width={'16px'}
               height={'16px'}
-              onClick={(e) => onClose?.(e, 'backdropClick')}
+              onClick={(e) => onClose?.(e)}
               className={'text-secondary'}
             >
               <CloseIcon size={16} />
