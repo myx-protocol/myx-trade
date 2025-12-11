@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { TpSlTabTypeEnum } from '../types'
 
-export interface PositionTPSLStore {
+export interface OrderTPSLStore {
   tpSize: string
   setTpSize: (tpSize: string) => void
   slSize: string
@@ -15,7 +15,7 @@ export interface PositionTPSLStore {
   reset: () => void
 }
 
-export const usePositionTPSLStore = create<PositionTPSLStore>((set) => ({
+export const useOrderTPSLStore = create<OrderTPSLStore>((set) => ({
   tpSize: '',
   setTpSize: (tpSize: string) => set({ tpSize }),
   slSize: '',
@@ -24,7 +24,7 @@ export const usePositionTPSLStore = create<PositionTPSLStore>((set) => ({
   setTpPrice: (tpPrice: string) => set({ tpPrice }),
   slPrice: '',
   setSlPrice: (slPrice: string) => set({ slPrice }),
-  activeTab: TpSlTabTypeEnum.TPOrSL,
+  activeTab: TpSlTabTypeEnum.TPAndSL,
   setActiveTab: (activeTab: TpSlTabTypeEnum) => set({ activeTab }),
   reset: () => set({ tpSize: '', slSize: '', tpPrice: '', slPrice: '' }),
 }))

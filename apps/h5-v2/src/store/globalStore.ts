@@ -14,8 +14,8 @@ interface GlobalStore {
   tradeMode: TradeMode
   setTradeMode: (tradeMode: TradeMode) => void
 
-  exportSeamlessKeyDialogOpen: boolean
-  setExportSeamlessKeyDialogOpen: (open: boolean) => void
+  exportSeamlessKeyDialogOpen: string | false
+  setExportSeamlessKeyDialogOpen: (open: string | false) => void
   exportSeamlessInfoDialogOpen: boolean
   setExportSeamlessInfoDialogOpen: (open: boolean) => void
   importSeamlessKeyDialogOpen: boolean
@@ -28,6 +28,27 @@ interface GlobalStore {
   setShowSeamlessPasswordDialog: (show: boolean) => void
   unlockAccountDialogOpen: boolean
   setUnlockAccountDialogOpen: (open: boolean) => void
+
+  placeOrderConfirmDialogOpen: 'LONG' | 'SHORT' | false
+  setPlaceOrderConfirmDialogOpen: (open: 'LONG' | 'SHORT' | false) => void
+
+  closeOrderConfirmDialogOpen: 'LONG' | 'SHORT' | false
+  setCloseOrderConfirmDialogOpen: (open: 'LONG' | 'SHORT' | false) => void
+
+  showPlaceOrderConfirmDialog: boolean
+  setShowPlaceOrderConfirmDialog: (show: boolean) => void
+
+  showCloseOrderConfirmDialog: boolean
+  setShowCloseOrderConfirmDialog: (show: boolean) => void
+
+  marketCloseConfirmDialogOpen: boolean
+  setMarketCloseConfirmDialogOpen: (open: boolean) => void
+
+  setShowMarketCloseConfirmDialog: (show: boolean) => void
+  showMarketCloseConfirmDialog: boolean
+
+  cancelAllOrdersDialogOpen: boolean
+  setCancelAllOrdersDialogOpen: (open: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -52,7 +73,7 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             setShowSeamlessPasswordDialog: (show: boolean) =>
               set({ showSeamlessPasswordDialog: show }),
             exportSeamlessKeyDialogOpen: false,
-            setExportSeamlessKeyDialogOpen: (open: boolean) =>
+            setExportSeamlessKeyDialogOpen: (open: string | false) =>
               set({ exportSeamlessKeyDialogOpen: open }),
             exportSeamlessInfoDialogOpen: false,
             setExportSeamlessInfoDialogOpen: (open: boolean) =>
@@ -63,12 +84,29 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             selectedSeamlessAccountDialogOpen: false,
             setSelectedSeamlessAccountDialogOpen: (open: boolean) =>
               set({ selectedSeamlessAccountDialogOpen: open }),
+            placeOrderConfirmDialogOpen: false,
+            setPlaceOrderConfirmDialogOpen: (open: 'LONG' | 'SHORT' | false) =>
+              set({ placeOrderConfirmDialogOpen: open }),
+            showPlaceOrderConfirmDialog: false,
+            setShowPlaceOrderConfirmDialog: (show: boolean) =>
+              set({ showPlaceOrderConfirmDialog: show }),
+            closeOrderConfirmDialogOpen: false,
+            setCloseOrderConfirmDialogOpen: (open: 'LONG' | 'SHORT' | false) =>
+              set({ closeOrderConfirmDialogOpen: open }),
+            showCloseOrderConfirmDialog: false,
+            setShowCloseOrderConfirmDialog: (show: boolean) =>
+              set({ showCloseOrderConfirmDialog: show }),
+            cancelAllOrdersDialogOpen: false,
+            setCancelAllOrdersDialogOpen: (open: boolean) =>
+              set({ cancelAllOrdersDialogOpen: open }),
           }) as GlobalStore,
       ),
       {
         name: 'global-store',
         partialize: (state) => ({
           tradeMode: state.tradeMode,
+          showPlaceOrderConfirmDialog: state.showPlaceOrderConfirmDialog,
+          showCloseOrderConfirmDialog: state.showCloseOrderConfirmDialog,
         }),
       },
     ),

@@ -1,52 +1,59 @@
 import { Trans } from '@lingui/react/macro'
 import { InfoIcon } from '@/components/UI/Icon'
-import { InfoButton, PrimaryButton } from '@/components/UI/Button'
+import { PrimaryButton } from '@/components/UI/Button'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useState } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import useGlobalStore from '@/store/globalStore'
+import { usePositionStore } from '@/store/position/createStore'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
-export const CancelOrderButton = ({ orderId, chainId }: { orderId: number; chainId: number }) => {
-  const { client } = useMyxSdkClient(Number(chainId))
+export const CancelAllOrdersDialog = () => {
+  const { selectChainId } = usePositionStore()
+  const { client } = useMyxSdkClient(Number(selectChainId))
   const [loading, setLoading] = useState(false)
-  const [cancelOrderDialogOpen, setCancelOrderDialogOpen] = useState(false)
+  const { cancelAllOrdersDialogOpen, setCancelAllOrdersDialogOpen } = useGlobalStore()
+  const orders = useGetOrderList()
+
   return (
     <>
-      <InfoButton
-        style={{
-          width: '100%',
-          padding: '10px 16px',
-          borderRadius: '6px',
-          fontWeight: 500,
-          lineHeight: 1,
-        }}
-        onClick={async () => {
-          setCancelOrderDialogOpen(true)
-        }}
+      <DialogBase
+        open={cancelAllOrdersDialogOpen}
+        onClose={() => setCancelAllOrdersDialogOpen(false)}
       >
-        <Trans>Cancel</Trans>
-      </InfoButton>
-      <DialogBase open={cancelOrderDialogOpen} onClose={() => setCancelOrderDialogOpen(false)}>
         <InfoIcon width={56} height={56} className="mx-auto mt-[40px]" />
         <p className="mt-[20px] text-center text-[16px] leading-[16px] text-[white]">
           <Trans>Are you sure to</Trans>
         </p>
         <p className="mt-[5px] text-center text-[16px] leading-[16px] text-[#F29D39]">
-          <Trans>Cancel this order?</Trans>
+          <Trans>cancel all open orders?</Trans>
         </p>
         <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
           <PrimaryButton
             onClick={async () => {
               try {
                 setLoading(true)
-                await client?.order.cancelOrder(orderId.toString(), Number(chainId))
-                toast.success({
-                  title: t`Cancel all orders success`,
-                })
-                setCancelOrderDialogOpen(false)
+                const rs = await client?.order.cancelOrders(
+                  orders.map((item: any) => item.orderId),
+                  Number(selectChainId),
+                )
+                if (rs?.code === 0) {
+                  toast.success({
+                    title: t`Cancel all orders success`,
+                  })
+                  setCancelAllOrdersDialogOpen(false)
+                } else {
+                  toast.error({
+                    title: t`Cancel all orders failed`,
+                  })
+                }
               } catch (e) {
                 console.log(e)
+                toast.error({
+                  title: t`Cancel all orders failed`,
+                })
               } finally {
                 setLoading(false)
               }

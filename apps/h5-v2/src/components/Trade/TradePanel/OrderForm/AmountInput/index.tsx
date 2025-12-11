@@ -10,9 +10,8 @@ import { useTradePanelStore } from '../../store'
 import { parseBigNumber } from '@/utils/bn'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
-import { useTotalAvailableBalance } from '@/hooks/balance/use-total-available-balance'
-import { ethers } from 'ethers'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
+import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
 
 const ValueLabelComponent = (props: any) => {
   const { children, value } = props
@@ -76,7 +75,6 @@ const AmountSliderMarks = [
 
 export const AmountInput = () => {
   const { symbolInfo } = useTradePageStore()
-  const [sliderValue, setSliderValue] = useState<number>(0)
   const [useSlider, setUseSlider] = useState(false)
   const {
     collateralAmount,
@@ -87,10 +85,110 @@ export const AmountInput = () => {
     amountUnit,
     setAmountUnit,
     positionAction,
+    amountSliderValue: sliderValue,
+    setAmountSliderValue: setSliderValue,
+    setTempInputValue,
+    tempInputValue,
   } = useTradePanelStore()
   const leverage = useLeverage(symbolInfo?.poolId)
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
-  const totalBalanceString = useTotalAvailableBalance()
+  const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
+
+  useEffect(() => {
+    if (!useSlider) return
+    if (positionAction === PositionActionEnum.OPEN) {
+      if (autoMarginMode) {
+        if (amountUnit === AmountUnitEnum.QUOTE) {
+          const longSize = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(maxOpenLong.quoteAmount))
+            .toString()
+          const shortSize = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(maxOpenShort.quoteAmount))
+            .toString()
+
+          setLongSize(longSize)
+          setShortSize(shortSize)
+        } else {
+          const longSize = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(maxOpenLong.baseAmount))
+            .toString()
+          const shortSize = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(maxOpenShort.baseAmount))
+            .toString()
+
+          setLongSize(longSize)
+          setShortSize(shortSize)
+        }
+      } else {
+        const balance = parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
+
+        if (amountUnit === AmountUnitEnum.QUOTE) {
+          const openSize = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(balance))
+            .toString()
+
+          setLongSize(openSize)
+          setShortSize(openSize)
+        } else {
+          if (parseBigNumber(price).eq(0)) {
+            setLongSize('0')
+            setShortSize('0')
+          } else {
+            const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
+            const openSize = parseBigNumber(sliderValue)
+              .div(100)
+              .mul(parseBigNumber(maxSize))
+              .toString()
+
+            setLongSize(openSize)
+            setShortSize(openSize)
+          }
+        }
+      }
+      return
+    }
+    if (amountUnit === AmountUnitEnum.QUOTE) {
+      const longSize = parseBigNumber(sliderValue)
+        .div(100)
+        .mul(parseBigNumber(maxCloseLong.quoteAmount))
+        .toString()
+      const shortSize = parseBigNumber(sliderValue)
+        .div(100)
+        .mul(parseBigNumber(maxCloseShort.quoteAmount))
+        .toString()
+
+      setLongSize(longSize)
+      setShortSize(shortSize)
+    } else {
+      const longSize = parseBigNumber(sliderValue)
+        .div(100)
+        .mul(parseBigNumber(maxCloseLong.baseAmount))
+        .toString()
+      const shortSize = parseBigNumber(sliderValue)
+        .div(100)
+        .mul(parseBigNumber(maxCloseShort.baseAmount))
+        .toString()
+
+      setLongSize(longSize)
+      setShortSize(shortSize)
+    }
+  }, [
+    sliderValue,
+    useSlider,
+    setLongSize,
+    setShortSize,
+    positionAction,
+    autoMarginMode,
+    amountUnit,
+    collateralAmount,
+    leverage,
+    price,
+  ])
 
   return (
     <InputWrapper
@@ -111,7 +209,6 @@ export const AmountInput = () => {
               value={`${sliderValue}%`}
               onFocus={() => {
                 setUseSlider(false)
-                setSliderValue(0)
                 setSliderValue(0)
               }}
               InputProps={{
@@ -138,16 +235,20 @@ export const AmountInput = () => {
             />
           ) : (
             <NumberInputPrimitive
+              value={tempInputValue}
               className="w-full text-[20px] font-bold text-[#fff]"
+              decimalScale={symbolInfo?.quoteDecimals ?? 6}
               onFocus={() => {
                 setUseSlider(false)
                 setSliderValue(0)
                 setLongSize('0')
                 setShortSize('0')
+                setTempInputValue('')
               }}
               onValueChange={({ value }) => {
                 setLongSize(value)
                 setShortSize(value)
+                setTempInputValue(value)
               }}
               thousandSeparator=","
               inputMode="decimal"
@@ -164,10 +265,11 @@ export const AmountInput = () => {
               setLongSize('0')
               setShortSize('0')
               setSliderValue(0)
+              setTempInputValue('')
             }}
             options={[
-              { label: symbolInfo?.quoteSymbol, value: AmountUnitEnum.QUOTE },
               { label: symbolInfo?.baseSymbol, value: AmountUnitEnum.BASE },
+              { label: symbolInfo?.quoteSymbol, value: AmountUnitEnum.QUOTE },
             ]}
           />
         </div>
@@ -178,97 +280,6 @@ export const AmountInput = () => {
           onChange={(_, newValue) => {
             setUseSlider(true)
             setSliderValue(newValue as number)
-
-            if (positionAction === PositionActionEnum.OPEN) {
-              if (autoMarginMode) {
-                const totalBalance = ethers.formatUnits(
-                  totalBalanceString,
-                  symbolInfo?.quoteDecimals ?? 6,
-                )
-                const balance = parseBigNumber(totalBalance)
-                  .mul(parseBigNumber(leverage))
-                  .toString()
-
-                if (amountUnit === AmountUnitEnum.QUOTE) {
-                  const size = parseBigNumber(newValue)
-                    .div(100)
-                    .mul(parseBigNumber(balance))
-                    .toString()
-
-                  setLongSize(size)
-                  setShortSize(size)
-                } else {
-                  if (parseBigNumber(price).eq(0)) {
-                    setLongSize('0')
-                    setShortSize('0')
-                    return
-                  }
-
-                  const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
-                  const openSize = parseBigNumber(newValue)
-                    .div(100)
-                    .mul(parseBigNumber(maxSize))
-                    .toString()
-
-                  setLongSize(openSize)
-                  setShortSize(openSize)
-                }
-              } else {
-                const balance = parseBigNumber(collateralAmount)
-                  .mul(parseBigNumber(leverage))
-                  .toString()
-
-                if (amountUnit === AmountUnitEnum.QUOTE) {
-                  const openSize = parseBigNumber(newValue)
-                    .div(100)
-                    .mul(parseBigNumber(balance))
-                    .toString()
-
-                  setLongSize(openSize)
-                  setShortSize(openSize)
-                } else {
-                  if (parseBigNumber(price).eq(0)) {
-                    setLongSize('0')
-                    setShortSize('0')
-                  } else {
-                    const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
-                    const openSize = parseBigNumber(newValue)
-                      .div(100)
-                      .mul(parseBigNumber(maxSize))
-                      .toString()
-
-                    setLongSize(openSize)
-                    setShortSize(openSize)
-                  }
-                }
-              }
-              return
-            }
-            if (amountUnit === AmountUnitEnum.QUOTE) {
-              const longSize = parseBigNumber(newValue)
-                .div(100)
-                .mul(parseBigNumber(maxCloseLong.quoteAmount))
-                .toString()
-              const shortSize = parseBigNumber(newValue)
-                .div(100)
-                .mul(parseBigNumber(maxCloseShort.quoteAmount))
-                .toString()
-
-              setLongSize(longSize)
-              setShortSize(shortSize)
-            } else {
-              const longSize = parseBigNumber(newValue)
-                .div(100)
-                .mul(parseBigNumber(maxCloseLong.baseAmount))
-                .toString()
-              const shortSize = parseBigNumber(newValue)
-                .div(100)
-                .mul(parseBigNumber(maxCloseShort.baseAmount))
-                .toString()
-
-              setLongSize(longSize)
-              setShortSize(shortSize)
-            }
           }}
           min={0}
           max={100}

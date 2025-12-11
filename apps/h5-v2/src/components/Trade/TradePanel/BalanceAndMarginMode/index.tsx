@@ -1,4 +1,4 @@
-import { formatNumber } from '@/utils/number'
+import { formatNumberWithBaseToken } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import Reverse from '@/components/Icon/set/ReverseV2'
 import { ArrowDown } from '@/components/Icon'
@@ -28,8 +28,7 @@ const Balance = () => {
         <Trans>Balance</Trans>
       </p>
       <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-white">
-        {formatNumber(accountAssets?.totalAvailableMargin?.toString() ?? '0', {
-          decimals: 2,
+        {formatNumberWithBaseToken(accountAssets?.availableMargin?.toString() ?? '0', {
           showUnit: false,
         })}
       </p>

@@ -3,17 +3,10 @@ import type React from 'react'
 
 interface PriceInfoProps {
   currentPrice?: string
-  forceTpPrice?: string
   entryPrice?: string
-  estimatedForceSlPrice?: string | React.ReactElement
 }
 
-export const PriceInfo = ({
-  currentPrice,
-  forceTpPrice,
-  entryPrice,
-  estimatedForceSlPrice,
-}: PriceInfoProps) => {
+export const PriceInfo = ({ currentPrice, entryPrice }: PriceInfoProps) => {
   return (
     <div className="mt-[16px] flex flex-col gap-[10px]">
       {currentPrice && (
@@ -31,23 +24,6 @@ export const PriceInfo = ({
             <Trans>开仓价格</Trans>
           </span>
           <span className="text-[#CED1D9]">{entryPrice}</span>
-        </div>
-      )}
-
-      {forceTpPrice && (
-        <div className="flex items-center justify-between text-[12px] leading-[1] font-medium text-[#848E9C]">
-          <span>
-            <Trans>强制止盈价</Trans>
-          </span>
-          <span className="text-[#CED1D9]">{forceTpPrice}</span>
-        </div>
-      )}
-      {estimatedForceSlPrice && (
-        <div className="flex items-center justify-between text-[12px] leading-[1] font-medium text-[#848E9C]">
-          <span>
-            <Trans>预估强平价</Trans>
-          </span>
-          <span className="text-[#F29D39]">{estimatedForceSlPrice}</span>
         </div>
       )}
     </div>
