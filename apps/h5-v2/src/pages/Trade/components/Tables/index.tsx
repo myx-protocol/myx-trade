@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
 import useGlobalStore from '@/store/globalStore'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
-import { CancelAllOrdersDialog } from '../CancelAllOrdersDialog'
+import { t } from '@lingui/core/macro'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 const TabButton = ({
   activeTab,
@@ -49,7 +50,7 @@ export const Tables = () => {
   const { setCancelAllOrdersDialogOpen } = useGlobalStore()
   const orderList = useGetOrderList()
   const positionList = useGetPositionList()
-
+  const { symbolInfo } = useTradePageStore()
   const navigate = useNavigate()
   const onCloseAllHandler = () => {
     if (activeTab === TabType.POSITION) {
@@ -84,20 +85,26 @@ export const Tables = () => {
         <div className="flex-[1_1_0%]">
           <TradeRecordTabs
             value={activeTab}
-            onChange={(event, value) => setActiveTab(value as TabType)}
+            onChange={(_, value) => setActiveTab(value as TabType)}
           >
             <TradeRecordTab
               value={TabType.POSITION}
-              label={<Trans>Positions({positionList.length})</Trans>}
+              label={t`Positions${positionList.length > 0 ? `(${positionList.length})` : ''}`}
             />
             <TradeRecordTab
               value={TabType.ENTRUSTS}
-              label={<Trans>Open Orders({orderList.length})</Trans>}
+              label={t`Open Orders${orderList.length > 0 ? `(${orderList.length})` : ''}`}
             />
           </TradeRecordTabs>
         </div>
         {/* hide outer symbols */}
-        <div className="shrink-0 text-[#848E9C]" role="button" onClick={() => navigate('/record')}>
+        <div
+          className="shrink-0 text-[#848E9C]"
+          role="button"
+          onClick={() =>
+            navigate(`/record?chainId=${symbolInfo?.chainId}&poolId=${symbolInfo?.poolId}`)
+          }
+        >
           <Record size={18} />
         </div>
       </div>
@@ -109,8 +116,5 @@ export const Tables = () => {
       {activeTab === TabType.POSITION && <Position />}
       {activeTab === TabType.ENTRUSTS && <Entrusts />}
     </>
-    // {activeTab === TabType.POSITION_HISTORY && <PositionHistory />}
-    // {activeTab === TabType.ORDER_HISTORY && <OrderHistory />}
-    // {activeTab === TabType.FINANCE && <Finance />}
   )
 }

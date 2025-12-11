@@ -4,7 +4,7 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 
 export const PositionList = () => {
-  const positionList = useGetPositionList(true)
+  const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const { poolList } = useGetPoolList()
 

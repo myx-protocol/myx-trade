@@ -11,11 +11,14 @@ import { OpenOrderList } from './components/OpenOrderList'
 import { OrderHistoryList } from './components/OrderHistoryList'
 import { PositionHistoryList } from './components/PositionHistoryList'
 import { FinanceList } from './components/FinanceList'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 const Record = () => {
   const [tab, setTab] = React.useState<TabType>(TabType.POSITION)
   const [hideOuterSymbols, setHideOuterSymbols] = React.useState(false)
   const { setCloseAllPositionDialogOpen } = usePositionStore()
+  const { symbolInfo } = useTradePageStore()
+  console.log('symbolInfo-->', symbolInfo)
 
   const onCloseAllHandler = () => {
     if (tab === TabType.POSITION) {

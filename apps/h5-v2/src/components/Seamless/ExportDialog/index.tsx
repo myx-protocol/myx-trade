@@ -3,14 +3,15 @@ import { t } from '@lingui/core/macro'
 import useGlobalStore from '@/store/globalStore'
 import { Trans } from '@lingui/react/macro'
 import { PrimaryButton } from '@/components/UI/Button'
+import { InputBase } from '@mui/material'
+import { toast } from '@/components/UI/Toast'
 export const ExportDialog = () => {
   const { exportSeamlessKeyDialogOpen, setExportSeamlessKeyDialogOpen } = useGlobalStore()
 
-  const seamlessKey = '0x1234567890abcdef1234567890abcdef1f'
   return (
     <DialogBase
       title={t`Export Seamless Trading Key`}
-      open={exportSeamlessKeyDialogOpen}
+      open={!!exportSeamlessKeyDialogOpen}
       onClose={() => setExportSeamlessKeyDialogOpen(false)}
       sx={{
         '& .MuiDialog-paper': {
@@ -29,9 +30,24 @@ export const ExportDialog = () => {
           <p className="text-[14px] leading-[14px] font-medium text-[#848E9C]">
             <Trans>Seamless Trading Key</Trans>
           </p>
-          <div className="mt-[8px] mt-[10px] flex w-full items-center rounded-[6px] border-[1px] border-[#3A404A] p-[8px]">
-            <p className="text-[14px] leading-[14px] font-medium text-[#CED1D9]">{seamlessKey}</p>
-          </div>
+          <InputBase
+            value={exportSeamlessKeyDialogOpen as string}
+            // disabled
+            sx={{
+              width: '100%',
+              color: 'white',
+              '& .MuiInputBase-input': {
+                color: 'white !important',
+                fontSize: '14px',
+                fontWeight: '500',
+                leading: '14px',
+                marginTop: '16px',
+                border: '1px solid #3A404A',
+                padding: '8px',
+                borderRadius: '6px',
+              },
+            }}
+          />
         </div>
 
         <div className="mt-[24px]">
@@ -43,7 +59,19 @@ export const ExportDialog = () => {
               fontWeight: 500,
             }}
             onClick={() => {
-              navigator.clipboard.writeText(seamlessKey)
+              navigator.clipboard
+                .writeText(exportSeamlessKeyDialogOpen as string)
+                .then(() => {
+                  toast.success({
+                    title: t`Copied to clipboard`,
+                  })
+                })
+                .catch((error) => {
+                  console.error('error-->', error)
+                  toast.error({
+                    title: t`Failed to copy`,
+                  })
+                })
             }}
           >
             <Trans>Copy</Trans>

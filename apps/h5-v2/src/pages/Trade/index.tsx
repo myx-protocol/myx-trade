@@ -1,7 +1,7 @@
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
 import { TradePanel } from '@/components/Trade/TradePanel'
 import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
@@ -11,11 +11,11 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import type { ChainId } from '@myx-trade/sdk'
-import { Charts } from '@/components/Trade/Charts'
+import { getPoolLevelConfig } from '@/api'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
-  const { setSymbolInfo, symbolInfo } = useTradePageStore()
+  const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
 
   const { client } = useMyxSdkClient()
   const { setTickerData } = useMarketStore()
@@ -40,6 +40,11 @@ export const Trade = () => {
       }
       if (marketDetail && _chainId === marketDetail?.chainId && poolId === marketDetail?.poolId) {
         setSymbolInfo(marketDetail)
+      }
+    })
+    getPoolLevelConfig(poolId as string, parseInt(chainId) as number).then((res: any) => {
+      if (res.code === 0) {
+        setPoolConfig(res.data as unknown as PoolConfig)
       }
     })
   }, [chainId, poolId, getDetail, setSymbolInfo, navigate])

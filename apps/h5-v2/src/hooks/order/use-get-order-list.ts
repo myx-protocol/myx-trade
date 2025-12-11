@@ -11,7 +11,7 @@ export const useGetOrderList = (filter = false) => {
   const { symbolInfo } = useTradePageStore()
   const { isWrongNetwork } = useWalletConnection()
   const { hideOthersSymbols } = usePositionStore()
-  const { selectChainId } = usePositionStore()
+  const { address } = useWalletConnection()
 
   const { data, mutate } = useSWR(
     client && clientIsAuthenticated && !isWrongNetwork
@@ -21,12 +21,11 @@ export const useGetOrderList = (filter = false) => {
           hideOthersSymbols,
           clientIsAuthenticated,
           isWrongNetwork,
-          selectChainId,
           filter,
         }
       : null,
     async () => {
-      const rs: any = await client?.order.getOrders()
+      const rs: any = await client?.order.getOrders(address as string)
 
       const orders = rs.data ?? []
 
@@ -38,11 +37,7 @@ export const useGetOrderList = (filter = false) => {
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      const positionByChainId = filteredOrders.filter((item: any) => {
-        return item.chainId === Number(selectChainId) || selectChainId === '0'
-      })
-
-      return positionByChainId
+      return filteredOrders
     },
     {
       refreshInterval: 5000,
