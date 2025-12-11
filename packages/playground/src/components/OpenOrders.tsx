@@ -11,9 +11,10 @@ export const PoolOpenOrders = () => {
   const { pools } = useContext(PoolContext);
   const [orderId, setOrderId] = useState<PoolOpenOrder["orderId"] | null>(null)
   const { data = null, refetch } = useQuery({
-    queryKey: [{ key: 'PoolOpenOrders' }, chainId],
+    queryKey: [{ key: 'PoolOpenOrders' }, account, chainId],
+    enabled: !!account && !!chainId,
     queryFn: async () => {
-      const result = await Pool.getOpenOrders(account, chainId);
+      const result = await Pool.getOpenOrders( chainId, account as string);
       console.log(result)
       return result
     }
