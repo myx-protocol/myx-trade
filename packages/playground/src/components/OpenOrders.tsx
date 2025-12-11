@@ -14,7 +14,7 @@ export const PoolOpenOrders = () => {
     queryKey: [{ key: 'PoolOpenOrders' }, account, chainId],
     enabled: !!account && !!chainId,
     queryFn: async () => {
-      const result = await Pool.getOpenOrders( chainId, account as string);
+      const result = await Pool.getOpenOrders(chainId, account ?? '');
       console.log(result)
       return result
     }
