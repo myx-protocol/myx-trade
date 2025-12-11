@@ -62,7 +62,7 @@ export class MyxClient {
     /**
      * initialize position
      */
-    this.position = new Position(this.configManager, this.logger, this.utils, this.seamless);
+    this.position = new Position(this.configManager, this.logger, this.utils, this.seamless, this.account);
 
     /**
      * initialize orders

@@ -88,7 +88,7 @@ export class Account {
       }
       const poolList = poolListRes.data;
       const pool = poolList?.find((pool: any) => pool.poolId === poolId);
-      const orderRes = await this.client.order.getOrders();
+      const orderRes = await this.client.order.getOrders(address);
       if (orderRes.code !== 0) {
 
         throw new MyxSDKError(
@@ -104,6 +104,7 @@ export class Account {
         return curr.toString();
       }, '0');
 
+
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -111,19 +112,27 @@ export class Account {
           "Failed to get account info"
         );
       }
+
+      this.logger.info("getAvailableMarginBalance used-->", used)
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
-      const freeAmount = BigInt((marginAccountBalance?.freeAmount ?? 0))
+      this.logger.info("getAvailableMarginBalance quoteProfit-->", quoteProfit.toString)
+      const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
+      this.logger.info("getAvailableMarginBalance freeAmount-->", freeAmount.toString())
+
       const accountMargin = freeAmount + quoteProfit
+
+      this.logger.info("getAvailableMarginBalance accountMargin-->", accountMargin.toString())
+
       if (accountMargin < usedMargin) {
         return BigInt(0)
       }
 
       const availableAccountMarginBalance = accountMargin - usedMargin;
+      this.logger.info("getAvailableMarginBalance availableAccountMarginBalance-->", availableAccountMarginBalance.toString())
 
       return availableAccountMarginBalance
-
     } catch (error) {
       this.logger.info('getAvailableMarginBalance error-->', error)
       throw new MyxSDKError(
@@ -133,7 +142,7 @@ export class Account {
     }
   }
 
-  async getTradeFlow(params: GetHistoryOrdersParams) {
+  async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -141,13 +150,12 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params });
+    const res = await getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,
     };
   }
-
 
   async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
     const config: MyxClientConfig = this.configManager.getConfig();

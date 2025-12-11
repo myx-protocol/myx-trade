@@ -91,6 +91,7 @@ export const getPoolDetail = async (
 
 export const getPositions = async (
   accessToken: string,
+  address: string,
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
     `${baseUrl}/openapi/gateway/scan/position/open`,
@@ -98,6 +99,7 @@ export const getPositions = async (
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
@@ -105,22 +107,24 @@ export const getPositions = async (
 
 export const getOrders = async (
   accessToken: string,
+  address: string,
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
     `${baseUrl}/openapi/gateway/scan/order/open`,
     undefined,
-    { headers: { myx_openapi_access_token: accessToken } }
+    { headers: { myx_openapi_access_token: accessToken, myx_openapi_account: address } }
   );
 };
 
 export const getPoolOpenOrders = async (
   accessToken: string,
+  address: string,
   chainId: ChainId
 ): Promise<PoolOpenOrdersResponse> => {
   return await http.get<PoolOpenOrdersResponse>(
     `${baseUrl}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
-    { headers: { myx_openapi_access_token: accessToken } }
+    { headers: { myx_openapi_access_token: accessToken, myx_openapi_account: address } }
   );
 };
 
@@ -205,6 +209,7 @@ export interface SearchMarketParams {
 // search market pool
 export const searchMarketAuth = async ({
   accessToken,
+  address,
   ...params
 }: SearchMarketParams & AccessTokenRequest) => {
   return http.get<ApiResponse<SearchResultResponse>>(
@@ -213,6 +218,7 @@ export const searchMarketAuth = async ({
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
@@ -235,6 +241,7 @@ export interface AddFavoriteParams {
 
 export const addFavorite = async ({
   accessToken,
+  address,
   ...params
 }: AddFavoriteParams & AccessTokenRequest) => {
   return http.get<ApiResponse<null>>(
@@ -243,6 +250,7 @@ export const addFavorite = async ({
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
@@ -255,6 +263,7 @@ export interface RemoveFavoriteParams {
 
 export const removeFavorite = async ({
   accessToken,
+  address,
   ...params
 }: RemoveFavoriteParams & AccessTokenRequest) => {
   return http.get<ApiResponse<null>>(
@@ -263,6 +272,7 @@ export const removeFavorite = async ({
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
@@ -284,6 +294,7 @@ export interface FavoritesListParams {
 
 export const getFavoritesList = async ({
   accessToken,
+  address,
   ...params
 }: FavoritesListParams & AccessTokenRequest) => {
   return http.get<ApiResponse<FavoritesListItem[]>>(
@@ -292,6 +303,7 @@ export const getFavoritesList = async ({
     {
       headers: {
         myx_openapi_access_token: accessToken,
+        myx_openapi_account: address,
       },
     }
   );
