@@ -128,11 +128,9 @@ export class Position {
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
-      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
-
       let depositAmount = BigInt(0)
 
-      const used = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+      const used = (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId, chainId, address });
       let diff = BigInt(0)
       if (availableAccountMarginBalance < used) {
