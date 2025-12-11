@@ -11,11 +11,12 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
 import { useEffect } from 'react'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
+import { useNavigate } from 'react-router-dom'
 
 export const FavoritesList = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWalletConnected } = useWalletConnection()
-
+  const navigate = useNavigate()
   const marketTickerDataMap = useMarketStore((state) => state.tickerData)
 
   const { isLoading, data } = useQuery({
@@ -60,6 +61,9 @@ export const FavoritesList = () => {
         <MarketListRow
           className="my-[14px]"
           key={item.poolId}
+          onClick={() => {
+            navigate(`/price/${item.chainId}/${item.poolId}`)
+          }}
           values={[
             <SymbolInfo
               symbol={item.baseQuoteSymbol}

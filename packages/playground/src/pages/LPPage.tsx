@@ -2,7 +2,6 @@ import React from 'react';
 import { PoolProvider } from "../components/PoolProvider.tsx";
 import { PoolInfo } from "../components/PoolInfo.tsx";
 import { PoolList } from "../components/PoolList.tsx";
-import { BaseTokenList } from "../components/BaseTokenList.tsx";
 import { Deploy } from "../components/Deploy.tsx";
 import { DepositQuote } from "@components/DepositQuote.tsx";
 import { DepositBase } from "@components/DepositBase.tsx";
@@ -20,7 +19,7 @@ const LPPage: React.FC = () => {
         <PoolInfo/>
         <div className={'flex gap-[10px] mt-[-20px]'}>
           <PoolList/>
-          <BaseTokenList/>
+          {/*<BaseTokenList/>*/}
         </div>
         <Deploy className={''}/>
         <DepositQuote/>
