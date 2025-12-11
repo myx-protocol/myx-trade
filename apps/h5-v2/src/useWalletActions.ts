@@ -1,14 +1,8 @@
 import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { useConnect } from 'wagmi'
 import { useWalletStore } from '@/store/wallet/createStore.ts'
-import {
-  ChainId,
-  getAsSupportedChainIdFn,
-  getSupportedChainIdsByEnv,
-  isSupportedChainFn,
-} from '@/config/chain.ts'
+import { ChainId, getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain.ts'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck.ts'
 
 export const useWalletActions = () => {

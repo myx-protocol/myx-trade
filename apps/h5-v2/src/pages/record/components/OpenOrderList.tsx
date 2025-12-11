@@ -1,10 +1,18 @@
 import { OpenOrderItem } from '@/components/Record/Items/OpenOrders'
+import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 
 export const OpenOrderList = () => {
+  const orderList = useGetOrderList()
+  const { poolList } = useGetPoolList()
   return (
     <>
-      {new Array(10).fill(0).map((_, index) => (
-        <OpenOrderItem key={index} />
+      {orderList.map((order: any, index: number) => (
+        <OpenOrderItem
+          key={index}
+          order={order}
+          pool={poolList.find((pool: any) => pool.poolId === order.poolId)}
+        />
       ))}
     </>
   )

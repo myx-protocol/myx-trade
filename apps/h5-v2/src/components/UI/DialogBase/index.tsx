@@ -8,26 +8,24 @@ export const DialogBase = ({
   children,
   sx,
   title,
-  width,
 }: {
   open: boolean
   onClose: () => void
   children: React.ReactNode
   sx?: SxProps<Theme>
   title?: string
-  width?: number
 }) => {
   return (
     <Dialog
       sx={merge(
         {
           '& .MuiDialog-paper': {
-            minWidth: '390px',
+            width: '100%',
+            margin: '0 16px',
             backgroundColor: '#18191F',
             borderRadius: '16px',
             padding: '24px 20px',
             border: '1px solid #31333D',
-            width,
           },
         },
         sx,

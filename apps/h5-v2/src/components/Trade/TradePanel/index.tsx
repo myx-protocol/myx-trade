@@ -36,6 +36,7 @@ import ArrowDownIconFill from '@/components/UI/Icon/ArrowDownIconFill'
 import { Tables } from '@/pages/Trade/components/Tables'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { Price } from '@/components/Price'
+import useGlobalStore from '@/store/globalStore'
 
 const getSlippageConfig = (level: number) => {
   if (level === 1) {
@@ -57,6 +58,7 @@ export const TradePanel = () => {
     symbolInfo?.chainId as number,
   )
   const { receiveDialogOpen } = useTradePanelStore()
+  const { setAccountDialogOpen } = useGlobalStore()
 
   const { address } = useWalletConnection()
   const { tickerData } = useMarketStore()
@@ -125,7 +127,12 @@ export const TradePanel = () => {
               {symbolInfo?.quoteSymbol}
             </span>
           </div>
-          <div className="flex items-center gap-[4px]">
+          <div
+            className="flex items-center gap-[4px]"
+            onClick={() => {
+              setAccountDialogOpen(true)
+            }}
+          >
             {symbolInfo?.chainId && (
               <img src={getChainInfo(symbolInfo?.chainId as ChainId)?.logoUrl} alt="" />
             )}
@@ -136,7 +143,7 @@ export const TradePanel = () => {
           </div>
         </div>
         <div className="mt-[8px] flex items-center justify-between">
-          <div className="flex items-end gap-[4px]">
+          <div className="flex items-center gap-[4px]">
             <Price
               className="text-[22px] font-[700] font-medium"
               value={marketPrice}
