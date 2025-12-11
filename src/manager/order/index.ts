@@ -60,7 +60,6 @@ export class Order {
       );
 
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-      this.logger.info('availableAccountMarginBalance-->', availableAccountMarginBalance.toString())
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const needAmount = BigInt(tradingFee) + BigInt(params.collateralAmount) + totalNetWorkFee
       let depositAmount = BigInt(0)
