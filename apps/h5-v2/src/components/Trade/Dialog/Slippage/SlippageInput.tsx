@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 
 interface SlippageInputProps {
   defaultValue: number
-  value: number
-  onChange: (value: number) => void
+  value: string
+  onChange: (value: string) => void
   maxSlippage: number
 }
 export const SlippageInput = ({
@@ -15,10 +15,10 @@ export const SlippageInput = ({
   maxSlippage,
 }: SlippageInputProps) => {
   const onValueChange = useCallback(
-    ({ floatValue }: { floatValue?: number; value: string }) => {
-      onChange(floatValue ?? defaultValue ?? 0)
+    ({ value }: { value: string }) => {
+      onChange(value)
     },
-    [onChange, defaultValue],
+    [onChange],
   )
   return (
     <div className="flex w-full items-center justify-between gap-[12px] rounded-[6px] bg-[#202129] px-[12px] py-[16px]">

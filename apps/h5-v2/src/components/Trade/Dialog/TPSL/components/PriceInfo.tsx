@@ -1,10 +1,11 @@
 import { Trans } from '@lingui/react/macro'
+import type React from 'react'
 
 interface PriceInfoProps {
   currentPrice?: string
   forceTpPrice?: string
   entryPrice?: string
-  estimatedForceSlPrice?: string
+  estimatedForceSlPrice?: string | React.ReactElement
 }
 
 export const PriceInfo = ({

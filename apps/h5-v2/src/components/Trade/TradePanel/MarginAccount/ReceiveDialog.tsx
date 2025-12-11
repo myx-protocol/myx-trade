@@ -6,13 +6,22 @@ import { t } from '@lingui/core/macro'
 import { useTradePageStore } from '../../store/TradePageStore'
 import { QRCodeSVG } from 'qrcode.react'
 import { CopyIcon } from '@/components/Icon'
-import toast from 'react-hot-toast'
+
 import { useTradePanelStore } from '../store'
+import { useMemo } from 'react'
+import { getChainInfo } from '@/config/chainInfo'
+import type { ChainId } from '@/config/chain'
+import { PrimaryButton } from '@/components/UI/Button'
+import { toast } from '@/components/UI/Toast'
 
 export const ReceiveDialog = () => {
   const { address } = useWalletConnection()
   const { symbolInfo } = useTradePageStore()
   const { receiveDialogOpen, setReceiveDialogOpen } = useTradePanelStore()
+  const chainInfo = useMemo(() => {
+    if (!symbolInfo?.chainId) return null
+    return getChainInfo(symbolInfo?.chainId as ChainId)
+  }, [symbolInfo?.chainId])
 
   return (
     <DialogBase
@@ -41,25 +50,55 @@ export const ReceiveDialog = () => {
           <p className="text-[12px] font-[500] text-[#848E9C]">
             <Trans>Address</Trans>
           </p>
-          <div className="flex items-center justify-between rounded-[4px] border-[1px] border-[#31333D] p-[8px]">
+          <div className="flex h-[48px] items-center justify-between rounded-[4px] border-[1px] border-[#31333D] p-[8px]">
             <p className="text-[12px] font-medium text-[white]">{address}</p>
             <CopyIcon
               size={12}
               className="cursor-pointer text-[white]"
               onClick={() => {
                 navigator.clipboard.writeText(address || '')
-                toast.success(t`Copied to clipboard`)
+                toast.success({
+                  title: t`Copied to clipboard`,
+                })
               }}
             />
           </div>
         </div>
-        <div className="mt-[16px] flex flex-col gap-[4px]">
+        <div className="mt-[16px] flex h-[48px] flex-col gap-[4px]">
           <p className="text-[12px] font-[500] text-[#848E9C]">
             <Trans>Chains</Trans>
           </p>
           <div className="flex items-center justify-between rounded-[4px] border-[1px] border-[#31333D] p-[8px]">
-            <p className="text-[12px] font-medium text-[white]">Arbitrum One</p>
+            <p className="text-[12px] font-medium text-[white]">{chainInfo?.label}</p>
           </div>
+        </div>
+        <div className="mt-[20px]">
+          <PrimaryButton
+            className="w-full rounded-[44px]"
+            style={{
+              height: '44px',
+              fontSize: '14px',
+              borderRadius: '44px',
+              fontWeight: '500',
+            }}
+            onClick={async () => {
+              navigator.clipboard
+                .writeText(address || '')
+                .then(() => {
+                  toast.success({
+                    title: t`Copied to clipboard`,
+                  })
+                })
+                .catch((error) => {
+                  console.error('error-->', error)
+                  toast.error({
+                    title: t`Failed to copy`,
+                  })
+                })
+            }}
+          >
+            <Trans>Copy Address</Trans>
+          </PrimaryButton>
         </div>
       </div>
     </DialogBase>

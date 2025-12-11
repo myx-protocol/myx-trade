@@ -15,20 +15,24 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { Seamless } from "../seamless";
 import { getForwarderContract, getSeamlessBrokerContract } from "@/web3/providers";
 import dayjs from "dayjs";
+import { Account } from "../account";
+
 
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
   private seamless: Seamless;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless) {
+  private account: Account;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
+    this.account = account;
   }
 
-  async listPositions() {
+  async listPositions(address: string) {
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -39,7 +43,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken);
+      const res = await getPositions(accessToken, address);
       return {
         code: 0,
         data: res.data,
@@ -53,7 +57,7 @@ export class Position {
     }
   }
 
-  async getPositionHistory(params: GetHistoryOrdersParams) {
+  async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -61,7 +65,7 @@ export class Position {
         "Invalid access token"
       );
     }
-    const res = await getPositionHistory({ accessToken, ...params });
+    const res = await getPositionHistory({ accessToken, ...params, address: address });
     return {
       code: 0,
       data: res.data,
@@ -74,7 +78,8 @@ export class Position {
     adjustAmount,
     quoteToken,
     poolOracleType,
-    chainId
+    chainId,
+    address
   }: {
     poolId: string;
     positionId: string;
@@ -82,6 +87,7 @@ export class Position {
     quoteToken: string;
     poolOracleType: OracleType,
     chainId: number
+    address: string
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
@@ -122,15 +128,20 @@ export class Position {
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
-      const networkFee = await this.utils.getNetworkFee(quoteToken, chainId);
+      let depositAmount = BigInt(0)
 
-      const depositAmount = BigInt(networkFee) + (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+      const used = (BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n);
+      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId, chainId, address });
+      let diff = BigInt(0)
+      if (availableAccountMarginBalance < used) {
+        diff = used - availableAccountMarginBalance
+        depositAmount = diff
+      }
 
       const depositData = {
         token: quoteToken,
         amount: depositAmount.toString()
       }
-
 
       if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
