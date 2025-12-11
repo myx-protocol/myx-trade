@@ -4,6 +4,26 @@ import { createWithEqualityFn } from 'zustand/traditional'
 import type { MarketDetailResponse } from '@myx-trade/sdk'
 import { KlineTypeEnum } from '../Charts/type'
 
+export interface PoolConfig {
+  level: number
+  levelConfig: {
+    assetClass: number
+    fundingFeeRate1: number
+    fundingFeeRate1Max: number
+    fundingFeeRate2: number
+    fundingFeeSeconds: number
+    leverage: number
+    lockLiquidity: number
+    lockPriceRate: number
+    lockSeconds: number
+    maintainCollateralRate: number
+    minOrderSizeInUsd: number
+    name: string
+    slip: number
+  }
+  levelName: string
+}
+
 interface TradePageStore {
   symbolInfo: MarketDetailResponse | null
   setSymbolInfo: (symbolInfo: MarketDetailResponse | null) => void
@@ -17,6 +37,9 @@ interface TradePageStore {
   setKlineType: (klineType: KlineTypeEnum) => void
   maxLeverage: number
   setMaxLeverage: (maxLeverage: number) => void
+
+  poolConfig: PoolConfig | null
+  setPoolConfig: (poolConfig: PoolConfig | null) => void
 }
 
 export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
@@ -38,6 +61,8 @@ export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
         setKlineType: (klineType: KlineTypeEnum) => set({ klineType }),
         maxLeverage: 100,
         setMaxLeverage: (maxLeverage: number) => set({ maxLeverage }),
+        poolConfig: null,
+        setPoolConfig: (poolConfig: PoolConfig | null) => set({ poolConfig }),
       })),
       {
         name: 'MYX_TradePageStore',

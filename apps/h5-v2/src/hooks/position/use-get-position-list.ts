@@ -12,7 +12,7 @@ import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 export const useGetPositionList = (filter: boolean = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWrongNetwork } = useWalletConnection()
-  const { hideOthersSymbols, selectChainId } = usePositionStore()
+  const { hideOthersSymbols } = usePositionStore()
   const { symbolInfo } = useTradePageStore()
   const { tickerData } = useMarketStore()
   const { poolList } = useGetPoolList()
@@ -27,12 +27,11 @@ export const useGetPositionList = (filter: boolean = false) => {
           hideOthersSymbols,
           clientIsAuthenticated,
           isWrongNetwork,
-          selectChainId,
           filter,
         }
       : null,
     async () => {
-      const rs: any = await client?.position.listPositions()
+      const rs: any = await client?.position.listPositions(address as string)
       const positions = rs?.data ?? []
 
       poolList.forEach((item: any) => {
@@ -55,10 +54,7 @@ export const useGetPositionList = (filter: boolean = false) => {
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      const positionByChainId = filteredPositions.filter((item: any) => {
-        return item.chainId === Number(selectChainId) || selectChainId === '0'
-      })
-      return positionByChainId ?? []
+      return filteredPositions ?? []
       // return positions ?? []
     },
     {

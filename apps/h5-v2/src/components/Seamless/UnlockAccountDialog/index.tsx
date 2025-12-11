@@ -3,18 +3,21 @@ import useGlobalStore from '@/store/globalStore'
 import { encryptionAddress } from '@/utils'
 import { t } from '@lingui/core/macro'
 import walletIcon from '@/assets/icon/commons/wallet.svg'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import Reverse from '@/components/Icon/set/ReverseV2'
 import { Trans } from '@lingui/react/macro'
 import { InputBase } from '@mui/material'
 import deleteIcon from '@/assets/icon/commons/delete.svg'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PrimaryButton } from '@/components/UI/Button'
 import WalletIcon from '@/components/UI/Icon/WalletIcon'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { TradeMode } from '@/pages/Trade/types'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -24,15 +27,32 @@ export const UnlockAccountDialog = () => {
     setTradeMode,
     setSeamlessPasswordDialogOpen,
   } = useGlobalStore()
-  const { address } = useWalletConnection()
+  const { symbolInfo } = useTradePageStore()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [show, setShow] = useState(false)
   const { setLoginModalOpen } = useWalletStore()
   const [password, setPassword] = useState('')
+  const { seamlessAccountList, activeSeamlessAddress, setActiveSeamlessAddress } =
+    useSeamlessStore()
+  const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
+
+  useEffect(() => {
+    if (activeSeamlessAddress) {
+      return
+    }
+
+    setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
+  }, [activeSeamlessAddress])
+
   return (
     <DialogBase
       title={t`Enter your Password`}
       open={unlockAccountDialogOpen}
-      onClose={() => setUnlockAccountDialogOpen(false)}
+      onClose={() => {
+        setUnlockAccountDialogOpen(false)
+        setTradeMode(TradeMode.Classic)
+        setActiveSeamlessAddress('')
+      }}
       sx={{
         '& .MuiDialog-paper': {
           paddingLeft: 0,
@@ -48,7 +68,7 @@ export const UnlockAccountDialog = () => {
       <div className="p-[16px]">
         <div className="flex items-center gap-[4px]">
           <img src={walletIcon} className="h-[14px] w-[14px]" />
-          <p className="text-[white]">{encryptionAddress(address)}</p>
+          <p className="text-[white]">{encryptionAddress(activeSeamlessAddress)}</p>
           <div
             className="cursor-pointer"
             onClick={() => {
@@ -109,8 +129,26 @@ export const UnlockAccountDialog = () => {
               height: '44px',
               fontWeight: 500,
             }}
-            onClick={() => {
-              setUnlockAccountDialogOpen(false)
+            onClick={async () => {
+              const activeSeamlessAccount = seamlessAccountList.find(
+                (item) => item.masterAddress === activeSeamlessAddress,
+              )
+              if (!activeSeamlessAccount) {
+                return
+              }
+
+              const rs = await client?.seamless.unLockSeamlessWallet({
+                password,
+                masterAddress: activeSeamlessAccount?.masterAddress as string,
+                apiKey: activeSeamlessAccount?.apiKey as string,
+                chainId: symbolInfo?.chainId as number,
+              })
+              console.log('unLockSeamlessWallet  rs-->', rs)
+              if (rs?.code === 0) {
+                changeSdkTradeMode(true)
+                setUnlockAccountDialogOpen(false)
+                // setTradeMode(TradeMode.Seamless)
+              }
             }}
           >
             <Trans>Confirm</Trans>

@@ -79,7 +79,7 @@ export const Charts = () => {
   }
   return (
     <div
-      className="mt-[4px] flex h-[220px] w-full flex-col gap-[6px] bg-[#101114]"
+      className="mt-[4px] flex h-[320px] w-full flex-col gap-[6px] bg-[#101114]"
       ref={chartsRoot}
     >
       <ToolBar />

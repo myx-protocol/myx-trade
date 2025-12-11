@@ -4,37 +4,32 @@ import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { encryptionAddress } from '@/utils'
 import { Trans } from '@lingui/react/macro'
-import { useGetWalletBalance } from '@/hooks/balance/use-get-wallet-balance'
-import { parseBigNumber } from '@/utils/bn'
-import { useMemo } from 'react'
-import { ethers } from 'ethers'
-import { useGetAccountPoolAssets } from '@/hooks/balance/use-get-account-pool-Assets'
 import { useTradePageStore } from '../Trade/store/TradePageStore'
 import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
 import disable from '@/assets/icon/commons/disable.svg'
 import enable from '@/assets/icon/commons/enable.svg'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
+import { getChainInfo } from '@/config/chainInfo'
+import type { ChainId } from '@/config/chain'
 
 export const ChangeModeDialog = () => {
-  const { changeModeDialogOpen, setChangeModeDialogOpen, tradeMode, setTradeMode } =
-    useGlobalStore()
+  const {
+    changeModeDialogOpen,
+    setChangeModeDialogOpen,
+    tradeMode,
+    setTradeMode,
+    setSeamlessPasswordDialogOpen,
+    setUnlockAccountDialogOpen,
+  } = useGlobalStore()
   const { address } = useWalletConnection()
-  const tokenBalanceString = useGetWalletBalance()
   const { symbolInfo } = useTradePageStore()
-  const walletBalance =
-    ethers.formatUnits(tokenBalanceString, symbolInfo?.quoteDecimals ?? 6) ?? '0'
-  const accountPoolAssets = useGetAccountPoolAssets(symbolInfo?.poolId as string)
-
-  const totalBalance = useMemo(() => {
-    const freeAmount =
-      ethers.formatUnits(accountPoolAssets?.freeAmount ?? '0', symbolInfo?.quoteDecimals ?? 6) ??
-      '0'
-
-    return parseBigNumber(walletBalance ?? 0)
-      .plus(parseBigNumber(freeAmount))
-      .toString()
-  }, [walletBalance, accountPoolAssets, symbolInfo?.quoteDecimals])
+  const { seamlessAccountList } = useSeamlessStore()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   return (
     <DialogBase
@@ -80,13 +75,13 @@ export const ChangeModeDialog = () => {
             <div>
               <span className="mt-[12px] text-[18px] font-[700] text-[white]">
                 $
-                {formatNumber(totalBalance, {
+                {formatNumber(accountAssets?.availableMargin?.toString() ?? '0', {
                   decimals: 2,
                   showUnit: false,
                 })}
               </span>{' '}
               <span className="ml-[4px] text-[12px] leading-[12px] text-[#9397A3]">
-                <Trans>Available</Trans>(Arbitrum)
+                <Trans>Available</Trans>({getChainInfo(symbolInfo?.chainId as ChainId).label})
               </span>
             </div>
             <div className="h-[40px]">
@@ -108,7 +103,8 @@ export const ChangeModeDialog = () => {
                 <PrimaryButton
                   className="w-full"
                   style={{ height: '36px', borderRadius: '40px' }}
-                  onClick={() => {
+                  onClick={async () => {
+                    await client?.seamless.startSeamlessMode({ open: false })
                     setTradeMode(TradeMode.Classic)
                     setChangeModeDialogOpen(false)
                   }}
@@ -189,13 +185,13 @@ export const ChangeModeDialog = () => {
             <div>
               <span className="mt-[12px] text-[18px] font-[700] text-[white]">
                 $
-                {formatNumber(totalBalance, {
+                {formatNumber(accountAssets?.availableMargin?.toString() ?? '0', {
                   decimals: 2,
                   showUnit: false,
                 })}
               </span>{' '}
               <span className="ml-[4px] text-[12px] leading-[12px] text-[#9397A3]">
-                <Trans>Available</Trans>(Arbitrum)
+                <Trans>Available</Trans>({getChainInfo(symbolInfo?.chainId as ChainId).label})
               </span>
             </div>
             <div className="h-[40px]">
@@ -217,9 +213,15 @@ export const ChangeModeDialog = () => {
                 <PrimaryButton
                   className="w-full"
                   style={{ height: '36px', borderRadius: '40px' }}
-                  onClick={() => {
-                    setTradeMode(TradeMode.Seamless)
+                  onClick={async () => {
                     setChangeModeDialogOpen(false)
+
+                    if (seamlessAccountList.length === 0) {
+                      setSeamlessPasswordDialogOpen(true)
+                      return
+                    }
+
+                    setUnlockAccountDialogOpen(true)
                   }}
                 >
                   <Trans>Choose</Trans>

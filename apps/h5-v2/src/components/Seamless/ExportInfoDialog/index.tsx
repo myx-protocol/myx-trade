@@ -3,9 +3,25 @@ import useGlobalStore from '@/store/globalStore'
 import { Trans } from '@lingui/react/macro'
 import { PrimaryButton } from '@/components/UI/Button'
 import InfoIcon from '@/components/UI/Icon/InfoIcon'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useState } from 'react'
+import { InputBase } from '@mui/material'
+import { t } from '@lingui/core/macro'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 export const ExportInfoDialog = () => {
-  const { exportSeamlessInfoDialogOpen, setExportSeamlessInfoDialogOpen } = useGlobalStore()
+  const {
+    exportSeamlessInfoDialogOpen,
+    setExportSeamlessInfoDialogOpen,
+    setExportSeamlessKeyDialogOpen,
+  } = useGlobalStore()
+  const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
+  const [loading, setLoading] = useState(false)
+  const { symbolInfo } = useTradePageStore()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const [password, setPassword] = useState('')
+
   return (
     <DialogBase
       open={exportSeamlessInfoDialogOpen}
@@ -34,6 +50,25 @@ export const ExportInfoDialog = () => {
             share it with anyone.
           </Trans>
         </div>
+        <InputBase
+          placeholder={t`Enter your password`}
+          type={'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{
+            '& .MuiInputBase-input': {
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '500',
+              leading: '14px',
+              marginTop: '16px',
+              border: '1px solid #3A404A',
+              padding: '8px',
+              borderRadius: '6px',
+            },
+          }}
+          className="w-full flex-1 text-[14px] leading-[14px] font-medium text-[white]"
+        />
         <div className="mt-[24px] flex items-center justify-center gap-[12px]">
           <PrimaryButton
             className="flex-1"
@@ -42,8 +77,35 @@ export const ExportInfoDialog = () => {
               height: '44px',
               fontWeight: 500,
             }}
-            onClick={() => {
-              setExportSeamlessInfoDialogOpen(false)
+            loading={loading}
+            onClick={async () => {
+              try {
+                console.log('password-->', password)
+                setLoading(true)
+                const activeSeamlessAccount = seamlessAccountList.find(
+                  (item) => item.masterAddress === activeSeamlessAddress,
+                )
+                console.log('activeSeamlessAccount-->', activeSeamlessAccount)
+
+                if (!activeSeamlessAccount) {
+                  return
+                }
+                console.log('activeSeamlessAccount-->', activeSeamlessAccount)
+
+                const rs = await client?.seamless.exportSeamlessPrivateKey({
+                  password,
+                  apiKey: activeSeamlessAccount.apiKey,
+                })
+
+                if (rs?.code === 0) {
+                  setExportSeamlessKeyDialogOpen(rs.data?.privateKey as string)
+                  setExportSeamlessInfoDialogOpen(false)
+                }
+              } catch (error) {
+                console.error('error-->', error)
+              } finally {
+                setLoading(false)
+              }
             }}
           >
             <Trans>Authorizing</Trans>
