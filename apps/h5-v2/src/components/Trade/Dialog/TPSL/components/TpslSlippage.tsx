@@ -4,15 +4,20 @@ import { useEffect, useState } from 'react'
 import YesIcon from '@/components/Icon/set/Yes'
 import CloseIcon from '@/components/Icon/set/CloseIcon'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
-import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 export const TpslSlippage = () => {
   const [isEdit, setIsEdit] = useState(false)
   const [value, setValue] = useState(0)
-  const { tpSlSlippage, setTpSlSlippage } = useTradePanelStore()
-
+  const { symbolInfo } = useTradePageStore()
+  const tpSlSlippage = getSlippage({
+    chainId: symbolInfo?.chainId ?? 0,
+    poolId: symbolInfo?.poolId ?? '',
+    type: SlippageTypeEnum.TPSL,
+  })
   useEffect(() => {
-    setValue(tpSlSlippage * 100)
+    setValue(tpSlSlippage ? tpSlSlippage * 100 : 0)
   }, [tpSlSlippage])
 
   return (
