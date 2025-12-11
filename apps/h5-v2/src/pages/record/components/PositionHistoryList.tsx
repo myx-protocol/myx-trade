@@ -12,10 +12,13 @@ export const PositionHistoryList = () => {
     enabled: Boolean(address && !!client && clientIsAuthenticated),
     queryFn: async () => {
       if (!client || !clientIsAuthenticated) return null
-      const res = await client.position.getPositionHistory({
-        chainId: 0,
-        poolId: undefined,
-      })
+      const res = await client.position.getPositionHistory(
+        {
+          chainId: 0,
+          poolId: undefined,
+        },
+        address ?? '',
+      )
       return res.data
     },
   })

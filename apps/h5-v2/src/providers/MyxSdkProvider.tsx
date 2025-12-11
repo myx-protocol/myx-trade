@@ -35,7 +35,7 @@ const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
     chainId: validChainId,
     brokerAddress: brokerAddress,
     isTestnet: true,
-    logLevel: 'debug',
+    logLevel: 'info',
   }
   return new MyxClient(options)
 }
@@ -125,8 +125,8 @@ export const useMyxSdkClient = (chainId?: number) => {
 }
 
 const brokerAddressMap: Record<number, string> = {
-  [ChainId.ARB_TESTNET]: '0x75c0D6BE13fd8B4fF0AE3F518d6880c1fBf5a012',
-  [ChainId.LINEA_SEPOLIA]: '0xe3FE12120992a31800783B25d432687A3A705cb2',
+  [ChainId.ARB_TESTNET]: '0xb07C8D6167ed8B58A7B37ac6f19D23bf17236900',
+  [ChainId.LINEA_SEPOLIA]: '0x793b37C3ea9e2059Fd47403d3879de8b9abd51fd',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
@@ -167,9 +167,9 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
           myxSdkClientRef.current.forEach((_client, chainId) => {
             _client.auth({
               signer,
-              walletClient: walletClient,
+              walletClient: walletClient as any,
               getAccessToken: createGetAccessTokenMethod(address ?? ''),
-            })
+            } as any)
             setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
             console.log('authed-emit-authenticated-->', Date.now(), chainId)
           })

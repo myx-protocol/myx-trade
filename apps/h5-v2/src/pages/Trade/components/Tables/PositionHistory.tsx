@@ -51,10 +51,13 @@ export const PositionHistory = () => {
     ),
     queryFn: async () => {
       if (!client || !clientIsAuthenticated) return null
-      const res = await client.position.getPositionHistory({
-        chainId: selectChainId === '0' ? 0 : Number(selectChainId),
-        poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
-      })
+      const res = await client.position.getPositionHistory(
+        {
+          chainId: selectChainId === '0' ? 0 : Number(selectChainId),
+          poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
+        },
+        address ?? '',
+      )
       return res
     },
   })

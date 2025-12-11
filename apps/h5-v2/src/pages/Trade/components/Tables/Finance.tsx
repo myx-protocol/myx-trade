@@ -55,10 +55,13 @@ export const Finance = () => {
     ),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
-      const res = await client.account.getTradeFlow({
-        chainId: selectChainId === '0' ? 0 : Number(selectChainId),
-        poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
-      })
+      const res = await client.account.getTradeFlow(
+        {
+          chainId: selectChainId === '0' ? 0 : Number(selectChainId),
+          poolId: hideOthersSymbols ? symbolInfo?.poolId : undefined,
+        },
+        address ?? '',
+      )
       return res.data
     },
   })

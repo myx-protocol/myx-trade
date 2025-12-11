@@ -13,10 +13,13 @@ export const OrderHistoryList = () => {
     enabled: Boolean(isWalletConnected && address && !!client && clientIsAuthenticated),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
-      const res = await client.order.getOrderHistory({
-        chainId: 0,
-        poolId: undefined,
-      })
+      const res = await client.order.getOrderHistory(
+        {
+          chainId: 0,
+          poolId: undefined,
+        },
+        address ?? '',
+      )
       return res.data
     },
   })

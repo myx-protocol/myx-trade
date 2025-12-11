@@ -47,7 +47,7 @@ export const ClaimRewardsDialog = ({
     }
   }, [lpAsset?.chainId, lpAsset?.poolId, reward, account, refetch, onAction])
   return (
-    <DialogBase title={t`领取收益`} open={open} onClose={onClose} width={390}>
+    <DialogBase title={t`领取收益`} open={open} onClose={onClose}>
       <div className="mt-[16px] leading-[1]">
         <p className="text-[14px] font-medium text-[#848E9C]">
           <Trans>Claimable Amount</Trans>

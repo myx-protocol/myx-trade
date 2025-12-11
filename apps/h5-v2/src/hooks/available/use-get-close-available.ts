@@ -8,7 +8,7 @@ import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 export const useGetCloseAvailable = () => {
   const positionList = useGetPositionList()
   const { symbolInfo } = useTradePageStore()
-  const { price } = useTradePanelStore()
+  const { price, amountUnit } = useTradePanelStore()
 
   const maxCloseLongAmount = useMemo(() => {
     const list =
@@ -26,7 +26,7 @@ export const useGetCloseAvailable = () => {
       quoteAmount: size?.mul(parseBigNumber(price ?? '0')).toString(),
       baseAmount: size?.toString() ?? '0',
     }
-  }, [positionList, symbolInfo, price])
+  }, [positionList, symbolInfo, price, amountUnit])
 
   const maxCloseShortAmount = useMemo(() => {
     const list =
@@ -43,7 +43,7 @@ export const useGetCloseAvailable = () => {
       quoteAmount: size?.mul(parseBigNumber(price ?? '0')).toString() ?? '0',
       baseAmount: size?.toString() ?? '0',
     }
-  }, [positionList, symbolInfo, price])
+  }, [positionList, symbolInfo, price, amountUnit])
 
   return {
     maxCloseLong: {

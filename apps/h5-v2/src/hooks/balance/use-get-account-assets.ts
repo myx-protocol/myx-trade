@@ -46,7 +46,6 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
         address as string,
         poolId as string,
       )
-
       const assets = rs.data as AccountAssets
       if (rs.code === 0) {
         const usedMargin = orderList.reduce((acc: Big, order: any) => {
@@ -106,7 +105,6 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
       refreshInterval: 1000,
     },
   )
-
   return (
     data ?? {
       availableMargin: '0',

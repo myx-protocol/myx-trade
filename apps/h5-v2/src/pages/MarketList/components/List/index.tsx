@@ -38,7 +38,7 @@ export const List = () => {
         return null
       }
       if (isWalletConnected) {
-        result = await client?.markets.searchMarketAuth(params)
+        result = await client?.markets.searchMarketAuth(params, address ?? '')
       } else {
         result = await client?.markets.searchMarket(params)
       }
