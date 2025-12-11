@@ -19,6 +19,7 @@ import { displayAmount } from '@/utils/number'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
 import { useGetPoolList } from '../hooks/use-get-pool-list'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 function AdjustMarginSelect() {
   return (
@@ -90,6 +91,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const [adjustMargin, setAdjustMargin] = useState('')
   const { client } = useMyxSdkClient()
   const { poolList } = useGetPoolList()
+  const { address } = useWalletConnection()
 
   const pool = useMemo(() => {
     return poolList.find((item: any) => item.poolId === position?.poolId)
@@ -252,6 +254,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                   quoteToken: pool?.quotePoolToken ?? '',
                   poolOracleType: OracleType.Chainlink,
                   chainId: position.chainId,
+                  address: address as string,
                 }
 
                 const rs = await client?.position.adjustCollateral(data)
