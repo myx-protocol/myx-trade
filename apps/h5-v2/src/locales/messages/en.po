@@ -18,88 +18,639 @@ msgstr ""
 "X-Crowdin-File: en.po\n"
 "X-Crowdin-File-ID: 12\n"
 
+#. js-lingui-explicit-id
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "/+Z5u4"
+msgstr "/+Z5u4"
+
+#: src/pages/Cook/components/TrenchTabBar.tsx
+msgid " APR "
+msgstr " APR "
+
+#: src/pages/Cook/components/TrenchTabBar.tsx
+msgid " Eligible "
+msgstr " Eligible "
+
+#: src/pages/Cook/components/TrenchTabBar.tsx
+msgid " Gainers "
+msgstr " Gainers "
+
+#: src/pages/Cook/detail/components/TabBar.tsx
+msgid " Info "
+msgstr " Info "
+
+#: src/pages/Cook/components/TrenchTabBar.tsx
+msgid " Latest "
+msgstr " Latest "
+
+#: src/pages/Cook/detail/components/TabBar.tsx
+msgid " Price "
+msgstr " Price "
+
+#: src/pages/Cook/detail/components/TabBar.tsx
+msgid " Trade "
+msgstr " Trade "
+
+#. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
+#. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
 #. placeholder {0}: item.label
 #: src/components/Header/Menu.tsx
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Record/Items/Position.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "{0}"
 msgstr "{0}"
+
+#. placeholder {0}: symbolInfo?.baseSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "{0} tokens in trading account that have completed unlocking and are withdrawable."
+msgstr "{0} tokens in trading account that have completed unlocking and are withdrawable."
+
+#. placeholder {0}: quote?.symbol
+#. placeholder {0}: token?.symbol
+#: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "{0} Vault"
+msgstr "{0} Vault"
+
+#. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#. placeholder {1}: pool?.baseSymbol || '-'
+#. placeholder {2}: quoteLpDetail?.quoteSymbol || '-'
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "{0} Vault is an automated market-making strategy vault. By depositing assets (such as USDC) into this vault, you can become a Liquidity Provider (LP) for the {1}{2} perpetual contract market and easily earn returns. In exchange, you will receive LP tokens that represent your share of the assets, and their value will continuously grow with the vault's earnings."
+msgstr "{0} Vault is an automated market-making strategy vault. By depositing assets (such as USDC) into this vault, you can become a Liquidity Provider (LP) for the {1}{2} perpetual contract market and easily earn returns. In exchange, you will receive LP tokens that represent your share of the assets, and their value will continuously grow with the vault's earnings."
+
+#. placeholder {0}: item.userLeverage
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "{0}x"
+msgstr "{0}x"
+
+#: src/components/Trade/TradePanel/Leverage/index.tsx
+msgid "{leverage}x"
+msgstr "{leverage}x"
 
 #: src/components/Header/Operation/Transactions/index.tsx
 msgid "{pendingTransactionsLength} 笔交易正在确认"
 msgstr "{pendingTransactionsLength} 笔交易正在确认"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "A system-set take-profit to secure extreme profits and protect the protocol"
-msgstr "A system-set take-profit to secure extreme profits and protect the protocol"
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
+msgstr "`AccountInsufficientTradableAmount(uint256,uint256)"
+
+#: src/pages/Earn/components/Carousel.tsx
+msgid "24h APR"
+msgstr "24h APR"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "24h Estimated Earnings"
+msgstr "24h Estimated Earnings"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+msgid "24h High"
+msgstr "24h High"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+msgid "24h Low"
+msgstr "24h Low"
+
+#: src/pages/Earn/List.tsx
+msgid "24h PnL"
+msgstr "24h PnL"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
+msgid "24h Volume"
+msgstr "24h Volume"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "8 to 128 characters"
+msgstr "8 to 128 characters"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AccessControlBadConfirmation()"
+msgstr "AccessControlBadConfirmation()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AccessControlUnauthorizedAccount(address,bytes32)"
+msgstr "AccessControlUnauthorizedAccount(address,bytes32)"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+#: src/components/WalletConnect/index.tsx
 msgid "Account Mode"
 msgstr "Account Mode"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Accumulated funding fees will be settled each time the position size (coin) changes"
-msgstr "Accumulated funding fees will be settled each time the position size (coin) changes"
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AccountInsufficientFreeAmount()"
+msgstr "AccountInsufficientFreeAmount()"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Actions"
-msgstr "Actions"
+#. placeholder {0}: formatNumberPrecision(data, COMMON_PRICE_DISPLAY_DECIMALS)
+#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
+#. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Act fast! Just <0>${0}</0>{1} Genesis Shares are left. Secure your lifetime<1>{2}</1> share of all trading fees!"
+msgstr "Act fast! Just <0>${0}</0>{1} Genesis Shares are left. Secure your lifetime<1>{2}</1> share of all trading fees!"
+
+#: src/pages/Market/components/activeMarket.tsx
+msgid "Activate Market"
+msgstr "Activate Market"
+
+#: src/pages/Market/components/activeMarket.tsx
+msgid "Activate Your Trading Contract"
+msgstr "Activate Your Trading Contract"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "Active"
+msgstr "Active"
+
+#: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+#: src/components/WalletConnect/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Address"
+msgstr "Address"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AddressEmptyCode(address)"
+msgstr "AddressEmptyCode(address)"
+
+#: src/components/Trade/Dialog/Leverage/Leverage.tsx
+msgid "Adjust Leverage"
+msgstr "Adjust Leverage"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust Margin"
+msgstr "Adjust Margin"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin amount cannot be 0"
+msgstr "Adjust margin amount cannot be 0"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin amount is greater than the maximum decrease amount"
+msgstr "Adjust margin amount is greater than the maximum decrease amount"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin amount is greater than the total balance"
+msgstr "Adjust margin amount is greater than the total balance"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin failed"
+msgstr "Adjust margin failed"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin success"
+msgstr "Adjust margin success"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjusted Margin"
+msgstr "Adjusted Margin"
+
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "ADL"
+msgstr "ADL"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Age(min)"
+msgstr "Age(min)"
 
 #: src/components/Footer/index.tsx
 msgid "Airdrop"
 msgstr "Airdrop"
 
-#: src/pages/Trade/components/Tables/index.tsx
+#: src/components/CookDetail/Charts/index.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+#: src/components/SelectPanel/index.tsx
+#: src/pages/Cook/components/ChainsBar.tsx
+#: src/pages/Earn/components/Chart.tsx
+msgid "All"
+msgstr "All"
+
+#: src/components/ChainsDrawer.tsx
+#: src/components/ChainSelector.tsx
+#: src/pages/Cook/components/ChainDropDownMenu.tsx
+#: src/pages/rank/components/ChainSelector/index.tsx
+msgid "All Chain"
+msgstr "All Chain"
+
+#: src/components/ChainSelector.tsx
 msgid "All Chains"
 msgstr "All Chains"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+#: src/pages/MarketList/components/Tabs/MarketTabs.tsx
+#: src/pages/rank/components/Tabs/TypeSelector.tsx
+msgid "Alpha"
+msgstr "Alpha"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AlreadyClaimed(CaseId,address)"
+msgstr "AlreadyClaimed(CaseId,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AlreadyInitialized()"
+msgstr "AlreadyInitialized()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AlreadyMinted()"
+msgstr "AlreadyMinted()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "AlreadyVoted()"
+msgstr "AlreadyVoted()"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/OrderForm/AmountInput/index.tsx
+#: src/pages/Earn/components/Trade/Claim.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Earn/List.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
 msgid "Amount"
 msgstr ""
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Amount must be greater than 0"
+msgstr "Amount must be greater than 0"
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Amount to Redeem"
+msgstr "Amount to Redeem"
+
+#. placeholder {0}: item.baseSymbol
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Amount({0})"
+msgstr "Amount({0})"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
+#: src/pages/Cook/components/TrenchList.tsx
+#: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Earn/List.tsx
+msgid "APR"
+msgstr "APR"
+
+#: src/components/DialogBase/WarningDialog.tsx
+#: src/components/Trade/Dialog/ConfirmDialog/index.tsx
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Are you sure to"
+msgstr "Are you sure to"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ArrayEmpty()"
+msgstr "ArrayEmpty()"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Asset"
+msgstr "Asset"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+msgid "Assets"
+msgstr "Assets"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "At least 1 number"
+msgstr "At least 1 number"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "At least 1 upper case letter"
+msgstr "At least 1 upper case letter"
 
 #: src/components/Footer/index.tsx
 msgid "Audit Report"
 msgstr "Audit Report"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+msgid "Authorize"
+msgstr "Authorize"
+
+#: src/components/Seamless/ExportInfoDialog/index.tsx
+msgid "Authorizing"
+msgstr "Authorizing"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+msgid "Auto Margin"
+msgstr "Auto Margin"
+
+#: src/components/Record/Items/Position.tsx
 msgid "Auto TP Price"
 msgstr "Auto TP Price"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Auto-Signatures"
+msgstr "Auto-Signatures"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Auto-Signed"
+msgstr "Auto-Signed"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Automatically list your token for derivatives trading, enabling long/short strategies. This stimulates real market demand and drives liquidity."
 msgstr "Automatically list your token for derivatives trading, enabling long/short strategies. This stimulates real market demand and drives liquidity."
 
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Available"
+msgstr "Available"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Available for withdrawal to wallet after {countdownText}"
+msgstr "Available for withdrawal to wallet after {countdownText}"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Available Long"
+msgstr "Available Long"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Available Margin"
+msgstr "Available Margin"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Available Short"
+msgstr "Available Short"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Avg. Close Price"
+msgstr "Avg. Close Price"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Avg. Entry Price"
+msgstr "Avg. Entry Price"
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+msgid "Avg. Price"
+msgstr "Avg. Price"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+msgid "Balance"
+msgstr "Balance"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "BaseFeeNotSoldOut()"
+msgstr "BaseFeeNotSoldOut()"
+
 #: src/pages/Market/components/Introduction.tsx
 msgid "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
 msgstr "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
+
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Become the Genesis LP and exclusively receive a 2% share of this market's trading fees. LPs added after market activation are not eligible for this reward."
+msgstr "Become the Genesis LP and exclusively receive a 2% share of this market's trading fees. LPs added after market activation are not eligible for this reward."
 
 #: src/components/Footer/index.tsx
 #: src/components/NoticeTeaching/index.tsx
 msgid "Beginner's Guide"
 msgstr "Beginner's Guide"
 
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Blacklist"
+msgstr "Blacklist"
+
+#: src/pages/MarketList/components/Tabs/MarketTabs.tsx
+msgid "Blue Chip"
+msgstr "Blue Chip"
+
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+msgid "Blue Chips"
+msgstr "Blue Chips"
+
+#: src/pages/rank/components/Tabs/TypeSelector.tsx
+msgid "BlueChip"
+msgstr "BlueChip"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "BondNotReleased()"
+msgstr "BondNotReleased()"
+
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
 msgstr "Boost Your Token's Exposure"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Bridge/Swap"
+msgstr "Bridge/Swap"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "BrokerAlreadyExists()"
+msgstr "BrokerAlreadyExists()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "BrokerNotFound()"
+msgstr "BrokerNotFound()"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/OrderSide/index.tsx
+msgid "Buy"
+msgstr "Buy"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Buy Tax"
+msgstr "Buy Tax"
+
+#: src/components/Seamless/ExportInfoDialog/index.tsx
+msgid "By importing this key on another device, you can access MYX from any browser without needing a wallet extension or using a wallet app browser. This key is for trading authorization only and will never hold any of your assets. For your security, do not share it with anyone."
+msgstr "By importing this key on another device, you can access MYX from any browser without needing a wallet extension or using a wallet app browser. This key is for trading authorization only and will never hold any of your assets. For your security, do not share it with anyone."
+
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Cancel All"
+msgstr "Cancel All"
+
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+msgid "cancel all open orders?"
+msgstr "cancel all open orders?"
+
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+msgid "Cancel all orders failed"
+msgstr "Cancel all orders failed"
+
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel all orders success"
+msgstr "Cancel all orders success"
+
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel this order?"
+msgstr "Cancel this order?"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Canceled"
+msgstr "Canceled"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseAppealNotFinished()"
+msgstr "CaseAppealNotFinished()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseCanNotAppeal()"
+msgstr "CaseCanNotAppeal()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseDeadlineNotReached()"
+msgstr "CaseDeadlineNotReached()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseDeadlineReached()"
+msgstr "CaseDeadlineReached()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseNotAccepted()"
+msgstr "CaseNotAccepted()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseNotExist(CaseId)"
+msgstr "CaseNotExist(CaseId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseNotInVoting()"
+msgstr "CaseNotInVoting()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "CaseRespondentAppealed(CaseId,address)"
+msgstr "CaseRespondentAppealed(CaseId,address)"
+
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+msgid "Chains"
+msgstr "Chains"
+
+#: src/components/Dialog/DialogFilters.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+#: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+msgid "Change"
+msgstr "Change"
+
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/MarketList/components/List/index.tsx
+#: src/pages/rank/components/List/index.tsx
+msgid "Change %"
+msgstr "Change %"
+
+#: src/pages/Cook/components/TrenchList.tsx
+msgid "Chg"
+msgstr "Chg"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Choose"
+msgstr "Choose"
 
 #: src/components/Login/LoginModal.tsx
 msgid "Choose how to start"
 msgstr "Choose how to start"
 
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Choose Your Account Mode"
+msgstr "Choose Your Account Mode"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Circulation"
+msgstr "Circulation"
+
+#: src/pages/Cook/detail/components/Assets.tsx
+#: src/pages/Earn/components/Trade/Claim.tsx
+#: src/pages/Earn/components/Trade/Tab.tsx
+msgid "Claim"
+msgstr "Claim"
+
 #: src/store/transactions/options.ts
 msgid "Claim airdrop"
 msgstr ""
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
+msgid "Claim Now"
+msgstr "Claim Now"
 
 #: src/store/transactions/options.ts
 msgid "Claim referral fee"
 msgstr ""
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Earn/components/Trade/Claim.tsx
+msgid "Claim successfully claimed"
+msgstr "Claim successfully claimed"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+msgid "Claimable Amount"
+msgstr "Claimable Amount"
+
+#: src/components/AccountDialog/index.tsx
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+#: src/components/WalletConnect/index.tsx
 msgid "Classic"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Classic Account"
+msgstr "Classic Account"
+
+#: src/components/GlobalSearch/GlobalSearchHeader.tsx
+msgid "Clear"
+msgstr "Clear"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Trade/TradePanel/PositionAction/index.tsx
 msgid "Close"
 msgstr ""
 
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be greater than 0"
+msgstr "close  amount must be greater than 0"
+
+#. placeholder {0}: displayAmount(maxCloseShort.quoteAmount)
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be less than {0}"
+msgstr "close  amount must be less than {0}"
+
+#: src/pages/Price/components/PriceContent/index.tsx
+#: src/pages/record/index.tsx
 #: src/pages/Trade/components/Tables/index.tsx
 msgid "Close All"
 msgstr ""
@@ -107,6 +658,49 @@ msgstr ""
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "close all positions at market price?"
 msgstr "close all positions at market price?"
+
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Close all positions success"
+msgstr "Close all positions success"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Close Amount"
+msgstr "Close Amount"
+
+#. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close amount must be less than {0}"
+msgstr "close amount must be less than {0}"
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Close Long"
+msgstr "Close Long"
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Close Short"
+msgstr "Close Short"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Close Time"
+msgstr "Close Time"
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Closeable Amount"
+msgstr "Closeable Amount"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Closed Amount"
+msgstr "Closed Amount"
 
 #: src/components/Footer/index.tsx
 msgid "Collaboration Application"
@@ -116,7 +710,19 @@ msgstr "Collaboration Application"
 msgid "Community"
 msgstr "Community"
 
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/DialogBase/index.tsx
+#: src/components/Login/CodeConfirm.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/components/DialogConfirmFooter/index.tsx
+#: src/components/Trade/Dialog/ConfirmDialog/index.tsx
+#: src/components/Trade/Dialog/Leverage/Leverage.tsx
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Confirm"
 msgstr ""
 
@@ -124,83 +730,629 @@ msgstr ""
 msgid "Confirm token info"
 msgstr "Confirm token info"
 
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Confirm Token Info"
+msgstr "Confirm Token Info"
+
 #: src/pages/Market/components/create.tsx
 msgid "Connect wallet"
 msgstr "Connect wallet"
 
+#: src/components/CanSwitchWalletNetwork/index.tsx
 #: src/components/WalletConnect/index.tsx
 msgid "Connect Wallet"
 msgstr ""
 
+#. placeholder {0}: encryptionAddress(address)
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Connected wallet: {0}. Please select your preferred trading mode."
+msgstr "Connected wallet: {0}. Please select your preferred trading mode."
+
+#: src/components/Login/LoginModal.tsx
+msgid "Continue With Seamless Account"
+msgstr "Continue With Seamless Account"
+
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+msgid "Contract"
+msgstr "Contract"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ConvertAmountMismatch(uint256,uint256)"
+msgstr "ConvertAmountMismatch(uint256,uint256)"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
+#: src/components/Tabbar/const.tsx
+#: src/pages/Cook/components/ToolBar.tsx
 msgid "Cook"
 msgstr "Cook"
 
-#: src/pages/Market/components/create.tsx
+#: src/components/AccountDialog/index.tsx
+#: src/components/Seamless/ExportDialog/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+msgid "Copied to clipboard"
+msgstr "Copied to clipboard"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+#: src/components/WalletConnect/index.tsx
+msgid "Copy"
+msgstr "Copy"
+
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+msgid "Copy Address"
+msgstr "Copy Address"
+
+#: src/components/Copy.tsx
+msgid "Copy success"
+msgstr "Copy success"
+
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Cost Basis"
+msgstr "Cost Basis"
+
+#: src/config/chainInfo.ts
+msgid "Could not find information with chain id {chainId}"
+msgstr "Could not find information with chain id {chainId}"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+#: src/pages/Price/components/PriceInfo.tsx
+msgid "Countdown"
+msgstr "Countdown"
+
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "Counterparty PnL: As the counterparty to traders, when the trader community incurs a net loss in this market, those funds become the profit for the LP pool."
+msgstr "Counterparty PnL: As the counterparty to traders, when the trader community incurs a net loss in this market, those funds become the profit for the LP pool."
+
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+msgid "creat time"
+msgstr "creat time"
+
+#: src/pages/Market/index.tsx
+msgid "Create a Contract Market"
+msgstr "Create a Contract Market"
+
+#: src/pages/Cook/components/Banner.tsx
 msgid "Create a Market"
 msgstr "Create a Market"
 
+#: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
+#: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr "Create Market"
 
+#: src/components/GlobalSearch/SearchList/NotFound.tsx
+msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
+msgstr "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
+
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Create Time"
+msgstr "Create Time"
+
+#: src/pages/Cook/components/Banner.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
 msgstr "Create your own derivatives market to enjoy LP rewards and fee sharing."
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Current Price"
+msgstr "Current Price"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Current USDC asset balance held in your on-chain wallet."
+msgstr "Current USDC asset balance held in your on-chain wallet."
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Custody"
+msgstr "Custody"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Custom Filters"
+msgstr "Custom Filters"
+
+#: src/utils/index.ts
+msgid "D"
+msgstr "D"
+
+#: src/pages/Home/components/ExpressMenu/const.tsx
+msgid "Date"
+msgstr "Date"
+
+#: src/components/CookDetail/Charts/index.tsx
+#: src/pages/Earn/components/Chart.tsx
+msgid "Day"
+msgstr "Day"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Decrease"
+msgstr "Decrease"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Degen Audit"
+msgstr "Degen Audit"
+
+#: src/components/AccountDialog/index.tsx
+#: src/pages/Home/components/AccountInfo/index.tsx
+msgid "Deposit"
+msgstr "Deposit"
+
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Deposit underlying assets, gain price exposure, and earn fees."
+msgstr "Deposit underlying assets, gain price exposure, and earn fees."
 
 #: src/components/Footer/index.tsx
 msgid "Developers"
 msgstr "Developers"
 
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "DifferentMarket(PoolId,PoolId)"
+msgstr "DifferentMarket(PoolId,PoolId)"
+
 #: src/components/Footer/index.tsx
 msgid "Discord"
 msgstr ""
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "DisputeNotAllowed()"
+msgstr "DisputeNotAllowed()"
 
 #: src/components/Footer/index.tsx
 msgid "Documentation"
 msgstr "Documentation"
 
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Due to [Reason for Delisting], new buys for this market have been paused. You can still sell your holdings at any time.<0>Reactivate Market</0>"
+msgstr "Due to [Reason for Delisting], new buys for this market have been paused. You can still sell your holdings at any time.<0>Reactivate Market</0>"
+
+#. placeholder {0}: baseLpDetail?.mBaseQuoteSymbol
+#. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol
+#. placeholder {1}: cutDownFormat(dayjs.duration(countdown))
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0> View Delisting Rules</0>"
+msgstr "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0> View Delisting Rules</0>"
+
 #: src/components/Footer/index.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
+#: src/components/Tabbar/const.tsx
+#: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
 msgstr "Earn"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ECDSAInvalidSignature()"
+msgstr "ECDSAInvalidSignature()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ECDSAInvalidSignatureLength(uint256)"
+msgstr "ECDSAInvalidSignatureLength(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ECDSAInvalidSignatureS(bytes32)"
+msgstr "ECDSAInvalidSignatureS(bytes32)"
 
 #: src/components/Footer/index.tsx
 msgid "Ecosystem"
 msgstr "Ecosystem"
 
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit"
+msgstr "Edit"
+
 #: src/components/Footer/index.tsx
 msgid "Email"
 msgstr ""
+
+#: src/components/Login/CodeConfirm.tsx
+msgid "Email has been sent"
+msgstr "Email has been sent"
+
+#: src/components/Login/EmailForm.tsx
+msgid "Email login"
+msgstr "Email login"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Enable Seamless Trading"
+msgstr "Enable Seamless Trading"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "EnforcedPause()"
+msgstr "EnforcedPause()"
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Enter the token address for the new perpetuals market."
 msgstr "Enter the token address for the new perpetuals market."
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Entry Price"
-msgstr ""
+#: src/components/Login/EmailForm.tsx
+msgid "Enter your email"
+msgstr "Enter your email"
+
+#: src/components/Seamless/ExportInfoDialog/index.tsx
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Enter your password"
+msgstr "Enter your password"
+
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Enter your Password"
+msgstr "Enter your Password"
+
+#. placeholder {0}: orderList.length
+#: src/pages/record/components/RecordTab.tsx
+msgid "Entrusts({0})"
+msgstr "Entrusts({0})"
+
+#: src/components/Record/Items/Position.tsx
+msgid "Entry price"
+msgstr "Entry price"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "EOA Wallet"
+msgstr "EOA Wallet"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC1967InvalidImplementation(address)"
+msgstr "ERC1967InvalidImplementation(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC1967NonPayable()"
+msgstr "ERC1967NonPayable()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InsufficientAllowance(address,uint256,uint256)"
+msgstr "ERC20InsufficientAllowance(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InsufficientBalance(address,uint256,uint256)"
+msgstr "ERC20InsufficientBalance(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InvalidApprover(address)"
+msgstr "ERC20InvalidApprover(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InvalidReceiver(address)"
+msgstr "ERC20InvalidReceiver(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InvalidSender(address)"
+msgstr "ERC20InvalidSender(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC20InvalidSpender(address)"
+msgstr "ERC20InvalidSpender(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2612ExpiredSignature(uint256)"
+msgstr "ERC2612ExpiredSignature(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2612InvalidSigner(address,address)"
+msgstr "ERC2612InvalidSigner(address,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2771ForwarderExpiredRequest(uint48)"
+msgstr "ERC2771ForwarderExpiredRequest(uint48)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2771ForwarderInvalidSigner(address,address)"
+msgstr "ERC2771ForwarderInvalidSigner(address,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2771ForwarderMismatchedValue(uint256,uint256)"
+msgstr "ERC2771ForwarderMismatchedValue(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC2771UntrustfulTarget(address,address)"
+msgstr "ERC2771UntrustfulTarget(address,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721IncorrectOwner(address,uint256,address)"
+msgstr "ERC721IncorrectOwner(address,uint256,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InsufficientApproval(address,uint256)"
+msgstr "ERC721InsufficientApproval(address,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InvalidApprover(address)"
+msgstr "ERC721InvalidApprover(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InvalidOperator(address)"
+msgstr "ERC721InvalidOperator(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InvalidOwner(address)"
+msgstr "ERC721InvalidOwner(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InvalidReceiver(address)"
+msgstr "ERC721InvalidReceiver(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721InvalidSender(address)"
+msgstr "ERC721InvalidSender(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ERC721NonexistentToken(uint256)"
+msgstr "ERC721NonexistentToken(uint256)"
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Est. Pnl"
+msgstr "Est. Pnl"
+
+#: src/components/CookDetail/Order/EstRate.tsx
+#: src/pages/Earn/components/Trade/EstRate.tsx
+msgid "Est. Rate"
+msgstr "Est. Rate"
+
+#: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Est. Slippage"
+msgstr "Est. Slippage"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Estimated 24h yield based on pool trading activity over the last 24 hours. For reference only; returns are not guaranteed."
+msgstr "Estimated 24h yield based on pool trading activity over the last 24 hours. For reference only; returns are not guaranteed."
+
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Estimated realized PnL for this redemption."
+msgstr "Estimated realized PnL for this redemption."
+
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations."
+msgstr "Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations."
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ETHTransferFailed()"
+msgstr "ETHTransferFailed()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ETHTransferFailed(address,uint256)"
+msgstr "ETHTransferFailed(address,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedBaseCollateral(uint256,uint256)"
+msgstr "ExceedBaseCollateral(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedBaseReserved(uint256,uint256)"
+msgstr "ExceedBaseReserved(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedDebt(uint256,uint256)"
+msgstr "ExceedDebt(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedExchangeable()"
+msgstr "ExceedExchangeable()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMaxBaseProfit()"
+msgstr "ExceedMaxBaseProfit()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMaxExchangeableAmount()"
+msgstr "ExceedMaxExchangeableAmount()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMaxLeverage(PositionId)"
+msgstr "ExceedMaxLeverage(PositionId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMaxPriceDeviation()"
+msgstr "ExceedMaxPriceDeviation()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMaxProfit()"
+msgstr "ExceedMaxProfit()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMinOutput(uint256,uint256)"
+msgstr "ExceedMinOutput(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedMinOutputAmount()"
+msgstr "ExceedMinOutputAmount()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedOrderSize(uint256)"
+msgstr "ExceedOrderSize(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedPositionSize()"
+msgstr "ExceedPositionSize()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedQuoteReserved(uint256,uint256)"
+msgstr "ExceedQuoteReserved(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExceedsMaximumRelayFee()"
+msgstr "ExceedsMaximumRelayFee()"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "Execution Fee"
+msgstr "Execution Fee"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExecutionFeeNotSupport(address)"
+msgstr "ExecutionFeeNotSupport(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExpectedPause()"
+msgstr "ExpectedPause()"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Expired"
+msgstr "Expired"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExpiredFeeData()"
+msgstr "ExpiredFeeData()"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+msgid "Export Seamless Key"
+msgstr "Export Seamless Key"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+msgid "Export Seamless Trading Key"
+msgstr "Export Seamless Trading Key"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExpOverflow()"
+msgstr "ExpOverflow()"
+
+#: src/components/UI/Toast/index.tsx
+msgid "failed"
+msgstr "failed"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+msgid "Failed to copy"
+msgstr "Failed to copy"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "FailedCall()"
+msgstr "FailedCall()"
 
 #: src/store/transactions/options.ts
 msgid "Faucet"
 msgstr ""
+
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+msgid "Favorite"
+msgstr "Favorite"
+
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/MarketList/components/Tabs/MarketTabs.tsx
+msgid "Favorites"
+msgstr "Favorites"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "FDV"
+msgstr "FDV"
+
+#: src/components/Record/Items/Finance.tsx
+#: src/pages/Earn/components/Trade/Fee.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+msgid "Fee"
+msgstr "Fee"
+
+#. placeholder {0}: item.executionFeeToken?.toString() || '--'
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Fee({0})"
+msgstr "Fee({0})"
 
 #: src/components/Footer/index.tsx
 #: src/components/Header/Operation/Community.tsx
 msgid "Feedback"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/index.tsx
-msgid "Finance"
-msgstr "Finance"
+#: src/pages/Earn/components/Trade/Fee.tsx
+msgid "Fees are permanently free."
+msgstr "Fees are permanently free."
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/Dialog/DialogFilters.tsx
+#: src/pages/Cook/components/Card.tsx
+msgid "Filter"
+msgstr "Filter"
+
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Forgot Password?"
+msgstr "Forgot Password?"
+
+#: src/pages/Earn/components/Trade/Fee.tsx
+msgid "Free forever"
+msgstr "Free forever"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Free Margin"
+msgstr "Free Margin"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Frequent traders on one chain"
+msgstr "Frequent traders on one chain"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "From"
+msgstr "From"
+
+#: src/components/Record/Items/Position.tsx
+msgid "Funding fee"
+msgstr "Funding fee"
+
+#: src/components/Record/Items/Finance.tsx
 msgid "Funding Fee"
 msgstr ""
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+#: src/pages/Price/components/PriceInfo.tsx
+#: src/pages/Price/components/PriceInfo.tsx
+msgid "Funding rate"
+msgstr "Funding rate"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
+msgid "Funding Rate"
+msgstr "Funding Rate"
+
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "Gainers"
+msgstr "Gainers"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Gasless trading"
+msgstr "Gasless trading"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "GasLimitExceeded(address,uint256,uint256)"
+msgstr "GasLimitExceeded(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "GasLimitNotSet(address)"
+msgstr "GasLimitNotSet(address)"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr "Genesis Rewards"
+
+#: src/pages/Home/components/Banner/index.tsx
+msgid "Get Started"
+msgstr "Get Started"
+
+#: src/utils/index.ts
+msgid "H"
+msgstr "H"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "Hash"
+msgstr "Hash"
 
 #: src/components/Header/Operation/Community.tsx
 msgid "Help"
@@ -210,9 +1362,44 @@ msgstr ""
 msgid "Helper Center"
 msgstr "Helper Center"
 
-#: src/pages/Trade/components/Tables/index.tsx
-msgid "Hide Others Symbols"
-msgstr "Hide Others Symbols"
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Hide other symbols"
+msgstr "Hide other symbols"
+
+#: src/components/Dialog/DialogFilters.tsx
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Holders"
+msgstr "Holders"
+
+#: src/components/Tabbar/const.tsx
+msgid "Home"
+msgstr "Home"
+
+#: src/404.tsx
+msgid "Homepage"
+msgstr "Homepage"
+
+#: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "Hot"
+msgstr "Hot"
+
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "How are your rights protected?"
+msgstr "How are your rights protected?"
+
+#. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "How does the {0} Vault earn returns for you?"
+msgstr "How does the {0} Vault earn returns for you?"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+msgid "How to Use: To enable Seamless Trading, go to Settings → Import Key. You can then trade in any browser without a wallet."
+msgstr "How to Use: To enable Seamless Trading, go to Settings → Import Key. You can then trade in any browser without a wallet."
 
 #: src/store/transactions/options.ts
 msgid "Hypervault Purchase"
@@ -222,45 +1409,667 @@ msgstr "Hypervault Purchase"
 msgid "Hypervault Sale"
 msgstr "Hypervault Sale"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/ErrorPage.tsx
+msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
+msgstr "If the issue persists, Join the <0>MYX Discord</0> community for support"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Import Seamless Key"
+msgstr "Import Seamless Key"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "Inactive"
+msgstr "Inactive"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InconsistentParamsLength()"
+msgstr "InconsistentParamsLength()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "IncorrectFee(uint256)"
+msgstr "IncorrectFee(uint256)"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Increase"
+msgstr "Increase"
+
+#: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
+msgid "Indicators"
+msgstr "Indicators"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InDisputeMode()"
+msgstr "InDisputeMode()"
+
+#: src/components/UI/Toast/index.tsx
+msgid "info"
+msgstr "info"
+
+#: src/pages/Price/components/Tabs.tsx
+msgid "Info"
+msgstr "Info"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InitializationFunctionReverted(address,bytes)"
+msgstr "InitializationFunctionReverted(address,bytes)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InRewindMode()"
+msgstr "InRewindMode()"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Market/components/activeMarket.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Insufficient balance"
+msgstr "Insufficient balance"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Insufficient Balance"
+msgstr "Insufficient Balance"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientBalance()"
+msgstr "InsufficientBalance()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientBalance(address,uint256,uint256)"
+msgstr "InsufficientBalance(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientBalance(uint256,uint256)"
+msgstr "InsufficientBalance(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientCollateral(PositionId,uint256)"
+msgstr "InsufficientCollateral(PositionId,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientCollateral(uint256,uint256)"
+msgstr "InsufficientCollateral(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientFeeAllowance(address,uint256,uint256)"
+msgstr "InsufficientFeeAllowance(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientFeeBalance(address,uint256,uint256)"
+msgstr "InsufficientFeeBalance(address,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientFreeCollateral(PositionId,uint256)"
+msgstr "InsufficientFreeCollateral(PositionId,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientLiquidity(uint256,uint256,uint256)"
+msgstr "InsufficientLiquidity(uint256,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientLockedCollateral(PositionId,uint256)"
+msgstr "InsufficientLockedCollateral(PositionId,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientOutputAmount()"
+msgstr "InsufficientOutputAmount()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientPoolProfit()"
+msgstr "InsufficientPoolProfit()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientQuoteIn(uint256,uint256,uint256)"
+msgstr "InsufficientQuoteIn(uint256,uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientReturnAmount(uint256,uint256)"
+msgstr "InsufficientReturnAmount(uint256,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientRiskReserves()"
+msgstr "InsufficientRiskReserves()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InsufficientSize()"
+msgstr "InsufficientSize()"
+
+#: src/pages/Earn/detail/components/TabBar.tsx
+msgid "Introduction"
+msgstr "Introduction"
+
+#: src/pages/Market/index.tsx
+msgid "Invalid Market"
+msgstr "Invalid Market"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidAccountNonce(address,uint256)"
+msgstr "InvalidAccountNonce(address,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidADLPosition(OrderId,PositionId)"
+msgstr "InvalidADLPosition(OrderId,PositionId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidAmount(CaseId,address)"
+msgstr "InvalidAmount(CaseId,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidAmount(uint256)"
+msgstr "InvalidAmount(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidBaseToken()"
+msgstr "InvalidBaseToken()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidDistributionAmount()"
+msgstr "InvalidDistributionAmount()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidFeeRate()"
+msgstr "InvalidFeeRate()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidFeeTier()"
+msgstr "InvalidFeeTier()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidInitialization()"
+msgstr "InvalidInitialization()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidLiquidityAmount()"
+msgstr "InvalidLiquidityAmount()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidOrder(OrderId)"
+msgstr "InvalidOrder(OrderId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidParameter()"
+msgstr "InvalidParameter()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidPoolToken()"
+msgstr "InvalidPoolToken()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidPosition(PositionId)"
+msgstr "InvalidPosition(PositionId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidPrice()"
+msgstr "InvalidPrice()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidQuoteTokenAddress()"
+msgstr "InvalidQuoteTokenAddress()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidRatioParams()"
+msgstr "InvalidRatioParams()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidRewindPrice()"
+msgstr "InvalidRewindPrice()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidShortString()"
+msgstr "InvalidShortString()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidSplitConfig()"
+msgstr "InvalidSplitConfig()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidTpsl(uint256)"
+msgstr "InvalidTpsl(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "InvalidUpdateFee()"
+msgstr "InvalidUpdateFee()"
+
+#: src/components/Trade/TradePanel/PositionMode/index.tsx
+msgid "Isolated"
+msgstr "Isolated"
+
+#. placeholder {0}: item.userLeverage
+#. placeholder {0}: order.userLeverage
+#. placeholder {0}: position.userLeverage
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Record/Items/Position.tsx
+msgid "Isolated {0}x"
+msgstr "Isolated {0}x"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
+msgid "Last"
+msgstr "Last"
+
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/MarketList/components/List/index.tsx
+#: src/pages/rank/components/List/index.tsx
+msgid "Last Price"
+msgstr "Last Price"
+
+#: src/components/Trade/Dialog/Leverage/Leverage.tsx
+msgid "Leverage adjustments will impact your new opening orders. When opening a new position, your minimum maintenance margin will be calculated according to the new leverage"
+msgstr "Leverage adjustments will impact your new opening orders. When opening a new position, your minimum maintenance margin will be calculated according to the new leverage"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
+#: src/components/Trade/TradePanel/OrderType/index.tsx
+msgid "Limit"
+msgstr "Limit"
+
+#: src/components/Dialog/DialogFilters.tsx
+#: src/pages/Cook/components/Token.tsx
+msgid "Liq"
+msgstr "Liq"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Liq. Price"
+msgstr "Liq. Price"
+
+#: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr ""
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Locked Realized Pnl"
+msgstr "Locked Realized Pnl"
+
+#. placeholder {0}: symbolInfo?.baseSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Locked Realized Pnl {0}"
+msgstr "Locked Realized Pnl {0}"
+
+#: src/components/WalletConnect/index.tsx
+msgid "Log Out"
+msgstr "Log Out"
+
+#: src/components/AccountDialog/index.tsx
+msgid "Log Out Wallet"
+msgstr "Log Out Wallet"
+
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Login In With Wallet"
+msgstr "Login In With Wallet"
+
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Record/Items/Position.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/SymbolInfo/index.tsx
+msgid "Long"
+msgstr "Long"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
+msgid "Long Positions"
+msgstr "Long Positions"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Long-Short Ratio"
+msgstr "Long-Short Ratio"
+
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "Losers"
+msgstr "Losers"
+
+#: src/pages/Earn/components/Carousel.tsx
+msgid "Low Volatility, Stable Yield"
+msgstr "Low Volatility, Stable Yield"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "LP Yield Generation"
 msgstr "LP Yield Generation"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "LPNotFullyMinted()"
+msgstr "LPNotFullyMinted()"
+
+#: src/utils/index.ts
+msgid "m"
+msgstr "m"
+
+#: src/utils/index.ts
+msgid "M"
+msgstr "M"
+
+#: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
+msgid "Main-chart Indicators"
+msgstr "Main-chart Indicators"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Manual"
+msgstr "Manual"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+msgid "Manual Margin"
+msgstr "Manual Margin"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+#: src/pages/Price/components/Trade/OpenLong.tsx
+#: src/pages/Price/components/Trade/OpenShort.tsx
 msgid "Margin"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)"
-msgstr "Margin Ratio = (Position Size in USDC * 1%) / (Margin + Unrealized P/L + Pending Funding Fee - Close Position Fee)"
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Margin Account"
+msgstr "Margin Account"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/Record/Items/Position.tsx
+msgid "Margin ratio"
+msgstr "Margin ratio"
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Margin used to maintain positions, subject to potential total loss upon liquidation"
 msgstr "Margin used to maintain positions, subject to potential total loss upon liquidation"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Mark Price"
-msgstr "Mark Price"
+#. placeholder {0}: order.quoteSymbol
+#. placeholder {0}: position.quoteSymbol
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/Position.tsx
+msgid "Margin({0})"
+msgstr "Margin({0})"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
+#: src/components/Trade/TradePanel/OrderType/index.tsx
+#: src/pages/Price/components/Trade/TradeForm.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Market"
+msgstr "Market"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Market cap"
+msgstr "Market cap"
+
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "Market Cap"
+msgstr "Market Cap"
+
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr ""
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Market close failed"
+msgstr "Market close failed"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Market close success"
+msgstr "Market close success"
+
+#: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
+msgid "Market price"
+msgstr "Market price"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "Market Price"
+msgstr "Market Price"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "MarketAlreadyExisted()"
+msgstr "MarketAlreadyExisted()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "MarketNotExist(MarketId)"
+msgstr "MarketNotExist(MarketId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "MarketNotInitialized()"
+msgstr "MarketNotInitialized()"
+
+#: src/components/Tabbar/const.tsx
+msgid "Markets"
+msgstr "Markets"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/components/Dialog/DialogFilters.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
+#: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
+#: src/components/Trade/TradePanel/OrderForm/MarginAmount/index.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Max"
+msgstr "Max"
+
+#. placeholder {0}: symbolInfo?.quoteSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
+msgstr "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
+
+#: src/components/Dialog/DialogFilters.tsx
+#: src/pages/Cook/components/Token.tsx
+msgid "MC"
+msgstr "MC"
 
 #: src/components/Footer/index.tsx
 msgid "Medium"
 msgstr "Medium"
 
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "MerkleTreeVerificationFailed(CaseId,address)"
+msgstr "MerkleTreeVerificationFailed(CaseId,address)"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Min"
+msgstr "Min"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Mintable"
+msgstr "Mintable"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "MismatchedSender(address)"
+msgstr "MismatchedSender(address)"
+
+#: src/components/Trade/Charts/Toolbar/index.tsx
+msgid "more"
+msgstr "more"
+
+#: src/components/Login/MorePage.tsx
+msgid "More"
+msgstr "More"
+
 #: src/components/NoticeTeaching/index.tsx
 msgid "More detailed help content will be available soon."
 msgstr "More detailed help content will be available soon."
 
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "My Assets"
+msgstr "My Assets"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "My Tokens"
+msgstr "My Tokens"
+
+#: src/pages/record/index.tsx
+msgid "My trades"
+msgstr "My trades"
+
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Home/components/MarketList/index.tsx
+msgid "Name"
+msgstr "Name"
+
+#: src/pages/MarketList/components/List/index.tsx
+#: src/pages/rank/components/List/index.tsx
+msgid "Name/Mcap"
+msgstr "Name/Mcap"
+
+#: src/pages/Trade/components/TableNoData/TableWongNetwork.tsx
+msgid "Network error"
+msgstr "Network error"
+
+#: src/pages/Cook/components/CookSubBar.tsx
+#: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Home/components/MarketList/index.tsx
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "New"
+msgstr "New"
+
+#: src/components/Login/EmailForm.tsx
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Next"
+msgstr "Next"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "No"
+msgstr "No"
+
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "No data"
 msgstr ""
+
+#: src/components/CookDetail/Charts/AreaCharts.tsx
+#: src/components/Empty/index.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Trade/components/TableNoData/index.tsx
+msgid "No records found"
+msgstr "No records found"
+
+#: src/components/Empty.tsx
+#: src/components/GlobalSearch/SearchList/NotFound.tsx
+msgid "No results found"
+msgstr "No results found"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NoADLNeeded(OrderId)"
+msgstr "NoADLNeeded(OrderId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NoRebateToClaim()"
+msgstr "NoRebateToClaim()"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "Not Created"
+msgstr "Not Created"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Not Required"
+msgstr "Not Required"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotActiveBroker(address)"
+msgstr "NotActiveBroker(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotAddressManager()"
+msgstr "NotAddressManager()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotAllowedCaller(address)"
+msgstr "NotAllowedCaller(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotAllowedTarget(address)"
+msgstr "NotAllowedTarget(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotBrokerAdmin()"
+msgstr "NotBrokerAdmin()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotBrokerSigner(address)"
+msgstr "NotBrokerSigner(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotCaseRespondent(CaseId,address)"
+msgstr "NotCaseRespondent(CaseId,address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotDependencyManager()"
+msgstr "NotDependencyManager()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotEmptyAddress()"
+msgstr "NotEmptyAddress()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotInDisputeMode()"
+msgstr "NotInDisputeMode()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotInitializing()"
+msgstr "NotInitializing()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotInRewindMode()"
+msgstr "NotInRewindMode()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotMeetEarlyCloseCriteria(PositionId)"
+msgstr "NotMeetEarlyCloseCriteria(PositionId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotOrderOwner()"
+msgstr "NotOrderOwner()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotPositionOwner()"
+msgstr "NotPositionOwner()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotProxyAdmin()"
+msgstr "NotProxyAdmin()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotReachedPrice(OrderId,uint256,uint256,TriggerType)"
+msgstr "NotReachedPrice(OrderId,uint256,uint256,TriggerType)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "NotSupportVersion()"
+msgstr "NotSupportVersion()"
 
 #: src/store/transactions/options.ts
 msgid "On-chain Transaction confirmed"
@@ -283,13 +2092,89 @@ msgstr ""
 msgid "On-chain Transaction timed out"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/index.tsx
-msgid "Open Orders"
-msgstr ""
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "Once you become a Liquidity Provider (LP) for the vault, your returns primarily come from two sources: Trading Fee Dividends: You will continuously share in the trading fees generated from all trades in this market."
+msgstr "Once you become a Liquidity Provider (LP) for the vault, your returns primarily come from two sources: Trading Fee Dividends: You will continuously share in the trading fees generated from all trades in this market."
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Open position amounts shown are calculated based on the actual coin quantity. Values change with the last price of the token"
-msgstr "Open position amounts shown are calculated based on the actual coin quantity. Values change with the last price of the token"
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Only Seamless Trading private key import supported."
+msgstr "Only Seamless Trading private key import supported."
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OnlyActiveValidator()"
+msgstr "OnlyActiveValidator()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OnlyKeeper()"
+msgstr "OnlyKeeper()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OnlyRelayer()"
+msgstr "OnlyRelayer()"
+
+#: src/components/Trade/TradePanel/PositionAction/index.tsx
+msgid "Open"
+msgstr "Open"
+
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "open  amount must be greater than 0"
+msgstr "open  amount must be greater than 0"
+
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "open amount must be greater than 0"
+msgstr "open amount must be greater than 0"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Open Interest (Long)"
+msgstr "Open Interest (Long)"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Open Interest (Short)"
+msgstr "Open Interest (Short)"
+
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/pages/Price/components/Trade/OpenLong.tsx
+msgid "Open Long"
+msgstr "Open Long"
+
+#: src/pages/Price/components/PriceContent/index.tsx
+msgid "Open Orders(2)"
+msgstr "Open Orders(2)"
+
+#. placeholder {0}: orderList.length > 0 ? `(${orderList.length})` : ''
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Open Orders{0}"
+msgstr "Open Orders{0}"
+
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/pages/Price/components/Trade/OpenShort.tsx
+msgid "Open Short"
+msgstr "Open Short"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Open Source"
+msgstr "Open Source"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Open Time"
+msgstr "Open Time"
+
+#: src/components/Trade/Dialog/Leverage/Leverage.tsx
+msgid "Opting for a leverage higher than [10x] elevates your risks for liquidation. Please exercise caution with the associated risks Confirm"
+msgstr "Opting for a leverage higher than [10x] elevates your risks for liquidation. Please exercise caution with the associated risks Confirm"
+
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "OR"
+msgstr "OR"
+
+#: src/components/Login/LoginModal.tsx
+msgid "Or Continue With "
+msgstr "Or Continue With "
 
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts
@@ -297,7 +2182,7 @@ msgstr "Open position amounts shown are calculated based on the actual coin quan
 msgid "Order confirmed"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/index.tsx
+#: src/pages/record/components/RecordTab.tsx
 msgid "Order History"
 msgstr "Order History"
 
@@ -307,33 +2192,351 @@ msgstr "Order History"
 msgid "Order Rejected"
 msgstr ""
 
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OrderExpired(OrderId)"
+msgstr "OrderExpired(OrderId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OrderNotExist(OrderId)"
+msgstr "OrderNotExist(OrderId)"
+
 #: src/components/Footer/index.tsx
 msgid "Others"
 msgstr "Others"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OwnableInvalidOwner(address)"
+msgstr "OwnableInvalidOwner(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "OwnableUnauthorizedAccount(address)"
+msgstr "OwnableUnauthorizedAccount(address)"
+
+#. placeholder {0}: displayAmount(paidOrigin?.freeMargin ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {1}: position?.quoteSymbol
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Paid from Free Margin: {0} {1}"
+msgstr "Paid from Free Margin: {0} {1}"
+
+#. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {1}: position?.quoteSymbol
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Paid from Locked Realized PnL: {0} {1}"
+msgstr "Paid from Locked Realized PnL: {0} {1}"
+
+#. placeholder {0}: displayAmount(paidOrigin?.walletBalance ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {1}: position?.quoteSymbol
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Paid from Wallet: {0} {1}"
+msgstr "Paid from Wallet: {0} {1}"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Search.tsx
+msgid "Paste"
+msgstr "Paste"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/TradePanel/OrderForm/MarginAmount/index.tsx
+msgid "Pay"
+msgstr "Pay"
+
+#. placeholder {0}: quoteLpDetail?.quoteSymbol
+#: src/pages/Market/components/activeMarket.tsx
+msgid "Pay with {0}"
+msgstr "Pay with {0}"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Per trade"
+msgstr "Per trade"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PermissionDenied(address,address)"
+msgstr "PermissionDenied(address,address)"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
+msgid "Perp Trading Info"
+msgstr "Perp Trading Info"
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Please confirm whether to"
 msgstr "Please confirm whether to"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Pnl/(Position Value /Leverage)"
-msgstr "Pnl/(Position Value /Leverage)"
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Please Enter"
+msgstr "Please Enter"
 
-#: src/pages/Trade/components/Tables/index.tsx
-msgid "Position History"
-msgstr "Position History"
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Please Enter Amount"
+msgstr "Please Enter Amount"
 
-#: src/pages/Trade/components/Tables/index.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Please enter the amount."
+msgstr "Please enter the amount."
+
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+#: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+msgid "PnL"
+msgstr "PnL"
+
+#: src/pages/Price/components/Tabs.tsx
+msgid "Pool"
+msgstr "Pool"
+
+#: src/pages/Market/components/activeMarket.tsx
+msgid "Pool reprime"
+msgstr "Pool reprime"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolExists(PoolId)"
+msgstr "PoolExists(PoolId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolFundingFeeNotPositive(int256,uint256,Direction)"
+msgstr "PoolFundingFeeNotPositive(int256,uint256,Direction)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolNotActive(PoolId)"
+msgstr "PoolNotActive(PoolId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolNotCompoundable(PoolId)"
+msgstr "PoolNotCompoundable(PoolId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolNotExist(PoolId)"
+msgstr "PoolNotExist(PoolId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolNotInitialized()"
+msgstr "PoolNotInitialized()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolNotInPreBenchState(PoolId)"
+msgstr "PoolNotInPreBenchState(PoolId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolOracleFeeCharged()"
+msgstr "PoolOracleFeeCharged()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolOracleFeeNotCharged()"
+msgstr "PoolOracleFeeNotCharged()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PoolOracleFeeNotExisted()"
+msgstr "PoolOracleFeeNotExisted()"
+
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "Pools info"
+msgstr "Pools info"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+msgid "Pools Info"
+msgstr "Pools Info"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Position Amount"
+msgstr "Position Amount"
+
+#. placeholder {0}: positionList.length
+#: src/pages/record/components/RecordTab.tsx
+msgid "Position({0})"
+msgstr "Position({0})"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PositionNotEmpty()"
+msgstr "PositionNotEmpty()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PositionNotHealthy(PositionId,uint256)"
+msgstr "PositionNotHealthy(PositionId,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PositionNotInitialized(PositionId)"
+msgstr "PositionNotInitialized(PositionId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "PositionRemainsHealthy(PositionId)"
+msgstr "PositionRemainsHealthy(PositionId)"
+
+#: src/pages/Earn/components/TabBar.tsx
 msgid "Positions"
 msgstr ""
+
+#: src/pages/record/components/RecordTab.tsx
+msgid "Positions History"
+msgstr "Positions History"
+
+#: src/pages/Price/components/PriceContent/index.tsx
+msgid "Positions(1)"
+msgstr "Positions(1)"
+
+#. placeholder {0}: positionList.length > 0 ? `(${positionList.length})` : ''
+#: src/pages/Trade/components/Tables/index.tsx
+msgid "Positions{0}"
+msgstr "Positions{0}"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+#: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
+#: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/detail/components/TabBar.tsx
+#: src/pages/Price/components/Tabs.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/utils/chart.ts
+msgid "Price"
+msgstr "Price"
+
+#: src/pages/Earn/components/Trade/PriceImpact.tsx
+msgid "Price Impact"
+msgstr "Price Impact"
+
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Price/Price"
+msgstr "Price/Price"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+msgid "Private Key Security: Keep your private key safe. If shared, it may be misused for trading permissions. If compromised, revoke access immediately. This key cannot transfer assets."
+msgstr "Private Key Security: Keep your private key safe. If shared, it may be misused for trading permissions. If compromised, revoke access immediately. This key cannot transfer assets."
+
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Profit"
+msgstr "Profit"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Progress"
+msgstr "Progress"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Provide liquidity to earn trading fees and receive additional platform rewards. Your LP assets will grow in value automatically."
 msgstr "Provide liquidity to earn trading fees and receive additional platform rewards. Your LP assets will grow in value automatically."
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Ratio"
-msgstr "Ratio"
+#. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "Providing liquidity to the {0} Vault does not have the \"impermanent loss\" risk associated with traditional liquidity mining. Its main risk is that, as the counterparty, the LP pool will bear corresponding losses when the trader community is consistently profitable in the market. However, based on overall market statistics, the long-term expected return for the LP pool is positive."
+msgstr "Providing liquidity to the {0} Vault does not have the \"impermanent loss\" risk associated with traditional liquidity mining. Its main risk is that, as the counterparty, the LP pool will bear corresponding losses when the trader community is consistently profitable in the market. However, based on overall market statistics, the long-term expected return for the LP pool is positive."
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Proxy Contract"
+msgstr "Proxy Contract"
+
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Quantity"
+msgstr "Quantity"
+
+#. placeholder {0}: symbolInfo?.baseSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Realized {0} token profits undergoing unlocking cycle. Claimable after unlocking completes."
+msgstr "Realized {0} token profits undergoing unlocking cycle. Claimable after unlocking completes."
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Realized PnL"
+msgstr "Realized PnL"
+
+#. placeholder {0}: symbolInfo?.quoteSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Realized profits ({0} undergoing unlocking cycle. Not withdrawable, but usable for opening new positions."
+msgstr "Realized profits ({0} undergoing unlocking cycle. Not withdrawable, but usable for opening new positions."
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+msgid "Receive"
+msgstr "Receive"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/Login/LoginItem.tsx
+#: src/components/Login/LoginItem.tsx
+msgid "Recent"
+msgstr "Recent"
+
+#: src/pages/Earn/components/Carousel.tsx
+msgid "Recommend"
+msgstr "Recommend"
+
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Recover or Reset immediately"
+msgstr "Recover or Reset immediately"
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+#: src/pages/Earn/components/Trade/Tab.tsx
+msgid "Redeem"
+msgstr "Redeem"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ReentrancyGuardReentrantCall()"
+msgstr "ReentrancyGuardReentrantCall()"
+
+#: src/pages/Home/components/ExpressMenu/const.tsx
+msgid "Referral"
+msgstr "Referral"
+
+#: src/ErrorPage.tsx
+msgid "refresh now"
+msgstr "refresh now"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ReimbursementValidity(CaseId)"
+msgstr "ReimbursementValidity(CaseId)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "RelayerRegistered(address)"
+msgstr "RelayerRegistered(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "RemoveRelayerFailed()"
+msgstr "RemoveRelayerFailed()"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Required"
+msgstr "Required"
+
+#: src/components/Login/CodeConfirm.tsx
+msgid "Resend code"
+msgstr "Resend code"
+
+#: src/components/Login/CodeConfirm.tsx
+msgid "Resend in {countdown}s"
+msgstr "Resend in {countdown}s"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ReservableNotEnough(uint256,uint256)"
+msgstr "ReservableNotEnough(uint256,uint256)"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Reset"
+msgstr "Reset"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+msgid "Reset Password"
+msgstr "Reset Password"
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Retain Genesis LP Share"
+msgstr "Retain Genesis LP Share"
+
+#: src/components/SettingDrawer.tsx
+msgid "Revoke"
+msgstr "Revoke"
 
 #: src/store/transactions/options.ts
 msgid "Reward Claim"
@@ -343,14 +2546,219 @@ msgstr "Reward Claim"
 msgid "Reward Vesting"
 msgstr "Reward Vesting"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "ROE%"
-msgstr "ROE%"
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Risk Rating"
+msgstr "Risk Rating"
+
+#: src/components/Record/Items/Position.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "Roe"
+msgstr "Roe"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+#: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+msgid "ROI"
+msgstr "ROI"
+
+#: src/utils/index.ts
+msgid "S"
+msgstr "S"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+msgid "Safe"
+msgstr "Safe"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SafeCastOverflowedIntToUint(int256)"
+msgstr "SafeCastOverflowedIntToUint(int256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SafeCastOverflowedUintDowncast(uint8,uint256)"
+msgstr "SafeCastOverflowedUintDowncast(uint8,uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SafeCastOverflowedUintToInt(uint256)"
+msgstr "SafeCastOverflowedUintToInt(uint256)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SafeERC20FailedOperation(address)"
+msgstr "SafeERC20FailedOperation(address)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SamePoolMigration(PoolId)"
+msgstr "SamePoolMigration(PoolId)"
+
+#: src/components/AccountDialog/index.tsx
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+msgid "Seamless"
+msgstr "Seamless"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Seamless Account"
+msgstr "Seamless Account"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Seamless Key"
+msgstr "Seamless Key"
+
+#: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
+msgid "Seamless Trading"
+msgstr "Seamless Trading"
+
+#: src/components/Seamless/ExportDialog/index.tsx
+msgid "Seamless Trading Key"
+msgstr "Seamless Trading Key"
+
+#: src/components/GlobalSearch/GlobalSearchHeader.tsx
+msgid "Search for token name/address"
+msgstr "Search for token name/address"
+
+#: src/components/GlobalSearch/SearchHistory.tsx
+msgid "Search History"
+msgstr "Search History"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "Search name or paste address"
+msgstr "Search name or paste address"
+
+#: src/components/Seamless/SelectAccountDialog/index.tsx
+msgid "Select  Account"
+msgstr "Select  Account"
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Select a token"
+msgstr "Select a token"
+
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "Select a Token"
+msgstr "Select a Token"
+
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Select a vault to provide initial liquidity"
+msgstr "Select a vault to provide initial liquidity"
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Select the asset that will be the subject of the contract (e.g., a Meme token)."
+msgstr "Select the asset that will be the subject of the contract (e.g., a Meme token)."
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "Select the currency used for pricing and settling contract PnL"
+msgstr "Select the currency used for pricing and settling contract PnL"
 
 #: src/pages/Market/components/steps.tsx
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select token"
 msgstr "Select token"
+
+#: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
+msgid "Select Token"
+msgstr "Select Token"
+
+#: src/components/CookDetail/Order/OrderSide/index.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Sell"
+msgstr "Sell"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Sell Tax"
+msgstr "Sell Tax"
+
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+msgid "Set TP/SL trigger prices based on the coin price."
+msgstr "Set TP/SL trigger prices based on the coin price."
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+msgid "Set TP/SL trigger prices based on the estimated pnl"
+msgstr "Set TP/SL trigger prices based on the estimated pnl"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+msgid "Set TP/SL trigger prices based on the estimated ROl."
+msgstr "Set TP/SL trigger prices based on the estimated ROl."
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+msgid "Set TP/SL trigger prices based on the percentage change in order price"
+msgstr "Set TP/SL trigger prices based on the percentage change in order price"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Set Your Password"
+msgstr "Set Your Password"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
+msgstr "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
+
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OrderHistory.tsx
+#: src/components/Record/Items/Position.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/SymbolInfo/index.tsx
+msgid "Short"
+msgstr "Short"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
+msgid "Short Positions"
+msgstr "Short Positions"
+
+#. placeholder {0}: position.baseSymbol
+#: src/components/Record/Items/Position.tsx
+msgid "Size({0})"
+msgstr "Size({0})"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "SL Est. PNL"
+msgstr "SL Est. PNL"
+
+#: src/utils/verify.ts
+msgid "SL price must be greater than entry price"
+msgstr "SL price must be greater than entry price"
+
+#: src/utils/verify.ts
+msgid "SL price must be less than entry price"
+msgstr "SL price must be less than entry price"
+
+#. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "SL({0})"
+msgstr "SL({0})"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "SlippageExceeded(uint256,uint256)"
+msgstr "SlippageExceeded(uint256,uint256)"
+
+#: src/components/Login/MorePage.tsx
+msgid "Social Login"
+msgstr "Social Login"
+
+#: src/ErrorPage.tsx
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
+#: src/pages/Cook/components/CookSubBar.tsx
+msgid "Soon"
+msgstr "Soon"
+
+#: src/404.tsx
+msgid "Sorry, the page you are trying to access does not exist"
+msgstr "Sorry, the page you are trying to access does not exist"
 
 #: src/store/transactions/options.ts
 msgid "Staking"
@@ -364,6 +2772,15 @@ msgstr "Staking Claim"
 msgid "Staking Unlock"
 msgstr "Staking Unlock"
 
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "StalePrice()"
+msgstr "StalePrice()"
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Status"
+msgstr "Status"
+
 #: src/pages/Market/components/steps.tsx
 msgid "Step 1"
 msgstr "Step 1"
@@ -372,78 +2789,580 @@ msgstr "Step 1"
 msgid "Step 2"
 msgstr "Step 2"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "Symbol"
-msgstr "Symbol"
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "StringTooLong(string)"
+msgstr "StringTooLong(string)"
+
+#: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
+msgid "Sub-chart Indicators"
+msgstr "Sub-chart Indicators"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Earn/components/Trade/Tab.tsx
+msgid "Subscribe"
+msgstr "Subscribe"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Subscription Amount"
+msgstr "Subscription Amount"
+
+#: src/components/UI/Toast/index.tsx
+msgid "success"
+msgstr "success"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Successful"
+msgstr "Successful"
+
+#: src/components/CookDetail/Order/Buy.tsx
+msgid "Successfully buy"
+msgstr "Successfully buy"
+
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Successfully deposited"
+msgstr "Successfully deposited"
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Successfully redeem"
+msgstr "Successfully redeem"
+
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Successfully sell"
+msgstr "Successfully sell"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Successfully subscribe"
+msgstr "Successfully subscribe"
+
+#: src/pages/Home/components/ExpressMenu/const.tsx
+msgid "Swap"
+msgstr "Swap"
+
+#: src/components/CanSwitchWalletNetwork/index.tsx
+msgid "Switch Network"
+msgstr "Switch Network"
 
 #: src/components/Footer/index.tsx
 msgid "Terms of Use"
 msgstr "Terms of Use"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#. placeholder {0}: baseLpDetail.symbolName
+#. placeholder {0}: quoteLpDetail.baseQuoteSymbol
+#. placeholder {1}: baseLpDetail.mBaseQuoteSymbol
+#. placeholder {1}: quoteLpDetail.mQuoteBaseSymbol
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
+msgstr "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "The average position cost price for multiple opening and closing trades"
 msgstr "The average position cost price for multiple opening and closing trades"
 
-#: src/pages/Trade/components/Tables/Position.tsx
-msgid "The current real-time oracle price, used to calculate unrealized PnL and margin."
-msgstr "The current real-time oracle price, used to calculate unrealized PnL and margin."
+#: src/pages/Earn/components/Trade/PriceImpact.tsx
+msgid "The estimated deviation of your execution price from the current market price."
+msgstr "The estimated deviation of your execution price from the current market price."
+
+#: src/components/CookDetail/Order/Buy.tsx
+msgid "The estimated LP token shares you will receive after adding liquidity."
+msgstr "The estimated LP token shares you will receive after adding liquidity."
+
+#. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "The market will activate immediately once total liquidity reaches ${0}."
+msgstr "The market will activate immediately once total liquidity reaches ${0}."
+
+#: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
+#: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
+msgid "The maximum number of positions you are allowed to open, determined by factors such as your slippage settings and current market liquidity."
+msgstr "The maximum number of positions you are allowed to open, determined by factors such as your slippage settings and current market liquidity."
 
 #: src/components/Footer/index.tsx
+#: src/pages/Home/components/Banner/index.tsx
 msgid "The New Species of Perpetual DEX"
 msgstr "The New Species of Perpetual DEX"
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/404.tsx
+msgid "The page you are trying to view is temporarily unavailable. Please try again later"
+msgstr "The page you are trying to view is temporarily unavailable. Please try again later"
+
+#: src/pages/Market/components/activeMarket.tsx
+msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
+msgstr "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
+
+#. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
+#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
+#. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol
+#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
+msgstr "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "To"
+msgstr "To"
+
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
+msgstr "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+msgid "Token Info"
+msgstr "Token Info"
+
+#: src/pages/Cook/components/CookSubBar.tsx
+msgid "Token Sniper"
+msgstr "Token Sniper"
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Top 10 Holders"
+msgstr "Top 10 Holders"
+
+#: src/pages/Earn/components/Dashboard.tsx
+msgid "Top APR"
+msgstr "Top APR"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "Total Amount"
+msgstr "Total Amount"
+
+#. placeholder {0}: symbolInfo?.quoteSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Total floating PnL for all {0} positions, based on oracle price."
+msgstr "Total floating PnL for all {0} positions, based on oracle price."
+
+#. placeholder {0}: symbolInfo?.quoteSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Total margin actively utilized by all open positions and pending orders in {0} markets."
+msgstr "Total margin actively utilized by all open positions and pending orders in {0} markets."
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Total PnL"
+msgstr "Total PnL"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Total Spot liq"
+msgstr "Total Spot liq"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Total supply"
+msgstr "Total supply"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "TP Est. PNL"
+msgstr "TP Est. PNL"
+
+#: src/utils/verify.ts
+msgid "TP price must be greater than entry price"
+msgstr "TP price must be greater than entry price"
+
+#: src/utils/verify.ts
+msgid "TP price must be less than entry price"
+msgstr "TP price must be less than entry price"
+
+#. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "TP({0})"
+msgstr "TP({0})"
+
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/TradePanel/TPSL/index.tsx
 msgid "TP/SL"
 msgstr ""
 
+#: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
+msgid "TP/SL Settings"
+msgstr "TP/SL Settings"
+
+#: src/components/Trade/Dialog/TPSL/index.tsx
+msgid "TP&SL"
+msgstr "TP&SL"
+
+#: src/components/Record/Items/OpenOrders.tsx
+msgid "TPSL"
+msgstr "TPSL"
+
 #: src/components/Footer/index.tsx
 #: src/components/Header/const.tsx
+#: src/components/Tabbar/const.tsx
+#: src/pages/Earn/detail/components/TabBar.tsx
 msgid "Trade"
 msgstr ""
 
+#: src/404.tsx
+msgid "Trade Now"
+msgstr "Trade Now"
+
+#: src/components/Trade/TradePanel/TokenInfo/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Price/components/InfoContent/TokenInfo.tsx
+msgid "Traders"
+msgstr "Traders"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "Trading Setting"
 msgstr "Trading Setting"
+
+#: src/pages/record/components/RecordTab.tsx
+msgid "Transaction History"
+msgstr "Transaction History"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Transfer"
+msgstr "Transfer"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Transfer Failed"
+msgstr "Transfer Failed"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Transfer Success"
+msgstr "Transfer Success"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "TransferFailed()"
+msgstr "TransferFailed()"
+
+#: src/pages/Cook/components/ToolBar.tsx
+msgid "Trench"
+msgstr "Trench"
+
+#: src/ErrorPage.tsx
+msgid "Try refreshing your browser"
+msgstr "Try refreshing your browser"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/List.tsx
+msgid "TVL"
+msgstr "TVL"
 
 #: src/components/Footer/index.tsx
 msgid "Twitter"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Unclaimed Fees"
+msgstr "Unclaimed Fees"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UnderflowOI()"
+msgstr "UnderflowOI()"
+
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+msgid "Underlying Price"
+msgstr "Underlying Price"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UnexpectedCaseState()"
+msgstr "UnexpectedCaseState()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UnexpectedPoolState()"
+msgstr "UnexpectedPoolState()"
+
+#: src/components/Record/Items/Position.tsx
 msgid "unPnl"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
 msgstr "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Unrealized PnL"
+msgstr "Unrealized PnL"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UnsupportedAssetClass(AssetClass)"
+msgstr "UnsupportedAssetClass(AssetClass)"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UnsupportedFeeTier(uint8)"
+msgstr "UnsupportedFeeTier(uint8)"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Used Margin"
+msgstr "Used Margin"
+
+#: src/components/ChangeModeDialog/index.tsx
+msgid "User who prefer classic DeFi UX"
+msgstr "User who prefer classic DeFi UX"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UUPSUnauthorizedCallContext()"
+msgstr "UUPSUnauthorizedCallContext()"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "UUPSUnsupportedProxiableUUID(bytes32)"
+msgstr "UUPSUnsupportedProxiableUUID(bytes32)"
+
+#: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Earn/List.tsx
+msgid "Vault"
+msgstr "Vault"
+
+#: src/pages/Earn/components/TabBar.tsx
+#: src/pages/Earn/List.tsx
+msgid "Vaults"
+msgstr "Vaults"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Verify"
+msgstr "Verify"
+
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "VerifyPriceFailed()"
+msgstr "VerifyPriceFailed()"
+
+#: src/pages/Home/components/ExpressMenu/const.tsx
+msgid "VIP"
+msgstr "VIP"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "VIP Redeem Code"
 msgstr ""
 
+#: src/pages/Earn/components/Dashboard.tsx
+msgid "Volatility Rating"
+msgstr "Volatility Rating"
+
+#: src/pages/rank/components/Tabs/index.tsx
+msgid "Volume"
+msgstr "Volume"
+
+#: src/components/AccountDialog/index.tsx
+#: src/components/Login/MorePage.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Wallet"
+msgstr "Wallet"
+
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Wallet Balance"
+msgstr "Wallet Balance"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Wallet connection"
+msgstr "Wallet connection"
+
+#: src/components/CookDetail/Charts/index.tsx
+#: src/pages/Earn/components/Chart.tsx
+msgid "Week"
+msgstr "Week"
+
 #: src/components/NoticeTeaching/index.tsx
 msgid "Welcome to MYX! This is a placeholder for the beginner's guide."
 msgstr "Welcome to MYX! This is a placeholder for the beginner's guide."
 
-#: src/pages/Trade/components/Tables/Position.tsx
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "What are the risks?"
+msgstr "What are the risks?"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "What infomation am i signing?"
+msgstr "What infomation am i signing?"
+
+#. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#: src/pages/Earn/detail/components/Introduction.tsx
+msgid "What is the {0} Vault?"
+msgstr "What is the {0} Vault?"
+
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "When checked, the system will only redeem your regular LP shares."
+msgstr "When checked, the system will only redeem your regular LP shares."
+
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Whitelist"
+msgstr "Whitelist"
+
+#. placeholder {0}: symbolInfo?.baseSymbol ?? ''
+#: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
+#: src/components/Trade/TradePanel/MarginAccount/index.tsx
+msgid "Withdrawable {0}"
+msgstr "Withdrawable {0}"
+
+#: src/utils/index.ts
+msgid "Y"
+msgstr "Y"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/components/SafeList/index.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+msgid "Yes"
+msgstr "Yes"
+
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "You Will Receive"
+msgstr "You Will Receive"
+
+#: src/components/ChangeModeDialog/index.tsx
+#: src/components/ChangeModeDialog/index.tsx
+msgid "Your Current Mode"
+msgstr "Your Current Mode"
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+#: src/components/Seamless/UnlockAccountDialog/index.tsx
+msgid "Your Password"
+msgstr "Your Password"
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
 msgstr "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
 
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/CookList/index.tsx
+#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
+#: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
+msgid "交易对"
+msgstr "交易对"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+#: src/pages/Trade/components/TradeFlowDetail/index.tsx
+msgid "交易手续费"
+msgstr "交易手续费"
+
+#: src/components/Trade/Dialog/Slippage/index.tsx
+msgid "交易滑点设置"
+msgstr "交易滑点设置"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "从保证金账户"
+msgstr "从保证金账户"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "从钱包"
+msgstr "从钱包"
+
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "保留创世LP份额"
+msgstr "保留创世LP份额"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+#: src/pages/Trade/components/TradeFlowDetail/index.tsx
+msgid "保证金"
+msgstr "保证金"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+msgid "修改"
+msgstr "修改"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
+
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "全部撤单"
+msgstr "全部撤单"
 
 #: src/store/transactions/options.ts
 msgid "全部撤销"
 msgstr "Cancel All Orders"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "其他"
 msgstr "Other"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
+msgid "最大滑点"
+msgstr "最大滑点"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/CookList/index.tsx
+#: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
+msgid "最新价/24h涨跌幅"
+msgstr "最新价/24h涨跌幅"
+
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "减少保证金"
+msgstr "减少保证金"
 
 #: src/store/transactions/options.ts
 msgid "出售MLP"
 msgstr "Sell MLP"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+msgid "删除"
+msgstr "删除"
+
+#: src/components/InfiniteScrollView.tsx
+msgid "加载中..."
+msgstr "加载中..."
+
+#: src/components/DialogBase/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/Slippage/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "取消"
+msgstr "取消"
 
 #: src/store/transactions/options.ts
 msgid "取消平仓"
@@ -461,11 +3380,28 @@ msgstr "Cancel SL"
 msgid "取消止盈"
 msgstr "Cancel TP"
 
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "取消订单"
+msgstr "取消订单"
+
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+msgid "可平数量"
+msgstr "可平数量"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "合约"
+msgstr "合约"
+
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
 msgid "哈希"
 msgstr "Hash"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "基础设置"
 msgstr "Basic Settings"
 
@@ -473,58 +3409,363 @@ msgstr "Basic Settings"
 msgid "增加保证金"
 msgstr "Increase Margin"
 
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "委托价格"
+msgstr "委托价格"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "委托数量"
+msgstr "委托数量"
+
+#: src/components/InfiniteScrollView.tsx
+msgid "已全部加载完毕"
+msgstr "已全部加载完毕"
+
+#: src/pages/Trade/components/TradeFlowDetail/index.tsx
+msgid "已实现盈亏"
+msgstr "已实现盈亏"
+
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+msgid "市价买入/开多"
+msgstr "市价买入/开多"
+
+#: src/pages/Trade/components/OrderType/index.tsx
+msgid "市价平仓"
+msgstr "市价平仓"
+
+#: src/pages/Trade/components/OrderType/index.tsx
+msgid "市价开仓"
+msgstr "市价开仓"
+
+#: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+msgid "市价止损"
+msgstr "市价止损"
+
+#: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
+msgid "市价止盈"
+msgstr "市价止盈"
+
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "市场关闭"
+msgstr "市场关闭"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "市场平仓"
+msgstr "市场平仓"
+
+#: src/components/Record/Items/Finance.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "平仓"
 msgstr "Close"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "平仓二次确认"
 msgstr "平仓二次确认"
 
+#: src/components/Trade/Dialog/Slippage/index.tsx
+msgid "平仓滑点设置"
+msgstr "平仓滑点设置"
+
+#: src/components/Record/Items/Finance.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "开仓"
 msgstr "Open"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "开仓二次确认"
 msgstr "开仓二次确认"
+
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/PriceInfo.tsx
+#: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
+msgid "开仓价格"
+msgstr "开仓价格"
+
+#: src/components/Trade/Dialog/Slippage/index.tsx
+msgid "开仓滑点设置"
+msgstr "开仓滑点设置"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "强制平仓"
+msgstr "强制平仓"
+
+#: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
+msgid "强制止盈价"
+msgstr "强制止盈价"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "强平价"
+msgstr "强平价"
+
+#. placeholder {0}: type === 'tp' ? formatNumber(tpSize) : formatNumber(slSize)
+#. placeholder {1}: order?.baseSymbol ?? ''
+#. placeholder {1}: position?.baseSymbol ?? ''
+#. placeholder {2}: formatNumber(totalPnl)
+#. placeholder {3}: order?.quoteSymbol ?? ''
+#. placeholder {3}: position?.quoteSymbol ?? ''
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
+msgid "当最新价格 <0>{displayTargetPrice}</0> 时，将以市价平仓, 数量{0} {1},预期收益<1>{2} {3}</1>"
+msgstr "当最新价格 <0>{displayTargetPrice}</0> 时，将以市价平仓, 数量{0} {1},预期收益<1>{2} {3}</1>"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/PriceInfo.tsx
+#: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
+msgid "当前价格"
+msgstr "当前价格"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "当前市场最大可开做多仓位"
+msgstr "当前市场最大可开做多仓位"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "当前市场最大可开做空仓位"
+msgstr "当前市场最大可开做空仓位"
+
+#: src/pages/Cook/components/Token.tsx
+msgid "待上架"
+msgstr "待上架"
+
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+msgid "成交数量"
+msgstr "成交数量"
+
+#: src/pages/Trade/components/TradeFlowDetail/index.tsx
+msgid "执行费"
+msgstr "执行费"
+
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "按价格排序"
+msgstr "按价格排序"
+
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "按委托时间排序"
+msgstr "按委托时间排序"
+
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "按盈亏排序"
+msgstr "按盈亏排序"
 
 #: src/store/transactions/options.ts
 msgid "授权"
 msgstr "Authorize"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "提前平仓"
+msgstr "提前平仓"
+
 #: src/store/transactions/options.ts
 msgid "提取保证金"
 msgstr "Withdraw Margin"
 
+#: src/components/Dialog/DialogTokenSelect.tsx
+msgid "搜索结果"
+msgstr "搜索结果"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "数据"
 msgstr "数据"
 
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+msgid "数量"
+msgstr "数量"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "文档"
 msgstr "文档"
 
+#: src/pages/Trade/components/Tables/Finance.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
+msgid "时间"
+msgstr "时间"
+
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "暂停中"
+msgstr "暂停中"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "本合约市场上所有多头头寸的总和，反映了市场上投资者的看涨信心"
+msgstr "本合约市场上所有多头头寸的总和，反映了市场上投资者的看涨信心"
+
+#: src/components/Trade/TradePanel/PoolsInfo/index.tsx
+#: src/pages/Price/components/PoolContent/index.tsx
+msgid "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
+msgstr "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
+
+#. placeholder {0}: searchResult.contractInfo?.total || '0'
+#. placeholder {0}: searchResult.cookInfo?.total || '0'
+#. placeholder {0}: searchResult.earnInfo?.total || '0'
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+msgid "查看所有结果({0})"
+msgstr "查看所有结果({0})"
+
+#: src/pages/rank/index.tsx
+msgid "榜单"
+msgstr "榜单"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+msgid "止损-最新"
+msgstr "止损-最新"
+
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+#: src/pages/Trade/components/OrderType/index.tsx
+#: src/pages/Trade/components/OrderType/index.tsx
 #: src/store/transactions/options.ts
 msgid "止盈止损"
 msgstr "TP/SL"
+
+#: src/components/Trade/Dialog/Slippage/index.tsx
+msgid "止盈止损滑点"
+msgstr "止盈止损滑点"
+
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "添加保证金"
+msgstr "添加保证金"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+msgid "滑点"
+msgstr "滑点"
+
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "爆仓"
+msgstr "爆仓"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "状态"
 msgstr "Status"
 
-#: src/pages/Market/components/create.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
+msgid "确定"
+msgstr "确定"
+
+#: src/components/DialogBase/index.tsx
+#: src/components/Trade/Dialog/Slippage/index.tsx
+msgid "确认"
+msgstr "确认"
+
+#: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "立即创建我的合约交易市场"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+#: src/pages/Trade/components/Tables/Finance.tsx
+#: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "类型"
 msgstr "Type"
+
+#: src/components/Trade/CurrentMarket/MarketInfo.tsx
+msgid "结算时，多空之间需要支付的资金费，当费率为正时，多头向空头付费；当费率为负时，空头向多头付费。"
+msgstr "结算时，多空之间需要支付的资金费，当费率为正时，多头向空头付费；当费率为负时，空头向多头付费。"
+
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "自动{defaultValue}%"
+msgstr "自动{defaultValue}%"
+
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+#: src/components/Trade/CurrentMarket/SymbolInfo.tsx
+msgid "蓝筹"
+msgstr "蓝筹"
+
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+#: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+msgid "触发价格"
+msgstr "触发价格"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
 msgstr "Buy MLP"
 
+#: src/pages/Trade/components/Tables/Finance.tsx
+msgid "资金流水"
+msgstr "资金流水"
+
+#: src/pages/Trade/components/TradeFlowDetail/index.tsx
+msgid "资金费"
+msgstr "资金费"
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "选择合约计价资产"
+msgstr "选择合约计价资产"
+
+#: src/pages/Market/components/TokenSelect.tsx
+msgid "选择您的资产"
+msgstr "选择您的资产"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "通用滑点容忍设置"
 msgstr "通用滑点容忍设置"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/pages/Trade/components/Tables/PositionHistory.tsx
+msgid "部分平仓"
+msgstr "部分平仓"
+
+#: src/pages/Trade/components/OrderType/index.tsx
+msgid "限价平仓"
+msgstr "限价平仓"
+
+#: src/pages/Trade/components/OrderType/index.tsx
+msgid "限价开仓"
+msgstr "限价开仓"
+
+#: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
+msgid "预估强平价"
+msgstr "预估强平价"
+
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+msgid "预计滑点"
+msgstr "预计滑点"
+
+#: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
+msgid "预计盈亏"
+msgstr "预计盈亏"
+
+#: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
+msgid "领取全部收益"
+msgstr "领取全部收益"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+msgid "领取收益"
+msgstr "领取收益"
