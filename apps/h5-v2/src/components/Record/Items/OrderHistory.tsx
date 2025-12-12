@@ -1,10 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { Tag } from '@/components/Tag/index'
-import { Share } from '@/components/Icon'
-import { InfoButton } from '@/components/UI/Button'
 import { formatNumber } from '@/utils/number'
-import { RiseFallText } from '@/components/RiseFallText'
-import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import dayjs from 'dayjs'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import {
@@ -14,16 +10,37 @@ import {
 } from '@myx-trade/sdk'
 import { t } from '@lingui/core/macro'
 import { OrderType } from '@/pages/Trade/components/OrderType'
+import { useMemo } from 'react'
+import { getChainInfo } from '@/config/chainInfo'
+import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
+import { PairLogo } from '@/components/UI/PairLogo'
 
 export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
-  const symbol =
-    !item.baseSymbol || !item.quoteSymbol ? '--' : `${item.baseSymbol}/${item.quoteSymbol}`
+  const symbolInfo = usePoolSymbol({
+    chainId: item.chainId,
+    poolId: item.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!item.chainId) return null
+    return getChainInfo(item.chainId)
+  }, [item.chainId])
   return (
     <div className="w-full border-b border-[#202129] px-[16px] py-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[14px] font-medium text-white">{symbol}</p>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={symbolInfo?.baseTokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <p className="text-[14px] font-medium text-white">
+              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+            </p>
+          </div>
           <div className="mt-[4px] flex gap-[4px]">
             <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>
               <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>

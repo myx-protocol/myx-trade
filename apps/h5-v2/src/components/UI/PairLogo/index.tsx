@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { CoinIcon } from '../CoinIcon'
 
 interface PairLogoProps {
@@ -7,6 +8,8 @@ interface PairLogoProps {
   quoteLogoSize?: number
   baseSymbol?: string
   quoteSymbol?: string
+  quoteClassName?: string
+  baseClassName?: string
 }
 
 export const PairLogo = ({
@@ -16,13 +19,20 @@ export const PairLogo = ({
   quoteLogo,
   baseLogoSize = 24,
   quoteLogoSize = 12,
+  quoteClassName,
+  baseClassName,
 }: PairLogoProps) => {
   return (
     <div className="flex items-end justify-center">
-      <CoinIcon icon={baseLogo || ''} size={baseLogoSize} className="z-1" symbol={baseSymbol} />
+      <CoinIcon
+        icon={baseLogo || ''}
+        size={baseLogoSize}
+        className={clsx(`z-[1]`, baseClassName)}
+        symbol={baseSymbol}
+      />
       <CoinIcon
         icon={quoteLogo || ''}
-        className="z-2"
+        className={clsx(`z-[2]`, quoteClassName)}
         size={quoteLogoSize}
         style={{ marginLeft: `-${quoteLogoSize / 2}px` }}
         symbol={quoteSymbol}
