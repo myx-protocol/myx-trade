@@ -16,14 +16,24 @@ import type { TradeFlowItem } from '@myx-trade/sdk'
 import { t } from '@lingui/core/macro'
 import { TradeFlowTypeEnum } from '@myx-trade/sdk'
 import Big from 'big.js'
+import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
+import { getChainInfo } from '@/config/chainInfo'
+import { PairLogo } from '@/components/UI/PairLogo'
 
 export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
   const [open, setOpen] = useState(false)
-
+  const symbolInfo = usePoolSymbol({
+    chainId: item.chainId,
+    poolId: item.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!item.chainId) return null
+    return getChainInfo(item.chainId)
+  }, [item.chainId])
   const amountBig = useMemo(
     () =>
       Big(item.collateralAmount || '0')
-        .add(item.realizedPnl || '0')
+        .add(item.quotePnl || '0')
         .add(item.fundingFee || '0')
         .add(item.executionFee || '0')
         .add(item.tradingFee || '0'),
@@ -38,9 +48,18 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
       >
         {/* symbol info */}
         <div>
-          <p className="text-[14px] font-medium text-white">
-            {item.baseSymbol}/{item.quoteSymbol}
-          </p>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={symbolInfo?.baseTokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <p className="text-[14px] font-medium text-white">
+              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+            </p>
+          </div>
           <div className="mt-[4px] flex items-center gap-[4px]">
             <Tag type="success">
               <Trans>{item.type === TradeFlowTypeEnum.Increase ? t`开仓` : t`平仓`}</Trans>
@@ -58,7 +77,7 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
               showSign: true,
               showUnit: false,
             })}
-            <span className="ml-[2px]">{item.quoteSymbol}</span>
+            <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
           </p>
           {/* pnl */}
           <div className="flex items-center">
@@ -67,12 +86,12 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
             </span>
             <p className="mr-[2px] ml-[8px]">
               <RiseFallText
-                value={item.realizedPnl}
+                value={item.quotePnl}
                 renderOptions={{
                   showUnit: false,
                   showSign: true,
                 }}
-                suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
               />
             </p>
             <span role="button" className="shrink-0">
@@ -101,7 +120,7 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
                     showUnit: false,
                     showSign: true,
                   }}
-                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                  suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
                 />
               </p>
             }
@@ -116,7 +135,7 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
                     showUnit: false,
                     showSign: true,
                   }}
-                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                  suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
                 />
               </p>
             }
@@ -131,7 +150,7 @@ export const FinanceItem = ({ item }: { item: TradeFlowItem }) => {
                     showUnit: false,
                     showSign: true,
                   }}
-                  suffix={<span className="ml-[2px]">{item.quoteSymbol}</span>}
+                  suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
                 />
               </p>
             }

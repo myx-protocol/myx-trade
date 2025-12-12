@@ -15,6 +15,11 @@ import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { ClosePositionButton } from './components/ClosePositionButton'
 import { AdjustMarginDialog } from '@/components/Trade/Dialog/AdjustMargin'
 import { TpSlButton } from '@/components/Trade/Dialog/TPSL'
+import { usePoolInfo } from '@/components/Trade/hooks/usePoolInfo'
+import { PairLogo } from '@/components/UI/PairLogo'
+import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
+import { getChainInfo } from '@/config/chainInfo'
+import { useMemo } from 'react'
 
 export const PositionItem = ({
   position,
@@ -86,14 +91,33 @@ export const PositionItem = ({
 
   const ratio = originalCollateralRatio.div(currentCollateral).mul(100).toFixed(2) ?? '0'
 
+  const symbolInfo = usePoolSymbol({
+    chainId: position.chainId,
+    poolId: position.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!position.chainId) return null
+    return getChainInfo(position.chainId)
+  }, [position.chainId])
+
   return (
     <div className="w-full border-b border-[#202129] px-[16px] py-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[16px] font-semibold text-white">
-            {position.baseSymbol}/{position.quoteSymbol}
-          </p>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={symbolInfo?.baseTokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <p className="text-[16px] font-semibold text-white">
+              {position.baseSymbol}/{position.quoteSymbol}
+            </p>
+          </div>
+
           <div className="mt-[4px] flex gap-[4px]">
             <Tag type="success">
               <Trans>{position.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>

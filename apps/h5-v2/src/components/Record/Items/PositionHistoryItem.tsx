@@ -10,6 +10,10 @@ import {
 } from '@myx-trade/sdk'
 import { t } from '@lingui/core/macro'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import { getChainInfo } from '@/config/chainInfo'
+import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
+import { PairLogo } from '@/components/UI/PairLogo'
 
 const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
   [CloseTypeEnum.PartialClose]: () => t`部分平仓`,
@@ -20,14 +24,31 @@ const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
 }
 
 export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType }) => {
+  const symbolInfo = usePoolSymbol({
+    chainId: item.chainId,
+    poolId: item.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!item.chainId) return null
+    return getChainInfo(item.chainId)
+  }, [item.chainId])
   return (
     <div className="w-full border-b border-[#202129] px-[16px] pt-[16px] pb-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[14px] font-medium text-white">
-            {item.baseSymbol}/{item.quoteSymbol}
-          </p>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={symbolInfo?.baseTokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <p className="text-[14px] font-medium text-white">
+              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+            </p>
+          </div>
           <div className="mt-[4px] flex gap-[4px]">
             <Tag type="success">
               <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>

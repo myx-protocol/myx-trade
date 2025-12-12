@@ -6,16 +6,37 @@ import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import { DirectionEnum, OrderTypeEnum } from '@myx-trade/sdk'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import { getChainInfo } from '@/config/chainInfo'
+import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
+import { PairLogo } from '@/components/UI/PairLogo'
 
 export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
+  const symbolInfo = usePoolSymbol({
+    chainId: order.chainId,
+    poolId: order.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!order.chainId) return null
+    return getChainInfo(order.chainId)
+  }, [order.chainId])
   return (
     <div className="w-full border-b border-[#202129] px-[16px] py-[20px]">
       <div className="flex items-center justify-between">
         {/* symbol info */}
         <div>
-          <p className="text-[16px] font-semibold text-white">
-            {order.baseSymbol}/{order.quoteSymbol}
-          </p>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={symbolInfo?.baseTokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <p className="text-[14px] font-medium text-white">
+              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+            </p>
+          </div>
           <div className="mt-[4px] flex gap-[4px]">
             <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
               {order.direction === DirectionEnum.Long ? <Trans>Long</Trans> : <Trans>Short</Trans>}
