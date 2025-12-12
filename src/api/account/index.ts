@@ -31,6 +31,12 @@ export enum TradeFlowTypeEnum {
   Liquidation = 6,
   MarketClose = 7,
   EarlyClose = 8,
+  AddTPSL = 9,
+  SecurityDeposit = 10,
+  TransferToWallet = 11,
+  MarginAccountDeposit = 12,
+  ReferralReward = 13,
+  ReferralRewardClaim = 14,
 }
 
 export enum TriggerTypeEnum {
@@ -168,22 +174,32 @@ export const getPositionHistory = async ({
 /**
  * Get Trade Flow
  */
+export enum TradeFlowAccountTypeEnum {
+  MarginAccount = 1,
+  WalletAccount = 2,
+  ReferralReward = 3,
+}
 export interface TradeFlowItem {
   chainId: number;
   orderId: number;
   user: Address;
   poolId: string;
-  realizedPnl: string;
   fundingFee: string;
   tradingFee: string;
   charge: string;
   collateralAmount: string;
   txHash: string;
   txTime: number;
-  baseSymbol: string; // base symbol
-  quoteSymbol: string; // quote symbol
-  executionFee: string; // execution fee
   type: TradeFlowTypeEnum; // operation type
+  accountType: TradeFlowAccountTypeEnum; // account type
+  executionFee: string; // execution fee type=9(use execution fee)
+  seamlessFee: string; // seamless fee
+  seamlessFeeSymbol: string; // seamless fee symbol
+  basePnl: string; // base pnl
+  quotePnl: string; // quote pnl
+  referrerRebate: string; // referrer rebate(type=13)
+  referralRebate: string; // referral rebate(type=13)
+  rebateClaimedAmount: string; // rebate claimed amount(type=14)
 }
 export const getTradeFlow = async ({
   accessToken,
