@@ -42,7 +42,7 @@ export const List = () => {
       } else {
         result = await client?.markets.searchMarket(params)
       }
-      return resultwww
+      return result
     },
   })
   const navigate = useNavigate()
