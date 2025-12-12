@@ -15,7 +15,8 @@ import { Slippage } from './Slippage'
 // import { TokenInfo } from './TokenInfo'
 // import { CollapseGroup } from '../components/Collapse/CollapseGroup'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
-import { useEffect, useMemo } from 'react'
+import menuIcon from '@/assets/icon/menu.png'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DEFAULT_SLIPPAGE_LEVEL_1,
   DEFAULT_SLIPPAGE_LEVEL_2,
@@ -37,6 +38,9 @@ import { Tables } from '@/pages/Trade/components/Tables'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { Price } from '@/components/Price'
 import useGlobalStore from '@/store/globalStore'
+import { SettingDrawer } from '@/components/SettingDrawer'
+import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
+import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
 
 const getSlippageConfig = (level: number) => {
   if (level === 1) {
@@ -57,8 +61,10 @@ export const TradePanel = () => {
     symbolInfo?.poolId as string,
     symbolInfo?.chainId as number,
   )
+  const [settingDialogOpen, setSettingDialogOpen] = useState(false)
   const { receiveDialogOpen } = useTradePanelStore()
-  const { setAccountDialogOpen } = useGlobalStore()
+  const { setAccountDialogOpen, placeOrderConfirmDialogOpen, closeOrderConfirmDialogOpen } =
+    useGlobalStore()
 
   const { address } = useWalletConnection()
   const { tickerData } = useMarketStore()
@@ -121,8 +127,16 @@ export const TradePanel = () => {
     <div className="w-full py-[16px]">
       <div className="px-[16px]">
         <div className="flex w-full items-center justify-between">
-          <div>
-            <span className="text-[20px] font-[700] font-medium">
+          <div className="flex items-center gap-[4px]">
+            <img
+              src={menuIcon}
+              alt=""
+              className="h-[20px] w-[20px]"
+              onClick={() => {
+                setSettingDialogOpen(true)
+              }}
+            />
+            <span className="ml-[4px] text-[20px] font-[700] font-medium">
               {symbolInfo?.baseSymbol}
               {symbolInfo?.quoteSymbol}
             </span>
@@ -181,6 +195,11 @@ export const TradePanel = () => {
         <Tables />
       </div>
       {receiveDialogOpen && <ReceiveDialog />}
+      {settingDialogOpen && (
+        <SettingDrawer open={settingDialogOpen} onOpenChange={setSettingDialogOpen} />
+      )}
+      {closeOrderConfirmDialogOpen && <CloseConfirmDialog />}
+      {placeOrderConfirmDialogOpen && <PlaceOrderConfirmDialog />}
     </div>
   )
 }
