@@ -17,9 +17,11 @@ import { useUpdateEffect } from 'ahooks'
 import { Mode, type PoolInfo } from '../type'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import { parseUnits } from 'ethers'
+import { useGenesisFeeRate } from '@/hooks/lp/useGenesisFeeRate.ts'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
+  const genesisFeeRate = useGenesisFeeRate(chainId, poolId)
   const { client } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
 
@@ -50,11 +52,11 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
   // })
 
   const { data: poolInfo } = useQuery({
-    queryKey: [{ key: 'getBasePoolExchangeRate' }, poolId, chainId, tickerData?.price],
-    enabled: !!poolId && !!chainId && !!tickerData?.price,
+    queryKey: [{ key: 'getBasePoolExchangeRate' }, poolId, chainId],
+    enabled: !!poolId && !!chainId,
     queryFn: async () => {
       console.log(poolId, tickerData?.price)
-      if (!poolId || !chainId || !tickerData?.price) {
+      if (!poolId || !chainId) {
         console.error('poolId must be a positive integer')
         return {} as PoolInfo
       }
@@ -62,7 +64,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
       const result = await Pool.getPoolInfo(
         +chainId,
         poolId,
-        parseUnits(tickerData?.price, COMMON_PRICE_DECIMALS),
+        parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
       )
 
       if (result) {
@@ -101,22 +103,6 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         return response.data
       }
       return {} as BaseLpDetail
-    },
-  })
-
-  const { data: genesisFeeRate } = useQuery({
-    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
-    enabled: !!poolId && !!chainId,
-    queryFn: async () => {
-      console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return ''
-      try {
-        const result = await getPoolRiskLevelConfig(poolId, +chainId)
-
-        return result?.data?.levelConfig?.genesisFeeRate as string
-      } catch (error) {
-        return ''
-      }
     },
   })
 

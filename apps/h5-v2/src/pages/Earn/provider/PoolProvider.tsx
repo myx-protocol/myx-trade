@@ -16,9 +16,12 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import { useUpdateEffect } from 'ahooks'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription.ts'
+import { useGenesisFeeRate } from '@/hooks/lp/useGenesisFeeRate.ts'
+import type { ChainId } from '@/config/chain.ts'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
+  const genesisFeeRate = useGenesisFeeRate(chainId, poolId)
   const { client } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
@@ -65,18 +68,18 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
   })*/
 
   const { data: poolInfo } = useQuery({
-    queryKey: [{ key: 'getBasePoolExchangeRate' }, poolId, chainId, tickerData?.price],
-    enabled: !!poolId && !!chainId && !!tickerData?.price,
+    queryKey: [{ key: 'getBasePoolExchangeRate' }, poolId, chainId],
+    enabled: !!poolId && !!chainId,
     queryFn: async () => {
       console.log(poolId, tickerData?.price)
-      if (!poolId || !chainId || !tickerData?.price) {
+      if (!poolId || !chainId) {
         console.error('poolId must be a positive integer')
         return {} as PoolInfo
       }
       const result = await Pool.getPoolInfo(
         +chainId,
         poolId,
-        parseUnits(tickerData?.price, COMMON_PRICE_DECIMALS),
+        parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
       )
       if (result) {
         const info = {
@@ -93,22 +96,6 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
       return {} as PoolInfo
     },
     placeholderData: (prev) => prev, // ⭐ v5 推荐写法
-  })
-
-  const { data: genesisFeeRate } = useQuery({
-    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
-    enabled: !!poolId && !!chainId,
-    queryFn: async () => {
-      console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return ''
-      try {
-        const result = await getPoolRiskLevelConfig(poolId, +chainId)
-
-        return result?.data?.levelConfig?.genesisFeeRate as string
-      } catch (error) {
-        return ''
-      }
-    },
   })
 
   useUpdateEffect(() => {
