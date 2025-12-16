@@ -112,7 +112,7 @@ export const AccountDialog = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[74px] flex flex-col items-center gap-[10px]">
+      <div className="mt-[74px] flex flex-col items-center gap-[10px] px-[16px]">
         <PrimaryButton
           className="w-full"
           style={{ height: '44px', borderRadius: '44px' }}

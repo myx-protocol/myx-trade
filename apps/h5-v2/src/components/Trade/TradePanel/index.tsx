@@ -136,11 +136,7 @@ export const TradePanel = () => {
               alt=""
               className="h-[20px] w-[20px]"
               onClick={() => {
-                if (address) {
-                  setSettingDialogOpen(true)
-                  return
-                }
-                setLoginModalOpen(true)
+                setSettingDialogOpen(true)
               }}
             />
             <span className="ml-[4px] text-[20px] font-[700] font-medium">
@@ -151,7 +147,12 @@ export const TradePanel = () => {
           <div
             className="flex items-center gap-[4px]"
             onClick={() => {
-              setAccountDialogOpen(true)
+              if (address) {
+                setAccountDialogOpen(true)
+                return
+              }
+
+              setLoginModalOpen(true)
             }}
           >
             {symbolInfo?.chainId && (
