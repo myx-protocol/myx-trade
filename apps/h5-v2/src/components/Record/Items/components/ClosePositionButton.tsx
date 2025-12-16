@@ -18,7 +18,7 @@ import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPri
 import { TradeSelect } from '@/components/Trade/components/Select'
 import { AmountUnitEnum } from '@/components/Trade/type'
 import clsx from 'clsx'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -107,7 +107,8 @@ export const ClosePositionButton = ({
   const { address } = useWalletConnection()
   const closeAmount = formatNumber(position.size ?? '0', { showUnit: false }) ?? '0'
   const [amountUnit, setAmountUnit] = useState<AmountUnitEnum>(AmountUnitEnum.BASE)
-  const { poolList } = useGetPoolList()
+
+  const { poolList } = useGlobalStore()
 
   // 当 Dialog 打开时，重置为默认值
   useEffect(() => {
@@ -518,7 +519,7 @@ export const ClosePositionButton = ({
                     ? amount
                     : parseBigNumber(amount).div(parseBigNumber(price)).toString()
 
-                const rs = await client?.order.createDecreaseOrder({
+                const data = {
                   chainId: position.chainId,
                   address: address as `0x${string}`,
                   poolId: position.poolId,
@@ -534,9 +535,11 @@ export const ClosePositionButton = ({
                   slippagePct: ethers
                     .parseUnits((closePositionSlippage ?? 0).toString(), 4)
                     .toString(), // 转换为精度4位
-                  executionFeeToken: symbolInfo?.quoteToken as string,
+                  executionFeeToken: pool?.quoteToken as string,
                   leverage: position.userLeverage,
-                })
+                } as any
+
+                const rs = await client?.order.createDecreaseOrder(data)
                 if (rs?.code === 0) {
                   console.log('market close success')
                   toast.success({ title: t`Market close success` })

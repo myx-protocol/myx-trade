@@ -2,11 +2,11 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '../wallet/useWalletConnection'
 import useSWR from 'swr'
 import { type ChainId } from '@myx-trade/sdk'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import { useMemo } from 'react'
 import { ethers } from 'ethers'
 import { parseBigNumber } from '@/utils/bn'
 import { useGetOrderList } from '../order/use-get-order-list'
+import useGlobalStore from '@/store/globalStore'
 
 type AccountAssets = {
   availableMargin: string
@@ -23,7 +23,7 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient(chainId)
   const orderList = useGetOrderList(true)
   const { address } = useWalletConnection()
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
   const pool = useMemo(() => {
     return poolList.find((item: any) => item.poolId === poolId)
   }, [poolList, poolId])

@@ -7,7 +7,6 @@ import { LoginModal } from './components/Login/LoginModal'
 import { MorePage } from './components/Login/MorePage'
 import { Toaster } from './components/UI/Toast/Toaster'
 import useGlobalStore from './store/globalStore'
-import { ChangeModeDialog } from './components/ChangeModeDialog'
 import { UnlockAccountDialog } from './components/Seamless/UnlockAccountDialog'
 import { SetPasswordDialog } from './components/Seamless/SetPasswordDialog'
 import { ImportDialog } from './components/Seamless/ImportDialog'
@@ -15,12 +14,15 @@ import { ExportInfoDialog } from './components/Seamless/ExportInfoDialog'
 import { ExportDialog } from './components/Seamless/ExportDialog'
 import { useUpdateEffect } from 'ahooks'
 import { CancelAllOrdersDialog } from './pages/Trade/components/CancelAllOrdersDialog'
+import { useEffect } from 'react'
+import { getPools } from './api'
 
 function App() {
   const { closeAllPositionDialogOpen } = usePositionStore()
   const { loginModalOpen, moreLoginDrawerOpen } = useWalletStore()
-  const { changeModeDialogOpen } = useGlobalStore()
   const {
+    poolList,
+    setPoolList,
     unlockAccountDialogOpen,
     seamlessPasswordDialogOpen,
     importSeamlessKeyDialogOpen,
@@ -43,13 +45,20 @@ function App() {
       window.removeEventListener('resize', handleResize)
     }
   })
+
+  useEffect(() => {
+    getPools().then((res) => {
+      const pools = res?.data ?? []
+      setPoolList(pools)
+    })
+  }, [])
+
   return (
     <>
       <RouterProvider router={router} />
       {closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {loginModalOpen && <LoginModal />}
       {moreLoginDrawerOpen && <MorePage />}
-      {changeModeDialogOpen && <ChangeModeDialog />}
       {unlockAccountDialogOpen && <UnlockAccountDialog />}
       {seamlessPasswordDialogOpen && <SetPasswordDialog />}
       {importSeamlessKeyDialogOpen && <ImportDialog />}

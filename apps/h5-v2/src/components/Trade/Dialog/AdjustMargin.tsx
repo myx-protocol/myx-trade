@@ -16,7 +16,6 @@ import usdtIcon from '@/assets/icon/chainIcon/usdt.svg'
 import { displayAmount, formatNumber } from '@/utils/number'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
-import { useGetPoolList } from '../hooks/use-get-pool-list'
 import { useGetFundingFee } from '@/hooks/calculate/use-get-fundingfee'
 import useSWR from 'swr'
 import { useCalculateLiqPrice } from '@/hooks/calculate/use-get-liq-price'
@@ -25,6 +24,7 @@ import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useGetTradingFeeInfo } from '@/hooks/calculate/use-get-trading-fee'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
+import useGlobalStore from '@/store/globalStore'
 
 function AdjustMarginSelect({
   adjustType,
@@ -100,6 +100,7 @@ function AdjustMarginSelect({
 export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const [open, setOpen] = useState(false)
   const { tickerData } = useMarketStore()
+  const { poolList } = useGlobalStore()
   const [loading, setLoading] = useState(false)
   const accountAssets = useGetAccountAssets(position.chainId, position.poolId)
   const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
@@ -109,7 +110,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const maintainCollateralRate = poolConfig?.levelConfig?.maintainCollateralRate.toString() ?? '0'
   const [adjustMargin, setAdjustMargin] = useState('')
   const { client } = useMyxSdkClient(position.chainId)
-  const { poolList } = useGetPoolList()
   const [adjustType, setAdjustType] = useState<'increase' | 'decrease'>('increase')
   const tradingFee = useGetTradingFeeInfo({
     size: position.size,

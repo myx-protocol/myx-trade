@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 export const useGetPositionList = (filter: boolean = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
@@ -15,7 +15,7 @@ export const useGetPositionList = (filter: boolean = false) => {
   const { hideOthersSymbols } = usePositionStore()
   const { symbolInfo } = useTradePageStore()
   const { tickerData } = useMarketStore()
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
   const { subscribeToTicker } = useSubscription()
 
   const { data, mutate } = useSWR(
