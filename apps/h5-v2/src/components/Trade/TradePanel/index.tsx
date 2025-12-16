@@ -41,6 +41,7 @@ import useGlobalStore from '@/store/globalStore'
 import { SettingDrawer } from '@/components/SettingDrawer'
 import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
 import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
+import { useWalletStore } from '@/store/wallet/createStore'
 
 const getSlippageConfig = (level: number) => {
   if (level === 1) {
@@ -57,6 +58,8 @@ const getSlippageConfig = (level: number) => {
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
   const { symbolInfo } = useTradePageStore()
+  const { setLoginModalOpen } = useWalletStore()
+
   const { poolConfig } = useGetPoolConfig(
     symbolInfo?.poolId as string,
     symbolInfo?.chainId as number,
@@ -133,7 +136,11 @@ export const TradePanel = () => {
               alt=""
               className="h-[20px] w-[20px]"
               onClick={() => {
-                setSettingDialogOpen(true)
+                if (address) {
+                  setSettingDialogOpen(true)
+                  return
+                }
+                setLoginModalOpen(true)
               }}
             />
             <span className="ml-[4px] text-[20px] font-[700] font-medium">
