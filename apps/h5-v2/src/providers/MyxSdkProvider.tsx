@@ -125,8 +125,8 @@ export const useMyxSdkClient = (chainId?: number) => {
 }
 
 const brokerAddressMap: Record<number, string> = {
-  [ChainId.ARB_TESTNET]: '0xb07C8D6167ed8B58A7B37ac6f19D23bf17236900',
-  [ChainId.LINEA_SEPOLIA]: '0x793b37C3ea9e2059Fd47403d3879de8b9abd51fd',
+  [ChainId.ARB_TESTNET]: '0x23d9508812563313F5161aBaE68E175b73dBf28e',
+  [ChainId.LINEA_SEPOLIA]: '0x42528b8d863417209B4927B29f35a0ADF115900c',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
