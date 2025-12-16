@@ -51,6 +51,8 @@ interface GlobalStore {
   setCancelAllOrdersDialogOpen: (open: boolean) => void
   accountDialogOpen: boolean
   setAccountDialogOpen: (open: boolean) => void
+  poolList: any
+  setPoolList: (list: any) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -103,6 +105,8 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
               set({ cancelAllOrdersDialogOpen: open }),
             accountDialogOpen: false,
             setAccountDialogOpen: (open: boolean) => set({ accountDialogOpen: open }),
+            poolList: [],
+            setPoolList: (list: any[]) => set({ poolList: list }),
           }) as GlobalStore,
       ),
       {

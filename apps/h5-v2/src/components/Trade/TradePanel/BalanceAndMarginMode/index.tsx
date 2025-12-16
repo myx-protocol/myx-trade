@@ -12,7 +12,6 @@ import { DialogBase } from '@/components/UI/DialogBase'
 import { t } from '@lingui/core/macro'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useMarketStore } from '../../store/MarketStore'
-import { useGetPoolList } from '../../hooks/use-get-pool-list'
 import { parseBigNumber } from '@/utils/bn'
 import { DirectionEnum } from '@myx-trade/sdk'
 import { useBoolean } from 'ahooks'
@@ -20,6 +19,7 @@ import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { PrimaryButton } from '@/components/UI/Button'
 import { TransferDialogButton } from '../MarginAccount/TransferDialog'
+import useGlobalStore from '@/store/globalStore'
 
 const useCountdown = (targetTimestamp: number) => {
   const [remainingSeconds, setRemainingSeconds] = useState(0)
@@ -74,13 +74,13 @@ const useCountdown = (targetTimestamp: number) => {
 
 const AssetsDialogButton = () => {
   const [open, setOpen] = useState(false)
+  const { poolList } = useGlobalStore()
   const { symbolInfo } = useTradePageStore()
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
   const { setReceiveDialogOpen } = useTradePanelStore()
-  const [showBase, setShowBase] = useState(false)
-  const { poolList } = useGetPoolList()
+
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   const releaseTime = Number(accountAssets?.releaseTime ?? 0)
