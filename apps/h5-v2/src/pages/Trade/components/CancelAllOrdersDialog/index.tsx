@@ -14,7 +14,7 @@ export const CancelAllOrdersDialog = () => {
   const { selectChainId } = usePositionStore()
   const { client } = useMyxSdkClient(Number(selectChainId))
   const [loading, setLoading] = useState(false)
-  const { cancelAllOrdersDialogOpen, setCancelAllOrdersDialogOpen } = useGlobalStore()
+  const { cancelAllOrdersDialogOpen, setCancelAllOrdersDialogOpen } = usePositionStore()
   const orders = useGetOrderList()
 
   return (
