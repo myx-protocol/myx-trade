@@ -15,41 +15,58 @@ import useGlobalStore from '@/store/globalStore'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { t } from '@lingui/core/macro'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
+import { getSupportedChainIdsByEnv } from '@/config/chain'
 
-const TabButton = ({
-  activeTab,
-  onClick,
-  tabType,
-  children,
-}: {
-  activeTab: TabType
-  onClick: () => void
-  tabType: TabType
-  children: React.ReactNode
-}) => {
-  const isActive = activeTab === tabType
-  return (
-    <div
-      className="cursor-pointer text-[14px]"
-      style={{
-        color: isActive ? '#FFFFFF' : '#848E9C',
-        fontWeight: '500',
-        textShadow: isActive ? '0.3px 0 0 currentColor, -0.3px 0 0 currentColor' : 'none',
-      }}
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  )
-}
+// const TabButton = ({
+//   activeTab,
+//   onClick,
+//   tabType,
+//   children,
+// }: {
+//   activeTab: TabType
+//   onClick: () => void
+//   tabType: TabType
+//   children: React.ReactNode
+// }) => {
+//   const isActive = activeTab === tabType
+//   return (
+//     <div
+//       className="cursor-pointer text-[14px]"
+//       style={{
+//         color: isActive ? '#FFFFFF' : '#848E9C',
+//         fontWeight: '500',
+//         textShadow: isActive ? '0.3px 0 0 currentColor, -0.3px 0 0 currentColor' : 'none',
+//       }}
+//       onClick={onClick}
+//     >
+//       {children}
+//     </div>
+//   )
+// }
+
+const CHAIN_LIST: Array<
+  BaseChainInfo & {
+    chainId: number
+  }
+> = getSupportedChainIdsByEnv().map((chainId) => {
+  return {
+    ...getChainInfo(chainId),
+    chainId,
+  }
+})
 
 export const Tables = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
-  const { hideOthersSymbols, setHideOthersSymbols, setCloseAllPositionDialogOpen } =
-    usePositionStore()
-  const { setCancelAllOrdersDialogOpen } = useGlobalStore()
-  const orderList = useGetOrderList()
-  const positionList = useGetPositionList()
+  const {
+    hideOthersSymbols,
+    setHideOthersSymbols,
+    setCloseAllPositionDialogOpen,
+    selectChainId,
+    setCancelAllOrdersDialogOpen,
+  } = usePositionStore()
+  const orderList = useGetOrderList(true)
+  const positionList = useGetPositionList(true)
   const { symbolInfo } = useTradePageStore()
   const navigate = useNavigate()
   const onCloseAllHandler = () => {
@@ -60,6 +77,20 @@ export const Tables = () => {
     }
   }
   const renderCloseAllButton = () => {
+    if (selectChainId === '0') {
+      return null
+    }
+
+    let isDisable = false
+
+    if (activeTab === TabType.POSITION && positionList.length === 0) {
+      isDisable = true
+    }
+
+    if (activeTab === TabType.ENTRUSTS && orderList.length === 0) {
+      isDisable = true
+    }
+
     if (activeTab === TabType.POSITION || activeTab === TabType.ENTRUSTS) {
       return (
         <InfoButton
@@ -70,6 +101,7 @@ export const Tables = () => {
             fontSize: '11px',
             fontWeight: 500,
             lineHeight: 1,
+            color: isDisable ? '#848E9C' : 'white',
             border: 0,
           }}
         >
@@ -108,11 +140,13 @@ export const Tables = () => {
           <Record size={18} />
         </div>
       </div>
+
       <HideOuterSymbols
         checked={hideOthersSymbols}
         onChange={setHideOthersSymbols}
         right={renderCloseAllButton()}
       />
+
       {activeTab === TabType.POSITION && <Position />}
       {activeTab === TabType.ENTRUSTS && <Entrusts />}
     </>

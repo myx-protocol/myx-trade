@@ -1,7 +1,6 @@
 import { RouterProvider } from 'react-router-dom'
 import router from './router'
-import { CloseAllPositionDialog } from './pages/Trade/components/CloseAllPositionDialog'
-import { usePositionStore } from './store/position/createStore'
+
 import { useWalletStore } from './store/wallet/createStore'
 import { LoginModal } from './components/Login/LoginModal'
 import { MorePage } from './components/Login/MorePage'
@@ -13,12 +12,10 @@ import { ImportDialog } from './components/Seamless/ImportDialog'
 import { ExportInfoDialog } from './components/Seamless/ExportInfoDialog'
 import { ExportDialog } from './components/Seamless/ExportDialog'
 import { useUpdateEffect } from 'ahooks'
-import { CancelAllOrdersDialog } from './pages/Trade/components/CancelAllOrdersDialog'
 import { useEffect } from 'react'
 import { getPools } from './api'
 
 function App() {
-  const { closeAllPositionDialogOpen } = usePositionStore()
   const { loginModalOpen, moreLoginDrawerOpen } = useWalletStore()
   const {
     poolList,
@@ -28,7 +25,6 @@ function App() {
     importSeamlessKeyDialogOpen,
     exportSeamlessInfoDialogOpen,
     exportSeamlessKeyDialogOpen,
-    cancelAllOrdersDialogOpen,
   } = useGlobalStore()
 
   useUpdateEffect(() => {
@@ -56,7 +52,6 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      {closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {loginModalOpen && <LoginModal />}
       {moreLoginDrawerOpen && <MorePage />}
       {unlockAccountDialogOpen && <UnlockAccountDialog />}
@@ -64,7 +59,6 @@ function App() {
       {importSeamlessKeyDialogOpen && <ImportDialog />}
       {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
       {exportSeamlessKeyDialogOpen && <ExportDialog />}
-      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
       <Toaster />
     </>
   )

@@ -8,6 +8,7 @@ interface Action {
   setHideOthersSymbols: (hideOthersSymbols: boolean) => void
   setSelectChainId: (selectChainId: string) => void
   setCloseAllPositionDialogOpen: (closeAllPositionDialogOpen: boolean) => void
+  setCancelAllOrdersDialogOpen: (cancelAllOrdersDialogOpen: boolean) => void
 }
 
 type PositionStore = PositionState & Action
@@ -23,6 +24,8 @@ export const usePositionStore = createWithEqualityFn<PositionStore>()(
             setSelectChainId: (selectChainId) => set({ selectChainId }),
             setCloseAllPositionDialogOpen: (closeAllPositionDialogOpen: boolean) =>
               set({ closeAllPositionDialogOpen }),
+            setCancelAllOrdersDialogOpen: (cancelAllOrdersDialogOpen: boolean) =>
+              set({ cancelAllOrdersDialogOpen }),
           }) as PositionStore,
       ),
       {

@@ -3,7 +3,7 @@ import { OpenOrderItem } from '@/components/Record/Items/OpenOrders'
 import useGlobalStore from '@/store/globalStore'
 
 export const Entrusts = () => {
-  const orders = useGetOrderList()
+  const orders = useGetOrderList(true)
   const { poolList } = useGlobalStore()
 
   return (

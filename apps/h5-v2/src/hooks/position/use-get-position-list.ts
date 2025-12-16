@@ -12,7 +12,7 @@ import useGlobalStore from '@/store/globalStore'
 export const useGetPositionList = (filter: boolean = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWrongNetwork } = useWalletConnection()
-  const { hideOthersSymbols } = usePositionStore()
+  const { hideOthersSymbols, selectChainId } = usePositionStore()
   const { symbolInfo } = useTradePageStore()
   const { tickerData } = useMarketStore()
   const { poolList } = useGlobalStore()
@@ -25,6 +25,7 @@ export const useGetPositionList = (filter: boolean = false) => {
           address,
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
+          selectChainId,
           clientIsAuthenticated,
           isWrongNetwork,
           filter,
@@ -54,8 +55,10 @@ export const useGetPositionList = (filter: boolean = false) => {
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      return filteredPositions ?? []
-      // return positions ?? []
+      const positionsWithChainId = filteredPositions.filter(
+        (item: any) => selectChainId === '0' || `${item.chainId}` === selectChainId,
+      )
+      return positionsWithChainId ?? []
     },
     {
       refreshInterval: 10000,

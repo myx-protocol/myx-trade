@@ -40,10 +40,17 @@ export const CancelOrderButton = ({ orderId, chainId }: { orderId: number; chain
             onClick={async () => {
               try {
                 setLoading(true)
-                await client?.order.cancelOrder(orderId.toString(), Number(chainId))
-                toast.success({
-                  title: t`Cancel all orders success`,
-                })
+                const rs = await client?.order.cancelOrder(orderId.toString(), Number(chainId))
+
+                if (rs?.code === 0) {
+                  toast.success({
+                    title: t`Cancel order success`,
+                  })
+                } else {
+                  toast.error({
+                    title: t`Cancel order failed`,
+                  })
+                }
                 setCancelOrderDialogOpen(false)
               } catch (e) {
                 console.log(e)

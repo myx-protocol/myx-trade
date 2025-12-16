@@ -12,19 +12,31 @@ import { OrderHistoryList } from './components/OrderHistoryList'
 import { PositionHistoryList } from './components/PositionHistoryList'
 import { FinanceList } from './components/FinanceList'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
+import { usePositionStore } from '@/store/position/createStore'
+import { CancelAllOrdersDialog } from '../Trade/components/CancelAllOrdersDialog'
+import { CloseAllPositionDialog } from '../Trade/components/CloseAllPositionDialog'
+import { useGetPositionList } from '@/hooks/position/use-get-position-list'
+import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 
 const Record = () => {
   const [tab, setTab] = React.useState<TabType>(TabType.POSITION)
   const [hideOuterSymbols, setHideOuterSymbols] = React.useState(false)
-  // const { setCloseAllPositionDialogOpen } = usePositionStore()
+  const {
+    setCloseAllPositionDialogOpen,
+    setCancelAllOrdersDialogOpen,
+    closeAllPositionDialogOpen,
+    cancelAllOrdersDialogOpen,
+    selectChainId,
+  } = usePositionStore()
   const { search } = useLocation()
   const { setSymbolInfo } = useTradePageStore()
-  console.log('search-->', search)
   const params = new URLSearchParams(search)
   const chainId = params.get('chainId') ?? ''
   const poolId = params.get('poolId') ?? ''
+  const positionList = useGetPositionList(true)
+  const orderList = useGetOrderList(true)
 
   const { getDetail } = useMarketDetail({
     poolId: poolId || '',
@@ -39,13 +51,27 @@ const Record = () => {
 
   const onCloseAllHandler = () => {
     if (tab === TabType.POSITION) {
-      // setCloseAllPositionDialogOpen(true)
+      setCloseAllPositionDialogOpen(true)
     } else if (tab === TabType.ENTRUSTS) {
-      // todo: cancel all orders
+      setCancelAllOrdersDialogOpen(true)
     }
   }
 
   const renderCloseAllButton = () => {
+    if (selectChainId === '0') {
+      return null
+    }
+
+    let isDisable = false
+
+    if (tab === TabType.POSITION && positionList.length === 0) {
+      isDisable = true
+    }
+
+    if (tab === TabType.ENTRUSTS && orderList.length === 0) {
+      isDisable = true
+    }
+
     if (tab === TabType.POSITION || tab === TabType.ENTRUSTS) {
       return (
         <InfoButton
@@ -59,7 +85,7 @@ const Record = () => {
             border: 0,
           }}
         >
-          <Trans>Close All</Trans>
+          {tab === TabType.POSITION ? <Trans>Close All</Trans> : <Trans>Cancel All</Trans>}
         </InfoButton>
       )
     }
@@ -79,6 +105,8 @@ const Record = () => {
       {tab === TabType.HISTORY && <OrderHistoryList />}
       {tab === TabType.POSITION_HISTORY && <PositionHistoryList />}
       {tab === TabType.FINANCE && <FinanceList />}
+      {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
+      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
     </div>
   )
 }
