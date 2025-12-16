@@ -35,11 +35,20 @@ export const ConfirmToken = ({ onNext }: { onNext: () => void }) => {
       const info = await pool.getPoolDetail(+chainId, poolId)
       return info
     },
+    refetchInterval: (query) => {
+      const data = query.state.data
+      if (data) {
+        return false
+      }
+      return 1000 * 10
+    },
   })
 
   return (
     <>
-      {poolInfo?.state !== MarketPoolState.Bench && <VaultSelect onNext={() => onNext()} />}
+      {poolInfo?.state !== MarketPoolState.Bench && (
+        <VaultSelect poolInfo={poolInfo} onNext={() => onNext()} />
+      )}
       {poolInfo?.state === MarketPoolState.Bench && (
         <ActiveMarket
           onNext={() => {

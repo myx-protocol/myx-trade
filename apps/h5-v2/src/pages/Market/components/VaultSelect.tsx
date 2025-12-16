@@ -14,6 +14,7 @@ import {
   COMMON_PRICE_DECIMALS,
   formatUnits,
   getBalanceOf,
+  type MarketPool,
 } from '@myx-trade/sdk'
 import { useParams } from 'react-router-dom'
 import { parseUnits } from 'ethers'
@@ -164,7 +165,13 @@ export const QuoteVaultInput = memo(
   },
 )
 
-export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
+export const VaultSelect = ({
+  onNext,
+  poolInfo,
+}: {
+  onNext: () => void
+  poolInfo?: MarketPool
+}) => {
   const { chainId } = useParams()
   const { market, quote, token, poolId } = useContext(TokenContext)
   const { chainId: curChainId } = useWalletConnection()
@@ -358,7 +365,7 @@ export const VaultSelect = ({ onNext }: { onNext: () => void }) => {
       <Box className={'mt-[32px] w-full'}>
         <Button
           className={'gradient primary long mx-auto w-full rounded'}
-          loading={isLoading}
+          loading={isLoading || !poolInfo}
           onClick={onConfirm}
           disabled={
             isLoading ||
