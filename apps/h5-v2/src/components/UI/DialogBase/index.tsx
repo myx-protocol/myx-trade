@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle, type SxProps, type Theme } from '@mui/material'
+import { Dialog, DialogContent, DialogTitle, Drawer, type SxProps, type Theme } from '@mui/material'
 import CloseIcon from '@/components/Icon/set/Close'
 import { merge } from 'lodash-es'
 
@@ -16,14 +16,16 @@ export const DialogBase = ({
   title?: string
 }) => {
   return (
-    <Dialog
+    <Drawer
+      anchor="bottom"
       sx={merge(
         {
-          '& .MuiDialog-paper': {
+          '& .MuiDrawer-paper': {
             width: '100%',
-            margin: '0 16px',
+            // margin: '0 16px',
             backgroundColor: '#18191F',
-            borderRadius: '16px',
+            borderTopLeftRadius: '16px',
+            borderTopRightRadius: '16px',
             padding: '24px 20px',
             border: '1px solid #31333D',
           },
@@ -56,6 +58,6 @@ export const DialogBase = ({
       >
         {children}
       </DialogContent>
-    </Dialog>
+    </Drawer>
   )
 }
