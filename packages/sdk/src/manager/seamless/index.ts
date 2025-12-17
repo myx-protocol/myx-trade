@@ -3,7 +3,7 @@ import { Logger } from "@/logger";
 import CryptoJS from 'crypto-js'
 
 import { Utils } from "../utils";
-import { getJSONProvider, getSignerProvider, getWalletProvider } from "@/web3";
+import { getSignerProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { ForwarderGetStatus, fetchForwarderGetApi, forwarderTxApi } from "@/api";
@@ -14,7 +14,6 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getChainDomainConfig, getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
-import { SEAMLESS_ACCOUNT_GAS_LIMIT } from "@/config/fee";
 import { retry, RetryableError, TimeoutError } from "@/utils";
 
 const contractTypes = {
@@ -222,6 +221,7 @@ export class Seamless {
     data: string;
     nonce: string;
   }, chainId: number, provider?: ethers.Signer) {
+    const isProd = !this.configManager.getConfig().isTestnet;
     const forwarderContract = await getForwarderContract(chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
 
@@ -244,7 +244,7 @@ export class Seamless {
       data
     })
 
-    const txRs = await forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId)
+    const txRs = await forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId, isProd)
     return txRs
   }
 
@@ -260,7 +260,7 @@ export class Seamless {
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(masterAddress)
       const balance = balanceRes.data
-      const forwarderContract = await getForwarderContract(config.chainId)
+      const forwarderContract = await getForwarderContract(chainId)
 
       const pledgeFee = await forwarderContract.getRelayFee()
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
@@ -273,9 +273,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        console.log('getUSDPermitParams')
         permitParams = await this.getUSDPermitParams(deadline, chainId)
-        console.log('permitParams result-->', permitParams)
       } catch (error) {
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []

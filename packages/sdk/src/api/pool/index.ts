@@ -1,10 +1,14 @@
 import { ApiResponse } from "../type";
 import { http } from "../request";
-import { baseUrl } from "..";
+import { getBaseUrlByEnv } from "../index";
 
-export const getPoolList = async () => {
+export const getPoolList = async ({
+  isProd = true,
+}: {
+  isProd?: boolean;
+}) => {
   return http.get<ApiResponse<any[]>>(
-    `${baseUrl}/openapi/gateway/scan/market/list`
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/list`
   );
 };
 
@@ -16,8 +20,12 @@ export interface PoolSymbolAllResponse {
   quoteSymbol: string;
   baseTokenIcon: string;
 }
-export const getPoolSymbolAll = async () => {
+export const getPoolSymbolAll = async ({
+  isProd = true,
+}: {
+  isProd?: boolean;
+}) => {
   return http.get<ApiResponse<PoolSymbolAllResponse[]>>(
-    `${baseUrl}/openapi/gateway/scan/pools`
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/pools`
   );
 };

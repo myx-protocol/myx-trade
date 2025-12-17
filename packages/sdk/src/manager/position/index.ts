@@ -33,6 +33,7 @@ export class Position {
   }
 
   async listPositions(address: string) {
+    const isProd = !this.configManager.getConfig().isTestnet;
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -43,7 +44,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken, address);
+      const res = await getPositions(accessToken, address, isProd);
       return {
         code: 0,
         data: res.data,
@@ -58,6 +59,7 @@ export class Position {
   }
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
+    const isProd = !this.configManager.getConfig().isTestnet;
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -65,7 +67,7 @@ export class Position {
         "Invalid access token"
       );
     }
-    const res = await getPositionHistory({ accessToken, ...params, address: address });
+    const res = await getPositionHistory({ accessToken, ...params, address: address, isProd });
     return {
       code: 0,
       data: res.data,
@@ -103,7 +105,7 @@ export class Position {
       /**
        * fetch oracle price
        */
-      const priceData = await this.utils.getOraclePrice(poolId);
+      const priceData = await this.utils.getOraclePrice(poolId, chainId);
       if (!priceData) {
         throw new Error("Failed to get price data");
       }

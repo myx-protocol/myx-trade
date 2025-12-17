@@ -1,7 +1,6 @@
 import { http } from "@/api/request";
 import {
   ApiResponse,
-  MarketPoolResponse,
   PriceResponse,
   PoolResponse,
   PositionResponse,
@@ -13,25 +12,29 @@ import {
   SearchTypeEnum,
   SearchSecondTypeEnum,
   SearchResultResponse,
-  ChainIdRequest,
   FavoritesListItem,
   BaseDetailResponse,
   MarketDetailResponse, MarketInfo,
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
-// todo @JC
-export const baseUrl = "https://api-test.myx.cash";
 
-export const forwardUrl = "https://api-test.myx.cash/v2/agent";
+export const getBaseUrlByEnv = (isProd: boolean) => {
+  return isProd ? 'https://api.myx.finance' : 'https://api-test.myx.cash'
+}
+
+export const getForwardUrlByEnv = (isProd: boolean) => {
+  return isProd ? 'https://api.myx.finance/v2/agent': 'https://api-test.myx.cash/v2/agent'
+}
 
 
 export const getOraclePrice = async (
   chainId: ChainId,
-  poolIds: string[] = []
+  poolIds: string[] = [],
+  isProd: boolean = true
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
-    return http.get(`${baseUrl}/openapi/gateway/quote/price/oracles`, {
+    return http.get(`${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/price/oracles`, {
       chainId,
       poolIds: poolIds.join(","),
     });
@@ -63,6 +66,7 @@ export interface PoolLevelConfig {
 export interface GetPoolLevelConfigParams {
   poolId: string;
   chainId: ChainId;
+  isProd?: boolean;
 }
 
 /**
@@ -71,9 +75,10 @@ export interface GetPoolLevelConfigParams {
 export const getPoolLevelConfig = async ({
   poolId,
   chainId,
+  isProd = true
 }: GetPoolLevelConfigParams) => {
   return http.get<ApiResponse<PoolLevelConfig>>(
-    `${baseUrl}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
       poolId,
       chainId,
     })}`
@@ -82,19 +87,21 @@ export const getPoolLevelConfig = async ({
 
 export const getPoolDetail = async (
   chainId: number,
-  poolId: string
+  poolId: string,
+  isProd: boolean = true
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
 export const getPositions = async (
   accessToken: string,
   address: string,
+  isProd: boolean = true
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/gateway/scan/position/open`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/position/open`,
     undefined, // params
     {
       headers: {
@@ -108,9 +115,10 @@ export const getPositions = async (
 export const getOrders = async (
   accessToken: string,
   address: string,
+  isProd: boolean = true
 ): Promise<PositionResponse> => {
   return await http.get<PositionResponse>(
-    `${baseUrl}/openapi/gateway/scan/order/open`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/order/open`,
     undefined,
     { headers: { myx_openapi_access_token: accessToken, myx_openapi_account: address } }
   );
@@ -119,10 +127,11 @@ export const getOrders = async (
 export const getPoolOpenOrders = async (
   accessToken: string,
   address: string,
-  chainId: ChainId
+  chainId: ChainId,
+  isProd: boolean = true
 ): Promise<PoolOpenOrdersResponse> => {
   return await http.get<PoolOpenOrdersResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
     { headers: { myx_openapi_access_token: accessToken, myx_openapi_account: address } }
   );
@@ -137,6 +146,7 @@ export interface GetKlineDataParams {
   endTime: number;
   limit: number;
   interval: HttpKlineIntervalEnum;
+  isProd?: boolean;
 }
 
 export const getKlineData = ({
@@ -145,9 +155,10 @@ export const getKlineData = ({
   endTime,
   limit,
   interval,
+  isProd = true
 }: GetKlineDataParams) => {
   return http.get<ApiResponse<KlineDataItemType[]>>(
-    `${baseUrl}/openapi/gateway/quote/candles`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candles`,
     {
       chainId,
       poolId,
@@ -162,10 +173,11 @@ export const getKlineData = ({
  * Get Kline Latest Bar
  */
 export const getKlineLatestBar = async (
-  params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">
+  params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">,
+  isProd: boolean = true
 ) => {
   return http.get<ApiResponse<KlineDataItemType>>(
-    `${baseUrl}/openapi/gateway/quote/candle/latest`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candle/latest`,
     params
   );
 };
@@ -174,14 +186,16 @@ export const getKlineLatestBar = async (
 export interface GetTickerDataParams {
   chainId: ChainId;
   poolIds: string[];
+  isProd?: boolean;
 }
 
 export const getTickerData = async ({
   chainId,
   poolIds,
+  isProd = true
 }: GetTickerDataParams) => {
   return http.get<ApiResponse<TickerDataItem[]>>(
-    `${baseUrl}/openapi/gateway/quote/candle/tickers`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candle/tickers`,
     {
       chainId,
       poolIds: poolIds.join(","),
@@ -190,9 +204,13 @@ export const getTickerData = async ({
 };
 
 // Get ALL Tickers
-export const getAllTickers = async () => {
+export const getAllTickers = async ({
+  isProd = true
+}: {
+  isProd?: boolean;
+}) => {
   return http.get<ApiResponse<TickerDataItem[]>>(
-    `${baseUrl}/v2/mx-gateway/quote/candle/all_tickers`
+    `${getBaseUrlByEnv(isProd)}/v2/mx-gateway/quote/candle/all_tickers`
   );
 };
 
@@ -205,15 +223,17 @@ export interface SearchMarketParams {
   searchType?: SearchTypeEnum;
   type?: SearchSecondTypeEnum;
   searchKey?: string; // keywords
+  isProd?: boolean;
 }
 // search market pool
 export const searchMarketAuth = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: SearchMarketParams & AccessTokenRequest) => {
   return http.get<ApiResponse<SearchResultResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/ac-search`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/ac-search`,
     params,
     {
       headers: {
@@ -224,9 +244,12 @@ export const searchMarketAuth = async ({
   );
 };
 
-export const searchMarket = async ({ ...params }: SearchMarketParams) => {
+export const searchMarket = async ({
+  isProd = true,
+  ...params
+}: SearchMarketParams) => {
   return http.get<ApiResponse<SearchResultResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/search`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/search`,
     params
   );
 };
@@ -237,15 +260,17 @@ export const searchMarket = async ({ ...params }: SearchMarketParams) => {
 export interface AddFavoriteParams {
   poolId: string;
   chainId: ChainId;
+  isProd?: boolean;
 }
 
 export const addFavorite = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: AddFavoriteParams & AccessTokenRequest) => {
   return http.get<ApiResponse<null>>(
-    `${baseUrl}/openapi/gateway/scan/market/add-favorites`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/add-favorites`,
     params,
     {
       headers: {
@@ -259,15 +284,17 @@ export const addFavorite = async ({
 export interface RemoveFavoriteParams {
   poolId: string;
   chainId: ChainId;
+  isProd?: boolean;
 }
 
 export const removeFavorite = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: RemoveFavoriteParams & AccessTokenRequest) => {
   return http.get<ApiResponse<null>>(
-    `${baseUrl}/openapi/gateway/scan/market/cancel-favorites`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/cancel-favorites`,
     params,
     {
       headers: {
@@ -290,15 +317,17 @@ export interface FavoritesListParams {
   limit?: number;
   timeInterval?: FavoritesTimeInterval;
   chainId: ChainId | 0;
+  isProd?: boolean;
 }
 
 export const getFavoritesList = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: FavoritesListParams & AccessTokenRequest) => {
   return http.get<ApiResponse<FavoritesListItem[]>>(
-    `${baseUrl}/openapi/gateway/scan/market/favorites`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/favorites`,
     params,
     {
       headers: {
@@ -312,10 +341,14 @@ export const getFavoritesList = async ({
 export interface GetBaseDetailParams {
   chainId: ChainId;
   poolId: string;
-}
-export const getBaseDetail = async (params: GetBaseDetailParams) => {
+  isProd?: boolean;
+  }
+export const getBaseDetail = async ({
+  isProd = true,
+  ...params
+}: GetBaseDetailParams & AccessTokenRequest) => {
   return http.get<ApiResponse<BaseDetailResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/base-details`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/base-details`,
     params
   );
 };
@@ -323,16 +356,24 @@ export const getBaseDetail = async (params: GetBaseDetailParams) => {
 export interface GetMarketDetailParams {
   chainId: number;
   poolId: string;
+  isProd?: boolean;
 }
-export const getMarketDetail = async (params: GetMarketDetailParams) => {
+export const getMarketDetail = async ({
+  isProd = true,
+  ...params
+}: GetMarketDetailParams & AccessTokenRequest) => {
   return http.get<ApiResponse<MarketDetailResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/detail`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/detail`,
     params
   );
 };
 
-export const getMarketList = async () => {
-  return http.get<ApiResponse<MarketInfo[]>>(`${baseUrl}/openapi/gateway/scan/market`);
+export const getMarketList = async ({
+  isProd = true,
+}: {
+  isProd?: boolean;
+}) => {
+  return http.get<ApiResponse<MarketInfo[]>>(`${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market`);
 }
 
 export * from "./type";

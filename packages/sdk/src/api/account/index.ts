@@ -1,12 +1,13 @@
 import { Address } from "@/address";
 import { AccessTokenRequest, ApiResponse } from "../type";
 import { http } from "../request";
-import { baseUrl } from "..";
+import { getBaseUrlByEnv } from "../index";
 
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
   poolId?: string;
+  isProd?: boolean;
 }
 
 export enum OrderTypeEnum {
@@ -103,10 +104,11 @@ export interface HistoryOrderItem {
 export const getHistoryOrders = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<HistoryOrderItem[]>>(
-    `${baseUrl}/openapi/gateway/scan/order/closed`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/order/closed`,
     params,
     {
       headers: {
@@ -157,10 +159,11 @@ export interface PositionHistoryItem {
 export const getPositionHistory = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<PositionHistoryItem[]>>(
-    `${baseUrl}/openapi/gateway/scan/position/closed`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/position/closed`,
     params,
     {
       headers: {
@@ -204,10 +207,11 @@ export interface TradeFlowItem {
 export const getTradeFlow = async ({
   accessToken,
   address,
+  isProd = true,
   ...params
 }: GetHistoryOrdersParams & AccessTokenRequest) => {
   return http.get<ApiResponse<TradeFlowItem[]>>(
-    `${baseUrl}/openapi/gateway/scan/trade/flow`,
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/trade/flow`,
     params,
     {
       headers: {

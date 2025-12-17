@@ -1,6 +1,6 @@
 import { ApiResponse, BaseResponse } from "../type";
 import { http } from "../request";
-import { forwardUrl } from "..";
+import { getForwardUrlByEnv } from "../index";
 import { addQueryParams } from "../utils";
 
 export type ForwarderTxParams = {
@@ -14,10 +14,9 @@ export type ForwarderTxParams = {
   signature: string
 }
 
-export const forwarderTxApi = async (params: ForwarderTxParams, chainId: number) => {
-  console.log('forwarderTxApi params-->', params)
+export const forwarderTxApi = async (params: ForwarderTxParams, chainId: number, isProd = true) => {
   return http.post<ApiResponse<any>>(
-    `${forwardUrl}/forwarder/tx-v2`,
+    `${getForwardUrlByEnv(isProd)}/forwarder/tx-v2`,
     params,
     {
       headers: {
@@ -47,9 +46,9 @@ export type FetchForwarderGetResponseData = {
 
 export type FetchForwarderGetResponse = BaseResponse<FetchForwarderGetResponseData>
 
-export const fetchForwarderGetApi = async (params: FetchForwarderGetParams) => {
+export const fetchForwarderGetApi = async (params: FetchForwarderGetParams, isProd = true) => {
   const rs: FetchForwarderGetResponse = await http.get(
-    `${forwardUrl}/forwarder/get${addQueryParams(params)}`,
+    `${getForwardUrlByEnv(isProd)}/forwarder/get${addQueryParams(params)}`,
   )
 
   return rs
