@@ -10,6 +10,7 @@ import Big from 'big.js'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { getChainInfo } from '@/config/chainInfo'
 import { toast } from '@/components/UI/Toast'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 
 const COMMON_TRANSLATE_USDC_ASSETS_SCALE = 2
 
@@ -40,11 +41,12 @@ function RebateClaimDialog({ open, onClose }: { open: boolean; onClose: () => vo
   const [confirming, setConfirming] = useState(false)
   const { bonusChainInfo } = useReferralStore()
   const { claimChainId, setClaimChainId, onClaimReferralRebate } = useClaimReferralRebate()
-  const { chainId: activeChainId, switchChain } = useWalletConnection()
+  const { chainId: activeChainId } = useWalletConnection()
+  const { checkWalletChainId } = useWalletChainCheck()
 
   const handleSelectChain = (chainId: number) => {
     if (chainId !== activeChainId) {
-      switchChain?.({ chainId })
+      checkWalletChainId?.(chainId)
       return
     }
     setClaimChainId(chainId)
