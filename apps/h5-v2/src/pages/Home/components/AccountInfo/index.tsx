@@ -6,9 +6,30 @@ import { formatNumber } from '@/utils/number'
 import { truncateAddress } from '@/utils/string'
 import { Trans } from '@lingui/react/macro'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useHomeStore } from '../../store'
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { formatUnits, parseUnits } from 'ethers'
+import { Tooltips } from '@/components/UI/Tooltips'
+import useGlobalStore from '@/store/globalStore'
 
 export const AccountInfo = () => {
   const { address } = useWalletConnection()
+  const homeStore = useHomeStore()
+  const { client, clientIsAuthenticated } = useMyxSdkClient(homeStore.chainId)
+  const { setAccountDialogOpen } = useGlobalStore()
+  const { data: accountBalance, isLoading } = useQuery({
+    enabled: Boolean(client && clientIsAuthenticated),
+    queryKey: ['home-getAccountBalance', homeStore.chainId, address],
+    queryFn: () => {
+      return client?.account.getWalletQuoteTokenBalance()
+    },
+    select: (data) => {
+      return formatUnits(data?.data || '0', 6).toString()
+    },
+  })
+
   return (
     <div className="mt-[9px] w-full px-[16px]">
       {/* wallet */}
@@ -18,7 +39,13 @@ export const AccountInfo = () => {
           <p className="text-[14px] leading-[1] font-medium text-[#CED1D9]">
             {truncateAddress(address || '')}
           </p>
-          <span className="ml-[4px] flex" role="button">
+          <span
+            className="ml-[4px] flex"
+            role="button"
+            onClick={() => {
+              setAccountDialogOpen(true)
+            }}
+          >
             <ArrowDown size={14} color="#CED1D9" />
           </span>
         </div>
@@ -28,12 +55,21 @@ export const AccountInfo = () => {
       </div>
       {/* balance */}
       <div className="mt-[10px] flex w-full items-center gap-[17px]">
-        <p className="line-clamp-2 flex-[1_1_0%] text-[28px] font-bold break-all">
-          {formatNumber(10000000, {
+        <Tooltips
+          title={formatNumber(accountBalance ?? '0', {
             showUnit: false,
           })}
-          <span className="ml-[4px] flex-shrink-0 text-[14px] leading-[28px]">USDC</span>
-        </p>
+        >
+          <p className="flex-[1_1_0%] truncate text-[28px] font-bold">
+            {isLoading
+              ? '--'
+              : formatNumber(accountBalance ?? '0', {
+                  showUnit: false,
+                })}
+            <span className="ml-[4px] flex-shrink-0 text-[14px] leading-[28px]">USDC</span>
+          </p>
+        </Tooltips>
+
         <PrimaryButton
           style={{
             flexShrink: 0,
@@ -41,7 +77,7 @@ export const AccountInfo = () => {
             height: '32px',
             fontSize: '12px',
             fontWeight: 500,
-            width: '107px',
+            width: '91px',
           }}
         >
           <Trans>Deposit</Trans>
