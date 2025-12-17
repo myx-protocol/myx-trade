@@ -21,6 +21,8 @@ import {
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
 
+export const baseUrl = 'https://api-test.myx.cash'
+
 export const getBaseUrlByEnv = (isProd: boolean) => {
   return isProd ? "https://api.myx.finance" : "https://api-test.myx.cash";
 };
@@ -34,11 +36,10 @@ export const getForwardUrlByEnv = (isProd: boolean) => {
 export const getOraclePrice = async (
   chainId: ChainId,
   poolIds: string[] = [],
-  isProd: boolean = true
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
     return http.get(
-      `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/price/oracles`,
+      `${baseUrl}/openapi/gateway/quote/price/oracles`,
       {
         chainId,
         poolIds: poolIds.join(","),
@@ -143,12 +144,9 @@ export const getPoolOpenOrders = async (
   accessToken: string,
   address: string,
   chainId: ChainId,
-  isProd: boolean = true
 ): Promise<PoolOpenOrdersResponse> => {
   return await http.get<PoolOpenOrdersResponse>(
-    `${getBaseUrlByEnv(
-      isProd
-    )}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
+    `${baseUrl}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
     {
       headers: {

@@ -34,9 +34,9 @@ export const getPricesData = async (chainId: ChainId, poolIds : string[]) => {
   const result =  await parsePriceData (chainId, rs.data)
   return result
 }
-export const getPriceData = async (chainId:ChainId,poolId: string, isProd: boolean) => {
+export const getPriceData = async (chainId:ChainId,poolId: string) => {
   if (!poolId) return
-  const rs = await getOraclePrice(chainId, [poolId], isProd)
+  const rs = await getOraclePrice(chainId, [poolId])
   const data  = rs?.data?.[0]
   if (!data) {
     throw new Error (`Unable to get price for ${poolId} in the deposit`)
