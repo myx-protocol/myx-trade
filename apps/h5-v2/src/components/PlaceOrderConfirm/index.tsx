@@ -1,4 +1,4 @@
-import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
+import { DialogBase } from '@/components/UI/DialogBase'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
@@ -333,14 +333,11 @@ export const PlaceOrderConfirmDialog = () => {
   }, [slValue, price, direction, longSize, shortSize, autoMarginMode])
 
   return (
-    <DialogTheme
+    <DialogBase
       open={!!placeOrderConfirmDialogOpen}
       onClose={() => setPlaceOrderConfirmDialogOpen(false)}
     >
-      <DialogTitleTheme
-        onClose={() => setPlaceOrderConfirmDialogOpen(false)}
-        className="pb-[20px]!"
-      >
+      <div>
         <div className="leading-[1]">
           <p className="text-[20px] leading-[1] font-bold text-[white]">
             <Trans>{direction === Direction.LONG ? 'Open Long' : 'Open Short'}</Trans>
@@ -356,8 +353,6 @@ export const PlaceOrderConfirmDialog = () => {
             <span className="ml-[4px]">{leverage}x</span>
           </p>
         </div>
-      </DialogTitleTheme>
-      <div className="px-[20px] pb-[24px]">
         {/* order info  */}
         <div className="rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
           {/* top */}
@@ -551,6 +546,6 @@ export const PlaceOrderConfirmDialog = () => {
           />
         </div>
       </div>
-    </DialogTheme>
+    </DialogBase>
   )
 }
