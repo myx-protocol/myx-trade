@@ -234,11 +234,11 @@ export class Order {
       // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       // this.logger.info("createIncreaseOrder receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
         success: true,
-        orderId,
+        // orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -248,10 +248,10 @@ export class Order {
         receipt,
       };
 
-      if (!orderId) {
-        this.logger.warn("Warning: OrderId not found in transaction logs");
-        result.success = false;
-      }
+      // if (!orderId) {
+      //   this.logger.warn("Warning: OrderId not found in transaction logs");
+      //   result.success = false;
+      // }
 
       return {
         code: 0,
@@ -406,19 +406,19 @@ export class Order {
         gasLimit: (gasLimit * 120n) / 100n,
       });
 
-      this.logger.info("Transaction sent:", transaction.hash);
-      this.logger.info("Waiting for confirmation...");
+      // this.logger.info("Transaction sent:", transaction.hash);
+      // this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
-      this.logger.info("closeAllPositions receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // this.logger.info("closeAllPositions receipt--->", receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       return {
         code: 0,
         message: "close all positions success",
-        data: orderId,
+        // data: orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -593,11 +593,11 @@ export class Order {
       // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       // this.logger.info("createDecreaseOrder receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
         success: true,
-        orderId,
+        // orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -607,10 +607,10 @@ export class Order {
         receipt,
       };
 
-      if (!orderId) {
-        this.logger.warn("Warning: OrderId not found in transaction logs");
-        result.success = false;
-      }
+      // if (!orderId) {
+      //   this.logger.warn("Warning: OrderId not found in transaction logs");
+      //   result.success = false;
+      // }
 
       return {
         code: 0,
@@ -788,21 +788,21 @@ export class Order {
             });
           }
 
-          this.logger.info("Transaction sent:", transaction.hash);
-          this.logger.info("Waiting for confirmation...");
+          // this.logger.info("Transaction sent:", transaction.hash);
+          // this.logger.info("Waiting for confirmation...");
 
           const receipt = await transaction.wait();
-          this.logger.info(
-            "Transaction confirmed in block:",
-            receipt?.blockNumber
-          );
+          // this.logger.info(
+          //   "Transaction confirmed in block:",
+          //   receipt?.blockNumber
+          // );
 
-          this.logger.info("createDecreaseOrder receipt--->", receipt);
-          const orderId = this.utils.getOrderIdFromTransaction(receipt);
+          // this.logger.info("createDecreaseOrder receipt--->", receipt);
+          // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
           const result = {
             success: true,
-            orderId,
+            // orderId,
             transactionHash: transaction.hash,
             blockNumber: receipt?.blockNumber,
             gasUsed: receipt?.gasUsed?.toString(),
@@ -812,10 +812,10 @@ export class Order {
             receipt,
           };
 
-          if (!orderId) {
-            this.logger.warn("Warning: OrderId not found in transaction logs");
-            result.success = false;
-          }
+          // if (!orderId) {
+          //   this.logger.warn("Warning: OrderId not found in transaction logs");
+          //   result.success = false;
+          // }
 
           return {
             code: 0,
@@ -954,21 +954,21 @@ export class Order {
           });
         }
 
-        this.logger.info("Transaction sent:", transaction.hash);
-        this.logger.info("Waiting for confirmation...");
+        // this.logger.info("Transaction sent:", transaction.hash);
+        // this.logger.info("Waiting for confirmation...");
 
         const receipt = await transaction.wait();
-        this.logger.info(
-          "Transaction confirmed in block:",
-          receipt?.blockNumber
-        );
+        // this.logger.info(
+        //   "Transaction confirmed in block:",
+        //   receipt?.blockNumber
+        // );
 
-        this.logger.info("createDecreaseOrder receipt--->", receipt);
-        const orderId = this.utils.getOrderIdFromTransaction(receipt);
+        // this.logger.info("createDecreaseOrder receipt--->", receipt);
+        // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
         const result = {
           success: true,
-          orderId,
+          // orderId,
           transactionHash: transaction.hash,
           blockNumber: receipt?.blockNumber,
           gasUsed: receipt?.gasUsed?.toString(),
@@ -978,10 +978,10 @@ export class Order {
           receipt,
         };
 
-        if (!orderId) {
-          this.logger.warn("Warning: OrderId not found in transaction logs");
-          result.success = false;
-        }
+        // if (!orderId) {
+        //   this.logger.warn("Warning: OrderId not found in transaction logs");
+        //   result.success = false;
+        // }
 
         return {
           code: 0,

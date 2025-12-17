@@ -331,4 +331,6 @@ export class Api {
       `${this.getHost()}/openapi/gateway/scan/market`
     );
   };
+
+  
 }
