@@ -20,18 +20,19 @@ import {
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
 import { addQueryParams } from "./utils";
+import sdk from "@/web3";
 
-export const baseUrl = 'https://api-test.myx.cash'
 
-export const getBaseUrlByEnv = (isProd: boolean) => {
-  return isProd ? "https://api.myx.finance" : "https://api-test.myx.cash";
+
+export const getBaseUrlByEnv = (isProd?: boolean) => {
+  const _isProd =  !!isProd || !sdk.getConfigManager()?.getConfig()?.isTestnet
+  return _isProd ? "https://api.myx.finance" : "https://api-test.myx.cash";
 };
 
-export const getForwardUrlByEnv = (isProd: boolean) => {
-  return isProd
-    ? "https://api.myx.finance/v2/agent"
-    : "https://api-test.myx.cash/v2/agent";
+export const getForwardUrlByEnv = (isProd?: boolean) => {
+  return `${getBaseUrlByEnv(isProd)}/v2/agent`
 };
+
 
 export const getOraclePrice = async (
   chainId: ChainId,
@@ -39,7 +40,7 @@ export const getOraclePrice = async (
 ): Promise<PriceResponse> => {
   if (!!poolIds.length) {
     return http.get(
-      `${baseUrl}/openapi/gateway/quote/price/oracles`,
+      `${getBaseUrlByEnv()}/openapi/gateway/quote/price/oracles`,
       {
         chainId,
         poolIds: poolIds.join(","),
@@ -97,12 +98,10 @@ export const getPoolLevelConfig = async ({
 export const getPoolDetail = async (
   chainId: number,
   poolId: string,
-  isProd: boolean = true
+  isProd?: boolean
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${getBaseUrlByEnv(
-      isProd
-    )}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
+    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
@@ -146,7 +145,7 @@ export const getPoolOpenOrders = async (
   chainId: ChainId,
 ): Promise<PoolOpenOrdersResponse> => {
   return await http.get<PoolOpenOrdersResponse>(
-    `${baseUrl}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
     undefined,
     {
       headers: {
@@ -356,7 +355,7 @@ export const getBaseDetail = async (
   { ...params }: GetBaseDetailParams
 ) => {
   return http.get<ApiResponse<BaseDetailResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/base-details`,
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market/base-details`,
     params
   );
 };
@@ -369,14 +368,14 @@ export const getMarketDetail = async (
   { ...params }: GetMarketDetailParams
 ) => {
   return http.get<ApiResponse<MarketDetailResponse>>(
-    `${baseUrl}/openapi/gateway/scan/market/detail`,
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market/detail`,
     params
   );
 };
 
 export const getMarketList = async () => {
   return http.get<ApiResponse<MarketInfo[]>>(
-    `${baseUrl}/openapi/gateway/scan/market`
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market`
   );
 };
 
