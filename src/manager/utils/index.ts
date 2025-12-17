@@ -205,7 +205,7 @@ export class Utils {
     }
   }
 
-  async getUserTradingFeeRate(assetClass: number) {
+  async getUserTradingFeeRate(assetClass: number, riskTier: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
@@ -220,8 +220,10 @@ export class Utils {
 
       const userFeeRate = await brokerContract.getUserFeeRate(
         targetAddress,
-        assetClass
+        assetClass,
+        riskTier
       );
+      
       return {
         code: 0,
         data: {
