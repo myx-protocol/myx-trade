@@ -85,9 +85,7 @@ export class MxSDK {
   }
   public async getMarkets () {
     try {
-      const result = await getMarketList({
-        isProd: !this.configManager?.getConfig()?.isTestnet 
-      })
+      const result = await getMarketList()
       this.Markets = result?.data || []
     } catch (error) {
       throw error;
