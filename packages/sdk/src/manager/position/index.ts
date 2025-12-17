@@ -4,8 +4,6 @@ import { Logger } from "@/logger";
 import { ethers, Signer } from "ethers";
 import {
   GetHistoryOrdersParams,
-  getPositionHistory,
-  getPositions,
   OracleType,
 } from "@/api";
 import { Utils } from "../utils";
@@ -19,6 +17,7 @@ import {
 } from "@/web3/providers";
 import dayjs from "dayjs";
 import { Account } from "../account";
+import { Api } from "../api";
 
 export class Position {
   private configManager: ConfigManager;
@@ -26,22 +25,24 @@ export class Position {
   private utils: Utils;
   private seamless: Seamless;
   private account: Account;
+  private api: Api;
   constructor(
     configManager: ConfigManager,
     logger: Logger,
     utils: Utils,
     seamless: Seamless,
-    account: Account
+    account: Account,
+    api: Api
   ) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
     this.account = account;
+    this.api = api;
   }
 
   async listPositions(address: string) {
-    const isProd = !this.configManager.getConfig().isTestnet;
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -52,7 +53,7 @@ export class Position {
     }
 
     try {
-      const res = await getPositions(accessToken, address, isProd);
+      const res = await this.api.getPositions(accessToken, address);
       return {
         code: 0,
         data: res.data,
@@ -67,7 +68,6 @@ export class Position {
   }
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
-    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -75,11 +75,8 @@ export class Position {
         "Invalid access token"
       );
     }
-    const res = await getPositionHistory(
+    const res = await this.api.getPositionHistory(
       { accessToken, ...params, address: address },
-      {
-        isProd: !config?.isTestnet,
-      }
     );
     return {
       code: 0,

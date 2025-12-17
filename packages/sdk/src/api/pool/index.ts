@@ -16,8 +16,4 @@ export interface PoolSymbolAllResponse {
   quoteSymbol: string;
   baseTokenIcon: string;
 }
-export const getPoolSymbolAll = async () => {
-  return http.get<ApiResponse<PoolSymbolAllResponse[]>>(
-    `${getBaseUrlByEnv()}/openapi/gateway/scan/pools`
-  );
-};
+

@@ -1,7 +1,4 @@
-import { ApiResponse, BaseResponse } from "../type";
-import { http } from "../request";
-import { getForwardUrlByEnv } from "../index";
-import { addQueryParams } from "../utils";
+import { BaseResponse } from "../type";
 
 export type ForwarderTxParams = {
   from: string;
@@ -13,18 +10,6 @@ export type ForwarderTxParams = {
   deadline: number
   signature: string
 }
-
-export const forwarderTxApi = async (params: ForwarderTxParams, chainId: number, isProd = true) => {
-  return http.post<ApiResponse<any>>(
-    `${getForwardUrlByEnv(isProd)}/forwarder/tx-v2`,
-    params,
-    {
-      headers: {
-        'myx-chain-id': chainId.toString(),
-      },
-    },
-  );
-};
 
 export type FetchForwarderGetParams = {
   requestId: string
@@ -45,11 +30,3 @@ export type FetchForwarderGetResponseData = {
 }
 
 export type FetchForwarderGetResponse = BaseResponse<FetchForwarderGetResponseData>
-
-export const fetchForwarderGetApi = async (params: FetchForwarderGetParams, isProd = true) => {
-  const rs: FetchForwarderGetResponse = await http.get(
-    `${getForwardUrlByEnv(isProd)}/forwarder/get${addQueryParams(params)}`,
-  )
-
-  return rs
-}

@@ -4,7 +4,7 @@ import { Utils } from "../utils";
 import { ethers, Signer } from "ethers";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index";
-import { GetHistoryOrdersParams, getTradeFlow } from "@/api";
+import { GetHistoryOrdersParams } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
@@ -12,7 +12,7 @@ import { getForwarderContract } from "@/web3/providers";
 import { MyxClient } from "..";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
-import { getPoolList } from "@/api/pool";
+
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -48,39 +48,10 @@ export class Account {
     };
   }
 
-  /**
-   * get tradable amount
-   */
-  async getTradableAmount({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
-    const contractAddress = getContractAddressByChainId(chainId);
-    const provider = await getJSONProvider(chainId)
-    const accountContract = new ethers.Contract(
-      contractAddress.Account,
-      Account_ABI,
-      provider
-    );
-    try {
-      const assets = await accountContract.getTradableAmount(address, poolId);
-      const data = {
-        profitIsReleased: assets[0],
-        freeAmount: assets[1],
-        tradeableProfit: assets[2],
-      }
-      return {
-        code: 0,
-        data,
-      };
-    } catch (error) {
-      return {
-        code: -1
-      }
-    }
-  }
-
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
       const isProd = !this.configManager.getConfig().isTestnet;
-      const poolListRes = await getPoolList();
+      const poolListRes = await this.client.api.getPoolList();
       if (poolListRes.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
@@ -130,7 +101,6 @@ export class Account {
 
       return availableAccountMarginBalance
     } catch (error) {
-      this.logger.info('getAvailableMarginBalance error-->', error)
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
         "Failed to get getAvailableMarginBalance"
@@ -139,7 +109,6 @@ export class Account {
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
-    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -147,9 +116,7 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params, address }, {
-      isProd: !config?.isTestnet,
-    });
+    const res = await this.client.api.getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,
@@ -190,10 +157,7 @@ export class Account {
           nonce: nonce.toString(),
         }
 
-        this.logger.info("withdraw forward tx params --->", forwardTxParams)
-
         const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
@@ -282,7 +246,6 @@ export class Account {
         this.logger.info("deposit forward tx params --->", forwardTxParams)
 
         const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
