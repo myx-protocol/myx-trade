@@ -44,6 +44,12 @@ export class MyxClient {
     this.logger = new Logger({
       logLevel: options.logLevel,
     });
+    
+    /**
+     * initialize lp sdk
+     */
+    const lp = MxSDK.getInstance();
+    lp.setConfigManager(this.configManager);
 
     /**
      * initialize utils
@@ -76,15 +82,7 @@ export class MyxClient {
 
 
 
-    const lp = MxSDK.getInstance();
-    // if (options.walletClient?.transport) {
-    //   const provider = new BrowserProvider(options.walletClient?.transport);
-    //   if (provider) {
-    //     lp.setProvider(provider);
-    //   }
-    // }
-
-    lp.setConfigManager(this.configManager);
+    
   }
 
   /**
