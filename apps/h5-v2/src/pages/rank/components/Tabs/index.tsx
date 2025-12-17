@@ -40,12 +40,19 @@ export const MarketTab = styled(MuiTab)({
 })
 
 export const Tabs = () => {
-  const { tabsType, setTabsType } = useRankStore()
+  const { tabsType, setTabsType, setSort } = useRankStore()
   return (
     <div className="border-b border-[#202129] px-[6px]">
       <MarketTabs
+        variant="scrollable"
         value={tabsType}
-        onChange={(_, newValue) => setTabsType(newValue as LeaderboardSortField)}
+        onChange={(_, newValue) => {
+          setSort({
+            by: undefined,
+            direction: 'none',
+          })
+          setTabsType(newValue as LeaderboardSortField)
+        }}
       >
         <MarketTab value="tvl" label={<Trans>Hot</Trans>} />
         <MarketTab value="tokenCreateTime" label={<Trans>New</Trans>} />

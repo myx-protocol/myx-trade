@@ -1,4 +1,10 @@
-import { type LeaderboardSortField, type LeaderboardTimeInterval, LeaderboardTypeEnum } from '@/api'
+import {
+  type GetLeaderboardItem,
+  type LeaderboardSortField,
+  type LeaderboardTimeInterval,
+  LeaderboardTypeEnum,
+} from '@/api'
+import type { SortOrder } from '@/components/Sort'
 import { create } from 'zustand'
 
 interface RankStore {
@@ -10,6 +16,12 @@ interface RankStore {
   setTabsType: (tabsType: LeaderboardSortField) => void
   chainId: number
   setChainId: (chainId: number) => void
+
+  sort: {
+    by: keyof GetLeaderboardItem | undefined
+    direction: SortOrder
+  }
+  setSort: (sort: { by: keyof GetLeaderboardItem | undefined; direction: SortOrder }) => void
 }
 
 export const useRankStore = create<RankStore>((set) => ({
@@ -21,4 +33,10 @@ export const useRankStore = create<RankStore>((set) => ({
   setTabsType: (tabsType: LeaderboardSortField) => set({ tabsType }),
   chainId: 0,
   setChainId: (chainId: number) => set({ chainId }),
+  sort: {
+    by: undefined,
+    direction: 'none',
+  },
+  setSort: (sort: { by: keyof GetLeaderboardItem | undefined; direction: SortOrder }) =>
+    set({ sort }),
 }))
