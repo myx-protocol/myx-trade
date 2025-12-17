@@ -5,10 +5,12 @@ import { useGlobalSearchStore } from './GlobalSearch/store'
 import { Tabbar } from '@/components/Tabbar/index'
 import { useLayout } from '@/hooks/layout/useLayout'
 import { useEffect } from 'react'
+import { AccountDialog } from './AccountDialog'
+import useGlobalStore from '@/store/globalStore'
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
-  console.log('isOPen', isOpen)
+  const { accountDialogOpen } = useGlobalStore()
   useEffect(() => {
     if (tabbarActiveItem) {
       document.documentElement.style.setProperty('--tabbar-height', '60px')
@@ -30,6 +32,7 @@ function Layout() {
         </div>
         {/* global search modal */}
         {isOpen && <GlobalSearch />}
+        {accountDialogOpen && <AccountDialog />}
       </MyxSdkProvider>
     </div>
   )
