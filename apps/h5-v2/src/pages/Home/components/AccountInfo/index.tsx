@@ -8,17 +8,19 @@ import { Trans } from '@lingui/react/macro'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useHomeStore } from '../../store'
-import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { formatUnits, parseUnits } from 'ethers'
 import { Tooltips } from '@/components/UI/Tooltips'
 import useGlobalStore from '@/store/globalStore'
+import { ReceiveDialog } from '@/components/ReceiveDialog'
+import { useState } from 'react'
 
 export const AccountInfo = () => {
   const { address } = useWalletConnection()
   const homeStore = useHomeStore()
   const { client, clientIsAuthenticated } = useMyxSdkClient(homeStore.chainId)
   const { setAccountDialogOpen } = useGlobalStore()
+  const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
   const { data: accountBalance, isLoading } = useQuery({
     enabled: Boolean(client && clientIsAuthenticated),
     queryKey: ['home-getAccountBalance', homeStore.chainId, address],
@@ -50,7 +52,7 @@ export const AccountInfo = () => {
           </span>
         </div>
         <div className="ml-[10px] border-l-[1px] border-[#31333D] pl-[10px]">
-          <Copy content="0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" />
+          <Copy content={address || ''} />
         </div>
       </div>
       {/* balance */}
@@ -79,9 +81,17 @@ export const AccountInfo = () => {
             fontWeight: 500,
             width: '91px',
           }}
+          onClick={() => setReceiveDialogOpen(true)}
         >
           <Trans>Deposit</Trans>
         </PrimaryButton>
+        <ReceiveDialog
+          address={address as string}
+          chainId={homeStore.chainId}
+          open={receiveDialogOpen}
+          onClose={() => setReceiveDialogOpen(false)}
+          symbol="USDC"
+        />
       </div>
     </div>
   )
