@@ -1,0 +1,189 @@
+.vip-container {
+  padding: 20px 16px;
+  border-radius: 8px;
+  background-image: linear-gradient(375deg, #464B52 1.3%, #909499 37.98%, #484C52 97.82%);
+  .title {
+    background-image: linear-gradient(0deg, #999 0%, #FFF 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .progress {
+    height: 8px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.15);
+    .progress-bar, .MuiLinearProgress-bar {
+      background: linear-gradient(90deg, #667280 0%, #C4DBF5 100%);
+    }
+  }
+
+  &.vip1 {
+    background-image: linear-gradient(375deg, #354566 0.81%, #8D95A6 36.6%, #374052 95%);
+    .title {
+      background-image: linear-gradient(180deg, #FFF 50%, #7D93CD 100%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #5273CC 0%, #C4D1F5 100%);
+      }
+    }
+  }
+
+  &.vip2 {
+    background-image: linear-gradient(375deg, #264C52 0.79%, #A5B2B8 38.13%, #365566 100%);
+    .title {
+      background-image: linear-gradient(180deg, #FFF 0%, #86D4FF 100%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #73BDE5 0%, #DCE8F5 100%);
+      }
+    }
+  }
+  &.vip3 {
+    background-image: linear-gradient(93deg, #315237 1.14%, #A5B8AC 38.5%, #43735B 100.4%);
+    .title {
+      background-image: linear-gradient(180deg, #FFF 0%, #81E595 100%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #7EE593 0%, #D7E5CF 100%);
+      }
+    }
+  }
+
+  &.vip4 {
+    background-image: linear-gradient(375deg, #99804D 1.29%, #BFBAAC 38.55%, #B2A16B 99.76%);
+    .title {
+      background-image: linear-gradient(180deg, #FFF 50%, #FFDA6A 100%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #CCAD52 0%, #E5E0CF 100%);
+      }
+    }
+  }
+
+
+  &.vip5 {
+    background-image: linear-gradient(375deg, #8C6946 1.79%, #BFB4AC 38.8%, #A68563 100%);
+    .title {
+      background-image: linear-gradient(180deg, #FFF 50%, #FFA375 100%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #CC815C 0%, #F5E4DC 100%);
+      }
+    }
+
+  }
+
+
+  &.vip6, &.vip7, &.vip8, &.vip9, &.vip10, &.vip11 {
+    background-image: linear-gradient(375deg, #414166 2.47%, #A19DB2 37.63%, #736B99 95%);
+
+    .title {
+      background-image: linear-gradient(180deg, #FFF 50%, #96F 100%);
+    }
+
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background: linear-gradient(90deg, #4C3AA6 15%, #CAC2F2 100%);
+      }
+    }
+  }
+}
+
+
+
+.table-container {
+  position: relative;
+
+  border: 1px solid var(--dark-border);
+  border-radius: 12px;
+  table {
+    font-family: inherit;
+    border-collapse: collapse;
+    color: var(--basic-white);
+    /*border-collapse: separate;
+    border-spacing: 0;*/
+  }
+  thead {
+    /*tr {
+      border-bottom: 1px solid var(--dark-border);
+    }*/
+  }
+  /*tr:not(:last-child) {
+    border-bottom: 1px solid var(--dark-border);
+  }*/
+ /* th:not(:last-child), td:not(:last-child) {
+    border-right: 1px solid var(--dark-border);
+  }*/
+
+  tr {
+    height: 54px;
+    font-weight: 400;
+    &.active {
+      font-weight: 700;
+    }
+  }
+
+  th {
+    /*display: table-cell;*/
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 18px */
+    color: var(--secondary-text);
+    padding-top: 12.5px;
+    border-bottom: 1px solid var(--dark-border);
+    border-right: 1px solid var(--dark-border);
+  }
+  th:first-child {
+    padding-left: 40px;
+    text-align: left;
+  }
+
+  td{
+    /*display: table-cell;*/
+    font-size: 14px;
+    font-style: normal;
+    font-weight: inherit;
+    line-height: 150%; /* 21px */
+    color: var(--basic-white);
+    border-bottom: 1px solid var(--dark-border);
+    border-right: 1px solid var(--dark-border);
+
+  }
+
+  td:not(:first-child) {
+    padding: 0 20px;
+  }
+  td:first-child {
+    padding-right: 24px;
+    padding-left: 40px;
+    position: relative;
+    text-align: left;
+  }
+}
+
+.progress.progress-primary {
+  height: 6px;
+  border-radius: 8px;
+  background: var(--dark-border);
+  .MuiLinearProgress-barColorPrimary {
+    background: linear-gradient(90deg, #29CCA0 0%, #CCFFF1 100%);
+  }
+}
+
+
+.record-dialog {
+  padding: 0 16px 20px;
+}
+
+.sticky-col {
+  position: sticky!important;
+  left: 0;
+  background-color: var(--deep-bg); /* 避免遮挡后面的列 */
+  z-index: 1; /* 让列在上层 */
+}
