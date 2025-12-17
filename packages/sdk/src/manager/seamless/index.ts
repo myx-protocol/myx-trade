@@ -6,7 +6,7 @@ import { Utils } from "../utils";
 import { getSignerProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
-import { ForwarderGetStatus, fetchForwarderGetApi, forwarderTxApi } from "@/api";
+import { ForwarderGetStatus } from "@/api";
 import { getForwarderContract } from "@/web3/providers";
 import { Account } from "../account";
 import dayjs from "dayjs";
@@ -15,6 +15,7 @@ import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getChainDomainConfig, getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { retry, RetryableError, TimeoutError } from "@/utils";
+import { Api } from "../api";
 
 const contractTypes = {
   ForwardRequest: [
@@ -115,13 +116,15 @@ export class Seamless {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private account: Account
+  private account: Account;
+  private api: Api;
 
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account) {
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, api: Api) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.account = account;
+    this.api = api;
   }
 
   async onCheckRelayer(account: string, relayer: string, chainId: number) {
@@ -221,7 +224,6 @@ export class Seamless {
     data: string;
     nonce: string;
   }, chainId: number, provider?: ethers.Signer) {
-    const isProd = !this.configManager.getConfig().isTestnet;
     const forwarderContract = await getForwarderContract(chainId)
     const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
 
@@ -244,7 +246,7 @@ export class Seamless {
       data
     })
 
-    const txRs = await forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId, isProd)
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId)
     return txRs
   }
 
@@ -303,7 +305,7 @@ export class Seamless {
       const retryOptions = { n: 10, minWait: 250, maxWait: 1000 }
 
       const { promise } = retry(async () => {
-        const getRs = await fetchForwarderGetApi({
+        const getRs = await this.api.fetchForwarderGetApi({
           requestId: txRs.data?.requestId,
         })
 

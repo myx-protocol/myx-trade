@@ -7,6 +7,7 @@ import { Position } from "./position";
 import { Order } from "./order";
 import { Utils } from "./utils";
 import { Account } from "./account";
+import { Api } from "./api";
 
 import { MxSDK } from "@/web3";
 import { Seamless } from "./seamless";
@@ -32,6 +33,7 @@ export class MyxClient {
   public utils: Utils;
   public account: Account;
   public seamless: Seamless;
+  public api: Api;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -44,7 +46,7 @@ export class MyxClient {
     this.logger = new Logger({
       logLevel: options.logLevel,
     });
-    
+
     /**
      * initialize lp sdk
      */
@@ -56,33 +58,32 @@ export class MyxClient {
      */
     this.utils = new Utils(this.configManager, this.logger);
 
+    this.api = new Api(this.configManager, this.logger);
+
     this.account = new Account(this.configManager, this.logger, this.utils, this);
 
-    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account);
+    this.seamless = new Seamless(this.configManager, this.logger, this.utils, this.account, this.api);
 
     /**
      * initialize markets
      */
-    this.markets = new Markets(this.configManager, this.utils);
+    this.markets = new Markets(this.configManager, this.utils, this.api);
 
     /**
      * initialize position
      */
-    this.position = new Position(this.configManager, this.logger, this.utils, this.seamless, this.account);
+    this.position = new Position(this.configManager, this.logger, this.utils, this.seamless, this.account, this.api);
 
     /**
      * initialize orders
      */
-    this.order = new Order(this.configManager, this.logger, this.utils, this.seamless, this.account);
+    this.order = new Order(this.configManager, this.logger, this.utils, this.seamless, this.account, this.api);
 
     /**
      * initialize subscription
      */
     this.subscription = new SubScription(this.configManager, this.logger);
 
-
-
-    
   }
 
   /**

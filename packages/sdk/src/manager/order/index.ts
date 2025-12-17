@@ -1,6 +1,6 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
-import { getHistoryOrders, GetHistoryOrdersParams, getOrders } from "@/api";
+import { GetHistoryOrdersParams } from "@/api";
 import {
   getBrokerSingerContract,
   getForwarderContract,
@@ -21,6 +21,7 @@ import { Seamless } from "../seamless";
 import dayjs from "dayjs";
 import { Account } from "../account";
 import { ChainId } from "@/config/chain";
+import { Api } from "../api";
 
 export class Order {
   private configManager: ConfigManager;
@@ -28,12 +29,14 @@ export class Order {
   private utils: Utils;
   private seamless: Seamless;
   private account: Account
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account) {
+  private api: Api;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account, api: Api) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
     this.account = account
+    this.api = api;
   }
 
   async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string) {
@@ -1201,7 +1204,7 @@ export class Order {
   }
 
   async getOrders(address: string) {
-    const isProd = !this.configManager.getConfig().isTestnet;
+
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -1212,7 +1215,7 @@ export class Order {
     }
 
     try {
-      const res = await getOrders(accessToken, address, isProd);
+      const res = await this.api.getOrders(accessToken, address);
       return {
         code: 0,
         data: res.data,
@@ -1235,9 +1238,7 @@ export class Order {
         "Invalid access token"
       );
     }
-    const res = await getHistoryOrders({ accessToken, ...params, address }, {
-      isProd: !config?.isTestnet,
-    });
+    const res = await this.api.getHistoryOrders({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,

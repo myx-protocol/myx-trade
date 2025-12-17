@@ -3,23 +3,22 @@ import {
   ApiResponse,
   PriceResponse,
   PoolResponse,
-  PositionResponse,
+  // PositionResponse,
   PoolOpenOrdersResponse,
-  AccessTokenRequest,
+  // AccessTokenRequest,
   HttpEnvParams,
   HttpKlineIntervalEnum,
-  KlineDataItemType,
+  // KlineDataItemType,
   TickerDataItem,
   SearchTypeEnum,
   SearchSecondTypeEnum,
-  SearchResultResponse,
-  FavoritesListItem,
+  // SearchResultResponse,
+  // FavoritesListItem,
   BaseDetailResponse,
   MarketDetailResponse,
   MarketInfo,
 } from "@/api/type";
 import { ChainId } from "@/config/chain";
-import { addQueryParams } from "./utils";
 import sdk from "@/web3";
 
 
@@ -80,20 +79,20 @@ export interface GetPoolLevelConfigParams {
 /**
  * Get Pool Level Config
  */
-export const getPoolLevelConfig = async ({
-  poolId,
-  chainId,
-  isProd = true,
-}: GetPoolLevelConfigParams) => {
-  return http.get<ApiResponse<PoolLevelConfig>>(
-    `${getBaseUrlByEnv(
-      isProd
-    )}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
-      poolId,
-      chainId,
-    })}`
-  );
-};
+// export const getPoolLevelConfig = async ({
+//   poolId,
+//   chainId,
+//   isProd = true,
+// }: GetPoolLevelConfigParams) => {
+//   return http.get<ApiResponse<PoolLevelConfig>>(
+//     `${getBaseUrlByEnv(
+//       isProd
+//     )}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
+//       poolId,
+//       chainId,
+//     })}`
+//   );
+// };
 
 export const getPoolDetail = async (
   chainId: number,
@@ -105,39 +104,39 @@ export const getPoolDetail = async (
   );
 };
 
-export const getPositions = async (
-  accessToken: string,
-  address: string,
-  isProd: boolean = true
-): Promise<PositionResponse> => {
-  return await http.get<PositionResponse>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/position/open`,
-    undefined, // params
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const getPositions = async (
+//   accessToken: string,
+//   address: string,
+//   isProd: boolean = true
+// ): Promise<PositionResponse> => {
+//   return await http.get<PositionResponse>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/position/open`,
+//     undefined, // params
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
-export const getOrders = async (
-  accessToken: string,
-  address: string,
-  isProd: boolean = true
-): Promise<PositionResponse> => {
-  return await http.get<PositionResponse>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/order/open`,
-    undefined,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const getOrders = async (
+//   accessToken: string,
+//   address: string,
+//   isProd: boolean = true
+// ): Promise<PositionResponse> => {
+//   return await http.get<PositionResponse>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/order/open`,
+//     undefined,
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
 export const getPoolOpenOrders = async (
   accessToken: string,
@@ -167,36 +166,36 @@ export interface GetKlineDataParams {
   interval: HttpKlineIntervalEnum;
 }
 
-export const getKlineData = (
-  { chainId, poolId, endTime, limit, interval }: GetKlineDataParams,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<KlineDataItemType[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candles`,
-    {
-      chainId,
-      poolId,
-      endTime,
-      limit,
-      interval,
-    }
-  );
-};
+// export const getKlineData = (
+//   { chainId, poolId, endTime, limit, interval }: GetKlineDataParams,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<KlineDataItemType[]>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candles`,
+//     {
+//       chainId,
+//       poolId,
+//       endTime,
+//       limit,
+//       interval,
+//     }
+//   );
+// };
 
 /**
  * Get Kline Latest Bar
  */
-export const getKlineLatestBar = async (
-  params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<KlineDataItemType>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candle/latest`,
-    params
-  );
-};
+// export const getKlineLatestBar = async (
+//   params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<KlineDataItemType>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candle/latest`,
+//     params
+//   );
+// };
 
 // Get Ticker Data
 export interface GetTickerDataParams {
@@ -218,13 +217,13 @@ export const getTickerData = async (
   );
 };
 
-// Get ALL Tickers
-export const getAllTickers = async (envParams: HttpEnvParams) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<TickerDataItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/v2/mx-gateway/quote/candle/all_tickers`
-  );
-};
+// // Get ALL Tickers
+// export const getAllTickers = async (envParams: HttpEnvParams) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<TickerDataItem[]>>(
+//     `${getBaseUrlByEnv(isProd)}/v2/mx-gateway/quote/candle/all_tickers`
+//   );
+// };
 
 /**
  * search
@@ -237,33 +236,33 @@ export interface SearchMarketParams {
   searchKey?: string; // keywords
 }
 // search market pool
-export const searchMarketAuth = async (
-  { accessToken, address, ...params }: SearchMarketParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<SearchResultResponse>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/ac-search`,
-    params,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const searchMarketAuth = async (
+//   { accessToken, address, ...params }: SearchMarketParams & AccessTokenRequest,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<SearchResultResponse>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/ac-search`,
+//     params,
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
-export const searchMarket = async (
-  { ...params }: SearchMarketParams,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<SearchResultResponse>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/search`,
-    params
-  );
-};
+// export const searchMarket = async (
+//   { ...params }: SearchMarketParams,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<SearchResultResponse>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/search`,
+//     params
+//   );
+// };
 
 /**
  * favorite
@@ -273,48 +272,48 @@ export interface AddFavoriteParams {
   chainId: ChainId;
 }
 
-export const addFavorite = async (
-  { accessToken, address, ...params }: AddFavoriteParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<null>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/add-favorites`,
-    params,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const addFavorite = async (
+//   { accessToken, address, ...params }: AddFavoriteParams & AccessTokenRequest,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<null>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/add-favorites`,
+//     params,
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
 export interface RemoveFavoriteParams {
   poolId: string;
   chainId: ChainId;
 }
 
-export const removeFavorite = async (
-  {
-    accessToken,
-    address,
-    ...params
-  }: RemoveFavoriteParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<null>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/cancel-favorites`,
-    params,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const removeFavorite = async (
+//   {
+//     accessToken,
+//     address,
+//     ...params
+//   }: RemoveFavoriteParams & AccessTokenRequest,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<null>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/cancel-favorites`,
+//     params,
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
 /**
  * Favorites List
@@ -330,22 +329,22 @@ export interface FavoritesListParams {
   chainId: ChainId | 0;
 }
 
-export const getFavoritesList = async (
-  { accessToken, address, ...params }: FavoritesListParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<FavoritesListItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/favorites`,
-    params,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+// export const getFavoritesList = async (
+//   { accessToken, address, ...params }: FavoritesListParams & AccessTokenRequest,
+//   envParams: HttpEnvParams
+// ) => {
+//   const isProd = envParams?.isProd ?? true;
+//   return http.get<ApiResponse<FavoritesListItem[]>>(
+//     `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/favorites`,
+//     params,
+//     {
+//       headers: {
+//         myx_openapi_access_token: accessToken,
+//         myx_openapi_account: address,
+//       },
+//     }
+//   );
+// };
 
 export interface GetBaseDetailParams {
   chainId: ChainId;
