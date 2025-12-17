@@ -79,7 +79,8 @@ export class Account {
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
-      const poolListRes = await getPoolList();
+      const isProd = !this.configManager.getConfig().isTestnet;
+      const poolListRes = await getPoolList({ isProd });
       if (poolListRes.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
@@ -113,24 +114,19 @@ export class Account {
         );
       }
 
-      this.logger.info("getAvailableMarginBalance used-->", used)
       const marginAccountBalance = marginAccountBalanceRes.data;
       const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
-      this.logger.info("getAvailableMarginBalance quoteProfit-->", quoteProfit.toString)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
-      this.logger.info("getAvailableMarginBalance freeAmount-->", freeAmount.toString())
 
       const accountMargin = freeAmount + quoteProfit
 
-      this.logger.info("getAvailableMarginBalance accountMargin-->", accountMargin.toString())
 
       if (accountMargin < usedMargin) {
         return BigInt(0)
       }
 
       const availableAccountMarginBalance = accountMargin - usedMargin;
-      this.logger.info("getAvailableMarginBalance availableAccountMarginBalance-->", availableAccountMarginBalance.toString())
 
       return availableAccountMarginBalance
     } catch (error) {
@@ -143,6 +139,7 @@ export class Account {
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
+    const isProd = !this.configManager.getConfig().isTestnet;
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -150,7 +147,7 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params, address });
+    const res = await getTradeFlow({ accessToken, ...params, address, isProd });
     return {
       code: 0,
       data: res.data,

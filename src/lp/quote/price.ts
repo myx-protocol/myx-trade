@@ -13,7 +13,9 @@ export const getLpPrice = async (chainId:ChainId,poolId: string) => {
     const contract = await getQuotePoolContract(chainId);
     let price = 0n
     // if (!(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)) {
-      const res = await getPriceData(chainId, poolId)
+    // todo cici
+    // @ts-ignore
+      const res = await getPriceData(chainId, poolId, true)
       if (res?.price) {
         price = parseUnits(res.price, COMMON_PRICE_DECIMALS)
       }

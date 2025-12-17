@@ -1201,6 +1201,7 @@ export class Order {
   }
 
   async getOrders(address: string) {
+    const isProd = !this.configManager.getConfig().isTestnet;
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -1211,7 +1212,7 @@ export class Order {
     }
 
     try {
-      const res = await getOrders(accessToken, address);
+      const res = await getOrders(accessToken, address, isProd);
       return {
         code: 0,
         data: res.data,
@@ -1227,13 +1228,14 @@ export class Order {
 
   async getOrderHistory(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken();
+    const isProd = !this.configManager.getConfig().isTestnet;
     if (!accessToken) {
       throw new MyxSDKError(
         MyxErrorCode.InvalidAccessToken,
         "Invalid access token"
       );
     }
-    const res = await getHistoryOrders({ accessToken, ...params, address });
+    const res = await getHistoryOrders({ accessToken, ...params, address, isProd });
     return {
       code: 0,
       data: res.data,

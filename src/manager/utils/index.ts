@@ -265,11 +265,10 @@ export class Utils {
     }
   }
 
-  async getOraclePrice(poolId: string) {
+  async getOraclePrice(poolId: string, chainId: number) {
     try {
-      const config: MyxClientConfig = this.configManager.getConfig();
-      // update price data
-      const priceData = await getPriceData(config.chainId, poolId);
+      const isProd = !this.configManager.getConfig().isTestnet;
+      const priceData = await getPriceData(chainId, poolId, isProd);
       if (!priceData) throw new Error("Failed to get price data");
       return priceData;
     } catch (error) {
@@ -377,8 +376,5 @@ export class Utils {
         message: error?.message,
       };
     }
-
-
-    // return poolInfo;
   }
 }
