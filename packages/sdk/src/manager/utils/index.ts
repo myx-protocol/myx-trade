@@ -269,8 +269,7 @@ export class Utils {
 
   async getOraclePrice(poolId: string, chainId: number) {
     try {
-      const isProd = !this.configManager.getConfig().isTestnet;
-      const priceData = await getPriceData(chainId, poolId, isProd);
+      const priceData = await getPriceData(chainId, poolId);
       if (!priceData) throw new Error("Failed to get price data");
       return priceData;
     } catch (error) {
