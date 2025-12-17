@@ -80,7 +80,7 @@ export class Account {
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
       const isProd = !this.configManager.getConfig().isTestnet;
-      const poolListRes = await getPoolList({ isProd });
+      const poolListRes = await getPoolList();
       if (poolListRes.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,

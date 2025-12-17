@@ -228,11 +228,8 @@ export class Markets {
    * base detail
    */
   async getBaseDetail(params: GetBaseDetailParams) {
-    const config = this.configManager.getConfig();
     return (
-      await getBaseDetail(params, {
-        isProd: !config?.isTestnet,
-      })
+      await getBaseDetail(params)
     ).data;
   }
 
@@ -240,11 +237,8 @@ export class Markets {
    * get market detail
    */
   async getMarketDetail(params: GetMarketDetailParams) {
-    const config = this.configManager.getConfig();
     return (
-      await getMarketDetail(params, {
-        isProd: !config?.isTestnet,
-      })
+      await getMarketDetail(params)
     ).data;
   }
 
@@ -252,11 +246,8 @@ export class Markets {
    * get pool symbol all
    */
   async getPoolSymbolAll() {
-    const config = this.configManager.getConfig();
     return (
-      await getPoolSymbolAll({
-        isProd: !config?.isTestnet,
-      })
+      await getPoolSymbolAll()
     ).data;
   }
 }

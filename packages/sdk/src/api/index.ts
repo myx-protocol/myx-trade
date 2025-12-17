@@ -353,12 +353,10 @@ export interface GetBaseDetailParams {
   poolId: string;
 }
 export const getBaseDetail = async (
-  { ...params }: GetBaseDetailParams,
-  envParams: HttpEnvParams
+  { ...params }: GetBaseDetailParams
 ) => {
-  const isProd = envParams?.isProd ?? true;
   return http.get<ApiResponse<BaseDetailResponse>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/base-details`,
+    `${baseUrl}/openapi/gateway/scan/market/base-details`,
     params
   );
 };
@@ -368,20 +366,17 @@ export interface GetMarketDetailParams {
   poolId: string;
 }
 export const getMarketDetail = async (
-  { ...params }: GetMarketDetailParams,
-  envParams: HttpEnvParams
+  { ...params }: GetMarketDetailParams
 ) => {
-  const isProd = envParams?.isProd ?? true;
   return http.get<ApiResponse<MarketDetailResponse>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/detail`,
+    `${baseUrl}/openapi/gateway/scan/market/detail`,
     params
   );
 };
 
-export const getMarketList = async (envParams: HttpEnvParams) => {
-  const isProd = envParams?.isProd ?? true;
+export const getMarketList = async () => {
   return http.get<ApiResponse<MarketInfo[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market`
+    `${baseUrl}/openapi/gateway/scan/market`
   );
 };
 
