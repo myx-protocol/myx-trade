@@ -137,66 +137,88 @@
         "name": "brokerAddress"
       },
       {
+        "type": "uint8[]",
+        "name": "assetClasses"
+      },
+      {
+        "type": "uint8[][]",
+        "name": "assetRiskTiers"
+      },
+      {
         "type": "bool",
         "name": "isMYXBroker"
       }
     ],
     "outputs": [
       {
-        "type": "tuple",
-        "name": "brokerFee",
+        "type": "tuple[]",
+        "name": "brokerFees",
         "components": [
           {
-            "type": "tuple[]",
-            "name": "addOnFeeTiers",
-            "components": [
-              {
-                "type": "uint8",
-                "name": "tier"
-              },
-              {
-                "type": "uint32",
-                "name": "takerFeeRate"
-              },
-              {
-                "type": "int32",
-                "name": "makerFeeRate"
-              }
-            ]
+            "type": "uint8",
+            "name": "asset"
           },
           {
             "type": "tuple[]",
-            "name": "baseFeeRate",
+            "name": "riskTieredBrokerFees",
             "components": [
               {
                 "type": "uint8",
-                "name": "assetClass"
+                "name": "riskTier"
               },
               {
-                "type": "uint32",
-                "name": "makerFeeRate"
+                "type": "tuple[]",
+                "name": "addOnFeeTiers",
+                "components": [
+                  {
+                    "type": "uint8",
+                    "name": "tier"
+                  },
+                  {
+                    "type": "uint32",
+                    "name": "takerFeeRate"
+                  },
+                  {
+                    "type": "int32",
+                    "name": "makerFeeRate"
+                  }
+                ]
               },
               {
-                "type": "uint32",
-                "name": "takerFeeRate"
-              }
-            ]
-          },
-          {
-            "type": "tuple[]",
-            "name": "specialFeeTiers",
-            "components": [
-              {
-                "type": "uint8",
-                "name": "tier"
+                "type": "tuple[]",
+                "name": "baseFeeRate",
+                "components": [
+                  {
+                    "type": "uint8",
+                    "name": "assetClass"
+                  },
+                  {
+                    "type": "uint32",
+                    "name": "makerFeeRate"
+                  },
+                  {
+                    "type": "uint32",
+                    "name": "takerFeeRate"
+                  }
+                ]
               },
               {
-                "type": "uint32",
-                "name": "takerFeeRate"
-              },
-              {
-                "type": "int32",
-                "name": "makerFeeRate"
+                "type": "tuple[]",
+                "name": "specialFeeTiers",
+                "components": [
+                  {
+                    "type": "uint8",
+                    "name": "tier"
+                  },
+                  {
+                    "type": "uint32",
+                    "name": "takerFeeRate"
+                  },
+                  {
+                    "type": "int32",
+                    "name": "makerFeeRate"
+                  }
+                ]
               }
             ]
           }
