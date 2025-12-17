@@ -17,6 +17,7 @@ export const EXPRESS_MENU_LIST: MenuItem[] = [
   {
     title: () => <Trans>Referrals</Trans>,
     icon: MenuReferral,
+    href: '/referrals',
   },
   {
     title: () => <Trans>VIP</Trans>,
