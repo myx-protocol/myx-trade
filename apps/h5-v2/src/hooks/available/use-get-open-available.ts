@@ -1,5 +1,5 @@
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
 import { usePoolLiquidityInfo } from '@/components/Trade/TradePanel/PoolsInfo/usePoolLiquidityInfo'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import { parseBigNumber } from '@/utils/bn'
@@ -9,6 +9,7 @@ import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { ethers } from 'ethers'
 import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
+import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 
 // 自定义 hook：保留之前的有效值（在渲染时同步更新，不使用 useEffect）
 function useStableValue<T>(value: T, isValid: (val: T) => boolean): T {
@@ -27,8 +28,15 @@ export const useGetOpenAvailable = () => {
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   const leverage = useLeverage(symbolInfo?.poolId)
   const { autoMarginMode, collateralAmount, price } = useTradePanelStore()
-
+  const fundingFeeRate = useGetUserTradingFeeRate(
+    symbolInfo?.chainId ?? 0,
+    poolConfig?.levelConfig?.assetClass ?? 0,
+    poolConfig as PoolConfig,
+  )
   const { liquidityInfo } = useGetLiquidityInfo()
+  const safePrice = useMemo(() => {
+    return !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
+  }, [price])
 
   const slipValue = useMemo(() => {
     if (!poolConfig) return 1
@@ -91,18 +99,17 @@ export const useGetOpenAvailable = () => {
 
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
-  const safePrice = useMemo(() => {
-    return !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
-  }, [price])
-
   const collateralAmountValue = useMemo(() => {
+    const availableMarginOriginal = accountAssets?.availableMargin?.toString()
+    const ratio = parseBigNumber(leverage).mul(parseBigNumber(fundingFeeRate))
+    const ratioRs = parseBigNumber(1).minus(ratio)
+    const availableMargin = parseBigNumber(availableMarginOriginal).mul(ratioRs).toString()
+
     const value = autoMarginMode
-      ? parseBigNumber(accountAssets?.availableMargin?.toString() ?? '0').mul(
-          parseBigNumber(leverage),
-        )
+      ? parseBigNumber(availableMargin ?? '0').mul(parseBigNumber(leverage))
       : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
     return value.toString()
-  }, [autoMarginMode, accountAssets?.availableMargin, leverage, collateralAmount])
+  }, [autoMarginMode, accountAssets?.availableMargin, leverage, collateralAmount, fundingFeeRate])
 
   // 使用 useStableValue 保留有效值，避免 refetch 期间的空值
   const stableBuySizeValue = useStableValue(
