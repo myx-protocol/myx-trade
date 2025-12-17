@@ -139,7 +139,7 @@ export class Account {
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
-    const isProd = !this.configManager.getConfig().isTestnet;
+    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -147,7 +147,9 @@ export class Account {
         "Invalid access token"
       );
     }
-    const res = await getTradeFlow({ accessToken, ...params, address, isProd });
+    const res = await getTradeFlow({ accessToken, ...params, address }, {
+      isProd: !config?.isTestnet,
+    });
     return {
       code: 0,
       data: res.data,

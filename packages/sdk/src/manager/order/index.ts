@@ -1227,15 +1227,17 @@ export class Order {
   }
 
   async getOrderHistory(params: GetHistoryOrdersParams, address: string) {
+    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
-    const isProd = !this.configManager.getConfig().isTestnet;
     if (!accessToken) {
       throw new MyxSDKError(
         MyxErrorCode.InvalidAccessToken,
         "Invalid access token"
       );
     }
-    const res = await getHistoryOrders({ accessToken, ...params, address, isProd });
+    const res = await getHistoryOrders({ accessToken, ...params, address }, {
+      isProd: !config?.isTestnet,
+    });
     return {
       code: 0,
       data: res.data,
