@@ -2,6 +2,8 @@ import { toast } from '@/components/UI/Toast'
 import { EXPRESS_MENU_LIST } from './const'
 import { useNavigate } from 'react-router-dom'
 import { t } from '@lingui/core/macro'
+import { SecondHeader } from '@/components/SecondHeader'
+import { Trans } from '@lingui/react/macro'
 
 export const ExpressMenu = () => {
   const navigate = useNavigate()

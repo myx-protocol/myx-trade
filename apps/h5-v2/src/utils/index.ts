@@ -1,6 +1,7 @@
 import { t } from '@lingui/core/macro'
 import dayjs from 'dayjs'
 import { isNil } from 'lodash-es'
+import type { HTMLAttributeAnchorTarget } from 'react'
 import screenfull from 'screenfull'
 import scrollIntoViewIfNeed from 'scroll-into-view-if-needed'
 
@@ -101,3 +102,18 @@ export * from './url'
 
 export const enumValues = <T extends object>(enu: T): Array<T[keyof T]> =>
   Object.values(enu).filter((v) => typeof v !== 'string') as any
+
+type ALinkProps = {
+  href: string
+  target?: HTMLAttributeAnchorTarget
+  fileName?: string
+}
+export const aLink = ({ href, target = '_blank', fileName = 'download' }: ALinkProps) => {
+  const aLink = document.createElement('a')
+  aLink.href = href
+  aLink.target = target
+  aLink.download = fileName
+  document.body.append(aLink)
+  aLink.click()
+  aLink.remove()
+}
