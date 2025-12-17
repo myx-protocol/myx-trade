@@ -1,48 +1,39 @@
 import { ConfigManager } from "@/manager/config";
 import {
-  getKlineData,
   GetKlineDataParams,
-  getKlineLatestBar,
-  getPoolLevelConfig,
-  getTickerData,
   GetTickerDataParams,
-  searchMarket,
-  searchMarketAuth,
   SearchMarketParams,
-  addFavorite,
   AddFavoriteParams,
-  removeFavorite,
   RemoveFavoriteParams,
-  getFavoritesList,
   FavoritesListParams,
-  getBaseDetail,
   type GetBaseDetailParams,
-  getMarketDetail,
   type GetMarketDetailParams,
 } from "@/api";
 import { KlineResolution } from "../subscription/types";
 import { Utils } from "../utils";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { getPoolSymbolAll } from "@/api/pool";
+import { Api } from "../api";
 
 export class Markets {
   private configManager: ConfigManager;
   private utils: Utils;
-  constructor(configManager: ConfigManager, utils: Utils) {
+  private api: Api;
+  constructor(configManager: ConfigManager, utils: Utils, api: Api) {
     this.configManager = configManager;
     this.utils = utils;
+    this.api = api;
   }
 
   getMarkets() {
     return Promise.resolve([]);
   }
 
-  async getPoolLevelConfig(poolId: string) {
+  async getPoolLevelConfig(poolId: string, chainId: number) {
     const config = this.configManager.getConfig();
     return (
-      await getPoolLevelConfig({
+      await this.api.getPoolLevelConfig({
         poolId,
-        chainId: config?.chainId,
+        chainId,
       })
     ).data;
   }
@@ -58,13 +49,10 @@ export class Markets {
   }) {
     const config = this.configManager.getConfig();
     return (
-      await getKlineData(
+      await this.api.getKlineData(
         {
           ...params,
           interval: this.utils.transferKlineResolutionToInterval(interval),
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
@@ -78,13 +66,10 @@ export class Markets {
   }) {
     const config = this.configManager.getConfig();
     return (
-      await getKlineLatestBar(
+      await this.api.getKlineLatestBar(
         {
           ...params,
           interval: this.utils.transferKlineResolutionToInterval(interval),
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
@@ -97,11 +82,8 @@ export class Markets {
    * ticker start
    */
   async getTickerList(params: GetTickerDataParams) {
-    const config = this.configManager.getConfig();
     return (
-      await getTickerData(params, {
-        isProd: !config?.isTestnet,
-      })
+      await this.api.getTickerData(params)
     ).data;
   }
 
@@ -115,7 +97,6 @@ export class Markets {
    *
    */
   async searchMarketAuth(params: SearchMarketParams, address: string) {
-    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -124,14 +105,11 @@ export class Markets {
       );
     }
     return (
-      await searchMarketAuth(
+      await this.api.searchMarketAuth(
         {
           address: address,
           ...params,
           accessToken: accessToken,
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
@@ -141,11 +119,8 @@ export class Markets {
    * search by unauthenticated users
    */
   async searchMarket(params: SearchMarketParams) {
-    const config = this.configManager.getConfig();
     return (
-      await searchMarket(params, {
-        isProd: !config?.isTestnet,
-      })
+      await this.api.searchMarket(params)
     ).data;
   }
 
@@ -163,14 +138,11 @@ export class Markets {
       );
     }
     return (
-      await getFavoritesList(
+      await this.api.getFavoritesList(
         {
           ...params,
           address: address,
           accessToken: accessToken,
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
@@ -188,21 +160,17 @@ export class Markets {
       );
     }
     return (
-      await addFavorite(
+      await this.api.addFavorite(
         {
           ...params,
           address: address,
           accessToken: accessToken,
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
   }
 
   async removeFavorite(params: RemoveFavoriteParams, address: string) {
-    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -211,14 +179,11 @@ export class Markets {
       );
     }
     return (
-      await removeFavorite(
+      await this.api.removeFavorite(
         {
           ...params,
           address: address,
           accessToken: accessToken,
-        },
-        {
-          isProd: !config?.isTestnet,
         }
       )
     ).data;
@@ -229,7 +194,7 @@ export class Markets {
    */
   async getBaseDetail(params: GetBaseDetailParams) {
     return (
-      await getBaseDetail(params)
+      await this.api.getBaseDetail(params)
     ).data;
   }
 
@@ -238,7 +203,7 @@ export class Markets {
    */
   async getMarketDetail(params: GetMarketDetailParams) {
     return (
-      await getMarketDetail(params)
+      await this.api.getMarketDetail(params)
     ).data;
   }
 
@@ -247,7 +212,7 @@ export class Markets {
    */
   async getPoolSymbolAll() {
     return (
-      await getPoolSymbolAll()
+      await this.api.getPoolSymbolAll()
     ).data;
   }
 }

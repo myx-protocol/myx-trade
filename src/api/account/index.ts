@@ -1,7 +1,4 @@
 import { Address } from "@/address";
-import { AccessTokenRequest, ApiResponse, HttpEnvParams } from "../type";
-import { http } from "../request";
-import { getBaseUrlByEnv } from "../index";
 
 export interface GetHistoryOrdersParams {
   limit?: number;
@@ -98,30 +95,6 @@ export interface HistoryOrderItem {
 }
 
 /**
- * Get history orders
- */
-export const getHistoryOrders = async (
-  {
-    accessToken,
-    address,
-    ...params
-  }: GetHistoryOrdersParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<HistoryOrderItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/order/closed`,
-    params,
-    {
-      headers: {
-        myx_openapi_account: address,
-        myx_openapi_access_token: accessToken,
-      },
-    }
-  );
-};
-
-/**
  * Get position history
  */
 
@@ -158,27 +131,6 @@ export interface PositionHistoryItem {
   avgClosePrice: string; // average close price
 }
 
-export const getPositionHistory = async (
-  {
-    accessToken,
-    address,
-    ...params
-  }: GetHistoryOrdersParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<PositionHistoryItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/position/closed`,
-    params,
-    {
-      headers: {
-        myx_openapi_account: address,
-        myx_openapi_access_token: accessToken,
-      },
-    }
-  );
-};
-
 /**
  * Get Trade Flow
  */
@@ -209,23 +161,4 @@ export interface TradeFlowItem {
   referralRebate: string; // referral rebate(type=13)
   rebateClaimedAmount: string; // rebate claimed amount(type=14)
 }
-export const getTradeFlow = async (
-  {
-    accessToken,
-    address,
-    ...params
-  }: GetHistoryOrdersParams & AccessTokenRequest,
-  envParams: HttpEnvParams
-) => {
-  const isProd = envParams?.isProd ?? true;
-  return http.get<ApiResponse<TradeFlowItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/trade/flow`,
-    params,
-    {
-      headers: {
-        myx_openapi_access_token: accessToken,
-        myx_openapi_account: address,
-      },
-    }
-  );
-};
+

@@ -3,7 +3,6 @@ import {
   KlineResolution,
   WebSocketMethodEnum,
   WebSocketTopicEnum,
-  WebSocketConfig,
   WebSocketEvents,
 } from "./websocket/types";
 import {
