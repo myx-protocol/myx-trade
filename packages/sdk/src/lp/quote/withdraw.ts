@@ -57,7 +57,9 @@ export const withdraw = async (params: WithdrawParams) => {
     
     if (isNeedPrice) {
       // todo  getprice
-      const priceData = await getPriceData (chainId, poolId)
+      // todo cici
+      // @ts-ignore
+      const priceData = await getPriceData (chainId, poolId, true)
       if (!priceData) return
       const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
       price.push ({

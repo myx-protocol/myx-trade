@@ -182,6 +182,8 @@ export class Markets {
    * base detail
    */
   async getBaseDetail(params: GetBaseDetailParams) {
+    // @ts-ignore
+    // todo: allen
     return (await getBaseDetail(params)).data;
   }
 
@@ -189,6 +191,8 @@ export class Markets {
    * get market detail
    */
   async getMarketDetail(params: GetMarketDetailParams) {
+     // @ts-ignore
+    // todo: all
     return (await getMarketDetail(params)).data;
   }
 
@@ -196,6 +200,8 @@ export class Markets {
    * get pool symbol all
    */
   async getPoolSymbolAll() {
+     // @ts-ignore
+    // todo: all
     return (await getPoolSymbolAll()).data;
   }
 }
