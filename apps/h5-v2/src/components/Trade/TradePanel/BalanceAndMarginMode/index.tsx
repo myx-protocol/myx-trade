@@ -13,7 +13,7 @@ import { t } from '@lingui/core/macro'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useMarketStore } from '../../store/MarketStore'
 import { parseBigNumber } from '@/utils/bn'
-import { DirectionEnum } from '@myx-trade/sdk'
+import { DirectionEnum, type MarketDetailResponse } from '@myx-trade/sdk'
 import { useBoolean } from 'ahooks'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Tooltips } from '@/components/UI/Tooltips'
@@ -72,12 +72,13 @@ const useCountdown = (targetTimestamp: number) => {
   }
 }
 
-const AssetsDialogButton = () => {
+export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }) => {
   const [open, setOpen] = useState(false)
   const { poolList } = useGlobalStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo: tradeSymbol } = useTradePageStore()
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
+  const symbolInfo = symbol ?? tradeSymbol
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
   const { setReceiveDialogOpen } = useTradePanelStore()
 
@@ -135,7 +136,7 @@ const AssetsDialogButton = () => {
     return parseBigNumber(totalPositionMargin)
       .plus(parseBigNumber(accountAssets?.usedMargin?.toString() ?? '0'))
       .toString()
-  }, [positionList, symbolInfo?.poolId, accountAssets?.usedMargin])
+  }, [positionList, accountAssets?.usedMargin, poolList, pool?.quoteToken])
 
   const [isSwitchNetwork, { setTrue: setIsSwitchNetworkTrue, setFalse: setIsSwitchNetworkFalse }] =
     useBoolean(false)
@@ -349,19 +350,9 @@ const AssetsDialogButton = () => {
   )
 }
 
-const Balance = () => {
+export const Balance = () => {
   const { symbolInfo } = useTradePageStore()
-  const { setReceiveDialogOpen } = useTradePanelStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
-
-  const { checkWalletChainId } = useWalletChainCheck()
-
-  const onReceive = () => {
-    if (!symbolInfo?.chainId) return
-    checkWalletChainId(symbolInfo.chainId).then(() => {
-      setReceiveDialogOpen(true)
-    })
-  }
 
   return (
     <div className="flex min-w-0 flex-[1_1_0%] items-center gap-[4px] text-[12px] leading-[1] font-medium">

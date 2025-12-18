@@ -9,13 +9,11 @@ import { memo } from 'react'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 // import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 // import Big from 'big.js'
-import { useTradePageStore } from '../../store/TradePageStore'
 
 export const MaxTradeAmount = memo(() => {
   const openAvailable = useGetOpenAvailable()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { amountUnit, positionAction } = useTradePanelStore()
-  const { symbolInfo } = useTradePageStore()
   // const { poolConfig } = useGetPoolConfig(
   //   symbolInfo?.poolId as string,
   //   symbolInfo?.chainId as number,
