@@ -11,9 +11,12 @@ import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
 import { PoolContent } from './components/PoolContent'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import { InfoContent } from './components/InfoContent'
+import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 const Price = () => {
   const { tab, symbolInfo, setSymbolInfo } = usePriceStore()
+  const { setSymbolInfo: setTradeSymbolInfo } = useTradePageStore()
+
   const { chainId, poolId } = useParams()
   const { getDetail, client } = useMarketDetail()
 
@@ -32,9 +35,10 @@ const Price = () => {
       }
       if (marketDetail && _chainId === marketDetail?.chainId && poolId === marketDetail?.poolId) {
         setSymbolInfo(marketDetail)
+        setTradeSymbolInfo(marketDetail)
       }
     })
-  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, client])
+  }, [chainId, poolId, getDetail, setSymbolInfo, setTradeSymbolInfo, navigate, client])
 
   useMount(() => {
     if (chainId && poolId) {
