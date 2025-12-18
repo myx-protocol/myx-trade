@@ -48,7 +48,7 @@ export class Api {
 
   async fetchForwarderGetApi(params: FetchForwarderGetParams) {
     const rs: FetchForwarderGetResponse = await http.get(
-      `${this.getHost()}/forwarder/get${addQueryParams(params)}`,
+      `${this.getHost()}/v2/agent/forwarder/get${addQueryParams(params)}`,
     )
 
     return rs
@@ -62,7 +62,7 @@ export class Api {
 
   async forwarderTxApi(params: ForwarderTxParams, chainId: number) {
     return http.post<ApiResponse<any>>(
-      `${this.getHost()}/forwarder/tx-v2`,
+      `${this.getHost()}/v2/agent/forwarder/tx-v2`,
       params,
       {
         headers: {
