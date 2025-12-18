@@ -78,8 +78,8 @@ export function useSortData<T>({ data, sort, getFieldValue }: UseSortDataOptions
         aValue = getFieldValueRef.current(a, sort.by!)
         bValue = getFieldValueRef.current(b, sort.by!)
       } else {
-        aValue = a[sort.by] as string | number | undefined
-        bValue = b[sort.by] as string | number | undefined
+        aValue = a[sort.by!] as string | number | undefined
+        bValue = b[sort.by!] as string | number | undefined
       }
 
       // 处理空值情况
