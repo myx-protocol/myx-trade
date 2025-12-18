@@ -1,17 +1,15 @@
-import { MarketType, type SearchResultContractItem } from '@myx-trade/sdk'
+import { type SearchResultContractItem } from '@myx-trade/sdk'
 import { SymbolInfo } from '../../SymbolInfo'
-import { MarketCapType } from '@myx-trade/sdk'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
-import { formatNumber } from '@/utils/number'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMemo, useRef } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { tradePubSub } from '@/utils/pubsub'
-import { useMount } from 'ahooks'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { Price } from '@/components/Price'
+import { Favorite } from '../../SymbolInfo/Favorite'
 
 interface FuturesListDataRowProps {
   item: SearchResultContractItem
@@ -25,9 +23,6 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
   const { setLoginModalOpen } = useWalletStore()
   const tickerData = useMarketStore((state) => state.tickerData[item.poolId])
   const { address } = useWalletConnection()
-  useMount(() => {
-    console.log('mounted-item', item.poolId)
-  })
 
   const isLoadingRef = useRef<boolean>(false)
 
@@ -74,30 +69,30 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
   }
   return (
     <div
-      className="flex justify-between rounded-[6px] py-[12px] text-[#6D7180] hover:bg-[#202129]"
+      className="flex justify-between gap-[24px] rounded-[6px] py-[12px] text-[#6D7180] hover:bg-[#202129]"
       role="button"
       onClick={() => onItemClick(item)}
     >
-      <div className="w-[210px] items-center">
+      <div className="w-[107px] items-center">
         <SymbolInfo
-          showFavoriteIcon={item.type === MarketType.Contract}
-          isFavorite={item.favorites === 1}
           baseTokenLogo={item.tokenIcon}
           quoteTokenLogo={chainInfo?.logoUrl}
-          symbolName={item.baseQuoteSymbol || item.symbolName}
-          coinName={item.symbolName}
           onFavoriteChange={handleFavoriteChange}
-          tokenAddress={item.baseToken}
-          baseSymbol={item.symbolName}
+          baseSymbol={item.baseSymbol || '-'}
+          quoteSymbol={item.quoteSymbol || '-'}
+          volume={tickerData?.volume || item.volume}
         />
       </div>
-      <div className="flex w-[103px] flex-col items-end text-right text-[14px] font-medium text-white">
-        <p>
-          <Price value={tickerData?.price || item.basePrice} showUnit={false} decimals={2} />
-        </p>
-        <p className="mt-[6px] text-[12px]">
-          <RiseFallTextPrecent value={tickerData?.change || item.priceChange} />
-        </p>
+      <div className="flex flex-[1_1_0%] items-center gap-[20px]">
+        <div className="flex flex-[1_1_0%] flex-col items-end text-right text-[14px] font-medium text-white">
+          <p>
+            <Price value={tickerData?.price || item.basePrice} showUnit={false} decimals={2} />
+          </p>
+          <p className="mt-[6px] text-[12px]">
+            <RiseFallTextPrecent value={tickerData?.change || item.priceChange} />
+          </p>
+        </div>
+        <Favorite isFavorite={item.favorites === 1} onFavoriteChange={handleFavoriteChange} />
       </div>
     </div>
   )
