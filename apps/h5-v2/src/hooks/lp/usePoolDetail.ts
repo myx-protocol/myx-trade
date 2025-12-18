@@ -1,1 +1,168 @@
-export const usePoolDetail = () => {}
+import { PoolType } from '@/request/type'
+import { useEffect, useRef, useState } from 'react'
+import { Mode, type PoolInfo } from '@/pages/Cook/type.ts'
+import { useUpdateEffect } from 'ahooks'
+import { useQuery } from '@tanstack/react-query'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { useParams } from 'react-router-dom'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
+import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription.ts'
+import {
+  COMMON_LP_AMOUNT_DECIMALS,
+  COMMON_PRICE_DECIMALS,
+  formatUnits,
+  parseUnits,
+  pool as Pool,
+} from '@myx-trade/sdk'
+import { getBaseLPDetail, getPoolRiskLevelConfig, getQuoteLPDetail } from '@/request'
+import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
+type BaseQuotePoolInfo = {
+  poolToken: string
+  poolTokenSupply: bigint
+  exchangeRate: bigint
+  poolTokenPrice: bigint
+}
+function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: BaseQuotePoolInfo }>(
+  poolInfo: T,
+) {
+  const { basePool, quotePool } = poolInfo
+  const baseSize = basePool.poolTokenSupply * basePool.exchangeRate
+  const quoteSize = quotePool.poolTokenSupply * quotePool.exchangeRate
+  const lpPrice = basePool.poolTokenPrice
+  const quoteLpPrice = quotePool.poolTokenPrice
+  const baseTvl = baseSize * lpPrice
+  const quoteTvl = quoteSize * quoteLpPrice
+  return formatUnits(baseTvl + quoteTvl, COMMON_LP_AMOUNT_DECIMALS * 2 + COMMON_PRICE_DECIMALS)
+}
+
+export const usePoolDetail = (poolType: PoolType) => {
+  const { chainId, poolId } = useParams()
+  const { client } = useMyxSdkClient()
+  const { subscribeToTicker } = useSubscription()
+  const currentSymbolGlobalIdRef = useRef<number>(null)
+
+  const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
+
+  const prevPriceRef = useRef<string | undefined>(undefined)
+  const [mode, setMode] = useState<Mode>(Mode.Rise)
+
+  const { data: lpDetail, refetch } = useQuery({
+    queryKey: [
+      { key: poolType === PoolType.quote ? 'getQuotePoolDetail' : 'getBasePoolDetail' },
+      chainId,
+      poolId,
+    ],
+    queryFn: async () => {
+      if (!chainId || !poolId) return {} as QuoteLpDetail
+      const fun = poolType === PoolType.quote ? getQuoteLPDetail : getBaseLPDetail
+      const response = await fun(chainId as unknown as number, poolId)
+      if (response.data) {
+        return response.data
+      }
+      if (poolType === PoolType.quote) return {} as QuoteLpDetail
+      return {} as BaseLpDetail
+    },
+  })
+
+  const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
+    queryKey: [
+      { key: poolType === PoolType.quote ? 'getQuoteContractPoolInfo' : 'getBaseContractPoolInfo' },
+      poolId,
+      chainId,
+      tickerData?.price,
+    ],
+    enabled: !!poolId && !!chainId,
+    queryFn: async () => {
+      // console.log(poolId, tickerData?.price)
+      if (!poolId || !chainId) {
+        console.error('poolId must be a positive integer')
+        return {} as PoolInfo
+      }
+
+      const result = await Pool.getPoolInfo(
+        +chainId,
+        poolId,
+        parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
+      )
+
+      // console.log(result)
+      if (result) {
+        const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+        const info = {
+          price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+          exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+          tvl: calculationTvl(result),
+        } as PoolInfo
+
+        return info
+      }
+
+      return {} as PoolInfo
+    },
+    placeholderData: (prev) => prev,
+  })
+
+  const { data: pool } = useQuery({
+    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId],
+    queryFn: async () => {
+      if (!poolId || !chainId) return undefined
+      const result = await Pool.getPoolDetail(+chainId, poolId)
+
+      return result
+    },
+  })
+
+  const { data: genesisFeeRate } = useQuery({
+    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
+    enabled: !!poolId && !!chainId,
+    queryFn: async () => {
+      // console.log('getMarketPoolRiskRate')
+      if (!poolId || !chainId) return ''
+      try {
+        const result = await getPoolRiskLevelConfig(poolId, +chainId)
+
+        return result?.data?.levelConfig?.genesisFeeRate as string
+      } catch (error) {
+        return ''
+      }
+    },
+  })
+
+  useEffect(() => {
+    if (poolInfo?.price !== prevPriceRef.current) {
+      setMode(Number(poolInfo?.price) >= Number(prevPriceRef.current || '') ? Mode.Rise : Mode.Fall)
+      prevPriceRef.current = poolInfo?.price
+    }
+  }, [poolInfo?.price])
+
+  useUpdateEffect(() => {
+    let unsubscribe: (() => void) | undefined = undefined
+    if (!poolId || !lpDetail?.globalId) return
+    if (client) {
+      currentSymbolGlobalIdRef.current = lpDetail?.globalId
+      // subscribe ticker data
+      if (currentSymbolGlobalIdRef.current === lpDetail?.globalId) {
+        unsubscribe = subscribeToTicker({
+          poolId: poolId,
+          globalId: lpDetail.globalId,
+        })
+      }
+    }
+
+    return () => {
+      if (unsubscribe && typeof unsubscribe === 'function') {
+        unsubscribe()
+      }
+    }
+  }, [poolId, client, lpDetail?.globalId])
+
+  return {
+    genesisFeeRate,
+    pool,
+    poolInfo,
+    mode,
+    lpDetail,
+    refetch,
+    poolInfoRefetch,
+  }
+}
