@@ -24,7 +24,7 @@ import sdk from "@/web3";
 
 
 export const getBaseUrlByEnv = (isProd?: boolean) => {
-  const _isProd =  !!isProd || !sdk.getConfigManager()?.getConfig()?.isTestnet
+  const _isProd =  !!isProd || (sdk?.getConfigManager() ? !sdk?.getConfigManager()?.getConfig()?.isTestnet : false)
   return _isProd ? "https://api.myx.finance" : "https://api-test.myx.cash";
 };
 
