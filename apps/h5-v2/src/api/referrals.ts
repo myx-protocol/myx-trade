@@ -127,6 +127,7 @@ export const getReferralClaimCountByChain = async (access: AccessParams) => {
 
 // 用户邀请人数据
 export interface UserReferralDataType {
+  id: number
   referee: string // 被邀请人
   invitationCode: string
   referrerRatio: number
@@ -134,11 +135,22 @@ export interface UserReferralDataType {
   referralRebate: string
   referrerRebate: string
   createTime: number
+  contribute: string
 }
-export const getUserReferralData = async (access: AccessParams) => {
+
+export interface GetUserReferralDataParams {
+  code?: string
+  after?: string | number
+  before?: string | number
+  limit?: number
+}
+export const getUserReferralData = async (
+  params: GetUserReferralDataParams,
+  access: AccessParams,
+) => {
   return http.get<ApiResponse<UserReferralDataType[]>>(
     `${baseUrl}/openapi/gateway/referral/relationships/list`,
-    undefined,
+    params,
     {
       headers: withAccessHeaders(access),
     },
@@ -177,10 +189,18 @@ export interface RefereeReferralFlowType {
   rebateType: 1 | 2 // 1=返佣, 2=返还
   txTime: number // 返佣时间
 }
-export const getRefereeReferralFlow = async (access: AccessParams) => {
+interface GetRefereeReferralFlowParams {
+  after: number
+  before: number
+  limit: number
+}
+export const getRefereeReferralFlow = async (
+  params: GetRefereeReferralFlowParams,
+  access: AccessParams,
+) => {
   return http.get<ApiResponse<RefereeReferralFlowType[]>>(
     `${baseUrl}/openapi/gateway/referral/rebates/list`,
-    undefined,
+    params,
     {
       headers: withAccessHeaders(access),
     },
@@ -195,10 +215,18 @@ export interface ExtractReferralFlowType {
   txHash: string // 交易哈希
   txTime: number // 提取时间
 }
-export const extractReferralFlow = async (access: AccessParams) => {
+export interface ExtractReferralFlowParams {
+  after: number
+  before: number
+  limit: number
+}
+export const extractReferralFlow = async (
+  params: ExtractReferralFlowParams,
+  access: AccessParams,
+) => {
   return http.get<ApiResponse<ExtractReferralFlowType[]>>(
     `${baseUrl}/openapi/gateway/referral/claims/list`,
-    undefined,
+    params,
     {
       headers: withAccessHeaders(access),
     },
@@ -232,41 +260,64 @@ export const updateInvitationNote = async (code: string, note: string, access: A
     { headers: withAccessHeaders(access) },
   )
 }
-// @todo 下面是v1的接口，现在已经废弃
 
-// 账户汇总信息
-export const getReferralSummary = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/summary`, undefined, {
+// 获取配置信息
+export interface ReferralConfigType {
+  maxVipLevel: number
+  codeCount: number
+  remindLine: number
+}
+export const getReferralConfig = async (access: AccessParams) => {
+  return http.get<ApiResponse<ReferralConfigType>>(`${baseUrl}/v2/ref/config`, undefined, {
     headers: withAccessHeaders(access),
   })
 }
 
-// 分链路返佣
-export const getReferralByChain = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/by-chain`, undefined, {
-    headers: withAccessHeaders(access),
-  })
+export interface StatisticsType {
+  h24: string
+  d7: string
+  d30: string
+  vipTier: number
+  referee: string
 }
 
-// 根据邀请码查询关系
-export const getReferralByCode = async (code: string, access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(
-    `${baseUrl}/openapi/gateway/referral/code/get`,
-    { code },
+// 获取统计详情
+export const getStaticDetail = async (referee: string, access: AccessParams) => {
+  return http.get<StatisticsType>(
+    `${baseUrl}/openapi/gateway/referral/rebates/by-referee`,
+    { referee },
     { headers: withAccessHeaders(access) },
   )
 }
 
-// 查询当前账户返佣信息
-export const getReferralByAccount = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/account/get`, undefined, {
-    headers: withAccessHeaders(access),
-  })
+// 根据邀请码查询关系
+export interface GetReferralByCodeParams {
+  code: string
 }
+export interface GetReferralByCodeResponse {
+  referrer: string
+  refereeRatio: number
+}
+export const getReferralByCode = async (params: GetReferralByCodeParams, access: AccessParams) => {
+  return http.get<ApiResponse<GetReferralByCodeResponse>>(
+    `${baseUrl}/openapi/gateway/referral/codes/get`,
+    params,
+    { headers: withAccessHeaders(access) },
+  )
+}
+
+// 获取推荐人信息
+export const getReferrerInfo = async (access: AccessParams) => {
+  return http.get<ApiResponse<GetReferralByCodeResponse>>(
+    `${baseUrl}/openapi/gateway/referral/referrer`,
+    undefined,
+    {
+      headers: withAccessHeaders(access),
+    },
+  )
+}
+
+// @todo 下面是v1的接口，现在已经废弃
 
 // 邀请记录
 export interface InviteType {
@@ -286,93 +337,4 @@ export const listInvites = async (
   return http.get<InviteType[]>(`${baseUrl}/openapi/gateway/referral/invite/list`, params, {
     headers: withAccessHeaders(access),
   })
-}
-
-export interface RebateType {
-  id: string
-  rebateTime: number
-  account: string
-  chainId: number
-  amount: number
-  token: string
-  rebateType: number
-}
-
-// 返佣记录
-export const listRebates = async (
-  params: { after?: string | number; before?: string | number; limit?: number },
-  access: AccessParams,
-) => {
-  // TODO: 确认后端实际 path
-  return http.get<RebateType[]>(`${baseUrl}/openapi/gateway/referral/rebate/list`, params, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-export interface ClaimType {
-  id: string
-  claimTime: number
-  chainId: number
-  txHash: string
-  amount: number
-  token: string
-}
-
-// 领取记录
-export const listClaim = async (
-  params: { after?: string | number; before?: string | number; limit?: number },
-  access: AccessParams,
-) => {
-  // TODO: 确认后端实际 path
-  return http.get<ClaimType[]>(`${baseUrl}/openapi/gateway/referral/claim/list`, params, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-// 领取返佣
-export const claimReferralBonus = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.post(`${baseUrl}/openapi/gateway/referral/claim`, undefined, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-// 获取配置信息
-export const getReferralConfig = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/config`, undefined, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-// 获取全局领取记录
-export const listGlobalClaims = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/claim/list-global`, undefined, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-// 获取推荐人信息
-export const getReferrerInfo = async (access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get(`${baseUrl}/openapi/gateway/referral/referrer`, undefined, {
-    headers: withAccessHeaders(access),
-  })
-}
-
-export interface StatisticsType {
-  h24: string
-  d7: string
-  d30: string
-}
-
-// 获取统计详情
-export const getStaticDetail = async (referee: string, access: AccessParams) => {
-  // TODO: 确认后端实际 path
-  return http.get<StatisticsType>(
-    `${baseUrl}/openapi/gateway/referral/static`,
-    { referee },
-    { headers: withAccessHeaders(access) },
-  )
 }

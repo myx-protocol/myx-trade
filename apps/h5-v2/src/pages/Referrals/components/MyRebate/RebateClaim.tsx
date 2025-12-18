@@ -1,16 +1,15 @@
-import { Trans } from '@lingui/macro'
+import { Trans } from '@lingui/react/macro'
 import { PrimaryButton as Button } from '@/components/UI/Button'
 import { useReferralStore } from '@/store/referrals'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { useClaimReferralRebate } from '@/pages/Referrals/hooks/useClaimRebate'
-// import { useSwitchChain } from '@particle-network/connectkit'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import Big from 'big.js'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { getChainInfo } from '@/config/chainInfo'
 import { toast } from '@/components/UI/Toast'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 
 const COMMON_TRANSLATE_USDC_ASSETS_SCALE = 2
 
@@ -41,12 +40,11 @@ function RebateClaimDialog({ open, onClose }: { open: boolean; onClose: () => vo
   const [confirming, setConfirming] = useState(false)
   const { bonusChainInfo } = useReferralStore()
   const { claimChainId, setClaimChainId, onClaimReferralRebate } = useClaimReferralRebate()
-  const { chainId: activeChainId } = useWalletConnection()
-  const { checkWalletChainId } = useWalletChainCheck()
+  const { chainId: activeChainId, switchChain } = useWalletConnection()
 
   const handleSelectChain = (chainId: number) => {
     if (chainId !== activeChainId) {
-      checkWalletChainId?.(chainId)
+      switchChain?.({ chainId })
       return
     }
     setClaimChainId(chainId)
@@ -65,16 +63,16 @@ function RebateClaimDialog({ open, onClose }: { open: boolean; onClose: () => vo
   }
 
   return (
-    <Dialog
+    <DialogTheme
       open={open}
       onClose={onClose}
       maxWidth="xs"
       fullWidth
       PaperProps={{ style: { background: '#202129', color: 'white' } }}
     >
-      <DialogTitle className="border-b border-[#31333D]">
+      <DialogTitleTheme className="border-b border-[#31333D]">
         <Trans>Select Claim Amount</Trans>
-      </DialogTitle>
+      </DialogTitleTheme>
       <DialogContent>
         <div className="mt-4 flex min-h-[120px] flex-col gap-3">
           {bonusChainInfo?.map((item) => (
@@ -113,6 +111,9 @@ function RebateClaimDialog({ open, onClose }: { open: boolean; onClose: () => vo
 
         <div className="mt-10">
           <Button
+            style={{
+              height: '44px',
+            }}
             className="w-full"
             loading={confirming}
             disabled={!claimChainId}
@@ -122,6 +123,6 @@ function RebateClaimDialog({ open, onClose }: { open: boolean; onClose: () => vo
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
+    </DialogTheme>
   )
 }

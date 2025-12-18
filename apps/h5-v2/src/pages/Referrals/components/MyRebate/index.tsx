@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/macro'
+import { Trans } from '@lingui/react/macro'
 import { useReferralStore } from '@/store/referrals'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { ModuleTitle } from '../ModuleTitle'
@@ -33,7 +33,6 @@ export function MyRebate() {
     isLoadingReferrer,
     accessToken,
   } = useReferralStore()
-  const accessParams = useAccessParams()
 
   useEffect(() => {
     if (accessToken) {
@@ -227,15 +226,15 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
             <Trans>Unclaimed</Trans>({COMMON_USD_ASSETS_LABEL})
           </div>
           <div className="mt-3 flex items-center gap-1">
-            <Tooltip title={<UnclaimedList infos={chainInfo} />} placement="right" arrow>
-              <div className="cursor-help text-[40px] leading-none font-bold text-[#FFD700] underline decoration-dashed decoration-1 underline-offset-4">
-                {loading ? (
-                  <Skeleton className="h-10 w-32" />
-                ) : (
-                  formatNumberPrecision(bonus?.availableAmount, COMMON_USD_ASSETS_SCALE)
-                )}
-              </div>
-            </Tooltip>
+            {/* <Tooltips title={<UnclaimedList infos={chainInfo} />} placement="right" arrow> */}
+            <div className="cursor-help text-[40px] leading-none font-bold text-[#FFD700] decoration-1">
+              {loading ? (
+                <Skeleton className="h-10 w-32" />
+              ) : (
+                formatNumberPrecision(bonus?.availableAmount, COMMON_USD_ASSETS_SCALE)
+              )}
+            </div>
+            {/* </Tooltips> */}
           </div>
         </div>
 
