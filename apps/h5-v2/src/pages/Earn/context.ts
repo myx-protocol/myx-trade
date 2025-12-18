@@ -21,6 +21,8 @@ export interface PoolContextValue {
   refetch: () => void
   genesisFeeRate?: string
   mode: Mode
+  tvl?: string
+  poolInfoRefetch: () => void
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
 

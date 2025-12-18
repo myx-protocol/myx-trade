@@ -13,7 +13,7 @@ import { useCountDown } from 'ahooks'
 import { Big } from 'big.js'
 
 export const BenchWarning = () => {
-  const { quoteLpDetail, refetch, genesisFeeRate } = useContext(PoolContext)
+  const { quoteLpDetail, refetch, genesisFeeRate, tvl } = useContext(PoolContext)
   const [targetDate, setTargetDate] = useState<number>()
   // const { data: fee } = useQuery({
   //   queryKey: [{ key: 'market_fee_Info' }, chainId, pool?.state],
@@ -37,7 +37,7 @@ export const BenchWarning = () => {
       quoteLpDetail?.marketId,
       quoteLpDetail?.chainId,
       quoteLpDetail?.state,
-      quoteLpDetail?.tvl,
+      tvl,
     ],
     enabled:
       !!quoteLpDetail?.marketId &&
@@ -52,14 +52,10 @@ export const BenchWarning = () => {
         )
         console.log(result?.poolPrimeThreshold)
         console.log(
-          new Big(Number(result?.poolPrimeThreshold))
-            .minus(new Big(quoteLpDetail?.totalTvl || '0'))
-            .toString(),
+          new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString(),
         )
         if (result?.poolPrimeThreshold) {
-          return new Big(Number(result?.poolPrimeThreshold))
-            .minus(new Big(quoteLpDetail?.totalTvl || '0'))
-            .toString()
+          return new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString()
         }
         return ''
       } catch (error) {

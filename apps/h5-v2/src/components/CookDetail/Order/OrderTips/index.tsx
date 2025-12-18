@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Big } from 'big.js'
 
 export const OrderTips = () => {
-  const { baseLpDetail, refetch, genesisFeeRate } = usePoolContext()
+  const { baseLpDetail, refetch, genesisFeeRate, tvl } = usePoolContext()
   const [targetDate, setTargetDate] = useState<number>()
   const [countdown] = useCountDown({
     targetDate,
@@ -27,7 +27,7 @@ export const OrderTips = () => {
       baseLpDetail?.marketId,
       baseLpDetail?.chainId,
       baseLpDetail?.state,
-      baseLpDetail?.totalTvl,
+      tvl,
     ],
     enabled:
       !!baseLpDetail?.marketId &&
@@ -39,14 +39,10 @@ export const OrderTips = () => {
         const result = await market.getMarket(Number(baseLpDetail?.chainId), baseLpDetail?.marketId)
         console.log(result?.poolPrimeThreshold)
         console.log(
-          new Big(Number(result?.poolPrimeThreshold))
-            .minus(new Big(baseLpDetail?.totalTvl || '0'))
-            .toString(),
+          new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString(),
         )
         if (result?.poolPrimeThreshold) {
-          return new Big(Number(result?.poolPrimeThreshold))
-            .minus(new Big(baseLpDetail?.totalTvl || '0'))
-            .toString()
+          return new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString()
         }
         return ''
       } catch (error) {
