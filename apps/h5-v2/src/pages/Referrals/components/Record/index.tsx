@@ -3,15 +3,12 @@ import { t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { useReferralStore } from '@/store/referrals'
 import { useAccessParams } from '@/hooks/useAccessParams'
-import { Skeleton } from '@/components/UI/Skeleton'
 import { getUserReferralData, getRefereeReferralFlow, extractReferralFlow } from '@/api/referrals'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { encryptionAddress } from '@/utils'
-import { toast } from '@/components/UI/Toast'
-import { useCopyToClipboard } from 'usehooks-ts'
 import { ModuleTitle } from '../ModuleTitle'
 import { StatisticsDialog } from '../StatisticsDialog'
-import Copy from '@/components/Icon/set/Copy'
+import { Copy } from '@/components/Copy'
 import ArrowRight from '@/components/Icon/set/ArrowRight'
 import Prev from '@/components/Icon/set/Prev'
 import Next from '@/components/Icon/set/Next'
@@ -30,15 +27,13 @@ enum RecordTypeEnum {
 const PAGE_SIZE = 10
 
 export const RecordCard = () => {
-  const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig, isLoadingBonus, accessToken } =
-    useReferralStore()
+  const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig } = useReferralStore()
   const accessParams = useAccessParams()
   const [recordType, setRecordType] = useState<RecordTypeEnum>(RecordTypeEnum.Invite)
   const [list, setList] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
-  const [before, setBefore] = useState<string | number | undefined>(undefined)
-  const [after, setAfter] = useState<string | number | undefined>(undefined)
-  const [, copy] = useCopyToClipboard()
+  const [before, setBefore] = useState<number>(0)
+  const [after, setAfter] = useState<number>(0)
   const [statisticsOpen, setStatisticsOpen] = useState(false)
   const [currentReferee, setCurrentReferee] = useState<string>('')
 
@@ -51,41 +46,40 @@ export const RecordCard = () => {
       // const params = { limit: PAGE_SIZE, before, after }
 
       if (recordType === RecordTypeEnum.Invite) {
-        res = await getUserReferralData(accessParams)
+        res = await getUserReferralData(
+          {
+            limit: PAGE_SIZE,
+            before,
+            after,
+          },
+          accessParams,
+        )
         // Map to expected format
-        const data = (res.data || []).map((item: any) => ({
-          id: item.invitationCode, // Use code as ID
-          referee: item.referee,
-          contribute: item.referralRebate,
-          createTime: item.createTime,
-          referrerRatio: item.referrerRatio,
-          refereeRatio: item.refereeRatio,
-        }))
+        const data = res.data || []
         setList(data)
       } else if (recordType === RecordTypeEnum.Rebase) {
-        res = await getRefereeReferralFlow(accessParams)
+        res = await getRefereeReferralFlow(
+          {
+            limit: PAGE_SIZE,
+            before,
+            after,
+          },
+          accessParams,
+        )
         // Map to expected format
-        const data = (res.data || []).map((item: any) => ({
-          id: item.id,
-          rebateTime: item.txTime,
-          account: item.account,
-          chainId: item.chainId,
-          amount: item.receiveAmount,
-          token: 'USDC', // Default
-          rebateType: item.rebateType,
-        }))
+        const data = res.data || []
         setList(data)
       } else {
-        res = await extractReferralFlow(accessParams)
+        res = await extractReferralFlow(
+          {
+            limit: PAGE_SIZE,
+            before,
+            after,
+          },
+          accessParams,
+        )
         // Map to expected format
-        const data = (res.data || []).map((item: any) => ({
-          id: item.txHash, // Use hash as ID
-          claimTime: item.txTime,
-          chainId: item.chainId,
-          txHash: item.txHash,
-          amount: item.claimAmount,
-          token: 'USDC', // Default
-        }))
+        const data = res.data || []
         setList(data)
       }
     } catch (e) {
@@ -113,21 +107,21 @@ export const RecordCard = () => {
   const handlePrev = () => {
     if (list.length > 0) {
       setBefore(list[0].id)
-      setAfter(undefined)
+      setAfter(0)
     }
   }
 
   const handleNext = () => {
     if (list.length > 0) {
       setAfter(list[list.length - 1].id)
-      setBefore(undefined)
+      setBefore(0)
     }
   }
 
   const handleChangeType = (type: RecordTypeEnum) => {
     setRecordType(type)
-    setBefore(undefined)
-    setAfter(undefined)
+    setBefore(0)
+    setAfter(0)
     setList([])
   }
 
@@ -167,7 +161,6 @@ export const RecordCard = () => {
                 key={item.id}
                 type={recordType}
                 item={item}
-                copy={copy}
                 onStatistics={(referee: string) => {
                   setCurrentReferee(referee)
                   setStatisticsOpen(true)
@@ -257,7 +250,6 @@ export const RecordCard = () => {
                     key={item.id}
                     type={recordType}
                     item={item}
-                    copy={copy}
                     onStatistics={(referee: string) => {
                       setCurrentReferee(referee)
                       setStatisticsOpen(true)
@@ -310,7 +302,7 @@ export const RecordCard = () => {
   )
 }
 
-const MobileRecordItem = ({ type, item, copy, onStatistics }: any) => {
+const MobileRecordItem = ({ type, item, onStatistics }: any) => {
   return (
     <div className="flex flex-col gap-4 border-b border-[#31333D] p-4">
       <div className="flex justify-between">
@@ -336,15 +328,7 @@ const MobileRecordItem = ({ type, item, copy, onStatistics }: any) => {
             </div>
             <div className="flex items-center gap-1 text-sm text-white">
               {encryptionAddress(item.referee)}
-              <Copy
-                size={14}
-                className="cursor-pointer"
-                onClick={() =>
-                  copy(item.referee).then(
-                    (rs: any) => rs && toast.success({ title: t`Copy success` }),
-                  )
-                }
-              />
+              <Copy content={item.referee} />
             </div>
           </div>
           <div className="flex justify-between">
@@ -388,15 +372,7 @@ const MobileRecordItem = ({ type, item, copy, onStatistics }: any) => {
             </div>
             <div className="flex items-center gap-1 text-sm text-white">
               {encryptionAddress(item.account)}
-              <Copy
-                size={14}
-                className="cursor-pointer"
-                onClick={() =>
-                  copy(item.account).then(
-                    (rs: any) => rs && toast.success({ title: t`Copy success` }),
-                  )
-                }
-              />
+              <Copy content={item.account} />
             </div>
           </div>
           <div className="flex justify-between">
@@ -452,9 +428,9 @@ const MobileRecordItem = ({ type, item, copy, onStatistics }: any) => {
   )
 }
 
-const DesktopRecordItem = ({ type, item, copy, onStatistics }: any) => {
+const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
   return (
-    <tr className="hover:bg-[#31333D]">
+    <tr className="text-white hover:bg-[#31333D]">
       <td className="py-3">
         {dayjs(
           type === RecordTypeEnum.Rebase
@@ -470,15 +446,7 @@ const DesktopRecordItem = ({ type, item, copy, onStatistics }: any) => {
           <td className="py-3">
             <div className="flex items-center gap-1">
               {encryptionAddress(item.referee)}
-              <Copy
-                size={14}
-                className="cursor-pointer"
-                onClick={() =>
-                  copy(item.referee).then(
-                    (rs: any) => rs && toast.success({ title: t`Copy success` }),
-                  )
-                }
-              />
+              <Copy content={item.referee} />
             </div>
           </td>
           <td className="py-3">{item.referrerRatio}%</td>
@@ -501,15 +469,7 @@ const DesktopRecordItem = ({ type, item, copy, onStatistics }: any) => {
           <td className="py-3">
             <div className="flex items-center gap-1">
               {encryptionAddress(item.account)}
-              <Copy
-                size={14}
-                className="cursor-pointer"
-                onClick={() =>
-                  copy(item.account).then(
-                    (rs: any) => rs && toast.success({ title: t`Copy success` }),
-                  )
-                }
-              />
+              <Copy content={item.account} />
             </div>
           </td>
           <td className="py-3">{getChainInfo(item.chainId)?.label ?? '--'}</td>

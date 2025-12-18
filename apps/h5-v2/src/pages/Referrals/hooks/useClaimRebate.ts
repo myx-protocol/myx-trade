@@ -17,8 +17,7 @@ export function useClaimReferralRebate() {
   // const { addTransaction } = useTransactionAdder()
   // const { handleAction } = useSeamlessAccountTradeAction()
   // const { handleCheckSeamlessGas } = useSeamlessCheckBalance()
-  const { claimReferralBonus, fetchRefBonus, fetchRefBonusInfoByChain, accessToken } =
-    useReferralStore()
+  const { fetchRefBonus, fetchRefBonusInfoByChain, accessToken } = useReferralStore()
   const { chainId } = useWalletConnection()
   const accessParams = useAccessParams()
 

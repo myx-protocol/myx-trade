@@ -61,11 +61,6 @@ export interface RefRatioInfo extends RefRatioData {
   invitationLink?: string
 }
 
-export interface RefReferrerInfo {
-  referrer: string
-  refereeRatio: number
-}
-
 interface ReferralState {
   bonusInfo: RefBonusInfo | null
   bonusChainInfo: RefBonusChainInfo[] | null
@@ -73,7 +68,7 @@ interface ReferralState {
   configData: RefConfigData | null
   invitationCodes: InvitationCodeInfo[]
   ratioInfo: RefRatioInfo | null
-  referrerInfo: RefReferrerInfo | null
+  referrerInfo: api.GetReferralByCodeResponse | null
 
   accessToken: string | null
   account: string | undefined
@@ -118,13 +113,9 @@ interface ReferralState {
   setDefaultInvitationCode: (code: string) => Promise<void>
   updateInvitationNote: (code: string, note: string) => Promise<void>
   bindRelationshipByCode: (code: string) => Promise<ApiResponse<null> | undefined>
-  getInvitationRelationships: (params: {
-    code?: string
-    after?: string | number
-    before?: string | number
-    limit?: number
-  }) => Promise<api.InviteType[]>
-  claimReferralBonus: () => Promise<void>
+  getInvitationRelationships: (
+    params: api.GetUserReferralDataParams,
+  ) => Promise<api.UserReferralDataType[]>
 }
 
 export const useReferralStore = create<ReferralState>()(
@@ -315,7 +306,7 @@ export const useReferralStore = create<ReferralState>()(
       if (!accessToken || !account) return
       set({ isLoadingReferrer: true })
       try {
-        const res: any = await api.getReferrerInfo({ accessToken, account })
+        const res = await api.getReferrerInfo({ accessToken, account })
         set({ referrerInfo: res.data })
       } catch (e) {
         console.error('fetchRefReferrerInfo error', e)
@@ -328,10 +319,7 @@ export const useReferralStore = create<ReferralState>()(
       const { accessToken, account } = get()
       if (!accessToken || !account) return
       try {
-        // Cast payload to any to include flag if needed, or assume API handles it
-        // The new API definition expects { referrerRatio, refereeRatio, note }
-        // But we might want to pass flag if the user intends to create a default code
-        await api.createInvitationCode(payload as any, { accessToken, account })
+        await api.createInvitationCode(payload, { accessToken, account })
         await get().fetchInvitationCodes()
       } catch (e) {
         console.error('createInvitationCode error', e)
@@ -382,34 +370,10 @@ export const useReferralStore = create<ReferralState>()(
       const { accessToken, account } = get()
       if (!accessToken || !account) return []
       try {
-        // Mapping getUserReferralData to InviteType[]
-        // Note: getUserReferralData doesn't support pagination params in the new API definition?
-        // The new API `getUserReferralData` takes `access` only.
-        // We might need to ignore params or check if API supports them.
-        // For now, we call it without params.
-        const res = await api.getUserReferralData({ accessToken, account })
-        return (res.data || []).map((item) => ({
-          id: item.invitationCode, // Use code as ID or generate one
-          referee: item.referee,
-          contribute: item.referralRebate,
-          createTime: item.createTime,
-          referrerRatio: item.referrerRatio,
-          refereeRatio: item.refereeRatio,
-        }))
+        const res = await api.getUserReferralData(params, { accessToken, account })
+        return res.data || []
       } catch (e) {
         console.error('getInvitationRelationships error', e)
-        throw e
-      }
-    },
-
-    claimReferralBonus: async () => {
-      const { accessToken, account } = get()
-      if (!accessToken || !account) return
-      try {
-        await api.claimReferralBonus({ accessToken, account })
-        await get().fetchRefBonus()
-      } catch (e) {
-        console.error('claimReferralBonus error', e)
         throw e
       }
     },

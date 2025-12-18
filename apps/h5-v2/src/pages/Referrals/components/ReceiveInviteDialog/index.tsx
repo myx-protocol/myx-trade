@@ -2,13 +2,15 @@ import { Dialog, DialogContent } from '@mui/material'
 import { useReferralStore } from '@/store/referrals'
 import { useAccessParams } from '@/hooks/useAccessParams'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { Trans } from '@lingui/macro'
+import { Trans } from '@lingui/react/macro'
 import { useState, useEffect } from 'react'
 import icon from '@/assets/images/referrals/dialog/receiveDialogicon.png'
 import accepBg from '@/assets/images/referrals/dialog/acceptBg.png'
 import * as api from '@/api/referrals'
 import { encryptionAddress } from '@/utils'
 import { PrimaryButton } from '@/components/UI/Button'
+import { toast } from '@/components/UI/Toast'
+import { t } from '@lingui/core/macro'
 
 export const ReceiveInviteDialog = ({
   code,
@@ -21,17 +23,17 @@ export const ReceiveInviteDialog = ({
     isReceiveInviteDialogOpen,
     setReceiveInviteDialogOpen,
     bindRelationshipByCode,
+    fetchRefReferrerInfo,
     accessToken,
     account,
   } = useReferralStore()
-  const accessParams = useAccessParams()
   const { isConnected } = useWalletConnection()
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (code && isReceiveInviteDialogOpen && accessToken && account) {
-      api.getReferralByCode(code, { accessToken, account }).then((res: any) => {
+      api.getReferralByCode({ code }, { accessToken, account }).then((res: any) => {
         setData(res.data)
       })
     }
@@ -41,9 +43,15 @@ export const ReceiveInviteDialog = ({
     setLoading(true)
     try {
       if (accessToken) {
-        await bindRelationshipByCode(code)
-        setReceiveInviteDialogOpen(false)
-        close(data?.refereeRatio || 0)
+        const res = await bindRelationshipByCode(code)
+        if (res?.code === 9200) {
+          setReceiveInviteDialogOpen(false)
+          close(data?.refereeRatio || 0)
+        } else {
+          toast.error({
+            title: res?.msg || t`Bind relationship failed`,
+          })
+        }
       }
     } catch (e) {
       console.error(e)

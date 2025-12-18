@@ -2,10 +2,10 @@ import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { useReferralStore } from '@/store/referrals'
 import { useAccessParams } from '@/hooks/useAccessParams'
 import { Skeleton } from '@/components/UI/Skeleton'
-import { Trans, t } from '@lingui/macro'
+import { Trans } from '@lingui/react/macro'
 import { useState, useEffect } from 'react'
 import { toast } from '@/components/UI/Toast'
-import Copy from '@/components/Icon/set/Copy'
+import { Copy } from '@/components/Copy'
 import Prev from '@/components/Icon/set/Prev'
 import Next from '@/components/Icon/set/Next'
 import { useCopyToClipboard } from 'usehooks-ts'
@@ -13,7 +13,11 @@ import { encryptionAddress } from '@/utils'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import dayjs from 'dayjs'
 import type { InvitationCodeInfo } from '@/store/referrals'
-import type { InviteType } from '@/api/referrals'
+import type { GetUserReferralDataParams, InviteType, UserReferralDataType } from '@/api/referrals'
+import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
+import { t } from '@lingui/core/macro'
+import { ReferralsEmpty } from '../Empty'
+import { formatNumber } from '@/utils/number'
 
 type ReferralFriendsListDialogProps = {
   info: InvitationCodeInfo
@@ -32,25 +36,47 @@ export const ReferralFriendsListDialog = ({
   const accessParams = useAccessParams()
   const [, copy] = useCopyToClipboard()
 
-  const [list, setList] = useState<InviteType[]>([])
+  const [list, setList] = useState<UserReferralDataType[]>([])
   const [loading, setLoading] = useState(false)
-  const [before, setBefore] = useState<string | number | undefined>(undefined)
-  const [after, setAfter] = useState<string | number | undefined>(undefined)
+  const [before, setBefore] = useState<string | number | undefined>(0)
+  const [after, setAfter] = useState<string | number | undefined>(0)
   const [hasNext, setHasNext] = useState(false)
+  const [hasPrev, setHasPrev] = useState(false)
 
   const fetchData = async () => {
     setLoading(true)
     try {
       if (accessParams?.accessToken && accessParams.account) {
-        const res = await getInvitationRelationships({
+        const params: GetUserReferralDataParams = {
           code: info.invitationCode,
+          limit: PAGE_SIZE,
           after: after,
           before: before,
-          limit: PAGE_SIZE,
-        })
+        }
+
+        const res = await getInvitationRelationships(params)
+
+        const hasNoMoreData = res.length < PAGE_SIZE
+
+        let hasPrevPage = true
+        let hasNextPage = true
+        if (!params.after && !params.before) {
+          hasPrevPage = false
+          if (hasNoMoreData) {
+            hasNextPage = false
+          }
+        } else if (params.after && hasNoMoreData) {
+          hasNextPage = false
+        } else if (params.before && hasNoMoreData) {
+          hasPrevPage = false
+        }
         setList(res ?? [])
+        setHasNext(hasNextPage)
+        setHasPrev(hasPrevPage)
         setLoading(false)
       }
+    } catch (error) {
+      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -60,33 +86,35 @@ export const ReferralFriendsListDialog = ({
     if (open) {
       fetchData()
     }
-  }, [open, before, after])
+  }, [open, before, after, accessParams?.accessToken, accessParams?.account])
 
   const handlePrev = () => {
     if (list.length > 0) {
       setBefore(list[0].id)
-      setAfter(undefined)
+      setAfter(0)
     }
   }
 
   const handleNext = () => {
     if (list.length > 0) {
       setAfter(list[list.length - 1].id)
-      setBefore(undefined)
+      setBefore(0)
     }
   }
 
   return (
-    <Dialog
+    <DialogTheme
       open={open}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{ style: { background: '#202129', color: 'white' } }}
+      sx={{
+        '.MuiPaper-root': {
+          minWidth: '600px',
+        },
+      }}
     >
-      <DialogTitle className="border-b border-[#31333D]">
+      <DialogTitleTheme divider onClose={onClose}>
         <Trans>Friends List</Trans>
-      </DialogTitle>
+      </DialogTitleTheme>
       <DialogContent>
         <div className="mt-4">
           <table className="w-full text-left text-sm">
@@ -123,18 +151,10 @@ export const ReferralFriendsListDialog = ({
                       <td className="py-3">
                         <div className="flex items-center gap-1">
                           <span>{encryptionAddress(row.referee)}</span>
-                          <Copy
-                            size={16}
-                            className="cursor-pointer"
-                            onClick={() =>
-                              copy(row.referee).then(
-                                (rs) => rs && toast.success({ title: t`Copy success` }),
-                              )
-                            }
-                          />
+                          <Copy content={row.referee} />
                         </div>
                       </td>
-                      <td className="py-3">{formatNumberPrecision(row.contribute, 2)} USDC</td>
+                      <td className="py-3">{formatNumber(row.contribute)} USDC</td>
                       <td className="py-3 text-right text-[#CED1D9]">
                         {dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss')}
                       </td>
@@ -143,7 +163,9 @@ export const ReferralFriendsListDialog = ({
               {!loading && list.length === 0 && (
                 <tr>
                   <td colSpan={3} className="py-10 text-center text-[#CED1D9]">
-                    <Trans>No Data</Trans>
+                    <div className="h-[150px]">
+                      <ReferralsEmpty />
+                    </div>
                   </td>
                 </tr>
               )}
@@ -152,7 +174,7 @@ export const ReferralFriendsListDialog = ({
 
           <div className="mt-4 flex justify-end gap-4">
             <div
-              className={`cursor-pointer ${!after && !before ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
+              className={`cursor-pointer ${!hasPrev ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
               onClick={() => {
                 if (after || before) handlePrev()
               }}
@@ -170,6 +192,6 @@ export const ReferralFriendsListDialog = ({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+    </DialogTheme>
   )
 }
