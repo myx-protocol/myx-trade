@@ -16,6 +16,8 @@ import { lazy } from 'react'
 
 const Record = lazy(() => import('@/pages/record'))
 const Price = lazy(() => import('@/pages/Price'))
+import Referrals from '@/pages/Referrals'
+import SelectReferral from '@/pages/Referrals/SelectReferral'
 
 const router = createBrowserRouter([
   {
@@ -86,6 +88,14 @@ const router = createBrowserRouter([
       {
         path: 'record',
         element: <Record />,
+      },
+      {
+        path: 'referrals',
+        element: <Referrals />,
+      },
+      {
+        path: '/referrals/select-referral',
+        element: <SelectReferral />,
       },
       {
         path: '*',

@@ -176,6 +176,9 @@ export interface GetLeaderboardItem {
   poolId: string
   tokenIcon: string
   globalId: number
+  tokenCreateTime: number
+  volume?: string
+  marketCap?: string
 }
 
 export const getLeaderboard = async (params: GetLeaderboardParams) => {

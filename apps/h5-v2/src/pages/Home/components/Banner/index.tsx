@@ -1,8 +1,10 @@
 import BannerPng from '@/assets/home/banner.png'
 import { PrimaryButton } from '@/components/UI/Button'
+import { useWalletStore } from '@/store/wallet/createStore'
 import { Trans } from '@lingui/react/macro'
 
 export const Banner = () => {
+  const { setLoginModalOpen } = useWalletStore()
   return (
     <div className="w-full">
       <img className="w-full" src={BannerPng} />
@@ -20,6 +22,9 @@ export const Banner = () => {
             fontSize: '14px',
             lineHeight: '1',
             color: '#fff',
+          }}
+          onClick={() => {
+            setLoginModalOpen(true)
           }}
         >
           <Trans>Get Started</Trans>

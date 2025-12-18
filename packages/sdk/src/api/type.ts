@@ -150,6 +150,10 @@ export interface AccessTokenRequest {
   address: string;
 }
 
+export interface HttpEnvParams {
+  isProd?: boolean
+}
+
 export enum HttpKlineIntervalEnum {
   Minute1 = 1,
   Minute5 = 5,

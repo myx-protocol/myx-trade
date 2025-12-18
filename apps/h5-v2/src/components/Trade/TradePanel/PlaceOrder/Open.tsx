@@ -58,8 +58,8 @@ export const OpenPosition = () => {
 
           if (
             (amountUnit === AmountUnitEnum.BASE &&
-              parseBigNumber(longSize).gte(parseBigNumber(baseAmount))) ||
-            (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(longSize).gte(quoteAmount))
+              parseBigNumber(longSize).gt(parseBigNumber(baseAmount))) ||
+            (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(longSize).gt(quoteAmount))
           ) {
             toast.error({
               title: `open size must be less than max size`,
@@ -107,8 +107,8 @@ export const OpenPosition = () => {
 
           if (
             (amountUnit === AmountUnitEnum.BASE &&
-              parseBigNumber(shortSize).gte(parseBigNumber(baseAmount))) ||
-            (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(shortSize).gte(quoteAmount))
+              parseBigNumber(shortSize).gt(parseBigNumber(baseAmount))) ||
+            (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(shortSize).gt(quoteAmount))
           ) {
             toast.error({
               title: `open size must be less than max size`,

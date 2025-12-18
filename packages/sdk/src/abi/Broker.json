@@ -1,5 +1,10 @@
 [
   {
+    "type": "constructor",
+    "payable": false,
+    "inputs": []
+  },
+  {
     "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
@@ -348,7 +353,16 @@
     "constant": true,
     "stateMutability": "view",
     "payable": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      }
+    ],
     "outputs": [
       {
         "type": "uint256[]"
@@ -361,7 +375,16 @@
     "constant": true,
     "stateMutability": "view",
     "payable": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      }
+    ],
     "outputs": [
       {
         "type": "uint256[]"
@@ -408,6 +431,82 @@
       {
         "type": "int256",
         "name": "adjustAmount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "batchSetSpecialFeeTiers",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "assetClass"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "feeTier"
+          },
+          {
+            "type": "int32",
+            "name": "makerFeeRate"
+          },
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "batchUpdateFeeTiers",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "assetClass"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "feeTier"
+          },
+          {
+            "type": "tuple",
+            "name": "addOnFeeRate",
+            "components": [
+              {
+                "type": "uint32",
+                "name": "takerFeeRate"
+              },
+              {
+                "type": "uint32",
+                "name": "makerFeeRate"
+              }
+            ]
+          }
+        ]
       }
     ],
     "outputs": []
@@ -511,7 +610,15 @@
     "inputs": [
       {
         "type": "uint8",
-        "name": "tier"
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      },
+      {
+        "type": "uint8",
+        "name": "feeTier"
       }
     ],
     "outputs": [
@@ -563,6 +670,14 @@
     "inputs": [
       {
         "type": "uint8",
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      },
+      {
+        "type": "uint8",
         "name": "feeTier"
       }
     ],
@@ -591,6 +706,10 @@
       {
         "type": "uint8",
         "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
       }
     ],
     "outputs": [
@@ -1203,16 +1322,30 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint8",
-        "name": "feeTier"
-      },
-      {
-        "type": "int32",
-        "name": "makerFeeRate"
-      },
-      {
-        "type": "uint32",
-        "name": "takerFeeRate"
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "assetClass"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "feeTier"
+          },
+          {
+            "type": "int32",
+            "name": "makerFeeRate"
+          },
+          {
+            "type": "uint32",
+            "name": "takerFeeRate"
+          }
+        ]
       }
     ],
     "outputs": []
@@ -1333,24 +1466,30 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint8[]",
-        "name": "assetClasses"
-      },
-      {
-        "type": "bool[]",
-        "name": "isEnables"
-      },
-      {
         "type": "tuple[]",
-        "name": "baseFeeRates",
+        "name": "params",
         "components": [
           {
-            "type": "uint32",
-            "name": "takerFeeRate"
+            "type": "uint8",
+            "name": "assetClass"
           },
           {
-            "type": "uint32",
-            "name": "makerFeeRate"
+            "type": "bool",
+            "name": "isEnable"
+          },
+          {
+            "type": "tuple",
+            "name": "baseFeeRate",
+            "components": [
+              {
+                "type": "uint32",
+                "name": "takerFeeRate"
+              },
+              {
+                "type": "uint32",
+                "name": "makerFeeRate"
+              }
+            ]
           }
         ]
       }
@@ -1378,7 +1517,15 @@
     "inputs": [
       {
         "type": "uint8",
-        "name": "tier"
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      },
+      {
+        "type": "uint8",
+        "name": "feeTier"
       },
       {
         "type": "tuple",
@@ -1404,8 +1551,16 @@
     "payable": false,
     "inputs": [
       {
+        "type": "uint8",
+        "name": "assetClass"
+      },
+      {
+        "type": "uint8",
+        "name": "riskTier"
+      },
+      {
         "type": "uint8[]",
-        "name": "tiers"
+        "name": "feeTiers"
       },
       {
         "type": "tuple[]",

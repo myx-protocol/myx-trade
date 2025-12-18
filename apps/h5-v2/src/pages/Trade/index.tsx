@@ -12,17 +12,19 @@ import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import type { ChainId } from '@myx-trade/sdk'
 import { getPoolLevelConfig } from '@/api'
-import { AccountDialog } from '@/components/AccountDialog'
 import useGlobalStore from '@/store/globalStore'
-
+import { usePositionStore } from '@/store/position/createStore'
+import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
+import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
 export const Trade = () => {
   const { chainId, poolId } = useParams()
   const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
-  const { accountDialogOpen } = useGlobalStore()
   const { client } = useMyxSdkClient()
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
+  const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
+
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
 
   const { getDetail } = useMarketDetail({
@@ -110,7 +112,8 @@ export const Trade = () => {
     <>
       <TradePanel />
       <LeverageDialog />
-      {accountDialogOpen && <AccountDialog />}
+      {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
+      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
     </>
   )
 }

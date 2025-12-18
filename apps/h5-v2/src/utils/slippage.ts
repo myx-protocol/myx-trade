@@ -1,4 +1,10 @@
 const SLIPPAGE_STORAGE_KEY = 'MYX_Slippage'
+import {
+  DEFAULT_SLIPPAGE_LEVEL_1,
+  DEFAULT_SLIPPAGE_LEVEL_2,
+  DEFAULT_SLIPPAGE_LEVEL_3,
+  DEFAULT_SLIPPAGE_LEVEL_4,
+} from '@/constant/slippage'
 
 export const SlippageTypeEnum = {
   OPEN: 'open',
@@ -127,5 +133,17 @@ export const clearAllSlippage = (): void => {
     localStorage.removeItem(SLIPPAGE_STORAGE_KEY)
   } catch (error) {
     console.error('Failed to clear slippage info:', error)
+  }
+}
+
+export const getSlippageConfig = (level: number) => {
+  if (level === 1) {
+    return DEFAULT_SLIPPAGE_LEVEL_1
+  } else if (level === 2) {
+    return DEFAULT_SLIPPAGE_LEVEL_2
+  } else if (level === 3) {
+    return DEFAULT_SLIPPAGE_LEVEL_3
+  } else {
+    return DEFAULT_SLIPPAGE_LEVEL_4
   }
 }

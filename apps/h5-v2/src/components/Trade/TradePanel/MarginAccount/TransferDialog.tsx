@@ -22,7 +22,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { AmountUnitEnum } from '../../type'
 import { MenuItem, Select } from '@mui/material'
-import { useGetPoolList } from '../../hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -41,7 +41,7 @@ export const TransferDialogButton = () => {
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const [transferType, setTransferType] = useState<TransferType>(TransferType.Account)
   const [amount, setAmount] = useState<string>('')
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
   const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
 

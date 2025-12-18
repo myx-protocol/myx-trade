@@ -10,7 +10,7 @@ export const useGetOrderList = (filter = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { symbolInfo } = useTradePageStore()
   const { isWrongNetwork } = useWalletConnection()
-  const { hideOthersSymbols } = usePositionStore()
+  const { hideOthersSymbols, selectChainId } = usePositionStore()
   const { address } = useWalletConnection()
 
   const { data, mutate } = useSWR(
@@ -19,6 +19,7 @@ export const useGetOrderList = (filter = false) => {
           key: 'get_orders',
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
+          selectChainId,
           clientIsAuthenticated,
           isWrongNetwork,
           filter,
@@ -37,7 +38,10 @@ export const useGetOrderList = (filter = false) => {
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      return filteredOrders
+      const ordersWithChainId = filteredOrders.filter(
+        (item: any) => selectChainId === '0' || `${item.chainId}` === selectChainId,
+      )
+      return ordersWithChainId ?? []
     },
     {
       refreshInterval: 5000,

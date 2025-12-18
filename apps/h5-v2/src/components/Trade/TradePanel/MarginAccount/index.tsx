@@ -17,8 +17,8 @@ import { useBoolean } from 'ahooks'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import ArrowDownFill from '@/components/UI/Icon/ArrowDownIconFill'
 import clsx from 'clsx'
-import { useGetPoolList } from '../../hooks/use-get-pool-list'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
+import useGlobalStore from '@/store/globalStore'
 
 /**
  * 倒计时 Hook
@@ -83,7 +83,7 @@ export const MarginAccount = () => {
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
   const { setReceiveDialogOpen } = useTradePanelStore()
   const [showBase, setShowBase] = useState(false)
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   const releaseTime = Number(accountAssets?.releaseTime ?? 0)
