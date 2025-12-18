@@ -13,6 +13,7 @@ export interface ChainsDrawerProps {
   chainId?: ChainId
   onChainChange: (chainId?: ChainId) => void
   onOpen?: () => void
+  showAllChain?: boolean
 }
 
 const ChainItem = ({
@@ -37,10 +38,11 @@ export const ChainsDrawer = ({
   onChainChange,
   onClose,
   onOpen = () => {},
+  showAllChain = true,
 }: ChainsDrawerProps) => {
   return (
     <Drawer open={open} onClose={onClose} onOpen={onOpen} anchor={'bottom'}>
-      {
+      {showAllChain && (
         <ChainItem selected={!chainId} key={'all'} onClick={() => onChainChange(undefined)}>
           <Box className={'flex-shrink-0 text-white'}>
             <GlobalLine size={24} />
@@ -49,7 +51,7 @@ export const ChainsDrawer = ({
             <Trans>All Chain</Trans>
           </span>
         </ChainItem>
-      }
+      )}
       {getSupportedChainIdsByEnv().map((_chainId) => {
         const { logoUrl, label } = CHAIN_INFO[_chainId]
         return (

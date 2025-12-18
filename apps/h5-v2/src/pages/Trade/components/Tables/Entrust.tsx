@@ -1,10 +1,10 @@
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { OpenOrderItem } from '@/components/Record/Items/OpenOrders'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 export const Entrusts = () => {
-  const orders = useGetOrderList()
-  const { poolList } = useGetPoolList()
+  const orders = useGetOrderList(true)
+  const { poolList } = useGlobalStore()
 
   return (
     <>

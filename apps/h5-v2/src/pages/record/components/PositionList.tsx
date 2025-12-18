@@ -1,12 +1,12 @@
 import { PositionItem } from '@/components/Record/Items/Position'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 export const PositionList = () => {
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
 
   return (
     <>

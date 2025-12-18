@@ -7,15 +7,15 @@ import { useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useGlobalStore from '@/store/globalStore'
 
 export const useGetPositionList = (filter: boolean = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWrongNetwork } = useWalletConnection()
-  const { hideOthersSymbols } = usePositionStore()
+  const { hideOthersSymbols, selectChainId } = usePositionStore()
   const { symbolInfo } = useTradePageStore()
   const { tickerData } = useMarketStore()
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGlobalStore()
   const { subscribeToTicker } = useSubscription()
 
   const { data, mutate } = useSWR(
@@ -25,6 +25,7 @@ export const useGetPositionList = (filter: boolean = false) => {
           address,
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
+          selectChainId,
           clientIsAuthenticated,
           isWrongNetwork,
           filter,
@@ -54,8 +55,10 @@ export const useGetPositionList = (filter: boolean = false) => {
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
 
-      return filteredPositions ?? []
-      // return positions ?? []
+      const positionsWithChainId = filteredPositions.filter(
+        (item: any) => selectChainId === '0' || `${item.chainId}` === selectChainId,
+      )
+      return positionsWithChainId ?? []
     },
     {
       refreshInterval: 10000,

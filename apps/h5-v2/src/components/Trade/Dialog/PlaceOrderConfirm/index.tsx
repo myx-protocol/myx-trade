@@ -18,7 +18,6 @@ import { setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { getSlippage } from '@/utils/slippage'
 import { EditText } from '@/components/EditText'
 import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
-import { useGetPoolList } from '../../hooks/use-get-pool-list'
 import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { tradePubSub } from '@/utils/pubsub'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
@@ -47,9 +46,8 @@ export const PlaceOrderConfirmDialog = () => {
   } = useTradePanelStore()
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
   const { submitOrder, submitLoading } = useSubmitOrder()
-  const { showPlaceOrderConfirmDialog } = useGlobalStore()
+  const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
-  const { poolList } = useGetPoolList()
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
   const { getLiqPrice } = useGetLiqPrice({
     poolId: symbolInfo?.poolId ?? '',

@@ -17,16 +17,11 @@ import { Slippage } from './Slippage'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import menuIcon from '@/assets/icon/menu.png'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  DEFAULT_SLIPPAGE_LEVEL_1,
-  DEFAULT_SLIPPAGE_LEVEL_2,
-  DEFAULT_SLIPPAGE_LEVEL_3,
-  DEFAULT_SLIPPAGE_LEVEL_4,
-} from '@/constant/slippage'
+
 import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
 import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
 import { useTradePageStore } from '../store/TradePageStore'
-import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, getSlippageConfig, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { truncateAddress } from '@/utils/string'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMarketStore } from '../store/MarketStore'
@@ -41,22 +36,13 @@ import useGlobalStore from '@/store/globalStore'
 import { SettingDrawer } from '@/components/SettingDrawer'
 import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
 import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
-
-const getSlippageConfig = (level: number) => {
-  if (level === 1) {
-    return DEFAULT_SLIPPAGE_LEVEL_1
-  } else if (level === 2) {
-    return DEFAULT_SLIPPAGE_LEVEL_2
-  } else if (level === 3) {
-    return DEFAULT_SLIPPAGE_LEVEL_3
-  } else {
-    return DEFAULT_SLIPPAGE_LEVEL_4
-  }
-}
+import { useWalletStore } from '@/store/wallet/createStore'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
   const { symbolInfo } = useTradePageStore()
+  const { setLoginModalOpen } = useWalletStore()
+
   const { poolConfig } = useGetPoolConfig(
     symbolInfo?.poolId as string,
     symbolInfo?.chainId as number,
@@ -144,7 +130,12 @@ export const TradePanel = () => {
           <div
             className="flex items-center gap-[4px]"
             onClick={() => {
-              setAccountDialogOpen(true)
+              if (address) {
+                setAccountDialogOpen(true)
+                return
+              }
+
+              setLoginModalOpen(true)
             }}
           >
             {symbolInfo?.chainId && (
