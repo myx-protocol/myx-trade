@@ -2,11 +2,13 @@ import { formatNumber } from '@/utils/number'
 import Big, { type BigSource } from 'big.js'
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 interface PriceProps {
   value: BigSource
   showUnit?: boolean
   decimals?: number
+  className?: string
 }
 
 enum PriceChangeMode {
@@ -19,7 +21,7 @@ enum PriceChangeMode {
  * cache price value and mode
  */
 
-export const Price = ({ value, showUnit = false, decimals }: PriceProps) => {
+export const Price = ({ className, value, showUnit = false, decimals }: PriceProps) => {
   const priceValueRef = useRef<BigSource>(value || 0)
   const modeRef = useRef<PriceChangeMode>(PriceChangeMode.None)
   useEffect(() => {
@@ -35,10 +37,13 @@ export const Price = ({ value, showUnit = false, decimals }: PriceProps) => {
   }, [value])
   return (
     <span
-      className={clsx('text-white', {
-        'text-rise': modeRef.current === PriceChangeMode.Rise,
-        'text-fall': modeRef.current === PriceChangeMode.Fall,
-      })}
+      className={twMerge(
+        clsx('text-white', {
+          'text-rise': modeRef.current === PriceChangeMode.Rise,
+          'text-fall': modeRef.current === PriceChangeMode.Fall,
+        }),
+        className,
+      )}
     >
       {formatNumber(value, {
         showUnit,

@@ -3,7 +3,13 @@ import type { SvgIconProps } from '../types'
 
 const Search = (props: SvgIconProps) => {
   return (
-    <svg width={props.size} height={props.size} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={props.size}
+      height={props.size}
+      viewBox="0 0 16 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <g clipPath="url(#clip0_3476_109620)">
         <mask id="mask0_3476_109620" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
           <path d="M15.0005 0.5H0.00292969V16.5H15.0005V0.5Z" fill="white" />

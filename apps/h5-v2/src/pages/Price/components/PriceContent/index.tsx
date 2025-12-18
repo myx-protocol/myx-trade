@@ -23,6 +23,7 @@ import { formatNumberWithBaseToken } from '@/utils/number'
 
 import ToTrade from '@/components/Icon/set/ToTrade'
 import { AmountInput } from './AmountInput'
+import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
 
 export const PriceContent = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
@@ -190,6 +191,7 @@ export const PriceContent = () => {
       />
       {activeTab === TabType.POSITION && <Position />}
       {activeTab === TabType.ENTRUSTS && <Entrusts />}
+      <LeverageDialog />
     </div>
   )
 }
