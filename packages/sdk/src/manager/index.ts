@@ -52,6 +52,7 @@ export class MyxClient {
      */
     const lp = MxSDK.getInstance();
     lp.setConfigManager(this.configManager);
+    lp.getMarkets ().then ();
 
     /**
      * initialize utils
