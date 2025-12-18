@@ -1,4 +1,3 @@
-import MenuSwap from '@/assets/home/swap.png'
 import MenuEarn from '@/assets/home/earn.png'
 import MenuReferral from '@/assets/home/referral.png'
 import MenuVip from '@/assets/home/vip.png'

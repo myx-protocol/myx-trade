@@ -41,13 +41,14 @@ export const useGlobalSearchStore = create<GlobalSearchStore>()(
       immer((set) => ({
         isOpen: false,
         open: (params) => {
-          const defaultTab = params?.defaultTab ?? SearchTypeEnum.All
+          const defaultTab = params?.defaultTab ?? SearchTypeEnum.Contract
           const secondTab = params?.secondTab ?? SearchSecondTypeEnum.Favorite
 
           set((state) => {
             state.isOpen = true
             state.searchTab = defaultTab
             state.secondSearchTab = secondTab
+            state.searchValue = ''
 
             return state
           })
@@ -65,7 +66,7 @@ export const useGlobalSearchStore = create<GlobalSearchStore>()(
           }),
         clearSearchHistory: () => set({ searchHistory: [] }),
 
-        searchTab: SearchTypeEnum.All,
+        searchTab: SearchTypeEnum.Contract,
         setSearchTab: (tab: SearchTypeEnum) => set({ searchTab: tab }),
 
         secondSearchTab: SearchSecondTypeEnum.Favorite,
