@@ -59,7 +59,6 @@ export class MxSDK {
   
   constructor() {
     console.log(this.version);
-    this.getMarkets().then()
   }
   
   public setConfigManager(configManager: ConfigManager): void {
