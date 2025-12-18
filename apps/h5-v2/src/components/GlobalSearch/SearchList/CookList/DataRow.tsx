@@ -21,13 +21,14 @@ export const CookListDataRow = ({ item, onItemClick }: CookListDataRowProps) => 
     >
       <div className="w-[210px] items-center">
         <SymbolInfo
-          isCook
           baseTokenLogo={item.tokenIcon}
           quoteTokenLogo={chainInfo?.logoUrl}
           symbolName={item.mBaseQuoteSymbol || item.symbolName}
           tokenAddress={item.baseToken}
           coinName={item.symbolName}
           baseSymbol={item.symbolName}
+          showMarketStatus
+          marketStatus={item.state}
         />
       </div>
       <div className="flex w-[103px] flex-col items-end text-right text-[14px] font-medium text-white">

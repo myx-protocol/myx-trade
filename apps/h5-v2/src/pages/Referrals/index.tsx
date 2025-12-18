@@ -10,6 +10,8 @@ import { ReceiveInviteDialog } from './components/ReceiveInviteDialog'
 import { ReceiveConfirmDialog } from './components/ReceiveConfirmDialog'
 import { isSupportedChainFn } from '@/config/chain'
 import { useAccessParams } from '@/hooks/useAccessParams'
+import { SecondHeader } from '@/components/SecondHeader'
+import { Trans } from '@lingui/react/macro'
 const Referrals = () => {
   const { isConnected, address, chainId, switchChain } = useWalletConnection()
   const [ratio, setRatio] = useState<number>(0)
@@ -55,28 +57,31 @@ const Referrals = () => {
   }, [isConnected, chainId])
 
   return (
-    <div className="flex justify-center bg-[#0B090B] px-4 pb-[50px] lg:px-5">
-      <div className="flex w-full flex-col items-center lg:min-w-[1440px]">
-        <Hero />
-        <div className="w-full lg:max-w-[1196px]">
-          <div className="mt-10 flex flex-col px-0 lg:mt-5 lg:px-4">
-            {isConnected ? (
-              <>
-                <MyRebate />
-                <RecordCard />
-              </>
-            ) : (
-              <RewardsCard />
-            )}
+    <div>
+      <SecondHeader title={<Trans>Referrals</Trans>} />
+      <div className="flex justify-center bg-[#0B090B] px-4 pb-[50px] lg:px-5">
+        <div className="flex w-full flex-col items-center lg:min-w-[1440px]">
+          <Hero />
+          <div className="w-full lg:max-w-[1196px]">
+            <div className="mt-10 flex flex-col px-0 lg:mt-5 lg:px-4">
+              {isConnected ? (
+                <>
+                  <MyRebate />
+                  <RecordCard />
+                </>
+              ) : (
+                <RewardsCard />
+              )}
+            </div>
+            <ReceiveInviteDialog
+              code={code}
+              close={(refereeRatio: number) => {
+                setRatio(refereeRatio)
+                setReceiveConfirmDialogOpen(true)
+              }}
+            />
+            <ReceiveConfirmDialog refereeRatio={ratio} />
           </div>
-          <ReceiveInviteDialog
-            code={code}
-            close={(refereeRatio: number) => {
-              setRatio(refereeRatio)
-              setReceiveConfirmDialogOpen(true)
-            }}
-          />
-          <ReceiveConfirmDialog refereeRatio={ratio} />
         </div>
       </div>
     </div>
