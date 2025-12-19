@@ -1,48 +1,39 @@
 import { ConfigManager } from "@/manager/config";
 import {
-  getKlineData,
   GetKlineDataParams,
-  getKlineLatestBar,
-  getPoolLevelConfig,
-  getTickerData,
   GetTickerDataParams,
-  searchMarket,
-  searchMarketAuth,
   SearchMarketParams,
-  addFavorite,
   AddFavoriteParams,
-  removeFavorite,
   RemoveFavoriteParams,
-  getFavoritesList,
   FavoritesListParams,
-  getBaseDetail,
   type GetBaseDetailParams,
-  getMarketDetail,
   type GetMarketDetailParams,
 } from "@/api";
 import { KlineResolution } from "../subscription/types";
 import { Utils } from "../utils";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { getPoolSymbolAll } from "@/api/pool";
+import { Api } from "../api";
 
 export class Markets {
   private configManager: ConfigManager;
   private utils: Utils;
-  constructor(configManager: ConfigManager, utils: Utils) {
+  private api: Api;
+  constructor(configManager: ConfigManager, utils: Utils, api: Api) {
     this.configManager = configManager;
     this.utils = utils;
+    this.api = api;
   }
 
   getMarkets() {
     return Promise.resolve([]);
   }
 
-  async getPoolLevelConfig(poolId: string) {
+  async getPoolLevelConfig(poolId: string, chainId: number) {
     const config = this.configManager.getConfig();
     return (
-      await getPoolLevelConfig({
+      await this.api.getPoolLevelConfig({
         poolId,
-        chainId: config?.chainId,
+        chainId,
       })
     ).data;
   }
@@ -56,11 +47,14 @@ export class Markets {
   }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | "chainId"> & {
     interval: KlineResolution;
   }) {
+    const config = this.configManager.getConfig();
     return (
-      await getKlineData({
-        ...params,
-        interval: this.utils.transferKlineResolutionToInterval(interval),
-      })
+      await this.api.getKlineData(
+        {
+          ...params,
+          interval: this.utils.transferKlineResolutionToInterval(interval),
+        }
+      )
     ).data;
   }
 
@@ -70,11 +64,14 @@ export class Markets {
   }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | "chainId"> & {
     interval: KlineResolution;
   }) {
+    const config = this.configManager.getConfig();
     return (
-      await getKlineLatestBar({
-        ...params,
-        interval: this.utils.transferKlineResolutionToInterval(interval),
-      })
+      await this.api.getKlineLatestBar(
+        {
+          ...params,
+          interval: this.utils.transferKlineResolutionToInterval(interval),
+        }
+      )
     ).data;
   }
   /**
@@ -85,7 +82,9 @@ export class Markets {
    * ticker start
    */
   async getTickerList(params: GetTickerDataParams) {
-    return (await getTickerData(params)).data;
+    return (
+      await this.api.getTickerData(params)
+    ).data;
   }
 
   /**
@@ -106,11 +105,13 @@ export class Markets {
       );
     }
     return (
-      await searchMarketAuth({
-        address: address,
-        ...params,
-        accessToken: accessToken,
-      })
+      await this.api.searchMarketAuth(
+        {
+          address: address,
+          ...params,
+          accessToken: accessToken,
+        }
+      )
     ).data;
   }
 
@@ -118,7 +119,9 @@ export class Markets {
    * search by unauthenticated users
    */
   async searchMarket(params: SearchMarketParams) {
-    return (await searchMarket(params)).data;
+    return (
+      await this.api.searchMarket(params)
+    ).data;
   }
 
   /**
@@ -126,6 +129,7 @@ export class Markets {
    * (only for authenticated users)
    */
   async getFavoritesList(params: FavoritesListParams, address: string) {
+    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -134,17 +138,20 @@ export class Markets {
       );
     }
     return (
-      await getFavoritesList({
-        ...params,
-        address: address,
-        accessToken: accessToken,
-      })
+      await this.api.getFavoritesList(
+        {
+          ...params,
+          address: address,
+          accessToken: accessToken,
+        }
+      )
     ).data;
   }
   /**
    * favorite
    */
   async addFavorite(params: AddFavoriteParams, address: string) {
+    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -153,11 +160,13 @@ export class Markets {
       );
     }
     return (
-      await addFavorite({
-        ...params,
-        address: address,
-        accessToken: accessToken,
-      })
+      await this.api.addFavorite(
+        {
+          ...params,
+          address: address,
+          accessToken: accessToken,
+        }
+      )
     ).data;
   }
 
@@ -170,11 +179,13 @@ export class Markets {
       );
     }
     return (
-      await removeFavorite({
-        ...params,
-        address: address,
-        accessToken: accessToken,
-      })
+      await this.api.removeFavorite(
+        {
+          ...params,
+          address: address,
+          accessToken: accessToken,
+        }
+      )
     ).data;
   }
 
@@ -182,20 +193,26 @@ export class Markets {
    * base detail
    */
   async getBaseDetail(params: GetBaseDetailParams) {
-    return (await getBaseDetail(params)).data;
+    return (
+      await this.api.getBaseDetail(params)
+    ).data;
   }
 
   /**
    * get market detail
    */
   async getMarketDetail(params: GetMarketDetailParams) {
-    return (await getMarketDetail(params)).data;
+    return (
+      await this.api.getMarketDetail(params)
+    ).data;
   }
 
   /**
    * get pool symbol all
    */
   async getPoolSymbolAll() {
-    return (await getPoolSymbolAll()).data;
+    return (
+      await this.api.getPoolSymbolAll()
+    ).data;
   }
 }

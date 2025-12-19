@@ -4,13 +4,15 @@ import { parseBigNumber } from '@/utils/bn'
 import { TRADING_FEE_DECIMALS } from '@/constant/decimals'
 import { ethers } from 'ethers'
 import useSWR from 'swr'
+import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
 
 export const useGetTradingFee = (chainId?: number) => {
   const { client } = useMyxSdkClient(chainId)
+  const { poolConfig } = useTradePageStore()
 
   const getTradingFee = useCallback(
     async ({ size, price, assetClass }: { size: string; price: string; assetClass: number }) => {
-      const rs = await client?.utils.getUserTradingFeeRate(assetClass)
+      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
       const fundingFeeInfo = rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
       const tradingFee = parseBigNumber(size)
         .mul(parseBigNumber(price))
@@ -22,7 +24,7 @@ export const useGetTradingFee = (chainId?: number) => {
 
       return tradingFee.toString()
     },
-    [client],
+    [client, poolConfig],
   )
   return {
     getTradingFee,
@@ -41,11 +43,15 @@ export const useGetTradingFeeInfo = ({
   chainId?: number
 }) => {
   const { client } = useMyxSdkClient(chainId)
+  const { poolConfig } = useTradePageStore()
 
-  const { data: fundingFeeInfo } = useSWR('getFundingFeeInfo', async () => {
-    const rs = await client?.utils.getUserTradingFeeRate(assetClass)
-    return rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
-  })
+  const { data: fundingFeeInfo } = useSWR(
+    ['getFundingFeeInfo', assetClass, poolConfig?.level ?? 1],
+    async () => {
+      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
+      return rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
+    },
+  )
 
   const tradingFee = parseBigNumber(size)
     .mul(parseBigNumber(price))
@@ -56,4 +62,24 @@ export const useGetTradingFeeInfo = ({
     )
 
   return tradingFee.toString()
+}
+
+export const useGetUserTradingFeeRate = (
+  chainId: number,
+  assetClass: number,
+  poolConfig: PoolConfig,
+) => {
+  const { client } = useMyxSdkClient(chainId)
+  const { data: fundingFeeRate } = useSWR(
+    ['getFundingFeeRate', assetClass, poolConfig?.level ?? 1],
+    async () => {
+      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
+      return rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
+    },
+    {
+      refreshInterval: 1000,
+    },
+  )
+
+  return ethers.formatUnits(fundingFeeRate?.takerFeeRate ?? 0, TRADING_FEE_DECIMALS) ?? '0'
 }

@@ -1,13 +1,15 @@
 import { CopyIcon } from '@/components/Icon'
 import { Box } from '@mui/material'
-import type { MouseEventHandler } from 'react'
+import { useState, type MouseEventHandler } from 'react'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { toast } from './UI/Toast'
 import { t } from '@lingui/core/macro'
 import { useThrottleFn } from 'ahooks'
+import Yes from './Icon/set/Yes'
 
 export const Copy = ({ content, className = '' }: { content?: string; className?: string }) => {
   const [, copy] = useCopyToClipboard()
+  const [isCopied, setIsCopied] = useState<boolean>(false)
 
   const { run: onCopyFn } = useThrottleFn(
     (text: string) => {
@@ -17,6 +19,10 @@ export const Copy = ({ content, className = '' }: { content?: string; className?
           toast.success({
             title: t`Copy success`,
           })
+          setTimeout(() => {
+            setIsCopied(false)
+          }, 1000)
+          setIsCopied(true)
         })
     },
     { wait: 1000 },
@@ -29,8 +35,21 @@ export const Copy = ({ content, className = '' }: { content?: string; className?
     }
   }
   return (
-    <Box className={`h-[12px] w-[12px] cursor-pointer ${className}`} onClick={onCopy}>
-      <CopyIcon size={12} />
+    <Box className={`h-[12px] w-[12px] cursor-pointer ${className}`}>
+      {isCopied ? (
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+          }}
+        >
+          <Yes size={12} color="#00E3A5" />
+        </div>
+      ) : (
+        <div onClick={onCopy}>
+          <CopyIcon size={12} />
+        </div>
+      )}
     </Box>
   )
 }

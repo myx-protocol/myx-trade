@@ -1,6 +1,6 @@
 import { ConfigManager, MyxClientConfig } from "../config";
 import { Logger } from "@/logger";
-import { getHistoryOrders, GetHistoryOrdersParams, getOrders } from "@/api";
+import { GetHistoryOrdersParams } from "@/api";
 import {
   getBrokerSingerContract,
   getForwarderContract,
@@ -21,6 +21,7 @@ import { Seamless } from "../seamless";
 import dayjs from "dayjs";
 import { Account } from "../account";
 import { ChainId } from "@/config/chain";
+import { Api } from "../api";
 
 export class Order {
   private configManager: ConfigManager;
@@ -28,12 +29,14 @@ export class Order {
   private utils: Utils;
   private seamless: Seamless;
   private account: Account
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account) {
+  private api: Api;
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account, api: Api) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
     this.seamless = seamless;
     this.account = account
+    this.api = api;
   }
 
   async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string) {
@@ -231,11 +234,11 @@ export class Order {
       // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       // this.logger.info("createIncreaseOrder receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
         success: true,
-        orderId,
+        // orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -245,10 +248,10 @@ export class Order {
         receipt,
       };
 
-      if (!orderId) {
-        this.logger.warn("Warning: OrderId not found in transaction logs");
-        result.success = false;
-      }
+      // if (!orderId) {
+      //   this.logger.warn("Warning: OrderId not found in transaction logs");
+      //   result.success = false;
+      // }
 
       return {
         code: 0,
@@ -403,19 +406,19 @@ export class Order {
         gasLimit: (gasLimit * 120n) / 100n,
       });
 
-      this.logger.info("Transaction sent:", transaction.hash);
-      this.logger.info("Waiting for confirmation...");
+      // this.logger.info("Transaction sent:", transaction.hash);
+      // this.logger.info("Waiting for confirmation...");
 
       const receipt = await transaction.wait();
-      this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
+      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
-      this.logger.info("closeAllPositions receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // this.logger.info("closeAllPositions receipt--->", receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       return {
         code: 0,
         message: "close all positions success",
-        data: orderId,
+        // data: orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -590,11 +593,11 @@ export class Order {
       // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
 
       // this.logger.info("createDecreaseOrder receipt--->", receipt);
-      const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
       const result = {
         success: true,
-        orderId,
+        // orderId,
         transactionHash: transaction.hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
@@ -604,10 +607,10 @@ export class Order {
         receipt,
       };
 
-      if (!orderId) {
-        this.logger.warn("Warning: OrderId not found in transaction logs");
-        result.success = false;
-      }
+      // if (!orderId) {
+      //   this.logger.warn("Warning: OrderId not found in transaction logs");
+      //   result.success = false;
+      // }
 
       return {
         code: 0,
@@ -785,21 +788,21 @@ export class Order {
             });
           }
 
-          this.logger.info("Transaction sent:", transaction.hash);
-          this.logger.info("Waiting for confirmation...");
+          // this.logger.info("Transaction sent:", transaction.hash);
+          // this.logger.info("Waiting for confirmation...");
 
           const receipt = await transaction.wait();
-          this.logger.info(
-            "Transaction confirmed in block:",
-            receipt?.blockNumber
-          );
+          // this.logger.info(
+          //   "Transaction confirmed in block:",
+          //   receipt?.blockNumber
+          // );
 
-          this.logger.info("createDecreaseOrder receipt--->", receipt);
-          const orderId = this.utils.getOrderIdFromTransaction(receipt);
+          // this.logger.info("createDecreaseOrder receipt--->", receipt);
+          // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
           const result = {
             success: true,
-            orderId,
+            // orderId,
             transactionHash: transaction.hash,
             blockNumber: receipt?.blockNumber,
             gasUsed: receipt?.gasUsed?.toString(),
@@ -809,10 +812,10 @@ export class Order {
             receipt,
           };
 
-          if (!orderId) {
-            this.logger.warn("Warning: OrderId not found in transaction logs");
-            result.success = false;
-          }
+          // if (!orderId) {
+          //   this.logger.warn("Warning: OrderId not found in transaction logs");
+          //   result.success = false;
+          // }
 
           return {
             code: 0,
@@ -951,21 +954,21 @@ export class Order {
           });
         }
 
-        this.logger.info("Transaction sent:", transaction.hash);
-        this.logger.info("Waiting for confirmation...");
+        // this.logger.info("Transaction sent:", transaction.hash);
+        // this.logger.info("Waiting for confirmation...");
 
         const receipt = await transaction.wait();
-        this.logger.info(
-          "Transaction confirmed in block:",
-          receipt?.blockNumber
-        );
+        // this.logger.info(
+        //   "Transaction confirmed in block:",
+        //   receipt?.blockNumber
+        // );
 
-        this.logger.info("createDecreaseOrder receipt--->", receipt);
-        const orderId = this.utils.getOrderIdFromTransaction(receipt);
+        // this.logger.info("createDecreaseOrder receipt--->", receipt);
+        // const orderId = this.utils.getOrderIdFromTransaction(receipt);
 
         const result = {
           success: true,
-          orderId,
+          // orderId,
           transactionHash: transaction.hash,
           blockNumber: receipt?.blockNumber,
           gasUsed: receipt?.gasUsed?.toString(),
@@ -975,10 +978,10 @@ export class Order {
           receipt,
         };
 
-        if (!orderId) {
-          this.logger.warn("Warning: OrderId not found in transaction logs");
-          result.success = false;
-        }
+        // if (!orderId) {
+        //   this.logger.warn("Warning: OrderId not found in transaction logs");
+        //   result.success = false;
+        // }
 
         return {
           code: 0,
@@ -1201,6 +1204,7 @@ export class Order {
   }
 
   async getOrders(address: string) {
+
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
@@ -1211,7 +1215,7 @@ export class Order {
     }
 
     try {
-      const res = await getOrders(accessToken, address);
+      const res = await this.api.getOrders(accessToken, address);
       return {
         code: 0,
         data: res.data,
@@ -1226,6 +1230,7 @@ export class Order {
   }
 
   async getOrderHistory(params: GetHistoryOrdersParams, address: string) {
+    const config = this.configManager.getConfig();
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -1233,7 +1238,7 @@ export class Order {
         "Invalid access token"
       );
     }
-    const res = await getHistoryOrders({ accessToken, ...params, address });
+    const res = await this.api.getHistoryOrders({ accessToken, ...params, address });
     return {
       code: 0,
       data: res.data,

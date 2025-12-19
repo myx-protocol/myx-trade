@@ -1,13 +1,17 @@
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useSwitchChain, useWalletClient } from 'wagmi'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { LoginChannelEnum } from '@/store/wallet/types'
 import { isSupportedChainFn } from '@/config/chain'
+import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 
 export const useWalletConnection = () => {
   const { address, isConnected, isConnecting, chainId } = useAccount()
   const { connect, connectors, error, isPending } = useConnect()
+  const { resetStore } = useTradePanelStore()
   const { disconnect } = useDisconnect()
+  const { switchChain } = useSwitchChain()
+
   const {
     setActiveAddress,
     setMoreLoginDrawerOpen,
@@ -17,7 +21,7 @@ export const useWalletConnection = () => {
   } = useWalletStore()
   useEffect(() => {
     setActiveAddress(address || '')
-  }, [address, setActiveAddress])
+  }, [address, setActiveAddress, resetStore])
 
   const connectWallet = useCallback(
     async (walletItem: { id: string; connectorId: string; name: string }) => {
@@ -56,8 +60,6 @@ export const useWalletConnection = () => {
     return Boolean(address && isConnected && !isSupportedChainFn(chainId))
   }, [address, isConnected, chainId])
 
-  // console.log('isConnected', isConnected, address, chainId, 'chainId')
-
   return {
     // 状态
     address,
@@ -71,5 +73,6 @@ export const useWalletConnection = () => {
     setLoginModalOpen,
     chainId,
     isWrongNetwork,
+    switchChain,
   }
 }

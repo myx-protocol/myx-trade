@@ -82,8 +82,6 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
         <SymbolInfo
           showFavoriteIcon={item.type === MarketType.Contract}
           isFavorite={item.favorites === 1}
-          isBluechip={item.capType === MarketCapType.BlueChips}
-          isCook={item.type === MarketType.Cook}
           baseTokenLogo={item.tokenIcon}
           quoteTokenLogo={chainInfo?.logoUrl}
           symbolName={item.baseQuoteSymbol || item.symbolName}

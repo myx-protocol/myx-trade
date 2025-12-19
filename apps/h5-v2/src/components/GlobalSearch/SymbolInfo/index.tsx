@@ -1,10 +1,19 @@
 import Star from '@/components/Icon/set/Star'
-import Cook from '@/components/Icon/set/Cook'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { truncateAddress } from '@/utils/string'
 import { t } from '@lingui/core/macro'
-import type { MouseEventHandler } from 'react'
+import { useMemo, type MouseEventHandler } from 'react'
 import { Copy } from '@/components/Copy'
+import { MarketPoolState } from '@myx-trade/sdk'
+import { Tooltips } from '@/components/UI/Tooltips'
+
+import {
+  MarketCreate,
+  MarketReady,
+  MarketTrading,
+  MarketPreDelisted,
+  MarketDelisted,
+} from '@/components/Icon'
 
 export interface SymbolInfoProps {
   symbolName?: string
@@ -12,13 +21,13 @@ export interface SymbolInfoProps {
   tokenAddress?: string
   baseTokenLogo?: string
   quoteTokenLogo?: string
-  isBluechip?: boolean
-  isCook?: boolean
   showFavoriteIcon?: boolean
   isFavorite?: boolean
   onFavoriteChange?: () => void
   baseSymbol?: string
   quoteSymbol?: string
+  showMarketStatus?: boolean
+  marketStatus?: MarketPoolState
 }
 
 export const SymbolInfo = ({
@@ -29,11 +38,11 @@ export const SymbolInfo = ({
   quoteTokenLogo,
   showFavoriteIcon,
   isFavorite = false,
-  isBluechip,
-  isCook,
   onFavoriteChange,
   baseSymbol,
   quoteSymbol,
+  showMarketStatus = false,
+  marketStatus,
 }: SymbolInfoProps) => {
   const handleBeforeFavoriteChange: MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation()
@@ -41,6 +50,50 @@ export const SymbolInfo = ({
       onFavoriteChange()
     }
   }
+
+  const MarketStatusIcon = useMemo(() => {
+    if (showMarketStatus) {
+      switch (marketStatus) {
+        case MarketPoolState.Cook:
+          return (
+            <Tooltips
+              title={t`Cooking : Gathering initial liquidity. Become a "Genesis LP" now for a permanent 2% fee share.`}
+            >
+              <MarketCreate size={12} />
+            </Tooltips>
+          )
+        case MarketPoolState.Primed:
+          return (
+            <Tooltips
+              title={t`Pending : Activation Oracle deployment in progress. Trading will begin soon.`}
+            >
+              <MarketReady size={12} />
+            </Tooltips>
+          )
+        case MarketPoolState.Trench:
+          return (
+            <Tooltips title={t`Trading : Market is live. Trading is open and generating earnings.`}>
+              <MarketTrading size={12} />
+            </Tooltips>
+          )
+        case MarketPoolState.PreBench:
+          return (
+            <Tooltips
+              title={t`Pending Delisting:Scheduled for closure soon. Operations are stopping.`}
+            >
+              <MarketPreDelisted size={12} />
+            </Tooltips>
+          )
+        case MarketPoolState.Bench:
+          return (
+            <Tooltips title={t`Delisted : Market is closed. Only asset redemption is available.`}>
+              <MarketDelisted size={12} />
+            </Tooltips>
+          )
+      }
+    }
+    return null
+  }, [showMarketStatus, marketStatus])
   return (
     <div className="flex items-center gap-[8px] leading-[1]">
       {/* star */}
@@ -66,15 +119,8 @@ export const SymbolInfo = ({
           {/* symbol name */}
           <div className="flex items-center gap-[4px]">
             <p className="line-clamp-1 text-[14px] font-medium text-white">{symbolName}</p>
-            {/* bluechip */}
-            {isBluechip && (
-              <div className="rounded rounded-[4px] bg-[rgba(0,227,165,0.1)] px-[4px] py-[3px] text-[10px] leading-[1] text-[#00E3A5]">{t`蓝筹`}</div>
-            )}
-            {/* cook */}
-            {isCook && (
-              <div className="flex items-center">
-                <Cook size={12} color="#00E3A5" />
-              </div>
+            {showMarketStatus && (
+              <div className="ml-[4px] flex shrink-0 items-center">{MarketStatusIcon}</div>
             )}
           </div>
           {/* info */}
