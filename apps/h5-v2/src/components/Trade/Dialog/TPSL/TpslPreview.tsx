@@ -26,10 +26,10 @@ export const TpslPreviewDialog = () => {
           paddingTop: '24px',
           paddingBottom: '24px',
         },
-        '& .MuiDialogTitle-root': {
-          marginLeft: '20px',
-          marginRight: '20px',
-        },
+        // '& .MuiDialogTitle-root': {
+        //   marginLeft: '20px',
+        //   marginRight: '20px',
+        // },
       }}
     >
       <div className="px-[20px]">

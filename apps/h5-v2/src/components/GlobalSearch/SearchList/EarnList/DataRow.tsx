@@ -26,6 +26,8 @@ export const EarnListDataRow = ({ item, onItemClick }: EarnListDataRowProps) => 
           baseTokenLogo={item.tokenIcon}
           quoteTokenLogo={chainInfo?.logoUrl}
           baseSymbol={item.symbolName}
+          marketStatus={item.state}
+          showMarketStatus
         />
       </div>
       <div className="flex w-[103px] items-center justify-end text-[14px] font-medium text-white">

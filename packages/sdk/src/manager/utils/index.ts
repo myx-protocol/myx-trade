@@ -46,7 +46,6 @@ export class Utils {
       "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
     );
 
-    this.logger.info("Looking for OrderPlaced events with topic:", eventTopic);
 
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
@@ -59,7 +58,7 @@ export class Utils {
 
       // 检查是否是 OrderPlaced 事件
       if (log.topics && log.topics.length > 0 && log.topics[0] === eventTopic) {
-        this.logger.info(`Found OrderPlaced event in log ${i}`);
+        // this.logger.info(`Found OrderPlaced event in log ${i}`);
 
         try {
           // 使用 ethers 解析事件数据
@@ -69,7 +68,7 @@ export class Utils {
           });
 
           if (parsedLog && parsedLog.name === "OrderPlaced") {
-            this.logger.info("Parsed OrderPlaced event:", parsedLog.args);
+            // this.logger.info("Parsed OrderPlaced event:", parsedLog.args);
 
             // 根据 Emiter.json 的定义，orderId 是第5个参数（索引4）
             // 事件字段顺序：broker, user, poolId, positionId, orderId, ...
@@ -77,7 +76,7 @@ export class Utils {
 
             if (orderId !== undefined && orderId !== null) {
               const orderIdString = orderId.toString();
-              this.logger.info(`Found orderId: ${orderIdString}`);
+              // this.logger.info(`Found orderId: ${orderIdString}`);
               return orderIdString;
             }
           }
@@ -87,7 +86,7 @@ export class Utils {
         }
       }
     }
-    this.logger.warn("OrderPlaced event not found in transaction logs");
+    // this.logger.warn("OrderPlaced event not found in transaction logs");
     return null;
   }
 
@@ -205,7 +204,7 @@ export class Utils {
     }
   }
 
-  async getUserTradingFeeRate(assetClass: number) {
+  async getUserTradingFeeRate(assetClass: number, riskTier: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
@@ -220,8 +219,10 @@ export class Utils {
 
       const userFeeRate = await brokerContract.getUserFeeRate(
         targetAddress,
-        assetClass
+        assetClass,
+        riskTier
       );
+      
       return {
         code: 0,
         data: {
@@ -257,7 +258,6 @@ export class Utils {
         quoteAddress
       );
 
-      console.log("networkFee-->", networkFee.toString());
       return networkFee.toString();
     } catch (error) {
       this.logger.error("Error getting network fee:", error);
@@ -265,11 +265,9 @@ export class Utils {
     }
   }
 
-  async getOraclePrice(poolId: string) {
+  async getOraclePrice(poolId: string, chainId: number) {
     try {
-      const config: MyxClientConfig = this.configManager.getConfig();
-      // update price data
-      const priceData = await getPriceData(config.chainId, poolId);
+      const priceData = await getPriceData(chainId, poolId);
       if (!priceData) throw new Error("Failed to get price data");
       return priceData;
     } catch (error) {
@@ -377,8 +375,5 @@ export class Utils {
         message: error?.message,
       };
     }
-
-
-    // return poolInfo;
   }
 }

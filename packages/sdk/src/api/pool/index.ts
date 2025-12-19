@@ -1,10 +1,10 @@
 import { ApiResponse } from "../type";
 import { http } from "../request";
-import { baseUrl } from "..";
+import { getBaseUrlByEnv } from "@/api";
 
 export const getPoolList = async () => {
   return http.get<ApiResponse<any[]>>(
-    `${baseUrl}/openapi/gateway/scan/market/list`
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market/list`
   );
 };
 
@@ -16,8 +16,4 @@ export interface PoolSymbolAllResponse {
   quoteSymbol: string;
   baseTokenIcon: string;
 }
-export const getPoolSymbolAll = async () => {
-  return http.get<ApiResponse<PoolSymbolAllResponse[]>>(
-    `${baseUrl}/openapi/gateway/scan/pools`
-  );
-};
+

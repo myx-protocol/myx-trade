@@ -113,9 +113,9 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
       open={open}
       onClose={() => onOpenChange(false)}
       sx={{
-        width: '360px',
-        borderTopLeftRadius: '16px',
-        borderBottomLeftRadius: '16px',
+        width: '100%',
+        // borderTopLeftRadius: '16px',
+        // borderBottomLeftRadius: '16px',
       }}
     >
       <div className="pt-[48px]">

@@ -16,11 +16,12 @@ import { useNavigate } from 'react-router-dom'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useSortData } from '@/hooks/useSortData'
 
 export const List = () => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const { chainId, tab } = useMarketPageStore()
+  const { chainId, tab, sort, setSort } = useMarketPageStore()
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { isWalletConnected, address } = useWalletConnection()
   const { isLoading, data } = useQuery({
@@ -45,8 +46,31 @@ export const List = () => {
       return result
     },
   })
+
+  const marketTickerDataMap = useMarketStore((state) => state.tickerData)
+
+  // 使用排序 hook，只在用户点击排序时触发，ticker 数据变化不会重新排序
+  const dataSorted = useSortData({
+    data: data?.contractInfo.list ?? [],
+    sort: {
+      by: sort.by,
+      direction: sort.direction,
+    },
+    getFieldValue: (item, field) => {
+      // 对于 basePrice 和 priceChange，使用 ticker 数据，如果没有则使用原值
+      if (field === 'basePrice') {
+        return marketTickerDataMap[item.poolId]?.price || item.basePrice
+      }
+      if (field === 'priceChange') {
+        return marketTickerDataMap[item.poolId]?.change || item.priceChange
+      }
+      // 其他字段使用原值
+      return item[field] as string | number | undefined
+    },
+  })
+
   const navigate = useNavigate()
-  const [list] = useVirtualList(data?.contractInfo.list ?? [], {
+  const [list] = useVirtualList(dataSorted, {
     containerTarget: containerRef,
     wrapperTarget: wrapperRef,
     itemHeight: 58,
@@ -55,8 +79,7 @@ export const List = () => {
 
   const { subscribeToTicker } = useSubscription()
   useEffect(() => {
-    if (client && list.length && data?.contractInfo.list.length) {
-      console.log('list', list, data?.contractInfo?.list)
+    if (client && list.length && dataSorted.length) {
       const unsubscribe = subscribeToTicker(
         list.map((item) => ({
           globalId: item.data.globalId,
@@ -64,14 +87,13 @@ export const List = () => {
         })),
       )
       return () => {
-        console.log('unsubscribe-market-list', unsubscribe)
         if (unsubscribe) {
           unsubscribe()
         }
       }
     }
-  }, [list, client, data?.contractInfo.list])
-  const marketTickerDataMap = useMarketStore((state) => state.tickerData)
+  }, [list, client, dataSorted.length, subscribeToTicker])
+
   // return <SelectFavoritesToken />
   return (
     <div className="mt-[8px] flex min-h-0 flex-[1_1_0%] flex-col">
@@ -80,6 +102,13 @@ export const List = () => {
         className="px-[16px] py-[8px] text-[12px] leading-[1.2] text-[#6D7180]"
         values={[
           <Sort
+            onChange={(direction) =>
+              setSort({
+                by: direction === 'none' ? undefined : 'marketCap',
+                direction,
+              })
+            }
+            isSorted={sort.by === 'marketCap'}
             label={
               <p>
                 <Trans>Name/Mcap</Trans>
@@ -87,6 +116,13 @@ export const List = () => {
             }
           />,
           <Sort
+            onChange={(direction) =>
+              setSort({
+                by: direction === 'none' ? undefined : 'basePrice',
+                direction,
+              })
+            }
+            isSorted={sort.by === 'basePrice'}
             label={
               <p>
                 <Trans>Last Price</Trans>
@@ -94,6 +130,13 @@ export const List = () => {
             }
           />,
           <Sort
+            onChange={(direction) =>
+              setSort({
+                by: direction === 'none' ? undefined : 'priceChange',
+                direction,
+              })
+            }
+            isSorted={sort.by === 'priceChange'}
             label={
               <p>
                 <Trans>Change %</Trans>
@@ -105,8 +148,8 @@ export const List = () => {
 
       {/* list */}
       {isLoading && <Loading total={10} />}
-      {Boolean(!isLoading && !data?.contractInfo.list.length) && <Empty />}
-      {Boolean(!isLoading && data?.contractInfo.list.length) && (
+      {Boolean(!isLoading && !dataSorted.length) && <Empty />}
+      {Boolean(!isLoading && dataSorted.length) && (
         <div className="min-h-0 flex-[1_1_0%] overflow-y-auto" ref={containerRef}>
           <div ref={wrapperRef} className="min-h-0 pb-[10px]">
             {list?.map((item) => (

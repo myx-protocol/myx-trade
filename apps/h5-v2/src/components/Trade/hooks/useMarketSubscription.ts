@@ -6,6 +6,7 @@ import type { MarketTickerData } from '../store/MarketStore'
 import { Count } from '@/utils/count'
 
 const TICKER_DATA_UPDATE_TIMER = 500
+const UNSUBSCRIBE_DEBOUNCE_TIMER = 10000 // 防抖延迟时间，单位：毫秒
 
 interface subscribeTickerParams {
   globalId: number
@@ -13,6 +14,7 @@ interface subscribeTickerParams {
 }
 
 const tickerSubscriptionCountMap = new Map<number, Count>()
+const unsubscribeDebounceTimers = new Map<number, NodeJS.Timeout>() // 防抖定时器Map
 
 export const useSubscription = () => {
   const { client } = useMyxSdkClient()
@@ -41,6 +43,12 @@ export const useSubscription = () => {
       paramsList.forEach((item) => {
         if (globalIdMap.has(item.globalId)) {
           return
+        }
+        // 如果存在防抖定时器，说明之前准备删除但还没删除，现在重新订阅了，需要清除定时器
+        const existingTimer = unsubscribeDebounceTimers.get(item.globalId)
+        if (existingTimer) {
+          clearTimeout(existingTimer)
+          unsubscribeDebounceTimers.delete(item.globalId)
         }
         if (!tickerSubscriptionCountMap.has(item.globalId)) {
           tickerSubscriptionCountMap.set(item.globalId, new Count())
@@ -83,23 +91,41 @@ export const useSubscription = () => {
 
       return () => {
         if (client.subscription.isConnected) {
-          const removedPoolIdList: string[] = []
           globalIdList.forEach((globalId) => {
             tickerSubscriptionCountMap.get(globalId)?.decrement()
             if (tickerSubscriptionCountMap.get(globalId)?.valueOf() === 0) {
-              tickerSubscriptionCountMap.delete(globalId)
-              removedPoolIdList.push(globalIdMap.get(globalId) as string)
-              // delete ticker data temp data
+              const poolId = globalIdMap.get(globalId) as string
+
+              // 清除已存在的防抖定时器（如果有）
+              const existingTimer = unsubscribeDebounceTimers.get(globalId)
+              if (existingTimer) {
+                clearTimeout(existingTimer)
+              }
+
+              // 设置防抖定时器，延迟删除数据
+              const timer = setTimeout(() => {
+                // 再次检查计数，确保仍然为0才删除
+                if (tickerSubscriptionCountMap.get(globalId)?.valueOf() === 0) {
+                  tickerSubscriptionCountMap.delete(globalId)
+                  unsubscribeDebounceTimers.delete(globalId)
+                  // 删除 ticker data
+                  marketStore.removeTickerDataBatch([poolId])
+                } else {
+                  // 如果在延迟期间又重新订阅了，只清除定时器，不删除数据
+                  unsubscribeDebounceTimers.delete(globalId)
+                }
+              }, UNSUBSCRIBE_DEBOUNCE_TIMER)
+
+              unsubscribeDebounceTimers.set(globalId, timer)
             }
           })
-          if (removedPoolIdList.length) {
-            marketStore.removeTickerDataBatch(removedPoolIdList)
-          }
+
+          // 立即取消订阅（不再等待防抖），但数据延迟删除
           client.subscription.unsubscribeTickers(globalIdList, onTickerUpdate)
         }
       }
     },
-    [client],
+    [client, marketStore],
   )
 
   return {

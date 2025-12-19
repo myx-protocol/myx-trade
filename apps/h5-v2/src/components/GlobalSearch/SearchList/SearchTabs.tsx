@@ -3,6 +3,7 @@ import { useGlobalSearchStore } from '../store'
 import { t } from '@lingui/core/macro'
 import { styled, Tab, Tabs } from '@mui/material'
 import { SearchTypeEnum, SearchSecondTypeEnum } from '@myx-trade/sdk'
+import { useDebounce } from 'ahooks'
 
 const SearchSecondTabs = styled(Tabs)({
   minHeight: 'auto',
@@ -40,23 +41,39 @@ export const SearchSecondTab = styled(Tab)({
 })
 
 export const SearchTabs = () => {
-  const { searchTab, setSearchTab, secondSearchTab, setSecondSearchTab } = useGlobalSearchStore()
+  const {
+    searchTab,
+    setSearchTab,
+    secondSearchTab,
+    setSecondSearchTab,
+    searchLoading,
+    searchValue,
+  } = useGlobalSearchStore()
+
+  const debouncedSearchValue = useDebounce(searchValue, {
+    wait: 500,
+  })
+  const searchLoadingDebounced = useDebounce(searchLoading, {
+    wait: 500,
+  })
   return (
     <div>
       <div className="flex gap-[32px] px-[28px]">
-        <div
-          className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
-          onClick={() => setSearchTab(SearchTypeEnum.All)}
-        >
-          <span
-            className={clsx({
-              'text-[#999]': searchTab !== SearchTypeEnum.All,
-              'text-white': searchTab === SearchTypeEnum.All,
-            })}
+        {debouncedSearchValue.trim() && !searchLoadingDebounced && (
+          <div
+            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            onClick={() => setSearchTab(SearchTypeEnum.All)}
           >
-            {t`All`}
-          </span>
-        </div>
+            <span
+              className={clsx({
+                'text-[#999]': searchTab !== SearchTypeEnum.All,
+                'text-white': searchTab === SearchTypeEnum.All,
+              })}
+            >
+              {t`All`}
+            </span>
+          </div>
+        )}
         <div
           className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
           onClick={() => setSearchTab(SearchTypeEnum.Contract)}
