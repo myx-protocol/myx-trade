@@ -3,11 +3,8 @@ import { Trans } from '@lingui/react/macro'
 import { Skeleton } from '@/components/UI/Skeleton'
 import ArrowRight from '@/components/Icon/set/ArrowRight'
 import { PrimaryButton as Button } from '@/components/UI/Button'
-import { useCopyToClipboard } from 'usehooks-ts'
 import TipsFill from '@/components/Icon/set/TipsFill'
-import { toast } from '@/components/UI/Toast'
 import { useReferralStore } from '@/store/referrals'
-import { useAccessParams } from '@/hooks/useAccessParams'
 import { isUndefined } from 'lodash-es'
 import { useNavigate } from 'react-router-dom'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -22,7 +19,6 @@ const FORMAT_VALUE_FALLBACK = '--'
 
 export function RebateSetting() {
   const { ratioInfo, fetchRatioInfo, isLoadingRatio, accessToken } = useReferralStore()
-  const accessParams = useAccessParams()
 
   useEffect(() => {
     if (accessToken) {
