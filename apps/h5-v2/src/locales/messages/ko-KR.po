@@ -103,8 +103,16 @@ msgstr ""
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr ""
 
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "1-day rebate"
+msgstr ""
+
 #: src/pages/Earn/components/Carousel.tsx
 msgid "24h APR"
+msgstr ""
+
+#: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
+msgid "24h Change"
 msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
@@ -129,8 +137,30 @@ msgstr ""
 msgid "24h Volume"
 msgstr ""
 
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "30-day rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "7-day rebate"
+msgstr ""
+
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
+msgstr ""
+
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Accept"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Accept Invitation"
+msgstr ""
+
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Accept now and receive rebates"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -160,6 +190,12 @@ msgstr ""
 msgid "Act fast! Just <0>${0}</0>{1} Genesis Shares are left. Secure your lifetime<1>{2}</1> share of all trading fees!"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Action"
+msgstr ""
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Activate Market"
 msgstr ""
@@ -172,15 +208,26 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Add new referral"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Add New Referral"
+msgstr ""
+
 #: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
 msgid "Add to Favorites"
 msgstr ""
 
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+#: src/components/ReceiveDialog.tsx
 #: src/components/WalletConnect/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
 msgid "Address"
 msgstr ""
 
@@ -222,8 +269,9 @@ msgstr ""
 msgid "Adjusted Margin"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "ADL"
+#. placeholder {0}: info.invitationCode
+#: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
+msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
 msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
@@ -234,6 +282,7 @@ msgstr ""
 msgid "Airdrop"
 msgstr ""
 
+#: src/components/ChainsSelectRow/index.tsx
 #: src/components/CookDetail/Charts/index.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
@@ -250,9 +299,11 @@ msgid "All Chain"
 msgstr ""
 
 #: src/components/ChainSelector.tsx
+#: src/components/Record/HideOuterSymbols.tsx
 msgid "All Chains"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/MarketList/components/Tabs/MarketTabs.tsx
 #: src/pages/rank/components/Tabs/TypeSelector.tsx
@@ -287,6 +338,10 @@ msgstr ""
 #: src/pages/Earn/List.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 #: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
 msgid "Amount"
 msgstr "수량"
 
@@ -433,6 +488,14 @@ msgstr ""
 msgid "Beginner's Guide"
 msgstr ""
 
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Bind relationship failed"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Bind the invitation relationship and get up to <0>10%</0> of the income"
+msgstr ""
+
 #: src/components/SafeList/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Price/components/InfoContent/SecurityInfo.tsx
@@ -443,6 +506,7 @@ msgstr ""
 msgid "Blue Chip"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 msgid "Blue Chips"
 msgstr ""
@@ -457,6 +521,10 @@ msgstr ""
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+msgid "Bound successfully"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
@@ -491,6 +559,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+#: src/pages/record/index.tsx
 #: src/pages/Trade/components/Tables/index.tsx
 msgid "Cancel All"
 msgstr ""
@@ -505,8 +574,15 @@ msgid "Cancel all orders failed"
 msgstr ""
 
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
-#: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel all orders success"
+msgstr ""
+
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel order failed"
+msgstr ""
+
+#: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel order success"
 msgstr ""
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
@@ -549,7 +625,14 @@ msgstr ""
 msgid "CaseRespondentAppealed(CaseId,address)"
 msgstr ""
 
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Chain"
+msgstr ""
+
+#: src/components/ReceiveDialog.tsx
 msgid "Chains"
 msgstr ""
 
@@ -565,6 +648,10 @@ msgstr ""
 #: src/pages/MarketList/components/List/index.tsx
 #: src/pages/rank/components/List/index.tsx
 msgid "Change %"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+msgid "Change referral settings"
 msgstr ""
 
 #: src/pages/Cook/components/TrenchList.tsx
@@ -594,12 +681,17 @@ msgstr ""
 #: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Claim"
 msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "Claim airdrop"
 msgstr "에어드롭 클레임"
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Claim History"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
@@ -617,6 +709,17 @@ msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 msgid "Claimable Amount"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Claimed"
+msgstr ""
+
+#. placeholder {0}: formatNumberPrecision(info.amount, COMMON_TRANSLATE_USDC_ASSETS_SCALE)
+#. placeholder {1}: info.token
+#: src/pages/Referrals/components/Hero/RebateRewardScroll.tsx
+msgid "claimed <0>{0} {1}</0> Rebate reward"
 msgstr ""
 
 #: src/components/AccountDialog/index.tsx
@@ -660,6 +763,9 @@ msgid "close all positions at market price?"
 msgstr ""
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Close all positions failed"
+msgstr ""
+
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Close all positions success"
 msgstr ""
@@ -706,6 +812,10 @@ msgstr ""
 msgid "Collaboration Application"
 msgstr ""
 
+#: src/pages/Home/components/ExpressMenu/index.tsx
+msgid "Coming soon"
+msgstr ""
+
 #: src/components/Footer/index.tsx
 msgid "Community"
 msgstr ""
@@ -719,6 +829,13 @@ msgstr ""
 #: src/components/Trade/Dialog/components/DialogConfirmFooter/index.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
@@ -734,12 +851,17 @@ msgstr ""
 msgid "Confirm Token Info"
 msgstr ""
 
+#: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
+msgid "Congratulations!"
+msgstr ""
+
 #: src/pages/Market/components/create.tsx
 msgid "Connect wallet"
 msgstr ""
 
 #: src/components/CanSwitchWalletNetwork/index.tsx
 #: src/components/WalletConnect/index.tsx
+#: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Connect Wallet"
 msgstr "지갑 연결"
 
@@ -765,13 +887,19 @@ msgstr ""
 #: src/components/Header/const.tsx
 #: src/components/Tabbar/const.tsx
 #: src/pages/Cook/components/ToolBar.tsx
+#: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Cook"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SymbolInfo/index.tsx
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+msgid "Cooking : Gathering initial liquidity. Become a \"Genesis LP\" now for a permanent 2% fee share."
+msgstr ""
+
 #: src/components/AccountDialog/index.tsx
+#: src/components/ReceiveDialog.tsx
+#: src/components/ReceiveDialog.tsx
 #: src/components/Seamless/ExportDialog/index.tsx
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
 msgid "Copied to clipboard"
 msgstr ""
 
@@ -780,11 +908,22 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
+#: src/components/ReceiveDialog.tsx
 msgid "Copy Address"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+msgid "Copy Link"
+msgstr ""
+
 #: src/components/Copy.tsx
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+#: src/pages/Referrals/SelectReferral/components/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
 msgid "Copy success"
 msgstr ""
 
@@ -837,6 +976,10 @@ msgstr ""
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
 msgstr ""
 
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Created successfully"
+msgstr ""
+
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
@@ -862,7 +1005,7 @@ msgid "D"
 msgstr ""
 
 #: src/pages/Home/components/ExpressMenu/const.tsx
-msgid "Date"
+msgid "Data"
 msgstr ""
 
 #: src/components/CookDetail/Charts/index.tsx
@@ -874,10 +1017,24 @@ msgstr ""
 msgid "Decrease"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Default"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+msgid "Default Referral"
+msgstr ""
+
 #: src/components/SafeList/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Degen Audit"
+msgstr ""
+
+#: src/components/GlobalContractSearch/SymbolInfo/index.tsx
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+msgid "Delisted : Market is closed. Only asset redemption is available."
 msgstr ""
 
 #: src/components/AccountDialog/index.tsx
@@ -931,6 +1088,10 @@ msgstr ""
 msgid "Earn"
 msgstr ""
 
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Earn up to 20% rebates"
+msgstr ""
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignature()"
 msgstr ""
@@ -951,6 +1112,10 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+#: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
+msgid "Edit Note"
+msgstr ""
+
 #: src/components/Footer/index.tsx
 msgid "Email"
 msgstr "이메일"
@@ -969,6 +1134,11 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "EnforcedPause()"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Enter 1-20 character"
 msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
@@ -1225,8 +1395,8 @@ msgstr ""
 msgid "failed"
 msgstr ""
 
+#: src/components/ReceiveDialog.tsx
 #: src/components/Seamless/ExportDialog/index.tsx
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
 msgid "Failed to copy"
 msgstr ""
 
@@ -1238,6 +1408,7 @@ msgstr ""
 msgid "Faucet"
 msgstr "Faucet 수도꼭지"
 
+#: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 msgid "Favorite"
 msgstr ""
@@ -1296,6 +1467,34 @@ msgstr ""
 msgid "Frequent traders on one chain"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/components/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Friends"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/components/ReferralFriendsListDialog.tsx
+msgid "Friends List"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Friends rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+msgid "Friends Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Friends Receive"
+msgstr ""
+
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "From"
 msgstr ""
@@ -1351,6 +1550,8 @@ msgid "H"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
 msgstr ""
 
@@ -1631,6 +1832,55 @@ msgstr ""
 msgid "InvalidUpdateFee()"
 msgstr ""
 
+#: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
+msgid "Invitation binding successful"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+msgid "Invite Friends"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/Overview.tsx
+msgid "Invite Friends Enjoy <0>20%</0> Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Invite friends to enjoy high rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Invite friends to join MYX"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Invite Now"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Invited Friends"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Invitee Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+msgid "Invitee Rebate Rate"
+msgstr ""
+
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Invites you to join MYX"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Inviting others to register and receiving rewards as the inviter after the invitees trade."
+msgstr ""
+
 #: src/components/Trade/TradePanel/PositionMode/index.tsx
 msgid "Isolated"
 msgstr ""
@@ -1644,15 +1894,28 @@ msgstr ""
 msgid "Isolated {0}x"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Join MYX And Enjoy <0>20%</0> Commission"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Join MYX, Get fee discounts and up to 20% rebates."
+msgstr ""
+
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Last"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/MarketList/components/List/index.tsx
 #: src/pages/rank/components/List/index.tsx
 msgid "Last Price"
+msgstr ""
+
+#: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
+msgid "Later"
 msgstr ""
 
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
@@ -1666,6 +1929,10 @@ msgstr ""
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/OrderType/index.tsx
 msgid "Limit"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Link Referral Relationship"
 msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
@@ -1763,6 +2030,8 @@ msgstr ""
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
 msgid "Margin"
@@ -1795,6 +2064,7 @@ msgstr ""
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/OrderType/index.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/TradeForm.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market"
@@ -1910,6 +2180,32 @@ msgstr ""
 msgid "My Assets"
 msgstr ""
 
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "My Friend"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "My rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "My Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "My Records"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+msgid "My referrer"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+msgid "My Referrer"
+msgstr ""
+
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "My Tokens"
 msgstr ""
@@ -1923,8 +2219,19 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/pages/MarketList/components/List/index.tsx
 #: src/pages/rank/components/List/index.tsx
+msgid "Name / Date"
+msgstr ""
+
+#: src/pages/rank/components/List/index.tsx
+msgid "Name / Mcap"
+msgstr ""
+
+#: src/pages/rank/components/List/index.tsx
+msgid "Name / Volume"
+msgstr ""
+
+#: src/pages/MarketList/components/List/index.tsx
 msgid "Name/Mcap"
 msgstr ""
 
@@ -1971,6 +2278,10 @@ msgstr ""
 msgid "No data"
 msgstr "데이터 없음"
 
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "No positions"
+msgstr ""
+
 #: src/components/CookDetail/Charts/AreaCharts.tsx
 #: src/components/Empty/index.tsx
 #: src/pages/Earn/components/Chart.tsx
@@ -1979,6 +2290,7 @@ msgid "No records found"
 msgstr ""
 
 #: src/components/Empty.tsx
+#: src/components/GlobalContractSearch/SearchList/NotFound.tsx
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "No results found"
 msgstr ""
@@ -2031,8 +2343,22 @@ msgstr ""
 msgid "NotDependencyManager()"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Note"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Note(optional)"
+msgstr ""
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotEmptyAddress()"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Notes can only enter letters or numbers"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2092,8 +2418,17 @@ msgstr "온체인 트랜잭션 실패"
 msgid "On-chain Transaction timed out"
 msgstr "온체인 트랜잭션 시간 초과"
 
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+msgid "Once accepted, referral relationship cannot be changed"
+msgstr ""
+
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "Once you become a Liquidity Provider (LP) for the vault, your returns primarily come from two sources: Trading Fee Dividends: You will continuously share in the trading fees generated from all trades in this market."
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/index.tsx
+#: src/pages/Referrals/components/RewardsCard/index.tsx
+msgid "One Invitation for Multiple Rewards"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
@@ -2135,6 +2470,7 @@ msgid "Open Interest (Short)"
 msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
 msgid "Open Long"
 msgstr ""
@@ -2149,6 +2485,7 @@ msgid "Open Orders{0}"
 msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
 msgid "Open Short"
 msgstr ""
@@ -2230,6 +2567,10 @@ msgstr ""
 msgid "Paid from Wallet: {0} {1}"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
+msgid "Pair"
+msgstr ""
+
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Search.tsx
 msgid "Paste"
@@ -2244,6 +2585,16 @@ msgstr ""
 #. placeholder {0}: quoteLpDetail?.quoteSymbol
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pay with {0}"
+msgstr ""
+
+#: src/components/GlobalContractSearch/SymbolInfo/index.tsx
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+msgid "Pending : Activation Oracle deployment in progress. Trading will begin soon."
+msgstr ""
+
+#: src/components/GlobalContractSearch/SymbolInfo/index.tsx
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+msgid "Pending Delisting:Scheduled for closure soon. Operations are stopping."
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
@@ -2274,6 +2625,10 @@ msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Please enter the amount."
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+msgid "Please enter the Referral ID"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
@@ -2453,11 +2808,27 @@ msgstr ""
 msgid "Realized profits ({0} undergoing unlocking cycle. Not withdrawable, but usable for opening new positions."
 msgstr ""
 
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+#: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/components/ReferralFriendsListDialog.tsx
+msgid "Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Rebate History"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Rebate up to"
+msgstr ""
+
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/components/ReceiveDialog.tsx
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
-#: src/components/Trade/TradePanel/MarginAccount/ReceiveDialog.tsx
 msgid "Receive"
 msgstr ""
 
@@ -2485,8 +2856,58 @@ msgstr ""
 msgid "ReentrancyGuardReentrantCall()"
 msgstr ""
 
+#: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
+msgid "Refer a friend to earn Rebates"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Refer Friends"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Referee"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "RefereeRatio"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Referral History"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
+msgid "Referral ID"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Referral ID:"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Referral Link"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Referral Link "
+msgstr ""
+
 #: src/pages/Home/components/ExpressMenu/const.tsx
-msgid "Referral"
+#: src/pages/Referrals/index.tsx
+msgid "Referrals"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Referrer Rebate"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "ReferrerRatio"
 msgstr ""
 
 #: src/ErrorPage.tsx
@@ -2499,6 +2920,11 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "RelayerRegistered(address)"
+msgstr ""
+
+#. placeholder {0}: 9
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+msgid "Remaining number of promotional links to be created: {0}"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2532,6 +2958,10 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Retain Genesis LP Share"
+msgstr ""
+
+#: src/pages/Referrals/components/RewardsCard/Card.tsx
+msgid "Return"
 msgstr ""
 
 #: src/components/SettingDrawer.tsx
@@ -2591,6 +3021,14 @@ msgstr ""
 msgid "SamePoolMigration(PoolId)"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Save as Picture"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "Scan to Join MYX"
+msgstr ""
+
 #: src/components/AccountDialog/index.tsx
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -2614,10 +3052,12 @@ msgstr ""
 msgid "Seamless Trading Key"
 msgstr ""
 
+#: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 #: src/components/GlobalSearch/GlobalSearchHeader.tsx
 msgid "Search for token name/address"
 msgstr ""
 
+#: src/components/GlobalContractSearch/SearchHistory.tsx
 #: src/components/GlobalSearch/SearchHistory.tsx
 msgid "Search History"
 msgstr ""
@@ -2640,6 +3080,15 @@ msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Select a vault to provide initial liquidity"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+msgid "Select Claim Amount"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Select Referral"
 msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
@@ -2669,6 +3118,24 @@ msgstr ""
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Sell Tax"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Set as default"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
+#: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Set as Default"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Set commission ratio"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
+msgid "Set successfully"
 msgstr ""
 
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -2701,6 +3168,10 @@ msgstr ""
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/Overview.tsx
+msgid "Share rebate with your friends"
 msgstr ""
 
 #: src/components/Record/Items/OpenOrders.tsx
@@ -2776,6 +3247,12 @@ msgstr ""
 msgid "StalePrice()"
 msgstr ""
 
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "Statistics"
+msgstr ""
+
 #: src/pages/Trade/components/Tables/OrderHistory.tsx
 #: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Status"
@@ -2834,10 +3311,6 @@ msgstr ""
 msgid "Successfully subscribe"
 msgstr ""
 
-#: src/pages/Home/components/ExpressMenu/const.tsx
-msgid "Swap"
-msgstr ""
-
 #: src/components/CanSwitchWalletNetwork/index.tsx
 msgid "Switch Network"
 msgstr ""
@@ -2858,6 +3331,20 @@ msgstr ""
 #: src/pages/Trade/components/Tables/OrderHistory.tsx
 #: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "The average position cost price for multiple opening and closing trades"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "The cashback income for the invitee's contract transaction fees."
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "The cashback ratio for the invitee's contract transaction fees."
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+msgid "The commission rate you can earn after your friend trades."
 msgstr ""
 
 #: src/pages/Earn/components/Trade/PriceImpact.tsx
@@ -2887,6 +3374,10 @@ msgstr ""
 msgid "The page you are trying to view is temporarily unavailable. Please try again later"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+msgid "The refund rate you can earn after your friend trades."
+msgstr ""
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
 msgstr ""
@@ -2898,6 +3389,13 @@ msgstr ""
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
+#: src/pages/Referrals/SelectReferral/components/ReferralFriendsListDialog.tsx
+msgid "Time"
 msgstr ""
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -3006,6 +3504,7 @@ msgid "Trade"
 msgstr "거래"
 
 #: src/404.tsx
+#: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Trade Now"
 msgstr ""
 
@@ -3014,6 +3513,11 @@ msgstr ""
 #: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Traders"
+msgstr ""
+
+#: src/components/GlobalContractSearch/SymbolInfo/index.tsx
+#: src/components/GlobalSearch/SymbolInfo/index.tsx
+msgid "Trading : Market is live. Trading is open and generating earnings."
 msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
@@ -3064,6 +3568,16 @@ msgstr ""
 msgid "Twitter"
 msgstr "Twitter"
 
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Type"
+msgstr ""
+
+#: src/pages/Referrals/components/MyRebate/index.tsx
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "Unclaimed"
+msgstr ""
+
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Unclaimed Fees"
 msgstr ""
@@ -3108,6 +3622,10 @@ msgstr ""
 msgid "UnsupportedFeeTier(uint8)"
 msgstr ""
 
+#: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
+msgid "Updated successfully"
+msgstr ""
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
@@ -3143,8 +3661,22 @@ msgstr ""
 msgid "VerifyPriceFailed()"
 msgstr ""
 
+#: src/pages/Referrals/components/MyRebate/index.tsx
+msgid "View my referrer"
+msgstr ""
+
+#: src/pages/Referrals/components/Hero/Overview.tsx
+msgid "View referral rules"
+msgstr ""
+
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "VIP"
+msgstr ""
+
+#. placeholder {0}: configData?.maxVipLevel
+#: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
+#: src/pages/Referrals/components/StatisticsDialog/index.tsx
+msgid "VIP {0} or above are not eligible for rebates"
 msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
@@ -3215,6 +3747,11 @@ msgstr ""
 msgid "Withdrawable {0}"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "X"
+msgstr ""
+
 #: src/utils/index.ts
 msgid "Y"
 msgstr ""
@@ -3242,13 +3779,33 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/RebateSetting.tsx
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "You Receive"
+msgstr ""
+
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "You Will Receive"
+msgstr ""
+
+#. placeholder {0}: refereeRatio ?? 0
+#: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
+msgid "You've earned {0}% trading fee refund"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Your Current Mode"
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Your currently allocable commission rate."
+msgstr ""
+
+#: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
+msgid "Your max commission rate"
 msgstr ""
 
 #: src/components/Seamless/SetPasswordDialog/index.tsx
@@ -3273,7 +3830,6 @@ msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
-#: src/pages/Trade/components/TradeFlowDetail/index.tsx
 msgid "交易手续费"
 msgstr ""
 
@@ -3291,13 +3847,16 @@ msgstr ""
 msgid "从钱包"
 msgstr ""
 
+#: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
+msgid "保存失败"
+msgstr ""
+
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "保留创世LP份额"
 msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
-#: src/pages/Trade/components/TradeFlowDetail/index.tsx
 msgid "保证金"
 msgstr ""
 
@@ -3338,10 +3897,6 @@ msgstr ""
 msgid "最新价/24h涨跌幅"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "减少保证金"
-msgstr ""
-
 #: src/store/transactions/options.ts
 msgid "出售MLP"
 msgstr "MLP 판매"
@@ -3380,23 +3935,17 @@ msgstr "취소"
 msgid "取消止盈"
 msgstr "취소"
 
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "取消订单"
-msgstr ""
-
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "可平数量"
 msgstr ""
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/pages/Trade/components/Tables/OrderHistory.tsx
 #: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "合约"
 msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 msgid "哈希"
 msgstr "해시"
 
@@ -3422,10 +3971,6 @@ msgstr ""
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
-msgstr ""
-
-#: src/pages/Trade/components/TradeFlowDetail/index.tsx
-msgid "已实现盈亏"
 msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
@@ -3454,17 +3999,12 @@ msgstr ""
 msgid "市价止盈"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "市场关闭"
-msgstr ""
-
 #: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "市场平仓"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "平仓"
 msgstr "종료"
@@ -3479,7 +4019,6 @@ msgid "平仓滑点设置"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "开仓"
 msgstr "오픈"
@@ -3547,10 +4086,6 @@ msgstr ""
 msgid "成交数量"
 msgstr ""
 
-#: src/pages/Trade/components/TradeFlowDetail/index.tsx
-msgid "执行费"
-msgstr ""
-
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按价格排序"
@@ -3571,7 +4106,6 @@ msgid "授权"
 msgstr "승인됨"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "提前平仓"
 msgstr ""
@@ -3600,7 +4134,6 @@ msgstr ""
 msgid "文档"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "时间"
 msgstr ""
@@ -3650,17 +4183,9 @@ msgstr "익절/손절"
 msgid "止盈止损滑点"
 msgstr ""
 
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "添加保证金"
-msgstr ""
-
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "滑点"
-msgstr ""
-
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "爆仓"
 msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
@@ -3684,7 +4209,6 @@ msgid "立即创建我的合约交易市场"
 msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
-#: src/pages/Trade/components/Tables/Finance.tsx
 #: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "类型"
 msgstr "유형"
@@ -3697,7 +4221,6 @@ msgstr ""
 msgid "自动{defaultValue}%"
 msgstr ""
 
-#: src/components/GlobalSearch/SymbolInfo/index.tsx
 #: src/components/Trade/CurrentMarket/SymbolInfo.tsx
 msgid "蓝筹"
 msgstr ""
@@ -3716,14 +4239,6 @@ msgstr ""
 #: src/store/transactions/options.ts
 msgid "购买MLP"
 msgstr "MLP 구매"
-
-#: src/pages/Trade/components/Tables/Finance.tsx
-msgid "资金流水"
-msgstr ""
-
-#: src/pages/Trade/components/TradeFlowDetail/index.tsx
-msgid "资金费"
-msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择合约计价资产"
