@@ -6,7 +6,6 @@ import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { useState, useMemo } from 'react'
 import { toast } from '@/components/UI/Toast'
-import { formatNumberPercent } from '@/utils/formatNumber'
 import TipsFill from '@/components/Icon/set/TipsFill'
 import { z } from 'zod'
 import { Tooltips } from '@/components/UI/Tooltips'
@@ -69,7 +68,7 @@ export const RebateSettingDialog = ({ open, onClose }: { open: boolean; onClose:
             <Trans>Your max commission rate</Trans>
           </div>
           <div className="flex items-center gap-1 text-white">
-            {formatNumberPercent(ratioData?.maxRatio, 0)}
+            {ratioData?.maxRatio ?? 0}%
             <Tooltips title={t`Your currently allocable commission rate.`}>
               <TipsFill size={16} />
             </Tooltips>
@@ -105,7 +104,7 @@ export const RebateSettingDialog = ({ open, onClose }: { open: boolean; onClose:
               max={optionsMaxLength}
               onChange={(_, value) => setRatioIndex(value as number)}
               valueLabelDisplay="auto"
-              valueLabelFormat={(v) => formatNumberPercent(ratioData?.options?.[v], 0)}
+              valueLabelFormat={(v) => (ratioData?.options?.[v] ?? 0) + '%'}
               sx={{
                 color: '#00E3A5',
                 '& .MuiSlider-track': {
@@ -149,13 +148,13 @@ export const RebateSettingDialog = ({ open, onClose }: { open: boolean; onClose:
               <span>
                 <Trans>Friends rebate</Trans>
               </span>
-              <span className="text-white">{formatNumberPercent(refereeRatio, 0)}</span>
+              <span className="text-white">{refereeRatio ?? 0}%</span>
             </div>
             <div className="flex gap-1">
               <span>
                 <Trans>My rebate</Trans>
               </span>
-              <span className="text-white">{formatNumberPercent(referrerRatio, 0)}</span>
+              <span className="text-white">{referrerRatio ?? 0}%</span>
             </div>
           </div>
         </div>
