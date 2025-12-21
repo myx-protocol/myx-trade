@@ -1,13 +1,15 @@
-import { Box } from '@mui/material'
-import Container from '@/components/Container.tsx'
 import { VIPCard } from '@/pages/VIP/components/VipCard.tsx'
+import { Upgrade } from './components/Upgrade'
+import { VIPLevel } from '@/pages/VIP/components/VipList.tsx'
+import { VIPProvider } from '@/pages/VIP/provider'
 
 const VIP = () => {
   return (
-    <Container className={'flex min-h-[calc(100vh-66px-40px)] flex-col py-[20px]'}>
+    <VIPProvider>
       <VIPCard />
       <Upgrade />
-    </Container>
+      <VIPLevel />
+    </VIPProvider>
   )
 }
 

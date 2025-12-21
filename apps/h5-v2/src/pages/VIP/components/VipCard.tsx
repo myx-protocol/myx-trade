@@ -7,13 +7,13 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import type { VipProps } from '@/pages/VIP/type.ts'
+import { useVipContext } from '@/pages/VIP/context.ts'
 
-export const VIPCard = memo(({ vipInfo, isLoading }: VipProps) => {
+export const VIPCard = memo(() => {
   const { address: account } = useWalletConnection()
 
-  const { nextLevelInfo, requiredTradeAmount, tradeAmount, myxBalance, process, maxLevel } =
-    useGetLevelUpdateInfo()
+  const { userVipInfo: vipInfo, isLoading } = useVipContext()
+  const { nextLevelInfo, requiredTradeAmount, process, maxLevel } = useGetLevelUpdateInfo()
 
   return (
     <Box
@@ -33,14 +33,16 @@ export const VIPCard = memo(({ vipInfo, isLoading }: VipProps) => {
 
       <Box className={'flex flex-col gap-[6px] text-[16px]'}>
         <Box className={'flex gap-[4px]'}>
-          {nextLevelInfo && nextLevelInfo.level >= maxLevel ? (
+          {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
             <span>
               <Trans>Congratulations! You’ve unlocked the highest VIP level.</Trans>
             </span>
           ) : (
             <>
               <span>
-                <Trans>Upgrade to VIP{nextLevelInfo ? nextLevelInfo.level : '--'} by trading</Trans>
+                <Trans>
+                  Upgrade to VIP{nextLevelInfo ? nextLevelInfo.vipTier : '--'} by trading
+                </Trans>
               </span>
               <span>
                 {nextLevelInfo && requiredTradeAmount
