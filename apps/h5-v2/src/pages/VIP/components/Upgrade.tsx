@@ -17,9 +17,9 @@ export const Upgrade = memo(() => {
     requiredMyxAmount,
     myxBalance,
     safeMyxProcess,
-    nextMyxAmount,
     maxLevel,
     process,
+    nextMyxAmount,
   } = useGetLevelUpdateInfo()
   return (
     <Box className={'flex flex-col gap-[16px]'}>
@@ -27,7 +27,7 @@ export const Upgrade = memo(() => {
         <span className={'text-basic-white text-[20px] leading-[1] font-[700]'}>
           <Trans>Upgrade</Trans>
         </span>
-        {nextLevelInfo && nextLevelInfo.level >= maxLevel ? (
+        {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
           <p className={'text-regular text-[14px] leading-[1.5] font-[500]'}>
             <Trans>Congratulations! You’ve unlocked the highest VIP level.</Trans>
           </p>
@@ -73,11 +73,11 @@ export const Upgrade = memo(() => {
 
         <Box className={'flex flex-col gap-[6px]'}>
           <span className={'text-secondary text-[12px] leading-[1.5] font-[500]'}>
-            {nextLevelInfo && nextLevelInfo.level >= maxLevel ? (
+            {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
               <Trans>You’ve unlocked the highest VIP level.</Trans>
             ) : (
               <Trans>
-                To upgrade to VIP{nextLevelInfo?.level ?? '--'}, you need an additional $
+                To upgrade to VIP{nextLevelInfo?.vipTier ?? '--'}, you need an additional $
                 {nextLevelInfo
                   ? formatNumberPrecision(requiredTradeAmount, COMMON_PRICE_DISPLAY_DECIMALS)
                   : '--'}{' '}
@@ -120,7 +120,7 @@ export const Upgrade = memo(() => {
               </span>
               <span className={'text-basic-white leading-[1] font-[700]'}>
                 {nextLevelInfo
-                  ? formatNumberPrecision(myxBalance.toString(), COMMON_PERCENT_DISPLAY_DECIMALS)
+                  ? formatNumberPrecision(myxBalance, COMMON_PERCENT_DISPLAY_DECIMALS)
                   : '--'}
               </span>
             </Box>
@@ -135,13 +135,13 @@ export const Upgrade = memo(() => {
 
           <Box className={'flex flex-col gap-[6px]'}>
             <span className={'text-secondary text-[12px] leading-[1.5] font-[500]'}>
-              {nextLevelInfo && nextLevelInfo.level >= maxLevel ? (
+              {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
                 <Trans>You’ve unlocked the highest VIP level.</Trans>
               ) : (
                 <Trans>
                   You need to hold{' '}
                   {formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)} MYX to
-                  upgrade to VIP{nextLevelInfo?.level}
+                  upgrade to VIP{nextLevelInfo?.vipTier}
                 </Trans>
               )}
             </span>

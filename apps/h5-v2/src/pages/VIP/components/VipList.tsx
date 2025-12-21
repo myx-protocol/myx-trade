@@ -1,23 +1,20 @@
-import { Box, Table, TableBody, TableHead, TableRow, TableCell } from '@mui/material'
+import { Box, Table, TableBody, TableHead, TableRow, TableCell, Skeleton } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Link } from 'react-router-dom'
-import type { VipProps } from '@/pages/VIP/type.ts'
-import { LevelRelation, type VipRateType } from '@/request/vip/type.d'
+import { LevelRelation } from '@/request/vip/type.d'
 import { CaretRight } from '@/components/Icon'
 import { FEE_RATE_PERCENT_DISPLAY_DECIMALS } from '@/constant/decimals'
 import { MYX_VIP_RULES_LINK } from '@/config/link'
-import { useQuery } from '@tanstack/react-query'
-import { getRiskLevelConfig } from '@/request/vip'
-import { useEffect, useState } from 'react'
+import { useVipContext } from '@/pages/VIP/context.ts'
 
-const VipList = ({ rateList, levelList, vipInfo }: VipProps) => {
+const VipList = () => {
   return (
     <Box className={'mr-[-16px] ml-[-16px] overflow-hidden'}>
       <Box className={'&:befeor overflow-x-auto'}>
         <Box className={'mx-[16px] w-[min-content]'}>
           <Box className={'table-container mb-[30px]'}>
-            <MTable vipInfo={vipInfo} levelList={levelList} rateList={rateList} />
+            <MTable />
           </Box>
         </Box>
       </Box>
@@ -25,38 +22,16 @@ const VipList = ({ rateList, levelList, vipInfo }: VipProps) => {
   )
 }
 
-const RiskList = ({
-  riskTier,
-  onChange,
-}: {
-  riskTier: number
-  onChange: (riskTier: number) => void
-}) => {
-  const { data } = useQuery({
-    queryKey: ['api.getRiskList'],
-    queryFn: async () => {
-      const rs = await getRiskLevelConfig()
-      const riskList = rs?.data || []
-      return riskList
-    },
-  })
-
-  useEffect(() => {
-    if (data?.length) {
-      const risk = data.find((risk) => risk.levelId === riskTier)
-      if (!risk) {
-        onChange(data?.[0].levelId)
-      }
-    }
-  }, [riskTier, onChange, data])
+const RiskList = () => {
+  const { riskList, setRiskTier, riskTier } = useVipContext()
   return (
-    <ul className={'risk-list mt-[24px] flex h-[28px] w-full gap-[12px]'}>
-      {(data || []).map((item, _index) => {
+    <ul className={'risk-list flex h-[28px] w-full gap-[12px]'}>
+      {(riskList || []).map((item, _index) => {
         return (
           <li
             key={item.name}
             className={`risk-item flex cursor-pointer items-center justify-center rounded-[6px] px-[16px] py-[8px] text-[14px] leading-[1] transition-all ${item.levelId === riskTier ? 'bg-base font-[700] text-white' : 'text-secondary bg-transparent'} `}
-            onClick={() => onChange(item.levelId)}
+            onClick={() => setRiskTier(item.levelId)}
           >
             {item.name}
           </li>
@@ -66,8 +41,7 @@ const RiskList = ({
   )
 }
 
-export const VIPLevel = ({ levelList, rateList, vipInfo }: VipProps) => {
-  const [riskTier, setRiskTier] = useState<number>(0)
+export const VIPLevel = () => {
   return (
     <Box className={'mt-[80px] flex flex-col gap-[24px]'}>
       <Box className={'flex items-center justify-between'}>
@@ -82,13 +56,41 @@ export const VIPLevel = ({ levelList, rateList, vipInfo }: VipProps) => {
           <Trans>VIP Rules</Trans>
         </Link>
       </Box>
-      <RiskList riskTier={riskTier} onChange={setRiskTier} />
-      <VipList levelList={levelList} rateList={rateList} vipInfo={vipInfo} />
+      <RiskList />
+      <VipList />
     </Box>
   )
 }
 
-function MTable({ levelList, rateList, vipInfo }: VipProps) {
+function LoadingTable() {
+  return Array.from({ length: 3 }).map((_, index) => {
+    return (
+      <TableRow key={index} className={'pointer-events-none'}>
+        <TableCell align={'center'} className={`!border-dark-border relative border-r-1`}>
+          <Skeleton />
+        </TableCell>
+        <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
+          <Skeleton />
+        </TableCell>
+        <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
+          <Skeleton />
+        </TableCell>
+        <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
+          <Skeleton />
+        </TableCell>
+        <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
+          <Skeleton />
+        </TableCell>
+        <TableCell align={'center'} className={'!border-dark-border !border-r-0'}>
+          <Skeleton />
+        </TableCell>
+      </TableRow>
+    )
+  })
+}
+
+function MTable() {
+  const { levelList, userVipInfo: vipInfo, feeMap, isFeeLoading } = useVipContext()
   return (
     <Table className={'text-basic-white'}>
       <TableHead>
@@ -119,21 +121,14 @@ function MTable({ levelList, rateList, vipInfo }: VipProps) {
       </TableHead>
       <TableBody>
         {(levelList || []).map((item, index) => {
-          const rate =
-            rateList?.find((configInfo) => configInfo.level === item.level) ?? ({} as VipRateType)
           return (
-            <TableRow key={index} className={item.level === vipInfo?.level ? 'active' : ''}>
+            <TableRow key={index} className={item.vipTier === vipInfo?.level ? 'active' : ''}>
               <TableCell
                 className={`sticky-col !text-basic-white !border-dark-border border-r-1 !pl-[40px] ${index + 1 === levelList?.length ? 'rounded-bl-[12px] !border-b-0' : ''}`}
               >
-                {`VIP${item.level}`}
-                {item.level === vipInfo?.level && (
-                  <CaretRight
-                    size={20}
-                    className={
-                      'buy absolute top-[50%] left-[18px] translate-y-[-50%] rotate-270 transform'
-                    }
-                  />
+                {`VIP${item.vipTier}`}
+                {item.vipTier === vipInfo?.level && (
+                  <CaretRight size={20} className={'buy absolute top-[50%] left-[18px]'} />
                 )}
               </TableCell>
               <TableCell className={'!text-basic-white !border-dark-border border-r-1'}>
@@ -158,16 +153,28 @@ function MTable({ levelList, rateList, vipInfo }: VipProps) {
                   : '/'}
               </TableCell>
               <TableCell className={'!text-basic-white !border-dark-border border-r-1 text-center'}>
-                {rate.takerFeeRate
-                  ? `${(Number(rate.takerFeeRate) * 100).toFixed(FEE_RATE_PERCENT_DISPLAY_DECIMALS)}%`
-                  : '-'}
+                {isFeeLoading ? (
+                  <Skeleton />
+                ) : (
+                  formatNumberPercent(
+                    feeMap?.[item.vipTier.toString()]?.takerFee,
+                    FEE_RATE_PERCENT_DISPLAY_DECIMALS,
+                    false,
+                  )
+                )}
               </TableCell>
               <TableCell
                 className={`!text-basic-white !border-dark-border text-center ${index + 1 === levelList?.length ? 'rounded-br-[12px] !border-b-0' : ''}`}
               >
-                {rate.makerFeeRate
-                  ? `${(Number(rate.makerFeeRate) * 100).toFixed(FEE_RATE_PERCENT_DISPLAY_DECIMALS)}%`
-                  : '-'}
+                {isFeeLoading ? (
+                  <Skeleton />
+                ) : (
+                  formatNumberPercent(
+                    feeMap?.[item.vipTier.toString()]?.makerFee,
+                    FEE_RATE_PERCENT_DISPLAY_DECIMALS,
+                    false,
+                  )
+                )}
               </TableCell>
             </TableRow>
           )
