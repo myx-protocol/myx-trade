@@ -11,18 +11,6 @@ import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 
-// 自定义 hook：保留之前的有效值（在渲染时同步更新，不使用 useEffect）
-function useStableValue<T>(value: T, isValid: (val: T) => boolean): T {
-  const ref = useRef<T>(value)
-
-  // 在渲染时立即判断和更新，不等到 useEffect
-  if (isValid(value)) {
-    ref.current = value
-  }
-
-  return ref.current
-}
-
 export const useGetOpenAvailable = () => {
   const { symbolInfo, poolConfig } = useTradePageStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
@@ -34,19 +22,42 @@ export const useGetOpenAvailable = () => {
     poolConfig as PoolConfig,
   )
   const { liquidityInfo } = useGetLiquidityInfo()
-  const safePrice = useMemo(() => {
-    return !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
-  }, [price])
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
-  const slipValue = useMemo(() => {
-    if (!poolConfig) return 1
-    return Number(poolConfig?.levelConfig?.slip ?? 1)
-  }, [poolConfig])
+  // 缓存所有异步数据源，避免 refetch 期间的闪烁
+  // 只有当新数据有效且非零时才更新缓存
+  const poolLiquidityInfoRef = useRef(poolLiquidityInfo)
+  if (
+    poolLiquidityInfo?.buySizeValueFormatedQuote &&
+    poolLiquidityInfo?.sellSizeValueFormatedQuote &&
+    poolLiquidityInfo?.buySizeValueFormatedQuote !== '0' &&
+    poolLiquidityInfo?.sellSizeValueFormatedQuote !== '0'
+  ) {
+    poolLiquidityInfoRef.current = poolLiquidityInfo
+  }
+  const stablePoolLiquidityInfo = poolLiquidityInfoRef.current
 
-  const {
-    maxOpenLongByConfigRatio: longByConfigRatio,
-    maxOpenShortByConfigRatio: shortByConfigRatio,
-  } = useMemo(() => {
+  const liquidityInfoRef = useRef(liquidityInfo)
+  if (
+    liquidityInfo?.windowCaps &&
+    liquidityInfo?.openInterest &&
+    liquidityInfo?.windowCaps !== '0'
+  ) {
+    liquidityInfoRef.current = liquidityInfo
+  }
+  const stableLiquidityInfo = liquidityInfoRef.current
+
+  const accountAssetsRef = useRef(accountAssets)
+  if (accountAssets?.availableMargin !== undefined && accountAssets?.availableMargin !== null) {
+    accountAssetsRef.current = accountAssets
+  }
+  const stableAccountAssets = accountAssetsRef.current
+
+  // 合并所有计算逻辑到一个 useMemo 中，减少中间状态
+  return useMemo(() => {
+    // 1. 计算基础参数
+    const safePrice = !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
+    const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
     const openSlippage =
       getSlippage({
         chainId: symbolInfo?.chainId ?? 0,
@@ -54,146 +65,112 @@ export const useGetOpenAvailable = () => {
         type: SlippageTypeEnum.OPEN,
       }) ?? 1
 
+    // 2. 计算可用保证金总值（使用缓存的稳定值）
+    const availableMarginOriginal = stableAccountAssets?.availableMargin?.toString() ?? '0'
+    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(fundingFeeRate))
+    const adjustedRatio = parseBigNumber(1).minus(feeRatio)
+    const availableMargin = parseBigNumber(availableMarginOriginal).mul(adjustedRatio).toString()
+
+    const collateralAmountValue = autoMarginMode
+      ? parseBigNumber(availableMargin).mul(parseBigNumber(leverage)).toString()
+      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
+
+    // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
     const ratio = openSlippage / slipValue
     const maxOpenByConfigRatio = Math.log(ratio)
     const configTotalRatio = parseBigNumber(1).plus(maxOpenByConfigRatio)
 
-    // 确保 windowCaps 和 openInterest 是字符串，避免每次都重新计算
-    const windowCapsStr = liquidityInfo?.windowCaps ?? '0'
-    const openInterestStr = liquidityInfo?.openInterest ?? '0'
+    const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
+    const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
     const windowCaps = parseBigNumber(
-      ethers.formatUnits(windowCapsStr, symbolInfo?.quoteDecimals).toString(),
+      ethers.formatUnits(windowCapsStr, symbolInfo?.quoteDecimals ?? 18).toString(),
     )
     const openInterest = parseBigNumber(
-      ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals).toString(),
+      ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
     )
 
-    // 计算并固定精度，避免浮点数精度问题
-    const longRatio = windowCaps.mul(configTotalRatio).minus(openInterest)
-    const shortRatio = windowCaps.mul(configTotalRatio).plus(openInterest)
+    const maxOpenLongByConfigRatio = windowCaps.mul(configTotalRatio).minus(openInterest).toString()
+    const maxOpenShortByConfigRatio = windowCaps.mul(configTotalRatio).plus(openInterest).toString()
 
+    // 4. 获取池子流动性限额（使用缓存的值）
+    const maxOpenLongQuoteAmountByLiquidity =
+      stablePoolLiquidityInfo?.buySizeValueFormatedQuote ?? '0'
+    const maxOpenShortQuoteAmountByLiquidity =
+      stablePoolLiquidityInfo?.sellSizeValueFormatedQuote ?? '0'
+
+    // 5. 计算 Long 的最大可开仓量
+    // 需要取三个值的最小值：用户保证金、滑点配置限额、池子流动性限额
+    const collateralValue = parseBigNumber(collateralAmountValue)
+
+    // 计算三者最小值
+    const longLimit1 = collateralValue // 用户可用保证金
+    const longLimit2 = parseBigNumber(maxOpenLongByConfigRatio) // 滑点配置限额
+    const longLimit3 = parseBigNumber(maxOpenLongQuoteAmountByLiquidity) // 池子流动性限额
+
+    // 取最小值
+    let longQuoteAmount = longLimit1.toString()
+    if (longLimit2.lt(longLimit1)) {
+      longQuoteAmount = longLimit2.toString()
+    }
+    if (longLimit3.lt(parseBigNumber(longQuoteAmount))) {
+      longQuoteAmount = longLimit3.toString()
+    }
+
+    const longBaseAmount = parseBigNumber(longQuoteAmount).div(parseBigNumber(safePrice)).toString()
+
+    // 6. 计算 Short 的最大可开仓量
+    // 需要取三个值的最小值：用户保证金、滑点配置限额、池子流动性限额
+    const shortLimit1 = collateralValue // 用户可用保证金
+    const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
+    const shortLimit3 = parseBigNumber(maxOpenShortQuoteAmountByLiquidity) // 池子流动性限额
+
+    // 取最小值
+    let shortQuoteAmount = shortLimit1.toString()
+    if (shortLimit2.lt(shortLimit1)) {
+      shortQuoteAmount = shortLimit2.toString()
+    }
+    if (shortLimit3.lt(parseBigNumber(shortQuoteAmount))) {
+      shortQuoteAmount = shortLimit3.toString()
+    }
+
+    const shortBaseAmount = parseBigNumber(shortQuoteAmount)
+      .div(parseBigNumber(safePrice))
+      .toString()
+
+    // 7. 返回结果
     return {
-      maxOpenLongByConfigRatio: longRatio.toFixed(18),
-      maxOpenShortByConfigRatio: shortRatio.toFixed(18),
+      maxOpenLong: {
+        quoteAmount: longQuoteAmount,
+        baseAmount: longBaseAmount,
+      },
+      maxOpenShort: {
+        quoteAmount: shortQuoteAmount,
+        baseAmount: shortBaseAmount,
+      },
+      maxOpenLongDisplayQuote: displayAmount(longQuoteAmount),
+      maxOpenLongDisplayBase: displayAmount(longBaseAmount),
+      maxOpenShortDisplayQuote: displayAmount(shortQuoteAmount),
+      maxOpenShortDisplayBase: displayAmount(shortBaseAmount),
     }
   }, [
-    liquidityInfo?.windowCaps,
-    liquidityInfo?.openInterest,
-    slipValue,
+    // 基础参数
+    price,
     symbolInfo?.chainId,
     symbolInfo?.poolId,
     symbolInfo?.quoteDecimals,
     symbolInfo?.baseDecimals,
-  ])
-
-  // 使用 useStableValue 保留有效值，避免计算结果变成 0 或负数
-  const maxOpenLongByConfigRatio = useStableValue(longByConfigRatio, (val) => {
-    const numVal = parseFloat(val)
-    return !isNaN(numVal) && numVal > 0
-  })
-  const maxOpenShortByConfigRatio = useStableValue(shortByConfigRatio, (val) => {
-    const numVal = parseFloat(val)
-    return !isNaN(numVal) && numVal > 0
-  })
-
-  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
-
-  const collateralAmountValue = useMemo(() => {
-    const availableMarginOriginal = accountAssets?.availableMargin?.toString()
-    const ratio = parseBigNumber(leverage).mul(parseBigNumber(fundingFeeRate))
-    const ratioRs = parseBigNumber(1).minus(ratio)
-    const availableMargin = parseBigNumber(availableMarginOriginal).mul(ratioRs).toString()
-
-    const value = autoMarginMode
-      ? parseBigNumber(availableMargin ?? '0').mul(parseBigNumber(leverage))
-      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
-    return value.toString()
-  }, [autoMarginMode, accountAssets?.availableMargin, leverage, collateralAmount, fundingFeeRate])
-
-  // 使用 useStableValue 保留有效值，避免 refetch 期间的空值
-  const stableBuySizeValue = useStableValue(
-    poolLiquidityInfo?.buySizeValueFormatedQuote,
-    (val) => val !== undefined && val !== null && val !== '0',
-  )
-  const stableSellSizeValue = useStableValue(
-    poolLiquidityInfo?.sellSizeValueFormatedQuote,
-    (val) => val !== undefined && val !== null && val !== '0',
-  )
-
-  const maxOpenLongQuoteAmountByLiquidityString = useMemo(() => {
-    return stableBuySizeValue ?? '0'
-  }, [stableBuySizeValue])
-
-  const maxOpenShortQuoteAmountByLiquidityString = useMemo(() => {
-    return stableSellSizeValue ?? '0'
-  }, [stableSellSizeValue])
-
-  return useMemo(() => {
-    const collateralValue = parseBigNumber(collateralAmountValue)
-    let longQuoteAmount = collateralAmountValue
-    let longBaseAmount = collateralValue.div(parseBigNumber(safePrice)).toString()
-
-    if (collateralValue.gte(parseBigNumber(maxOpenLongQuoteAmountByLiquidityString))) {
-      if (
-        parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).gte(
-          parseBigNumber(maxOpenLongByConfigRatio),
-        )
-      ) {
-        longQuoteAmount = maxOpenLongByConfigRatio
-        longBaseAmount = parseBigNumber(maxOpenLongByConfigRatio)
-          .div(parseBigNumber(safePrice))
-          .toString()
-      } else {
-        longQuoteAmount = parseBigNumber(maxOpenLongQuoteAmountByLiquidityString).toString()
-        longBaseAmount = parseBigNumber(maxOpenLongQuoteAmountByLiquidityString)
-          .div(parseBigNumber(safePrice))
-          .toString()
-      }
-    }
-
-    let shortQuoteAmount = collateralAmountValue
-    let shortBaseAmount = collateralValue.div(parseBigNumber(safePrice)).toString()
-
-    if (collateralValue.gte(parseBigNumber(maxOpenShortQuoteAmountByLiquidityString))) {
-      if (
-        parseBigNumber(maxOpenShortQuoteAmountByLiquidityString).gte(
-          parseBigNumber(maxOpenShortByConfigRatio),
-        )
-      ) {
-        shortQuoteAmount = maxOpenShortByConfigRatio
-        shortBaseAmount = parseBigNumber(maxOpenShortByConfigRatio)
-          .div(parseBigNumber(safePrice))
-          .toString()
-      } else {
-        shortQuoteAmount = parseBigNumber(maxOpenShortQuoteAmountByLiquidityString).toString()
-        shortBaseAmount = parseBigNumber(maxOpenShortQuoteAmountByLiquidityString)
-          .div(parseBigNumber(safePrice))
-          .toString()
-      }
-    }
-
-    return {
-      maxOpenLong: {
-        quoteAmount: longQuoteAmount ?? '0',
-        baseAmount: longBaseAmount ?? '0',
-      },
-      maxOpenShort: {
-        quoteAmount: shortQuoteAmount ?? '0',
-        baseAmount: shortBaseAmount ?? '0',
-      },
-      // 格式化后的显示值
-      maxOpenLongDisplayQuote: displayAmount(longQuoteAmount ?? '0'),
-      maxOpenLongDisplayBase: displayAmount(longBaseAmount ?? '0'),
-      maxOpenShortDisplayQuote: displayAmount(shortQuoteAmount ?? '0'),
-      maxOpenShortDisplayBase: displayAmount(shortBaseAmount ?? '0'),
-    }
-  }, [
-    collateralAmountValue,
-    safePrice,
-    maxOpenLongQuoteAmountByLiquidityString,
-    maxOpenShortQuoteAmountByLiquidityString,
-    maxOpenLongByConfigRatio,
-    maxOpenShortByConfigRatio,
+    poolConfig?.levelConfig?.slip,
+    // 流动性数据（使用缓存的稳定值）
+    stableLiquidityInfo?.windowCaps,
+    stableLiquidityInfo?.openInterest,
+    stablePoolLiquidityInfo?.buySizeValueFormatedQuote,
+    stablePoolLiquidityInfo?.sellSizeValueFormatedQuote,
+    // 用户数据（使用缓存的稳定值）
+    autoMarginMode,
+    collateralAmount,
+    leverage,
+    fundingFeeRate,
+    stableAccountAssets?.availableMargin,
   ])
 }
