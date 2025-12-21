@@ -21,6 +21,7 @@ export const EXPRESS_MENU_LIST: MenuItem[] = [
   {
     title: () => <Trans>VIP</Trans>,
     icon: MenuVip,
+    href: '/vip',
   },
   {
     title: () => <Trans>Data</Trans>,
