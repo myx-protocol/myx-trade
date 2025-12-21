@@ -1,13 +1,15 @@
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { useNavigate } from 'react-router-dom'
-
+import CreateMarketPng from '@/assets/home/create-market.png'
 export const Banner = () => {
   const navigate = useNavigate()
   return (
     <Box className="banner cursor-pointer p-[16px]" onClick={() => navigate('/market')}>
       <Box className={'border-base flex items-center gap-[24px] rounded-[10px] border-1 p-[16px]'}>
-        <Box className={'logo w-m-[60px] w-[60px]'}></Box>
+        <Box className={'logo w-m-[60px] w-[60px]'}>
+          <img src={CreateMarketPng} />
+        </Box>
         <Box className={'flex flex-1 flex-col gap-[8px]'}>
           <h3 className={'text-[16px] leading-[1] font-[700] text-white'}>
             <Trans>Create a Market</Trans>
