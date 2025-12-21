@@ -6,6 +6,7 @@ import { Trans } from '@lingui/react/macro'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PERCENT_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals'
 import { MYX_SWAP_LINK } from '@/config'
+import { TradeButton } from '@/components/Button/TradeButton.tsx'
 
 export const Upgrade = memo(() => {
   const navigate = useNavigate()
@@ -22,7 +23,7 @@ export const Upgrade = memo(() => {
     nextMyxAmount,
   } = useGetLevelUpdateInfo()
   return (
-    <Box className={'flex flex-col gap-[16px]'}>
+    <Box className={'mt-[24px] flex flex-col gap-[16px]'}>
       <Box className={'flex flex-col gap-[12px]'}>
         <span className={'text-basic-white text-[20px] leading-[1] font-[700]'}>
           <Trans>Upgrade</Trans>
@@ -96,14 +97,14 @@ export const Upgrade = memo(() => {
         </Box>
 
         <Box>
-          <Button
-            className={'gradient round'}
+          <TradeButton
+            className={'!rounded-full'}
             fullWidth
             variant="contained"
             onClick={() => navigate('/trade')}
           >
             <Trans>Trade</Trans>
-          </Button>
+          </TradeButton>
         </Box>
       </Box>
 
@@ -156,14 +157,14 @@ export const Upgrade = memo(() => {
           </Box>
 
           <Box>
-            <Button
-              className={'gradient round'}
+            <TradeButton
+              className={'!rounded-full'}
               fullWidth
               variant="contained"
               onClick={() => window.open(MYX_SWAP_LINK)}
             >
               <Trans>Buy MYX</Trans>
-            </Button>
+            </TradeButton>
           </Box>
         </Box>
       )}

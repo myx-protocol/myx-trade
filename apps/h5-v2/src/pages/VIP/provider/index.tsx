@@ -19,9 +19,7 @@ export const VIPProvider = ({ children }: { children: ReactNode }) => {
         isFeeLoading,
       }}
     >
-      <Container className={'flex min-h-[calc(100vh-66px-40px)] flex-col py-[20px]'}>
-        {children}
-      </Container>
+      <div className={'flex flex-col overflow-x-hidden px-[16px] py-[24px]'}>{children}</div>
     </VIPContext.Provider>
   )
 }
