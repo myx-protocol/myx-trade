@@ -2,7 +2,7 @@ import { Box, Table, TableBody, TableHead, TableRow, TableCell } from '@mui/mate
 import { Trans } from '@lingui/react/macro'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Link } from 'react-router-dom'
-import { LevelRelation } from '@/request/vip/type.d'
+import { LevelRelation, type LevelRule } from '@/request/vip/type.d'
 import { CaretRight } from '@/components/Icon'
 import { FEE_RATE_PERCENT_DISPLAY_DECIMALS } from '@/constant/decimals'
 import { MYX_VIP_RULES_LINK } from '@/config/link'
@@ -97,7 +97,7 @@ function LoadingTable() {
 function MTable() {
   const { levelList, userVipInfo: vipInfo, feeMap, isFeeLoading } = useVipContext()
   return (
-    <Table className={'text-basic-white'}>
+    <Table className={''}>
       <TableHead>
         <TableRow>
           <TableCell
@@ -157,17 +157,20 @@ function MTable() {
                     />
                   )}
                 </TableCell>
-                <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
+                <TableCell
+                  align={'center'}
+                  className={`!border-dark-border border-r-1 ${index + 1 === levelList?.length ? '!border-b-0' : ''}`}
+                >
                   {item.rule?.trade30Vol
                     ? `≥ $${formatNumberPrecision(item.rule?.trade30Vol, 0)}`
                     : '--'}
                 </TableCell>
                 <TableCell
                   align={'center'}
-                  className={'!border-dark-border border-r-1 text-center'}
+                  className={`!border-dark-border border-r-1 ${index + 1 === levelList?.length ? '!border-b-0' : ''}`}
                 >
-                  {item.rule.myxDaily ? (
-                    item.rule?.relation === LevelRelation.OR ? (
+                  {(item?.rule as LevelRule)?.myxDaily ? (
+                    (item?.rule as LevelRule)?.relation === LevelRelation.OR ? (
                       <Trans>or</Trans>
                     ) : (
                       <Trans>and</Trans>
@@ -176,14 +179,17 @@ function MTable() {
                     '/'
                   )}
                 </TableCell>
-                <TableCell align={'center'} className={'!border-dark-border border-r-1'}>
-                  {item.rule?.myxDaily
-                    ? `≥ ${formatNumberPrecision(item.rule.myxDaily, 0)} MYX`
+                <TableCell
+                  align={'center'}
+                  className={`!border-dark-border border-r-1 ${index + 1 === levelList?.length ? '!border-b-0' : ''}`}
+                >
+                  {(item?.rule as LevelRule)?.myxDaily
+                    ? `≥ ${formatNumberPrecision((item?.rule as LevelRule).myxDaily, 0)} MYX`
                     : '/'}
                 </TableCell>
                 <TableCell
                   align={'center'}
-                  className={'!border-dark-border border-r-1 text-center'}
+                  className={`!border-dark-border border-r-1 text-center ${index + 1 === levelList?.length ? '!border-b-0' : ''}`}
                 >
                   {isFeeLoading ? (
                     <Skeleton />
@@ -197,7 +203,7 @@ function MTable() {
                 </TableCell>
                 <TableCell
                   align={'center'}
-                  className={`!border-dark-border text-center ${index + 1 === levelList?.length ? 'rounded-br-[12px] !border-b-0' : ''}`}
+                  className={`!border-dark-border !border-r-0 text-center ${index + 1 === levelList?.length ? 'rounded-br-[12px] !border-b-0' : ''}`}
                 >
                   {isFeeLoading ? (
                     <Skeleton />
