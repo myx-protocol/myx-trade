@@ -119,7 +119,7 @@ export const PositionItem = ({
           </div>
 
           <div className="mt-[4px] flex gap-[4px]">
-            <Tag type="success">
+            <Tag type={position.direction === DirectionEnum.Long ? 'success' : 'danger'}>
               <Trans>{position.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
             </Tag>
             <Tag type="info">
