@@ -9,15 +9,16 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useVipContext } from '@/pages/VIP/context.ts'
 
+const MAX_UI_LEVEL = 6
+
 export const VIPCard = memo(() => {
   const { address: account } = useWalletConnection()
-
   const { userVipInfo: vipInfo, isLoading } = useVipContext()
   const { nextLevelInfo, requiredTradeAmount, process, maxLevel } = useGetLevelUpdateInfo()
 
   return (
     <Box
-      className={`vip-container vip-card mt-[24px] flex h-[250px] flex-col justify-between gap-[24px] text-[12px] leading-[1.5] font-[500] text-white vip${vipInfo?.level && vipInfo?.level > 6 ? 6 : vipInfo?.level || 0}`}
+      className={`vip-container vip-card flex h-[150px] flex-col justify-between gap-[24px] text-[12px] leading-[1.5] font-[500] text-white vip${vipInfo?.level && vipInfo?.level > MAX_UI_LEVEL ? MAX_UI_LEVEL : vipInfo?.level || 0}`}
     >
       <Box className={'flex flex-col gap-[6px]'}>
         <Box className={'flex items-end gap-[7px]'}>
@@ -31,7 +32,7 @@ export const VIPCard = memo(() => {
         <p className={''}>{encryptionAddress(account)}</p>
       </Box>
 
-      <Box className={'flex flex-col gap-[6px] text-[16px]'}>
+      <Box className={'flex flex-col gap-[6px] text-[12px]'}>
         <Box className={'flex gap-[4px]'}>
           {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
             <span>

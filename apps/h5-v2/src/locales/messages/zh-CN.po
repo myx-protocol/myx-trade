@@ -358,6 +358,10 @@ msgstr ""
 msgid "Amount({0})"
 msgstr ""
 
+#: src/pages/VIP/components/VipList.tsx
+msgid "and"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/pages/Cook/components/TrenchList.tsx
@@ -543,6 +547,10 @@ msgstr ""
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/OrderSide/index.tsx
 msgid "Buy"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Buy MYX"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
@@ -855,6 +863,11 @@ msgstr ""
 msgid "Congratulations!"
 msgstr ""
 
+#: src/pages/VIP/components/Upgrade.tsx
+#: src/pages/VIP/components/VipCard.tsx
+msgid "Congratulations! You’ve unlocked the highest VIP level."
+msgstr ""
+
 #: src/pages/Market/components/create.tsx
 msgid "Connect wallet"
 msgstr ""
@@ -980,10 +993,18 @@ msgstr ""
 msgid "Created successfully"
 msgstr ""
 
+#: src/pages/VIP/components/VipCard.tsx
+msgid "Current Level"
+msgstr ""
+
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Current Price"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Current Status"
 msgstr ""
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -1567,12 +1588,20 @@ msgstr ""
 msgid "Hide other symbols"
 msgstr ""
 
+#: src/pages/VIP/components/VipList.tsx
+msgid "Hold"
+msgstr ""
+
 #: src/components/Dialog/DialogFilters.tsx
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Holders"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Holding MYX"
 msgstr ""
 
 #: src/components/Tabbar/const.tsx
@@ -1918,6 +1947,10 @@ msgstr ""
 msgid "Later"
 msgstr ""
 
+#: src/pages/VIP/components/VipList.tsx
+msgid "Level"
+msgstr ""
+
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 msgid "Leverage adjustments will impact your new opening orders. When opening a new position, your minimum maintenance margin will be calculated according to the new leverage"
 msgstr ""
@@ -2016,6 +2049,10 @@ msgstr ""
 
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Main-chart Indicators"
+msgstr ""
+
+#: src/pages/VIP/components/VipList.tsx
+msgid "Maker"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
@@ -2503,6 +2540,14 @@ msgstr ""
 
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 msgid "Opting for a leverage higher than [10x] elevates your risks for liquidation. Please exercise caution with the associated risks Confirm"
+msgstr ""
+
+#: src/pages/VIP/components/VipList.tsx
+msgid "or"
+msgstr ""
+
+#: src/pages/VIP/components/VipList.tsx
+msgid "Or"
 msgstr ""
 
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
@@ -3315,6 +3360,10 @@ msgstr ""
 msgid "Switch Network"
 msgstr ""
 
+#: src/pages/VIP/components/VipList.tsx
+msgid "Taker"
+msgstr ""
+
 #: src/components/Footer/index.tsx
 msgid "Terms of Use"
 msgstr ""
@@ -3404,6 +3453,12 @@ msgstr ""
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
+msgstr ""
+
+#. placeholder {0}: nextLevelInfo?.vipTier ?? '--'
+#. placeholder {1}: nextLevelInfo ? formatNumberPrecision(requiredTradeAmount, COMMON_PRICE_DISPLAY_DECIMALS) : '--'
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
 msgstr ""
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
@@ -3500,6 +3555,8 @@ msgstr ""
 #: src/components/Header/const.tsx
 #: src/components/Tabbar/const.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
+#: src/pages/VIP/components/Upgrade.tsx
+#: src/pages/VIP/components/VipList.tsx
 msgid "Trade"
 msgstr "交易"
 
@@ -3523,6 +3580,10 @@ msgstr ""
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "Trading Setting"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Trading Volume"
 msgstr ""
 
 #: src/pages/record/components/RecordTab.tsx
@@ -3626,6 +3687,23 @@ msgstr ""
 msgid "Updated successfully"
 msgstr ""
 
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Upgrade"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Upgrade conditions met! New VIP tier updates today, 22:00 - 23:00 UTC."
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "Upgrade Progress"
+msgstr ""
+
+#. placeholder {0}: nextLevelInfo ? nextLevelInfo.vipTier : '--'
+#: src/pages/VIP/components/VipCard.tsx
+msgid "Upgrade to VIP{0} by trading"
+msgstr ""
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
@@ -3669,6 +3747,7 @@ msgstr ""
 msgid "View referral rules"
 msgstr ""
 
+#: src/components/Tabbar/const.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "VIP"
 msgstr ""
@@ -3679,9 +3758,17 @@ msgstr ""
 msgid "VIP {0} or above are not eligible for rebates"
 msgstr ""
 
+#: src/pages/VIP/components/VipList.tsx
+msgid "VIP Level"
+msgstr ""
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "VIP Redeem Code"
 msgstr "VIP兑换码"
+
+#: src/pages/VIP/components/VipList.tsx
+msgid "VIP Rules"
+msgstr ""
 
 #: src/pages/Earn/components/Dashboard.tsx
 msgid "Volatility Rating"
@@ -3779,6 +3866,12 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
+#. placeholder {1}: nextLevelInfo?.vipTier
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "You need to hold {0} MYX to upgrade to VIP{1}"
+msgstr ""
+
 #: src/pages/Referrals/components/Hero/RebateSetting.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -3793,6 +3886,11 @@ msgstr ""
 #. placeholder {0}: refereeRatio ?? 0
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "You've earned {0}% trading fee refund"
+msgstr ""
+
+#: src/pages/VIP/components/Upgrade.tsx
+#: src/pages/VIP/components/Upgrade.tsx
+msgid "You’ve unlocked the highest VIP level."
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx

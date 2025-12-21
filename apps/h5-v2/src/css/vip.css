@@ -104,7 +104,7 @@
   table {
     font-family: inherit;
     border-collapse: collapse;
-    color: var(--basic-white);
+    color: var(--regular-text);
     /*border-collapse: separate;
     border-spacing: 0;*/
   }
@@ -123,9 +123,14 @@
   tr {
     height: 54px;
     font-weight: 400;
+    color: var(--regular-text);
     &.active {
       font-weight: 700;
+      color: var(--basic-white);
     }
+  }
+  tbody tr:hover {
+    background-color: var(--base-bg);
   }
 
   th {
@@ -150,10 +155,9 @@
     font-style: normal;
     font-weight: inherit;
     line-height: 150%; /* 21px */
-    color: var(--basic-white);
     border-bottom: 1px solid var(--dark-border);
     border-right: 1px solid var(--dark-border);
-
+    color: inherit;
   }
 
   td:not(:first-child) {
