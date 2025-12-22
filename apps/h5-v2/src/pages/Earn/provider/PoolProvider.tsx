@@ -7,9 +7,8 @@ import { PoolType } from '@/request/type.ts'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, genesisFeeRate, refetch, lpDetail, poolInfoRefetch } = usePoolDetail(
-    PoolType.quote,
-  )
+  const { pool, poolInfo, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, mode } =
+    usePoolDetail(PoolType.quote)
 
   return (
     <PoolContext.Provider
@@ -24,6 +23,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         exchangeRate: poolInfo?.exchangeRate,
         tvl: poolInfo?.tvl,
         poolInfoRefetch,
+        mode,
       }}
     >
       {children}
