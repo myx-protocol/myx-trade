@@ -51,12 +51,13 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
     setSearchResult,
     setSearchLoading,
     addSearchHistory,
+    searchChainId,
   } = useGlobalSearchStore()
 
   const inputRef = useRef<HTMLInputElement>(null)
   //   chainid select
 
-  const [chainIdSelected, setChainIdSelected] = useState<number | null>(null)
+  // const [chainIdSelected, setChainIdSelected] = useState<number | null>(null)
 
   const debouncedSearchValue = useDebounce(searchValue, {
     wait: 500,
@@ -141,20 +142,20 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
   useEffect(() => {
     if (!client) return
     searchFunc({
-      chainId: chainIdSelected ?? 0,
+      chainId: searchChainId ?? 0,
       searchType: searchTab,
       searchKey: debouncedSearchValue,
       type: searchTab === SearchTypeEnum.Contract ? secondSearchTab : undefined,
       loading: true,
     })
-  }, [client, chainIdSelected, debouncedSearchValue, searchTab, secondSearchTab, searchFunc])
+  }, [client, searchChainId, debouncedSearchValue, searchTab, secondSearchTab, searchFunc])
 
   // refresh search result when global search update（收藏变更 / SDK 鉴权等）
   useEffect(() => {
     const refreshSearchResult = () => {
       if (!client) return
       searchFunc({
-        chainId: chainIdSelected ?? 0,
+        chainId: searchChainId ?? 0,
         searchType: searchTab,
         searchKey: debouncedSearchValue,
         type: searchTab === SearchTypeEnum.Contract ? secondSearchTab : undefined,
@@ -167,7 +168,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
       tradePubSub.off('global:search:update', refreshSearchResult)
       appPubSub.off('app:sdk:authenticated', refreshSearchResult)
     }
-  }, [client, chainIdSelected, debouncedSearchValue, searchTab, secondSearchTab, searchFunc])
+  }, [client, searchChainId, debouncedSearchValue, searchTab, secondSearchTab, searchFunc])
 
   const handleClear = () => {
     setSearchValue('')
@@ -178,19 +179,19 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
     setSearchValue(e.target.value)
   }
 
-  const handleChainIdSelect = (chainId: ChainId) => {
-    if (chainIdSelected === chainId) {
-      setChainIdSelected(null)
-      return
-    } else {
-      setChainIdSelected(chainId)
-    }
-    setChainSelectOpen(false)
-  }
+  // const handleChainIdSelect = (chainId: ChainId) => {
+  //   if (chainIdSelected === chainId) {
+  //     setChainIdSelected(null)
+  //     return
+  //   } else {
+  //     setChainIdSelected(chainId)
+  //   }
+  //   setChainSelectOpen(false)
+  // }
   return (
     <div className="sticky top-0 left-0 z-10 flex items-center justify-between rounded-t-[16px] bg-[#18191F] p-[16px]">
       {/* left */}
-      <div className="flex-[1_1_0%] px-[12px] py-[4px]">
+      <div className="flex-[1_1_0%] py-[4px] pr-[12px] pl-[0px]">
         <div className="flex w-full items-center gap-[8px]">
           <Search
             size={14}
@@ -229,7 +230,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
       {/* right */}
       <div className="flex flex-shrink-0 items-center">
         {/* chain select */}
-        <HoverCard
+        {/* <HoverCard
           className="bg-transparent!"
           trigger={
             <div className="flex cursor-pointer items-center gap-[4px] select-none">
@@ -259,19 +260,17 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
                   handleChainIdSelect(chainInfo.chainId)
                 }}
               >
-                {/* chain logo */}
                 <div className="h-[24px] w-[24px] overflow-hidden rounded-[9999px]">
                   <CoinIcon size={24} icon={chainInfo.logoUrl ?? ''} />
                 </div>
-                {/* chain name */}
                 <div className="text-[14px] font-medium text-white">{chainInfo.label}</div>
               </div>
             ))}
           </div>
-        </HoverCard>
+        </HoverCard> */}
 
         {/* split */}
-        <div className="mx-[20px] h-[17px] w-[1px] bg-[#31333D] select-none"></div>
+        {/* <div className="mx-[20px] h-[17px] w-[1px] bg-[#31333D] select-none"></div> */}
         {/* close */}
         <div
           className="flex h-[16px] w-[16px] cursor-pointer items-center justify-center text-[#848E9C] select-none"

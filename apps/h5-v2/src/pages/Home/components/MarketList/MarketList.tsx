@@ -77,7 +77,7 @@ export const MarketList = ({ activeMarket }: MarketListProps) => {
     <div>
       {data?.data?.map((item) => (
         <MarketListRow
-          className="my-[14px]"
+          className="py-[16px]"
           key={item.poolId}
           onClick={() => {
             navigate(`/price/${item.chainId}/${item.poolId}`)

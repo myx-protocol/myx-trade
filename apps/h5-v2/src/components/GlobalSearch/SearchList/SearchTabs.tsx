@@ -4,6 +4,10 @@ import { t } from '@lingui/core/macro'
 import { styled, Tab, Tabs } from '@mui/material'
 import { SearchTypeEnum, SearchSecondTypeEnum } from '@myx-trade/sdk'
 import { useDebounce } from 'ahooks'
+import { Trans } from '@lingui/react/macro'
+import { ArrowDown } from '@/components/Icon'
+import { useState } from 'react'
+import { ChainsDrawer } from '@/components/ChainsDrawer'
 
 const SearchSecondTabs = styled(Tabs)({
   minHeight: 'auto',
@@ -48,7 +52,11 @@ export const SearchTabs = () => {
     setSecondSearchTab,
     searchLoading,
     searchValue,
+    searchChainId,
+    setSearchChainId,
   } = useGlobalSearchStore()
+
+  const [chainSelectOpen, setChainSelectOpen] = useState(false)
 
   const debouncedSearchValue = useDebounce(searchValue, {
     wait: 500,
@@ -58,61 +66,82 @@ export const SearchTabs = () => {
   })
   return (
     <div>
-      <div className="flex gap-[32px] px-[28px]">
-        {debouncedSearchValue.trim() && !searchLoadingDebounced && (
+      <div className="flex items-center justify-between gap-[20px]">
+        <div className="flex flex-[1_1_0%] gap-[24px] pl-[16px]">
+          {debouncedSearchValue.trim() && !searchLoadingDebounced && (
+            <div
+              className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+              onClick={() => setSearchTab(SearchTypeEnum.All)}
+            >
+              <span
+                className={clsx({
+                  'text-[#6D7180]': searchTab !== SearchTypeEnum.All,
+                  'text-white': searchTab === SearchTypeEnum.All,
+                })}
+              >
+                {t`All`}
+              </span>
+            </div>
+          )}
           <div
             className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
-            onClick={() => setSearchTab(SearchTypeEnum.All)}
+            onClick={() => setSearchTab(SearchTypeEnum.Contract)}
           >
             <span
               className={clsx({
-                'text-[#999]': searchTab !== SearchTypeEnum.All,
-                'text-white': searchTab === SearchTypeEnum.All,
+                'text-[#6D7180]': searchTab !== SearchTypeEnum.Contract,
+                'text-white': searchTab === SearchTypeEnum.Contract,
               })}
             >
-              {t`All`}
+              {t`Contract`}
             </span>
           </div>
-        )}
-        <div
-          className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
-          onClick={() => setSearchTab(SearchTypeEnum.Contract)}
-        >
-          <span
-            className={clsx({
-              'text-[#999]': searchTab !== SearchTypeEnum.Contract,
-              'text-white': searchTab === SearchTypeEnum.Contract,
-            })}
+          <div
+            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            onClick={() => setSearchTab(SearchTypeEnum.Cook)}
           >
-            {t`Contract`}
-          </span>
+            <span
+              className={clsx({
+                'text-[#6D7180]': searchTab !== SearchTypeEnum.Cook,
+                'text-white': searchTab === SearchTypeEnum.Cook,
+              })}
+            >
+              {t`Cook`}
+            </span>
+          </div>
+          <div
+            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            onClick={() => setSearchTab(SearchTypeEnum.Earn)}
+          >
+            <span
+              className={clsx({
+                'text-[#6D7180]': searchTab !== SearchTypeEnum.Earn,
+                'text-white': searchTab === SearchTypeEnum.Earn,
+              })}
+            >
+              {t`Earn`}
+            </span>
+          </div>
         </div>
         <div
-          className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
-          onClick={() => setSearchTab(SearchTypeEnum.Cook)}
+          className="flex items-center justify-end gap-[2] pr-[16px] text-[#CED1D9]"
+          role="button"
+          onClick={() => setChainSelectOpen(true)}
         >
-          <span
-            className={clsx({
-              'text-[#999]': searchTab !== SearchTypeEnum.Cook,
-              'text-white': searchTab === SearchTypeEnum.Cook,
-            })}
-          >
-            {t`Cook`}
+          <span className="text-[12px]">
+            <Trans>All Chain</Trans>
           </span>
+          <ArrowDown size={12} color="#CED1D9" />
         </div>
-        <div
-          className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
-          onClick={() => setSearchTab(SearchTypeEnum.Earn)}
-        >
-          <span
-            className={clsx({
-              'text-[#999]': searchTab !== SearchTypeEnum.Earn,
-              'text-white': searchTab === SearchTypeEnum.Earn,
-            })}
-          >
-            {t`Earn`}
-          </span>
-        </div>
+        <ChainsDrawer
+          open={chainSelectOpen}
+          onClose={() => setChainSelectOpen(false)}
+          chainId={searchChainId || undefined}
+          onChainChange={(chainId) => {
+            setSearchChainId(chainId ? (chainId as number) : null)
+            setChainSelectOpen(false)
+          }}
+        />
       </div>
 
       {/* second tabs */}
