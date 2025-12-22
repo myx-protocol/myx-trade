@@ -332,5 +332,16 @@ export class Api {
     );
   };
 
-  
+  async getAccountVipInfo({ address, accessToken }: { address: string, accessToken: string }) {
+    return http.get<ApiResponse<any>>(
+      `${this.getHost()}/openapi/gateway/vip/trade_config`,
+      undefined,
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
 }
