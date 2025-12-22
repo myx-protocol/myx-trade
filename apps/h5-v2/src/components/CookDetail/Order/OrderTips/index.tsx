@@ -47,7 +47,8 @@ export const OrderTips = () => {
   const genesis = useMemo(() => {
     if (data) {
       console.log(new Big(Number(data)).minus(new Big(tvl || '0')).toString())
-      return new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+      const _genesis = new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+      return Number(_genesis) < 0 ? 0 : _genesis
     }
   }, [data, tvl])
 
