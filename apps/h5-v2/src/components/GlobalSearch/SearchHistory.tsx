@@ -20,7 +20,7 @@ export const SearchHistory = () => {
   }
 
   return (
-    <div className="mb-[24px] px-[28px]">
+    <div className="mb-[24px] px-[16px]">
       {/* 标题 */}
       <h3 className="mb-[16px] text-[14px] leading-[1] font-medium text-white">
         {t`Search History`}
