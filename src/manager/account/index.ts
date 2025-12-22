@@ -12,6 +12,7 @@ import { getForwarderContract } from "@/web3/providers";
 import { MyxClient } from "..";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
+import Broker_ABI from "@/abi/Broker.json";
 
 export class Account {
   private configManager: ConfigManager;
@@ -50,7 +51,6 @@ export class Account {
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
-      const isProd = !this.configManager.getConfig().isTestnet;
       const poolListRes = await this.client.api.getPoolList();
       if (poolListRes.code !== 9200) {
         throw new MyxSDKError(
@@ -302,6 +302,51 @@ export class Account {
       return {
         code: 0,
         data: accountInfo,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async getAccountVipInfo(chainId: number, address: string) {
+    const contractAddress = getContractAddressByChainId(chainId);
+    const provider = await getJSONProvider(chainId)
+    const dataProviderContract = new ethers.Contract(
+      contractAddress.DATA_PROVIDER,
+      Broker_ABI,
+      provider
+    );
+
+    try {
+      const accountVipInfo = await dataProviderContract.userFeeData(address);
+      return {
+        code: 0,
+        data: accountVipInfo,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async getAccountVipInfoByBackend(address: string) {
+    const accessToken = await this.configManager.getAccessToken();
+    if (!accessToken) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidAccessToken,
+        "Invalid access token"
+      );
+    }
+    try {
+      const res = await this.client.api.getAccountVipInfo({ address, accessToken });
+      return {
+        code: 0,
+        data: res.data,
       };
     } catch (error) {
       return {
