@@ -20,6 +20,7 @@ import { getSlippage } from '@/utils/slippage'
 import { SlippageTypeEnum } from '@/utils/slippage'
 import useGlobalStore from '@/store/globalStore'
 import { verifyTpSlPrice } from '@/utils/verify'
+import { useGetAccountVipInfo } from '@/hooks/use-get-account-vip-info'
 
 export const useSubmitOrder = () => {
   const [loading, setLoading] = useState(false)
@@ -28,9 +29,11 @@ export const useSubmitOrder = () => {
   const { symbolInfo } = useTradePageStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { oraclePriceData } = useMarketStore()
-  const { setCloseOrderConfirmDialogOpen, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
+  const { setCloseOrderConfirmDialogOpen, setPlaceOrderConfirmDialogOpen, userVipInfo } =
+    useGlobalStore()
   const { checkWalletChainId } = useWalletChainCheck()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
+  const { vipInfo } = useGetAccountVipInfo()
   const { poolConfig } = useGetPoolConfig(
     symbolInfo?.poolId as string,
     symbolInfo?.chainId as number,
@@ -301,6 +304,19 @@ export const useSubmitOrder = () => {
 
       try {
         setLoading(true)
+        if (vipInfo?.vipTier !== userVipInfo?.tier) {
+          await client?.account.setUserFeeData(
+            address as string,
+            vipInfo?.vipExpireTime as number,
+            {
+              tier: vipInfo?.vipTier as number,
+              referrer: vipInfo?.rebateAddr as string,
+              totalReferralRebatePct: vipInfo?.rebateReturnPct as number,
+              referrerRebatePct: vipInfo?.rebatePct as number,
+            },
+            vipInfo?.signature as string,
+          )
+        }
         if (positionAction === PositionActionEnum.OPEN) {
           console.log('tradingFee-->', tradingFee)
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)

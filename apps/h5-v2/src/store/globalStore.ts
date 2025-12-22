@@ -51,6 +51,15 @@ interface GlobalStore {
   setAccountDialogOpen: (open: boolean) => void
   poolList: any
   setPoolList: (list: any) => void
+  userVipInfo: UserVipInfoContract | null
+  setUserVipInfo: (userVipInfo: UserVipInfoContract | null) => void
+}
+
+interface UserVipInfoContract {
+  tier: number
+  referrer: string
+  totalReferralRebatePct: number
+  referrerRebatePct: number
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -102,6 +111,8 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             setAccountDialogOpen: (open: boolean) => set({ accountDialogOpen: open }),
             poolList: [],
             setPoolList: (list: any[]) => set({ poolList: list }),
+            userVipInfo: null,
+            setUserVipInfo: (userVipInfo: UserVipInfoContract | null) => set({ userVipInfo }),
           }) as GlobalStore,
       ),
       {

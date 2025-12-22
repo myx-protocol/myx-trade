@@ -12,10 +12,11 @@ import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import type { ChainId } from '@myx-trade/sdk'
 import { getPoolLevelConfig } from '@/api'
-import useGlobalStore from '@/store/globalStore'
 import { usePositionStore } from '@/store/position/createStore'
 import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import useGlobalStore from '@/store/globalStore'
 export const Trade = () => {
   const { chainId, poolId } = useParams()
   const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
@@ -24,9 +25,10 @@ export const Trade = () => {
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
+  const { address } = useWalletConnection()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
-
+  const { setUserVipInfo } = useGlobalStore()
   const { getDetail } = useMarketDetail({
     poolId: poolId || '',
     chainId: chainId ? parseInt(chainId) : undefined,
@@ -51,6 +53,20 @@ export const Trade = () => {
         setPoolConfig(res.data as unknown as PoolConfig)
       }
     })
+
+    if (client && address) {
+      client?.account
+        .getAccountInfo(parseInt(chainId) as ChainId, address as string, poolId as string)
+        .then((res) => {
+          // console.log('res-->', res)
+          setUserVipInfo({
+            tier: res.data.tier,
+            referrer: res.data.referrer,
+            totalReferralRebatePct: res.data.totalReferralRebatePct,
+            referrerRebatePct: res.data.referrerRebatePct,
+          })
+        })
+    }
   }, [chainId, poolId, getDetail, setSymbolInfo, navigate])
 
   useMount(() => {
