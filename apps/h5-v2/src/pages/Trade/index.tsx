@@ -56,14 +56,14 @@ export const Trade = () => {
 
     if (client && address) {
       client?.account
-        .getAccountInfo(parseInt(chainId) as ChainId, address as string, poolId as string)
+        .getAccountVipInfo(parseInt(chainId) as ChainId, address as string)
         .then((res) => {
-          // console.log('res-->', res)
+          const data = res.data ?? {}
           setUserVipInfo({
-            tier: res.data.tier,
-            referrer: res.data.referrer,
-            totalReferralRebatePct: res.data.totalReferralRebatePct,
-            referrerRebatePct: res.data.referrerRebatePct,
+            tier: data.tier,
+            referrer: data.referrer,
+            totalReferralRebatePct: data.totalReferralRebatePct,
+            referrerRebatePct: data.referrerRebatePct,
           })
         })
     }
