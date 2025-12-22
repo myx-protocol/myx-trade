@@ -334,7 +334,7 @@ export class Account {
     }
   }
 
-  async getAccountVipInfoByBackend(address: string) {
+  async getAccountVipInfoByBackend(address: string, chainId: number) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -343,8 +343,8 @@ export class Account {
       );
     }
     try {
-      const res = await this.client.api.getAccountVipInfo({ address, accessToken });
-      if(res.code !== 9200) {
+      const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId });
+      if (res.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
           res.msg ?? "Failed to get account vip info"
@@ -353,6 +353,38 @@ export class Account {
       return {
         code: 0,
         data: res.data,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async setUserFeeData(address: string, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number }, signature: string) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+
+    const brokerContract = new ethers.Contract(
+      config.brokerAddress,
+      Broker_ABI,
+      config.signer
+    );
+
+
+    try {
+      const nonce = await config.signer?.getNonce()
+      const rs = await brokerContract.setUserFeeData([address, nonce, deadline, [
+        params.tier,
+        params.referrer,
+        params.totalReferralRebatePct,
+        params.referrerRebatePct,
+      ]], signature);
+      const receipt = await rs?.wait(1);
+
+      return {
+        code: 0,
+        data: receipt,
       };
     } catch (error) {
       return {
