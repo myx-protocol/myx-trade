@@ -312,19 +312,30 @@ export class Account {
   }
 
   async getAccountVipInfo(chainId: number, address: string) {
+    const config: MyxClientConfig = this.configManager.getConfig();
     const contractAddress = getContractAddressByChainId(chainId);
     const provider = await getJSONProvider(chainId)
     const dataProviderContract = new ethers.Contract(
       contractAddress.DATA_PROVIDER,
+      DataProvider_ABI,
+      provider
+    );
+
+    const brokerContract = new ethers.Contract(
+      config.brokerAddress,
       Broker_ABI,
       provider
     );
 
+    const latestBlock = await provider.getBlock('latest')
+    const deadline = (latestBlock?.timestamp ?? dayjs().unix()) + 60 * 5
+
     try {
       const accountVipInfo = await dataProviderContract.userFeeData(address);
+      const nonce = await brokerContract.userNonces(address);
       return {
         code: 0,
-        data: accountVipInfo,
+        data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
       };
     } catch (error) {
       return {
@@ -362,7 +373,7 @@ export class Account {
     }
   }
 
-  async setUserFeeData(address: string, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number }, signature: string) {
+  async setUserFeeData(address: string, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number, nonce: string }, signature: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const brokerContract = new ethers.Contract(
@@ -371,10 +382,24 @@ export class Account {
       config.signer
     );
 
+    const nonce = await brokerContract.userNonces(address);
+
+    if(nonce.toString() !== params.nonce.toString()) {
+      throw new MyxSDKError(
+        MyxErrorCode.RequestFailed,
+        "Invalid nonce, please try again"
+      );
+    }
+
+    if(deadline < dayjs().unix()) {
+      throw new MyxSDKError(
+        MyxErrorCode.RequestFailed,
+        "Invalid deadline, please try again"
+      );
+    }
 
     try {
-      const nonce = await config.signer?.getNonce()
-      const rs = await brokerContract.setUserFeeData([address, nonce, deadline, [
+      const rs = await brokerContract.setUserFeeData([address, params.nonce, deadline, [
         params.tier,
         params.referrer,
         params.totalReferralRebatePct,
