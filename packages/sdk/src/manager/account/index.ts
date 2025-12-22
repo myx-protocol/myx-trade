@@ -379,27 +379,37 @@ export class Account {
 
     const nonce = await brokerContract.userNonces(address);
 
-    if(nonce.toString() !== params.nonce.toString()) {
+    if (nonce.toString() !== params.nonce.toString()) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
         "Invalid nonce, please try again"
       );
     }
 
-    if(deadline < dayjs().unix()) {
+    if (deadline < dayjs().unix()) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
         "Invalid deadline, please try again"
       );
     }
 
+    const feeData = {
+      user: address,
+      nonce: params.nonce,
+      deadline: deadline,
+      feeData: {
+        tier: params.tier,
+        referrer: params.referrer || ethers.ZeroAddress,
+        totalReferralRebatePct: params.totalReferralRebatePct,
+        referrerRebatePct: params.referrerRebatePct,
+      },
+      signature: signature,
+    }
+
+    this.logger.info("setUserFeeData params --->", feeData)
+
     try {
-      const rs = await brokerContract.setUserFeeData([address, params.nonce, deadline, [
-        params.tier,
-        params.referrer,
-        params.totalReferralRebatePct,
-        params.referrerRebatePct,
-      ]], signature);
+      const rs = await brokerContract.setUserFeeData(feeData);
       const receipt = await rs?.wait(1);
 
       return {
