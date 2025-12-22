@@ -38,6 +38,8 @@ export interface PoolContextValue {
   genesisFeeRate?: string
   refreshAssetKey: number
   refreshAsset: () => void
+  tvl?: string
+  poolInfoRefetch: () => void
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
