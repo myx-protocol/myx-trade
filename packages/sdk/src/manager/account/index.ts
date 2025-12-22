@@ -344,6 +344,12 @@ export class Account {
     }
     try {
       const res = await this.client.api.getAccountVipInfo({ address, accessToken });
+      if (res.code !== 0) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Failed to get account vip info"
+        );
+      }
       return {
         code: 0,
         data: res.data,
