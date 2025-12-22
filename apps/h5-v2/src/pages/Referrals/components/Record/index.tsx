@@ -17,6 +17,7 @@ import { getChainInfo } from '@/config/chainInfo'
 import { TransactionHash } from '@/components/TransactionHash'
 import { Loading } from '../Loading'
 import { ReferralsEmpty } from '../Empty'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 enum RecordTypeEnum {
   Invite = 0,
@@ -28,6 +29,7 @@ const PAGE_SIZE = 10
 
 export const RecordCard = () => {
   const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig } = useReferralStore()
+  const { address } = useWalletConnection()
   const accessParams = useAccessParams()
   const [recordType, setRecordType] = useState<RecordTypeEnum>(RecordTypeEnum.Invite)
   const [list, setList] = useState<any[]>([])
@@ -98,11 +100,19 @@ export const RecordCard = () => {
 
   useEffect(() => {
     fetchInitialData()
-  }, [accessParams?.accessToken, accessParams?.account])
+  }, [accessParams?.accessToken, accessParams?.account, address])
 
   useEffect(() => {
     fetchData()
-  }, [accessParams, recordType, before, after, accessParams?.accessToken, accessParams?.account]) // Added accessToken to dependencies
+  }, [
+    accessParams,
+    recordType,
+    before,
+    after,
+    accessParams?.accessToken,
+    accessParams?.account,
+    address,
+  ]) // Added accessToken to dependencies
 
   const handlePrev = () => {
     if (list.length > 0) {

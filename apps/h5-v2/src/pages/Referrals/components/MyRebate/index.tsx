@@ -34,13 +34,15 @@ export function MyRebate() {
     accessToken,
   } = useReferralStore()
 
+  const { address } = useWalletConnection()
+
   useEffect(() => {
     if (accessToken) {
       fetchRefBonus()
       fetchRefBonusInfoByChain()
       fetchRefReferrerInfo()
     }
-  }, [accessToken, fetchRefBonus, fetchRefBonusInfoByChain, fetchRefReferrerInfo])
+  }, [accessToken, fetchRefBonus, fetchRefBonusInfoByChain, fetchRefReferrerInfo, address])
 
   return (
     <>
