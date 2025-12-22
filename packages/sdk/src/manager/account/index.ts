@@ -340,7 +340,7 @@ export class Account {
     }
   }
 
-  async getAccountVipInfoByBackend(address: string, chainId: number) {
+  async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
     const accessToken = await this.configManager.getAccessToken();
     if (!accessToken) {
       throw new MyxSDKError(
@@ -349,7 +349,7 @@ export class Account {
       );
     }
     try {
-      const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId });
+      const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
       if (res.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
