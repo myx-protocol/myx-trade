@@ -315,11 +315,6 @@ export class Account {
     const config: MyxClientConfig = this.configManager.getConfig();
     const contractAddress = getContractAddressByChainId(chainId);
     const provider = await getJSONProvider(chainId)
-    const dataProviderContract = new ethers.Contract(
-      contractAddress.DATA_PROVIDER,
-      DataProvider_ABI,
-      provider
-    );
 
     const brokerContract = new ethers.Contract(
       config.brokerAddress,
@@ -331,7 +326,7 @@ export class Account {
     const deadline = (latestBlock?.timestamp ?? dayjs().unix()) + 60 * 5
 
     try {
-      const accountVipInfo = await dataProviderContract.userFeeData(address);
+      const accountVipInfo = await brokerContract.userFeeData(address);
       const nonce = await brokerContract.userNonces(address);
       return {
         code: 0,
