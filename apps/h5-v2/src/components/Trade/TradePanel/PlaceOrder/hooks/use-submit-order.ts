@@ -307,12 +307,13 @@ export const useSubmitOrder = () => {
         if (vipInfo?.vipTier !== userVipInfo?.tier) {
           await client?.account.setUserFeeData(
             address as string,
-            vipInfo?.vipExpireTime as number,
+            vipInfo?.deadline as number,
             {
               tier: vipInfo?.vipTier as number,
               referrer: vipInfo?.rebateAddr as string,
               totalReferralRebatePct: vipInfo?.rebateReturnPct as number,
               referrerRebatePct: vipInfo?.rebatePct as number,
+              nonce: vipInfo?.nonce as string,
             },
             vipInfo?.signature as string,
           )
