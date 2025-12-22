@@ -51,4 +51,5 @@ export enum Mode {
 export interface PoolInfo {
   price?: string
   exchangeRate?: string
+  tvl?: string
 }
