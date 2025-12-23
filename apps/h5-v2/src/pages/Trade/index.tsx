@@ -15,8 +15,6 @@ import { getPoolLevelConfig } from '@/api'
 import { usePositionStore } from '@/store/position/createStore'
 import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import useGlobalStore from '@/store/globalStore'
 export const Trade = () => {
   const { chainId, poolId } = useParams()
   const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
@@ -25,10 +23,8 @@ export const Trade = () => {
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
-  const { address } = useWalletConnection()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
-  const { setUserVipInfo } = useGlobalStore()
   const { getDetail } = useMarketDetail({
     poolId: poolId || '',
     chainId: chainId ? parseInt(chainId) : undefined,
@@ -53,22 +49,6 @@ export const Trade = () => {
         setPoolConfig(res.data as unknown as PoolConfig)
       }
     })
-
-    if (client && address) {
-      client?.account
-        .getAccountVipInfo(parseInt(chainId) as ChainId, address as string)
-        .then((res) => {
-          const data = res.data ?? {}
-          setUserVipInfo({
-            tier: data[0],
-            referrer: data[1],
-            totalReferralRebatePct: data[2],
-            referrerRebatePct: data[3],
-            deadline: data.deadline,
-            nonce: data.nonce,
-          })
-        })
-    }
   }, [chainId, poolId, getDetail, setSymbolInfo, navigate])
 
   useMount(() => {

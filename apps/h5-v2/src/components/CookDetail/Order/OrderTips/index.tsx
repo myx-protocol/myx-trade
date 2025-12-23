@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import { useQuery } from '@tanstack/react-query'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
+import { MYX_DELISTING_RULES_LINK } from '@/config'
 
 export const OrderTips = () => {
   const { baseLpDetail, refetch, genesisFeeRate, pool, tvl } = usePoolContext()
@@ -107,7 +108,7 @@ export const OrderTips = () => {
             {baseLpDetail?.mBaseQuoteSymbol} market will be delisted in{' '}
             {cutDownFormat(dayjs.duration(countdown))}. After delisting, buys will be suspended.
             Your ability to sell will not be affected.{' '}
-            <a className={'text-green'} href={''}>
+            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK}>
               {' '}
               View Delisting Rules
             </a>
