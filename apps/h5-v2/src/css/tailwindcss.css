@@ -20,6 +20,7 @@
   --color-warning-10: var(--warning-10);
   --color-danger-10: var(--danger-10);
   --color-green2: var(--green2);
+  --color-light-border: var(--light-border);
 }
 
 @layer utilities {
@@ -96,6 +97,7 @@
   --sell-gradient: linear-gradient(275deg, #c23749 3.47%, #ba4c47 99.82%);
   --light-bg: #2d3138;
   --green2: #00996f;
+  --light-border: #292B33;
 }
 
 Button.gradient {

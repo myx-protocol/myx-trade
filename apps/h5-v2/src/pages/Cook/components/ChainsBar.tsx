@@ -15,7 +15,7 @@ export const ChainsBar = ({
 }) => {
   return (
     <ul
-      className={`no-scrollbar flex w-full snap-x snap-mandatory items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] ${className}`}
+      className={`no-scrollbar flex w-full snap-x snap-mandatory items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] text-[12px] ${className}`}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
       <li
@@ -39,7 +39,7 @@ export const ChainsBar = ({
             onClick={() => setChainId(_chainId)}
           >
             <Box className={''}>
-              <img src={logoUrl} alt="Logo" width={12} height={12} />
+              <img src={logoUrl} alt="Logo" width={12} height={12} className={'rounded-full'} />
             </Box>
             <span>{label}</span>
           </li>

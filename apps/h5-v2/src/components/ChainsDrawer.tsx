@@ -61,7 +61,13 @@ export const ChainsDrawer = ({
             selected={chainId === _chainId}
           >
             <Box className={'flex-shrink-0'}>
-              <img src={logoUrl} alt="Logo" width={24} height={24} />
+              <img
+                src={logoUrl}
+                alt="Logo"
+                width={24}
+                height={24}
+                className={'border-light-border rounded-full border-1'}
+              />
             </Box>
             <span className={'text-[16px] leading-[1] font-[500] text-white'}>{label}</span>
           </ChainItem>

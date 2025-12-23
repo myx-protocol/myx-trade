@@ -62,7 +62,11 @@ const Cook = () => {
             </>
           ) : (
             <>
-              <TrenchTabBar type={trenchType} onTypeChange={(_type) => setTrenchType(_type)} />
+              <TrenchTabBar
+                className={'mt-[-4px]'}
+                type={trenchType}
+                onTypeChange={(_type) => setTrenchType(_type)}
+              />
 
               <TrenchSubBar>
                 <IntervalList interval={interval} setInterval={setInterval} />
