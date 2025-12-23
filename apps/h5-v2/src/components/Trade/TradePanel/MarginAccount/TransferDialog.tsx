@@ -367,7 +367,9 @@ export const TransferDialogButton = () => {
                         : (accountAssets?.freeBaseAmount?.toString() ?? '0'),
                       symbolInfo?.quoteDecimals ?? 6,
                     )}{' '}
-                    {symbolInfo?.quoteSymbol}
+                    {tokenType === AmountUnitEnum.QUOTE
+                      ? symbolInfo?.quoteSymbol
+                      : symbolInfo?.baseSymbol}
                   </span>
                 )}
                 <InfoIcon className="h-[16px] w-[16px]" />
