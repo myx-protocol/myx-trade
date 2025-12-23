@@ -313,7 +313,7 @@ export class Account {
 
   async getAccountVipInfo(chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const contractAddress = getContractAddressByChainId(chainId);
+
     const provider = await getJSONProvider(chainId)
 
     const brokerContract = new ethers.Contract(
