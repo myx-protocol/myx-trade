@@ -3,20 +3,19 @@ import { TabType } from '../../types'
 import { Trans } from '@lingui/react/macro'
 import { InfoButton } from '@/components/UI/Button'
 import { usePositionStore } from '@/store/position/createStore'
-import { Position } from './Position'
-import { Entrusts } from './Entrust'
 
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { Record } from '@/components/Icon'
 import { TradeRecordTab, TradeRecordTabs } from '@/components/Record/TradeRecordTabs'
 import { useNavigate } from 'react-router-dom'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
-import useGlobalStore from '@/store/globalStore'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { t } from '@lingui/core/macro'
 import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
+import { PositionList } from '@/pages/record/components/PositionList'
+import { OpenOrderList } from '@/pages/record/components/OpenOrderList'
 
 // const TabButton = ({
 //   activeTab,
@@ -147,8 +146,8 @@ export const Tables = () => {
         right={renderCloseAllButton()}
       />
 
-      {activeTab === TabType.POSITION && <Position />}
-      {activeTab === TabType.ENTRUSTS && <Entrusts />}
+      {activeTab === TabType.POSITION && <PositionList />}
+      {activeTab === TabType.ENTRUSTS && <OpenOrderList />}
     </>
   )
 }

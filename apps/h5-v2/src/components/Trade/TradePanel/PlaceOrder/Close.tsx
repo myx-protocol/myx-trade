@@ -13,19 +13,25 @@ import { t } from '@lingui/core/macro'
 import { toast } from '@/components/UI/Toast'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 
-export const ClosePosition = () => {
+interface ClosePositionProps {
+  showOrderSize?: boolean
+}
+
+export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
   const { shortSize, longSize, amountUnit } = useTradePanelStore()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { symbolInfo } = useTradePageStore()
   const { submitOrder } = useSubmitOrder()
   const { showCloseOrderConfirmDialog, setCloseOrderConfirmDialogOpen } = useGlobalStore()
   const displayLongSize = useMemo(() => {
+    if (!showOrderSize) return '0'
     return `${displayAmount(longSize ?? '0')} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
-  }, [longSize, amountUnit, symbolInfo])
+  }, [longSize, amountUnit, symbolInfo, showOrderSize])
 
   const displayShortSize = useMemo(() => {
+    if (!showOrderSize) return '0'
     return `${displayAmount(shortSize ?? '0')} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
-  }, [shortSize, amountUnit, symbolInfo])
+  }, [shortSize, amountUnit, symbolInfo, showOrderSize])
 
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
@@ -65,7 +71,7 @@ export const ClosePosition = () => {
           <p>
             <Trans>Close Long</Trans>
           </p>
-          {parseBigNumber(longSize).gt(0) && (
+          {showOrderSize && parseBigNumber(longSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayLongSize}
             </p>
@@ -107,7 +113,7 @@ export const ClosePosition = () => {
           <p>
             <Trans>Close Short</Trans>
           </p>
-          {parseBigNumber(shortSize).gt(0) && (
+          {showOrderSize && parseBigNumber(shortSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayShortSize}
             </p>

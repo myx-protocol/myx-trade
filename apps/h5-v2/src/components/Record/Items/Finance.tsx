@@ -155,10 +155,18 @@ export const FinanceDetailItem = ({ item }: { item: TradeFlowItem }) => {
       case TradeFlowTypeEnum.Increase:
       case TradeFlowTypeEnum.Decrease:
       case TradeFlowTypeEnum.AddTPSL:
+      case TradeFlowTypeEnum.AddMargin:
+      case TradeFlowTypeEnum.ReferralRewardClaim:
+      case TradeFlowTypeEnum.ReferralReward:
         return <Tag type="success">{TradeFlowType[item.type]?.()}</Tag>
       case TradeFlowTypeEnum.ADL:
       case TradeFlowTypeEnum.Liquidation:
+      case TradeFlowTypeEnum.RemoveMargin:
         return <Tag type="danger">{TradeFlowType[item.type]?.()}</Tag>
+      case TradeFlowTypeEnum.MarketClose:
+      case TradeFlowTypeEnum.SecurityDeposit:
+      case TradeFlowTypeEnum.EarlyClose:
+        return <Tag type="warning">{TradeFlowType[item.type]?.()}</Tag>
       default:
         return <Tag type="info">{TradeFlowType[item.type]?.()}</Tag>
     }
