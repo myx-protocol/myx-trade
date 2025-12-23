@@ -40,7 +40,7 @@ export const ChainDropDownMenu = ({
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
-        className={'text-secondary !text-secondary p-[0] text-[12px]'}
+        className={'text-secondary !text-secondary p-[0] !pr-[0] !text-[12px]'}
       >
         {!chainId ? <Trans>All Chain</Trans> : CHAIN_INFO[chainId].chainSymbol}
         <ArrowDown size={16} className={'ml-[2px]'} />
