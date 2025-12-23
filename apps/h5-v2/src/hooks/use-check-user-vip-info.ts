@@ -7,21 +7,25 @@ import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
 export const useCheckUserVipInfo = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { chainId } = useParams()
+  const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
   const { address } = useWalletConnection()
   const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract()
   const checkUserVipInfo = useCallback(async () => {
     if (!client || !clientIsAuthenticated || !address) return {}
 
+    console.log('parseInt(chainId)-->', parseInt(chainId as string))
+    console.log('address-->', address)
+
     const userVipInfoByContract = await getAccountVipInfoByContract()
 
-    console.log('userVipInfoByContract-->', userVipInfoByContract)
+    const nonce = parseInt(userVipInfoByContract?.nonce as unknown as string) + 1
+
     const res = await client?.account.getAccountVipInfoByBackend(
       address as string,
       parseInt(chainId as string),
       userVipInfoByContract?.deadline as number,
-      userVipInfoByContract?.nonce as unknown as string,
+      nonce.toString(),
     )
 
     const vipInfo = res.data ?? {}
@@ -34,12 +38,13 @@ export const useCheckUserVipInfo = () => {
           referrer: vipInfo?.rebateAddr as string,
           totalReferralRebatePct: vipInfo?.rebateReturnPct as number,
           referrerRebatePct: vipInfo?.rebatePct as number,
-          nonce: userVipInfoByContract?.nonce as unknown as string,
+          nonce: nonce.toString(),
         },
         vipInfo?.signature as string,
       )
 
       if (rs?.code !== 0) {
+        console.log('rs-->', rs)
         toast.error({
           title: t`${client.utils.formatErrorMessage(rs)}`,
         })

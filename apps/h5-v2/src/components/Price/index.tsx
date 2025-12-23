@@ -25,7 +25,6 @@ export const Price = ({ className, value, showUnit = false, decimals }: PricePro
   const priceValueRef = useRef<BigSource>(value || 0)
   const modeRef = useRef<PriceChangeMode>(PriceChangeMode.None)
   useEffect(() => {
-    console.log(value, 'Price value')
     if (Big(value || 0).eq(priceValueRef.current)) {
       modeRef.current = PriceChangeMode.None
     } else if (Big(value || 0).gt(priceValueRef.current)) {

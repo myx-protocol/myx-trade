@@ -14,9 +14,9 @@ interface UserVipInfoContract {
 }
 
 export const useGetAccountVipInfoByContract = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
-  const { address } = useWalletConnection()
   const { chainId } = useParams()
+  const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
+  const { address } = useWalletConnection()
 
   const getAccountVipInfoByContract = useCallback(async () => {
     if (!client || !clientIsAuthenticated || !address || !chainId) return {} as UserVipInfoContract
