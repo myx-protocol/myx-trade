@@ -62,6 +62,7 @@ export const usePoolDetail = (poolType: PoolType) => {
       if (poolType === PoolType.quote) return {} as QuoteLpDetail
       return {} as BaseLpDetail
     },
+    placeholderData: (prev) => prev,
   })
 
   const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
@@ -94,12 +95,15 @@ export const usePoolDetail = (poolType: PoolType) => {
           tvl: calculationTvl(result),
         } as PoolInfo
 
+        console.log(info)
+
         return info
       }
 
       return {} as PoolInfo
     },
     placeholderData: (prev) => prev,
+    refetchInterval: 1000 * 10,
   })
 
   const { data: pool } = useQuery({

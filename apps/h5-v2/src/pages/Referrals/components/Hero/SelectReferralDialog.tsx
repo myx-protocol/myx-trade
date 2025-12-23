@@ -1,12 +1,10 @@
 // import { Dialog, DialogContent } from '@mui/material'
 import { useReferralStore, InvitationCodeFlag } from '@/store/referrals'
-import { useAccessParams } from '@/hooks/useAccessParams'
 import { PrimaryButton as Button } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
-import { useState, useEffect, type MouseEventHandler } from 'react'
+import { useState, useEffect } from 'react'
 import EditSimply from '@/components/Icon/set/EditSimply'
 import UsersLine from '@/components/Icon/set/UsersLine'
-import { formatNumberPercent } from '@/utils/formatNumber'
 import { RebateSettingDialog } from '../SelectReferral/RebateSettingDialog'
 import { EditNoteDialog } from '../SelectReferral/EditNoteDialog'
 import { SetDefaultConfirmDialog } from '../SelectReferral/SetDefaultConfirmDialog'
@@ -15,7 +13,6 @@ import type { InvitationCodeInfo } from '@/store/referrals'
 import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 import { Copy } from '@/components/Copy'
 import { Loading } from '../Loading'
-import { Empty } from '@/components/Empty'
 import { ReferralsEmpty } from '../Empty'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { useThrottleFn } from 'ahooks'
@@ -148,8 +145,8 @@ export const SelectReferralDialog = () => {
                         <Copy content={row.invitationCode} className="cursor-pointer" />
                       </div>
                     </td>
-                    <td className="px-3 py-3">{formatNumberPercent(row.referrerRatio, 0)}</td>
-                    <td className="px-3 py-3">{formatNumberPercent(row.refereeRatio, 0)}</td>
+                    <td className="px-3 py-3">{row.referrerRatio ?? 0}%</td>
+                    <td className="px-3 py-3">{row.refereeRatio ?? 0}%</td>
                     <td className="px-3 py-3">
                       <div
                         className="flex cursor-pointer items-center gap-1 hover:text-[#00E3A5]"

@@ -64,7 +64,6 @@ export const PriceInfo = () => {
         <p className="text-[12px] leading-[1.5] font-medium text-[#CED1D9]">
           {/* rate value */}
           <span>
-            $
             {formatNumber(tickerData?.volume || 0, {
               showUnit: true,
             })}

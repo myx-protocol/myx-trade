@@ -2,7 +2,7 @@ import { MarketListRow } from '@/components/MarketList/MarketListRow'
 import { Sort } from '@/components/Sort'
 import { Trans } from '@lingui/react/macro'
 import { useVirtualList } from 'ahooks'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Empty } from './Empty'
 import { SymbolInfo } from '@/components/MarketList/SymbolInfo'
 import { formatNumber } from '@/utils/number'
@@ -10,17 +10,13 @@ import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
 import { useMarketPageStore } from '../../store'
 import { useQuery } from '@tanstack/react-query'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import {
-  SearchSecondTypeEnum,
-  SearchTypeEnum,
-  type SearchMarketParams,
-  type SearchResultContractItem,
-} from '@myx-trade/sdk'
+import { SearchSecondTypeEnum, SearchTypeEnum, type SearchMarketParams } from '@myx-trade/sdk'
 import { Loading } from '@/pages/rank/components/List/Loading'
 import { useNavigate } from 'react-router-dom'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useSortData } from '@/hooks/useSortData'
 
 export const List = () => {
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -51,42 +47,30 @@ export const List = () => {
     },
   })
 
-  // const [dataSorted, setDataSorted] = useState<SearchResultContractItem[]>([])
-
   const marketTickerDataMap = useMarketStore((state) => state.tickerData)
 
-  // const setSortData = useCallback(() => {
-  //   if (!sort.by || sort.direction === 'none' || !data?.contractInfo.list.length) {
-  //     setDataSorted([...(data?.contractInfo.list ?? [])])
-  //     return
-  //   }
-  //   const dataSorted = [...(data?.contractInfo.list ?? [])].sort((a, b) => {
-  //     let aValue = a[sort.by as keyof SearchResultContractItem]
-  //     let bValue = b[sort.by as keyof SearchResultContractItem]
-  //     if (sort.by === 'basePrice') {
-  //       aValue = marketTickerDataMap[a.poolId]?.price || a.basePrice
-  //       bValue = marketTickerDataMap[b.poolId]?.price || b.basePrice
-  //     }
-
-  //     if (sort.by === 'priceChange') {
-  //       aValue = marketTickerDataMap[a.poolId]?.change || a.priceChange
-  //       bValue = marketTickerDataMap[b.poolId]?.change || b.priceChange
-  //     }
-
-  //     if (sort.direction === 'desc') {
-  //       return Number(bValue) - Number(aValue)
-  //     }
-  //     return Number(bValue) - Number(aValue)
-  //   })
-  //   setDataSorted(dataSorted)
-  // }, [data?.contractInfo.list, sort.by, sort.direction, marketTickerDataMap])
-
-  // useEffect(() => {
-  //   setSortData()
-  // }, [setSortData])
+  // 使用排序 hook，只在用户点击排序时触发，ticker 数据变化不会重新排序
+  const dataSorted = useSortData({
+    data: data?.contractInfo.list ?? [],
+    sort: {
+      by: sort.by,
+      direction: sort.direction,
+    },
+    getFieldValue: (item, field) => {
+      // 对于 basePrice 和 priceChange，使用 ticker 数据，如果没有则使用原值
+      if (field === 'basePrice') {
+        return marketTickerDataMap[item.poolId]?.price || item.basePrice
+      }
+      if (field === 'priceChange') {
+        return marketTickerDataMap[item.poolId]?.change || item.priceChange
+      }
+      // 其他字段使用原值
+      return item[field] as string | number | undefined
+    },
+  })
 
   const navigate = useNavigate()
-  const [list] = useVirtualList(data?.contractInfo.list ?? [], {
+  const [list] = useVirtualList(dataSorted, {
     containerTarget: containerRef,
     wrapperTarget: wrapperRef,
     itemHeight: 58,
@@ -95,8 +79,7 @@ export const List = () => {
 
   const { subscribeToTicker } = useSubscription()
   useEffect(() => {
-    if (client && list.length && data?.contractInfo.list.length) {
-      console.log('list', list, data?.contractInfo?.list)
+    if (client && list.length && dataSorted.length) {
       const unsubscribe = subscribeToTicker(
         list.map((item) => ({
           globalId: item.data.globalId,
@@ -104,13 +87,12 @@ export const List = () => {
         })),
       )
       return () => {
-        console.log('unsubscribe-market-list', unsubscribe)
         if (unsubscribe) {
           unsubscribe()
         }
       }
     }
-  }, [list, client, data?.contractInfo.list])
+  }, [list, client, dataSorted.length, subscribeToTicker])
 
   // return <SelectFavoritesToken />
   return (
@@ -166,8 +148,8 @@ export const List = () => {
 
       {/* list */}
       {isLoading && <Loading total={10} />}
-      {Boolean(!isLoading && !data?.contractInfo.list.length) && <Empty />}
-      {Boolean(!isLoading && data?.contractInfo.list.length) && (
+      {Boolean(!isLoading && !dataSorted.length) && <Empty />}
+      {Boolean(!isLoading && dataSorted.length) && (
         <div className="min-h-0 flex-[1_1_0%] overflow-y-auto" ref={containerRef}>
           <div ref={wrapperRef} className="min-h-0 pb-[10px]">
             {list?.map((item) => (

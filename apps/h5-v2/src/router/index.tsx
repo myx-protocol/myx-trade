@@ -13,11 +13,12 @@ import NotFound from '@/404'
 import { MarketList } from '@/pages/MarketList'
 import { Rank } from '@/pages/rank'
 import { lazy } from 'react'
+import Referrals from '@/pages/Referrals'
+import SelectReferral from '@/pages/Referrals/SelectReferral'
+import VIP from '@/pages/VIP'
 
 const Record = lazy(() => import('@/pages/record'))
 const Price = lazy(() => import('@/pages/Price'))
-import Referrals from '@/pages/Referrals'
-import SelectReferral from '@/pages/Referrals/SelectReferral'
 
 const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: '/referrals/select-referral',
         element: <SelectReferral />,
+      },
+      {
+        path: 'vip',
+        element: <VIP />,
       },
       {
         path: '*',
