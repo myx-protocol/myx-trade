@@ -1,6 +1,4 @@
 import { DialogBase } from '@/components/UI/DialogBase'
-import { Tab, Tabs } from '@/components/UI/Tabs'
-import { t } from '@lingui/core/macro'
 import { TpSlTabTypeEnum } from './types'
 import { useCallback, useState } from 'react'
 import { PriceInfo } from './components/PriceInfo'
@@ -15,9 +13,9 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { Direction } from '@myx-trade/sdk'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
-import { EditIcon } from '@/components/UI/Icon'
+import { t } from '@lingui/core/macro'
 
 export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any }) => {
   const [open, setOpen] = useState(false)
@@ -29,94 +27,93 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = useCallback(async () => {
-    try {
-      const data = {
-        orderId: order.orderId,
-        tpSize: '0',
-        tpPrice: '0',
-        slSize: '0',
-        slPrice: '0',
-        useOrderCollateral: false,
-        executionFeeToken: poolInfo.quoteToken,
-        size: ethers.parseUnits(order.size, poolInfo.baseDecimals).toString(),
-        price: ethers.parseUnits(order.price, 30).toString(),
-      }
+    const data = {
+      orderId: order.orderId,
+      tpSize: '0',
+      tpPrice: '0',
+      slSize: '0',
+      slPrice: '0',
+      useOrderCollateral: false,
+      executionFeeToken: poolInfo.quoteToken,
+      size: ethers.parseUnits(order.size, poolInfo.baseDecimals).toString(),
+      price: ethers.parseUnits(order.price, 30).toString(),
+    }
 
-      if (activeTab === TpSlTabTypeEnum.TPOrSL) {
-        if (order.direction === Direction.LONG) {
-          if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
-            data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
-            data.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
-          } else {
-            data.slPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
-            data.slSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
-          }
+    if (activeTab === TpSlTabTypeEnum.TPOrSL) {
+      if (order.direction === Direction.LONG) {
+        if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
+          data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+          data.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
         } else {
-          if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
-            data.slPrice = ethers.parseUnits(tpPrice, 30).toString()
-            data.slSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
-          } else {
-            data.tpPrice = ethers.parseUnits(tpPrice, 30).toString()
-            data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
-          }
+          data.slPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+          data.slSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
         }
       } else {
-        if (!parseBigNumber(tpPrice).eq(0) && !parseBigNumber(tpSize).eq(0)) {
+        if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
+          data.slPrice = ethers.parseUnits(tpPrice, 30).toString()
+          data.slSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
+        } else {
           data.tpPrice = ethers.parseUnits(tpPrice, 30).toString()
           data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
-
-          const tpVerify = verifyTpSlPrice(
-            ethers.parseUnits(order.price, 30).toString(),
-            data.tpPrice,
-            order.direction,
-            'tp',
-          )
-
-          if (!tpVerify) {
-            return
-          }
-        }
-
-        if (!parseBigNumber(slPrice).eq(0) && !parseBigNumber(slSize).eq(0)) {
-          data.slPrice = ethers.parseUnits(slPrice, 30).toString()
-          data.slSize = ethers.parseUnits(slSize, poolInfo.baseDecimals).toString()
-
-          const slVerify = verifyTpSlPrice(
-            ethers.parseUnits(order.price, 30).toString(),
-            data.slPrice,
-            order.direction,
-            'sl',
-          )
-          if (!slVerify) {
-            return
-          }
         }
       }
+    } else {
+      if (!parseBigNumber(tpPrice).eq(0) && !parseBigNumber(tpSize).eq(0)) {
+        data.tpPrice = ethers.parseUnits(tpPrice, 30).toString()
+        data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
 
-      try {
-        setLoading(true)
-
-        const rs = await client?.order.updateOrderTpSl(
-          data,
-          poolInfo?.quoteToken,
-          order.chainId as number,
+        const tpVerify = verifyTpSlPrice(
+          ethers.parseUnits(order.price, 30).toString(),
+          data.tpPrice,
+          order.direction,
+          'tp',
         )
 
-        if (rs?.code === 0) {
-          toast.success('Update order success')
-          reset()
-          setOpen(false)
-        } else {
-          toast.error('Update order failed')
+        if (!tpVerify) {
+          return
         }
-      } catch (error) {
-        console.log('error-->', error)
-        toast.error('Update order failed')
-      } finally {
-        setLoading(false)
+      }
+
+      if (!parseBigNumber(slPrice).eq(0) && !parseBigNumber(slSize).eq(0)) {
+        data.slPrice = ethers.parseUnits(slPrice, 30).toString()
+        data.slSize = ethers.parseUnits(slSize, poolInfo.baseDecimals).toString()
+
+        const slVerify = verifyTpSlPrice(
+          ethers.parseUnits(order.price, 30).toString(),
+          data.slPrice,
+          order.direction,
+          'sl',
+        )
+        if (!slVerify) {
+          return
+        }
+      }
+    }
+
+    try {
+      setLoading(true)
+
+      const rs = await client?.order.updateOrderTpSl(
+        data,
+        poolInfo?.quoteToken,
+        order.chainId as number,
+      )
+
+      if (rs?.code === 0) {
+        toast.success({
+          title: 'Update order success',
+        })
+        reset()
+        setOpen(false)
+      } else {
+        toast.error({
+          title: t`${client?.utils.formatErrorMessage(rs)}`,
+        })
       }
     } catch (error) {
-      console.log('error-->', error)
+      toast.error({
+        title: t`${client?.utils.formatErrorMessage(error)}`,
+      })
     } finally {
       setLoading(false)
     }

@@ -22,6 +22,7 @@ import useGlobalStore from '@/store/globalStore'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { useGetAccountVipInfo } from '@/hooks/use-get-account-vip-info'
 import { toast } from '@/components/UI/Toast'
+import { t } from '@lingui/core/macro'
 
 export const useSubmitOrder = () => {
   const [loading, setLoading] = useState(false)
@@ -324,14 +325,14 @@ export const useSubmitOrder = () => {
           if (rs?.code === 0) {
             resetStore()
             toast.success({
-              title: 'Submit open order success',
+              title: t`Submit open order success`,
             })
             setPlaceOrderConfirmDialogOpen(false)
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
             toast.error({
-              title: client?.utils.formatErrorMessage(rs),
+              title: t`${client?.utils.formatErrorMessage(rs)}`,
             })
           }
         } else {
@@ -341,7 +342,7 @@ export const useSubmitOrder = () => {
           } as any)
           if (rs?.code === 0) {
             toast.success({
-              title: 'Submit close order success',
+              title: t`Submit close order success`,
             })
             setCloseOrderConfirmDialogOpen(false)
             resetStore()
@@ -349,13 +350,13 @@ export const useSubmitOrder = () => {
             tradePubSub.emit('place:order:success')
           } else {
             toast.error({
-              title: client?.utils.formatErrorMessage(rs),
+              title: t`${client?.utils.formatErrorMessage(rs)}`,
             })
           }
         }
       } catch (error) {
         toast.error({
-          title: client?.utils.formatErrorMessage(error),
+          title: t`${client?.utils.formatErrorMessage(error)}`,
         })
       } finally {
         setLoading(false)

@@ -67,7 +67,6 @@ export const ExportDialog = () => {
                   })
                 })
                 .catch((error) => {
-                  console.error('error-->', error)
                   toast.error({
                     title: t`Failed to copy`,
                   })
