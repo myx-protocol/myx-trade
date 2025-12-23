@@ -30,7 +30,6 @@ export const SetPasswordDialog = () => {
   const { symbolInfo } = useTradePageStore()
   const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
-  const { address } = useWalletConnection()
 
   return (
     <DialogBase
