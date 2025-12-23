@@ -40,6 +40,9 @@ interface TradePageStore {
 
   poolConfig: PoolConfig | null
   setPoolConfig: (poolConfig: PoolConfig | null) => void
+
+  showCharts: boolean
+  setShowCharts: (showCharts: boolean) => void
 }
 
 export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
@@ -63,6 +66,11 @@ export const useTradePageStore = createWithEqualityFn<TradePageStore>()(
         setMaxLeverage: (maxLeverage: number) => set({ maxLeverage }),
         poolConfig: null,
         setPoolConfig: (poolConfig: PoolConfig | null) => set({ poolConfig }),
+
+        showCharts: false,
+        setShowCharts(showCharts) {
+          set({ showCharts })
+        },
       })),
       {
         name: 'MYX_TradePageStore',
