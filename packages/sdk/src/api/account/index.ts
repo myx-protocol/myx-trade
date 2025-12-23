@@ -1,5 +1,4 @@
-import { Address } from "@/address";
-
+import type { Address } from "viem";
 export interface GetHistoryOrdersParams {
   limit?: number;
   chainId?: number;
@@ -147,7 +146,8 @@ export interface TradeFlowItem {
   fundingFee: string;
   tradingFee: string;
   charge: string;
-  collateralAmount: string;
+  collateralAmount: string; // collateral quote amount
+  collateralBase: string; // collateral base amount
   txHash: string;
   txTime: number;
   type: TradeFlowTypeEnum; // operation type
@@ -160,5 +160,5 @@ export interface TradeFlowItem {
   referrerRebate: string; // referrer rebate(type=13)
   referralRebate: string; // referral rebate(type=13)
   rebateClaimedAmount: string; // rebate claimed amount(type=14)
+  token?: Address; // type=11|type=12(transfer token)
 }
-
