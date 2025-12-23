@@ -546,11 +546,11 @@ export const ClosePositionButton = ({
                   setCloseDialogOpen(false)
                 } else {
                   console.log('market close failed')
-                  toast.error({ title: t`Market close failed`, content: rs?.message })
+                  toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
                 }
                 // todo toast
               } catch (e) {
-                console.log(e)
+                toast.error({ title: t`${client?.utils.formatErrorMessage(e)}` })
               } finally {
                 setLoading(false)
               }

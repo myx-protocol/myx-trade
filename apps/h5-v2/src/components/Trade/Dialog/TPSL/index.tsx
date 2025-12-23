@@ -15,7 +15,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { Direction, TriggerType } from '@myx-trade/sdk'
-import { toast } from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
@@ -155,15 +155,14 @@ export const TpSlButton = ({ position, poolInfo }: { position: any; poolInfo: an
       const rs = await client?.order.createPositionTpSlOrder(data)
 
       if (rs?.code === 0) {
-        toast.success('Submit tp/sl order success')
+        toast.success({ title: t`Submit tp/sl order success` })
         reset()
         setOpen(false)
       } else {
-        toast.error('Submit tp/sl order failed')
+        toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
       }
     } catch (error) {
-      console.log('error-->', error)
-      toast.error('Submit tp/sl order failed')
+      toast.error({ title: t`${client?.utils.formatErrorMessage(error)}` })
     } finally {
       setLoading(false)
     }
