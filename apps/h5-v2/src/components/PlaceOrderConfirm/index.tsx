@@ -332,6 +332,23 @@ export const PlaceOrderConfirmDialog = () => {
     }
   }, [slValue, price, direction, longSize, shortSize, autoMarginMode])
 
+  const formatTpSize = useMemo(() => {
+    const size = direction === Direction.LONG ? longSize : shortSize
+    return amountUnit === AmountUnitEnum.BASE
+      ? size
+      : parseBigNumber(size)
+          .div(parseBigNumber(price ?? 1))
+          .toString()
+  }, [direction, longSize, shortSize, amountUnit, price])
+  const formatSlSize = useMemo(() => {
+    const size = direction === Direction.LONG ? longSize : shortSize
+    return amountUnit === AmountUnitEnum.BASE
+      ? size
+      : parseBigNumber(size)
+          .div(parseBigNumber(price ?? 1))
+          .toString()
+  }, [direction, longSize, shortSize, amountUnit, price])
+
   return (
     <DialogBase
       open={!!placeOrderConfirmDialogOpen}
@@ -465,10 +482,7 @@ export const PlaceOrderConfirmDialog = () => {
                   right={
                     <p className="font-medium text-white">
                       {formatNumber(tpInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol} /
-                      {direction === Direction.LONG
-                        ? formatNumber(longSize, { showUnit: false })
-                        : formatNumber(shortSize, { showUnit: false })}{' '}
-                      {symbolInfo?.baseSymbol}
+                      {formatNumber(formatTpSize, { showUnit: false })} {symbolInfo?.baseSymbol}
                     </p>
                   }
                 />
@@ -490,10 +504,7 @@ export const PlaceOrderConfirmDialog = () => {
                   right={
                     <p className="font-medium text-white">
                       {formatNumber(slInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol} /
-                      {direction === Direction.LONG
-                        ? formatNumber(longSize, { showUnit: false })
-                        : formatNumber(shortSize, { showUnit: false })}{' '}
-                      {symbolInfo?.baseSymbol}
+                      {formatNumber(formatSlSize, { showUnit: false })} {symbolInfo?.baseSymbol}
                     </p>
                   }
                 />
