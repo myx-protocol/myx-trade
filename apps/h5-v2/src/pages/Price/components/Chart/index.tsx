@@ -7,8 +7,10 @@ import type { ResolutionString } from '@public/charting_library/charting_library
 import { useMount, useUnmount } from 'ahooks'
 import { klinePubSub } from '@/utils/pubsub'
 import { ToolBar } from '@/components/Trade/Charts/Toolbar'
+import { useChartsStore } from '@/components/Trade/Charts/store'
 export const Chart = () => {
   const { symbolInfo } = usePriceStore()
+  const { activeResolution } = useChartsStore()
   const tradingViewRef = useRef<TradingViewInstance>(null)
   const onResolutionChange = (value: number | string) => {
     tradingViewRef.current?.setResolution(value as ResolutionString)
@@ -30,6 +32,7 @@ export const Chart = () => {
           globalId={symbolInfo?.globalId}
           symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
           ref={tradingViewRef}
+          defaultInterval={activeResolution as ResolutionString}
         />
       </div>
       <div className="mt-[4px]">

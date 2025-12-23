@@ -27,9 +27,9 @@ export const RiseFallText = ({
   const renderWrapper = useCallback(
     (value: BigSource) => {
       if (render) {
-        return render(value)
+        return render(value || 0)
       }
-      return formatNumber(value, renderOptions)
+      return formatNumber(value || 0, renderOptions)
     },
     [render, renderOptions],
   )
