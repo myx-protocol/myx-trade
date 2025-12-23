@@ -36,13 +36,26 @@ const PositionActionButton = ({
 
 export const PositionAction = () => {
   const { positionAction } = useTradePanelStore()
+  const isOpen = positionAction === PositionActionEnum.OPEN
+
+  // Open: 左边圆角，右边倒梯形斜边（上底长下底短：顶部到100%，底部到calc(100% - 12px)）
+  const openClipPath = 'polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)'
+  // Close: 左边倒梯形斜边（上底长下底短：顶部从12px开始，底部从0开始），右边圆角
+  const closeClipPath = 'polygon(12px 0, 100% 0, 100% 100%, 0 100%)'
+
   return (
     <div className="relative mt-[8px] h-[36px] rounded-[8px] bg-[#202129]">
       {/* indicator */}
       <div
-        className="absolute top-0 h-full w-[50%] rounded-[6px] bg-[#008C66] transition-all duration-200 ease-in-out"
+        className="absolute top-0 h-full w-[50%] transition-all duration-200 ease-in-out"
         style={{
-          left: positionAction === PositionActionEnum.OPEN ? '0%' : '50%',
+          left: isOpen ? '0%' : '50%',
+          borderTopLeftRadius: isOpen ? '16px' : '0px',
+          borderBottomLeftRadius: isOpen ? '16px' : '0px',
+          borderTopRightRadius: isOpen ? '0px' : '16px',
+          borderBottomRightRadius: isOpen ? '0px' : '16px',
+          clipPath: isOpen ? openClipPath : closeClipPath,
+          backgroundColor: isOpen ? '#008C66' : '#BA4C47',
         }}
       ></div>
       {/* tabs */}
