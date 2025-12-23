@@ -19,6 +19,7 @@ export const TradeRecordTab = styled(MuiTab)({
   color: '#848E9C',
   minHeight: 'auto',
   minWidth: 'auto',
+  textTransform: 'none',
   '&.Mui-selected': {
     color: '#fff',
   },
