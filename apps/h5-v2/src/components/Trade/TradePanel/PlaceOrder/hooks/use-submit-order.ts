@@ -23,7 +23,6 @@ import { verifyTpSlPrice } from '@/utils/verify'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
-import { useGetAccountVipInfoByContract } from '@/hooks/use-get-account-vip-info-by-contract'
 
 export const useSubmitOrder = () => {
   const [loading, setLoading] = useState(false)
@@ -60,7 +59,6 @@ export const useSubmitOrder = () => {
     resetStore,
     tpSlOpen,
   } = useTradePanelStore()
-  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract()
 
   const leverage = useLeverage(symbolInfo?.poolId ?? '')
 
