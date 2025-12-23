@@ -75,4 +75,5 @@ export const MYX_SWAP_LINK =
   'https://pancakeswap.finance/swap?outputCurrency=0xD82544bf0dfe8385eF8FA34D67e6e4940CC63e16'
 
 export const MYX_OFFICIAL_SITE_LINK = import.meta.env.VITE_MYX_OFFICIAL_SITE || '/'
-export const MYX_VIP_RULES_LINK = 'https://myxfinance.medium.com/vip-rules-b1b519a2419f'
+export const MYX_VIP_RULES_LINK = 'https://myxfinance.gitbook.io/myx/protocol/trading-costs'
+export const MYX_DELISTING_RULES_LINK = ''
