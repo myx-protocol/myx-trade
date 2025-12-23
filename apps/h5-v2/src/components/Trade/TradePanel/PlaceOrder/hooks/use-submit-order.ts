@@ -25,7 +25,9 @@ import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
 export const useSubmitOrder = () => {
-  const [loading, setLoading] = useState(false)
+  const [longLoading, setLongLoading] = useState(false)
+  const [shortLoading, setShortLoading] = useState(false)
+
   const { chainId, address } = useWalletConnection()
   const positionList = useGetPositionList()
   const { symbolInfo } = useTradePageStore()
@@ -304,7 +306,11 @@ export const useSubmitOrder = () => {
       }
 
       try {
-        setLoading(true)
+        if (direction === Direction.LONG) {
+          setLongLoading(true)
+        } else {
+          setShortLoading(true)
+        }
         await checkUserVipInfo()
         if (positionAction === PositionActionEnum.OPEN) {
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
@@ -345,7 +351,11 @@ export const useSubmitOrder = () => {
           title: t`${client?.utils.formatErrorMessage(error)}`,
         })
       } finally {
-        setLoading(false)
+        if (direction === Direction.LONG) {
+          setLongLoading(false)
+        } else {
+          setShortLoading(false)
+        }
       }
     },
     [
@@ -375,6 +385,8 @@ export const useSubmitOrder = () => {
 
   return {
     submitOrder,
-    submitLoading: loading,
+    submitLongLoading: longLoading,
+    submitShortLoading: shortLoading,
+    submitLoading: longLoading || shortLoading,
   }
 }
