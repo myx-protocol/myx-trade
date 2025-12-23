@@ -64,3 +64,4 @@ export const http = {
     return client.url(url).options(options).delete().json<T>();
   },
 };
+

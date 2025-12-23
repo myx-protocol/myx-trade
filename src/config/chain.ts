@@ -134,6 +134,8 @@ export interface ContractAddress {
   readonly DATA_PROVIDER: Address,
   readonly ORACLE_RESERVE: Address,
   readonly FORWARDER: Address,
+  readonly REIMBURSEMENT: Address,
+  readonly DISPUTE_COURT: Address,
 }
 
 export interface ChainInfo {
