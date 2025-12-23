@@ -11,6 +11,7 @@ import { Api } from "./api";
 
 import { MxSDK } from "@/web3";
 import { Seamless } from "./seamless";
+import { Appeal } from "./appeal";
 
 // types
 export type { MyxClientConfig } from "./config/index";
@@ -34,6 +35,7 @@ export class MyxClient {
   public account: Account;
   public seamless: Seamless;
   public api: Api;
+  public appeal: Appeal
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
    */
@@ -85,6 +87,10 @@ export class MyxClient {
      */
     this.subscription = new SubScription(this.configManager, this.logger);
 
+    /**
+     * initialize appeal
+     */
+    this.appeal = new Appeal(this);
   }
 
   /**
