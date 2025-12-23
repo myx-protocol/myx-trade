@@ -60,6 +60,8 @@ interface UserVipInfoContract {
   referrer: string
   totalReferralRebatePct: number
   referrerRebatePct: number
+  deadline: number
+  nonce: number
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
