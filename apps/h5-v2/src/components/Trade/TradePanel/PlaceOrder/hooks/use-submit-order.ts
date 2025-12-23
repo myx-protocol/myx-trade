@@ -9,7 +9,7 @@ import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AmountUnitEnum, PositionActionEnum, TpSlTypeEnum } from '@/components/Trade/type'
 import { parseBigNumber } from '@/utils/bn'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { toast } from 'react-hot-toast'
+
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { sleep } from '@/utils'
 import { tradePubSub } from '@/utils/pubsub'
@@ -21,6 +21,7 @@ import { SlippageTypeEnum } from '@/utils/slippage'
 import useGlobalStore from '@/store/globalStore'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { useGetAccountVipInfo } from '@/hooks/use-get-account-vip-info'
+import { toast } from '@/components/UI/Toast'
 
 export const useSubmitOrder = () => {
   const [loading, setLoading] = useState(false)
@@ -319,36 +320,43 @@ export const useSubmitOrder = () => {
           )
         }
         if (positionAction === PositionActionEnum.OPEN) {
-          console.log('tradingFee-->', tradingFee)
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
           if (rs?.code === 0) {
             resetStore()
-            toast.success('Submit open order success')
+            toast.success({
+              title: 'Submit open order success',
+            })
             setPlaceOrderConfirmDialogOpen(false)
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
-            toast.error('Submit open order failed')
+            toast.error({
+              title: client?.utils.formatErrorMessage(rs),
+            })
           }
         } else {
           const rs = await client?.order.createDecreaseOrder({
             ...orderData,
             collateralAmount: '0',
           } as any)
-          console.log('rs-->', rs)
           if (rs?.code === 0) {
-            toast.success('Submit close order success')
+            toast.success({
+              title: 'Submit close order success',
+            })
             setCloseOrderConfirmDialogOpen(false)
             resetStore()
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
-            console.log('rs-->', rs)
-            toast.error('Submit close order failed')
+            toast.error({
+              title: client?.utils.formatErrorMessage(rs),
+            })
           }
         }
       } catch (error) {
-        console.log('error-->', error)
+        toast.error({
+          title: client?.utils.formatErrorMessage(error),
+        })
       } finally {
         setLoading(false)
       }
