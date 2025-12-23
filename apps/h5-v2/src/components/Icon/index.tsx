@@ -39,6 +39,12 @@ import ChartStudy from './set/ChartStudy.tsx'
 import GlobalLine from './set/GlobalLine.tsx'
 import BackIcon from './set/BackIcon.tsx'
 import SuccessFill from './set/SuccessFill.tsx'
+import MarketCreate from './set/MarketCreate.tsx'
+import MarketReady from './set/MarketReady.tsx'
+import MarketTrading from './set/MarketTrading.tsx'
+import MarketPreDelisted from './set/MarketPreDelisted.tsx'
+import MarketDelisted from './set/MarketDelisted.tsx'
+import CaretRight from './set/CaretRight.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -100,6 +106,12 @@ export {
   GlobalLine,
   BackIcon,
   SuccessFill,
+  MarketCreate,
+  MarketReady,
+  MarketTrading,
+  MarketPreDelisted,
+  MarketDelisted,
+  CaretRight,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

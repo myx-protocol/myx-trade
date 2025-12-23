@@ -40,7 +40,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
     }
   }
 
-  const query = useQuery({
+  useQuery({
     queryKey: [{ key: 'quotePoolList' }, chainId, interval, after],
     queryFn: async () => {
       const paginatedLimit = limit + 1

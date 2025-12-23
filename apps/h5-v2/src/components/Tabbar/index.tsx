@@ -16,7 +16,7 @@ export const Tabbar = () => {
   }, [pathname])
   return (
     <div className="border-base/50 z-50 flex h-full w-full items-end justify-between border-t-[1px] bg-[#101114] px-[20px] py-[13px] text-[10px] leading-[1] font-medium text-[#848E9C]">
-      {TAB_LIST.map((item) => {
+      {TAB_LIST.filter((item) => !item.hidden).map((item) => {
         return (
           <Link to={item.path} key={item.path}>
             <div

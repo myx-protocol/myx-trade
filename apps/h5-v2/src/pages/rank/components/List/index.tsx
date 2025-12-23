@@ -1,8 +1,8 @@
 import { MarketListRow } from '@/components/MarketList/MarketListRow'
 import { Sort } from '@/components/Sort'
 import { Trans } from '@lingui/react/macro'
-import { useUpdateEffect, useVirtualList } from 'ahooks'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useVirtualList } from 'ahooks'
+import { useCallback, useEffect, useRef } from 'react'
 import { Empty } from './Empty'
 import { SymbolInfo } from '@/components/MarketList/SymbolInfo'
 import { formatNumber } from '@/utils/number'
@@ -16,9 +16,9 @@ import { useNavigate } from 'react-router-dom'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { getChainInfo } from '@/config/chainInfo'
-import type { GetLeaderboardItem, LeaderboardSortField } from '@/api'
+import type { GetLeaderboardItem } from '@/api'
 import dayjs from 'dayjs'
+import { useSortData } from '@/hooks/useSortData'
 
 export const List = () => {
   const navigate = useNavigate()
@@ -39,37 +39,27 @@ export const List = () => {
 
   const tickerData = useMarketStore((state) => state.tickerData)
 
-  // const [dataSorted, setDataSorted] = useState<GetLeaderboardItem[]>([])
+  // 使用排序 hook，只在用户点击排序时触发，ticker 数据变化不会重新排序
+  const dataSorted = useSortData({
+    data: data?.data || [],
+    sort: {
+      by: sort.by,
+      direction: sort.direction,
+    },
+    getFieldValue: (item, field) => {
+      // 对于 basePrice 和 priceChange，使用 ticker 数据，如果没有则使用原值
+      if (field === 'basePrice') {
+        return tickerData[item.poolId]?.price || item.basePrice
+      }
+      if (field === 'priceChange') {
+        return tickerData[item.poolId]?.change || item.priceChange
+      }
+      // 其他字段使用原值
+      return item[field] as string | number | undefined
+    },
+  })
 
-  // const setSortData = useCallback(() => {
-  //   if (!sort.by || sort.direction === 'none' || !data?.data?.length) {
-  //     setDataSorted(data?.data ? [...data.data] : [])
-  //     return
-  //   }
-  //   const dataSorted = [...(data?.data || [])].sort((a, b) => {
-  //     let aValue = a[sort.by as keyof GetLeaderboardItem]
-  //     let bValue = b[sort.by as keyof GetLeaderboardItem]
-  //     if (sort.by === 'basePrice') {
-  //       aValue = tickerData[a.poolId]?.price || a.basePrice
-  //       bValue = tickerData[b.poolId]?.price || b.basePrice
-  //     }
-  //     if (sort.by === 'priceChange') {
-  //       aValue = tickerData[a.poolId]?.change || a.priceChange
-  //       bValue = tickerData[b.poolId]?.change || b.priceChange
-  //     }
-  //     if (!aValue || !bValue) return 0
-  //     if (sort.direction === 'asc') {
-  //       return Number(aValue) - Number(bValue)
-  //     }
-  //     return Number(bValue) - Number(aValue)
-  //   })
-  //   setDataSorted(dataSorted)
-  // }, [data?.data, sort.by, sort.direction, tickerData])
-
-  // useEffect(() => {
-  //   setSortData()
-  // }, [setSortData])
-  const [list] = useVirtualList(data?.data || [], {
+  const [list] = useVirtualList(dataSorted, {
     containerTarget: containerRef,
     wrapperTarget: wrapperRef,
     itemHeight: 58,
@@ -79,7 +69,7 @@ export const List = () => {
   const { client } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   useEffect(() => {
-    if (client && list.length && data?.data.length) {
+    if (client && list.length && dataSorted.length) {
       const unsubscribe = subscribeToTicker(
         list.map((item) => ({
           globalId: item.data.globalId,
@@ -92,7 +82,7 @@ export const List = () => {
         }
       }
     }
-  }, [list, client, data?.data])
+  }, [list, client, dataSorted.length, subscribeToTicker])
 
   const getFirstColumnKey = useCallback<() => keyof GetLeaderboardItem>(() => {
     if (tabsType === 'marketCap') {
@@ -183,7 +173,7 @@ export const List = () => {
       />
 
       {isLoading && <Loading total={10} />}
-      {!isLoading && !data?.data?.length && <Empty />}
+      {!isLoading && !dataSorted.length && <Empty />}
       {/* list */}
       {!isLoading && (
         <div className="min-h-0 flex-[1_1_0%] overflow-y-auto" ref={containerRef}>

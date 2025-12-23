@@ -1,19 +1,20 @@
 import { Box } from '@mui/material'
 import { NoticeFill } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { market, MarketPoolState } from '@myx-trade/sdk'
 import { useQuery } from '@tanstack/react-query'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
 import { useCountDown } from 'ahooks'
 import { Big } from 'big.js'
+import { formatNumber } from '@/utils/number.ts'
+import { MYX_DELISTING_RULES_LINK } from '@/config'
 
 export const BenchWarning = () => {
-  const { quoteLpDetail, refetch, genesisFeeRate, tvl } = useContext(PoolContext)
+  const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl } = useContext(PoolContext)
   const [targetDate, setTargetDate] = useState<number>()
   // const { data: fee } = useQuery({
   //   queryKey: [{ key: 'market_fee_Info' }, chainId, pool?.state],
@@ -37,7 +38,6 @@ export const BenchWarning = () => {
       quoteLpDetail?.marketId,
       quoteLpDetail?.chainId,
       quoteLpDetail?.state,
-      tvl,
     ],
     enabled:
       !!quoteLpDetail?.marketId &&
@@ -50,19 +50,21 @@ export const BenchWarning = () => {
           Number(quoteLpDetail?.chainId),
           quoteLpDetail?.marketId,
         )
-        console.log(result?.poolPrimeThreshold)
-        console.log(
-          new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString(),
-        )
-        if (result?.poolPrimeThreshold) {
-          return new Big(Number(result?.poolPrimeThreshold)).minus(new Big(tvl || '0')).toString()
-        }
-        return ''
+
+        return result?.poolPrimeThreshold ? Number(result?.poolPrimeThreshold).toString() : ''
       } catch (error) {
         return ''
       }
     },
   })
+
+  const genesis = useMemo(() => {
+    if (data) {
+      console.log(new Big(Number(data)).minus(new Big(tvl || '0')).toString())
+      const _genesis = new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+      return Number(_genesis) < 0 ? 0 : _genesis
+    }
+  }, [data, tvl])
 
   useEffect(() => {
     if (quoteLpDetail?.state === MarketPoolState.PreBench && quoteLpDetail?.poolPreTime) {
@@ -91,18 +93,18 @@ export const BenchWarning = () => {
       </Box>
 
       <p className={''}>
-        {data}
-        {quoteLpDetail?.state === MarketPoolState.Cook && (
+        {quoteLpDetail?.state === MarketPoolState.Cook && Number(genesis) >= 0 && (
           <Trans>
-            Act fast! Just{' '}
-            <span className={'text-warning mr-[0.5em]'}>
-              ${formatNumberPrecision(data, COMMON_PRICE_DISPLAY_DECIMALS)}
-            </span>
-            {quoteLpDetail?.mQuoteBaseSymbol || '--'} Genesis Shares are left. Secure your lifetime
-            <span className={'text-warning ml-[0.5em]'}>
+            Only <span className={'text-warning mr-[0.5em]'}>${formatNumber(genesis)}</span>{' '}
+            {quoteLpDetail?.mQuoteBaseSymbol || '--'} Genesis Shares left to lock in lifetime
+            <span className={'text-warning mx-[0.5em]'}>
               {formatNumberPercent(genesisFeeRate, 0, false)}
-            </span>{' '}
-            share of all trading fees!
+            </span>
+            trading fees! Or use {pool?.baseSymbol || '--'} to join the{' '}
+            <a href={`/cook/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
+              [{`m${pool?.baseSymbol}.${pool?.quoteSymbol}`}↗]
+            </a>{' '}
+            pool for the same benefit.
           </Trans>
         )}
         {quoteLpDetail?.state === MarketPoolState.Primed && (
@@ -118,7 +120,7 @@ export const BenchWarning = () => {
             {quoteLpDetail?.mQuoteBaseSymbol} market will be delisted in{' '}
             {cutDownFormat(dayjs.duration(countdown))}. After delisting, buys will be suspended.
             Your ability to sell will not be affected.{' '}
-            <a className={'text-green'} href={''}>
+            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK}>
               {' '}
               View Delisting Rules
             </a>

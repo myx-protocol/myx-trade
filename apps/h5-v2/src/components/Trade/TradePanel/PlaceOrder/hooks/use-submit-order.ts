@@ -99,6 +99,7 @@ export const useSubmitOrder = () => {
           } else {
             formatCollateralAmount = parseBigNumber(size)
               .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+              .div(leverage)
               .toFixed(0)
           }
         }
