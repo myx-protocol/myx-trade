@@ -7,6 +7,7 @@ import OrderManager_ABI from "@/abi/OrderManager.json";
 import { Logger } from "@/logger";
 import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
+import { customErrorMapping } from "@/config/customErrorMap";
 import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
@@ -375,5 +376,55 @@ export class Utils {
         message: error?.message,
       };
     }
+  }
+
+  formatErrorMessage(error: any) {
+    if (typeof error === "string") {
+      return error;
+    }
+    if (error instanceof MyxSDKError) {
+      return error.message;
+    }
+    
+    // 处理用户拒绝交易的情况
+    if (
+      error?.code === "ACTION_REJECTED" ||
+      error?.code === 4001 ||
+      error?.info?.error?.code === 4001 ||
+      (typeof error?.message === "string" && 
+       (error.message.toLowerCase().includes("user rejected") ||
+        error.message.toLowerCase().includes("denied")))
+    ) {
+      return "User Rejected";
+    }
+    
+    // 尝试解析自定义错误 selector
+    if (error?.data) {
+      const errorData = error.data;
+      // 提取 selector (前10个字符: 0x + 8个十六进制字符)
+      const selector = typeof errorData === "string" && errorData.startsWith("0x") 
+        ? errorData.slice(0, 10).toLowerCase()
+        : null;
+      
+      if (selector) {
+        // 在错误映射中查找
+        const errorKey = Object.keys(customErrorMapping).find(
+          (k) => k.toLowerCase() === selector
+        );
+        if (errorKey) {
+          return customErrorMapping[errorKey];
+        }
+      }
+    }
+    
+    // 尝试从 error.reason 或 error.message 中提取信息
+    if (error?.reason) {
+      return error.reason;
+    }
+    if (error?.message) {
+      return error.message;
+    }
+    
+    return JSON.stringify(error);
   }
 }
