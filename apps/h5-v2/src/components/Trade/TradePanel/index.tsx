@@ -39,10 +39,13 @@ import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { GlobalContractSearch } from '@/components/GlobalContractSearch/GlobalContractSearch'
 import { useNavigate } from 'react-router-dom'
+import SettingIcon from '@/components/Icon/set/SettingIcon'
+import KlineIcon from '@/components/Icon/set/KlineIcon'
+import ChartsIcon from '@/components/Icon/set/ChartsIcon'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo, showCharts, setShowCharts } = useTradePageStore()
   const { setLoginModalOpen } = useWalletStore()
   const [isOpenGlobalContractSearch, setIsOpenGlobalContractSearch] = useState(false)
   const { poolConfig } = useGetPoolConfig(
@@ -161,12 +164,45 @@ export const TradePanel = () => {
               />
               <RiseFallTextPrecent value={tickerData[symbolInfo?.poolId as string]?.change ?? 0} />
             </div>
+            <div className="flex items-center justify-end gap-[16px]">
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  setShowCharts(!showCharts)
+                }}
+              >
+                <ChartsIcon size={18} />
+              </div>
+
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  navigate(`/price/${symbolInfo?.chainId}/${symbolInfo?.poolId}`)
+                }}
+              >
+                <KlineIcon size={18} />
+              </div>
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  setSettingDialogOpen(true)
+                }}
+              >
+                <SettingIcon size={18} />
+              </div>
+            </div>
           </div>
         </div>
-        <div className="mt-[12px]">
-          <Charts />
-        </div>
-        <div className="px-[16px]">
+        {showCharts && (
+          <div className="mt-[12px]">
+            <Charts />
+          </div>
+        )}
+
+        <div className="mt-[12px] px-[16px]">
           <div className="flex h-full gap-[4px]">
             <PositionMode />
             <Leverage />
