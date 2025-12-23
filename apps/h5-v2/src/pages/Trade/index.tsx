@@ -60,10 +60,12 @@ export const Trade = () => {
         .then((res) => {
           const data = res.data ?? {}
           setUserVipInfo({
-            tier: data.tier,
-            referrer: data.referrer,
-            totalReferralRebatePct: data.totalReferralRebatePct,
-            referrerRebatePct: data.referrerRebatePct,
+            tier: data[0],
+            referrer: data[1],
+            totalReferralRebatePct: data[2],
+            referrerRebatePct: data[3],
+            deadline: data.deadline,
+            nonce: data.nonce,
           })
         })
     }
