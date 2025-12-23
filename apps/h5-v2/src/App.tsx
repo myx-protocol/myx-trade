@@ -6,26 +6,14 @@ import { LoginModal } from './components/Login/LoginModal'
 import { MorePage } from './components/Login/MorePage'
 import { Toaster } from './components/UI/Toast/Toaster'
 import useGlobalStore from './store/globalStore'
-import { UnlockAccountDialog } from './components/Seamless/UnlockAccountDialog'
-import { SetPasswordDialog } from './components/Seamless/SetPasswordDialog'
-import { ImportDialog } from './components/Seamless/ImportDialog'
-import { ExportInfoDialog } from './components/Seamless/ExportInfoDialog'
-import { ExportDialog } from './components/Seamless/ExportDialog'
+
 import { useUpdateEffect } from 'ahooks'
 import { useEffect } from 'react'
 import { getPools } from './api'
 
 function App() {
   const { loginModalOpen, moreLoginDrawerOpen } = useWalletStore()
-  const {
-    poolList,
-    setPoolList,
-    unlockAccountDialogOpen,
-    seamlessPasswordDialogOpen,
-    importSeamlessKeyDialogOpen,
-    exportSeamlessInfoDialogOpen,
-    exportSeamlessKeyDialogOpen,
-  } = useGlobalStore()
+  const { setPoolList } = useGlobalStore()
 
   useUpdateEffect(() => {
     const vh = window.innerHeight * 0.01
@@ -54,11 +42,7 @@ function App() {
       <RouterProvider router={router} />
       {loginModalOpen && <LoginModal />}
       {moreLoginDrawerOpen && <MorePage />}
-      {unlockAccountDialogOpen && <UnlockAccountDialog />}
-      {seamlessPasswordDialogOpen && <SetPasswordDialog />}
-      {importSeamlessKeyDialogOpen && <ImportDialog />}
-      {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
-      {exportSeamlessKeyDialogOpen && <ExportDialog />}
+
       <Toaster />
     </>
   )

@@ -15,14 +15,28 @@ import { getPoolLevelConfig } from '@/api'
 import { usePositionStore } from '@/store/position/createStore'
 import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
+import { UnlockAccountDialog } from '@/components/Seamless/UnlockAccountDialog'
+import { SetPasswordDialog } from '@/components/Seamless/SetPasswordDialog'
+import { ImportDialog } from '@/components/Seamless/ImportDialog'
+import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
+import { ExportDialog } from '@/components/Seamless/ExportDialog'
+import useGlobalStore from '@/store/globalStore'
+
 export const Trade = () => {
   const { chainId, poolId } = useParams()
   const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
-  const { client } = useMyxSdkClient()
+  const { client } = useMyxSdkClient(chainId ? parseInt(chainId) : undefined)
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
+  const {
+    unlockAccountDialogOpen,
+    seamlessPasswordDialogOpen,
+    importSeamlessKeyDialogOpen,
+    exportSeamlessInfoDialogOpen,
+    exportSeamlessKeyDialogOpen,
+  } = useGlobalStore()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
   const { getDetail } = useMarketDetail({
@@ -112,6 +126,11 @@ export const Trade = () => {
       <LeverageDialog />
       {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
+      {unlockAccountDialogOpen && <UnlockAccountDialog />}
+      {seamlessPasswordDialogOpen && <SetPasswordDialog />}
+      {importSeamlessKeyDialogOpen && <ImportDialog />}
+      {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
+      {exportSeamlessKeyDialogOpen && <ExportDialog />}
     </>
   )
 }
