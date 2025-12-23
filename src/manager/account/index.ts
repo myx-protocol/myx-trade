@@ -325,9 +325,14 @@ export class Account {
     const latestBlock = await provider.getBlock('latest')
     const deadline = (latestBlock?.timestamp ?? dayjs().unix()) + 60 * 5
 
+    this.logger.info('deadline-->', deadline)
     try {
+      this.logger.info('brokerContract-->', config.brokerAddress)
+      this.logger.info('address-->', address)
       const accountVipInfo = await brokerContract.userFeeData(address);
+      this.logger.info('accountVipInfo-->', accountVipInfo)
       const nonce = await brokerContract.userNonces(address);
+      this.logger.info('nonce-->', nonce)
       return {
         code: 0,
         data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
@@ -379,7 +384,7 @@ export class Account {
 
     const nonce = await brokerContract.userNonces(address);
 
-    if (nonce.toString() !== params.nonce.toString()) {
+    if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
         "Invalid nonce, please try again"
