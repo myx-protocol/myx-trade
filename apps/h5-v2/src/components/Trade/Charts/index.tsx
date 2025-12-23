@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { TradingView, type TradingViewInstance } from './TradingView'
 import { useMount, useUnmount } from 'ahooks'
 import { klinePubSub } from '@/utils/pubsub'
@@ -57,26 +57,29 @@ export const Charts = () => {
     klinePubSub.off('kline:take:screenshot', onTakeScreenshot)
   })
 
-  const overridesChartOptions: Partial<ChartingLibraryWidgetOptions> = {
-    disabled_features: [
-      `header_screenshot`,
-      `header_fullscreen_button`,
-      'header_symbol_search',
-      'header_widget',
-      'header_chart_type',
-      // 'header_settings',
-      'header_saveload',
-      'go_to_date',
-      'header_compare',
-      'popup_hints',
-      'timeframes_toolbar',
-      'header_undo_redo',
-      'header_resolutions',
-      'legend_widget',
-      'create_volume_indicator_by_default',
-      'save_chart_properties_to_local_storage',
-    ],
-  }
+  const overridesChartOptions: Partial<ChartingLibraryWidgetOptions> = useMemo(
+    () => ({
+      disabled_features: [
+        `header_screenshot`,
+        `header_fullscreen_button`,
+        'header_symbol_search',
+        'header_widget',
+        'header_chart_type',
+        // 'header_settings',
+        'header_saveload',
+        'go_to_date',
+        'header_compare',
+        'popup_hints',
+        'timeframes_toolbar',
+        'header_undo_redo',
+        'header_resolutions',
+        'legend_widget',
+        'create_volume_indicator_by_default',
+        'save_chart_properties_to_local_storage',
+      ],
+    }),
+    [],
+  )
   return (
     <div
       className="mt-[4px] flex h-[320px] w-full flex-col gap-[6px] bg-[#101114]"
