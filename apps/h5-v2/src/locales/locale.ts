@@ -13,7 +13,7 @@ export type Lang = {
 export enum AVAILABLE_LOCALES {
   EN = 'en',
   ZH_CN = 'zh-CN',
-  KO = 'ko-KR',
+  // KO = 'ko-KR',
 }
 
 export const LOCALES: Record<AVAILABLE_LOCALES, Lang> = {
@@ -37,16 +37,16 @@ export const LOCALES: Record<AVAILABLE_LOCALES, Lang> = {
     boss: 'en',
     okx: 'en_us',
   },
-  [AVAILABLE_LOCALES.KO]: {
-    label: '한국어',
-    shortLabel: 'KO',
-    locale: AVAILABLE_LOCALES.KO,
-    iso: 'ko-KR',
-    // rainbow: 'ko-KR',
-    tv: 'ko',
-    boss: 'ko-KR',
-    okx: 'ko_kr',
-  },
+  // [AVAILABLE_LOCALES.KO]: {
+  //   label: '한국어',
+  //   shortLabel: 'KO',
+  //   locale: AVAILABLE_LOCALES.KO,
+  //   iso: 'ko-KR',
+  //   // rainbow: 'ko-KR',
+  //   tv: 'ko',
+  //   boss: 'ko-KR',
+  //   okx: 'ko_kr',
+  // },
 }
 
 export const DEFAULT_LOCALE = AVAILABLE_LOCALES.EN

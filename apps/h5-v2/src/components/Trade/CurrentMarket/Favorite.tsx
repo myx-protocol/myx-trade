@@ -96,7 +96,7 @@ export const Favorite = () => {
       role="button"
       onClick={handleFavoriteClick}
     >
-      <Star size={12} color={isFavorite ? '#00E3A5' : '#6D7180'} />
+      <Star size={12} color={isFavorite ? '#ffca40' : '#6D7180'} />
     </div>
   )
 }

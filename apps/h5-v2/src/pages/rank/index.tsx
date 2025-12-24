@@ -12,7 +12,7 @@ export const Rank = () => {
       <Tabs />
       <TypeSelector />
       <div className="mt-[16px] flex items-center justify-between gap-[60px] px-[6px]">
-        <div className="flex-[1_1_0%]">
+        <div className="flex-[1_1_0%] px-[10px]">
           <ResolutionTabs />
         </div>
         <ChainSelector />

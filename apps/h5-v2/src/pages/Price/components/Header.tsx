@@ -3,7 +3,7 @@ import { truncateString } from '@/utils/string'
 import { useNavigate } from 'react-router-dom'
 import { usePriceStore } from '../store'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useMount, useUnmount } from 'ahooks'
 import { appPubSub } from '@/utils/pubsub'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
@@ -12,6 +12,10 @@ import { useGlobalContractSearchStore } from '@/components/GlobalContractSearch/
 import { GlobalContractSearch } from '@/components/GlobalContractSearch/GlobalContractSearch'
 import { useWalletStore } from '@/store/wallet/createStore'
 import useGlobalStore from '@/store/globalStore'
+import { PairLogo } from '@/components/UI/PairLogo'
+import { useBaseTokenInfo } from '@/components/Trade/hooks/useBaseTokenInfo'
+import { getChainInfo } from '@/config/chainInfo'
+import type { ChainId } from '@/config/chain'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -101,6 +105,19 @@ export const Header = () => {
 
   const [isOpenGlobalContractSearch, setIsOpenGlobalContractSearch] = useState(false)
   const { setAccountDialogOpen } = useGlobalStore()
+
+  const { data: baseTokenInfo } = useBaseTokenInfo({
+    chainId: symbolInfo?.chainId,
+    poolId: symbolInfo?.poolId,
+  })
+  const chainInfo = useMemo(() => {
+    if (!symbolInfo?.chainId) return null
+    try {
+      return getChainInfo(symbolInfo?.chainId as ChainId)
+    } catch (_) {
+      return null
+    }
+  }, [symbolInfo?.chainId])
   return (
     <>
       <div className="bg-deep sticky top-0 z-20 flex h-auto shrink-0 items-center justify-between px-[16px] pt-[16px] pb-[12px]">
@@ -114,26 +131,35 @@ export const Header = () => {
           >
             <ArrowLeftLong size={20} />
           </span>
-
-          <div
-            className="flex items-center gap-[4px]"
-            role="button"
-            onClick={() => {
-              setIsOpenGlobalContractSearch(true)
-            }}
-          >
-            <p className="text-[16px] font-bold">
-              {`${symbolInfo?.baseSymbol || '--'}${symbolInfo?.quoteSymbol || ''}`}
-            </p>
-            <span role="button">
-              <SortDown size={8} />
-            </span>
+          <div className="flex items-center gap-[4px]">
+            <PairLogo
+              baseSymbol={symbolInfo?.baseSymbol}
+              baseLogo={baseTokenInfo?.tokenIcon}
+              quoteLogo={chainInfo?.logoUrl}
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              quoteClassName=" ml-[-8px]!"
+            />
+            <div
+              className="flex items-center gap-[4px]"
+              role="button"
+              onClick={() => {
+                setIsOpenGlobalContractSearch(true)
+              }}
+            >
+              <p className="text-[16px] font-bold">
+                {`${symbolInfo?.baseSymbol || '--'}${symbolInfo?.quoteSymbol || ''}`}
+              </p>
+              <span role="button">
+                <SortDown size={8} />
+              </span>
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-[10px]">
           <span role="button" className="flex" onClick={handleFavoriteClick}>
-            <Star color={isFavorite ? '#00E3A5' : '#6D7180'} size={18} />
+            <Star color={isFavorite ? '#ffca40' : '#6D7180'} size={18} />
           </span>
           <div className="flex items-center">
             {/* <CoinIcon size={20} icon={baseTokenInfo?.tokenIcon} /> */}

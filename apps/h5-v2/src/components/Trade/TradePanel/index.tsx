@@ -42,6 +42,9 @@ import { useNavigate } from 'react-router-dom'
 import SettingIcon from '@/components/Icon/set/SettingIcon'
 import KlineIcon from '@/components/Icon/set/KlineIcon'
 import ChartsIcon from '@/components/Icon/set/ChartsIcon'
+import { CoinIcon } from '@/components/UI/CoinIcon'
+import { PairLogo } from '@/components/UI/PairLogo'
+import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
@@ -115,12 +118,26 @@ export const TradePanel = () => {
   }, [poolConfig?.level])
   const navigate = useNavigate()
 
+  const { data: baseTokenInfo } = useBaseTokenInfo({
+    chainId: symbolInfo?.chainId,
+    poolId: symbolInfo?.poolId,
+  })
+
+  const chainInfo = useMemo(() => {
+    if (!symbolInfo?.chainId) return null
+    try {
+      return getChainInfo(symbolInfo?.chainId as ChainId)
+    } catch (_) {
+      return null
+    }
+  }, [symbolInfo?.chainId])
+
   return (
     <>
-      <div className="w-full py-[16px]">
-        <div className="px-[16px]">
+      <div className="w-full pb-[16px]">
+        <div className="bg-deep sticky top-0 z-10 px-[16px] pt-[16px] pb-[12px]">
           <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-[4px]">
+            <div className="flex items-center gap-[12px]">
               <img
                 src={menuIcon}
                 alt=""
@@ -130,10 +147,24 @@ export const TradePanel = () => {
                   setIsOpenGlobalContractSearch(true)
                 }}
               />
-              <span className="ml-[4px] text-[20px] font-[700] font-medium">
-                {symbolInfo?.baseSymbol}
-                {symbolInfo?.quoteSymbol}
-              </span>
+              <div className="flex items-center gap-[4px]">
+                <PairLogo
+                  baseSymbol={symbolInfo?.baseSymbol}
+                  quoteSymbol={symbolInfo?.quoteSymbol}
+                  baseLogo={baseTokenInfo?.tokenIcon}
+                  quoteLogo={chainInfo?.logoUrl}
+                  baseLogoSize={24}
+                  quoteLogoSize={10}
+                  quoteClassName=" ml-[-8px]!"
+                />
+                <span className="ml-[4px] text-[20px] font-[700] font-medium">
+                  {symbolInfo?.baseSymbol}
+                  {symbolInfo?.quoteSymbol}
+                </span>
+                <RiseFallTextPrecent
+                  value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
+                />
+              </div>
             </div>
             <div
               className="flex items-center gap-[4px]"
@@ -146,10 +177,7 @@ export const TradePanel = () => {
                 setLoginModalOpen(true)
               }}
             >
-              {symbolInfo?.chainId && (
-                <img src={getChainInfo(symbolInfo?.chainId as ChainId)?.logoUrl} alt="" />
-              )}
-              <span className="text-[12px] leading-[12px] text-[#fff]">
+              <span className="text-[16px] leading-[12px] text-[#fff]">
                 {truncateAddress(address || '') || ''}
               </span>
               <ArrowDownIconFill size={8} />
@@ -162,7 +190,6 @@ export const TradePanel = () => {
                 value={marketPrice}
                 showUnit={false}
               />
-              <RiseFallTextPrecent value={tickerData[symbolInfo?.poolId as string]?.change ?? 0} />
             </div>
             <div className="flex items-center justify-end gap-[16px]">
               <div
@@ -197,12 +224,12 @@ export const TradePanel = () => {
           </div>
         </div>
         {showCharts && (
-          <div className="mt-[12px]">
+          <div>
             <Charts />
           </div>
         )}
 
-        <div className="mt-[12px] px-[16px]">
+        <div className="px-[16px]">
           <div className="flex h-full gap-[4px]">
             <PositionMode />
             <Leverage />

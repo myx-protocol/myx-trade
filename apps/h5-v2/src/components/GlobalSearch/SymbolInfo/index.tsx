@@ -102,7 +102,7 @@ export const SymbolInfo = ({
           className="flex h-[18px] w-[18px] cursor-pointer select-none"
           onClick={handleBeforeFavoriteChange}
         >
-          <Star size={18} color={isFavorite ? '#00E3A5' : '#6D7180'} />
+          <Star size={18} color={isFavorite ? '#ffca40' : '#6D7180'} />
         </div>
       )}
       {/* symbol info */}
