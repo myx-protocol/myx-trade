@@ -399,8 +399,19 @@ export class Utils {
     }
     
     // 尝试解析自定义错误 selector
-    if (error?.data) {
-      const errorData = error.data;
+    // 首先尝试从 error.data 中获取
+    let errorData = error?.data;
+    
+    // 如果 error.data 不存在，尝试从 error.message 中提取 data 字段
+    if (!errorData && error?.message && typeof error.message === "string") {
+      // 匹配 data="0x..." 格式
+      const dataMatch = error.message.match(/data=["'](0x[0-9a-fA-F]+)["']/i);
+      if (dataMatch && dataMatch[1]) {
+        errorData = dataMatch[1];
+      }
+    }
+    
+    if (errorData) {
       // 提取 selector (前10个字符: 0x + 8个十六进制字符)
       const selector = typeof errorData === "string" && errorData.startsWith("0x") 
         ? errorData.slice(0, 10).toLowerCase()

@@ -52,17 +52,26 @@ msgstr " Price "
 msgid " Trade "
 msgstr " Trade "
 
-#. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
-#. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
-#. placeholder {0}: item.label
+#. placeholder {0}: client.utils.formatErrorMessage(rs)
+#. placeholder {0}: client?.utils.formatErrorMessage(e)
+#. placeholder {0}: client?.utils.formatErrorMessage(error)
 #: src/components/Header/Menu.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
-#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/hooks/use-check-user-vip-info.ts
 msgid "{0}"
 msgstr "{0}"
 
@@ -181,15 +190,6 @@ msgstr "Account Mode"
 msgid "AccountInsufficientFreeAmount()"
 msgstr "AccountInsufficientFreeAmount()"
 
-#. placeholder {0}: formatNumberPrecision(data, COMMON_PRICE_DISPLAY_DECIMALS)
-#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
-#. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
-#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Act fast! Just <0>${0}</0>{1} Genesis Shares are left. Secure your lifetime<1>{2}</1> share of all trading fees!"
-msgstr "Act fast! Just <0>${0}</0>{1} Genesis Shares are left. Secure your lifetime<1>{2}</1> share of all trading fees!"
-
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -269,6 +269,10 @@ msgstr "Adjust margin success"
 msgid "Adjusted Margin"
 msgstr "Adjusted Margin"
 
+#: src/components/Record/Items/Finance.tsx
+msgid "ADL"
+msgstr "ADL"
+
 #. placeholder {0}: info.invitationCode
 #: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
 msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
@@ -293,6 +297,7 @@ msgstr "All"
 
 #: src/components/ChainsDrawer.tsx
 #: src/components/ChainSelector.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/Cook/components/ChainDropDownMenu.tsx
 #: src/pages/rank/components/ChainSelector/index.tsx
 msgid "All Chain"
@@ -458,18 +463,12 @@ msgid "Available Short"
 msgstr "Available Short"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Avg. Close Price"
 msgstr "Avg. Close Price"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Avg. Entry Price"
 msgstr "Avg. Entry Price"
-
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-msgid "Avg. Price"
-msgstr "Avg. Price"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
@@ -567,6 +566,7 @@ msgstr "By importing this key on another device, you can access MYX from any bro
 msgid "Cancel"
 msgstr "Cancel"
 
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
 #: src/pages/Trade/components/Tables/index.tsx
 msgid "Cancel All"
@@ -802,7 +802,6 @@ msgid "Close Short"
 msgstr "Close Short"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Close Time"
 msgstr "Close Time"
 
@@ -812,7 +811,6 @@ msgid "Closeable Amount"
 msgstr "Closeable Amount"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Closed Amount"
 msgstr "Closed Amount"
 
@@ -1446,9 +1444,7 @@ msgstr "Favorites"
 msgid "FDV"
 msgstr "FDV"
 
-#: src/components/Record/Items/Finance.tsx
 #: src/pages/Earn/components/Trade/Fee.tsx
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "Fee"
 msgstr "Fee"
 
@@ -2083,11 +2079,6 @@ msgstr "Margin Account"
 msgid "Margin ratio"
 msgstr "Margin ratio"
 
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-msgid "Margin used to maintain positions, subject to potential total loss upon liquidation"
-msgstr "Margin used to maintain positions, subject to potential total loss upon liquidation"
-
 #. placeholder {0}: order.quoteSymbol
 #. placeholder {0}: position.quoteSymbol
 #: src/components/Record/Items/OpenOrders.tsx
@@ -2121,10 +2112,6 @@ msgstr "Market Cap"
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr ""
-
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-msgid "Market close failed"
-msgstr "Market close failed"
 
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 msgid "Market close success"
@@ -2468,6 +2455,26 @@ msgstr "Once you become a Liquidity Provider (LP) for the vault, your returns pr
 msgid "One Invitation for Multiple Rewards"
 msgstr "One Invitation for Multiple Rewards"
 
+#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
+#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
+#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
+#. placeholder {3}: pool?.quoteSymbol || '--'
+#. placeholder {4}: pool?.quoteSymbol
+#. placeholder {5}: pool?.baseSymbol
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime <1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+msgstr "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime <1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+
+#. placeholder {0}: formatNumber(genesis)
+#. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
+#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
+#. placeholder {3}: pool?.baseSymbol || '--'
+#. placeholder {4}: pool?.baseSymbol
+#. placeholder {5}: pool?.quoteSymbol
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime<1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+msgstr "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime<1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Only Seamless Trading private key import supported."
 msgstr "Only Seamless Trading private key import supported."
@@ -2507,14 +2514,18 @@ msgid "Open Interest (Short)"
 msgstr "Open Interest (Short)"
 
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
 msgid "Open Long"
 msgstr "Open Long"
 
 #: src/pages/Price/components/PriceContent/index.tsx
-msgid "Open Orders(2)"
-msgstr "Open Orders(2)"
+msgid "Open Orders"
+msgstr "Open Orders"
+
+#. placeholder {0}: orderList.length
+#: src/pages/Price/components/PriceContent/index.tsx
+msgid "Open Orders({0})"
+msgstr "Open Orders({0})"
 
 #. placeholder {0}: orderList.length > 0 ? `(${orderList.length})` : ''
 #: src/pages/Trade/components/Tables/index.tsx
@@ -2522,10 +2533,13 @@ msgid "Open Orders{0}"
 msgstr "Open Orders{0}"
 
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
 msgid "Open Short"
 msgstr "Open Short"
+
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "open size must be less than max size"
+msgstr "open size must be less than max size"
 
 #: src/components/SafeList/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
@@ -2534,7 +2548,6 @@ msgid "Open Source"
 msgstr "Open Source"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Open Time"
 msgstr "Open Time"
 
@@ -2769,13 +2782,18 @@ msgstr "PositionRemainsHealthy(PositionId)"
 msgid "Positions"
 msgstr ""
 
+#: src/pages/Price/components/PriceContent/index.tsx
+msgid "Positions "
+msgstr "Positions "
+
 #: src/pages/record/components/RecordTab.tsx
 msgid "Positions History"
 msgstr "Positions History"
 
+#. placeholder {0}: positionList.length
 #: src/pages/Price/components/PriceContent/index.tsx
-msgid "Positions(1)"
-msgstr "Positions(1)"
+msgid "Positions({0})"
+msgstr "Positions({0})"
 
 #. placeholder {0}: positionList.length > 0 ? `(${positionList.length})` : ''
 #: src/pages/Trade/components/Tables/index.tsx
@@ -2792,7 +2810,6 @@ msgstr "Positions{0}"
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
 #: src/utils/chart.ts
 msgid "Price"
 msgstr "Price"
@@ -2843,7 +2860,6 @@ msgid "Realized {0} token profits undergoing unlocking cycle. Claimable after un
 msgstr "Realized {0} token profits undergoing unlocking cycle. Claimable after unlocking completes."
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Realized PnL"
 msgstr "Realized PnL"
 
@@ -3298,11 +3314,6 @@ msgstr "StalePrice()"
 msgid "Statistics"
 msgstr "Statistics"
 
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-msgid "Status"
-msgstr "Status"
-
 #: src/pages/Market/components/steps.tsx
 msgid "Step 1"
 msgstr "Step 1"
@@ -3318,6 +3329,18 @@ msgstr "StringTooLong(string)"
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Sub-chart Indicators"
 msgstr "Sub-chart Indicators"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Submit close order success"
+msgstr "Submit close order success"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Submit open order success"
+msgstr "Submit open order success"
+
+#: src/components/Trade/Dialog/TPSL/index.tsx
+msgid "Submit tp/sl order success"
+msgstr "Submit tp/sl order success"
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
@@ -3376,11 +3399,6 @@ msgstr "Terms of Use"
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
 msgstr "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
-
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-msgid "The average position cost price for multiple opening and closing trades"
-msgstr "The average position cost price for multiple opening and closing trades"
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
 #: src/pages/Referrals/components/MyRebate/index.tsx
@@ -3480,7 +3498,6 @@ msgid "Top APR"
 msgstr "Top APR"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "Total Amount"
 msgstr "Total Amount"
 
@@ -3577,6 +3594,10 @@ msgstr "Traders"
 msgid "Trading : Market is live. Trading is open and generating earnings."
 msgstr "Trading : Market is live. Trading is open and generating earnings."
 
+#: src/components/Record/Items/Finance.tsx
+msgid "Trading Fee"
+msgstr "Trading Fee"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "Trading Setting"
@@ -3663,11 +3684,6 @@ msgstr "UnexpectedPoolState()"
 #: src/components/Record/Items/Position.tsx
 msgid "unPnl"
 msgstr ""
-
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-msgid "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
-msgstr "unPnL reflects the fluctuating profits or losses in your current position, tracking market price changes"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -3911,12 +3927,6 @@ msgstr "Your max commission rate"
 msgid "Your Password"
 msgstr "Your Password"
 
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
-msgid "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
-msgstr "Your position will be liquidated when the oracle price falls below (long) or surpasses (short) that price"
-
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -3954,9 +3964,15 @@ msgid "保留创世LP份额"
 msgstr "保留创世LP份额"
 
 #: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "保证金"
 msgstr "保证金"
+
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+msgid "保证金账户"
+msgstr "保证金账户"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
@@ -3964,7 +3980,6 @@ msgid "修改"
 msgstr "修改"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
@@ -3995,9 +4010,21 @@ msgstr "最大滑点"
 msgid "最新价/24h涨跌幅"
 msgstr "最新价/24h涨跌幅"
 
+#: src/components/Record/Items/Finance.tsx
+msgid "减少保证金"
+msgstr "减少保证金"
+
 #: src/store/transactions/options.ts
 msgid "出售MLP"
 msgstr "Sell MLP"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "划转至保证金"
+msgstr "划转至保证金"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "划转至钱包"
+msgstr "划转至钱包"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
@@ -4033,13 +4060,15 @@ msgstr "Cancel SL"
 msgid "取消止盈"
 msgstr "Cancel TP"
 
+#: src/components/Record/Items/Finance.tsx
+msgid "取消订单"
+msgstr "取消订单"
+
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "可平数量"
 msgstr "可平数量"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "合约"
 msgstr "合约"
 
@@ -4097,8 +4126,11 @@ msgstr "市价止损"
 msgid "市价止盈"
 msgstr "市价止盈"
 
+#: src/components/Record/Items/Finance.tsx
+msgid "市场关闭"
+msgstr "市场关闭"
+
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "市场平仓"
 msgstr "市场平仓"
 
@@ -4137,7 +4169,6 @@ msgid "开仓滑点设置"
 msgstr "开仓滑点设置"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "强制平仓"
 msgstr "强制平仓"
 
@@ -4180,10 +4211,6 @@ msgstr "当前市场最大可开做空仓位"
 msgid "待上架"
 msgstr "待上架"
 
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-msgid "成交数量"
-msgstr "成交数量"
-
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按价格排序"
@@ -4203,8 +4230,8 @@ msgstr "按盈亏排序"
 msgid "授权"
 msgstr "Authorize"
 
+#: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "提前平仓"
 msgstr "提前平仓"
 
@@ -4223,7 +4250,6 @@ msgstr "数据"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "数量"
 msgstr "数量"
 
@@ -4232,9 +4258,9 @@ msgstr "数量"
 msgid "文档"
 msgstr "文档"
 
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
-msgid "时间"
-msgstr "时间"
+#: src/components/Record/Items/Finance.tsx
+msgid "无感Gas费"
+msgstr "无感Gas费"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
@@ -4281,10 +4307,27 @@ msgstr "TP/SL"
 msgid "止盈止损滑点"
 msgstr "止盈止损滑点"
 
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+msgid "流入/流出"
+msgstr "流入/流出"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "添加保证金"
+msgstr "添加保证金"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "添加止盈止损"
+msgstr "添加止盈止损"
+
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "滑点"
 msgstr "滑点"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "爆仓"
+msgstr "爆仓"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "状态"
@@ -4307,7 +4350,6 @@ msgid "立即创建我的合约交易市场"
 msgstr "立即创建我的合约交易市场"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
-#: src/pages/Trade/components/Tables/OrderHistory.tsx
 msgid "类型"
 msgstr "Type"
 
@@ -4350,10 +4392,19 @@ msgstr "选择您的资产"
 msgid "通用滑点容忍设置"
 msgstr "通用滑点容忍设置"
 
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+msgid "邀请返佣"
+msgstr "邀请返佣"
+
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/pages/Trade/components/Tables/PositionHistory.tsx
 msgid "部分平仓"
 msgstr "部分平仓"
+
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+msgid "钱包账户"
+msgstr "钱包账户"
 
 #: src/pages/Trade/components/OrderType/index.tsx
 msgid "限价平仓"
@@ -4382,3 +4433,11 @@ msgstr "领取全部收益"
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 msgid "领取收益"
 msgstr "领取收益"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "领取邀请返佣"
+msgstr "领取邀请返佣"
+
+#: src/components/Record/Items/Finance.tsx
+msgid "风控扣除"
+msgstr "风控扣除"

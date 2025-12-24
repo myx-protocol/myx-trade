@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { TpslTypeSelect } from './TpslTypeSelect'
 import { TpSlTypeEnum } from '@/components/Trade/type'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -49,6 +49,7 @@ export const TpslFormGroup = ({
     usePositionTPSLStore()
   const [targetPrice, setTargetPrice] = useState<string>('')
   const [targetRate, setTargetRate] = useState<string>('')
+  const isUserInputRef = useRef(false)
 
   // 初始化默认值为 100%
   useEffect(() => {
@@ -63,6 +64,12 @@ export const TpslFormGroup = ({
   }, [position?.size, type, setTpSize, setSlSize])
 
   useEffect(() => {
+    // 如果是用户输入导致的更新，跳过反向计算，避免循环更新
+    if (isUserInputRef.current) {
+      isUserInputRef.current = false
+      return
+    }
+
     if (!targetPrice || parseBigNumber(targetPrice).eq(0)) {
       setTargetRate('')
       return
@@ -76,31 +83,40 @@ export const TpslFormGroup = ({
         : entryPrice.minus(triggerPrice)
     const collateralAmount = parseBigNumber(position.collateralAmount)
 
+    let calculatedRate = ''
     if (tpslType === TpSlTypeEnum.PRICE) {
-      setTargetRate(diff.toString())
+      calculatedRate = diff.toString()
     } else if (tpslType === TpSlTypeEnum.ROI) {
-      const radio = diff.div(collateralAmount).mul(100).toFixed(2)
-      setTargetRate(radio)
+      calculatedRate = diff.div(collateralAmount).mul(100).toFixed(2)
     } else if (tpslType === TpSlTypeEnum.Change) {
-      const radio = diff.div(entryPrice).mul(100).toFixed(2)
-      setTargetRate(radio)
+      calculatedRate = diff.div(entryPrice).mul(100).toFixed(2)
     } else if (tpslType === TpSlTypeEnum.Pnl) {
       const size = type === 'tp' ? tpSize : slSize
-      console.log('size-->', size)
-      const pnl = diff.mul(parseBigNumber(type === 'tp' ? tpSize : slSize)).toString()
-      setTargetRate(pnl)
+      calculatedRate = diff.mul(parseBigNumber(type === 'tp' ? tpSize : slSize)).toString()
     }
-  }, [targetPrice, tpSize, slSize, tpslType])
+
+    if (calculatedRate) {
+      setTargetRate(calculatedRate)
+    }
+  }, [
+    targetPrice,
+    tpSize,
+    slSize,
+    tpslType,
+    position.entryPrice,
+    position.collateralAmount,
+    position.direction,
+    position.size,
+    type,
+  ])
 
   // 创建防抖函数
   const debouncedUpdateSize = useMemo(
     () =>
       debounce((value: number) => {
         if (type === 'tp') {
-          console.log('tp value==>', value)
           setTpSize(value.toString())
         } else {
-          console.log('sl value==>', value)
           setSlSize(value.toString())
         }
       }, 300),
@@ -195,36 +211,52 @@ export const TpslFormGroup = ({
             value={targetRate}
             onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
-                setTargetRate(floatValue?.toString() ?? '')
+                const inputValue = floatValue?.toString() ?? ''
+
+                // 标记这是用户输入，避免 useEffect 反向计算覆盖用户输入的值
+                isUserInputRef.current = true
+                setTargetRate(inputValue)
+
+                if (inputValue === '' || floatValue === undefined || floatValue === null) {
+                  setTargetPrice('')
+                  if (type === 'tp') {
+                    setTpPrice('')
+                  } else {
+                    setSlPrice('')
+                  }
+                  return
+                }
+
+                let calculatedTargetPrice = ''
                 if (tpslType === TpSlTypeEnum.ROI) {
                   const radio = parseBigNumber(floatValue ?? 0).div(100)
                   const totalPnl = parseBigNumber(position.collateralAmount).mul(radio)
                   const averagePnl = totalPnl
                     .div(parseBigNumber(position.size))
                     .mul(position.direction === Direction.LONG ? 1 : -1)
-                  const targetPrice = parseBigNumber(position.entryPrice)
+                  calculatedTargetPrice = parseBigNumber(position.entryPrice)
                     .plus(averagePnl)
                     .toFixed(6)
-                  setTargetPrice(targetPrice)
                 } else if (tpslType === TpSlTypeEnum.Change) {
                   const radio = parseBigNumber(1).plus(parseBigNumber(floatValue ?? 0).div(100))
-                  const targetPrice = parseBigNumber(position.entryPrice).mul(radio).toFixed(6)
-                  setTargetPrice(targetPrice)
+                  calculatedTargetPrice = parseBigNumber(position.entryPrice).mul(radio).toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
                   const totalPnl = parseBigNumber(floatValue ?? 0)
                   const averagePnl = totalPnl
                     .div(parseBigNumber(position.size))
                     .mul(position.direction === Direction.LONG ? 1 : -1)
-                  const targetPrice = parseBigNumber(position.entryPrice)
+                  calculatedTargetPrice = parseBigNumber(position.entryPrice)
                     .plus(averagePnl)
                     .toFixed(6)
-
-                  setTargetPrice(targetPrice)
                 }
-                if (type === 'tp') {
-                  setTpPrice(targetPrice)
-                } else {
-                  setSlPrice(targetPrice)
+
+                if (calculatedTargetPrice) {
+                  setTargetPrice(calculatedTargetPrice)
+                  if (type === 'tp') {
+                    setTpPrice(calculatedTargetPrice)
+                  } else {
+                    setSlPrice(calculatedTargetPrice)
+                  }
                 }
               }
             }}
