@@ -75,7 +75,7 @@ export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType })
             </p>
           </div>
           {/* roe */}
-          <div className="text-center">
+          <div className="text-left">
             <p>
               <Trans>Realized PnL</Trans>
             </p>
@@ -108,7 +108,7 @@ export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType })
             </p>
           </div>
           {/* entry price */}
-          <div className="text-center">
+          <div className="text-left">
             <p>
               <Trans>Roe</Trans>
             </p>

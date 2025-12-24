@@ -26,7 +26,7 @@ export const PriceInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p className="text-[#CED1D9]">
+          <p style={{ color: orderType === OrderType.MARKET ? '' : '#fff' }}>
             <Trans>Price</Trans>
           </p>
         </div>
@@ -65,7 +65,7 @@ export const PriceInput = () => {
               <Trans>Last</Trans>
             </p>
           )}
-          <div className="ml-[12px] border-l-[1px] border-[#31333D] pl-[12px]">
+          <div className="ml-[12px] pl-[12px]">
             <TradeSelect
               value={orderType}
               onChange={(value) => {

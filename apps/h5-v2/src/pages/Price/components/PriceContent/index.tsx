@@ -193,7 +193,7 @@ export const PriceContent = () => {
     <div className="mt-[8px]">
       <Chart />
       {/* <Trade /> */}
-      <div className="mt-[17px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
+      <div className="mt-[12px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
         <div className="flex items-center gap-[8px]">
           <p>
             <Trans>Market</Trans>
@@ -262,7 +262,7 @@ export const PriceContent = () => {
           <PlaceOrder showOrderSize={false} />
         </CanSwitchWalletNetwork>
       </div>
-      <div className="mt-[12px] flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
+      <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
         <div className="flex-[1_1_0%]">
           <TradeRecordTabs
             value={activeTab}

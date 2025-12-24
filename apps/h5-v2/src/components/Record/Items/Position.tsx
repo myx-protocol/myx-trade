@@ -147,7 +147,7 @@ export const PositionItem = ({
             </p>
           </div>
           {/* roe */}
-          <div className="text-center">
+          <div className="text-left">
             <p>
               <Trans>Roe</Trans>
             </p>
@@ -174,7 +174,7 @@ export const PositionItem = ({
             </p>
           </div>
           {/* entry price */}
-          <div className="text-center">
+          <div className="text-left">
             <p>
               <Trans>Entry price</Trans>
             </p>
@@ -204,7 +204,7 @@ export const PositionItem = ({
             </p>
           </div>
           {/* liquidation price */}
-          <div className="text-center">
+          <div className="text-left">
             <p>
               <Trans>Liq.Price</Trans>
             </p>

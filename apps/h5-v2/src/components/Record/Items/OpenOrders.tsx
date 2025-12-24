@@ -83,7 +83,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
             </p>
           </div>
           {/* price */}
-          <div className="text-center">
+          <div className="text-right">
             <p>
               <Trans>Price</Trans>
             </p>
