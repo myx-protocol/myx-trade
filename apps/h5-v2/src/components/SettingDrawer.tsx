@@ -99,6 +99,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
     setChangeModeDialogOpen,
     setSeamlessPasswordDialogOpen,
     setExportSeamlessInfoDialogOpen,
+    setVipRedeemDialogOpen,
   } = useGlobalStore()
   const {
     showPlaceOrderConfirmDialog,
@@ -125,12 +126,18 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
         </div>
         {/* basic setting items */}
         {/* vip tickers */}
-        {/* <div className="flex cursor-pointer items-center justify-between py-[16px]">
+        <div
+          className="flex cursor-pointer items-center justify-between py-[16px]"
+          onClick={() => {
+            setVipRedeemDialogOpen(true)
+            onOpenChange(false)
+          }}
+        >
           <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
             <Trans>VIP Redeem Code</Trans>
           </p>
           <IconArrowRight className="h-[16px] w-[16px]" />
-        </div> */}
+        </div>
         {/* Slippage */}
         {/* <div className="flex cursor-pointer items-center justify-between py-[16px]">
           <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">

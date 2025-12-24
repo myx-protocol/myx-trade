@@ -7,10 +7,12 @@ import { useLayout } from '@/hooks/layout/useLayout'
 import { useEffect } from 'react'
 import { AccountDialog } from './AccountDialog'
 import useGlobalStore from '@/store/globalStore'
+import { VipRedeemDialog } from './VipRedeemDialog'
+import { VipRedeemResultDialog } from './VipRedeemDialog/VipRedeemResultDialog'
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
-  const { accountDialogOpen } = useGlobalStore()
+  const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
   useEffect(() => {
     if (tabbarActiveItem) {
       document.documentElement.style.setProperty('--tabbar-height', '60px')
@@ -33,6 +35,8 @@ function Layout() {
         {/* global search modal */}
         {isOpen && <GlobalSearch />}
         {accountDialogOpen && <AccountDialog />}
+        {vipRedeemDialogOpen && <VipRedeemDialog />}
+        {vipRedeemResultDialogOpen && <VipRedeemResultDialog />}
       </MyxSdkProvider>
     </div>
   )

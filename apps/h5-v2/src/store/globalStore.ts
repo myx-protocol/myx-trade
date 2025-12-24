@@ -4,6 +4,11 @@ import { immer } from 'zustand/middleware/immer'
 import { shallow } from 'zustand/shallow'
 import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from '@/locales/locale'
 import { TradeMode } from '@/pages/Trade/types'
+import type { RedeemResponse } from '@/request/vip'
+
+interface VipRedeemResultData extends RedeemResponse {
+  oldLevel: number
+}
 
 interface GlobalStore {
   theme: 'light' | 'dark'
@@ -51,6 +56,16 @@ interface GlobalStore {
   setAccountDialogOpen: (open: boolean) => void
   poolList: any
   setPoolList: (list: any) => void
+
+  /**
+   * vip redeem dialog
+   */
+  vipRedeemDialogOpen: boolean
+  setVipRedeemDialogOpen: (open: boolean) => void
+  vipRedeemResultDialogOpen: boolean
+  vipRedeemResultData: VipRedeemResultData | null
+  setVipRedeemResultData: (data: VipRedeemResultData | null) => void
+  setVipRedeemResultDialogOpen: (open: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -102,6 +117,14 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             setAccountDialogOpen: (open: boolean) => set({ accountDialogOpen: open }),
             poolList: [],
             setPoolList: (list: any[]) => set({ poolList: list }),
+
+            vipRedeemDialogOpen: false,
+            setVipRedeemDialogOpen: (open: boolean) => set({ vipRedeemDialogOpen: open }),
+            vipRedeemResultDialogOpen: false,
+            vipRedeemResultData: null,
+            setVipRedeemResultData: (data) => set({ vipRedeemResultData: data }),
+            setVipRedeemResultDialogOpen: (open: boolean) =>
+              set({ vipRedeemResultDialogOpen: open }),
           }) as GlobalStore,
       ),
       {
