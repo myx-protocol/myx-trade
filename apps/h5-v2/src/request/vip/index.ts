@@ -6,6 +6,8 @@ import type {
   VipInfoResponse,
 } from './type.d'
 import type { BaseResponse } from '@/request/type.ts'
+import type { ApiResponse } from '@/api/type'
+import type { AccessParams } from '@/api/referrals'
 
 export const fetchVipApiBaseUrl = () => {
   return `${baseUrl}/openapi/gateway/vip`
@@ -38,4 +40,30 @@ export const fetchVipInfo = async (account: string, accessToken: string) => {
 
 export const getRiskLevelConfig = async (): Promise<RiskLevelConfigResponse> => {
   return await http.get(`${baseUrl}/openapi/gateway/risk/market_pool/level_configs`)
+}
+
+/**
+ * redeem vip code
+ */
+interface RedeemRequest {
+  code: string
+}
+export interface RedeemResponse {
+  level: number
+  startTime: number
+  endTime: number
+  state: number
+  type: number
+}
+export const redeemVipCode = async (params: RedeemRequest, accessParams: AccessParams) => {
+  return await http.post<ApiResponse<RedeemResponse>>(
+    `${fetchVipApiBaseUrl()}/redeem/exchange`,
+    params,
+    {
+      headers: {
+        myx_openapi_access_token: accessParams.accessToken,
+        myx_openapi_account: accessParams.account,
+      },
+    },
+  )
 }
