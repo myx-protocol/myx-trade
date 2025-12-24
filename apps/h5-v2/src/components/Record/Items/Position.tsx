@@ -113,18 +113,19 @@ export const PositionItem = ({
               quoteLogo={chainInfo?.logoUrl}
               quoteClassName=" ml-[-8px]!"
             />
-            <p className="text-[16px] font-semibold text-white">
-              {position.baseSymbol}/{position.quoteSymbol}
-            </p>
-          </div>
-
-          <div className="mt-[4px] flex gap-[4px]">
-            <Tag type={position.direction === DirectionEnum.Long ? 'success' : 'danger'}>
-              <Trans>{position.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
-            </Tag>
-            <Tag type="info">
-              <Trans>Isolated {position.userLeverage}x</Trans>
-            </Tag>
+            <div className="flex flex-col items-start gap-[4px]">
+              <p className="text-[14px] text-white">
+                {position.baseSymbol}/{position.quoteSymbol}
+              </p>
+              <div className="flex gap-[4px]">
+                <Tag type={position.direction === DirectionEnum.Long ? 'success' : 'danger'}>
+                  <Trans>{position.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
+                </Tag>
+                <Tag type="info">
+                  <Trans>Isolated {position.userLeverage}x</Trans>
+                </Tag>
+              </div>
+            </div>
           </div>
         </div>
         {/* time */}

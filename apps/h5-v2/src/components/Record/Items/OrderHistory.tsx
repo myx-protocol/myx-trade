@@ -38,20 +38,22 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
               quoteLogo={chainInfo?.logoUrl}
               quoteClassName=" ml-[-8px]!"
             />
-            <p className="text-[14px] font-medium text-white">
-              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
-            </p>
-          </div>
-          <div className="mt-[4px] flex gap-[4px]">
-            <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>
-              <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
-            </Tag>
-            <Tag type="info">
-              <Trans>{item.orderType === OrderTypeEnum.Limit ? t`Limit` : t`Market`}</Trans>
-            </Tag>
-            <Tag type="info">
-              <Trans>Isolated {item.userLeverage}x</Trans>
-            </Tag>
+            <div className="flex flex-col items-start gap-[4px]">
+              <p className="text-[14px] font-medium text-white">
+                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+              </p>
+              <div className="flex gap-[4px]">
+                <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>
+                  <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
+                </Tag>
+                <Tag type="info">
+                  <Trans>{item.orderType === OrderTypeEnum.Limit ? t`Limit` : t`Market`}</Trans>
+                </Tag>
+                <Tag type="info">
+                  <Trans>Isolated {item.userLeverage}x</Trans>
+                </Tag>
+              </div>
+            </div>
           </div>
         </div>
         {/* right */}
