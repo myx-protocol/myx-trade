@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Rating } from '@mui/material'
 import type { ReactNode } from 'react'
 import { BackIcon } from '@/components/Icon'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +12,7 @@ import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrece
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Earn/type.ts'
 import { usePoolContext } from '../../hook'
+import { RatingLevel } from '@/components/Rating.tsx'
 
 export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
@@ -35,16 +36,18 @@ export const NavBar = ({ className, children }: { className?: string; children?:
               icon={quoteLpDetail?.tokenIcon as string}
               size={28}
               symbol={quoteLpDetail?.mQuoteBaseSymbol}
+              className={'border-light-border overflow-hidden rounded-full border-1'}
             />
 
             <Box
               className={
-                'absolute right-[-2px] bottom-0 aspect-square h-[8px] w-[8px] min-w-[8px] overflow-hidden rounded-full'
+                'absolute right-[-2px] bottom-0 aspect-square h-[10px] w-[10px] min-w-[10px] overflow-hidden rounded-full'
               }
             >
               <CoinIcon
-                size={8}
+                size={10}
                 icon={CHAIN_INFO?.[quoteLpDetail?.chainId as number]?.logoUrl ?? ''}
+                className={'border-deep overflow-hidden rounded-full border-1'}
               />
             </Box>
           </Box>
@@ -62,16 +65,13 @@ export const NavBar = ({ className, children }: { className?: string; children?:
               <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
                 ${formatNumberPrecision(price, COMMON_PRICE_DISPLAY_DECIMALS)}
               </span>
-              <span
-                className={'bg-brand-10 text-green rounded-[2px] px-[6px] py-[4px] text-[10px]'}
-              >
-                {quoteLpDetail?.rating}
-              </span>
+
+              {quoteLpDetail?.rating && <RatingLevel rating={quoteLpDetail?.rating} />}
             </Box>
           </Box>
         </Box>
         <Box className={'flex items-center justify-end gap-[6px] leading-[1]'}>
-          <span className={'text-[12px]'}>APR</span>
+          <span className={'text-secondary text-[12px]'}>APR</span>
           <span className={'text-[18px] font-[500]'}>
             <RiseFallTextPrecent value={Number(quoteLpDetail?.apr)} />
           </span>
