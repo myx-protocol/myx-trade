@@ -140,7 +140,7 @@ export const SetPasswordDialog = () => {
                   password,
                   chainId: symbolInfo?.chainId as number,
                 })
-                console.log('rs-->', rs)
+
                 if (rs?.code === 0) {
                   const seamlessAccount: SeamlessAccount = {
                     masterAddress: rs.data?.masterAddress || '',

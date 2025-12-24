@@ -119,7 +119,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
             (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(shortSize).gt(quoteAmount))
           ) {
             toast.error({
-              title: `open size must be less than max size`,
+              title: t`open size must be less than max size`,
             })
             return
           }
