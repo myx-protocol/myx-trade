@@ -104,7 +104,7 @@ const ChartHeader = () => {
 
   return (
     <Box className={'flex w-full flex-col'}>
-      <Box className={'mt-[4px] flex w-full items-center justify-between py-[4px]'}>
+      <Box className={'mt-[8px] flex w-full items-center justify-between py-[4px]'}>
         <span className={'text-secondary text-[12px] leading-[1] font-[500]'}>
           <Trans>Price</Trans>
         </span>
