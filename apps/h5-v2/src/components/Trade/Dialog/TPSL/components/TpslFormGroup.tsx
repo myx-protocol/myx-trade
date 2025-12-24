@@ -170,7 +170,7 @@ export const TpslFormGroup = ({
       {/* price & type value */}
       <div className="mt-[4px] flex items-center justify-between gap-[8px]">
         {/* trigger price */}
-        <div className="flex min-h-[46px] w-[202px] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
+        <div className="flex min-h-[46px] w-[50%] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
             className="flex-1 text-left"
             placeholder={t`触发价格`}
@@ -205,7 +205,7 @@ export const TpslFormGroup = ({
           <p className="text flex-shrink-0">{position?.quoteSymbol ?? ''}</p>
         </div>
         {/* type value */}
-        <div className="flex min-h-[46px] w-[140px] flex-[1_1_0%] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
+        <div className="flex min-h-[46px] w-[50%] flex-[1_1_0%] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
             allowNegative={true}
             value={targetRate}
@@ -341,7 +341,7 @@ export const TpslFormGroup = ({
                 boxSizing: 'border-box',
               },
               '& .MuiSlider-track': {
-                background: 'linear-gradient(90deg, #4cb86a 0%, #3ba07b 100%)',
+                background: 'linear-gradient(90deg, #7dd89a 0%, #6dc0a5 100%)',
                 borderRadius: 9,
               },
               '@media (pointer: coarse)': {

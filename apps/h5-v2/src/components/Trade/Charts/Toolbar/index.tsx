@@ -38,7 +38,7 @@ export const ToolBar = ({ showStudyPanel = false }: ToolBarProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [studyListDrawerOpen, setStudyListDrawerOpen] = useState(false)
   return (
-    <div className="flex items-center justify-between px-[16px] pb-[4px]">
+    <div className="flex items-center justify-between px-[8px] pb-[4px]">
       <div className="flex items-center gap-[10px]">
         {fixedResolutionList.map((item) => (
           <div

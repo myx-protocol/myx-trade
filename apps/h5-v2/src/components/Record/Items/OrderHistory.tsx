@@ -14,6 +14,7 @@ import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
+import { OrderStatus } from '@/pages/Trade/components/OrderStatus'
 
 export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
   const symbolInfo = usePoolSymbol({
@@ -56,7 +57,7 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
         {/* right */}
         <div className="flex shrink-0 flex-col items-end gap-[6px] text-[12px] text-[#848E9C]">
           <p>
-            <OrderType orderType={item.orderType} operation={item.operation} />
+            <OrderStatus orderStatus={item.orderStatus} />
           </p>
           <p>{dayjs.unix(item.txTime).format('YYYY/MM/DD HH:mm:ss')}</p>
         </div>
