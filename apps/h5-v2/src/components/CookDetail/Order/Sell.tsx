@@ -35,7 +35,8 @@ import { showErrorToast } from '@/config/error'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
-  const { pool, baseLpDetail, chainId, poolId, genesisFeeRate, refreshAsset } = usePoolContext()
+  const { pool, baseLpDetail, chainId, poolId, genesisFeeRate, refreshAsset, poolInfoRefetch } =
+    usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
@@ -145,15 +146,16 @@ export const Sell = () => {
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully sell` })
+      setAmount('')
       await refetchBalance()
       refreshAsset()
-      setAmount('')
+      poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
 
   return (
     <div className="mt-[12px]">

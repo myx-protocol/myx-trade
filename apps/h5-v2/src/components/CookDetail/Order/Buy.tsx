@@ -27,7 +27,7 @@ import { showErrorToast } from '@/config/error'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId, refreshAsset } = usePoolContext()
+  const { chainId, baseLpDetail, pool, poolId, refreshAsset, poolInfoRefetch } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
@@ -82,15 +82,16 @@ export const Buy = () => {
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully buy` })
+      setAmount('')
       await refetchBalance()
       refreshAsset()
-      setAmount('')
+      poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
 
   return (
     <>
