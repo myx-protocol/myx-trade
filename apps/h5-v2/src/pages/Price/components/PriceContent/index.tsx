@@ -178,14 +178,15 @@ export const PriceContent = () => {
     if (parseBigNumber(longSize).eq(0)) {
       return '0'
     }
-    return `${displayAmount(longSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
+
+    return `${displayAmount(longSize)} ${symbolInfo?.quoteSymbol}`
   }, [longSize, amountUnit, symbolInfo])
 
   const displayShortSize = useMemo(() => {
     if (parseBigNumber(shortSize).eq(0)) {
       return '0'
     }
-    return `${displayAmount(shortSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
+    return `${displayAmount(shortSize)} ${symbolInfo?.quoteSymbol}`
   }, [shortSize, amountUnit, symbolInfo])
 
   return (

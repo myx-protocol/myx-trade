@@ -43,7 +43,6 @@ export const useSubmitOrder = () => {
   )
 
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
-
   const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
   const {
     longSize,
