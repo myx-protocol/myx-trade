@@ -12,6 +12,7 @@ export enum MyxErrorCode {
   OperationFailed = "OPERATION_FAILED",
   InvalidSeamlessWallet = "INVALID_SEAMLESS_WALLET",
   InsufficientMarginBalance = "INSUFFICIENT_MARGIN_BALANCE",
+  InvalidBrokerAddress = "INVALID_BROKER_ADDRESS",
 }
 
 export class MyxSDKError extends Error {
