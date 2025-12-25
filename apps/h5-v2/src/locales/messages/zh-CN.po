@@ -48,6 +48,12 @@ msgstr ""
 msgid " Price "
 msgstr ""
 
+#: src/components/VipRedeemDialog/index.tsx
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+"                  your code by participating in MYX’s special events."
+msgstr ""
+
 #: src/pages/Cook/detail/components/TabBar.tsx
 msgid " Trade "
 msgstr ""
@@ -204,6 +210,10 @@ msgstr ""
 msgid "Activate Your Trading Contract"
 msgstr ""
 
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "Activation Successful"
+msgstr ""
+
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "Active"
 msgstr ""
@@ -287,10 +297,10 @@ msgid "Airdrop"
 msgstr ""
 
 #: src/components/ChainsSelectRow/index.tsx
-#: src/components/CookDetail/Charts/index.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
 #: src/pages/Cook/components/ChainsBar.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "All"
 msgstr ""
@@ -835,6 +845,7 @@ msgstr ""
 #: src/components/Trade/Dialog/components/DialogConfirmFooter/index.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
+#: src/components/VipRedeemDialog/index.tsx
 #: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -907,7 +918,6 @@ msgstr ""
 msgid "Cooking : Gathering initial liquidity. Become a \"Genesis LP\" now for a permanent 2% fee share."
 msgstr ""
 
-#: src/components/AccountDialog/index.tsx
 #: src/components/ReceiveDialog.tsx
 #: src/components/ReceiveDialog.tsx
 #: src/components/Seamless/ExportDialog/index.tsx
@@ -1027,7 +1037,7 @@ msgstr ""
 msgid "Data"
 msgstr ""
 
-#: src/components/CookDetail/Charts/index.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Day"
 msgstr ""
@@ -1077,6 +1087,10 @@ msgstr ""
 msgid "Discord"
 msgstr "Discord"
 
+#: src/components/SettingDrawer.tsx
+msgid "Display Currency"
+msgstr ""
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DisputeNotAllowed()"
 msgstr ""
@@ -1096,6 +1110,14 @@ msgstr ""
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0> View Delisting Rules</0>"
+msgstr ""
+
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "During the validity period, if your level is below <0>VIP{level}</0>, you can enjoy the benefits of <1>VIP{level}</1>."
+msgstr ""
+
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "During the validity period, you can enjoy a <0>VIP{level}</0> experience"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -1158,6 +1180,10 @@ msgstr ""
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 #: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
 msgid "Enter 1-20 character"
+msgstr ""
+
+#: src/components/VipRedeemDialog/index.tsx
+msgid "Enter Code"
 msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
@@ -1562,6 +1588,10 @@ msgstr ""
 msgid "Get Started"
 msgstr ""
 
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "Got it"
+msgstr ""
+
 #: src/utils/index.ts
 msgid "H"
 msgstr ""
@@ -1621,6 +1651,10 @@ msgstr ""
 #. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol || '--'
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How does the {0} Vault earn returns for you?"
+msgstr ""
+
+#: src/components/VipRedeemDialog/index.tsx
+msgid "How to Obtain a Redemption Code"
 msgstr ""
 
 #: src/components/Seamless/ExportDialog/index.tsx
@@ -1925,6 +1959,10 @@ msgstr ""
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX, Get fee discounts and up to 20% rebates."
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Language"
 msgstr ""
 
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -2421,6 +2459,10 @@ msgstr ""
 msgid "NotSupportVersion()"
 msgstr ""
 
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "Obtain <0>VIP{level}</0> Experience:"
+msgstr ""
+
 #: src/store/transactions/options.ts
 msgid "On-chain Transaction confirmed"
 msgstr "链上交易已确认"
@@ -2631,6 +2673,7 @@ msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Search.tsx
+#: src/components/VipRedeemDialog/index.tsx
 msgid "Paste"
 msgstr ""
 
@@ -2683,6 +2726,10 @@ msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Please enter the amount."
+msgstr ""
+
+#: src/components/VipRedeemDialog/index.tsx
+msgid "Please Enter the Redemption Code"
 msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
@@ -2885,6 +2932,11 @@ msgstr ""
 msgid "Rebate up to"
 msgstr ""
 
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Rebates"
+msgstr ""
+
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/ReceiveDialog.tsx
@@ -2911,6 +2963,10 @@ msgstr ""
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 msgid "Redeem"
+msgstr ""
+
+#: src/components/VipRedeemDialog/index.tsx
+msgid "Redeem Code"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2973,6 +3029,11 @@ msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "refresh now"
+msgstr ""
+
+#: src/pages/Referrals/components/Record/index.tsx
+#: src/pages/Referrals/components/Record/index.tsx
+msgid "Refund"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3226,6 +3287,10 @@ msgstr ""
 msgid "Set Your Password"
 msgstr ""
 
+#: src/components/SettingDrawer.tsx
+msgid "Setting"
+msgstr ""
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
@@ -3410,6 +3475,10 @@ msgstr ""
 msgid "The cashback ratio for the invitee's contract transaction fees."
 msgstr ""
 
+#: src/components/VipRedeemDialog/index.tsx
+msgid "The code format is incorrect"
+msgstr ""
+
 #: src/pages/Referrals/components/Hero/RebateSetting.tsx
 msgid "The commission rate you can earn after your friend trades."
 msgstr ""
@@ -3420,6 +3489,10 @@ msgstr ""
 
 #: src/components/CookDetail/Order/Buy.tsx
 msgid "The estimated LP token shares you will receive after adding liquidity."
+msgstr ""
+
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "The experience will become effective within 10 minutes"
 msgstr ""
 
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
@@ -3578,6 +3651,7 @@ msgid "Trade"
 msgstr "交易"
 
 #: src/404.tsx
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Trade Now"
 msgstr ""
@@ -3737,6 +3811,12 @@ msgstr ""
 msgid "UUPSUnsupportedProxiableUUID(bytes32)"
 msgstr ""
 
+#. placeholder {0}: dayjs.unix(startTime!).format('YYYY/MM/DD HH:mm')
+#. placeholder {1}: dayjs.unix(endTime!).format('YYYY/MM/DD HH:mm')
+#: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
+msgid "Valid From: {0} — {1}"
+msgstr ""
+
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/List.tsx
 msgid "Vault"
@@ -3779,6 +3859,7 @@ msgid "VIP Level"
 msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "VIP Redeem Code"
 msgstr "VIP兑换码"
 
@@ -3811,7 +3892,7 @@ msgstr ""
 msgid "Wallet connection"
 msgstr ""
 
-#: src/components/CookDetail/Charts/index.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Week"
 msgstr ""
