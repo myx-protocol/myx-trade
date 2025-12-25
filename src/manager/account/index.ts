@@ -391,6 +391,7 @@ export class Account {
       );
     }
 
+
     if (deadline < dayjs().unix()) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
@@ -411,7 +412,6 @@ export class Account {
       signature: signature,
     }
 
-    this.logger.info("setUserFeeData params --->", feeData)
 
     try {
       const rs = await brokerContract.setUserFeeData(feeData);
