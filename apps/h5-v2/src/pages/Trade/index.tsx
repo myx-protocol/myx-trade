@@ -105,7 +105,6 @@ export const Trade = () => {
     }
 
     return () => {
-      console.log('unsubscribe', unsubscribe)
       // unsubscribe oracle price
       if (symbolInfo) {
         unsubscribeOraclePrice({ poolId: symbolInfo.poolId })

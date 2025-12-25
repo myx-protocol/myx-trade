@@ -36,6 +36,7 @@ import { parseBigNumber } from '@/utils/bn'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
 import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
 import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
 
 export const PriceContent = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
@@ -112,11 +113,11 @@ export const PriceContent = () => {
     setSlValue,
     setPositionAction,
     setAmountSliderValue,
-    positionAction,
-    amountSliderValue,
     longSize,
     shortSize,
+    setAmountUnit,
   } = useTradePanelStore()
+  const { tickerData } = useMarketStore()
 
   useMount(() => {
     resetStore()
@@ -134,43 +135,10 @@ export const PriceContent = () => {
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
 
   useEffect(() => {
-    if (amountUnit === AmountUnitEnum.QUOTE) {
-      const longSize = parseBigNumber(amountSliderValue)
-        .div(100)
-        .mul(parseBigNumber(maxOpenLong.quoteAmount))
-        .toString()
-      const shortSize = parseBigNumber(amountSliderValue)
-        .div(100)
-        .mul(parseBigNumber(maxOpenShort.quoteAmount))
-        .toString()
-
-      setLongSize(longSize)
-      setShortSize(shortSize)
-    } else {
-      const longSize = parseBigNumber(amountSliderValue)
-        .div(100)
-        .mul(parseBigNumber(maxOpenLong.baseAmount))
-        .toString()
-      const shortSize = parseBigNumber(amountSliderValue)
-        .div(100)
-        .mul(parseBigNumber(maxOpenShort.baseAmount))
-        .toString()
-
-      setLongSize(longSize)
-      setShortSize(shortSize)
-    }
-  }, [
-    amountSliderValue,
-    setLongSize,
-    setShortSize,
-    positionAction,
-    amountUnit,
-    leverage,
-    maxOpenLong.baseAmount,
-    maxOpenLong.quoteAmount,
-    maxOpenShort.baseAmount,
-    maxOpenShort.quoteAmount,
-  ])
+    const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
+    setPrice(marketPrice.toString())
+    setAmountUnit(AmountUnitEnum.QUOTE)
+  }, [symbolInfo, tickerData, setPrice, setAmountUnit])
 
   const displayLongSize = useMemo(() => {
     if (parseBigNumber(longSize).eq(0)) {
@@ -233,7 +201,6 @@ export const PriceContent = () => {
       </div>
       <AmountInput
         onchange={(value) => {
-          console.log('maxOpenLong-->', maxOpenLong)
           const longSize = parseBigNumber(value)
             .div(100)
             .mul(parseBigNumber(maxOpenLong.quoteAmount))
@@ -242,10 +209,6 @@ export const PriceContent = () => {
             .div(100)
             .mul(parseBigNumber(maxOpenShort.quoteAmount))
             .toString()
-
-          console.log('longSize-->', longSize)
-          console.log('shortSize-->', shortSize)
-
           setLongSize(longSize)
           setShortSize(shortSize)
           setAmountSliderValue(value)

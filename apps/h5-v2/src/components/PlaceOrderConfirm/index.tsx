@@ -45,6 +45,7 @@ export const PlaceOrderConfirmDialog = () => {
     slType,
     tpSlOpen,
   } = useTradePanelStore()
+  console.log('price-->', price)
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
   const { submitOrder, submitLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()

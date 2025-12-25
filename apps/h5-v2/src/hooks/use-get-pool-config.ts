@@ -41,8 +41,6 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
         targetChainId ?? (chainId as number),
       )
 
-      console.log('res-->', res)
-
       const data = res.data as {
         level: number
         levelConfig: {
