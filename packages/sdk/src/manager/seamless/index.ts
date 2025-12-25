@@ -337,6 +337,7 @@ export class Seamless {
 
         return rs
       } catch (err) {
+        
         if (err instanceof TimeoutError) {
           throw new MyxSDKError(MyxErrorCode.Timeout, "Your request timed out, please try again");
         } else {
