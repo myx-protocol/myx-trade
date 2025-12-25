@@ -174,7 +174,7 @@ export class Seamless {
         masterAddress,
         forwarderAddress as string,
         ethers.MaxUint256.toString(),
-        (nonces + 1).toString(),
+        (nonces + BigInt(1)).toString(),
         deadline.toString(),
         chainId
       )
@@ -190,6 +190,8 @@ export class Seamless {
         s: brokerSignPermit.s,
       }
 
+      this.logger.info('brokerSeamlessUSDPermitParams-->', brokerSeamlessUSDPermitParams);
+
       const forwarderPermitParams = {
         token: erc20Contract.target,
         owner: masterAddress,
@@ -201,9 +203,12 @@ export class Seamless {
         s: forwarderSignPermit.s,
       }
 
+      this.logger.info('forwarderPermitParams-->', forwarderPermitParams);
+
       return [brokerSeamlessUSDPermitParams, forwarderPermitParams]
 
     } catch (error) {
+      this.logger.error('error-->', error);
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -278,6 +283,7 @@ export class Seamless {
       try {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
+        console.log('error-->', error);
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
@@ -286,6 +292,7 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
     const nonce = await forwarderContract.nonces(masterAddress)
 
+    this.logger.info('permitParams-->', permitParams);
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
       approve,
@@ -337,7 +344,7 @@ export class Seamless {
 
         return rs
       } catch (err) {
-        
+
         if (err instanceof TimeoutError) {
           throw new MyxSDKError(MyxErrorCode.Timeout, "Your request timed out, please try again");
         } else {
