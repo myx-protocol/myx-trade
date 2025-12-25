@@ -12,11 +12,12 @@ import { PoolContent } from './components/PoolContent'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import { InfoContent } from './components/InfoContent'
 
-import useGlobalStore from '@/store/globalStore'
+import useGlobalStore, { type PoolConfig } from '@/store/globalStore'
+import { getPoolLevelConfig } from '@/api'
 
 const Price = () => {
   const { tab } = usePriceStore()
-  const { symbolInfo, setSymbolInfo } = useGlobalStore()
+  const { symbolInfo, setSymbolInfo, setPoolConfig } = useGlobalStore()
 
   const { chainId, poolId } = useParams()
   const { getDetail, client } = useMarketDetail()
@@ -38,7 +39,12 @@ const Price = () => {
         setSymbolInfo(marketDetail)
       }
     })
-  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, client])
+    getPoolLevelConfig(poolId as string, parseInt(chainId) as number).then((res: any) => {
+      if (res.code === 0) {
+        setPoolConfig(res.data as unknown as PoolConfig)
+      }
+    })
+  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, client, setPoolConfig])
 
   useMount(() => {
     if (chainId && poolId) {
