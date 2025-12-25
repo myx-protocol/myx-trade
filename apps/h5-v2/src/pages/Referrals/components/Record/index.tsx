@@ -3,8 +3,14 @@ import { t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { useReferralStore } from '@/store/referrals'
 import { useAccessParams } from '@/hooks/useAccessParams'
-import { getUserReferralData, getRefereeReferralFlow, extractReferralFlow } from '@/api/referrals'
-import { formatNumberPrecision } from '@/utils/formatNumber'
+import {
+  getUserReferralData,
+  getRefereeReferralFlow,
+  extractReferralFlow,
+  type RefereeReferralFlowType,
+  type ExtractReferralFlowType,
+  type UserReferralDataType,
+} from '@/api/referrals'
 import { encryptionAddress } from '@/utils'
 import { ModuleTitle } from '../ModuleTitle'
 import { StatisticsDialog } from '../StatisticsDialog'
@@ -17,7 +23,8 @@ import { getChainInfo } from '@/config/chainInfo'
 import { TransactionHash } from '@/components/TransactionHash'
 import { Loading } from '../Loading'
 import { ReferralsEmpty } from '../Empty'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import type { ApiResponse } from '@/api/type'
+import { formatNumber } from '@/utils/number'
 
 enum RecordTypeEnum {
   Invite = 0,
@@ -29,10 +36,11 @@ const PAGE_SIZE = 10
 
 export const RecordCard = () => {
   const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig } = useReferralStore()
-  const { address } = useWalletConnection()
   const accessParams = useAccessParams()
   const [recordType, setRecordType] = useState<RecordTypeEnum>(RecordTypeEnum.Invite)
-  const [list, setList] = useState<any[]>([])
+  const [list, setList] = useState<
+    Array<RefereeReferralFlowType | ExtractReferralFlowType | UserReferralDataType>
+  >([])
   const [loading, setLoading] = useState(false)
   const [before, setBefore] = useState<number>(0)
   const [after, setAfter] = useState<number>(0)
@@ -43,7 +51,9 @@ export const RecordCard = () => {
     if (!accessParams?.accessToken || !accessParams.account) return // Only check accessToken, 'account' is not used here
     setLoading(true)
     try {
-      let res: any
+      let res: ApiResponse<
+        RefereeReferralFlowType[] | ExtractReferralFlowType[] | UserReferralDataType[]
+      >
       // New APIs do not support pagination params in the interface definition
       // const params = { limit: PAGE_SIZE, before, after }
 
@@ -100,19 +110,11 @@ export const RecordCard = () => {
 
   useEffect(() => {
     fetchInitialData()
-  }, [accessParams?.accessToken, accessParams?.account, address])
+  }, [accessParams?.accessToken, accessParams?.account])
 
   useEffect(() => {
     fetchData()
-  }, [
-    accessParams,
-    recordType,
-    before,
-    after,
-    accessParams?.accessToken,
-    accessParams?.account,
-    address,
-  ]) // Added accessToken to dependencies
+  }, [accessParams, recordType, before, after, accessParams?.accessToken, accessParams?.account]) // Added accessToken to dependencies
 
   const handlePrev = () => {
     if (list.length > 0) {
@@ -324,7 +326,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
             type === RecordTypeEnum.Rebase
               ? item.rebateTime * 1000
               : type === RecordTypeEnum.Claim
-                ? item.claimTime * 1000
+                ? item.txTime * 1000
                 : item.createTime,
           ).format('YYYY-MM-DD HH:mm:ss')}
         </div>
@@ -357,7 +359,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
             <div className="text-xs text-[#CED1D9]">
               <Trans>Rebate</Trans>
             </div>
-            <div className="text-sm text-white">{formatNumberPrecision(item.contribute, 2)}</div>
+            <div className="text-sm text-white">{formatNumber(item.contribute)}</div>
           </div>
           <div className="flex justify-between">
             <div className="text-xs text-[#CED1D9]">
@@ -396,14 +398,16 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
               <Trans>Amount</Trans>
             </div>
             <div className="text-sm text-white">
-              {formatNumberPrecision(item.amount, 2)} {item.token}
+              {formatNumber(item.receiveAmount)} {item.tokenName}
             </div>
           </div>
           <div className="flex justify-between">
             <div className="text-xs text-[#CED1D9]">
               <Trans>Type</Trans>
             </div>
-            <div className="text-sm text-white">{item.rebateType}</div>
+            <div className="text-sm text-white">
+              {item.rebateType === 1 ? <Trans>Rebates</Trans> : <Trans>Refund</Trans>}
+            </div>
           </div>
         </>
       )}
@@ -429,7 +433,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
               <Trans>Amount</Trans>
             </div>
             <div className="text-sm text-white">
-              {formatNumberPrecision(item.amount, 2)} {item.token}
+              {formatNumber(item.claimAmount)} {item.tokenName}
             </div>
           </div>
         </>
@@ -444,9 +448,9 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
       <td className="py-3">
         {dayjs(
           type === RecordTypeEnum.Rebase
-            ? item.rebateTime * 1000
+            ? item.txTime * 1000
             : type === RecordTypeEnum.Claim
-              ? item.claimTime * 1000
+              ? item.txTime * 1000
               : item.createTime,
         ).format('YYYY-MM-DD HH:mm:ss')}
       </td>
@@ -461,7 +465,7 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
           </td>
           <td className="py-3">{item.referrerRatio}%</td>
           <td className="py-3">{item.refereeRatio}%</td>
-          <td className="py-3">{formatNumberPrecision(item.contribute, 2)}</td>
+          <td className="py-3">{formatNumber(item.contribute)}</td>
           <td className="py-3 text-right">
             <div
               className="flex cursor-pointer items-center justify-end gap-1 text-[#00E3A5]"
@@ -484,9 +488,11 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
           </td>
           <td className="py-3">{getChainInfo(item.chainId)?.label ?? '--'}</td>
           <td className="py-3 text-right">
-            {formatNumberPrecision(item.amount, 2)} {item.token}
+            {formatNumber(item.receiveAmount)} {item.tokenName}
           </td>
-          <td className="py-3 text-right">{item.rebateType}</td>
+          <td className="py-3 text-right">
+            {item.rebateType === 1 ? <Trans>Rebates</Trans> : <Trans>Refund</Trans>}
+          </td>
         </>
       )}
 
@@ -497,7 +503,7 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
             <TransactionHash hash={item.txHash} />
           </td>
           <td className="py-3 text-right">
-            {formatNumberPrecision(item.amount, 2)} {item.token}
+            {formatNumber(item.claimAmount)} {item.tokenName}
           </td>
         </>
       )}
