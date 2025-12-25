@@ -161,7 +161,7 @@ export const PriceContent = () => {
       {/* <Trade /> */}
       <div className="mt-[12px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
         <div className="flex items-center gap-[8px]">
-          <p>
+          <p className="text-[#848E9C]">
             <Trans>Market</Trans>
           </p>
           <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
