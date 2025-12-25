@@ -13,31 +13,43 @@
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.15);
     .progress-bar, .MuiLinearProgress-bar {
-      background: linear-gradient(90deg, #667280 0%, #C4DBF5 100%);
+      background-image: linear-gradient(90deg, #667280 0%, #C4DBF5 100%);
+    }
+  }
+
+  &.vip0 {
+    background-image: linear-gradient(92deg, #484C52 1.3%, #909499 37.98%, #484C52 97.82%);
+    .title {
+      background-image: linear-gradient(0deg, #999 0%, #FFF 50%);
+    }
+    .progress {
+      .progress-bar, .MuiLinearProgress-bar {
+        background-image: linear-gradient(90deg, #667280 0%, #C4DBF5 100%);
+      }
     }
   }
 
   &.vip1 {
-    background-image: linear-gradient(375deg, #354566 0.81%, #8D95A6 36.6%, #374052 95%);
-    .title {
-      background-image: linear-gradient(180deg, #FFF 50%, #7D93CD 100%);
+    background-image: linear-gradient(92deg, #354566 0.81%, #8D95A6 36.6%, #374052 95%);
+   .title {
+     background-image: linear-gradient(180deg, #FFF 50%, #7D93CD 100%);
     }
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #5273CC 0%, #C4D1F5 100%);
+        background-image: linear-gradient(90deg, #5273CC 0%, #C4D1F5 100%);
       }
     }
   }
 
   &.vip2 {
-    background-image: linear-gradient(375deg, #264C52 0.79%, #A5B2B8 38.13%, #365566 100%);
+    background-image: linear-gradient(92deg, #264C52 0.79%, #A5B2B8 38.13%, #365566 100%);
     .title {
       background-image: linear-gradient(180deg, #FFF 0%, #86D4FF 100%);
     }
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #73BDE5 0%, #DCE8F5 100%);
-      }
+        background-image: linear-gradient(90deg, #73BDE5 0%, #DCE8F5 100%);
+     }
     }
   }
   &.vip3 {
@@ -47,32 +59,32 @@
     }
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #7EE593 0%, #D7E5CF 100%);
+        background-image: linear-gradient(90deg, #7EE593 0%, #D7E5CF 100%);
       }
     }
   }
 
   &.vip4 {
-    background-image: linear-gradient(375deg, #99804D 1.29%, #BFBAAC 38.55%, #B2A16B 99.76%);
+    background-image: linear-gradient(92deg, #99804D 1.29%, #BFBAAC 38.55%, #B2A16B 99.76%);
     .title {
       background-image: linear-gradient(180deg, #FFF 50%, #FFDA6A 100%);
     }
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #CCAD52 0%, #E5E0CF 100%);
+        background-image: linear-gradient(90deg, #CCAD52 0%, #E5E0CF 100%);
       }
     }
   }
 
 
   &.vip5 {
-    background-image: linear-gradient(375deg, #8C6946 1.79%, #BFB4AC 38.8%, #A68563 100%);
+    background-image: linear-gradient(92deg, #8C6946 1.79%, #BFB4AC 38.8%, #A68563 100%);
     .title {
       background-image: linear-gradient(180deg, #FFF 50%, #FFA375 100%);
     }
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #CC815C 0%, #F5E4DC 100%);
+        background-image: linear-gradient(90deg, #CC815C 0%, #F5E4DC 100%);
       }
     }
 
@@ -80,16 +92,15 @@
 
 
   &.vip6, &.vip7, &.vip8, &.vip9, &.vip10, &.vip11 {
-    background-image: linear-gradient(375deg, #414166 2.47%, #A19DB2 37.63%, #736B99 95%);
-
+    background-image: linear-gradient(92deg, #414166 2.47%, #A19DB2 37.63%, #736B99 95%);
     .title {
       background-image: linear-gradient(180deg, #FFF 50%, #96F 100%);
     }
 
     .progress {
       .progress-bar, .MuiLinearProgress-bar {
-        background: linear-gradient(90deg, #4C3AA6 15%, #CAC2F2 100%);
-      }
+        background-image: linear-gradient(90deg, #4C3AA6 15%, #CAC2F2 100%);
+     }
     }
   }
 }
