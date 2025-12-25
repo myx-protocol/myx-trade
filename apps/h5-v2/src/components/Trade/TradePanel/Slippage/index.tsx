@@ -33,7 +33,6 @@ export const Slippage = ({
         type,
       })
 
-      console.log('slippage-->', slippage)
       setSlippageDisplay(slippage ?? 0)
     }
 
