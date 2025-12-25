@@ -14,7 +14,6 @@ export const TPSLInput = ({
   placeHolder,
   quoteToken,
   inputPrefix,
-  inputSuffix,
 }: {
   value: string
   type: TpSlTypeEnum
@@ -68,6 +67,10 @@ export const TPSLInput = ({
         placeholder={placeHolder ?? ''}
         value={value}
         allowLeadingZeros
+        allowNegative={
+          type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
+        }
+        inputMode="decimal"
         onValueChange={(values) => {
           onChange(values.value ?? '')
         }}
