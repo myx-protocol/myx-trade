@@ -101,11 +101,11 @@ const RenderAuthButton = () => {
 export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   const {
     tradeMode,
-    setChangeModeDialogOpen,
     setSeamlessPasswordDialogOpen,
     setExportSeamlessInfoDialogOpen,
     setVipRedeemDialogOpen,
     activeLocale,
+    setAccountDialogOpen,
   } = useGlobalStore()
   const {
     showPlaceOrderConfirmDialog,
@@ -204,7 +204,11 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
         {/* account mode setting*/}
         <div
           className="flex cursor-pointer items-center justify-between py-[16px]"
-          onClick={() => setChangeModeDialogOpen(true)}
+          onClick={() => {
+            onOpenChange(false)
+            setAccountDialogOpen(true)
+            // setChangeModeDialogOpen(true)
+          }}
         >
           <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
             <Trans>Account Mode</Trans>
@@ -231,7 +235,10 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
             </div>
             <div
               className="flex cursor-pointer items-center justify-between py-[16px]"
-              onClick={() => setSeamlessPasswordDialogOpen(true)}
+              onClick={() => {
+                setSeamlessPasswordDialogOpen(true)
+                onOpenChange(false)
+              }}
             >
               <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
                 <Trans>Reset Password</Trans>
@@ -242,7 +249,10 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
             </div>
             <div
               className="flex cursor-pointer items-center justify-between py-[16px]"
-              onClick={() => setExportSeamlessInfoDialogOpen(true)}
+              onClick={() => {
+                setExportSeamlessInfoDialogOpen(true)
+                onOpenChange(false)
+              }}
             >
               <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
                 <Trans>Export Seamless Key</Trans>
