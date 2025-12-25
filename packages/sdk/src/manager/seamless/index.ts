@@ -12,7 +12,7 @@ import { Account } from "../account";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index";
 import ERC20_ABI from "@/abi/ERC20Token.json";
-import { getChainDomainConfig, getEIP712Domain } from "@/utils";
+import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { retry, RetryableError, TimeoutError } from "@/utils";
 import Forwarder_ABI from "@/abi/Forwarder.json";
@@ -84,11 +84,10 @@ async function signPermit(
   value: string,
   nonce: string,
   deadline: string,
-  chainId: number
 ) {
 
-  const chainDomainConfig = getChainDomainConfig(chainId, contract.target as string)
-  const domain = chainDomainConfig ?? (await getEIP712Domain(contract))
+  const domain = await getEIP712Domain(contract)
+
   const types = {
     Permit: [
       { name: 'owner', type: 'address' },
@@ -155,8 +154,10 @@ export class Seamless {
       config.signer
     );
 
+
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
+
       const brokerSignPermit = await signPermit(
         config.signer,  // 使用 signer 而不是 provider
         erc20Contract,
@@ -165,7 +166,6 @@ export class Seamless {
         ethers.MaxUint256.toString(),
         nonces.toString(),
         deadline.toString(),
-        chainId
       )
 
       const forwarderSignPermit = await signPermit(
@@ -176,7 +176,6 @@ export class Seamless {
         ethers.MaxUint256.toString(),
         (nonces + BigInt(1)).toString(),
         deadline.toString(),
-        chainId
       )
 
       const brokerSeamlessUSDPermitParams = {
@@ -203,9 +202,10 @@ export class Seamless {
         s: forwarderSignPermit.s,
       }
 
-      this.logger.info('forwarderPermitParams-->', forwarderPermitParams);
-
+      this.logger.info('forwarderPermitParams brokerSeamlessUSDPermitParams-->', brokerSeamlessUSDPermitParams, forwarderPermitParams);
       return [brokerSeamlessUSDPermitParams, forwarderPermitParams]
+
+      // return [forwarderPermitParams]
 
     } catch (error) {
       this.logger.error('error-->', error);
@@ -239,6 +239,8 @@ export class Seamless {
       chainId: forwarderJsonRpcContractDomain.chainId,
       verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
     }
+
+    this.logger.info('domain-->', domain);
 
     const walletProvider = provider ?? await getSignerProvider(chainId)
 
@@ -412,7 +414,7 @@ export class Seamless {
 
     const wallet = new ethers.Wallet(privateKey)
     const forwarderContract = await getForwarderContract(chainId)
-   
+
     const masterAddress = await forwarderContract.originAccount(wallet.address)
 
     if (masterAddress === ZeroAddress) {
