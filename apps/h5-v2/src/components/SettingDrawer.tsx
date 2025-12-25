@@ -15,6 +15,7 @@ import { LOCALE_OPTIONS, type AVAILABLE_LOCALES } from '@/locales/locale'
 import { useSwitchActiveLocale } from '@/hooks/useSwitchActiveLocale'
 import { useTradePanelStore } from './Trade/TradePanel/store'
 import { AmountUnitEnum } from './Trade/type'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 interface SettingDrawerProps {
   open: boolean
@@ -23,8 +24,8 @@ interface SettingDrawerProps {
 
 const RenderAuthButton = () => {
   const { activeSeamlessAddress, seamlessAccountList, setSeamlessAccountList } = useSeamlessStore()
-  const { symbolInfo } = useTradePageStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { chainId } = useWalletConnection()
+  const { client } = useMyxSdkClient(chainId)
   const isAuthorized = useMemo(() => {
     const activeSeamlessAccount = seamlessAccountList.find(
       (item) => item.masterAddress === activeSeamlessAddress,
@@ -33,8 +34,8 @@ const RenderAuthButton = () => {
       return false
     }
 
-    return activeSeamlessAccount.authorized[symbolInfo?.chainId as number]?.authorized || false
-  }, [seamlessAccountList, activeSeamlessAddress, symbolInfo])
+    return activeSeamlessAccount.authorized[chainId as number]?.authorized || false
+  }, [seamlessAccountList, activeSeamlessAddress, chainId])
 
   if (isAuthorized) {
     return (
@@ -44,7 +45,7 @@ const RenderAuthButton = () => {
           const authRs = await client?.seamless.authorizeSeamlessAccount({
             approve: false,
             seamlessAddress: activeSeamlessAddress,
-            chainId: symbolInfo?.chainId as number,
+            chainId: chainId as number,
           })
           if (!authRs) {
             const idx = seamlessAccountList.findIndex(
@@ -53,7 +54,7 @@ const RenderAuthButton = () => {
             const newSeamlessAccount = {
               ...seamlessAccountList[idx],
               authorized: {
-                [symbolInfo?.chainId as number]: {
+                [chainId as number]: {
                   authorized: false,
                 },
               },
@@ -74,7 +75,7 @@ const RenderAuthButton = () => {
         const authRs = await client?.seamless.authorizeSeamlessAccount({
           approve: true,
           seamlessAddress: activeSeamlessAddress,
-          chainId: symbolInfo?.chainId as number,
+          chainId: chainId as number,
         })
         if (!authRs) {
           const idx = seamlessAccountList.findIndex(
@@ -83,7 +84,7 @@ const RenderAuthButton = () => {
           const newSeamlessAccount = {
             ...seamlessAccountList[idx],
             authorized: {
-              [symbolInfo?.chainId as number]: {
+              [chainId as number]: {
                 authorized: true,
               },
             },
