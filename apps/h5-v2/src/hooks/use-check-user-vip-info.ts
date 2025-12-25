@@ -45,7 +45,6 @@ export const useCheckUserVipInfo = () => {
       )
 
       if (rs?.code !== 0) {
-        console.log('rs-->', rs)
         toast.error({
           title: t`${client.utils.formatErrorMessage(rs)}`,
         })

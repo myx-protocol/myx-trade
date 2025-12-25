@@ -1,6 +1,4 @@
-// import { ChainId } from "@/config/chain"
-// import { getContractAddressByChainId } from "@/config/address/index";
-import { Contract, keccak256, toUtf8Bytes } from "ethers";
+import { Contract } from "ethers";
 
 export type ChainDomainType = {
   name: string
@@ -9,32 +7,15 @@ export type ChainDomainType = {
   verifyingContract: string
 }
 
-// export function getChainDomainConfig(chainId: number, address: string): ChainDomainType | undefined {
-//   return CHAIN_DOMAIN?.[chainId]?.[address]
-// }
-
-// type ChainDomainMapType = Record<number, Record<string, ChainDomainType>>
-
-
-// const CHAIN_DOMAIN: ChainDomainMapType = {
-
-//   // [ChainId.ARB_TESTNET]: {
-//   //   [getContractAddressByChainId(ChainId.ARB_TESTNET).USDC]: {
-//   //     name: 'USDC',
-//   //     version: '2',
-//   //     chainId: ChainId.ARB_TESTNET.toString(),
-//   //     verifyingContract: getContractAddressByChainId(ChainId.ARB_TESTNET).USDC
-//   //   },
-//   // }
-// }
-
 export const getEIP712Domain = async (contract: Contract) => {
   try {
     // @ts-ignore
     const eip712Domain = await contract.eip712Domain()
+    console.log('eip712Domain-->', eip712Domain.name);
+    console.log('eip712Domain.version-->', eip712Domain.version);
     return {
-      name: keccak256(toUtf8Bytes(eip712Domain.name)),
-      version: keccak256(toUtf8Bytes(eip712Domain.version)),
+      name: eip712Domain.name,
+      version: eip712Domain.version,
       chainId: BigInt(eip712Domain.chainId), // 确保 chainId 是ForwarderGetStatus bigint 类型
       verifyingContract: eip712Domain.verifyingContract,
     }
