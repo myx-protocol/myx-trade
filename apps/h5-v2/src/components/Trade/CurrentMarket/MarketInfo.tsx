@@ -2,9 +2,7 @@ import { decimalToPercent, formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
 import Security from '@/components/Icon/set/Security'
 import ArrowDown from '@/components/Icon/set/ArrowDown'
-import { useTradePageStore } from '../store/TradePageStore'
 import { useMarketStore } from '../store/MarketStore'
-
 import { Tooltips } from '@/components/UI/Tooltips'
 import { useSecurityInfo } from '@/api'
 import { SafeList } from '@/components/SafeList'
@@ -12,9 +10,10 @@ import { Popover } from '@/components/UI/Popover'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useFundingInfo } from '../hooks/useFundingInfo'
 import { Trans } from '@lingui/react/macro'
+import useGlobalStore from '@/store/globalStore'
 
 export const MarketInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { poolConfig } = useGetPoolConfig(symbolInfo?.poolId, symbolInfo?.chainId)
   const tickerData = useMarketStore((state) => state.tickerData[symbolInfo?.poolId || ''])
 

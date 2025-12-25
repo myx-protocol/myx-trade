@@ -4,7 +4,6 @@ import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { encryptionAddress } from '@/utils'
 import { Trans } from '@lingui/react/macro'
-import { useTradePageStore } from '../Trade/store/TradePageStore'
 import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
@@ -26,7 +25,7 @@ export const AccountDialog = () => {
     setUnlockAccountDialogOpen,
   } = useGlobalStore()
   const { address } = useWalletConnection()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)

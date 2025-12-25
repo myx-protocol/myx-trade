@@ -4,7 +4,7 @@ import { useTradePanelStore } from '../store'
 import { Trans } from '@lingui/react/macro'
 import { OrderType as OrderTypeEnum } from '@myx-trade/sdk'
 import { useMarketStore } from '../../store/MarketStore'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 interface OrderTypeButtonProps {
   value: OrderTypeEnum
@@ -14,7 +14,7 @@ interface OrderTypeButtonProps {
 const OrderTypeButton = ({ value, label }: OrderTypeButtonProps) => {
   const { orderType, setOrderType, setPrice } = useTradePanelStore()
   const { tickerData } = useMarketStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
   const active = orderType === value
 

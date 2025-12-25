@@ -4,7 +4,6 @@ import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import { DialogConfirmFooter } from '../components/DialogConfirmFooter'
 import useGlobalStore from '@/store/globalStore'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { useTradePanelStore } from '../../TradePanel/store'
 import { Direction, DirectionEnum, OrderTypeEnum } from '@myx-trade/sdk'
@@ -28,7 +27,7 @@ export const PlaceOrderConfirmDialog = () => {
     setShowPlaceOrderConfirmDialog,
     setPlaceOrderConfirmDialogOpen,
   } = useGlobalStore()
-  const { symbolInfo, poolConfig } = useTradePageStore()
+  const { symbolInfo, poolConfig } = useGlobalStore()
   const leverage = useLeverage(symbolInfo?.poolId)
   const {
     price,

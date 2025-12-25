@@ -1,5 +1,4 @@
 import { DialogBase } from '@/components/UI/DialogBase'
-import useGlobalStore from '@/store/globalStore'
 import { encryptionAddress } from '@/utils'
 import { t } from '@lingui/core/macro'
 import walletIcon from '@/assets/icon/commons/wallet.svg'
@@ -17,7 +16,7 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -27,7 +26,7 @@ export const UnlockAccountDialog = () => {
     setTradeMode,
     setSeamlessPasswordDialogOpen,
   } = useGlobalStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [show, setShow] = useState(false)
   const { setLoginModalOpen } = useWalletStore()

@@ -8,7 +8,7 @@ import {
 } from '@public/charting_library/charting_library'
 import { useCallback } from 'react'
 import { Colors } from '../const'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { merge } from 'lodash-es'
 
 interface SetupTradingViewParams {
@@ -20,7 +20,7 @@ interface SetupTradingViewParams {
 }
 
 export const useInitTradingView = () => {
-  const { klineType } = useTradePageStore()
+  const { klineType } = useGlobalStore()
   const initTradingView = useCallback(
     (
       props: SetupTradingViewParams,

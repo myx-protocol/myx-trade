@@ -2,7 +2,6 @@ import { Price } from '@/components/Price'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import { decimalToPercent, formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
-import { usePriceStore } from '../store'
 import { useUpdateEffect } from 'ahooks'
 import { useRef } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
@@ -10,9 +9,10 @@ import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useFundingInfo } from '@/components/Trade/hooks/useFundingInfo'
 import { t } from '@lingui/core/macro'
+import useGlobalStore from '@/store/globalStore'
 
 export const PriceInfo = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { setTickerData } = useMarketStore()
 
   const { subscribeToTicker } = useSubscription()

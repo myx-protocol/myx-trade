@@ -2,7 +2,6 @@ import { DangerButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { useTradePanelStore } from '../store'
 import { AmountUnitEnum } from '../../type'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { displayAmount } from '@/utils/number'
 import { parseBigNumber } from '@/utils/bn'
 import { useMemo } from 'react'
@@ -20,7 +19,7 @@ interface OpenPositionProps {
 export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   const { longSize, shortSize, amountUnit } = useTradePanelStore()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { submitOrder, submitLongLoading, submitShortLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
 

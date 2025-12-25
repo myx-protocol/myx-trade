@@ -8,7 +8,6 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useState } from 'react'
 import { InputBase } from '@mui/material'
 import { t } from '@lingui/core/macro'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 
 export const ExportInfoDialog = () => {
   const {
@@ -18,7 +17,7 @@ export const ExportInfoDialog = () => {
   } = useGlobalStore()
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const [loading, setLoading] = useState(false)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [password, setPassword] = useState('')
 

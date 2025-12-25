@@ -1,19 +1,18 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '../wallet/useWalletConnection'
 import { usePositionStore } from '@/store/position/createStore'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import useSWR from 'swr'
 import { useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
-import useGlobalStore from '@/store/globalStore'
 
 export const useGetPositionList = (filter: boolean = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWrongNetwork } = useWalletConnection()
   const { hideOthersSymbols, selectChainId } = usePositionStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { tickerData } = useMarketStore()
   const { poolList } = useGlobalStore()
   const { subscribeToTicker } = useSubscription()

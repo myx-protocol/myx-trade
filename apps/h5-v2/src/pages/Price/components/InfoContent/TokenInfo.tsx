@@ -1,5 +1,4 @@
 import { useBaseTokenInfo } from '@/components/Trade/hooks/useBaseTokenInfo'
-import { usePriceStore } from '../../store'
 import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
 import { ChainId } from '@/config/chain'
@@ -10,9 +9,10 @@ import { formatNumber } from '@/utils/number'
 import { Copy } from '@/components/Copy'
 import { truncateAddress } from '@/utils/string'
 import dayjs from 'dayjs'
+import useGlobalStore from '@/store/globalStore'
 
 export const TokenInfo = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { data: baseTokenInfo } = useBaseTokenInfo({
     chainId: symbolInfo?.chainId,
     poolId: symbolInfo?.poolId,

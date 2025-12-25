@@ -1,5 +1,5 @@
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
-import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
+import type { PoolConfig } from '@/store/globalStore'
 import { usePoolLiquidityInfo } from '@/components/Trade/TradePanel/PoolsInfo/usePoolLiquidityInfo'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import { parseBigNumber } from '@/utils/bn'
@@ -10,9 +10,10 @@ import { ethers } from 'ethers'
 import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
+import useGlobalStore from '@/store/globalStore'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig } = useTradePageStore()
+  const { symbolInfo, poolConfig } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   const leverage = useLeverage(symbolInfo?.poolId)
   const { autoMarginMode, collateralAmount, price } = useTradePanelStore()

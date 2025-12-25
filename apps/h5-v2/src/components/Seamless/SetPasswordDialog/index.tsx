@@ -14,10 +14,8 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from 'react-hot-toast'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { TradeMode } from '@/pages/Trade/types'
 import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 export const SetPasswordDialog = () => {
   const { seamlessPasswordDialogOpen, setSeamlessPasswordDialogOpen, setTradeMode } =
@@ -27,7 +25,7 @@ export const SetPasswordDialog = () => {
   const [loading, setLoading] = useState(false)
   const { seamlessAccountList, setSeamlessAccountList, setActiveSeamlessAddress } =
     useSeamlessStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
 

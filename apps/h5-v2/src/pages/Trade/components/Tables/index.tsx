@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { t } from '@lingui/core/macro'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { PositionList } from '@/pages/record/components/PositionList'
@@ -66,7 +66,7 @@ export const Tables = () => {
   } = usePositionStore()
   const orderList = useGetOrderList(true)
   const positionList = useGetPositionList(true)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const navigate = useNavigate()
   const onCloseAllHandler = () => {
     if (activeTab === TabType.POSITION) {

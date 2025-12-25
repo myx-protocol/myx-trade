@@ -2,13 +2,13 @@ import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
-import { usePriceStore } from '../../store'
 import { LongShortBar } from '@/components/Trade/components/LongShortBar'
 import { t } from '@lingui/core/macro'
 import { usePoolLiquidityInfo } from './usePoolLiquidityInfo'
+import useGlobalStore from '@/store/globalStore'
 
 export const PoolContent = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   return (
     <div className="px-[16px] py-[24px]">

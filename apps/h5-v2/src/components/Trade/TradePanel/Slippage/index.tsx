@@ -2,7 +2,7 @@ import { SlippageDialog } from '../../Dialog/Slippage'
 import { useEffect, useState } from 'react'
 import { PositionActionEnum } from '../../type'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { tradePubSub } from '@/utils/pubsub'
 import type { MarketDetailResponse } from '@myx-trade/sdk'
 
@@ -19,7 +19,7 @@ export const Slippage = ({
   simple?: boolean
 }) => {
   const [open, setOpen] = useState(false)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const [slippageDisplay, setSlippageDisplay] = useState<number>(defaultSlippage * 100)
 
   useEffect(() => {

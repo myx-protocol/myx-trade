@@ -4,7 +4,6 @@ import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
 import { DialogConfirmFooter } from '@/components/Trade/Dialog/components/DialogConfirmFooter'
 import useGlobalStore from '@/store/globalStore'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 // import { useTradePanelStore } from '../../TradePanel/store'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
@@ -30,7 +29,7 @@ export const PlaceOrderConfirmDialog = () => {
     setShowPlaceOrderConfirmDialog,
     setPlaceOrderConfirmDialogOpen,
   } = useGlobalStore()
-  const { symbolInfo, poolConfig } = useTradePageStore()
+  const { symbolInfo, poolConfig } = useGlobalStore()
   const leverage = useLeverage(symbolInfo?.poolId)
   const {
     price,
