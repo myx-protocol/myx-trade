@@ -14,9 +14,6 @@ export const useCheckUserVipInfo = () => {
   const checkUserVipInfo = useCallback(async () => {
     if (!client || !clientIsAuthenticated || !address) return {}
 
-    console.log('parseInt(chainId)-->', parseInt(chainId as string))
-    console.log('address-->', address)
-
     const userVipInfoByContract = await getAccountVipInfoByContract()
 
     const nonce = parseInt(userVipInfoByContract?.nonce as unknown as string) + 1
