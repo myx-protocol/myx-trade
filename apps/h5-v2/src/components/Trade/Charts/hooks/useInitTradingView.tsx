@@ -32,9 +32,6 @@ export const useInitTradingView = () => {
        */
       let locale: LanguageCode = 'en'
       switch (language) {
-        case AVAILABLE_LOCALES.KO:
-          locale = 'ko'
-          break
         case AVAILABLE_LOCALES.ZH_CN:
           locale = 'zh'
           break
