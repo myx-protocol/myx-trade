@@ -1,7 +1,7 @@
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
 import { TradePanel } from '@/components/Trade/TradePanel'
 import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
-import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
+import type { PoolConfig } from '@/store/globalStore'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
@@ -24,7 +24,7 @@ import useGlobalStore from '@/store/globalStore'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
-  const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
+  const { setSymbolInfo, symbolInfo, setPoolConfig } = useGlobalStore()
   const { client } = useMyxSdkClient(chainId ? parseInt(chainId) : undefined)
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()

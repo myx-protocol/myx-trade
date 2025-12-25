@@ -3,8 +3,7 @@ import { TpSlTypeEnum } from '../../type'
 import { Trans } from '@lingui/react/macro'
 import { useMemo, type ReactNode } from 'react'
 import clsx from 'clsx'
-import { useTradePageStore } from '../../store/TradePageStore'
-
+import useGlobalStore from '@/store/globalStore'
 interface TPSLTypeSelectDialogProps {
   open: boolean
   onClose: () => void
@@ -26,7 +25,7 @@ export const TPSLTypeSelectDialog = ({
   quoteToken,
   onChange,
 }: TPSLTypeSelectDialogProps) => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const tpslTypeList = useMemo<Array<TPSLTypeSelectItemProps>>(() => {
     return [
       {

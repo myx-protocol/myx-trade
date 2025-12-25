@@ -1,16 +1,13 @@
 import { SortDown, ArrowLeftLong, Star } from '@/components/Icon'
 import { truncateString } from '@/utils/string'
 import { useNavigate } from 'react-router-dom'
-import { usePriceStore } from '../store'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMemo, useRef, useState } from 'react'
 import { useMount, useUnmount } from 'ahooks'
 import { appPubSub } from '@/utils/pubsub'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useQuery } from '@tanstack/react-query'
-import { useGlobalContractSearchStore } from '@/components/GlobalContractSearch/store'
 import { GlobalContractSearch } from '@/components/GlobalContractSearch/GlobalContractSearch'
-import { useWalletStore } from '@/store/wallet/createStore'
 import useGlobalStore from '@/store/globalStore'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useBaseTokenInfo } from '@/components/Trade/hooks/useBaseTokenInfo'
@@ -19,7 +16,7 @@ import type { ChainId } from '@/config/chain'
 
 export const Header = () => {
   const navigate = useNavigate()
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { isWalletConnected, address: walletAddress } = useWalletConnection()
   const { client, clientIsAuthenticated } = useMyxSdkClient()
 

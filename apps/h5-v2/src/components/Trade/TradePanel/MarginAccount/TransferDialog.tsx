@@ -2,7 +2,6 @@ import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useState } from 'react'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { t } from '@lingui/core/macro'
 import ChangePosition from '@/components/Icon/set/ChangePosition'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -35,7 +34,7 @@ export const TransferDialogButton = () => {
   const [loading, setLoading] = useState(false)
 
   const [open, setOpen] = useState(false)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { address } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)

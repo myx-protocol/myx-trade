@@ -1,10 +1,10 @@
 import { Trans } from '@lingui/react/macro'
 import { useLeverageDialogStore } from '../../Dialog/Leverage/store'
 import { useLeverage } from '../../hooks/useLeverage'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 export const Leverage = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { open: openLeverageDialog } = useLeverageDialogStore()
   const leverage = useLeverage(symbolInfo?.poolId)
   return (

@@ -2,14 +2,14 @@ import Star from '@/components/Icon/set/Star'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useQuery } from '@tanstack/react-query'
-import { useTradePageStore } from '../store/TradePageStore'
 import { useRef, useState } from 'react'
 import { appPubSub } from '@/utils/pubsub'
 import { useMount, useUnmount } from 'ahooks'
+import useGlobalStore from '@/store/globalStore'
 
 export const Favorite = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const { address, isConnected, setLoginModalOpen } = useWalletConnection()
   const [isFavorite, setIsFavorite] = useState<boolean>(false)

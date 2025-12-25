@@ -1,7 +1,6 @@
 import { DangerButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { useTradePanelStore } from '../store'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { useSubmitOrder } from './hooks/use-submit-order'
 import { useMemo } from 'react'
 import { displayAmount } from '@/utils/number'
@@ -20,7 +19,7 @@ interface ClosePositionProps {
 export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
   const { shortSize, longSize, amountUnit } = useTradePanelStore()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { submitOrder } = useSubmitOrder()
   const { showCloseOrderConfirmDialog, setCloseOrderConfirmDialogOpen } = useGlobalStore()
   const displayLongSize = useMemo(() => {

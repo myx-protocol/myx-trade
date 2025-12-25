@@ -1,10 +1,10 @@
-import { useTradePageStore } from '../store/TradePageStore'
 import { useMarketStore } from '../store/MarketStore'
 import { Price } from '@/components/Price'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
+import useGlobalStore from '@/store/globalStore'
 
 export const LatestPrice = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const tickerData = useMarketStore((state) => state.tickerData[symbolInfo?.poolId || ''])
   return (
     <div className="ml-[40px] min-w-[90px] leading-[1]">

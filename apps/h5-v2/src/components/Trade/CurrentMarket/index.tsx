@@ -4,15 +4,15 @@ import { MarketInfo } from './MarketInfo'
 import { SymbolInfo } from './SymbolInfo'
 import { useUpdateEffect } from 'ahooks'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useTradePageStore } from '../store/TradePageStore'
 import { useMarketStore } from '../store/MarketStore'
 import { useSubscription } from '../hooks/useMarketSubscription'
 import { useRef } from 'react'
 import { useOraclePricePolling } from '../hooks/useOraclePricePolling'
+import useGlobalStore from '@/store/globalStore'
 
 export const CurrentMarket = () => {
   const { client } = useMyxSdkClient()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()

@@ -9,7 +9,6 @@ import { InfoButton } from '@/components/UI/Button'
 import { useNavigate } from 'react-router-dom'
 import { Slippage } from '@/components/Trade/TradePanel/Slippage'
 import { AmountUnitEnum, PositionActionEnum } from '@/components/Trade/type'
-import { usePriceStore } from '../../store'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { getSlippageConfig } from '@/utils/slippage'
 import { OrderType, type MarketDetailResponse } from '@myx-trade/sdk'
@@ -18,7 +17,7 @@ import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AssetsDialogButton } from '@/components/Trade/TradePanel/BalanceAndMarginMode'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { displayAmount, formatNumberWithBaseToken } from '@/utils/number'
-
+import useGlobalStore from '@/store/globalStore'
 import ToTrade from '@/components/Icon/set/ToTrade'
 import { AmountInput } from './AmountInput'
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
@@ -37,7 +36,6 @@ import { parseBigNumber } from '@/utils/bn'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
 import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
 import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
-import useGlobalStore from '@/store/globalStore'
 
 export const PriceContent = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
@@ -52,7 +50,7 @@ export const PriceContent = () => {
   } = usePositionStore()
 
   const { open: openLeverageDialog } = useLeverageDialogStore()
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const leverage = useLeverage(symbolInfo?.poolId)
 
@@ -235,6 +233,21 @@ export const PriceContent = () => {
       </div>
       <AmountInput
         onchange={(value) => {
+          console.log('maxOpenLong-->', maxOpenLong)
+          const longSize = parseBigNumber(value)
+            .div(100)
+            .mul(parseBigNumber(maxOpenLong.quoteAmount))
+            .toString()
+          const shortSize = parseBigNumber(value)
+            .div(100)
+            .mul(parseBigNumber(maxOpenShort.quoteAmount))
+            .toString()
+
+          console.log('longSize-->', longSize)
+          console.log('shortSize-->', shortSize)
+
+          setLongSize(longSize)
+          setShortSize(shortSize)
           setAmountSliderValue(value)
         }}
       />

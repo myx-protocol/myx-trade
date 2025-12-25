@@ -4,11 +4,12 @@ import { parseBigNumber } from '@/utils/bn'
 import { TRADING_FEE_DECIMALS } from '@/constant/decimals'
 import { ethers } from 'ethers'
 import useSWR from 'swr'
-import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
+import type { PoolConfig } from '@/store/globalStore'
 
 export const useGetTradingFee = (chainId?: number) => {
   const { client } = useMyxSdkClient(chainId)
-  const { poolConfig } = useTradePageStore()
+  const { poolConfig } = useGlobalStore()
 
   const getTradingFee = useCallback(
     async ({ size, price, assetClass }: { size: string; price: string; assetClass: number }) => {
@@ -43,7 +44,7 @@ export const useGetTradingFeeInfo = ({
   chainId?: number
 }) => {
   const { client } = useMyxSdkClient(chainId)
-  const { poolConfig } = useTradePageStore()
+  const { poolConfig } = useGlobalStore()
 
   const { data: fundingFeeInfo } = useSWR(
     ['getFundingFeeInfo', assetClass, poolConfig?.level ?? 1],

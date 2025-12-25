@@ -1,13 +1,13 @@
 import { useLeverageDialogStore } from '../Dialog/Leverage/store'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { ChainId } from '@/config/chain'
-import { useTradePageStore } from '../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 const DEFAULT_LEVERAGE = 1
 
 export const useLeverage = (poolId?: string) => {
   const { chainId } = useWalletConnection()
   const { leverageMap } = useLeverageDialogStore()
-  const { maxLeverage } = useTradePageStore()
+  const { maxLeverage } = useGlobalStore()
 
   let defaultLeverage = DEFAULT_LEVERAGE
   if (maxLeverage >= 20) {

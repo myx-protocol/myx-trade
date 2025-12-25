@@ -1,6 +1,5 @@
 import { PairLogo } from '@/components/UI/PairLogo'
 import Dropdown from '@/components/Icon/set/Dropdown'
-import { useTradePageStore } from '../store/TradePageStore'
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store'
 import { t } from '@lingui/core/macro'
 import { MarketCapType, SearchSecondTypeEnum, SearchTypeEnum } from '@myx-trade/sdk'
@@ -11,9 +10,10 @@ import type { ChainId } from '@/config/chain'
 import { Copy } from '@/components/Copy'
 import { truncateAddress } from '@/utils/string'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import useGlobalStore from '@/store/globalStore'
 
 export const SymbolInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { open: openGlobalSearch } = useGlobalSearchStore()
 
   const { data: baseTokenInfo } = useBaseTokenInfo({

@@ -4,14 +4,14 @@ import { useTradePanelStore } from '../../store'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { Trans } from '@lingui/react/macro'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useEffect } from 'react'
 import { OrderType } from '@myx-trade/sdk'
 
 export const PriceInput = () => {
   const { orderType, setOrderType, price, setPrice } = useTradePanelStore()
   const { tickerData } = useMarketStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
 

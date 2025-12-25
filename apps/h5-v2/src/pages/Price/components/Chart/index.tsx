@@ -1,6 +1,5 @@
 import { StudyList } from '@/components/Trade/Charts/StudyList'
 import { TradingView } from '@/components/Trade/Charts/TradingView'
-import { usePriceStore } from '../../store'
 import { useRef } from 'react'
 import type { TradingViewInstance } from '@/components/Trade/Charts/TradingView'
 import type { ResolutionString } from '@public/charting_library/charting_library'
@@ -8,8 +7,10 @@ import { useMount, useUnmount } from 'ahooks'
 import { klinePubSub } from '@/utils/pubsub'
 import { ToolBar } from '@/components/Trade/Charts/Toolbar'
 import { useChartsStore } from '@/components/Trade/Charts/store'
+import useGlobalStore from '@/store/globalStore'
+
 export const Chart = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { activeResolution } = useChartsStore()
   const tradingViewRef = useRef<TradingViewInstance>(null)
   const onResolutionChange = (value: number | string) => {

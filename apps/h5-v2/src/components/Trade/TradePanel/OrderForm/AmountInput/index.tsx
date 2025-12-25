@@ -9,7 +9,7 @@ import { Slider, TextField, Tooltip } from '@mui/material'
 import { useTradePanelStore } from '../../store'
 import { parseBigNumber } from '@/utils/bn'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
 
@@ -74,7 +74,7 @@ const AmountSliderMarks = [
 ]
 
 export const AmountInput = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const [useSlider, setUseSlider] = useState(false)
   const {
     collateralAmount,

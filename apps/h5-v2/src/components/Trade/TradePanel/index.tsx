@@ -20,7 +20,6 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
 import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
-import { useTradePageStore } from '../store/TradePageStore'
 import { getSlippage, getSlippageConfig, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { truncateAddress } from '@/utils/string'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -42,13 +41,12 @@ import { useNavigate } from 'react-router-dom'
 import SettingIcon from '@/components/Icon/set/SettingIcon'
 import KlineIcon from '@/components/Icon/set/KlineIcon'
 import ChartsIcon from '@/components/Icon/set/ChartsIcon'
-import { CoinIcon } from '@/components/UI/CoinIcon'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
-  const { symbolInfo, showCharts, setShowCharts } = useTradePageStore()
+  const { symbolInfo, showCharts, setShowCharts } = useGlobalStore()
   const { setLoginModalOpen } = useWalletStore()
   const [isOpenGlobalContractSearch, setIsOpenGlobalContractSearch] = useState(false)
   const { poolConfig } = useGetPoolConfig(

@@ -3,13 +3,13 @@ import { Collapse } from '../../components/Collapse'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { LongShortBar } from '../../components/LongShortBar'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { usePoolLiquidityInfo } from './usePoolLiquidityInfo'
 import { formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
 
 export const PoolsInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   return (

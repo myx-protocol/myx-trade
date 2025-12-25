@@ -1,13 +1,12 @@
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 import { useTradePanelStore } from '../store'
 import { ReceiveDialog as ReceiveDialogComponent } from '@/components/ReceiveDialog'
 
 export const ReceiveDialog = () => {
   const { address } = useWalletConnection()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { receiveDialogOpen, setReceiveDialogOpen } = useTradePanelStore()
 
   return (
