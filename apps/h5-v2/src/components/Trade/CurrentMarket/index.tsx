@@ -43,7 +43,6 @@ export const CurrentMarket = () => {
     }
 
     return () => {
-      console.log('unsubscribe', unsubscribe)
       // unsubscribe oracle price
       unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
       if (unsubscribe && typeof unsubscribe === 'function') {
