@@ -36,8 +36,8 @@ export const useCheckUserVipInfo = () => {
         {
           tier: vipInfo?.vipTier as number,
           referrer: vipInfo?.rebateAddr as string,
-          totalReferralRebatePct: vipInfo?.rebateReturnPct as number,
-          referrerRebatePct: vipInfo?.rebatePct as number,
+          totalReferralRebatePct: vipInfo?.rebatePct as number,
+          referrerRebatePct: vipInfo?.rebateReferrerPct as number,
           nonce: nonce.toString(),
         },
         vipInfo?.signature as string,
