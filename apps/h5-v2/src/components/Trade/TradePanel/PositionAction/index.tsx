@@ -44,7 +44,7 @@ export const PositionAction = () => {
   const closeClipPath = 'polygon(12px 0, 100% 0, 100% 100%, 0 100%)'
 
   return (
-    <div className="relative mt-[8px] h-[36px] rounded-[8px] bg-[#202129]">
+    <div className="relative mt-[8px] h-[36px] rounded-[16px] bg-[#202129]">
       {/* indicator */}
       <div
         className="absolute top-0 h-full w-[50%] transition-all duration-200 ease-in-out"
@@ -59,7 +59,7 @@ export const PositionAction = () => {
         }}
       ></div>
       {/* tabs */}
-      <div className="absolute top-0 left-0 flex h-full w-full">
+      <div className="absolute top-0 left-0 flex h-full w-full gap-[12px]">
         <PositionActionButton value={PositionActionEnum.OPEN}>
           <Trans>Open</Trans>
         </PositionActionButton>
