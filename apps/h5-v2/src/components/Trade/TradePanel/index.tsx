@@ -43,6 +43,8 @@ import KlineIcon from '@/components/Icon/set/KlineIcon'
 import ChartsIcon from '@/components/Icon/set/ChartsIcon'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
+import { useScroll, useThrottle, useThrottleFn } from 'ahooks'
+import clsx from 'clsx'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
@@ -130,6 +132,17 @@ export const TradePanel = () => {
     }
   }, [symbolInfo?.chainId])
 
+  const position = useScroll()
+
+  const isFixedHeader = useThrottle(
+    () => {
+      return position?.top && position.top > 100
+    },
+    {
+      wait: 200,
+    },
+  )
+
   return (
     <>
       <div className="w-full pb-[16px]">
@@ -160,6 +173,9 @@ export const TradePanel = () => {
                   {symbolInfo?.quoteSymbol}
                 </span>
                 <RiseFallTextPrecent
+                  className={clsx({
+                    hidden: isFixedHeader,
+                  })}
                   value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
                 />
               </div>
@@ -187,6 +203,12 @@ export const TradePanel = () => {
                 className="text-[22px] font-[700] font-medium"
                 value={marketPrice}
                 showUnit={false}
+              />
+              <RiseFallTextPrecent
+                className={clsx({
+                  hidden: !isFixedHeader,
+                })}
+                value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
               />
             </div>
             <div className="flex items-center justify-end gap-[16px]">

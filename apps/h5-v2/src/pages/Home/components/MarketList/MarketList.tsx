@@ -27,7 +27,7 @@ export const MarketList = ({ activeMarket }: MarketListProps) => {
       let sortField: LeaderboardSortField | undefined = undefined
       switch (activeMarket) {
         case 'Hot':
-          sortField = 'tokenCreateTime'
+          sortField = 'tvl'
           break
         case 'Gainers':
           sortField = 'topGainers'

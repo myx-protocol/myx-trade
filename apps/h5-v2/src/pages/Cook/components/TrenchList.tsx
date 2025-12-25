@@ -257,12 +257,7 @@ export const TrenchList = ({
                   {isLoading ? (
                     <Skeleton width={40} height={40} className={'rounded-full'} />
                   ) : (
-                    <CoinIcon
-                      className={'border-light-border overflow-hidden rounded-full border-1'}
-                      icon={row?.market.icon}
-                      size={40}
-                      symbol={row?.market.label}
-                    />
+                    <CoinIcon icon={row?.market.icon} size={40} symbol={row?.market.label} />
                   )}
                   <Box
                     className={

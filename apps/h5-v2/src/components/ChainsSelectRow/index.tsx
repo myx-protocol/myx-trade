@@ -36,10 +36,10 @@ export const ChainsSelectRow = ({
       .filter((item) => item !== null)
   }, [])
   return (
-    <div className="flex w-full items-center justify-start gap-[12px]">
+    <div className="flex w-full items-center justify-start gap-[12px] text-[12px]">
       {showAllChains && (
         <div
-          className={clsx('flex items-center gap-[8px] rounded-[200px] p-[8px]', {
+          className={clsx('flex items-center gap-[4px] rounded-[200px] p-[8px]', {
             'text-[#848E9C]': chainIdSelected !== ALL_CHAIN_VALUE,
             'bg-[#292B33] text-white': chainIdSelected === ALL_CHAIN_VALUE,
           })}
@@ -57,7 +57,7 @@ export const ChainsSelectRow = ({
       {chainInfoList.map((chainInfo) => (
         <div
           key={chainInfo.chainId}
-          className={clsx('flex items-center gap-[8px] rounded-[200px] p-[8px]', {
+          className={clsx('flex items-center gap-[4px] rounded-[200px] p-[8px]', {
             'text-[#848E9C]': chainIdSelected !== chainInfo.chainId,
             'bg-[#292B33] text-white': chainIdSelected === chainInfo.chainId,
           })}

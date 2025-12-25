@@ -45,12 +45,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
         {isPending(props) ? (
           <Skeleton width={44} height={44} />
         ) : (
-          <CoinIcon
-            className={'border-light-border overflow-hidden rounded-full border-1'}
-            icon={props.icon}
-            size={44}
-            symbol={props.label}
-          />
+          <CoinIcon icon={props.icon} size={44} symbol={props.label} />
           // <img className={'h-full w-full rounded-[6px]'} src={props.icon} />
         )}
 

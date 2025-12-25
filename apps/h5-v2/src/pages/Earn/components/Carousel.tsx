@@ -37,11 +37,7 @@ const TokenInfo = ({ token }: { token?: Token }) => {
     <Box className={'flex items-center gap-[6px]'}>
       <Box className={'relative rounded-full'}>
         {token ? (
-          <CoinIcon
-            size={28}
-            icon={token.icon ?? ''}
-            className={'border-light-border overflow-hidden rounded-full border-1'}
-          />
+          <CoinIcon size={28} icon={token.icon ?? ''} />
         ) : (
           <Skeleton width={28} height={28} />
         )}
