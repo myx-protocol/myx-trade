@@ -36,7 +36,6 @@ export const NavBar = ({ className, children }: { className?: string; children?:
               icon={quoteLpDetail?.tokenIcon as string}
               size={28}
               symbol={quoteLpDetail?.mQuoteBaseSymbol}
-              className={'border-light-border overflow-hidden rounded-full border-1'}
             />
 
             <Box
@@ -47,7 +46,6 @@ export const NavBar = ({ className, children }: { className?: string; children?:
               <CoinIcon
                 size={10}
                 icon={CHAIN_INFO?.[quoteLpDetail?.chainId as number]?.logoUrl ?? ''}
-                className={'border-deep overflow-hidden rounded-full border-1'}
               />
             </Box>
           </Box>

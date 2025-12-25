@@ -65,6 +65,14 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
+  .font-harmony {
+    font-family: 'HarmonyOS';
+  }
+
+  .font-harmony-sc {
+    font-family: 'HarmonyOS_SC';
+  }
 }
 
 :root {
@@ -97,7 +105,9 @@
   --sell-gradient: linear-gradient(275deg, #c23749 3.47%, #ba4c47 99.82%);
   --light-bg: #2d3138;
   --green2: #00996f;
-  --light-border: #292B33;
+  --light-border: #292b33;
+  --font-family: "HarmonyOS, HarmonyOS_SC, Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif";
+  font-family: var(--font-family);
 }
 
 Button.gradient {
@@ -157,7 +167,6 @@ Button.gradient {
   }
 }
 
-
 .icon-sort.asc {
   .up-arrow {
     color: var(--basic-white);
@@ -170,7 +179,6 @@ Button.gradient {
   }
 }
 
-
 .MuiDialog-container.MuiDialog-scrollPaper {
   overflow: hidden;
 
@@ -179,23 +187,21 @@ Button.gradient {
   }
   /*-webkit-overflow-scrolling: touch;*/
   ::-webkit-scrollbar {
-    width: 6px
+    width: 6px;
   }
 
-
   ::-webkit-scrollbar-track {
-    background-color: transparent
+    background-color: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     background-color: #464852;
     border-radius: 6px;
     border: 2px solid transparent;
-    background-clip: content-box
+    background-clip: content-box;
   }
 
   ::-webkit-scrollbar-thumb :hover {
     background-color: #464852;
   }
-
 }

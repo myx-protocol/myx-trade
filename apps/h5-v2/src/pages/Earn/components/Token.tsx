@@ -13,12 +13,7 @@ export const Token = ({ token }: { token?: Vault }) => {
     <Box className={'flex items-center gap-[6px]'}>
       <Box className={'relative rounded-full'}>
         {token ? (
-          <CoinIcon
-            size={28}
-            icon={token.icon ?? ''}
-            symbol={token.name}
-            className={'border-light-border overflow-hidden rounded-full border-1'}
-          />
+          <CoinIcon size={28} icon={token.icon ?? ''} symbol={token.name} />
         ) : (
           <Skeleton className={'rounded-full'} width={28} height={28} />
         )}
@@ -27,11 +22,7 @@ export const Token = ({ token }: { token?: Vault }) => {
           className={'absolute right-[-2px] bottom-0 h-[10px] w-[10px] rounded-full bg-[#282C34]'}
         >
           {token ? (
-            <CoinIcon
-              size={10}
-              icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''}
-              className={'border-deep overflow-hidden rounded-full border-1'}
-            />
+            <CoinIcon size={10} icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''} />
           ) : (
             <Skeleton width={10} height={10} />
           )}

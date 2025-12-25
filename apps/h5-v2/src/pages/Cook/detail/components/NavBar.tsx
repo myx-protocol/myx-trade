@@ -34,7 +34,6 @@ export const NavBar = ({ className, children }: { className?: string; children?:
               icon={baseLpDetail?.tokenIcon as string}
               size={28}
               symbol={baseLpDetail?.mSymbol}
-              className={'border-light-border overflow-hidden rounded-full border-1'}
             />
 
             <Box

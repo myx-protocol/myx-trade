@@ -19,7 +19,7 @@ export const ChainSelector = () => {
     }
   }, [chainId])
   return (
-    <div className="flex min-w-[70px] shrink-0 gap-[2px] text-[#848E9C]">
+    <div className="flex min-w-[70px] shrink-0 justify-end gap-[2px] text-[#848E9C]">
       <p className="text-[12px]" role="button" onClick={() => setOpen(true)}>
         {!chainId ? <Trans>All Chain</Trans> : chainInfo?.label}
       </p>

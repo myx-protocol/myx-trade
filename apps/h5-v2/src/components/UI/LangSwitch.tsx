@@ -45,11 +45,12 @@ const LangSwitchStyle = {
   // borderBottomRightRadius: idx === options.length - 1 ? '4px' : 0,
   '&.Mui-selected': {
     borderRadius: '4px !important',
-    background: 'var(--brand-green)',
-    color: '#101114',
+    background: '#00996F',
+    color: '#fff',
   },
   '&.Mui-selected:hover': {
-    background: 'var(--brand-green)',
+    background: '#00996F',
+    color: '#fff',
   },
 }
 
@@ -67,7 +68,7 @@ const LangSwitch = <T = AVAILABLE_LOCALES,>({
       sx={LangSwitchGroupStyle}
       className={className}
     >
-      {options.map((opt, idx) => (
+      {options.map((opt) => (
         <ToggleButton key={opt.value} value={opt.value} sx={LangSwitchStyle} disableRipple>
           {opt.label}
         </ToggleButton>
