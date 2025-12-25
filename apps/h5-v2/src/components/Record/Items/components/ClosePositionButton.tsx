@@ -519,6 +519,9 @@ export const ClosePositionButton = ({
                     ? amount
                     : parseBigNumber(amount).div(parseBigNumber(price)).toString()
 
+                const size = parseBigNumber(formatAmount)
+                  .mul(10 ** (symbolInfo?.baseDecimals ?? 1))
+                  .toFixed(0)
                 const data = {
                   chainId: position.chainId,
                   address: address as `0x${string}`,
@@ -528,7 +531,7 @@ export const ClosePositionButton = ({
                   triggerType: triggerType,
                   direction: position.direction,
                   collateralAmount: '0',
-                  size: ethers.parseUnits(formatAmount, symbolInfo?.baseDecimals).toString(),
+                  size,
                   price: ethers.parseUnits(price.toString(), 30).toString(),
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
