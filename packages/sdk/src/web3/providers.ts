@@ -149,7 +149,10 @@ export const getDataProviderContract = async (chainId: ChainId, type: ProviderTy
 
 
 export const getForwarderContract = async (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
+  console.log('chainId-->', chainId);
   const addresses = Address[chainId as keyof typeof Address];
+
+  console.log('addresses-->', addresses);
   const address = addresses.FORWARDER;
   const provider = type === ProviderType.JSON ? getJSONProvider(chainId as number) : (await getSignerProvider(chainId as number));
 

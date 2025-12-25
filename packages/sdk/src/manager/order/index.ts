@@ -63,8 +63,6 @@ export class Order {
       );
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
 
-
-
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
       const needAmount = totalCollateralAmount + totalNetWorkFee
@@ -102,6 +100,8 @@ export class Order {
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
+      
       if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
           const approvalResult = await this.utils.approveAuthorization({
