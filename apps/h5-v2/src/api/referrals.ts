@@ -182,12 +182,13 @@ export const getRefereeReferralStatistics = async (
 
 // 被邀请人返佣流水
 export interface RefereeReferralFlowType {
-  id: string
+  id: number
   account: string
   chainId: number
   receiveAmount: string //返佣数量
   rebateType: 1 | 2 // 1=返佣, 2=返还
   txTime: number // 返佣时间
+  tokenName: string
 }
 interface GetRefereeReferralFlowParams {
   after: number
@@ -214,6 +215,8 @@ export interface ExtractReferralFlowType {
   claimAmount: string //提取数量
   txHash: string // 交易哈希
   txTime: number // 提取时间
+  id: number
+  tokenName: string
 }
 export interface ExtractReferralFlowParams {
   after: number
