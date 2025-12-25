@@ -7,7 +7,7 @@ import { getSignerProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { ForwarderGetStatus } from "@/api";
-import { getForwarderContract } from "@/web3/providers";
+import { getForwarderContract, ProviderType } from "@/web3/providers";
 import { Account } from "../account";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index";
@@ -15,6 +15,7 @@ import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getChainDomainConfig, getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { retry, RetryableError, TimeoutError } from "@/utils";
+import Forwarder_ABI from "@/abi/Forwarder.json";
 import { Api } from "../api";
 
 const contractTypes = {
@@ -282,7 +283,7 @@ export class Seamless {
       }
     }
 
-    const forwarderContract = await getForwarderContract(chainId)
+    const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
     const nonce = await forwarderContract.nonces(masterAddress)
 
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
@@ -397,13 +398,13 @@ export class Seamless {
   }
 
   async importSeamlessPrivateKey({ privateKey, password, chainId }: { privateKey: string, password: string, chainId: number }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
     if (!ethers.isHexString(privateKey, 32)) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
     }
 
     const wallet = new ethers.Wallet(privateKey)
-    const forwarderContract = await getForwarderContract(config.chainId)
+    const forwarderContract = await getForwarderContract(chainId)
+   
     const masterAddress = await forwarderContract.originAccount(wallet.address)
 
     if (masterAddress === ZeroAddress) {
