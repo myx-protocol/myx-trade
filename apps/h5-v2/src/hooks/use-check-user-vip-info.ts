@@ -27,9 +27,13 @@ export const useCheckUserVipInfo = () => {
 
     const vipInfo = res.data ?? {}
     if (
-      vipInfo?.vipTier.toString() !== userVipInfoByContract?.tier.toString() ||
-      vipInfo?.rebatePct.toString() !== userVipInfoByContract?.totalReferralRebatePct.toString() ||
-      vipInfo?.rebateReferrerPct.toString() !== userVipInfoByContract?.referrerRebatePct.toString()
+      vipInfo &&
+      userVipInfoByContract &&
+      (vipInfo?.vipTier.toString() !== userVipInfoByContract?.tier.toString() ||
+        vipInfo?.rebatePct.toString() !==
+          userVipInfoByContract?.totalReferralRebatePct.toString() ||
+        vipInfo?.rebateReferrerPct.toString() !==
+          userVipInfoByContract?.referrerRebatePct.toString())
     ) {
       const rs = await client?.account.setUserFeeData(
         address as string,
