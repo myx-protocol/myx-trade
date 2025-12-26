@@ -19,6 +19,7 @@ import { TradeSelect } from '@/components/Trade/components/Select'
 import { AmountUnitEnum } from '@/components/Trade/type'
 import clsx from 'clsx'
 import useGlobalStore from '@/store/globalStore'
+import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -99,6 +100,7 @@ export const ClosePositionButton = ({
   const [price, setPrice] = useState('')
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [amount, setAmount] = useState(position.size) // 默认是 position.size
+  const { checkUserVipInfo } = useCheckUserVipInfo()
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',
@@ -504,6 +506,7 @@ export const ClosePositionButton = ({
             onClick={async () => {
               try {
                 setLoading(true)
+                await checkUserVipInfo()
                 const pool = poolList.find((poolItem: any) => poolItem.poolId === position.poolId)
                 let triggerType: TriggerType = TriggerType.NONE
                 if (orderType === OrderType.LIMIT) {
