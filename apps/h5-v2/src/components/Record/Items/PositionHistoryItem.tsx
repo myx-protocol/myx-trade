@@ -14,6 +14,9 @@ import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
+import { getProfitRatePrecision } from '@/utils/math'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
   [CloseTypeEnum.PartialClose]: () => t`部分平仓`,
@@ -32,6 +35,11 @@ export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType })
     if (!item.chainId) return null
     return getChainInfo(item.chainId)
   }, [item.chainId])
+
+  const roe = useMemo(() => {
+    const profitRate = getProfitRatePrecision(item.realizedPnl || '0', item.collateralAmount || '0')
+    return profitRate
+  }, [item.realizedPnl, item.collateralAmount])
   return (
     <div className="w-full border-b border-[#202129] px-[16px] pt-[16px] pb-[20px]">
       <div className="flex items-center justify-between">
@@ -114,8 +122,15 @@ export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType })
             <p>
               <Trans>Roe</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
-              <RiseFallText value={item.realizedPnl} prefix="%" />
+            <p
+              className={twMerge(
+                clsx('mt-[4px] text-[14px] font-medium text-white', {
+                  'text-rise': roe.startsWith('+'),
+                  'text-fall': roe.startsWith('-'),
+                }),
+              )}
+            >
+              {roe}
             </p>
           </div>
           {/* margin amount */}
