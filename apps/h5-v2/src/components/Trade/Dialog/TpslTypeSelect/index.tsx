@@ -4,6 +4,8 @@ import { Trans } from '@lingui/react/macro'
 import { useMemo, type ReactNode } from 'react'
 import clsx from 'clsx'
 import useGlobalStore from '@/store/globalStore'
+import { DialogBase } from '@/components/UI/DialogBase'
+
 interface TPSLTypeSelectDialogProps {
   open: boolean
   onClose: () => void
@@ -78,8 +80,8 @@ export const TPSLTypeSelectDialog = ({
     onClose()
   }
   return (
-    <DialogTheme open={open} onClose={onClose}>
-      <DialogTitleTheme onClose={onClose} className="pb-[20px]! text-[20px]! font-bold">
+    <DialogBase open={open} onClose={onClose}>
+      <DialogTitleTheme className="pb-[20px]! text-[20px]! font-bold">
         <Trans>TP/SL Settings</Trans>
       </DialogTitleTheme>
       <div className="mt-[4px] flex flex-col gap-[10px] px-[16px] pb-[32px]">
@@ -100,6 +102,29 @@ export const TPSLTypeSelectDialog = ({
           </div>
         ))}
       </div>
-    </DialogTheme>
+    </DialogBase>
+    // <DialogTheme open={open} onClose={onClose}>
+    //   <DialogTitleTheme onClose={onClose} className="pb-[20px]! text-[20px]! font-bold">
+    //     <Trans>TP/SL Settings</Trans>
+    //   </DialogTitleTheme>
+    //   <div className="mt-[4px] flex flex-col gap-[10px] px-[16px] pb-[32px]">
+    //     {tpslTypeList.map((item) => (
+    //       <div
+    //         key={item.value}
+    //         className={clsx('rounded-[8px] border-[1px] px-[12px] py-[16px]', {
+    //           'border-[#31333D]': value !== item.value,
+    //           'border-[#ffffff]': value === item.value,
+    //         })}
+    //         role="button"
+    //         onClick={() => handleChange?.(item.value)}
+    //       >
+    //         <div className="text-[14px] leading-[1.2] font-bold text-white">{item.title}</div>
+    //         <div className="mt-[6px] text-[12px] leading-[1.2] font-medium text-[#848E9C]">
+    //           {item.description}
+    //         </div>
+    //       </div>
+    //     ))}
+    //   </div>
+    // </DialogTheme>
   )
 }

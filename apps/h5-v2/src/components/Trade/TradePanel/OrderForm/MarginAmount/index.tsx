@@ -17,7 +17,7 @@ export const MarginAmountInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p>
+          <p className="text-[#CED1D9]">
             <Trans>Pay</Trans>
           </p>
           <p className="ml-[4px]">
