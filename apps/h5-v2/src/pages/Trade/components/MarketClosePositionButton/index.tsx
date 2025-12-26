@@ -10,8 +10,9 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
-import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
+import { toast } from '@/components/UI/Toast'
 
 export const MarketClosePositionButton = ({
   position,
@@ -25,6 +26,7 @@ export const MarketClosePositionButton = ({
   const { client } = useMyxSdkClient()
   const [loading, setLoading] = useState(false)
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
+  const { checkUserVipInfo } = useCheckUserVipInfo()
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',
@@ -121,6 +123,7 @@ export const MarketClosePositionButton = ({
               try {
                 setLoading(true)
 
+                await checkUserVipInfo()
                 const rs = await client?.order.createDecreaseOrder({
                   chainId: position.chainId,
                   address: address as `0x${string}`,
@@ -143,15 +146,13 @@ export const MarketClosePositionButton = ({
                   leverage: position.userLeverage,
                 })
                 if (rs?.code === 0) {
-                  console.log('market close success')
+                  toast.success({ title: t`Market close success` })
                   setMarketCloseDialogOpen(false)
                 } else {
-                  console.log('rs-->', rs)
-                  console.log('market close failed')
+                  toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
                 }
-                // todo toast
               } catch (e) {
-                console.log(e)
+                toast.error({ title: t`${client?.utils.formatErrorMessage(e)}` })
               } finally {
                 setLoading(false)
               }

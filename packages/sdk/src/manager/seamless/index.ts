@@ -294,7 +294,6 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
     const nonce = await forwarderContract.nonces(masterAddress)
 
-    this.logger.info('permitParams-->', permitParams);
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
       approve,
@@ -311,47 +310,19 @@ export class Seamless {
       deadline,
     }, chainId)
 
-    if (!txRs.data?.txHash) {
-      const retryOptions = { n: 10, minWait: 250, maxWait: 1000 }
-
-      const { promise } = retry(async () => {
-        const getRs = await this.api.fetchForwarderGetApi({
-          requestId: txRs.data?.requestId,
-        })
-
-        if (getRs.data?.status === ForwarderGetStatus.EXECUTED) {
-          if (getRs.data?.txHash) {
-            txRs.data.txHash = getRs.data.txHash
-            return {
-              code: 0,
-              data: {
-                seamlessAccount: seamlessAddress,
-                authorized: approve,
-              },
-            }
-          } else {
-            throw new MyxSDKError(MyxErrorCode.OperationFailed, "Operation failed, please try again later");
-          }
-        } else if (
-          [ForwarderGetStatus.BROADCAST_FAILED, ForwarderGetStatus.TIMEOUT_CANCEL].includes(getRs?.data?.status as ForwarderGetStatus)
-        ) {
-          throw new MyxSDKError(MyxErrorCode.OperationFailed, "Operation failed, please try again later");
-        }
-
-        throw new RetryableError()
-      }, retryOptions)
-
-      try {
-        const rs = await promise
-
-        return rs
-      } catch (err) {
-
-        if (err instanceof TimeoutError) {
-          throw new MyxSDKError(MyxErrorCode.Timeout, "Your request timed out, please try again");
-        } else {
-          throw err
-        }
+    if (txRs.data?.txHash) {
+      return {
+        code: 0,
+        data: {
+          seamlessAccount: seamlessAddress,
+          authorized: approve,
+        },
+      }
+    } else {
+      return {
+        code: -1,
+        data: null,
+        message: 'Your request timed out, please try again',
       }
     }
   }

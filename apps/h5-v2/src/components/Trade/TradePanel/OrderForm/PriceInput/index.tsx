@@ -26,7 +26,7 @@ export const PriceInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p style={{ color: orderType === OrderType.MARKET ? '' : '#fff' }}>
+          <p style={{ color: orderType === OrderType.MARKET ? '#848E9C' : '#CED1D9' }}>
             <Trans>Price</Trans>
           </p>
         </div>

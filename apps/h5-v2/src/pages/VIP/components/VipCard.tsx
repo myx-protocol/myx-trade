@@ -25,15 +25,15 @@ export const VIPCard = memo(() => {
           <h1 className={'title text-[32px] leading-[1] font-[700]'}>
             VIP{isLoading ? '--' : vipInfo && vipInfo?.level >= 0 ? vipInfo?.level : '--'}
           </h1>
-          <span>
+          <span className={'opacity-65'}>
             <Trans>Current Level</Trans>
           </span>
         </Box>
-        <p className={''}>{encryptionAddress(account)}</p>
+        <p className={'opacity-65'}>{encryptionAddress(account)}</p>
       </Box>
 
       <Box className={'flex flex-col gap-[6px] text-[12px]'}>
-        <Box className={'flex gap-[4px]'}>
+        <Box className={'flex gap-[4px] opacity-85'}>
           {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
             <span>
               <Trans>Congratulations! You’ve unlocked the highest VIP level.</Trans>
@@ -46,10 +46,10 @@ export const VIPCard = memo(() => {
                 </Trans>
               </span>
               <span>
+                $
                 {nextLevelInfo && requiredTradeAmount
                   ? formatNumberPrecision(requiredTradeAmount, COMMON_PRICE_DISPLAY_DECIMALS)
-                  : '--'}{' '}
-                U{' '}
+                  : '--'}
               </span>
             </>
           )}
