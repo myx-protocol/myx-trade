@@ -26,7 +26,7 @@ export class BaseMyxClient {
   protected getAddressConfig() {
     const config = this.getConfig();
     const chainId = config?.chainId;
-    if (!chainId || isSupportedChainFn(chainId)) {
+    if (!chainId || !isSupportedChainFn(chainId)) {
       throw new MyxSDKError(MyxErrorCode.InvalidChainId, "Invalid chain id");
     }
     return address[chainId as keyof typeof address] as ContractAddress;
