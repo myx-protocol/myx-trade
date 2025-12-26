@@ -72,7 +72,7 @@ export const PriceInfo = () => {
         </p>
       </div>
 
-      <div>
+      <div className="text-right">
         <p className="text-[11px] text-[#6D7180]">
           {isShowCountdown ? (
             <>

@@ -26,7 +26,7 @@ export const MarketClosePositionButton = ({
   const { client } = useMyxSdkClient()
   const [loading, setLoading] = useState(false)
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
-  const { checkUserVipInfo } = useCheckUserVipInfo()
+  const { checkUserVipInfo } = useCheckUserVipInfo(position.chainId)
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',

@@ -13,17 +13,22 @@ interface UserVipInfoContract {
   nonce: number
 }
 
-export const useGetAccountVipInfoByContract = () => {
-  const { chainId } = useParams()
+export const useGetAccountVipInfoByContract = (positionChainId?: string) => {
+  const { chainId: currentChainId } = useParams()
+  const chainId = positionChainId ?? currentChainId
   const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
   const { address } = useWalletConnection()
 
   const getAccountVipInfoByContract = useCallback(async () => {
+    console.log(!client || !clientIsAuthenticated || !address || !chainId)
+
     if (!client || !clientIsAuthenticated || !address || !chainId) return {} as UserVipInfoContract
     const res = await client?.account.getAccountVipInfo(
       parseInt(chainId) as ChainId,
       address as string,
     )
+
+    console.log('res-->', res)
     const data = res.data ?? {}
     return {
       tier: data[0],
