@@ -195,7 +195,7 @@ export const AmountInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p className="text-[#848E9C]">
+          <p className="text-[#CED1D9]">
             <Trans>Amount</Trans>
           </p>
         </div>
