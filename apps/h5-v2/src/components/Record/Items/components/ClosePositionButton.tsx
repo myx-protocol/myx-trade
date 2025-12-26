@@ -100,7 +100,7 @@ export const ClosePositionButton = ({
   const [price, setPrice] = useState('')
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [amount, setAmount] = useState(position.size) // 默认是 position.size
-  const { checkUserVipInfo } = useCheckUserVipInfo()
+  const { checkUserVipInfo } = useCheckUserVipInfo(position.chainId)
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',

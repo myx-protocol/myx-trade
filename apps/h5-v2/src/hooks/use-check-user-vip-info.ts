@@ -6,11 +6,13 @@ import { useGetAccountVipInfoByContract } from './use-get-account-vip-info-by-co
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
-export const useCheckUserVipInfo = () => {
-  const { chainId } = useParams()
+export const useCheckUserVipInfo = (positionChainId?: string) => {
+  const { chainId: currentChainId } = useParams()
+  const chainId = positionChainId ?? currentChainId
   const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
   const { address } = useWalletConnection()
-  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract()
+  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract(chainId)
+
   const checkUserVipInfo = useCallback(async () => {
     if (!client || !clientIsAuthenticated || !address) return {}
 
@@ -54,7 +56,7 @@ export const useCheckUserVipInfo = () => {
         })
       }
     }
-  }, [client, clientIsAuthenticated, address, chainId])
+  }, [client, clientIsAuthenticated, address, chainId, positionChainId])
 
   return {
     checkUserVipInfo,
