@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import * as api from '@/api/referrals'
 import type { ApiResponse } from '@/api/type'
+import Big from 'big.js'
+import type { Address } from 'viem'
 
 export interface RefBonusInfo {
   claimedAmount: string
@@ -15,6 +17,7 @@ export interface RefBonusChainInfo {
   chainId: number
   availableAmount: string
   token: string
+  tokenAddress: Address
 }
 
 export interface RefClaimRecordInfo {
@@ -189,21 +192,14 @@ export const useReferralStore = create<ReferralState>()(
         // Map to RefBonusChainInfo
         const mappedChainInfo: RefBonusChainInfo[] = chainData.map((item) => ({
           chainId: item.chainId,
-          availableAmount: item.unclaimedAmount,
-          token: 'USDC', // Default to USDC as it's not in the response
+          availableAmount: Big(item.referral).minus(item.claimed).toString(),
+          token: item.tokenName || 'USDC', // Default to USDC as it's not in the response
+          tokenAddress: item.token,
         }))
 
         set((state) => {
           state.bonusChainInfo = mappedChainInfo
-          // Update availableAmount in bonusInfo by summing up unclaimedAmount
           if (state.bonusInfo) {
-            // Assuming simple sum for now, using Big.js would be better but string concat is risky.
-            // We'll use a helper or just sum if they are numbers in string format.
-            // Since we replaced BN with Big.js in components, we should be careful.
-            // But here we are just storing strings.
-            // Let's try to sum it up roughly or leave it to the component to calculate total?
-            // The component uses bonusInfo.availableAmount.
-            // Let's calculate it.
             let total = 0
             mappedChainInfo.forEach((c) => {
               total += parseFloat(c.availableAmount || '0')
@@ -228,8 +224,8 @@ export const useReferralStore = create<ReferralState>()(
         set({
           recentClaims: data.map((item) => ({
             account: item.account,
-            amount: item.claimAmount,
-            token: 'USDC', // Default
+            amount: item.amount,
+            token: item.tokenName || 'USDC', // Default
           })),
         })
       } catch (e) {

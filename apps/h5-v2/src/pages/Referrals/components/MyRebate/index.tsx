@@ -16,7 +16,6 @@ import { t } from '@lingui/core/macro'
 import { useAccessParams } from '@/hooks/useAccessParams'
 import { Skeleton } from '@/components/UI/Skeleton'
 
-const COMMON_USD_ASSETS_LABEL = 'USDC'
 const COMMON_USD_ASSETS_SCALE = 2
 const FORMAT_VALUE_FALLBACK = '--'
 
@@ -88,7 +87,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-xs leading-none text-[#CED1D9]">
-              <Trans>Unclaimed</Trans>({COMMON_USD_ASSETS_LABEL})
+              <Trans>Unclaimed</Trans>
             </div>
             <Tooltip title={<UnclaimedList infos={chainInfo} />} placement="bottom" arrow>
               <div className="mt-1.5 flex cursor-help gap-1 text-[28px] leading-none font-bold text-[#FFD700] underline decoration-dashed decoration-1 underline-offset-4">
@@ -108,7 +107,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
         <div className="flex justify-between">
           <div>
             <div className="text-xs leading-none text-[#CED1D9]">
-              <Trans>Claimed</Trans>({COMMON_USD_ASSETS_LABEL})
+              <Trans>Claimed</Trans>
             </div>
             <div className="mt-1.5 flex gap-1 text-[28px] leading-none font-bold text-white">
               {loading ? (
@@ -150,7 +149,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
               {loading ? (
                 <Skeleton className="h-4 w-16" />
               ) : (
-                `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)} ${COMMON_USD_ASSETS_LABEL}`
+                `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)}`
               )}
             </span>
           </div>
@@ -169,7 +168,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
                 {loading ? (
                   <Skeleton className="h-4 w-16" />
                 ) : (
-                  `${formatNumberPrecision(bonus?.rebates, COMMON_USD_ASSETS_SCALE)} ${COMMON_USD_ASSETS_LABEL}`
+                  `${formatNumberPrecision(bonus?.rebates, COMMON_USD_ASSETS_SCALE)} `
                 )}
               </span>
             </div>
@@ -225,7 +224,7 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
       <div className="mt-7 flex justify-between gap-6">
         <div className="flex-1">
           <div className="text-lg leading-none text-[#CED1D9]">
-            <Trans>Unclaimed</Trans>({COMMON_USD_ASSETS_LABEL})
+            <Trans>Unclaimed</Trans>
           </div>
           <div className="mt-3 flex items-center gap-1">
             {/* <Tooltips title={<UnclaimedList infos={chainInfo} />} placement="right" arrow> */}
@@ -242,7 +241,7 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
 
         <div className="flex-1">
           <div className="text-lg leading-none text-[#CED1D9]">
-            <Trans>Claimed</Trans>({COMMON_USD_ASSETS_LABEL})
+            <Trans>Claimed</Trans>
           </div>
           <div className="mt-3 flex items-center gap-1">
             <div className="text-[40px] leading-none font-bold text-white">
@@ -291,7 +290,7 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
             {loading ? (
               <Skeleton className="h-6 w-24" />
             ) : (
-              `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)} ${COMMON_USD_ASSETS_LABEL}`
+              `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)}`
             )}
           </span>
         </div>
@@ -311,7 +310,7 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
                 {loading ? (
                   <Skeleton className="h-6 w-24" />
                 ) : (
-                  `${formatNumberPrecision(bonus?.rebates, COMMON_USD_ASSETS_SCALE)} ${COMMON_USD_ASSETS_LABEL}`
+                  `${formatNumberPrecision(bonus?.rebates, COMMON_USD_ASSETS_SCALE)} `
                 )}
               </span>
             </div>
@@ -352,10 +351,7 @@ function UnclaimedList({ infos }: { infos?: any[] }) {
         <div key={item.chainId}>
           <div className="flex justify-between gap-6 p-4 text-sm leading-none font-medium">
             <div>{getChainInfo(item.chainId)?.label}</div>
-            <div>
-              {formatNumberPrecision(item.availableAmount, COMMON_USD_ASSETS_SCALE)}{' '}
-              {COMMON_USD_ASSETS_LABEL}
-            </div>
+            <div>{formatNumberPrecision(item.availableAmount, COMMON_USD_ASSETS_SCALE)} </div>
           </div>
           {index < infos.length - 1 && <div className="h-[1px] bg-[#31333D]" />}
         </div>
