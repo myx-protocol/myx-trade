@@ -1,6 +1,7 @@
 import { baseUrl, http } from '@/request'
 import { buildAccessHeaders } from '@/request/utils'
 import type { ApiResponse } from './type'
+import type { Address } from 'viem'
 
 /**
  * 所有 referrral 接口的公共参数
@@ -108,12 +109,10 @@ export const getUserReferralStatistics = async (access: AccessParams) => {
 // 分链领取数量
 export interface ReferralClaimCountByChainType {
   chainId: number
-  account: string
-  referralRebate: string
-  referrerRebate: string
-  refereeRebate: string
-  claimedAmount: string
-  unclaimedAmount: string
+  tokenName?: string
+  claimed: number | string
+  referral: number | string
+  token: Address
 }
 export const getReferralClaimCountByChain = async (access: AccessParams) => {
   return http.get<ApiResponse<ReferralClaimCountByChainType[]>>(
@@ -242,7 +241,8 @@ export interface ClaimNoticeListParams {
 }
 export interface ClaimNoticeListType {
   account: string
-  claimAmount: string //提取数量
+  amount: string //提取数量
+  tokenName?: string
 }
 export const getClaimNoticeList = async (params: ClaimNoticeListParams, access: AccessParams) => {
   return http.get<ApiResponse<ClaimNoticeListType[]>>(
