@@ -1,7 +1,5 @@
 import { Trans } from '@lingui/react/macro'
 import { Tag } from '@/components/Tag/index'
-import { Share } from '@/components/Icon'
-import { InfoButton } from '@/components/UI/Button'
 import { formatNumber } from '@/utils/number'
 import { RiseFallText } from '@/components/RiseFallText'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
@@ -15,11 +13,11 @@ import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { ClosePositionButton } from './components/ClosePositionButton'
 import { AdjustMarginDialog } from '@/components/Trade/Dialog/AdjustMargin'
 import { TpSlButton } from '@/components/Trade/Dialog/TPSL'
-import { usePoolInfo } from '@/components/Trade/hooks/usePoolInfo'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMemo } from 'react'
+import { SharePositionDialog } from '@/components/SharePositionDialog'
 
 export const PositionItem = ({
   position,
@@ -131,7 +129,11 @@ export const PositionItem = ({
         {/* time */}
         {/* <p className="text-[12px] text-[#848E9C]">{dayjs().format('YYYY/MM/DD HH:mm:ss')}</p> */}
         <div role="button" className="shrink-0 text-white">
-          <Share size={16} />
+          <SharePositionDialog
+            position={position}
+            roe={marketPrice ? rate : '--'}
+            price={marketPrice}
+          />
         </div>
       </div>
       {/* info */}
