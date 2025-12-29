@@ -190,7 +190,13 @@ export const MarginAccount = () => {
           }
           right={
             <p>
-              {displayAmount(accountAssets?.freeMargin?.toString() ?? '0')}{' '}
+              {isExpired
+                ? displayAmount(
+                    parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                      .plus(parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0'))
+                      .toString() ?? '0',
+                  )
+                : displayAmount(accountAssets?.freeMargin?.toString() ?? '0')}{' '}
               {symbolInfo?.quoteSymbol}
             </p>
           }
@@ -231,8 +237,7 @@ export const MarginAccount = () => {
                 </Tooltips>
               ) : (
                 <p>
-                  {displayAmount(accountAssets?.quoteProfit?.toString() ?? '0')}{' '}
-                  {symbolInfo?.quoteSymbol}
+                  {'0'} {symbolInfo?.quoteSymbol}
                 </p>
               )}
             </>
@@ -296,12 +301,18 @@ export const MarginAccount = () => {
                     <Tooltips title={`${countdownText}`}>
                       <p className="text-tooltip font-normal">
                         {displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
-                        {symbolInfo?.quoteSymbol}
+                        {symbolInfo?.baseSymbol}
                       </p>
                     </Tooltips>
                   ) : (
                     <p>
-                      {displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
+                      {isExpired
+                        ? displayAmount(
+                            parseBigNumber(accountAssets?.freeBaseAmount?.toString() ?? '0')
+                              .plus(parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0'))
+                              .toString() ?? '0',
+                          )
+                        : displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
                       {symbolInfo?.baseSymbol}
                     </p>
                   )}
@@ -321,7 +332,12 @@ export const MarginAccount = () => {
               right={
                 <Tooltips title={t``}>
                   <p>
-                    {displayAmount(accountAssets?.baseProfit?.toString() ?? '0')}{' '}
+                    {!isExpired
+                      ? displayAmount(
+                          parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0').toString() ??
+                            '0',
+                        )
+                      : 0}{' '}
                     {symbolInfo?.baseSymbol}
                   </p>
                 </Tooltips>
