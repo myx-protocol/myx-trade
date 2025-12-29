@@ -127,7 +127,9 @@ export const SharePositionDialog = ({
           <p className="w-[100px] text-[12px] text-[#848e9c]">
             <Trans>Entry Price</Trans>
           </p>
-          <span className="ml-[12px] text-[14px] text-[white]">{position?.entryPrice}</span>
+          <span className="ml-[12px] text-[14px] text-[white]">
+            {displayAmount(position?.entryPrice ?? '0')}
+          </span>
         </div>
         <div className="mt-[6px] flex w-full items-center">
           <p className="w-[100px] text-[12px] text-[#848e9c]">
