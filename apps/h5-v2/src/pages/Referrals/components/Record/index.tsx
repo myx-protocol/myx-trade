@@ -46,54 +46,76 @@ export const RecordCard = () => {
   const [after, setAfter] = useState<number>(0)
   const [statisticsOpen, setStatisticsOpen] = useState(false)
   const [currentReferee, setCurrentReferee] = useState<string>('')
+  const [hasBefore, setHasBefore] = useState(false)
+  const [hasAfter, setHasAfter] = useState(false)
 
   const fetchData = async () => {
     if (!accessParams?.accessToken || !accessParams.account) return // Only check accessToken, 'account' is not used here
-    setLoading(true)
+    if (!before && !after) {
+      setLoading(true)
+    }
     try {
       let res: ApiResponse<
         RefereeReferralFlowType[] | ExtractReferralFlowType[] | UserReferralDataType[]
       >
-      // New APIs do not support pagination params in the interface definition
-      // const params = { limit: PAGE_SIZE, before, after }
+
+      const requestLimit = PAGE_SIZE + 1
 
       if (recordType === RecordTypeEnum.Invite) {
         res = await getUserReferralData(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       } else if (recordType === RecordTypeEnum.Rebase) {
         res = await getRefereeReferralFlow(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       } else {
         res = await extractReferralFlow(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       }
+      if (!res.data?.length) {
+        if (before) {
+          setHasBefore(false)
+        }
+        if (after) {
+          setHasAfter(false)
+        }
+        setLoading(false)
+        return
+      }
+      if (res.data?.length === requestLimit) {
+        if (before) {
+          setList(res.data?.slice(1) || [])
+        } else {
+          setList(res.data?.slice(0, PAGE_SIZE) || [])
+        }
+      } else {
+        setList(res.data || [])
+      }
+      setHasBefore(
+        Boolean(before && res.data.length === requestLimit) ||
+          Boolean(after && res.data.length !== requestLimit),
+      )
+      setHasAfter(
+        Boolean(res.data.length === requestLimit) ||
+          Boolean(before && res.data.length !== requestLimit),
+      )
     } catch (e) {
       console.error(e)
       setList([])
@@ -287,17 +309,17 @@ export const RecordCard = () => {
       {list.length > 0 && (
         <div className="mt-4 flex justify-end gap-4">
           <div
-            className={`cursor-pointer ${!after && !before ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
+            className={`cursor-pointer ${!hasBefore ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
             onClick={() => {
-              if (after || before) handlePrev()
+              if (hasBefore) handlePrev()
             }}
           >
             <Prev size={12} />
           </div>
           <div
-            className={`cursor-pointer ${list.length < PAGE_SIZE ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
+            className={`cursor-pointer ${!hasAfter ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
             onClick={() => {
-              if (list.length === PAGE_SIZE) handleNext()
+              if (hasAfter) handleNext()
             }}
           >
             <Next size={12} />

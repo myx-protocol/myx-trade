@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { Popper, Paper } from '@mui/material'
+import { Popper, Paper, type SxProps, type Theme } from '@mui/material'
+import { merge } from 'lodash-es'
 
 interface HoverCardProps {
   children: ReactNode
@@ -24,6 +25,9 @@ interface HoverCardProps {
   className?: string
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  disablePortal?: boolean
+  sx?: SxProps<Theme>
+  paperSx?: SxProps<Theme>
 }
 
 export const HoverCard = ({
@@ -36,6 +40,9 @@ export const HoverCard = ({
   className = '',
   open: controlledOpen,
   onOpenChange,
+  disablePortal = false,
+  sx,
+  paperSx,
 }: HoverCardProps) => {
   const [internalOpen, setInternalOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -50,7 +57,6 @@ export const HoverCard = ({
       clearTimeout(closeTimeoutRef.current)
       closeTimeoutRef.current = null
     }
-
     if (!open) {
       setAnchorEl(event.currentTarget)
       openTimeoutRef.current = setTimeout(() => {
@@ -85,9 +91,11 @@ export const HoverCard = ({
         open={open}
         anchorEl={anchorEl}
         placement={placement}
+        disablePortal={disablePortal}
         style={{
           zIndex: 1300,
         }}
+        sx={sx}
         modifiers={[
           {
             name: 'offset',
@@ -98,13 +106,13 @@ export const HoverCard = ({
         ]}
       >
         <Paper
-          sx={{
+          sx={merge({}, paperSx, {
             backgroundColor: '#18191F',
             boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.15)',
             borderRadius: '8px',
             padding: 0,
             pointerEvents: 'auto',
-          }}
+          })}
           className={className}
         >
           {children}
