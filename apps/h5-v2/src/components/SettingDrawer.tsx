@@ -18,6 +18,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { SecondHeader } from './SecondHeader'
 import { styled } from '@mui/material'
 import { t } from '@lingui/core/macro'
+import { toast } from './UI/Toast'
 
 const StyledSwitch = styled(Switch)({
   '& .MuiSwitch-switchBase': {
@@ -59,9 +60,10 @@ const RenderAuthButton = () => {
             seamlessAddress: activeSeamlessAddress,
             chainId: chainId as number,
           })
-          if (!authRs) {
+
+          if (authRs?.code === 0) {
             const idx = seamlessAccountList.findIndex(
-              (item) => item.seamlessAddress === activeSeamlessAddress,
+              (item) => item.masterAddress === activeSeamlessAddress,
             )
             const newSeamlessAccount = {
               ...seamlessAccountList[idx],
@@ -73,6 +75,10 @@ const RenderAuthButton = () => {
             }
             seamlessAccountList[idx] = newSeamlessAccount
             setSeamlessAccountList([...seamlessAccountList])
+          } else {
+            toast.error({
+              title: 'Revoke seamless account failed',
+            })
           }
         }}
       >
@@ -89,10 +95,13 @@ const RenderAuthButton = () => {
           seamlessAddress: activeSeamlessAddress,
           chainId: chainId as number,
         })
-        if (!authRs) {
+
+        console.log('authRs-->', authRs)
+        if (authRs?.code === 0) {
           const idx = seamlessAccountList.findIndex(
-            (item) => item.seamlessAddress === activeSeamlessAddress,
+            (item) => item.masterAddress === activeSeamlessAddress,
           )
+
           const newSeamlessAccount = {
             ...seamlessAccountList[idx],
             authorized: {
@@ -102,6 +111,7 @@ const RenderAuthButton = () => {
             },
           }
           seamlessAccountList[idx] = newSeamlessAccount
+
           setSeamlessAccountList([...seamlessAccountList])
         }
       }}
