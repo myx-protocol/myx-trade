@@ -101,7 +101,6 @@ export class Order {
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
-      
       if (config.seamlessMode && authorized && seamlessWallet) {
         if (needsApproval) {
           const approvalResult = await this.utils.approveAuthorization({
