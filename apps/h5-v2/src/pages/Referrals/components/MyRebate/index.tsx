@@ -149,7 +149,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
               {loading ? (
                 <Skeleton className="h-4 w-16" />
               ) : (
-                `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)}`
+                `${formatNumberPrecision(bonus?.referrerRebate, COMMON_USD_ASSETS_SCALE)}`
               )}
             </span>
           </div>
@@ -290,7 +290,7 @@ function MyRebateDesktop({ bonus, chainInfo, referrerInfo, loading }: any) {
             {loading ? (
               <Skeleton className="h-6 w-24" />
             ) : (
-              `${formatNumberPrecision(bonus?.bonus, COMMON_USD_ASSETS_SCALE)}`
+              `${formatNumberPrecision(bonus?.referrerRebate, COMMON_USD_ASSETS_SCALE)}`
             )}
           </span>
         </div>
