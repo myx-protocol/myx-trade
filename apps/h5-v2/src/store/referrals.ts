@@ -11,6 +11,7 @@ export interface RefBonusInfo {
   bonus: string
   rebates: string
   referees: number
+  referrerRebate: string
 }
 
 export interface RefBonusChainInfo {
@@ -172,6 +173,7 @@ export const useReferralStore = create<ReferralState>()(
             bonus: data?.referralRebate || '0',
             rebates: data?.refereeRebate || '0',
             referees: data?.referees || 0,
+            referrerRebate: data?.referrerRebate || '0',
           }
         })
       } catch (e) {
