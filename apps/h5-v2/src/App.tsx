@@ -42,7 +42,6 @@ function App() {
       <RouterProvider router={router} />
       {loginModalOpen && <LoginModal />}
       {moreLoginDrawerOpen && <MorePage />}
-
       <Toaster />
     </>
   )
