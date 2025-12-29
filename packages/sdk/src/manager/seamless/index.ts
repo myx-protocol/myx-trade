@@ -338,7 +338,12 @@ export class Seamless {
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
-    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
+    let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
+
+    if (!isAuthorized) {
+      await this.authorizeSeamlessAccount({ approve: true, seamlessAddress: wallet.address, chainId })
+      isAuthorized = true
+    }
     this.configManager.updateSeamlessWallet({
       masterAddress: masterAddress,
       wallet: wallet,
