@@ -240,8 +240,6 @@ export class Seamless {
       verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
     }
 
-    this.logger.info('domain-->', domain);
-
     const walletProvider = provider ?? await getSignerProvider(chainId)
 
     const signature = await walletProvider.signTypedData(domain, contractTypes, {
