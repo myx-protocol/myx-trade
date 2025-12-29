@@ -5,7 +5,7 @@ import type { PoolConfig } from '@/store/globalStore'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
@@ -15,11 +15,7 @@ import { getPoolLevelConfig } from '@/api'
 import { usePositionStore } from '@/store/position/createStore'
 import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
-import { UnlockAccountDialog } from '@/components/Seamless/UnlockAccountDialog'
-import { SetPasswordDialog } from '@/components/Seamless/SetPasswordDialog'
-import { ImportDialog } from '@/components/Seamless/ImportDialog'
-import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
-import { ExportDialog } from '@/components/Seamless/ExportDialog'
+
 import useGlobalStore from '@/store/globalStore'
 
 export const Trade = () => {
@@ -30,13 +26,6 @@ export const Trade = () => {
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
-  const {
-    unlockAccountDialogOpen,
-    seamlessPasswordDialogOpen,
-    importSeamlessKeyDialogOpen,
-    exportSeamlessInfoDialogOpen,
-    exportSeamlessKeyDialogOpen,
-  } = useGlobalStore()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
   const { getDetail } = useMarketDetail({
@@ -125,11 +114,6 @@ export const Trade = () => {
       <LeverageDialog />
       {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
-      {unlockAccountDialogOpen && <UnlockAccountDialog />}
-      {seamlessPasswordDialogOpen && <SetPasswordDialog />}
-      {importSeamlessKeyDialogOpen && <ImportDialog />}
-      {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
-      {exportSeamlessKeyDialogOpen && <ExportDialog />}
     </>
   )
 }

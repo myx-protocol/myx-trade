@@ -25,8 +25,8 @@ export const UnlockAccountDialog = () => {
     setSelectedSeamlessAccountDialogOpen,
     setTradeMode,
     setSeamlessPasswordDialogOpen,
+    symbolInfo,
   } = useGlobalStore()
-  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [show, setShow] = useState(false)
   const { setLoginModalOpen } = useWalletStore()
