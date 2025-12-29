@@ -39,6 +39,7 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
     ) {
       const rs = await client?.account.setUserFeeData(
         address as string,
+        parseInt(chainId as string),
         userVipInfoByContract?.deadline as number,
         {
           tier: vipInfo?.vipTier as number,
