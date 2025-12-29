@@ -9,6 +9,14 @@ import { AccountDialog } from './AccountDialog'
 import useGlobalStore from '@/store/globalStore'
 import { VipRedeemDialog } from './VipRedeemDialog'
 import { VipRedeemResultDialog } from './VipRedeemDialog/VipRedeemResultDialog'
+
+import { UnlockAccountDialog } from '@/components/Seamless/UnlockAccountDialog'
+import { SetPasswordDialog } from '@/components/Seamless/SetPasswordDialog'
+import { ImportDialog } from '@/components/Seamless/ImportDialog'
+import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
+import { ExportDialog } from '@/components/Seamless/ExportDialog'
+import { TradeMode } from '@/pages/Trade/types'
+
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
@@ -20,6 +28,22 @@ function Layout() {
       document.documentElement.style.setProperty('--tabbar-height', '0px')
     }
   }, [tabbarActiveItem])
+
+  const {
+    unlockAccountDialogOpen,
+    seamlessPasswordDialogOpen,
+    importSeamlessKeyDialogOpen,
+    exportSeamlessInfoDialogOpen,
+    exportSeamlessKeyDialogOpen,
+    tradeMode,
+    setUnlockAccountDialogOpen,
+  } = useGlobalStore()
+
+  useEffect(() => {
+    if (tradeMode === TradeMode.Seamless) {
+      setUnlockAccountDialogOpen(true)
+    }
+  }, [tradeMode])
   return (
     <div className="">
       <MyxSdkProvider>
@@ -37,6 +61,11 @@ function Layout() {
         {accountDialogOpen && <AccountDialog />}
         {vipRedeemDialogOpen && <VipRedeemDialog />}
         {vipRedeemResultDialogOpen && <VipRedeemResultDialog />}
+        {unlockAccountDialogOpen && <UnlockAccountDialog />}
+        {seamlessPasswordDialogOpen && <SetPasswordDialog />}
+        {importSeamlessKeyDialogOpen && <ImportDialog />}
+        {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
+        {exportSeamlessKeyDialogOpen && <ExportDialog />}
       </MyxSdkProvider>
     </div>
   )
