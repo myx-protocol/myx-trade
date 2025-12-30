@@ -138,13 +138,8 @@ export class SubScription {
   }
 
   private async getAccessToken() {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     return accessToken;
   }
   private clientAuth = false;

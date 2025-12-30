@@ -68,13 +68,8 @@ export class Position {
   }
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+  
     const res = await this.api.getPositionHistory(
       { accessToken, ...params, address: address },
     );

@@ -97,13 +97,8 @@ export class Markets {
    *
    */
   async searchMarketAuth(params: SearchMarketParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+ 
     return (
       await this.api.searchMarketAuth(
         {
@@ -129,14 +124,8 @@ export class Markets {
    * (only for authenticated users)
    */
   async getFavoritesList(params: FavoritesListParams, address: string) {
-    const config = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     return (
       await this.api.getFavoritesList(
         {
@@ -151,14 +140,8 @@ export class Markets {
    * favorite
    */
   async addFavorite(params: AddFavoriteParams, address: string) {
-    const config = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+ 
     return (
       await this.api.addFavorite(
         {
@@ -171,13 +154,8 @@ export class Markets {
   }
 
   async removeFavorite(params: RemoveFavoriteParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+   
     return (
       await this.api.removeFavorite(
         {

@@ -258,10 +258,6 @@ export class Seamless {
 
   async authorizeSeamlessAccount({ approve, seamlessAddress, chainId }: { approve: boolean, seamlessAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(MyxErrorCode.InvalidAccessToken, "Invalid access token");
-    }
 
     const masterAddress = await config.signer?.getAddress() ?? ''
 
