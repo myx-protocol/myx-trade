@@ -80,7 +80,7 @@ const createGetAccessTokenMethod = () => {
     // const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
 
     return {
-      accessToken: '',
+      accessToken: 'access_token',
       expireAt: 0,
     }
     // if (response.code === 0) {

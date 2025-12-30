@@ -312,6 +312,7 @@ export const useSubmitOrder = () => {
         await checkUserVipInfo()
         if (positionAction === PositionActionEnum.OPEN) {
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
+
           if (rs?.code === 0) {
             resetStore()
             toast.success({
