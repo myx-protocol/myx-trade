@@ -1,5 +1,9 @@
 import { Signer } from "ethers";
-import { BETA_ENV_CHAIN_IDS, MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
+import {
+  BETA_ENV_CHAIN_IDS,
+  MAINNET_CHAIN_IDS,
+  TESTNET_CHAIN_IDS,
+} from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
@@ -37,8 +41,8 @@ export interface MyxClientConfig {
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
-  | (() => Promise<AccessTokenResponse | undefined>)
-  | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
+    | (() => Promise<AccessTokenResponse | undefined>)
+    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
 }
 
 export class ConfigManager {
@@ -69,20 +73,28 @@ export class ConfigManager {
   public startSeamlessMode(open: boolean) {
     this.config = {
       ...this.config,
-      seamlessMode: open
+      seamlessMode: open,
     };
 
     return this.config;
   }
 
-  public updateSeamlessWallet({ wallet, authorized, masterAddress }: { wallet?: ethers.Wallet, authorized?: boolean, masterAddress?: string }) {
+  public updateSeamlessWallet({
+    wallet,
+    authorized,
+    masterAddress,
+  }: {
+    wallet?: ethers.Wallet;
+    authorized?: boolean;
+    masterAddress?: string;
+  }) {
     this.config = {
       ...this.config,
       seamlessAccount: {
-        masterAddress: masterAddress ?? '',
+        masterAddress: masterAddress ?? "",
         wallet: wallet ?? null,
         authorized: authorized ?? false,
-      }
+      },
     };
   }
 
@@ -90,7 +102,7 @@ export class ConfigManager {
     this.config = {
       ...this.config,
       chainId,
-      brokerAddress
+      brokerAddress,
     };
   }
 
@@ -178,7 +190,7 @@ export class ConfigManager {
     forceRefresh: boolean = false
   ): Promise<string | null> {
     // 如果当前 token 有效且不需要强制刷新，直接返回
-    if (!forceRefresh) {
+    if (!forceRefresh && this.isAccessTokenValid()) {
       this._isGettingAccessToken = false;
       return this.accessToken!;
     }
@@ -193,8 +205,10 @@ export class ConfigManager {
       console.log("Automatically fetching accessToken...");
 
       // 调用前端提供的方法获取新的 token
-      const response = await this.config.getAccessToken() ?? { accessToken: '', expireAt: 0 };
-
+      const response = (await this.config.getAccessToken()) ?? {
+        accessToken: "",
+        expireAt: 0,
+      };
 
       return response.accessToken;
       // if (response && response.accessToken) {
@@ -249,17 +263,9 @@ export class ConfigManager {
   //  * 检查当前 accessToken 是否有效
   //  * @returns boolean token 是否有效
   //  */
-  // isAccessTokenValid(): boolean {
-  //   if (
-  //     !this.accessToken ||
-  //     !this.accessTokenExpiry ||
-  //     !this.config.getAccessToken ||
-  //     !this.config.signer
-  //   ) {
-  //     return false;
-  //   }
-  //   return Date.now() < this.accessTokenExpiry;
-  // }
+  isAccessTokenValid(): boolean {
+    return !!this.accessToken;
+  }
 
   /**
    * 清除 accessToken
