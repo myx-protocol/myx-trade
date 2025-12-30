@@ -1229,14 +1229,8 @@ export class Order {
   }
 
   async getOrderHistory(params: GetHistoryOrdersParams, address: string) {
-    const config = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     const res = await this.api.getHistoryOrders({ accessToken, ...params, address });
     return {
       code: 0,
