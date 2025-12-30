@@ -178,7 +178,7 @@ export class ConfigManager {
     forceRefresh: boolean = false
   ): Promise<string | null> {
     // 如果当前 token 有效且不需要强制刷新，直接返回
-    if (!forceRefresh && this.isAccessTokenValid()) {
+    if (!forceRefresh) {
       this._isGettingAccessToken = false;
       return this.accessToken!;
     }
@@ -245,21 +245,21 @@ export class ConfigManager {
     return this.accessToken;
   }
 
-  /**
-   * 检查当前 accessToken 是否有效
-   * @returns boolean token 是否有效
-   */
-  isAccessTokenValid(): boolean {
-    if (
-      !this.accessToken ||
-      !this.accessTokenExpiry ||
-      !this.config.getAccessToken ||
-      !this.config.signer
-    ) {
-      return false;
-    }
-    return Date.now() < this.accessTokenExpiry;
-  }
+  // /**
+  //  * 检查当前 accessToken 是否有效
+  //  * @returns boolean token 是否有效
+  //  */
+  // isAccessTokenValid(): boolean {
+  //   if (
+  //     !this.accessToken ||
+  //     !this.accessTokenExpiry ||
+  //     !this.config.getAccessToken ||
+  //     !this.config.signer
+  //   ) {
+  //     return false;
+  //   }
+  //   return Date.now() < this.accessTokenExpiry;
+  // }
 
   /**
    * 清除 accessToken
