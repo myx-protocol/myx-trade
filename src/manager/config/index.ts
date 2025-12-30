@@ -193,32 +193,34 @@ export class ConfigManager {
       console.log("Automatically fetching accessToken...");
 
       // 调用前端提供的方法获取新的 token
-      const response = await this.config.getAccessToken();
+      const response = await this.config.getAccessToken() ?? { accessToken: '', expireAt: 0 };
 
-      if (response && response.accessToken) {
-        // expireAt 是到期时间戳，需要转换为有效期秒数
-        let expiryInSeconds = 3600; // 默认1小时
-        if (response.expireAt) {
-          const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
-          expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
 
-          // 确保有效期为正数，如果已过期则使用默认值
-          if (expiryInSeconds <= 0) {
-            console.warn("Received expired token, using default expiry");
-            expiryInSeconds = 3600;
-          }
-        }
+      return response.accessToken;
+      // if (response && response.accessToken) {
+      //   // expireAt 是到期时间戳，需要转换为有效期秒数
+      //   let expiryInSeconds = 3600; // 默认1小时
+      //   if (response.expireAt) {
+      //     const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
+      //     expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
 
-        this.setAccessToken(response.accessToken, expiryInSeconds);
-        console.log("✅ AccessToken fetched and stored successfully", {
-          expiryInSeconds,
-          expireAt: response.expireAt,
-        });
-        return response.accessToken;
-      } else {
-        console.warn("❌ Received empty accessToken");
-        return null;
-      }
+      //     // 确保有效期为正数，如果已过期则使用默认值
+      //     if (expiryInSeconds <= 0) {
+      //       console.warn("Received expired token, using default expiry");
+      //       expiryInSeconds = 3600;
+      //     }
+      //   }
+
+      //   this.setAccessToken(response.accessToken, expiryInSeconds);
+      //   console.log("✅ AccessToken fetched and stored successfully", {
+      //     expiryInSeconds,
+      //     expireAt: response.expireAt,
+      //   });
+      //   return response.accessToken;
+      // } else {
+      //   console.warn("❌ Received empty accessToken");
+      //   return null;
+      // }
     } catch (error) {
       console.error("❌ Failed to fetch accessToken:", error);
       return null;
