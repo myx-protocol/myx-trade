@@ -54,9 +54,6 @@ function Layout() {
         isFirstRender.current = false
       }
 
-      console.log('activeSeamlessAddress-->', activeSeamlessAddress)
-      console.log('address-->', address)
-
       if (activeSeamlessAddress !== address) {
         setUnlockAccountDialogOpen(true)
       }

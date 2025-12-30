@@ -31,7 +31,7 @@ export interface MyxClientConfig {
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
-  betaMode?: boolean;
+  isBetaMode?: boolean;
   poolingInterval?: number;
   seamlessMode?: boolean;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
@@ -49,7 +49,7 @@ export class ConfigManager {
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
       isTestnet: false,
-      betaMode: false,
+      isBetaMode: false,
       ...config,
     };
     this.validateConfig(mergedConfig);
@@ -107,7 +107,7 @@ export class ConfigManager {
   }
 
   private validateConfig(config: MyxClientConfig) {
-    const { isTestnet, betaMode, chainId } = config;
+    const { isTestnet, isBetaMode, chainId } = config;
 
     /**
      * chainId must be in the range of TESTNET_CHAIN_IDS or MAINNET_CHAIN_IDS
@@ -119,7 +119,7 @@ export class ConfigManager {
           MyxErrorCode.InvalidChainId,
           `chainId ${chainId} is not in the range of TESTNET_CHAIN_IDS`
         );
-    } else if (betaMode) {
+    } else if (isBetaMode) {
       if (!BETA_ENV_CHAIN_IDS.includes(chainId))
         throw new MyxSDKError(
           MyxErrorCode.InvalidChainId,

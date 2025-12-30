@@ -33,14 +33,7 @@ declare global {
   } & {}
 
   interface ImportMetaEnv {
-    readonly VITE_APP_APP_ENV:
-      | 'production'
-      | 'development'
-      | 'test'
-      | 'dev'
-      | 'dev_2'
-      | 'beta'
-      | 'stg'
+    readonly VITE_APP_APP_ENV: 'production' | 'development' | 'test' | 'dev' | 'beta' | 'stg'
     readonly VITE_GOOGLE_AG_ID?: string
     readonly VITE_GLOB_API_URL_PREFIX?: string
     readonly VITE_GLOB_API_URL: string
