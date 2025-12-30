@@ -18,8 +18,14 @@ export class Api {
   }
 
   getHost() {
-    const isProd = !this.configManager.getConfig().isTestnet;
-    return isProd ? 'https://api.myx.finance' : 'https://api-test.myx.cash';
+    const { isTestnet, betaMode } = this.configManager.getConfig();
+    if (betaMode) {
+      return 'https://api-beta.myx.cash';
+    } else if (isTestnet) {
+      return 'https://api-test.myx.cash';
+    } else {
+      return 'https://api.myx.finance';
+    }
   }
 
   async getTradeFlow({
@@ -335,7 +341,7 @@ export class Api {
   async getAccountVipInfo({ address, accessToken, chainId, deadline, nonce }: { address: string, accessToken: string, chainId: number, deadline: number, nonce: string }) {
     return http.get<ApiResponse<any>>(
       `${this.getHost()}/openapi/gateway/vip/trade_config`,
-      {chainId, deadline, nonce},
+      { chainId, deadline, nonce },
       {
         headers: {
           myx_openapi_account: address,

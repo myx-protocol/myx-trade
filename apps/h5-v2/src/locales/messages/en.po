@@ -80,6 +80,8 @@ msgstr " Trade "
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/hooks/use-check-user-vip-info.ts
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
 msgstr "{0}"
 
@@ -1215,6 +1217,10 @@ msgstr "Entrusts({0})"
 msgid "Entry price"
 msgstr "Entry price"
 
+#: src/components/SharePositionDialog/index.tsx
+msgid "Entry Price"
+msgstr "Entry Price"
+
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
 msgid "EOA Wallet"
@@ -1959,6 +1965,10 @@ msgstr "Isolated {0}x"
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
 msgstr "Join MYX And Enjoy <0>20%</0> Commission"
 
+#: src/components/SharePositionDialog/index.tsx
+msgid "Join MYX Trading now to enjoy ultra-low fees and earn generous airdrop rewards! "
+msgstr "Join MYX Trading now to enjoy ultra-low fees and earn generous airdrop rewards! "
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX, Get fee discounts and up to 20% rebates."
 msgstr "Join MYX, Get fee discounts and up to 20% rebates."
@@ -1982,6 +1992,10 @@ msgstr "Last Price"
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Later"
 msgstr "Later"
+
+#: src/components/SharePositionDialog/index.tsx
+msgid "Latest Price"
+msgstr "Latest Price"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Level"
@@ -2154,6 +2168,7 @@ msgid "Market Close"
 msgstr ""
 
 #: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market close success"
 msgstr "Market close success"
 
@@ -2557,6 +2572,7 @@ msgstr "Open Interest (Long)"
 msgid "Open Interest (Short)"
 msgstr "Open Interest (Short)"
 
+#: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
 msgid "Open Long"
@@ -2576,6 +2592,7 @@ msgstr "Open Orders({0})"
 msgid "Open Orders{0}"
 msgstr "Open Orders{0}"
 
+#: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
 msgid "Open Short"
@@ -3110,6 +3127,10 @@ msgstr "Risk Rating"
 msgid "Roe"
 msgstr "Roe"
 
+#: src/components/SharePositionDialog/index.tsx
+msgid "ROE"
+msgstr "ROE"
+
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
@@ -3145,13 +3166,22 @@ msgstr "SafeERC20FailedOperation(address)"
 msgid "SamePoolMigration(PoolId)"
 msgstr "SamePoolMigration(PoolId)"
 
+#: src/components/SharePositionDialog/index.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Save as Picture"
 msgstr "Save as Picture"
 
+#: src/components/SharePositionDialog/index.tsx
+msgid "save failed"
+msgstr "save failed"
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Scan to Join MYX"
 msgstr "Scan to Join MYX"
+
+#: src/components/SharePositionDialog/index.tsx
+msgid "Scan to Visit MYX"
+msgstr "Scan to Visit MYX"
 
 #: src/components/AccountDialog/index.tsx
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
@@ -3207,6 +3237,10 @@ msgid "Select a vault to provide initial liquidity"
 msgstr "Select a vault to provide initial liquidity"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+msgid "Select Chain"
+msgstr "Select Chain"
+
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Select Claim Amount"
 msgstr "Select Claim Amount"
 
@@ -3229,6 +3263,7 @@ msgid "Select token"
 msgstr "Select token"
 
 #: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Select Token"
 msgstr "Select Token"
 
@@ -3301,6 +3336,10 @@ msgstr "Settled available balance in your margin account, withdrawable to on-cha
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
 msgstr "Share rebate with your friends"
+
+#: src/components/SharePositionDialog/index.tsx
+msgid "Share Twitter"
+msgstr "Share Twitter"
 
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Record/Items/OrderHistory.tsx
@@ -3506,6 +3545,10 @@ msgstr "The market will activate immediately once total liquidity reaches ${0}."
 #: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
 msgid "The maximum number of positions you are allowed to open, determined by factors such as your slippage settings and current market liquidity."
 msgstr "The maximum number of positions you are allowed to open, determined by factors such as your slippage settings and current market liquidity."
+
+#: src/components/SharePositionDialog/index.tsx
+msgid "The Most Scalable Derivatives Protocol"
+msgstr "The Most Scalable Derivatives Protocol"
 
 #: src/components/Footer/index.tsx
 #: src/pages/Home/components/Banner/index.tsx
@@ -4151,6 +4194,10 @@ msgstr "取消订单"
 msgid "可平数量"
 msgstr "可平数量"
 
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+msgid "可领取"
+msgstr "可领取"
+
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 msgid "合约"
 msgstr "合约"
@@ -4467,9 +4514,17 @@ msgstr "Buy MLP"
 msgid "选择合约计价资产"
 msgstr "选择合约计价资产"
 
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+msgid "选择币种"
+msgstr "选择币种"
+
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择您的资产"
 msgstr "选择您的资产"
+
+#: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
+msgid "选择链接"
+msgstr "选择链接"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "通用滑点容忍设置"

@@ -26,7 +26,9 @@ export class SubScription {
     this.logger = logger;
     const socketUrl = configManager.getConfig()?.isTestnet
       ? WEBSOCKET_URL.TestNet
-      : WEBSOCKET_URL.MainNet;
+      : configManager.getConfig()?.betaMode
+        ? WEBSOCKET_URL.BetaNet
+        : WEBSOCKET_URL.MainNet;
 
     this.wsClient = new MyxWebSocketClient({
       logLevel: this.configManager.getConfig()?.logLevel,

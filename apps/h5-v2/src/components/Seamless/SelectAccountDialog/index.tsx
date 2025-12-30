@@ -21,9 +21,11 @@ export const SelectAccountDialog = () => {
   } = useSeamlessStore()
 
   useEffect(() => {
-    const firstSeamlessAccount = seamlessAccountList[0]
+    const firstSeamlessAccount = activeSeamlessAddress
+      ? seamlessAccountList.find((item) => item.masterAddress === activeSeamlessAddress)
+      : seamlessAccountList[0]
     setActiveSeamlessAddress(firstSeamlessAccount?.masterAddress || '')
-  }, [])
+  }, [activeSeamlessAddress])
 
   return (
     <DialogBase
@@ -43,7 +45,7 @@ export const SelectAccountDialog = () => {
       }}
     >
       <div className="p-[16px]">
-        <div className="mt-[32px]">
+        <div className="mt-[32px] flex flex-col gap-[10px]">
           {seamlessAccountList.map((item) => {
             const isActive = item.masterAddress === activeSeamlessAddress
             return (
