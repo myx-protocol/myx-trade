@@ -109,13 +109,8 @@ export class Account {
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+    
     const res = await this.client.api.getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
@@ -348,13 +343,8 @@ export class Account {
   }
 
   async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     try {
       const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
       if (res.code !== 9200) {
