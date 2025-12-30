@@ -43,7 +43,7 @@ export const SelectAccountDialog = () => {
       }}
     >
       <div className="p-[16px]">
-        <div className="mt-[32px]">
+        <div className="mt-[32px] flex flex-col gap-[10px]">
           {seamlessAccountList.map((item) => {
             const isActive = item.masterAddress === activeSeamlessAddress
             return (
