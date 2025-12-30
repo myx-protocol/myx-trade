@@ -8,6 +8,7 @@
     "build": " tsc -b && vite build",
     "build:prod": "pnpm run build --mode production",
     "build:test": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode test",
+    "build:beta": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode beta",
     "lint": "eslint .",
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm",

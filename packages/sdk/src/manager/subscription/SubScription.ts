@@ -26,7 +26,7 @@ export class SubScription {
     this.logger = logger;
     const socketUrl = configManager.getConfig()?.isTestnet
       ? WEBSOCKET_URL.TestNet
-      : configManager.getConfig()?.betaMode
+      : configManager.getConfig()?.isBetaMode
         ? WEBSOCKET_URL.BetaNet
         : WEBSOCKET_URL.MainNet;
 
