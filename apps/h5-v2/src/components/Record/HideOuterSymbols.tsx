@@ -54,7 +54,7 @@ export const HideOuterSymbols = ({ checked, onChange, right }: HideOuterSymbolsP
           label={<span className="text-[12px] text-[#CED1D9]">Hide other</span>}
         />
       </div>
-      {right && <div className="shrink-0">{right}</div>}
+      {right && selectChainId !== '0' && <div className="shrink-0">{right}</div>}
     </div>
   )
 }

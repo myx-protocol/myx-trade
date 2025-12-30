@@ -25,7 +25,7 @@ function Layout() {
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
   const { address } = useWalletConnection()
-  const { activeSeamlessAddress } = useSeamlessStore()
+  const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const isFirstRender = useRef(true)
 
   useEffect(() => {
@@ -48,18 +48,23 @@ function Layout() {
   } = useGlobalStore()
 
   useEffect(() => {
-    if (tradeMode === TradeMode.Seamless && isFirstRender.current) {
-      setUnlockAccountDialogOpen(true)
-      isFirstRender.current = false
-    }
+    if (tradeMode === TradeMode.Seamless) {
+      if (isFirstRender.current) {
+        setUnlockAccountDialogOpen(true)
+        isFirstRender.current = false
+      }
 
-    if (activeSeamlessAddress !== address) {
-      setUnlockAccountDialogOpen(true)
+      console.log('activeSeamlessAddress-->', activeSeamlessAddress)
+      console.log('address-->', address)
+
+      if (activeSeamlessAddress !== address) {
+        setUnlockAccountDialogOpen(true)
+      }
     }
   }, [tradeMode, activeSeamlessAddress, address, setUnlockAccountDialogOpen])
 
   return (
-    <div className="">
+    <div>
       <MyxSdkProvider>
         <div className="fixed bottom-0 left-0 z-20 h-[var(--tabbar-height)] w-full">
           {tabbarActiveItem && <Tabbar />}
