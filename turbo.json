@@ -13,6 +13,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "build:beta": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
     "build:prod": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
