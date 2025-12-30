@@ -20,7 +20,7 @@ export class Api {
   getHost() {
     const { isTestnet, isBetaMode } = this.configManager.getConfig();
     if (isBetaMode) {
-      return 'https://api-beta.myx.cash';
+      return 'https://api-beta.myx.finance';
     } else if (isTestnet) {
       return 'https://api-test.myx.cash';
     } else {
