@@ -25,7 +25,7 @@ import sdk from "@/web3";
 export const getBaseUrlByEnv = () => {
   const { isTestnet, isBetaMode } = sdk?.getConfigManager()?.getConfig() || {};
   if (isBetaMode) {
-    return 'https://api-beta.myx.cash';
+    return 'https://api-beta.myx.finance';
   } else if (isTestnet) {
     return 'https://api-test.myx.cash';
   } else {
