@@ -2632,6 +2632,10 @@ msgstr "OR"
 msgid "Or Continue With "
 msgstr "Or Continue With "
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Order canceled"
+msgstr "Order canceled"
+
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts

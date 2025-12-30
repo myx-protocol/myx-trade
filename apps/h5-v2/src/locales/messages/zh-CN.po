@@ -2630,6 +2630,10 @@ msgstr ""
 msgid "Or Continue With "
 msgstr ""
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Order canceled"
+msgstr ""
+
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts
