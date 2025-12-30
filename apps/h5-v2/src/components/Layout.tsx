@@ -4,7 +4,7 @@ import { GlobalSearch } from './GlobalSearch/GlobalSearch'
 import { useGlobalSearchStore } from './GlobalSearch/store'
 import { Tabbar } from '@/components/Tabbar/index'
 import { useLayout } from '@/hooks/layout/useLayout'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { AccountDialog } from './AccountDialog'
 import useGlobalStore from '@/store/globalStore'
 import { VipRedeemDialog } from './VipRedeemDialog'
@@ -16,11 +16,18 @@ import { ImportDialog } from '@/components/Seamless/ImportDialog'
 import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
 import { ExportDialog } from '@/components/Seamless/ExportDialog'
 import { TradeMode } from '@/pages/Trade/types'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { SelectAccountDialog } from './Seamless/SelectAccountDialog'
 
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
+  const { address } = useWalletConnection()
+  const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
+  const isFirstRender = useRef(true)
+
   useEffect(() => {
     if (tabbarActiveItem) {
       document.documentElement.style.setProperty('--tabbar-height', '60px')
@@ -37,15 +44,27 @@ function Layout() {
     exportSeamlessKeyDialogOpen,
     tradeMode,
     setUnlockAccountDialogOpen,
+    selectedSeamlessAccountDialogOpen,
   } = useGlobalStore()
 
   useEffect(() => {
     if (tradeMode === TradeMode.Seamless) {
-      setUnlockAccountDialogOpen(true)
+      if (isFirstRender.current) {
+        setUnlockAccountDialogOpen(true)
+        isFirstRender.current = false
+      }
+
+      console.log('activeSeamlessAddress-->', activeSeamlessAddress)
+      console.log('address-->', address)
+
+      if (activeSeamlessAddress !== address) {
+        setUnlockAccountDialogOpen(true)
+      }
     }
-  }, [tradeMode])
+  }, [tradeMode, activeSeamlessAddress, address, setUnlockAccountDialogOpen])
+
   return (
-    <div className="">
+    <div>
       <MyxSdkProvider>
         <div className="fixed bottom-0 left-0 z-20 h-[var(--tabbar-height)] w-full">
           {tabbarActiveItem && <Tabbar />}
@@ -66,6 +85,7 @@ function Layout() {
         {importSeamlessKeyDialogOpen && <ImportDialog />}
         {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
         {exportSeamlessKeyDialogOpen && <ExportDialog />}
+        {selectedSeamlessAccountDialogOpen && <SelectAccountDialog />}
       </MyxSdkProvider>
     </div>
   )

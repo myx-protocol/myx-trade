@@ -1,5 +1,5 @@
 import { Signer } from "ethers";
-import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
+import { BETA_ENV_CHAIN_IDS, MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
@@ -31,6 +31,7 @@ export interface MyxClientConfig {
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
+  betaMode?: boolean;
   poolingInterval?: number;
   seamlessMode?: boolean;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
@@ -48,6 +49,7 @@ export class ConfigManager {
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
       isTestnet: false,
+      betaMode: false,
       ...config,
     };
     this.validateConfig(mergedConfig);
@@ -105,16 +107,23 @@ export class ConfigManager {
   }
 
   private validateConfig(config: MyxClientConfig) {
-    const { isTestnet, chainId } = config;
+    const { isTestnet, betaMode, chainId } = config;
 
     /**
      * chainId must be in the range of TESTNET_CHAIN_IDS or MAINNET_CHAIN_IDS
      */
+
     if (isTestnet) {
       if (!TESTNET_CHAIN_IDS.includes(chainId))
         throw new MyxSDKError(
           MyxErrorCode.InvalidChainId,
           `chainId ${chainId} is not in the range of TESTNET_CHAIN_IDS`
+        );
+    } else if (betaMode) {
+      if (!BETA_ENV_CHAIN_IDS.includes(chainId))
+        throw new MyxSDKError(
+          MyxErrorCode.InvalidChainId,
+          `chainId ${chainId} is not in the range of BETA_ENV_CHAIN_IDS`
         );
     } else {
       if (!MAINNET_CHAIN_IDS.includes(chainId))
