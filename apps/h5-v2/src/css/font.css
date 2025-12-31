@@ -1,69 +1,93 @@
 @font-face {
   font-family: 'HarmonyOS';
-  src: url('/fonts/HarmonyOS_Sans_Regular.ttf');
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS';
-  src: url('/fonts/HarmonyOS_Sans_Medium.ttf');
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS';
-  src: url('/fonts/HarmonyOS_Sans_Light.ttf');
+  src: url('/fonts/HarmonyOS_Sans_Light.ttf') format('truetype');
   font-weight: 300;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'HarmonyOS';
-  src: url('/fonts/HarmonyOS_Sans_Bold.ttf');
-  font-weight: 700;
+  src: url('/fonts/HarmonyOS_Sans_Regular.ttf') format('truetype');
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'HarmonyOS';
-  src: url('/fonts/HarmonyOS_Sans_Black.ttf');
-  font-weight: 800;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS_SC';
-  src: url('/fonts/HarmonyOS_Sans_SC_Light.ttf');
-  font-weight: 300;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'HarmonyOS_SC';
-  src: url('/fonts/HarmonyOS_Sans_SC_Regular.ttf');
+  src: url('/fonts/HarmonyOS_Sans_Regular.ttf') format('truetype');
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'HarmonyOS_SC';
-  src: url('/fonts/HarmonyOS_Sans_SC_Medium.ttf');
+  font-family: 'HarmonyOS';
+  src: url('/fonts/HarmonyOS_Sans_Medium.ttf') format('truetype');
   font-weight: 500;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'HarmonyOS_SC';
-  src: url('/fonts/HarmonyOS_Sans_SC_Bold.ttf');
+  font-family: 'HarmonyOS';
+  src: url('/fonts/HarmonyOS_Sans_Bold.ttf') format('truetype');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HarmonyOS';
+  src: url('/fonts/HarmonyOS_Sans_Bold.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarmonyOS';
+  src: url('/fonts/HarmonyOS_Sans_Black.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'HarmonyOS_SC';
-  src: url('/fonts/HarmonyOS_Sans_SC_Black.ttf');
+  src: url('/fonts/HarmonyOS_Sans_SC_Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarmonyOS_SC';
+  src: url('/fonts/HarmonyOS_Sans_SC_Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarmonyOS_SC';
+  src: url('/fonts/HarmonyOS_Sans_SC_Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarmonyOS_SC';
+  src: url('/fonts/HarmonyOS_Sans_SC_Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarmonyOS_SC';
+  src: url('/fonts/HarmonyOS_Sans_SC_Black.ttf') format('truetype');
   font-weight: 800;
+  font-style: normal;
   font-display: swap;
 }
