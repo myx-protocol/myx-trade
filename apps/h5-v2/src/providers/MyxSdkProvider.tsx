@@ -207,9 +207,9 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const { data: markets } = useQuery({
-    queryKey: [{ key: 'getMarkets' }, Object.keys(myxSdkClientRef.current)],
+    queryKey: [{ key: 'getMarkets' }, myxSdkClientRef.current?.size],
     queryFn: async () => {
-      if (Object.keys(myxSdkClientRef.current).length) {
+      if (myxSdkClientRef.current?.size) {
         const result = await getMarketList()
         return result?.data || ([] as MarketInfo[])
       }
