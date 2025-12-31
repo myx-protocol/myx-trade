@@ -94,7 +94,8 @@ export const AccountDialog = () => {
                   return
                 }
 
-                setUnlockAccountDialogOpen(true)
+                setTradeMode(TradeMode.Seamless)
+                // setUnlockAccountDialogOpen(true)
               }}
             >{t`Seamless`}</p>
           </div>
