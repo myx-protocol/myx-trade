@@ -20,7 +20,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
   const { shortSize, longSize, amountUnit } = useTradePanelStore()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { symbolInfo } = useGlobalStore()
-  const { submitOrder } = useSubmitOrder()
+  const { submitOrder, submitLoading } = useSubmitOrder()
   const { showCloseOrderConfirmDialog, setCloseOrderConfirmDialogOpen } = useGlobalStore()
   const displayLongSize = useMemo(() => {
     if (!showOrderSize) return '0'
@@ -44,6 +44,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
           borderRadius: '8px',
           height: '44px',
         }}
+        loading={submitLoading}
         onClick={() => {
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
@@ -87,6 +88,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
           borderRadius: '8px',
           height: '44px',
         }}
+        loading={submitLoading}
         onClick={() => {
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({

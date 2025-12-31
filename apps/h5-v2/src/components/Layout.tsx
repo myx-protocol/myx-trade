@@ -25,7 +25,7 @@ function Layout() {
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
   const { address } = useWalletConnection()
-  const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
+  const { activeSeamlessAddress } = useSeamlessStore()
   const isFirstRender = useRef(true)
 
   useEffect(() => {
@@ -48,17 +48,18 @@ function Layout() {
   } = useGlobalStore()
 
   useEffect(() => {
-    if (tradeMode === TradeMode.Seamless) {
-      if (isFirstRender.current) {
-        setUnlockAccountDialogOpen(true)
-        isFirstRender.current = false
-      }
-
-      if (activeSeamlessAddress !== address) {
-        setUnlockAccountDialogOpen(true)
-      }
+    // 只在 Seamless 模式下处理
+    if (tradeMode === TradeMode.Seamless && address !== activeSeamlessAddress) {
+      setUnlockAccountDialogOpen(true)
     }
   }, [tradeMode, activeSeamlessAddress, address, setUnlockAccountDialogOpen])
+
+  useEffect(() => {
+    if (tradeMode === TradeMode.Seamless) {
+      setUnlockAccountDialogOpen(true)
+      isFirstRender.current = false
+    }
+  }, [tradeMode, setUnlockAccountDialogOpen])
 
   return (
     <div>
