@@ -155,7 +155,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
                   colorStops: [
                     {
                       offset: 0,
-                      color: 'rgba(0, 227, 165, 0.3)',
+                      color: 'rgba(0, 227, 165, 0.6)',
                     },
                     {
                       offset: 1,
@@ -174,7 +174,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
         },
         lineStyle: {
           color: '#00E3A5',
-          width: 1,
+          width: 2,
         },
         data: (list || []).map((item) => [item.time * 1000, Number(item.value)]),
       },
