@@ -208,6 +208,7 @@ export const TpslFormGroup = ({
         <div className="flex min-h-[46px] w-[50%] flex-[1_1_0%] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
             allowNegative={true}
+            inputMode="text"
             value={targetRate}
             onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
