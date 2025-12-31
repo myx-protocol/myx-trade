@@ -107,12 +107,13 @@ export const usePoolDetail = (poolType: PoolType) => {
   })
 
   const { data: pool } = useQuery({
-    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets],
+    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets?.length],
+    enabled: Boolean(poolId && chainId && markets?.length),
     queryFn: async () => {
-      if (!poolId || !chainId || !markets?.length) return undefined
-      const result = await Pool.getPoolDetail(+chainId, poolId)
-
-      return result
+      if (chainId && poolId) {
+        const result = await Pool.getPoolDetail(+chainId, poolId)
+        return result
+      }
     },
   })
 
