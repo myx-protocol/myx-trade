@@ -37,7 +37,7 @@ function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: Base
 
 export const usePoolDetail = (poolType: PoolType) => {
   const { chainId, poolId } = useParams()
-  const { client } = useMyxSdkClient()
+  const { client, markets } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
 
@@ -107,9 +107,9 @@ export const usePoolDetail = (poolType: PoolType) => {
   })
 
   const { data: pool } = useQuery({
-    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId],
+    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets],
     queryFn: async () => {
-      if (!poolId || !chainId) return undefined
+      if (!poolId || !chainId || !markets?.length) return undefined
       const result = await Pool.getPoolDetail(+chainId, poolId)
 
       return result
