@@ -3,7 +3,7 @@ export * from "./api";
 
 export * from "./common";
 
-// export { MxSDK } from "./web3";
+export { MxSDK } from "./web3";
 
 export { MyxClient } from "./manager";
 export * from "./manager";
