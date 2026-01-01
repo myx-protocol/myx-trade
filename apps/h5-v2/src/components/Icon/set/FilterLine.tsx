@@ -11,7 +11,7 @@ const FilterLine = (props: SvgIconProps) => {
       viewBox="0 0 12 12"
       fill="none"
     >
-      <g clip-path="url(#clip0_3948_103388)">
+      <g clipPath="url(#clip0_3948_103388)">
         <mask
           id="mask0_3948_103388"
           maskUnits="userSpaceOnUse"
