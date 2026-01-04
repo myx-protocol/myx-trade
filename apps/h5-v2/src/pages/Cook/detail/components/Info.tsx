@@ -46,6 +46,7 @@ const SecurityInfo = () => {
       chainId={baseLpDetail?.chainId as number}
       address={baseLpDetail?.baseToken || ''}
       className={'px-[0px]'}
+      poolId={baseLpDetail?.poolId as string}
     >
       <span
         className={`text-green flex items-center gap-[4px] ${securityInfo?.danger_count > 0 ? 'text-wrong' : 'text-green'}`}
@@ -61,12 +62,6 @@ const SecurityInfo = () => {
 
 export const Info = () => {
   const { baseLpDetail } = usePoolContext()
-
-  const { data: securityInfo } = useSecurityInfo({
-    address: baseLpDetail?.baseToken || '',
-    chainId: baseLpDetail?.chainId as number,
-  })
-
   return (
     <Box className={'px-[16px]'}>
       <Box className={'border-dark-border border-b-1 py-[20px]'}>
