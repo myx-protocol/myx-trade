@@ -18,7 +18,7 @@ export const VIPCard = memo(() => {
 
   return (
     <Box
-      className={`vip-container vip-card flex h-[150px] flex-col justify-between gap-[24px] text-[12px] leading-[1.5] font-[500] text-white vip${vipInfo?.level && vipInfo?.level > MAX_UI_LEVEL ? MAX_UI_LEVEL : vipInfo?.level || 0}`}
+      className={`vip-container vip-card flex min-h-[150px] flex-col justify-between gap-[24px] text-[12px] leading-[1.5] font-[500] text-white vip${vipInfo?.level && vipInfo?.level > MAX_UI_LEVEL ? MAX_UI_LEVEL : vipInfo?.level || 0}`}
     >
       <Box className={'flex flex-col gap-[6px]'}>
         <Box className={'flex items-end gap-[7px]'}>

@@ -77,30 +77,33 @@ export const usePoolDetail = (poolType: PoolType) => {
       // console.log(poolId, tickerData?.price)
       if (!poolId || !chainId) {
         console.error('poolId must be a positive integer')
-        return {} as PoolInfo
+        return null
       }
 
-      const result = await Pool.getPoolInfo(
-        +chainId,
-        poolId,
-        parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
-      )
+      try {
+        const result = await Pool.getPoolInfo(
+          +chainId,
+          poolId,
+          parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
+        )
 
-      // console.log(result)
-      if (result) {
-        const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
-        const info = {
-          price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
-          exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-          tvl: calculationTvl(result),
-        } as PoolInfo
+        // console.log(result)
+        if (result) {
+          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+          const info = {
+            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+            tvl: calculationTvl(result),
+          } as PoolInfo
 
-        console.log(info)
+          console.log(info)
 
-        return info
+          return info
+        }
+      } catch (error) {
+        console.error(error)
+        return null
       }
-
-      return {} as PoolInfo
     },
     placeholderData: (prev) => prev,
     refetchInterval: 1000 * 10,
