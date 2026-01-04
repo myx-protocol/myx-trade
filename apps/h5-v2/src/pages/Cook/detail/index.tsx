@@ -12,7 +12,7 @@ import { Assets } from '@/pages/Cook/detail/components/Assets.tsx'
 
 export const CookDetail = () => {
   const { chainId, poolId } = useParams()
-  const [type, setType] = useState<DetailTabType>(DetailTabType.Price)
+  const [type, setType] = useState<DetailTabType>(DetailTabType.Trade)
 
   //   params validation
   if (!chainId || !poolId || !isSupportedChainFn(chainId ? parseInt(chainId) : undefined)) {

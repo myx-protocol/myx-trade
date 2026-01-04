@@ -13,7 +13,7 @@ import { TradingInfo } from '@/pages/Earn/detail/components/TradingInfo.tsx'
 
 const Detail = () => {
   const { chainId, poolId } = useParams()
-  const [type, setType] = useState<DetailTabType>(DetailTabType.Price)
+  const [type, setType] = useState<DetailTabType>(DetailTabType.Trade)
 
   //   params validation
   if (!chainId || !poolId || !isSupportedChainFn(chainId ? parseInt(chainId) : undefined)) {
