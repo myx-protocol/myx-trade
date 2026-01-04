@@ -39,7 +39,13 @@ export const ChainsBar = ({
             onClick={() => setChainId(_chainId)}
           >
             <Box className={''}>
-              <img src={logoUrl} alt="Logo" width={16} height={16} className={'rounded-full'} />
+              <img
+                src={logoUrl}
+                alt="Logo"
+                width={16}
+                height={16}
+                className={'border-light-border rounded-full border-1'}
+              />
             </Box>
             <span>{label}</span>
           </li>

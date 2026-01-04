@@ -11,20 +11,26 @@ import Big from 'big.js'
 interface SafeListProps {
   chainId: number
   address: string
+  children?: React.ReactNode
+  className?: string
 }
 
-export const SafeList = ({ chainId, address }: SafeListProps) => {
+export const SafeList = ({ chainId, address, children, className = '' }: SafeListProps) => {
   const { data: securityInfo } = useSecurityInfo({ chainId, address })
   if (!securityInfo) return null
   return (
-    <div className="min-w-[240px] p-[20px] leading-[1]">
+    <div className={`min-w-[240px] p-[20px] leading-[1] ${className}`}>
       <div className="flex items-center justify-between text-white">
         <p className="text-[12px] font-medium">
           <Trans>Degen Audit</Trans>
         </p>
-        <span className="inline-flex">
-          <ArrowDown size={12} />
-        </span>
+        {children ? (
+          children
+        ) : (
+          <span className="inline-flex">
+            <ArrowDown size={12} />
+          </span>
+        )}
       </div>
 
       {/* issues */}

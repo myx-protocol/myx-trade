@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 const Tag = ({ className, children }: { className?: string; children?: ReactNode }) => {
   return (
     <span
-      className={`bg-base inline-block w-[14px] rounded-[3px] text-center text-[10px] leading-[14px] font-[400] text-white ${className}`}
+      className={`bg-base text-regular inline-block w-[14px] rounded-[3px] text-center text-[10px] leading-[14px] font-[400] ${className}`}
     >
       {children}
     </span>
