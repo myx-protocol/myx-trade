@@ -6,17 +6,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: zh\n"
-"Project-Id-Version: myx-m-trade\n"
+"Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-09-24 08:42\n"
+"PO-Revision-Date: 2026-01-04 08:01\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Crowdin-Project: myx-m-trade\n"
-"X-Crowdin-Project-ID: 819840\n"
+"X-Crowdin-Project: myx-web-v2-H5\n"
+"X-Crowdin-Project-ID: 851758\n"
 "X-Crowdin-Language: zh-CN\n"
-"X-Crowdin-File: en.po\n"
-"X-Crowdin-File-ID: 12\n"
+"X-Crowdin-File: en-US.po\n"
+"X-Crowdin-File-ID: 20\n"
 
 #. js-lingui-explicit-id
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -26,7 +26,7 @@ msgstr "余额与保证金"
 
 #: src/pages/Cook/components/TrenchTabBar.tsx
 msgid " APR "
-msgstr " APR "
+msgstr ""
 
 #: src/pages/Cook/components/TrenchTabBar.tsx
 msgid " Eligible "
@@ -49,8 +49,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -81,7 +80,7 @@ msgstr " 交易 "
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
-msgstr "{0}"
+msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -106,15 +105,15 @@ msgstr "{0} 金库是一款自动做市策略金库。通过将资产（如 USDC
 #. placeholder {0}: item.userLeverage
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "{0}x"
-msgstr "{0}x"
+msgstr ""
 
 #: src/components/Trade/TradePanel/Leverage/index.tsx
 msgid "{leverage}x"
-msgstr "{leverage}x"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/index.tsx
 msgid "{pendingTransactionsLength} 笔交易正在确认"
-msgstr "{pendingTransactionsLength} 笔交易正在确认"
+msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
@@ -325,7 +324,7 @@ msgstr "所有链"
 #: src/pages/MarketList/components/Tabs/MarketTabs.tsx
 #: src/pages/rank/components/Tabs/TypeSelector.tsx
 msgid "Alpha"
-msgstr "Alpha"
+msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyClaimed(CaseId,address)"
@@ -385,7 +384,7 @@ msgstr "及"
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/List.tsx
 msgid "APR"
-msgstr "APR"
+msgstr ""
 
 #: src/components/DialogBase/WarningDialog.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
@@ -913,12 +912,12 @@ msgstr "兑换金额不匹配，请重试 (uint256,uint256)"
 #: src/pages/Cook/components/ToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Cook"
-msgstr "Cook"
+msgstr ""
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
 msgid "Cooking : Gathering initial liquidity. Become a \"Genesis LP\" now for a permanent 2% fee share."
-msgstr "Cooking：正在收集初始流动性。现在成为 \"
+msgstr ""
 
 #: src/components/ReceiveDialog.tsx
 #: src/components/ReceiveDialog.tsx
@@ -1087,7 +1086,7 @@ msgstr "市场不一致 (PoolId,PoolId)"
 
 #: src/components/Footer/index.tsx
 msgid "Discord"
-msgstr "Discord"
+msgstr ""
 
 #: src/components/SettingDrawer.tsx
 msgid "Display Currency"
@@ -1129,7 +1128,7 @@ msgstr "在有效期内，您可以享受 <0>VIP{level}</0> 体验"
 #: src/components/Tabbar/const.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
-msgstr "Earn"
+msgstr ""
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
@@ -2221,7 +2220,7 @@ msgstr "市值"
 
 #: src/components/Footer/index.tsx
 msgid "Medium"
-msgstr "Medium"
+msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MerkleTreeVerificationFailed(CaseId,address)"
@@ -3131,7 +3130,7 @@ msgstr "盈亏率"
 
 #: src/components/SharePositionDialog/index.tsx
 msgid "ROE"
-msgstr "ROE"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -3591,7 +3590,7 @@ msgstr "至"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
-msgstr "为保护您的 LP 资产免受价格操纵或恶意交易的影响，我们建立了 LP 申诉机制。如果怀疑某笔交易给您造成了不公平的损失，您可以在该收益的 \"
+msgstr ""
 
 #. placeholder {0}: nextLevelInfo?.vipTier ?? '--'
 #. placeholder {1}: nextLevelInfo ? formatNumberPrecision(requiredTradeAmount, COMMON_PRICE_DISPLAY_DECIMALS) : '--'
@@ -3755,7 +3754,7 @@ msgstr "转账失败()"
 
 #: src/pages/Cook/components/ToolBar.tsx
 msgid "Trench"
-msgstr "Trench"
+msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
@@ -3765,11 +3764,11 @@ msgstr "尝试刷新浏览器"
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Earn/List.tsx
 msgid "TVL"
-msgstr "TVL"
+msgstr ""
 
 #: src/components/Footer/index.tsx
 msgid "Twitter"
-msgstr "Twitter"
+msgstr ""
 
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -3893,7 +3892,7 @@ msgstr "查看邀请规则"
 #: src/components/Tabbar/const.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "VIP"
-msgstr "VIP"
+msgstr ""
 
 #. placeholder {0}: configData?.maxVipLevel
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -3981,11 +3980,11 @@ msgstr "可提取 {0}"
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "X"
-msgstr "X"
+msgstr ""
 
 #: src/utils/index.ts
 msgid "Y"
-msgstr "Y"
+msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/SafeList/index.tsx
@@ -4062,106 +4061,106 @@ msgstr "您的密码"
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
 msgid "交易对"
-msgstr "交易对"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "交易手续费"
-msgstr "交易手续费"
+msgstr ""
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "交易滑点设置"
-msgstr "交易滑点设置"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "从保证金账户"
-msgstr "从保证金账户"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "从钱包"
-msgstr "从钱包"
+msgstr ""
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
-msgstr "保存失败"
+msgstr ""
 
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "保留创世LP份额"
-msgstr "保留创世LP份额"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "保证金"
-msgstr "保证金"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 msgid "保证金账户"
-msgstr "保证金账户"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "修改"
-msgstr "修改"
+msgstr ""
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
-msgstr "全部平仓"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "全部撤单"
-msgstr "全部撤单"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "全部撤销"
-msgstr "全部撤销"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "其他"
-msgstr "其他"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
-msgstr "最大滑点"
+msgstr ""
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/CookList/index.tsx
 #: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
 msgid "最新价/24h涨跌幅"
-msgstr "最新价/24h涨跌幅"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
-msgstr "减少保证金"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "出售MLP"
-msgstr "出售MLP"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "划转至保证金"
-msgstr "划转至保证金"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "划转至钱包"
-msgstr "划转至钱包"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
-msgstr "删除"
+msgstr ""
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
-msgstr "加载中..."
+msgstr ""
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -4170,148 +4169,148 @@ msgstr "加载中..."
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "取消"
-msgstr "取消"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "取消平仓"
-msgstr "取消平仓"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "取消开仓"
-msgstr "取消开仓"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "取消止损"
-msgstr "取消止损"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "取消止盈"
-msgstr "取消止盈"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "取消订单"
-msgstr "取消订单"
+msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "可平数量"
-msgstr "可平数量"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "可领取"
-msgstr "可领取"
+msgstr ""
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 msgid "合约"
-msgstr "合约"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "哈希"
-msgstr "哈希"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "基础设置"
-msgstr "基础设置"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "增加保证金"
-msgstr "增加保证金"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "委托价格"
-msgstr "委托价格"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "委托数量"
-msgstr "委托数量"
+msgstr ""
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
-msgstr "已全部加载完毕"
+msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "市价买入/开多"
-msgstr "市价买入/开多"
+msgstr ""
 
 #: src/pages/Trade/components/OrderType/index.tsx
 msgid "市价平仓"
-msgstr "市价平仓"
+msgstr ""
 
 #: src/pages/Trade/components/OrderType/index.tsx
 msgid "市价开仓"
-msgstr "市价开仓"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 msgid "市价止损"
-msgstr "市价止损"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/TPSLOrderConfirm.tsx
 msgid "市价止盈"
-msgstr "市价止盈"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "市场关闭"
-msgstr "市场关闭"
+msgstr ""
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "市场平仓"
-msgstr "市场平仓"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "平仓"
-msgstr "平仓"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "平仓二次确认"
-msgstr "平仓二次确认"
+msgstr ""
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "平仓滑点设置"
-msgstr "平仓滑点设置"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/store/transactions/options.ts
 msgid "开仓"
-msgstr "开仓"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "开仓二次确认"
-msgstr "开仓二次确认"
+msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/PriceInfo.tsx
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "开仓价格"
-msgstr "开仓价格"
+msgstr ""
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "开仓滑点设置"
-msgstr "开仓滑点设置"
+msgstr ""
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "强制平仓"
-msgstr "强制平仓"
+msgstr ""
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "强制止盈价"
-msgstr "强制止盈价"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "强平价"
-msgstr "强平价"
+msgstr ""
 
 #. placeholder {0}: type === 'tp' ? formatNumber(tpSize) : formatNumber(slSize)
 #. placeholder {1}: order?.baseSymbol ?? ''
@@ -4322,92 +4321,92 @@ msgstr "强平价"
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
 msgid "当最新价格 <0>{displayTargetPrice}</0> 时，将以市价平仓, 数量{0} {1},预期收益<1>{2} {3}</1>"
-msgstr "当最新价格 <0>{displayTargetPrice}</0> 时，将以市价平仓, 数量{0} {1},预期收益<1>{2} {3}</1>"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/PriceInfo.tsx
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "当前价格"
-msgstr "当前价格"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "当前市场最大可开做多仓位"
-msgstr "当前市场最大可开做多仓位"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "当前市场最大可开做空仓位"
-msgstr "当前市场最大可开做空仓位"
+msgstr ""
 
 #: src/pages/Cook/components/Token.tsx
 msgid "待上架"
-msgstr "待上架"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按价格排序"
-msgstr "按价格排序"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按委托时间排序"
-msgstr "按委托时间排序"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按盈亏排序"
-msgstr "按盈亏排序"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "授权"
-msgstr "授权"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "提前平仓"
-msgstr "提前平仓"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "提取保证金"
-msgstr "提取保证金"
+msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "搜索结果"
-msgstr "搜索结果"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "数据"
-msgstr "数据"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
 msgid "数量"
-msgstr "数量"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "文档"
-msgstr "文档"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "无感Gas费"
-msgstr "无感Gas费"
+msgstr ""
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "暂停中"
-msgstr "暂停中"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "本合约市场上所有多头头寸的总和，反映了市场上投资者的看涨信心"
-msgstr "本合约市场上所有多头头寸的总和，反映了市场上投资者的看涨信心"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
-msgstr "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
+msgstr ""
 
 #. placeholder {0}: searchResult.contractInfo?.total || '0'
 #. placeholder {0}: searchResult.cookInfo?.total || '0'
@@ -4416,16 +4415,16 @@ msgstr "本合约市场上所有空头头寸的总和，反映了市场上投资
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 msgid "查看所有结果({0})"
-msgstr "查看所有结果({0})"
+msgstr ""
 
 #: src/pages/rank/index.tsx
 msgid "榜单"
-msgstr "榜单"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "止损-最新"
-msgstr "止损-最新"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
@@ -4433,69 +4432,69 @@ msgstr "止损-最新"
 #: src/pages/Trade/components/OrderType/index.tsx
 #: src/store/transactions/options.ts
 msgid "止盈止损"
-msgstr "止盈止损"
+msgstr ""
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
-msgstr "止盈止损滑点"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 msgid "流入/流出"
-msgstr "流入/流出"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "添加保证金"
-msgstr "添加保证金"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "添加止盈止损"
-msgstr "添加止盈止损"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "滑点"
-msgstr "滑点"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
-msgstr "爆仓"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "状态"
-msgstr "状态"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "确定"
-msgstr "确定"
+msgstr ""
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "确认"
-msgstr "确认"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
-msgstr "立即创建我的合约交易市场"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
-msgstr "类型"
+msgstr ""
 
 #: src/components/Trade/CurrentMarket/MarketInfo.tsx
 msgid "结算时，多空之间需要支付的资金费，当费率为正时，多头向空头付费；当费率为负时，空头向多头付费。"
-msgstr "结算时，多空之间需要支付的资金费，当费率为正时，多头向空头付费；当费率为负时，空头向多头付费。"
+msgstr ""
 
 #: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 msgid "自动{defaultValue}%"
-msgstr "自动{defaultValue}%"
+msgstr ""
 
 #: src/components/Trade/CurrentMarket/SymbolInfo.tsx
 msgid "蓝筹"
-msgstr "蓝筹"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4506,78 +4505,79 @@ msgstr "蓝筹"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "触发价格"
-msgstr "触发价格"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
-msgstr "购买MLP"
+msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择合约计价资产"
-msgstr "选择合约计价资产"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择币种"
-msgstr "选择币种"
+msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择您的资产"
-msgstr "选择您的资产"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择链接"
-msgstr "选择链接"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "通用滑点容忍设置"
-msgstr "通用滑点容忍设置"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 msgid "邀请返佣"
-msgstr "邀请返佣"
+msgstr ""
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "部分平仓"
-msgstr "部分平仓"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 msgid "钱包账户"
-msgstr "钱包账户"
+msgstr ""
 
 #: src/pages/Trade/components/OrderType/index.tsx
 msgid "限价平仓"
-msgstr "限价平仓"
+msgstr ""
 
 #: src/pages/Trade/components/OrderType/index.tsx
 msgid "限价开仓"
-msgstr "限价开仓"
+msgstr ""
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
-msgstr "预估强平价"
+msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "预计滑点"
-msgstr "预计滑点"
+msgstr ""
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "预计盈亏"
-msgstr "预计盈亏"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
 msgid "领取全部收益"
-msgstr "领取全部收益"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 msgid "领取收益"
-msgstr "领取收益"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "领取邀请返佣"
-msgstr "领取邀请返佣"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
-msgstr "风控扣除"
+msgstr ""
+
