@@ -4,53 +4,66 @@ import GoplusLogo from '@/assets/images/third/goplus-logo.svg'
 import Security from '../Icon/set/Security'
 import Danger from '../Icon/set/Danger'
 import { useSecurityInfo } from '@/api'
-import { formatNumberPercent } from '@/utils/formatNumber'
 import { decimalToPercent } from '@/utils/number'
 import Big from 'big.js'
 import WarningLine from '@/components/Icon/set/WarningLine.tsx'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config.ts'
+import { FlexRowLayout } from '../FlexRowLayout'
+import clsx from 'clsx'
+import { Tooltips } from '../UI/Tooltips'
+import { t } from '@lingui/core/macro'
 
 interface SafeListProps {
   chainId: number
   address: string
-  children?: React.ReactNode
-  className?: string
   poolId: string
+  className?: string
 }
 
-export const SafeList = ({ chainId, address, children, poolId, className = '' }: SafeListProps) => {
+export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListProps) => {
   const { data: securityInfo } = useSecurityInfo({ chainId, address })
   const { poolConfig } = useGetPoolConfig(poolId, chainId as number)
   if (!securityInfo || !poolConfig) return null
   return (
-    <div className={`min-w-[240px] p-[20px] leading-[1] ${className}`}>
-      <div className="flex items-center justify-between text-white">
-        <p className="text-[12px] font-medium">
-          <Trans>Degen Audit</Trans>
-        </p>
-        {children ? (
-          children
-        ) : (
-          <span className="inline-flex">
-            <ArrowDown size={12} />
-          </span>
-        )}
-      </div>
-
+    <div className={className}>
+      <FlexRowLayout
+        left={
+          <p className="text-[14px] font-medium text-white">
+            <Trans>Degen Audit</Trans>
+          </p>
+        }
+        right={
+          <div
+            className={clsx('flex items-center gap-[4px]', {
+              'text-green': securityInfo?.is_safe,
+              'text-danger': !securityInfo?.is_safe,
+            })}
+          >
+            <Security className="shrink-0" size={13} />
+            <span className="ml-[4px]">
+              {securityInfo?.security_count}/{securityInfo?.count}
+            </span>
+          </div>
+        }
+      />
       {/* issues */}
-      <div className="mt-[12px] flex flex-col gap-[12px] text-[12px] font-normal text-white">
+      <div className="mt-[16px] flex flex-col gap-[14px] text-[12px] font-normal text-white">
         {/* risk rating */}
         <div className="flex items-center justify-between">
           <p className="text-[#848E9C]">
             <Trans>Risk Rating</Trans>
           </p>
           <div className="flex items-center gap-[4px]">
-            <p className="text-[#F29D39]">{poolConfig?.levelName}</p>
-            <WarningLine size={12} color="#fff" />
+            <p className="">{poolConfig?.levelName}</p>
+            <Tooltips
+              title={t`Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements.`}
+            >
+              <WarningLine size={14} color="#fff" />
+            </Tooltips>
           </div>
         </div>
         {/* open source */}
-        {securityInfo.is_open_source && (
+        {securityInfo?.is_open_source && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Open Source</Trans>
@@ -71,7 +84,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
         )}
 
         {/* proxy contract */}
-        {securityInfo.is_proxy && (
+        {securityInfo?.is_proxy && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Proxy Contract</Trans>
@@ -90,7 +103,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
         )}
 
         {/* Mintable */}
-        {securityInfo.is_mintable && (
+        {securityInfo?.is_mintable && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Mintable</Trans>
@@ -111,7 +124,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
         )}
 
         {/* Blacklist*/}
-        {securityInfo.is_blacklisted && (
+        {securityInfo?.is_blacklisted && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Blacklist</Trans>
@@ -129,7 +142,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
           </div>
         )}
         {/* Whitelist*/}
-        {securityInfo.is_whitelisted && (
+        {securityInfo?.is_whitelisted && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Whitelist</Trans>
@@ -147,7 +160,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo.buy_tax && (
+        {securityInfo?.buy_tax && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Buy Tax</Trans>
@@ -165,7 +178,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo.sell_tax && (
+        {securityInfo?.sell_tax && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Sell Tax</Trans>
@@ -183,7 +196,7 @@ export const SafeList = ({ chainId, address, children, poolId, className = '' }:
           </div>
         )}
         {/* Top 10 Holders  */}
-        {securityInfo.top10_holders_percentage && (
+        {securityInfo?.top10_holders_percentage && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Top 10 Holders</Trans>
