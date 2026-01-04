@@ -133,7 +133,7 @@ function MTable() {
           </TableCell>
           <TableCell
             align={'center'}
-            className="!text-secondary !border-dark-border min-w-[157px] rounded-tr-[12px] border-b-1"
+            className="!text-secondary !border-dark-border min-w-[157px] rounded-tr-[12px] !border-r-0 border-b-1"
           >
             <Trans>Maker</Trans>
           </TableCell>

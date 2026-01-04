@@ -17,7 +17,7 @@ export const TradingInfo = () => {
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   return (
-    <Box className={'px-[16px] py-[12px]'}>
+    <Box className={'mt-[16px] px-[16px] py-[12px]'}>
       <Box className={'mb-[16px] text-[14px] leading-[1] font-[500] text-white'}>
         <Trans>Perp Trading Info</Trans>
       </Box>
