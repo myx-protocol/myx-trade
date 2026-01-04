@@ -7,17 +7,21 @@ import { useSecurityInfo } from '@/api'
 import { formatNumberPercent } from '@/utils/formatNumber'
 import { decimalToPercent } from '@/utils/number'
 import Big from 'big.js'
+import WarningLine from '@/components/Icon/set/WarningLine.tsx'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config.ts'
 
 interface SafeListProps {
   chainId: number
   address: string
   children?: React.ReactNode
   className?: string
+  poolId: string
 }
 
-export const SafeList = ({ chainId, address, children, className = '' }: SafeListProps) => {
+export const SafeList = ({ chainId, address, children, poolId, className = '' }: SafeListProps) => {
   const { data: securityInfo } = useSecurityInfo({ chainId, address })
-  if (!securityInfo) return null
+  const { poolConfig } = useGetPoolConfig(poolId, chainId as number)
+  if (!securityInfo || !poolConfig) return null
   return (
     <div className={`min-w-[240px] p-[20px] leading-[1] ${className}`}>
       <div className="flex items-center justify-between text-white">
@@ -35,6 +39,16 @@ export const SafeList = ({ chainId, address, children, className = '' }: SafeLis
 
       {/* issues */}
       <div className="mt-[12px] flex flex-col gap-[12px] text-[12px] font-normal text-white">
+        {/* risk rating */}
+        <div className="flex items-center justify-between">
+          <p className="text-[#848E9C]">
+            <Trans>Risk Rating</Trans>
+          </p>
+          <div className="flex items-center gap-[4px]">
+            <p className="text-[#F29D39]">{poolConfig?.levelName}</p>
+            <WarningLine size={12} color="#fff" />
+          </div>
+        </div>
         {/* open source */}
         {securityInfo.is_open_source && (
           <div className="flex items-center justify-between">
