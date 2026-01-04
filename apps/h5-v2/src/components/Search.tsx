@@ -83,7 +83,7 @@ export const Search = memo(
         event.preventDefault()
       }
       return (
-        <Box className={`bg-base flex h-[42px] w-full gap-[12px] rounded-[8px] ${className}`}>
+        <Box className={`bg-base-bg flex h-[42px] w-full gap-[12px] rounded-[8px] ${className}`}>
           <div className="h-full flex-1">
             <StyledSearch
               className={`gap-[4px] ${isRounded ? 'rounded' : ''}`}
