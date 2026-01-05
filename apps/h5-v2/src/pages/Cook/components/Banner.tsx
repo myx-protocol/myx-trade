@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { useNavigate } from 'react-router-dom'
-import CreateMarketPng from '@/assets/home/create-market.png'
+import CreateMarketPng from '@/assets/home/create-market.svg'
 export const Banner = () => {
   const navigate = useNavigate()
   return (

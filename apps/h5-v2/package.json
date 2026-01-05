@@ -16,6 +16,7 @@
     "i18n:extract": "NODE_ENV=development lingui extract --clean",
     "gen:abi": "typechain --target ethers-v6 --out-dir src/abi/types './src/abi/**/*.json'",
     "uploadCrowdin": "crowdin upload sources",
+    "uploadAllCrowdin": "crowdin upload translations",
     "downCrowdin": "crowdin download",
     "test": "vitest run",
     "test:watch": "vitest watch",

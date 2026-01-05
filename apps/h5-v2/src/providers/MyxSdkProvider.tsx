@@ -5,8 +5,6 @@ import { BrowserProvider, type Signer } from 'ethers'
 import { useUnmount, useUpdateEffect } from 'ahooks'
 import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import CryptoJS from 'crypto-js'
-import { getAccessToken } from '@/api'
 import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { WalletClient } from 'viem'
@@ -207,9 +205,9 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const { data: markets } = useQuery({
-    queryKey: [{ key: 'getMarkets' }, Object.keys(myxSdkClientRef.current)],
+    queryKey: [{ key: 'getMarkets' }, myxSdkClientRef.current?.size],
     queryFn: async () => {
-      if (Object.keys(myxSdkClientRef.current).length) {
+      if (myxSdkClientRef.current?.size) {
         const result = await getMarketList()
         return result?.data || ([] as MarketInfo[])
       }

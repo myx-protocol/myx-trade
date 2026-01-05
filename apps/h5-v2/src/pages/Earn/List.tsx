@@ -28,7 +28,7 @@ const EarnList = () => {
           <Trans>Vaults</Trans>
         </h2>
         <TabBar value={type} setValueType={setType} />
-        <Box className={'mt-[8px] flex items-center justify-between pr-[8px] pl-[16px]'}>
+        <Box className={'mt-[8px] flex items-center justify-between pr-[16px] pl-[16px]'}>
           <IntervalList interval={interval} setInterval={setInterval} />
           <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
         </Box>
