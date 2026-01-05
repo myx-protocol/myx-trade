@@ -234,9 +234,6 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
               <Trans>Account Mode</Trans>
             </p>
             <p className="flex items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-              {/* <span>
-                {tradeMode === TradeMode.Classic ? <Trans>Classic</Trans> : <Trans>Seamless</Trans>}
-              </span> */}
               <LangSwitch<TradeMode>
                 value={tradeMode}
                 onChange={() => {}}
