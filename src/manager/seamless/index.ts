@@ -6,7 +6,6 @@ import { Utils } from "../utils";
 import { getSignerProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
-import { ForwarderGetStatus } from "@/api";
 import { getForwarderContract, ProviderType } from "@/web3/providers";
 import { Account } from "../account";
 import dayjs from "dayjs";
@@ -14,8 +13,6 @@ import { getContractAddressByChainId } from "@/config/address/index";
 import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
-import { retry, RetryableError, TimeoutError } from "@/utils";
-import Forwarder_ABI from "@/abi/Forwarder.json";
 import { Api } from "../api";
 
 const contractTypes = {
@@ -142,12 +139,12 @@ export class Seamless {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
     }
 
+    const contractAddress = getContractAddressByChainId(chainId);
     const masterAddress = await config.signer.getAddress()
     const forwarderContract = await getForwarderContract(chainId)
     const forwarderAddress = forwarderContract.target
 
     const brokerAddress = config.brokerAddress
-    const contractAddress = getContractAddressByChainId(chainId);
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
@@ -168,6 +165,9 @@ export class Seamless {
         deadline.toString(),
       )
 
+     
+
+
       const forwarderSignPermit = await signPermit(
         config.signer,  // 使用 signer 而不是 provider
         erc20Contract,
@@ -175,6 +175,16 @@ export class Seamless {
         forwarderAddress as string,
         ethers.MaxUint256.toString(),
         (nonces + BigInt(1)).toString(),
+        deadline.toString(),
+      )
+
+      const accountSignPermit = await signPermit(
+        config.signer,  // 使用 signer 而不是 provider
+        erc20Contract,
+        masterAddress,
+        contractAddress.Account,
+        ethers.MaxUint256.toString(),
+        (nonces + BigInt(2)).toString(),
         deadline.toString(),
       )
 
@@ -189,8 +199,6 @@ export class Seamless {
         s: brokerSignPermit.s,
       }
 
-      this.logger.info('brokerSeamlessUSDPermitParams-->', brokerSeamlessUSDPermitParams);
-
       const forwarderPermitParams = {
         token: erc20Contract.target,
         owner: masterAddress,
@@ -202,8 +210,18 @@ export class Seamless {
         s: forwarderSignPermit.s,
       }
 
-      this.logger.info('forwarderPermitParams brokerSeamlessUSDPermitParams-->', brokerSeamlessUSDPermitParams, forwarderPermitParams);
-      return [brokerSeamlessUSDPermitParams, forwarderPermitParams]
+      const accountPermitParams = {
+        token: erc20Contract.target,
+        owner: masterAddress,
+        spender: contractAddress.Account,
+        value: ethers.MaxUint256,
+        deadline,
+        v: accountSignPermit.v,
+        r: accountSignPermit.r,
+        s: accountSignPermit.s,
+      }
+
+      return [brokerSeamlessUSDPermitParams, forwarderPermitParams, accountPermitParams]
 
       // return [forwarderPermitParams]
 
@@ -422,7 +440,8 @@ export class Seamless {
   }
 
   async startSeamlessMode({ open }: { open: boolean }) {
-    const config = this.configManager.startSeamlessMode(open)
+
+    await this.configManager.startSeamlessMode(open)
 
     return {
       code: 0,

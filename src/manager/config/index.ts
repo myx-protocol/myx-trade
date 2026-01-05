@@ -70,7 +70,8 @@ export class ConfigManager {
     };
   }
 
-  public startSeamlessMode(open: boolean) {
+  public async startSeamlessMode(open: boolean) {
+    console.log('startSeamlessMode-->', open)
     this.config = {
       ...this.config,
       seamlessMode: open,
