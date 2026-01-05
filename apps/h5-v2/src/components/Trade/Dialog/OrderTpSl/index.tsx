@@ -20,7 +20,7 @@ import { t } from '@lingui/core/macro'
 export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any }) => {
   const [open, setOpen] = useState(false)
   const { address } = useWalletConnection()
-  const { activeTab, setActiveTab, tpPrice, slPrice, tpSize, slSize, reset } = useOrderTPSLStore()
+  const { activeTab, tpPrice, slPrice, tpSize, slSize, reset } = useOrderTPSLStore()
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[order.poolId]?.price ?? 0
   const { client } = useMyxSdkClient(order.chainId)
@@ -97,6 +97,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         data,
         poolInfo?.quoteToken,
         order.chainId as number,
+        address ?? '',
       )
 
       if (rs?.code === 0) {
