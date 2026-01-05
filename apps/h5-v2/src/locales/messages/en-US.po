@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-04 08:01\n"
+"PO-Revision-Date: 2026-01-05 07:32\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -49,7 +49,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -135,19 +136,10 @@ msgstr ""
 msgid "24h Estimated Earnings"
 msgstr ""
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-msgid "24h High"
-msgstr ""
-
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-msgid "24h Low"
-msgstr ""
-
 #: src/pages/Earn/List.tsx
 msgid "24h PnL"
 msgstr ""
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Earn/detail/components/TradingInfo.tsx
 msgid "24h Volume"
@@ -511,8 +503,6 @@ msgid "Bind the invitation relationship and get up to <0>10%</0> of the income"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Blacklist"
 msgstr ""
 
@@ -564,8 +554,6 @@ msgid "Buy MYX"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Buy Tax"
 msgstr ""
 
@@ -957,7 +945,6 @@ msgstr ""
 msgid "Could not find information with chain id {chainId}"
 msgstr ""
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
 msgid "Countdown"
 msgstr ""
@@ -1057,8 +1044,6 @@ msgid "Default Referral"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Degen Audit"
 msgstr ""
 
@@ -1075,6 +1060,10 @@ msgstr ""
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
 msgstr ""
+
+#: src/components/SafeList/index.tsx
+msgid "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
+msgstr "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
 
 #: src/components/Footer/index.tsx
 msgid "Developers"
@@ -1208,7 +1197,7 @@ msgstr ""
 #. placeholder {0}: orderList.length
 #: src/pages/record/components/RecordTab.tsx
 msgid "Entrusts({0})"
-msgstr ""
+msgstr "Open({0})"
 
 #: src/components/Record/Items/Position.tsx
 msgid "Entry price"
@@ -1555,8 +1544,6 @@ msgstr ""
 msgid "Funding Fee"
 msgstr ""
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
 msgid "Funding rate"
@@ -2231,8 +2218,6 @@ msgid "Min"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Mintable"
 msgstr ""
 
@@ -2336,17 +2321,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "No"
 msgstr ""
 
@@ -2600,8 +2574,6 @@ msgid "open size must be less than max size"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Open Source"
 msgstr ""
 
@@ -2911,8 +2883,6 @@ msgid "Providing liquidity to the {0} Vault does not have the \"impermanent loss
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Proxy Contract"
 msgstr ""
 
@@ -3118,8 +3088,7 @@ msgstr ""
 msgid "Reward Vesting"
 msgstr ""
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
+#: src/components/SafeList/index.tsx
 msgid "Risk Rating"
 msgstr ""
 
@@ -3141,10 +3110,6 @@ msgstr ""
 
 #: src/utils/index.ts
 msgid "S"
-msgstr ""
-
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-msgid "Safe"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3275,8 +3240,6 @@ msgid "Sell"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Sell Tax"
 msgstr ""
 
@@ -3607,8 +3570,6 @@ msgid "Token Sniper"
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Top 10 Holders"
 msgstr ""
 
@@ -3915,7 +3876,7 @@ msgstr ""
 
 #: src/pages/Earn/components/Dashboard.tsx
 msgid "Volatility Rating"
-msgstr ""
+msgstr "Risk Rating"
 
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Volume"
@@ -3966,8 +3927,6 @@ msgid "When checked, the system will only redeem your regular LP shares."
 msgstr ""
 
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Whitelist"
 msgstr ""
 
@@ -3995,17 +3954,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
-#: src/pages/Price/components/InfoContent/SecurityInfo.tsx
 msgid "Yes"
 msgstr ""
 
@@ -4081,6 +4029,10 @@ msgstr "From Margin Account"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "从钱包"
 msgstr "From Wallet"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "仓位已平仓"
+msgstr "仓位已平仓"
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
@@ -4389,9 +4341,21 @@ msgstr "Amount"
 msgid "文档"
 msgstr "Docs"
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "无可执行数量"
+msgstr "无可执行数量"
+
 #: src/components/Record/Items/Finance.tsx
 msgid "无感Gas费"
 msgstr "Seamless Gas Fee"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "无效订单"
+msgstr "无效订单"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "无效订单，被Keeper清理"
+msgstr "无效订单，被Keeper清理"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
@@ -4456,6 +4420,10 @@ msgstr "Add TP/SL"
 msgid "滑点"
 msgstr "Slippage"
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "滑点超限"
+msgstr "滑点超限"
+
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
 msgstr "Liquidation"
@@ -4463,6 +4431,10 @@ msgstr "Liquidation"
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "状态"
 msgstr "Status"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "用户已取消"
+msgstr "用户已取消"
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
@@ -4484,17 +4456,9 @@ msgstr "Create my contract trading market now"
 msgid "类型"
 msgstr "Type"
 
-#: src/components/Trade/CurrentMarket/MarketInfo.tsx
-msgid "结算时，多空之间需要支付的资金费，当费率为正时，多头向空头付费；当费率为负时，空头向多头付费。"
-msgstr "Funding fee paid between longs and shorts during settlement. When the rate is positive, longs pay shorts; when negative, shorts pay longs."
-
 #: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 msgid "自动{defaultValue}%"
 msgstr "Auto {defaultValue}%"
-
-#: src/components/Trade/CurrentMarket/SymbolInfo.tsx
-msgid "蓝筹"
-msgstr "Blue Chip"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4506,6 +4470,14 @@ msgstr "Blue Chip"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "触发价格"
 msgstr "Trigger Price"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "订单执行超时失效"
+msgstr "订单执行超时失效"
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "订单数量超限"
+msgstr "订单数量超限"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
@@ -4553,6 +4525,10 @@ msgstr "Limit Close"
 msgid "限价开仓"
 msgstr "Limit Open"
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "非仓位持有者"
+msgstr "非仓位持有者"
+
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
 msgstr "Est. Liq. Price"
@@ -4580,4 +4556,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
