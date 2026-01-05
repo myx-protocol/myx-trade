@@ -128,7 +128,7 @@ export class Account {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(receiver)
+        const isEnoughGas = await this.utils.checkSeamlessGas(receiver, chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -189,6 +189,7 @@ export class Account {
 
     try {
       const needApproval = await this.utils.needsApproval(
+        account,
         chainId,
         tokenAddress,
         amount,
@@ -199,21 +200,21 @@ export class Account {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(account)
+        const isEnoughGas = await this.utils.checkSeamlessGas(account, chainId)
 
-        if (needApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId,
-            quoteAddress: tokenAddress,
-            amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.Account,
-            signer: seamlessWallet as Signer,
-          });
+        // if (needApproval) {
+        //   const approvalResult = await this.utils.approveAuthorization({
+        //     chainId,
+        //     quoteAddress: tokenAddress,
+        //     amount: ethers.MaxUint256.toString(),
+        //     spenderAddress: contractAddress.Account,
+        //     signer: seamlessWallet as Signer,
+        //   });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+        //   if (approvalResult.code !== 0) {
+        //     throw new Error(approvalResult.message);
+        //   }
+        // }
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -391,7 +392,7 @@ export class Account {
 
     try {
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(address)
+        const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");

@@ -55,9 +55,18 @@ const RenderAuthButton = () => {
       <span
         className="text-[14px] leading-[14px] font-medium text-[#848E9C]"
         onClick={async () => {
+          console.log('onClick revoke', activeSeamlessAddress)
+          const seamlessAccount = seamlessAccountList.find(
+            (item) => item.masterAddress === activeSeamlessAddress,
+          )
+
+          if (!seamlessAccount) {
+            return
+          }
+
           const authRs = await client?.seamless.authorizeSeamlessAccount({
             approve: false,
-            seamlessAddress: activeSeamlessAddress,
+            seamlessAddress: seamlessAccount.seamlessAddress,
             chainId: chainId as number,
           })
 
@@ -90,9 +99,16 @@ const RenderAuthButton = () => {
     <span
       className="text-[14px] leading-[14px] font-medium text-[#00E3A5]"
       onClick={async () => {
+        const seamlessAccount = seamlessAccountList.find(
+          (item) => item.masterAddress === activeSeamlessAddress,
+        )
+
+        if (!seamlessAccount) {
+          return
+        }
         const authRs = await client?.seamless.authorizeSeamlessAccount({
           approve: true,
-          seamlessAddress: activeSeamlessAddress,
+          seamlessAddress: seamlessAccount.seamlessAddress,
           chainId: chainId as number,
         })
 
