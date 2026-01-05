@@ -53,19 +53,19 @@ export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
 export class MxSDK {
   version = pkg.version;
   public provider: BrowserProvider | undefined;
-  private configManager: ConfigManager | undefined;
+  #configManager?: ConfigManager
   private static _instance: MxSDK
-  Markets: MarketInfo[] | undefined
+  public Markets: MarketInfo[] | undefined
   
   constructor() {
     console.log(this.version);
   }
   
-  public setConfigManager(configManager: ConfigManager): void {
-    this.configManager = configManager;
+  setConfigManager(cm: ConfigManager) {
+    this.#configManager = cm
   }
-  public getConfigManager(): ConfigManager | undefined {
-    return this.configManager;
+  getConfigManager(): ConfigManager | undefined {
+    return this.#configManager;
   }
   
   public setProvider(provider: BrowserProvider) {
@@ -85,7 +85,9 @@ export class MxSDK {
   public async getMarkets () {
     try {
       const result = await getMarketList()
-      this.Markets = result?.data || []
+      const data  = result?.data || []
+      this.Markets = data
+      return data
     } catch (error) {
       throw error;
     }

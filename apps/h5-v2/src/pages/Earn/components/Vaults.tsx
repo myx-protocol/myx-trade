@@ -18,7 +18,7 @@ import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 
 const sortField = SortField.tvl
 const sortOrder = 'desc'
-const limit = 3
+const limit = 20
 
 export const Vaults = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()

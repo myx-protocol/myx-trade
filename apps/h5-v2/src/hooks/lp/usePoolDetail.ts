@@ -37,7 +37,7 @@ function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: Base
 
 export const usePoolDetail = (poolType: PoolType) => {
   const { chainId, poolId } = useParams()
-  const { client } = useMyxSdkClient()
+  const { client, markets } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
 
@@ -77,42 +77,46 @@ export const usePoolDetail = (poolType: PoolType) => {
       // console.log(poolId, tickerData?.price)
       if (!poolId || !chainId) {
         console.error('poolId must be a positive integer')
-        return {} as PoolInfo
+        return null
       }
 
-      const result = await Pool.getPoolInfo(
-        +chainId,
-        poolId,
-        parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
-      )
+      try {
+        const result = await Pool.getPoolInfo(
+          +chainId,
+          poolId,
+          parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
+        )
 
-      // console.log(result)
-      if (result) {
-        const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
-        const info = {
-          price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
-          exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-          tvl: calculationTvl(result),
-        } as PoolInfo
+        // console.log(result)
+        if (result) {
+          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+          const info = {
+            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+            tvl: calculationTvl(result),
+          } as PoolInfo
 
-        console.log(info)
+          console.log(info)
 
-        return info
+          return info
+        }
+      } catch (error) {
+        console.error(error)
+        return null
       }
-
-      return {} as PoolInfo
     },
     placeholderData: (prev) => prev,
     refetchInterval: 1000 * 10,
   })
 
   const { data: pool } = useQuery({
-    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId],
+    queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets?.length],
+    enabled: Boolean(poolId && chainId && markets?.length),
     queryFn: async () => {
-      if (!poolId || !chainId) return undefined
-      const result = await Pool.getPoolDetail(+chainId, poolId)
-
-      return result
+      if (chainId && poolId) {
+        const result = await Pool.getPoolDetail(+chainId, poolId)
+        return result
+      }
     },
   })
 

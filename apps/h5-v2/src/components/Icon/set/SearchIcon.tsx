@@ -11,7 +11,7 @@ const SearchIcon = (props: SvgIconProps) => {
       viewBox="0 0 14 14"
       fill="none"
     >
-      <g clip-path="url(#clip0_3948_90304)">
+      <g clipPath="url(#clip0_3948_90304)">
         <mask
           id="mask0_3948_90304"
           maskUnits="userSpaceOnUse"

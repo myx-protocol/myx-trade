@@ -13,7 +13,7 @@ import { TradingInfo } from '@/pages/Earn/detail/components/TradingInfo.tsx'
 
 const Detail = () => {
   const { chainId, poolId } = useParams()
-  const [type, setType] = useState<DetailTabType>(DetailTabType.Price)
+  const [type, setType] = useState<DetailTabType>(DetailTabType.Trade)
 
   //   params validation
   if (!chainId || !poolId || !isSupportedChainFn(chainId ? parseInt(chainId) : undefined)) {
@@ -30,7 +30,7 @@ const Detail = () => {
           {type === DetailTabType.Price && (
             <>
               <Chart className={'px-[16px]'} />
-              <TokenInfo className={'border-base mx-[16px] border-b-1 py-[20px]'} />
+              <TokenInfo className={'border-base mx-[16px] mt-[16px] border-b-1 py-[20px]'} />
               <TradingInfo className={'px-[16px] py-[20px]'} />
             </>
           )}
