@@ -11,7 +11,7 @@ export type Lang = {
   okx: string
 }
 export enum AVAILABLE_LOCALES {
-  EN = 'en',
+  EN = 'en-US',
   ZH_CN = 'zh-CN',
   // KO = 'ko-KR',
 }
