@@ -23,26 +23,23 @@ const DEFAULT_OPTIONS: LangOption[] = [
 const LangSwitchGroupStyle = {
   borderRadius: '4px',
   p: '0px',
-  // width: '53px',
   height: '19px',
-  minWidth: '53px',
   minHeight: '19px',
+  width: 'auto',
+  display: 'inline-flex',
 }
 
 const LangSwitchStyle = {
-  flex: 1,
   fontSize: 10,
   fontWeight: 500,
   background: '#202129',
   color: '#848E9C',
   transition: 'all 0.2s',
   border: 'none',
-  minWidth: 0,
+  minWidth: 'auto',
   minHeight: 0,
-  // borderTopLeftRadius: idx === 0 ? '4px' : 0,
-  // borderBottomLeftRadius: idx === 0 ? '4px' : 0,
-  // borderTopRightRadius: idx === options.length - 1 ? '4px' : 0,
-  // borderBottomRightRadius: idx === options.length - 1 ? '4px' : 0,
+  px: '8px',
+  whiteSpace: 'nowrap',
   '&.Mui-selected': {
     borderRadius: '4px !important',
     background: '#00996F',
