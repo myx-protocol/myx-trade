@@ -195,6 +195,7 @@ export const SetPasswordDialog = () => {
 
                   setActiveSeamlessAddress(seamlessAccount.masterAddress)
                   setTradeMode(TradeMode.Seamless)
+                  changeSdkTradeMode(true)
                   setSeamlessPasswordDialogOpen(false)
                 } else {
                   toast.error('Create seamless failed')

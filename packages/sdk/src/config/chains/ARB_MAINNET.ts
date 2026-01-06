@@ -1,5 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
-import ArbitrumLogo from '@/assets/icons/chain/logo/arbitrum.png'
+// import ArbitrumLogo from '@/assets/icons/chain/logo/arbitrum.png'
 import { GAS_FEE_RESERVED_RATIO } from './../fee'
 
 export default {
@@ -11,7 +11,7 @@ export default {
     chainSymbol: 'Arbitrum One',
     explorer: 'https://arbiscan.io/',
     explorerOfTX: 'https://arbiscan.io/tx/',
-    logoUrl: ArbitrumLogo,
+    logoUrl: '',
     gasPriceRatio: 1.5,
     gasLimitRatio: 1.3,
     gasAmountRatio: 2,

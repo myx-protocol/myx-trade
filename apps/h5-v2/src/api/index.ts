@@ -104,6 +104,7 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
     queryKey: ['securityInfo', params],
     queryFn: async () => {
       const res = await getSecurityInfo(params)
+      let isSafe = true
       const validKeys = Object.keys(res.data).filter((key) => {
         const value = res.data[key as keyof GetSecurityInfoResponse]
         return value !== undefined && value !== null && value !== ''
@@ -121,11 +122,15 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
           // open source is 0 is danger
           if (res.data[key] === '0') {
             dangerCount++
+            isSafe = false
           }
         } else if (res.data[key] === '1') {
           // other is 1 is danger
           dangerCount++
+          isSafe = false
         }
+
+        //
       }
 
       if (res.code === 9200) {
@@ -134,6 +139,7 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
           count: total,
           security_count: total - dangerCount,
           danger_count: dangerCount,
+          is_safe: isSafe,
         }
       } else {
         return {
@@ -141,6 +147,7 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
           count: 0,
           security_count: 0,
           danger_count: 0,
+          is_safe: isSafe,
         }
       }
     },
