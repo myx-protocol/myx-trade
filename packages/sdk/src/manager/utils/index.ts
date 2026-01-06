@@ -12,9 +12,16 @@ import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
-import { getDataProviderContract, getForwarderContract } from "@/web3/providers";
+import {
+  getDataProviderContract,
+  getForwarderContract,
+} from "@/web3/providers";
 import { getJSONProvider } from "@/web3";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
+import {
+  bigintTradingGasPriceWithRatio,
+  bigintTradingGasToRatioCalculator,
+} from "@/common";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -46,7 +53,6 @@ export class Utils {
     const eventTopic = ethers.id(
       "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
     );
-
 
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
@@ -103,10 +109,9 @@ export class Utils {
       ];
 
       const spender =
-        spenderAddress ??
-        getContractAddressByChainId(chainId).Account;
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
 
-      const provider = await getJSONProvider(chainId)
+      const provider = await getJSONProvider(chainId);
       const tokenContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
@@ -159,7 +164,7 @@ export class Utils {
     quoteAddress,
     amount,
     spenderAddress,
-    signer
+    signer,
   }: {
     chainId: number;
     quoteAddress: string;
@@ -173,18 +178,17 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
-      console.log('approveAuthorization: signer-->', signer)
+      console.log("approveAuthorization: signer-->", signer);
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         signer ?? config.signer
       );
 
-      console.log('approveAuthorization: usdcContract-->', usdcContract)
+      console.log("approveAuthorization: usdcContract-->", usdcContract);
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
-        spenderAddress ??
-        getContractAddressByChainId(chainId).Account;
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
@@ -206,13 +210,15 @@ export class Utils {
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(config.chainId)
+      const provider = await getJSONProvider(config.chainId);
       const brokerContract = new ethers.Contract(
         brokerAddress,
         Broker_ABI,
         provider
-      )
-      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+      );
+      const targetAddress = config.seamlessMode
+        ? config.seamlessAccount?.masterAddress
+        : config.signer?.getAddress();
 
       const userFeeRate = await brokerContract.getUserFeeRate(
         targetAddress,
@@ -240,10 +246,9 @@ export class Utils {
   }
 
   async getNetworkFee(quoteAddress: string, chainId: number) {
-    const orderManagerAddress = getContractAddressByChainId(
-      chainId,
-    ).ORDER_MANAGER;
-    const provider = await getJSONProvider(chainId)
+    const orderManagerAddress =
+      getContractAddressByChainId(chainId).ORDER_MANAGER;
+    const provider = await getJSONProvider(chainId);
     const orderManagerContract = new ethers.Contract(
       orderManagerAddress,
       OrderManager_ABI,
@@ -329,8 +334,8 @@ export class Utils {
 
   async checkSeamlessGas(userAddress: string, chainId: number) {
     const forwarderContract = await getForwarderContract(chainId);
-    const relayFee = await forwarderContract.getRelayFee()
-    const provider = await getJSONProvider(chainId)
+    const relayFee = await forwarderContract.getRelayFee();
+    const provider = await getJSONProvider(chainId);
     // const { gasPrice } = await provider.getFeeData()
     const contractAddress = getContractAddressByChainId(chainId);
 
@@ -342,14 +347,16 @@ export class Utils {
     const balance = await erc20Contract.balanceOf(userAddress);
 
     if (BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
-      return false
+      return false;
     }
 
-    return true
+    return true;
   }
 
   async getLiquidityInfo({
-    chainId, poolId, marketPrice
+    chainId,
+    poolId,
+    marketPrice,
   }: {
     chainId: number;
     poolId: string;
@@ -357,7 +364,10 @@ export class Utils {
   }) {
     try {
       const dataProviderContract = await getDataProviderContract(chainId);
-      const poolInfo = await dataProviderContract.getPoolInfo(poolId, marketPrice);
+      const poolInfo = await dataProviderContract.getPoolInfo(
+        poolId,
+        marketPrice
+      );
 
       return {
         code: 0,
@@ -408,9 +418,10 @@ export class Utils {
 
     if (errorData) {
       // 提取 selector (前10个字符: 0x + 8个十六进制字符)
-      const selector = typeof errorData === "string" && errorData.startsWith("0x")
-        ? errorData.slice(0, 10).toLowerCase()
-        : null;
+      const selector =
+        typeof errorData === "string" && errorData.startsWith("0x")
+          ? errorData.slice(0, 10).toLowerCase()
+          : null;
 
       if (selector) {
         // 在错误映射中查找
@@ -432,5 +443,13 @@ export class Utils {
     }
 
     return JSON.stringify(error);
+  }
+
+  async getGasPriceByRatio(chainId: number) {
+    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice
+  }
+
+  async getGasLimitByRatio(chainId: number, gasLimit: bigint) {
+    return bigintTradingGasToRatioCalculator(gasLimit, chainId);
   }
 }
