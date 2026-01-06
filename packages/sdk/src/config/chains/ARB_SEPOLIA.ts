@@ -1,5 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
-import ArbitrumLogo from '@/assets/icons/chain/logo/arbitrum.png'
+// import ArbitrumLogo from '@/assets/icons/chain/logo/arbitrum.png'
 import { GAS_FEE_RESERVED_RATIO } from './../fee'
 
 export default {
@@ -15,7 +15,7 @@ export default {
     explorer: 'https://sepolia.arbiscan.io/',
     explorerOfTX: 'https://sepolia.arbiscan.io/tx/',
     faucetUrl: 'https://bwarelabs.com/faucets/arbitrum-sepolia',
-    logoUrl: ArbitrumLogo,
+    logoUrl: '',
     gasPriceRatio: 1.5,
     gasLimitRatio: 1.3,
     gasAmountRatio: 2,
