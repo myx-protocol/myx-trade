@@ -13,7 +13,7 @@ import clsx from 'clsx'
 import { useLeverage } from '../../hooks/useLeverage'
 import { useUpdateEffect } from 'ahooks'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { ChainId } from '@/config/chain'
+import { ChainId, getAsSupportedChainIdFn } from '@/config/chain'
 import useGlobalStore from '@/store/globalStore'
 
 // 写死的常量
@@ -21,7 +21,8 @@ const LEVERAGE_RISK_WARNING = 10
 const MIN_LEVERAGE = 1
 
 function LeverageDialogContent() {
-  const { chainId } = useWalletConnection()
+  const { chainId: currChainId } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
   const { symbolInfo, maxLeverage } = useGlobalStore()
   const { close, setLeverage } = useLeverageDialogStore()
   const leverage = useLeverage(symbolInfo?.poolId)
