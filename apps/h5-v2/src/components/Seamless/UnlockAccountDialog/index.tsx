@@ -1,5 +1,4 @@
 import { DialogBase } from '@/components/UI/DialogBase'
-import useGlobalStore from '@/store/globalStore'
 import { encryptionAddress } from '@/utils'
 import { t } from '@lingui/core/macro'
 import walletIcon from '@/assets/icon/commons/wallet.svg'
@@ -17,7 +16,8 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -26,10 +26,11 @@ export const UnlockAccountDialog = () => {
     setSelectedSeamlessAccountDialogOpen,
     setTradeMode,
     setSeamlessPasswordDialogOpen,
+    symbolInfo,
   } = useGlobalStore()
-  const { symbolInfo } = useTradePageStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [show, setShow] = useState(false)
+  const { address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const [password, setPassword] = useState('')
   const { seamlessAccountList, activeSeamlessAddress, setActiveSeamlessAddress } =
@@ -40,9 +41,16 @@ export const UnlockAccountDialog = () => {
     if (activeSeamlessAddress) {
       return
     }
+    const currentSeamlessAccount = seamlessAccountList.find(
+      (item) => item.masterAddress === address,
+    )
 
-    setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
-  }, [activeSeamlessAddress])
+    if (currentSeamlessAccount) {
+      setActiveSeamlessAddress(currentSeamlessAccount?.masterAddress || '')
+    } else {
+      setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
+    }
+  }, [activeSeamlessAddress, address, setActiveSeamlessAddress])
 
   return (
     <DialogBase
@@ -143,11 +151,12 @@ export const UnlockAccountDialog = () => {
                 apiKey: activeSeamlessAccount?.apiKey as string,
                 chainId: symbolInfo?.chainId as number,
               })
-              console.log('unLockSeamlessWallet  rs-->', rs)
+
               if (rs?.code === 0) {
                 changeSdkTradeMode(true)
                 setUnlockAccountDialogOpen(false)
-                // setTradeMode(TradeMode.Seamless)
+                setActiveSeamlessAddress(activeSeamlessAccount?.masterAddress as string)
+                setTradeMode(TradeMode.Seamless)
               }
             }}
           >

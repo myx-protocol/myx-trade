@@ -1,35 +1,57 @@
 import { TradeRecordTab, TradeRecordTabs } from '@/components/Record/TradeRecordTabs'
 import { Chart } from '../Chart'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TabType } from '@/pages/Trade/types'
 import { Trans } from '@lingui/react/macro'
 import { Record, SortDown, WalletLine } from '@/components/Icon'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
-import { DangerButton, InfoButton, PrimaryButton } from '@/components/UI/Button'
+import { InfoButton } from '@/components/UI/Button'
 import { useNavigate } from 'react-router-dom'
-import { Position } from '@/pages/Trade/components/Tables/Position'
-import { Entrusts } from '@/pages/Trade/components/Tables/Entrust'
 import { Slippage } from '@/components/Trade/TradePanel/Slippage'
-import { PositionActionEnum } from '@/components/Trade/type'
-import { usePriceStore } from '../../store'
+import { AmountUnitEnum, PositionActionEnum } from '@/components/Trade/type'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { getSlippageConfig } from '@/utils/slippage'
-import type { MarketDetailResponse } from '@myx-trade/sdk'
+import { OrderType, type MarketDetailResponse } from '@myx-trade/sdk'
 import { useLeverageDialogStore } from '@/components/Trade/Dialog/Leverage/store'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AssetsDialogButton } from '@/components/Trade/TradePanel/BalanceAndMarginMode'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
-import { formatNumberWithBaseToken } from '@/utils/number'
-
+import { displayAmount, formatNumberWithBaseToken } from '@/utils/number'
+import useGlobalStore from '@/store/globalStore'
 import ToTrade from '@/components/Icon/set/ToTrade'
 import { AmountInput } from './AmountInput'
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
+import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import { useGetPositionList } from '@/hooks/position/use-get-position-list'
+import { usePositionStore } from '@/store/position/createStore'
+import { PositionList } from '@/pages/record/components/PositionList'
+import { OpenOrderList } from '@/pages/record/components/OpenOrderList'
+import { CloseAllPositionDialog } from '@/pages/Trade/components/CloseAllPositionDialog'
+import { CancelAllOrdersDialog } from '@/pages/Trade/components/CancelAllOrdersDialog'
+import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
+import { PlaceOrder } from '@/components/Trade/TradePanel/PlaceOrder'
+import { useMount } from 'ahooks'
+import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
+import { parseBigNumber } from '@/utils/bn'
+import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
+import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
+import { PlaceOrderConfirmDialog } from '@/components/PlaceOrderConfirm'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
 
 export const PriceContent = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
-  const [hideOthersSymbols, setHideOthersSymbols] = useState(false)
+  const { closeOrderConfirmDialogOpen, placeOrderConfirmDialogOpen } = useGlobalStore()
+  const {
+    hideOthersSymbols,
+    setHideOthersSymbols,
+    setCloseAllPositionDialogOpen,
+    setCancelAllOrdersDialogOpen,
+    closeAllPositionDialogOpen,
+    cancelAllOrdersDialogOpen,
+  } = usePositionStore()
+
   const { open: openLeverageDialog } = useLeverageDialogStore()
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const leverage = useLeverage(symbolInfo?.poolId)
 
@@ -43,10 +65,25 @@ export const PriceContent = () => {
 
   const navigate = useNavigate()
 
+  const orderList = useGetOrderList(true)
+  const positionList = useGetPositionList(true)
+
+  const onCloseAllHandler = () => {
+    if (activeTab === TabType.POSITION && positionList.length > 0) {
+      setCloseAllPositionDialogOpen(true)
+    } else if (activeTab === TabType.ENTRUSTS && orderList.length > 0) {
+      setCancelAllOrdersDialogOpen(true)
+    }
+  }
+
   const renderCloseAllButton = () => {
-    if (activeTab === TabType.POSITION || activeTab === TabType.ENTRUSTS) {
+    if (
+      (activeTab === TabType.POSITION && positionList.length > 0) ||
+      (activeTab === TabType.ENTRUSTS && orderList.length > 0)
+    ) {
       return (
         <InfoButton
+          onClick={onCloseAllHandler}
           style={{
             padding: '6px 10px',
             borderRadius: '4px',
@@ -56,20 +93,75 @@ export const PriceContent = () => {
             border: 0,
           }}
         >
-          <Trans>Close All</Trans>
+          {activeTab === TabType.POSITION ? <Trans>Close All</Trans> : <Trans>Cancel All</Trans>}
         </InfoButton>
       )
     }
     return null
   }
 
+  const {
+    amountUnit,
+    resetStore,
+    setOrderType,
+    setAutoMarginMode,
+    setPrice,
+    setCollateralAmount,
+    setLongSize,
+    setShortSize,
+    setTpValue,
+    setSlValue,
+    setPositionAction,
+    setAmountSliderValue,
+    longSize,
+    shortSize,
+    setAmountUnit,
+  } = useTradePanelStore()
+  const { tickerData } = useMarketStore()
+
+  useMount(() => {
+    resetStore()
+    setOrderType(OrderType.MARKET)
+    setAutoMarginMode(true)
+    setTpValue('0')
+    setSlValue('0')
+    setPrice('0')
+    setCollateralAmount('0')
+    setLongSize('0')
+    setShortSize('0')
+    setPositionAction(PositionActionEnum.OPEN)
+  })
+
+  const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
+
+  useEffect(() => {
+    const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
+    setPrice(marketPrice.toString())
+    setAmountUnit(AmountUnitEnum.QUOTE)
+  }, [symbolInfo, tickerData, setPrice, setAmountUnit])
+
+  const displayLongSize = useMemo(() => {
+    if (parseBigNumber(longSize).eq(0)) {
+      return '0'
+    }
+
+    return `${displayAmount(longSize)} ${symbolInfo?.quoteSymbol}`
+  }, [longSize, amountUnit, symbolInfo])
+
+  const displayShortSize = useMemo(() => {
+    if (parseBigNumber(shortSize).eq(0)) {
+      return '0'
+    }
+    return `${displayAmount(shortSize)} ${symbolInfo?.quoteSymbol}`
+  }, [shortSize, amountUnit, symbolInfo])
+
   return (
     <div className="mt-[8px]">
       <Chart />
       {/* <Trade /> */}
-      <div className="mt-[17px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
+      <div className="mt-[12px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
         <div className="flex items-center gap-[8px]">
-          <p>
+          <p className="text-[#848E9C]">
             <Trans>Market</Trans>
           </p>
           <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
@@ -109,7 +201,17 @@ export const PriceContent = () => {
       </div>
       <AmountInput
         onchange={(value) => {
-          console.log(value)
+          const longSize = parseBigNumber(value)
+            .div(100)
+            .mul(parseBigNumber(maxOpenLong.quoteAmount))
+            .toString()
+          const shortSize = parseBigNumber(value)
+            .div(100)
+            .mul(parseBigNumber(maxOpenShort.quoteAmount))
+            .toString()
+          setLongSize(longSize)
+          setShortSize(shortSize)
+          setAmountSliderValue(value)
         }}
       />
       <div className="mt-[12px] flex items-center justify-between px-[16px]">
@@ -117,66 +219,51 @@ export const PriceContent = () => {
           <p className="text-tooltip text-[#848E9C]">
             <Trans>Margin</Trans>
           </p>
-          <p className="ml-[4px] font-medium text-white">0.00 USDT</p>
+          <p className="ml-[4px] font-medium text-white">{displayLongSize}</p>
         </div>
         <div className="flex items-center text-[12px]">
           <p className="text-tooltip text-[#848E9C]">
             <Trans>Margin</Trans>
           </p>
-          <p className="ml-[4px] font-medium text-white">0.00 USDT</p>
+          <p className="ml-[4px] font-medium text-white">{displayShortSize}</p>
         </div>
       </div>
-      <div className="mt-[12px] flex items-center gap-[8px] px-[16px]">
-        <PrimaryButton
-          style={{
-            width: '100%',
-            height: '45px',
-            fontSize: '13px',
-            fontWeight: 'bold',
-            paddingLeft: '20px',
-            paddingRight: '20px',
-            borderRadius: '8px',
-          }}
-        >
-          <Trans>Open Long</Trans>
-        </PrimaryButton>
-        <DangerButton
-          style={{
-            width: '100%',
-            height: '45px',
-            fontSize: '13px',
-            fontWeight: 'bold',
-            paddingLeft: '20px',
-            paddingRight: '20px',
-            borderRadius: '8px',
-          }}
-        >
-          <Trans>Open Short</Trans>
-        </DangerButton>
-      </div>
-      <div>
-        {/* <PositionAction />
-        <OrderType />
-        {positionAction === PositionActionEnum.OPEN && <BalanceAndMarginMode />}
-        <OrderForm />
-        {positionAction === PositionActionEnum.OPEN && <TPSL />}
+      <div className="mt-[12px] px-[16px]">
         <CanSwitchWalletNetwork
           targetChainId={symbolInfo?.chainId}
           style={{
             marginTop: '8px',
           }}
         >
-          <PlaceOrder />
-        </CanSwitchWalletNetwork> */}
+          <PlaceOrder showOrderSize={false} />
+        </CanSwitchWalletNetwork>
       </div>
-      <div className="mt-[12px] flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
+      <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
         <div className="flex-[1_1_0%]">
           <TradeRecordTabs
             value={activeTab}
             onChange={(event, value) => setActiveTab(value as TabType)}
           >
-            <TradeRecordTab value={TabType.POSITION} label={<Trans>Positions(1)</Trans>} />
-            <TradeRecordTab value={TabType.ENTRUSTS} label={<Trans>Open Orders(2)</Trans>} />
+            <TradeRecordTab
+              value={TabType.POSITION}
+              label={
+                positionList.length > 0 ? (
+                  <Trans>Positions({positionList.length})</Trans>
+                ) : (
+                  <Trans>Positions </Trans>
+                )
+              }
+            />
+            <TradeRecordTab
+              value={TabType.ENTRUSTS}
+              label={
+                orderList.length > 0 ? (
+                  <Trans>Open Orders({orderList.length})</Trans>
+                ) : (
+                  <Trans>Open Orders</Trans>
+                )
+              }
+            />
           </TradeRecordTabs>
         </div>
         {/* hide outer symbols */}
@@ -189,9 +276,13 @@ export const PriceContent = () => {
         onChange={setHideOthersSymbols}
         right={renderCloseAllButton()}
       />
-      {activeTab === TabType.POSITION && <Position />}
-      {activeTab === TabType.ENTRUSTS && <Entrusts />}
+      {activeTab === TabType.POSITION && <PositionList />}
+      {activeTab === TabType.ENTRUSTS && <OpenOrderList />}
       <LeverageDialog />
+      {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
+      {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
+      {closeOrderConfirmDialogOpen && <CloseConfirmDialog />}
+      {placeOrderConfirmDialogOpen && <PlaceOrderConfirmDialog />}
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { SlippageInput } from './SlippageInput'
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { useEffect, useState } from 'react'
 import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 interface SlippageDialogProps {
   open: boolean
@@ -21,7 +21,7 @@ export const SlippageDialog = ({
   defaultSlippage = 0.003,
   onChange,
 }: SlippageDialogProps) => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const [openSlippageValue, setOpenSlippageValue] = useState<string>('0')
   const [closeSlippageValue, setCloseSlippageValue] = useState<string>('0')
   const [tpSlSlippageValue, setTpSlSlippageValue] = useState<string>('0')

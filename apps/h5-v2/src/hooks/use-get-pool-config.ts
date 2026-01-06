@@ -1,4 +1,4 @@
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from './wallet/useWalletConnection'
 import useSWR from 'swr'
 import { getPoolLevelConfig } from '@/api'
@@ -24,7 +24,7 @@ interface PoolConfig {
 }
 
 export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) => {
-  const { symbolInfo, setMaxLeverage } = useTradePageStore()
+  const { symbolInfo, setMaxLeverage } = useGlobalStore()
   const { chainId } = useWalletConnection()
 
   const { data: poolConfig } = useSWR(
@@ -40,8 +40,6 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
         targetPoolId ?? (symbolInfo?.poolId as string),
         targetChainId ?? (chainId as number),
       )
-
-      console.log('res-->', res)
 
       const data = res.data as {
         level: number

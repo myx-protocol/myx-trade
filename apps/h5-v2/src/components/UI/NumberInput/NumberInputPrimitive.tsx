@@ -84,9 +84,16 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
           return
         }
 
-        // 允许负号
+        // 允许负号（只能在开头输入）
         if (e.key === '-' && allowNegative) {
-          if (displayValue.includes('-') || displayValue.length > 0) {
+          // 如果已经有负号，或者光标不在开头，则阻止
+          if (displayValue.includes('-')) {
+            e.preventDefault()
+          }
+          // 如果输入框不为空且光标不在开头，阻止输入负号
+          const input = e.target as HTMLInputElement
+          const cursorPosition = input.selectionStart || 0
+          if (displayValue.length > 0 && cursorPosition !== 0) {
             e.preventDefault()
           }
           return

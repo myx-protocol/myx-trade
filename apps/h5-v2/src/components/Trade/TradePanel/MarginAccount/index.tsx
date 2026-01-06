@@ -3,7 +3,6 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { Trans } from '@lingui/react/macro'
 // import { LongShortBar } from '../../components/LongShortBar'
 import { InfoButton } from '@/components/UI/Button'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { displayAmount, formatNumber } from '@/utils/number'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useMemo, useState, useEffect, useCallback } from 'react'
@@ -77,7 +76,7 @@ const useCountdown = (targetTimestamp: number) => {
 }
 
 export const MarginAccount = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
@@ -191,7 +190,13 @@ export const MarginAccount = () => {
           }
           right={
             <p>
-              {displayAmount(accountAssets?.freeMargin?.toString() ?? '0')}{' '}
+              {isExpired
+                ? displayAmount(
+                    parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                      .plus(parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0'))
+                      .toString() ?? '0',
+                  )
+                : displayAmount(accountAssets?.freeMargin?.toString() ?? '0')}{' '}
               {symbolInfo?.quoteSymbol}
             </p>
           }
@@ -232,8 +237,7 @@ export const MarginAccount = () => {
                 </Tooltips>
               ) : (
                 <p>
-                  {displayAmount(accountAssets?.quoteProfit?.toString() ?? '0')}{' '}
-                  {symbolInfo?.quoteSymbol}
+                  {'0'} {symbolInfo?.quoteSymbol}
                 </p>
               )}
             </>
@@ -297,12 +301,18 @@ export const MarginAccount = () => {
                     <Tooltips title={`${countdownText}`}>
                       <p className="text-tooltip font-normal">
                         {displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
-                        {symbolInfo?.quoteSymbol}
+                        {symbolInfo?.baseSymbol}
                       </p>
                     </Tooltips>
                   ) : (
                     <p>
-                      {displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
+                      {isExpired
+                        ? displayAmount(
+                            parseBigNumber(accountAssets?.freeBaseAmount?.toString() ?? '0')
+                              .plus(parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0'))
+                              .toString() ?? '0',
+                          )
+                        : displayAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')}{' '}
                       {symbolInfo?.baseSymbol}
                     </p>
                   )}
@@ -322,7 +332,12 @@ export const MarginAccount = () => {
               right={
                 <Tooltips title={t``}>
                   <p>
-                    {displayAmount(accountAssets?.baseProfit?.toString() ?? '0')}{' '}
+                    {!isExpired
+                      ? displayAmount(
+                          parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0').toString() ??
+                            '0',
+                        )
+                      : 0}{' '}
                     {symbolInfo?.baseSymbol}
                   </p>
                 </Tooltips>

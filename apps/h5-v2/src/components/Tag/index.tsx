@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge'
 interface TagProps {
   children: React.ReactNode
   className?: string
-  type?: 'success' | 'info' | 'danger'
+  type?: 'success' | 'info' | 'danger' | 'warning'
 }
 
 export const Tag = ({ children, className, type = 'success' }: TagProps) => {
@@ -17,6 +17,7 @@ export const Tag = ({ children, className, type = 'success' }: TagProps) => {
             'bg-green/10 text-green': type === 'success',
             'bg-[#202129] text-[#CED1D9]': type === 'info',
             'bg-danger/10 text-danger': type === 'danger',
+            'bg-warning/10 text-warning': type === 'warning',
           },
           className,
         ),

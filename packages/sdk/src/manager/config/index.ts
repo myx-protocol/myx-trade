@@ -1,5 +1,9 @@
 import { Signer } from "ethers";
-import { MAINNET_CHAIN_IDS, TESTNET_CHAIN_IDS } from "../const";
+import {
+  BETA_ENV_CHAIN_IDS,
+  MAINNET_CHAIN_IDS,
+  TESTNET_CHAIN_IDS,
+} from "../const";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
@@ -31,13 +35,14 @@ export interface MyxClientConfig {
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
+  isBetaMode?: boolean;
   poolingInterval?: number;
   seamlessMode?: boolean;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
-  | (() => Promise<AccessTokenResponse | undefined>)
-  | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
+    | (() => Promise<AccessTokenResponse | undefined>)
+    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
 }
 
 export class ConfigManager {
@@ -48,6 +53,7 @@ export class ConfigManager {
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
       isTestnet: false,
+      isBetaMode: false,
       ...config,
     };
     this.validateConfig(mergedConfig);
@@ -64,23 +70,32 @@ export class ConfigManager {
     };
   }
 
-  public startSeamlessMode(open: boolean) {
+  public async startSeamlessMode(open: boolean) {
+    console.log('startSeamlessMode-->', open)
     this.config = {
       ...this.config,
-      seamlessMode: open
+      seamlessMode: open,
     };
 
     return this.config;
   }
 
-  public updateSeamlessWallet({ wallet, authorized, masterAddress }: { wallet?: ethers.Wallet, authorized?: boolean, masterAddress?: string }) {
+  public updateSeamlessWallet({
+    wallet,
+    authorized,
+    masterAddress,
+  }: {
+    wallet?: ethers.Wallet;
+    authorized?: boolean;
+    masterAddress?: string;
+  }) {
     this.config = {
       ...this.config,
       seamlessAccount: {
-        masterAddress: masterAddress ?? '',
+        masterAddress: masterAddress ?? "",
         wallet: wallet ?? null,
         authorized: authorized ?? false,
-      }
+      },
     };
   }
 
@@ -88,7 +103,7 @@ export class ConfigManager {
     this.config = {
       ...this.config,
       chainId,
-      brokerAddress
+      brokerAddress,
     };
   }
 
@@ -105,16 +120,23 @@ export class ConfigManager {
   }
 
   private validateConfig(config: MyxClientConfig) {
-    const { isTestnet, chainId } = config;
+    const { isTestnet, isBetaMode, chainId } = config;
 
     /**
      * chainId must be in the range of TESTNET_CHAIN_IDS or MAINNET_CHAIN_IDS
      */
+
     if (isTestnet) {
       if (!TESTNET_CHAIN_IDS.includes(chainId))
         throw new MyxSDKError(
           MyxErrorCode.InvalidChainId,
           `chainId ${chainId} is not in the range of TESTNET_CHAIN_IDS`
+        );
+    } else if (isBetaMode) {
+      if (!BETA_ENV_CHAIN_IDS.includes(chainId))
+        throw new MyxSDKError(
+          MyxErrorCode.InvalidChainId,
+          `chainId ${chainId} is not in the range of BETA_ENV_CHAIN_IDS`
         );
     } else {
       if (!MAINNET_CHAIN_IDS.includes(chainId))
@@ -184,32 +206,36 @@ export class ConfigManager {
       console.log("Automatically fetching accessToken...");
 
       // 调用前端提供的方法获取新的 token
-      const response = await this.config.getAccessToken();
+      const response = (await this.config.getAccessToken()) ?? {
+        accessToken: "",
+        expireAt: 0,
+      };
 
-      if (response && response.accessToken) {
-        // expireAt 是到期时间戳，需要转换为有效期秒数
-        let expiryInSeconds = 3600; // 默认1小时
-        if (response.expireAt) {
-          const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
-          expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
+      return response.accessToken;
+      // if (response && response.accessToken) {
+      //   // expireAt 是到期时间戳，需要转换为有效期秒数
+      //   let expiryInSeconds = 3600; // 默认1小时
+      //   if (response.expireAt) {
+      //     const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
+      //     expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
 
-          // 确保有效期为正数，如果已过期则使用默认值
-          if (expiryInSeconds <= 0) {
-            console.warn("Received expired token, using default expiry");
-            expiryInSeconds = 3600;
-          }
-        }
+      //     // 确保有效期为正数，如果已过期则使用默认值
+      //     if (expiryInSeconds <= 0) {
+      //       console.warn("Received expired token, using default expiry");
+      //       expiryInSeconds = 3600;
+      //     }
+      //   }
 
-        this.setAccessToken(response.accessToken, expiryInSeconds);
-        console.log("✅ AccessToken fetched and stored successfully", {
-          expiryInSeconds,
-          expireAt: response.expireAt,
-        });
-        return response.accessToken;
-      } else {
-        console.warn("❌ Received empty accessToken");
-        return null;
-      }
+      //   this.setAccessToken(response.accessToken, expiryInSeconds);
+      //   console.log("✅ AccessToken fetched and stored successfully", {
+      //     expiryInSeconds,
+      //     expireAt: response.expireAt,
+      //   });
+      //   return response.accessToken;
+      // } else {
+      //   console.warn("❌ Received empty accessToken");
+      //   return null;
+      // }
     } catch (error) {
       console.error("❌ Failed to fetch accessToken:", error);
       return null;
@@ -234,20 +260,12 @@ export class ConfigManager {
     return this.accessToken;
   }
 
-  /**
-   * 检查当前 accessToken 是否有效
-   * @returns boolean token 是否有效
-   */
+  // /**
+  //  * 检查当前 accessToken 是否有效
+  //  * @returns boolean token 是否有效
+  //  */
   isAccessTokenValid(): boolean {
-    if (
-      !this.accessToken ||
-      !this.accessTokenExpiry ||
-      !this.config.getAccessToken ||
-      !this.config.signer
-    ) {
-      return false;
-    }
-    return Date.now() < this.accessTokenExpiry;
+    return !!this.accessToken;
   }
 
   /**

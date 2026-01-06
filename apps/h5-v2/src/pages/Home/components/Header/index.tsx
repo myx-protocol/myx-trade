@@ -56,7 +56,10 @@ export const Header = ({ isConnected }: HeaderProps) => {
             showAllChain={false}
             chainId={homeStore.chainId}
             open={chainSelectOpen}
-            onChainChange={(chainId) => homeStore.setChainId(chainId as number)}
+            onChainChange={(chainId) => {
+              homeStore.setChainId(chainId as number)
+              setChainSelectOpen(false)
+            }}
             onClose={() => setChainSelectOpen(false)}
           />
         </div>

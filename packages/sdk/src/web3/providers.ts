@@ -168,7 +168,14 @@ export const getSeamlessBrokerContract = async (
   singer: Signer
 ) => {
   return getContract(brokerAddress, Broker_ABI, singer) as unknown as Broker;
-};
+}
+
+export const getBrokerContract = async (chainId: ChainId, brokerAddress: string) => {
+  const address = brokerAddress;
+  const provider = getJSONProvider(chainId as number)
+  return getContract(address, Broker_ABI, provider) as unknown as Broker;
+}
+
 
 export const getOrderManagerSingerContract = async (chainId: ChainId) => {
   const addresses = Address[chainId as keyof typeof Address];
@@ -252,6 +259,7 @@ export const getForwarderContract = async (
   type: ProviderType = ProviderType.JSON
 ) => {
   const addresses = Address[chainId as keyof typeof Address];
+
   const address = addresses.FORWARDER;
   const provider =
     type === ProviderType.JSON

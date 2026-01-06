@@ -28,7 +28,7 @@ import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
-  const { pool, quoteLpDetail } = useContext(PoolContext)
+  const { pool, quoteLpDetail, poolInfoRefetch } = useContext(PoolContext)
   const { address: account } = useWalletConnection()
   const { slippage, setSlippage } = useContext(TradeContext)
   const onAction = useWalletActions()
@@ -84,14 +84,15 @@ export const Subscribe = () => {
         slippage: Number(slippage),
       })
       toast.success(t`Successfully subscribe`)
-      await refetch()
       setAmount('')
+      await refetch()
+      poolInfoRefetch()
     } catch (error) {
       toast.error(JSON.stringify(error))
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
   return (
     <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
       <Box className={'relative z-[1] flex flex-col gap-[6px]'}>

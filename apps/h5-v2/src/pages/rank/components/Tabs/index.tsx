@@ -1,6 +1,7 @@
 import type { LeaderboardSortField } from '@/api'
 import { Trans } from '@lingui/react/macro'
 import { styled, Tabs as MuiTabs, Tab as MuiTab } from '@mui/material'
+import { useEffect, useRef } from 'react'
 import { useRankStore } from '../../store'
 export { ResolutionTabs } from './ResolutionTabs'
 
@@ -41,9 +42,30 @@ export const MarketTab = styled(MuiTab)({
 
 export const Tabs = () => {
   const { tabsType, setTabsType, setSort } = useRankStore()
+  const tabsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!tabsRef.current) return
+
+    // 找到当前选中的 tab 元素
+    const selectedTab = tabsRef.current.querySelector(
+      `[role="tab"][aria-selected="true"]`,
+    ) as HTMLElement
+
+    if (selectedTab) {
+      // 滚动到选中的 tab，使其居中显示
+      selectedTab.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      })
+    }
+  }, [tabsType])
+
   return (
     <div className="border-b border-[#202129] px-[6px]">
       <MarketTabs
+        ref={tabsRef}
         variant="scrollable"
         value={tabsType}
         onChange={(_, newValue) => {

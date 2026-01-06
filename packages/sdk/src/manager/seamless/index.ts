@@ -6,15 +6,13 @@ import { Utils } from "../utils";
 import { getSignerProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
-import { ForwarderGetStatus } from "@/api";
-import { getForwarderContract } from "@/web3/providers";
+import { getForwarderContract, ProviderType } from "@/web3/providers";
 import { Account } from "../account";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index";
 import ERC20_ABI from "@/abi/ERC20Token.json";
-import { getChainDomainConfig, getEIP712Domain } from "@/utils";
+import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
-import { retry, RetryableError, TimeoutError } from "@/utils";
 import { Api } from "../api";
 
 const contractTypes = {
@@ -83,11 +81,10 @@ async function signPermit(
   value: string,
   nonce: string,
   deadline: string,
-  chainId: number
 ) {
 
-  const chainDomainConfig = getChainDomainConfig(chainId, contract.target as string)
-  const domain = chainDomainConfig ?? (await getEIP712Domain(contract))
+  const domain = await getEIP712Domain(contract)
+
   const types = {
     Permit: [
       { name: 'owner', type: 'address' },
@@ -142,20 +139,22 @@ export class Seamless {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
     }
 
+    const contractAddress = getContractAddressByChainId(chainId);
     const masterAddress = await config.signer.getAddress()
     const forwarderContract = await getForwarderContract(chainId)
     const forwarderAddress = forwarderContract.target
 
     const brokerAddress = config.brokerAddress
-    const contractAddress = getContractAddressByChainId(chainId);
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
       config.signer
     );
 
+
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
+
       const brokerSignPermit = await signPermit(
         config.signer,  // 使用 signer 而不是 provider
         erc20Contract,
@@ -164,8 +163,10 @@ export class Seamless {
         ethers.MaxUint256.toString(),
         nonces.toString(),
         deadline.toString(),
-        chainId
       )
+
+     
+
 
       const forwarderSignPermit = await signPermit(
         config.signer,  // 使用 signer 而不是 provider
@@ -173,9 +174,18 @@ export class Seamless {
         masterAddress,
         forwarderAddress as string,
         ethers.MaxUint256.toString(),
-        (nonces + 1).toString(),
+        (nonces + BigInt(1)).toString(),
         deadline.toString(),
-        chainId
+      )
+
+      const accountSignPermit = await signPermit(
+        config.signer,  // 使用 signer 而不是 provider
+        erc20Contract,
+        masterAddress,
+        contractAddress.Account,
+        ethers.MaxUint256.toString(),
+        (nonces + BigInt(2)).toString(),
+        deadline.toString(),
       )
 
       const brokerSeamlessUSDPermitParams = {
@@ -200,9 +210,23 @@ export class Seamless {
         s: forwarderSignPermit.s,
       }
 
-      return [brokerSeamlessUSDPermitParams, forwarderPermitParams]
+      const accountPermitParams = {
+        token: erc20Contract.target,
+        owner: masterAddress,
+        spender: contractAddress.Account,
+        value: ethers.MaxUint256,
+        deadline,
+        v: accountSignPermit.v,
+        r: accountSignPermit.r,
+        s: accountSignPermit.s,
+      }
+
+      return [brokerSeamlessUSDPermitParams, forwarderPermitParams, accountPermitParams]
+
+      // return [forwarderPermitParams]
 
     } catch (error) {
+      this.logger.error('error-->', error);
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -252,10 +276,6 @@ export class Seamless {
 
   async authorizeSeamlessAccount({ approve, seamlessAddress, chainId }: { approve: boolean, seamlessAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(MyxErrorCode.InvalidAccessToken, "Invalid access token");
-    }
 
     const masterAddress = await config.signer?.getAddress() ?? ''
 
@@ -277,12 +297,13 @@ export class Seamless {
       try {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
+        console.log('error-->', error);
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
 
-    const forwarderContract = await getForwarderContract(chainId)
+    const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
     const nonce = await forwarderContract.nonces(masterAddress)
 
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
@@ -301,46 +322,19 @@ export class Seamless {
       deadline,
     }, chainId)
 
-    if (!txRs.data?.txHash) {
-      const retryOptions = { n: 10, minWait: 250, maxWait: 1000 }
-
-      const { promise } = retry(async () => {
-        const getRs = await this.api.fetchForwarderGetApi({
-          requestId: txRs.data?.requestId,
-        })
-
-        if (getRs.data?.status === ForwarderGetStatus.EXECUTED) {
-          if (getRs.data?.txHash) {
-            txRs.data.txHash = getRs.data.txHash
-            return {
-              code: 0,
-              data: {
-                seamlessAccount: seamlessAddress,
-                authorized: approve,
-              },
-            }
-          } else {
-            throw new MyxSDKError(MyxErrorCode.OperationFailed, "Operation failed, please try again later");
-          }
-        } else if (
-          [ForwarderGetStatus.BROADCAST_FAILED, ForwarderGetStatus.TIMEOUT_CANCEL].includes(getRs?.data?.status as ForwarderGetStatus)
-        ) {
-          throw new MyxSDKError(MyxErrorCode.OperationFailed, "Operation failed, please try again later");
-        }
-
-        throw new RetryableError()
-      }, retryOptions)
-
-      try {
-        const rs = await promise
-
-        return rs
-      } catch (err) {
-        if (err instanceof TimeoutError) {
-          throw new MyxSDKError(MyxErrorCode.Timeout, "Your request timed out, please try again");
-        } else {
-          throw err
-        }
+    if (txRs.data?.txHash) {
+      return {
+        code: 0,
+        data: {
+          seamlessAccount: seamlessAddress,
+          authorized: approve,
+        },
+      }
+    } else {
+      return {
+        code: -1,
+        data: null,
+        message: 'Your request timed out, please try again',
       }
     }
   }
@@ -356,7 +350,12 @@ export class Seamless {
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
-    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
+    let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
+
+    if (!isAuthorized) {
+      await this.authorizeSeamlessAccount({ approve: true, seamlessAddress: wallet.address, chainId })
+      isAuthorized = true
+    }
     this.configManager.updateSeamlessWallet({
       masterAddress: masterAddress,
       wallet: wallet,
@@ -397,13 +396,13 @@ export class Seamless {
   }
 
   async importSeamlessPrivateKey({ privateKey, password, chainId }: { privateKey: string, password: string, chainId: number }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
     if (!ethers.isHexString(privateKey, 32)) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
     }
 
     const wallet = new ethers.Wallet(privateKey)
-    const forwarderContract = await getForwarderContract(config.chainId)
+    const forwarderContract = await getForwarderContract(chainId)
+
     const masterAddress = await forwarderContract.originAccount(wallet.address)
 
     if (masterAddress === ZeroAddress) {
@@ -441,7 +440,8 @@ export class Seamless {
   }
 
   async startSeamlessMode({ open }: { open: boolean }) {
-    const config = this.configManager.startSeamlessMode(open)
+
+    await this.configManager.startSeamlessMode(open)
 
     return {
       code: 0,

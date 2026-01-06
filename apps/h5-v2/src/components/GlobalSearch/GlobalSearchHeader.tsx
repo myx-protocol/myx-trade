@@ -203,6 +203,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
             value={searchValue}
             onChange={handleInputChange}
             placeholder={t`Search for token name/address`}
+            autoFocus
             onFocus={() => {
               setIsFocusedTrue()
               inputRef.current?.focus()

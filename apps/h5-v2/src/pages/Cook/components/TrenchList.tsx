@@ -261,7 +261,7 @@ export const TrenchList = ({
                   )}
                   <Box
                     className={
-                      'absolute right-[-2px] bottom-0 aspect-square h-[16px] w-[16px] min-w-[16px] overflow-hidden rounded-full'
+                      'absolute right-[-3px] bottom-0 aspect-square h-[12px] w-[12px] min-w-[12px] overflow-hidden rounded-full'
                     }
                   >
                     {isLoading ? (
@@ -269,6 +269,7 @@ export const TrenchList = ({
                     ) : (
                       <CoinIcon
                         size={12}
+                        className={'border-deep overflow-hidden rounded-full border-1'}
                         icon={
                           CHAIN_INFO?.[row.market?.chainId as keyof typeof CHAIN_INFO]?.logoUrl ??
                           ''
@@ -277,7 +278,7 @@ export const TrenchList = ({
                     )}
                   </Box>
                 </Box>
-                <Box className={'flex flex-col gap-[10px]'}>
+                <Box className={'flex flex-1 flex-col gap-[10px]'}>
                   <Box className={'flex items-center gap-[10px] leading-[1]'}>
                     {isLoading ? (
                       <Skeleton width={'30%'} />
@@ -307,7 +308,7 @@ export const TrenchList = ({
                 </Box>
               </Box>
               <Box className={'flex shrink-0 flex-col justify-end gap-[10px] leading-[1]'}>
-                <Box className={'text-[14px] font-[500] text-white'}>
+                <Box className={'text-right text-[14px] font-[500] text-white'}>
                   {isLoading ? (
                     <Skeleton width={60} />
                   ) : (
@@ -317,7 +318,7 @@ export const TrenchList = ({
                     </>
                   )}
                 </Box>
-                <Box className={'flex gap-[4px] text-[12px]'}>
+                <Box className={'flex justify-end gap-[4px] text-[12px]'}>
                   <span className={'text-secondary'}>
                     <Trans>Chg</Trans>
                   </span>

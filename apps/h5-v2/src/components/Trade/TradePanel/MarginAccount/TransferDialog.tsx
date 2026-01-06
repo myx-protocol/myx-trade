@@ -1,8 +1,7 @@
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { DialogBase } from '@/components/UI/DialogBase'
-import { useState } from 'react'
-import { useTradePageStore } from '../../store/TradePageStore'
+import { useMemo, useState } from 'react'
 import { t } from '@lingui/core/macro'
 import ChangePosition from '@/components/Icon/set/ChangePosition'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -23,6 +22,7 @@ import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { AmountUnitEnum } from '../../type'
 import { MenuItem, Select } from '@mui/material'
 import useGlobalStore from '@/store/globalStore'
+import dayjs from 'dayjs'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -35,7 +35,7 @@ export const TransferDialogButton = () => {
   const [loading, setLoading] = useState(false)
 
   const [open, setOpen] = useState(false)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { address } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
@@ -44,6 +44,9 @@ export const TransferDialogButton = () => {
   const { poolList } = useGlobalStore()
   const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
+
+  const releaseTime = accountAssets.releaseTime
+  const isExpired = dayjs().unix() > releaseTime
 
   const { checkWalletChainId } = useWalletChainCheck()
 
@@ -57,6 +60,28 @@ export const TransferDialogButton = () => {
       setOpen(true)
     })
   }
+
+  const total = useMemo(() => {
+    if (tokenType === AmountUnitEnum.QUOTE) {
+      if (isExpired) {
+        return (
+          parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+            .plus(parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0'))
+            .toString() ?? '0'
+        )
+      }
+      return accountAssets?.freeMargin?.toString() ?? '0'
+    } else {
+      if (isExpired) {
+        return (
+          parseBigNumber(accountAssets?.freeBaseAmount?.toString() ?? '0')
+            .plus(parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0'))
+            .toString() ?? '0'
+        )
+      }
+      return accountAssets?.freeBaseAmount?.toString() ?? '0'
+    }
+  }, [tokenType, accountAssets, isExpired])
 
   return (
     <>
@@ -334,11 +359,7 @@ export const TransferDialogButton = () => {
                     if (transferType === TransferType.Wallet) {
                       setAmount(accountAssets?.walletBalance?.toString() ?? '0')
                     } else {
-                      if (tokenType === AmountUnitEnum.QUOTE) {
-                        setAmount(accountAssets?.freeMargin?.toString() ?? '0')
-                      } else {
-                        setAmount(accountAssets?.freeBaseAmount?.toString() ?? '0')
-                      }
+                      setAmount(total)
                     }
                   }}
                 >
@@ -361,12 +382,7 @@ export const TransferDialogButton = () => {
                   </span>
                 ) : (
                   <span className="text-[white]">
-                    {displayAmount(
-                      tokenType === AmountUnitEnum.QUOTE
-                        ? (accountAssets?.freeMargin?.toString() ?? '0')
-                        : (accountAssets?.freeBaseAmount?.toString() ?? '0'),
-                      symbolInfo?.quoteDecimals ?? 6,
-                    )}{' '}
+                    {displayAmount(total)}{' '}
                     {tokenType === AmountUnitEnum.QUOTE
                       ? symbolInfo?.quoteSymbol
                       : symbolInfo?.baseSymbol}

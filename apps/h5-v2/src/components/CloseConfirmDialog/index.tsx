@@ -8,9 +8,8 @@ import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
-import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import useGlobalStore from '@/store/globalStore'
+import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { AmountUnitEnum } from '@/components/Trade/type'
 import { setSlippage as setSlippageAction } from '@/utils/slippage'
@@ -20,7 +19,7 @@ import { useSubmitOrder } from '@/components/Trade/TradePanel/PlaceOrder/hooks/u
 export const CloseConfirmDialog = () => {
   const { longSize, shortSize, price, amountUnit } = useTradePanelStore()
   const { submitOrder, submitLoading } = useSubmitOrder()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const {
     setCloseOrderConfirmDialogOpen,

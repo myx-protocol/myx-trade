@@ -2,16 +2,16 @@ import { availableLiquiditySizeWad } from '@/utils/liquidity'
 import { Big } from 'big.js'
 import { parseUnits, formatUnits } from 'ethers'
 import { useQuery } from '@tanstack/react-query'
-import { usePriceStore } from '../../store'
 import { usePoolInfo } from '@/components/Trade/hooks/usePoolInfo'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
+import { useMount, useUnmount } from 'ahooks'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
+import useGlobalStore from '@/store/globalStore'
 
 const BASE_RESERVE_RATIO = '100'
 const QUOTE_RESERVE_RATIO = '100'
 export const usePoolLiquidityInfo = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { data: poolInfo } = usePoolInfo({
     poolId: symbolInfo?.poolId,
     chainId: symbolInfo?.chainId,

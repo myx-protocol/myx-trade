@@ -294,24 +294,6 @@
   },
   {
     "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getImplementation",
     "constant": true,
     "stateMutability": "view",
@@ -360,30 +342,6 @@
             "name": "quoteToken"
           },
           {
-            "type": "address",
-            "name": "basePoolToken"
-          },
-          {
-            "type": "address",
-            "name": "quotePoolToken"
-          },
-          {
-            "type": "address",
-            "name": "poolVault"
-          },
-          {
-            "type": "address",
-            "name": "settler"
-          },
-          {
-            "type": "address",
-            "name": "tradingVault"
-          },
-          {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          },
-          {
             "type": "uint8",
             "name": "riskTier"
           },
@@ -392,14 +350,57 @@
             "name": "state"
           },
           {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          },
+          {
+            "type": "uint16",
+            "name": "maxPriceDeviation"
+          },
+          {
             "type": "bool",
             "name": "compoundEnabled"
           },
           {
             "type": "uint64",
             "name": "windowCapUsd"
+          },
+          {
+            "type": "address",
+            "name": "poolVault"
+          },
+          {
+            "type": "address",
+            "name": "tradingVault"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPairToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": "baseToken"
+      },
+      {
+        "type": "address",
+        "name": "quoteToken"
       }
     ]
   },
@@ -436,30 +437,6 @@
             "name": "quoteToken"
           },
           {
-            "type": "address",
-            "name": "basePoolToken"
-          },
-          {
-            "type": "address",
-            "name": "quotePoolToken"
-          },
-          {
-            "type": "address",
-            "name": "poolVault"
-          },
-          {
-            "type": "address",
-            "name": "settler"
-          },
-          {
-            "type": "address",
-            "name": "tradingVault"
-          },
-          {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          },
-          {
             "type": "uint8",
             "name": "riskTier"
           },
@@ -468,12 +445,32 @@
             "name": "state"
           },
           {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          },
+          {
+            "type": "uint16",
+            "name": "maxPriceDeviation"
+          },
+          {
             "type": "bool",
             "name": "compoundEnabled"
           },
           {
             "type": "uint64",
             "name": "windowCapUsd"
+          },
+          {
+            "type": "address",
+            "name": "poolVault"
+          },
+          {
+            "type": "address",
+            "name": "tradingVault"
           }
         ]
       }
@@ -493,12 +490,12 @@
     ],
     "outputs": [
       {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
         "type": "tuple",
         "components": [
-          {
-            "type": "bytes32",
-            "name": "marketId"
-          },
           {
             "type": "address",
             "name": "quoteToken"
@@ -529,6 +526,42 @@
   },
   {
     "type": "function",
+    "name": "getPoolRiskTier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint8"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolVault",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getPools",
     "constant": true,
     "stateMutability": "view",
@@ -538,6 +571,24 @@
       {
         "type": "bytes32[]",
         "name": "pools"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getTradingVault",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
       }
     ]
   },
@@ -553,6 +604,28 @@
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "isPoolAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "addr"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
   },
   {
     "type": "function",
@@ -615,19 +688,6 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "reprimePool",
     "constant": false,
     "payable": false,
@@ -664,6 +724,10 @@
             "name": "oracleFeedId"
           },
           {
+            "type": "uint32",
+            "name": "oracleDecimals"
+          },
+          {
             "type": "uint8",
             "name": "oracleType"
           },
@@ -680,36 +744,6 @@
             "name": "windowCapUsd"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "update",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
       }
     ],
     "outputs": []

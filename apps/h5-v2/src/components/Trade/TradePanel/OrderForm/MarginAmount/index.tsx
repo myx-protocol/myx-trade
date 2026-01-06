@@ -4,12 +4,12 @@ import { parseBigNumber } from '@/utils/bn'
 import { Trans } from '@lingui/react/macro'
 import { useTradePanelStore } from '../../store'
 import { formatNumber } from '@/utils/number'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 
 export const MarginAmountInput = () => {
   const { collateralAmount, setCollateralAmount } = useTradePanelStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   return (
@@ -17,7 +17,7 @@ export const MarginAmountInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p>
+          <p className="text-[#CED1D9]">
             <Trans>Pay</Trans>
           </p>
           <p className="ml-[4px]">

@@ -19,8 +19,18 @@ const PositionActionButton = ({
   } = useTradePanelStore()
   return (
     <div
-      className={`w-[50%] p-[12px] text-center text-[12px] leading-[1] font-medium ${positionAction === value ? 'text-[#FFFFFF]' : 'text-[#848E9C]'}`}
+      className={`w-[calc(50%-6px)] p-[12px] text-center text-[12px] ${positionAction === value ? 'bg-[transparent]' : 'bg-[#18191F]'} leading-[1] font-medium ${positionAction === value ? 'text-[#FFFFFF]' : 'text-[#848E9C]'}`}
       role="button"
+      style={{
+        clipPath:
+          value === PositionActionEnum.OPEN
+            ? 'polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%)'
+            : 'polygon(12px 0, 100% 0, 100% 100%, 0 100%)',
+        borderTopLeftRadius: value === PositionActionEnum.OPEN ? '16px' : '0px',
+        borderBottomLeftRadius: value === PositionActionEnum.OPEN ? '16px' : '0px',
+        borderTopRightRadius: value === PositionActionEnum.OPEN ? '0px' : '16px',
+        borderBottomRightRadius: value === PositionActionEnum.OPEN ? '0px' : '16px',
+      }}
       onClick={() => {
         setPositionAction(value)
         setTempInputValue('')
@@ -43,8 +53,9 @@ export const PositionAction = () => {
   // Close: 左边倒梯形斜边（上底长下底短：顶部从12px开始，底部从0开始），右边圆角
   const closeClipPath = 'polygon(12px 0, 100% 0, 100% 100%, 0 100%)'
 
+  //bg-[#202129]
   return (
-    <div className="relative mt-[8px] h-[36px] rounded-[8px] bg-[#202129]">
+    <div className="relative mt-[8px] h-[36px] rounded-[16px]">
       {/* indicator */}
       <div
         className="absolute top-0 h-full w-[50%] transition-all duration-200 ease-in-out"
@@ -59,7 +70,7 @@ export const PositionAction = () => {
         }}
       ></div>
       {/* tabs */}
-      <div className="absolute top-0 left-0 flex h-full w-full">
+      <div className="absolute top-0 left-0 flex h-full w-full justify-between gap-[12px]">
         <PositionActionButton value={PositionActionEnum.OPEN}>
           <Trans>Open</Trans>
         </PositionActionButton>

@@ -44,7 +44,11 @@ const TokenInfo = ({ token }: { token?: Token }) => {
 
         <Box className={'absolute right-[-2px] bottom-0 rounded-full bg-[#282C34]'}>
           {token ? (
-            <CoinIcon size={10} icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''} />
+            <CoinIcon
+              size={10}
+              icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''}
+              className={'border-deep overflow-hidden rounded-full border-1'}
+            />
           ) : (
             <Skeleton width={10} height={10} />
           )}

@@ -11,11 +11,13 @@ import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
 import { PoolContent } from './components/PoolContent'
 import { useOraclePricePolling } from '@/components/Trade/hooks/useOraclePricePolling'
 import { InfoContent } from './components/InfoContent'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+
+import useGlobalStore, { type PoolConfig } from '@/store/globalStore'
+import { getPoolLevelConfig } from '@/api'
 
 const Price = () => {
-  const { tab, symbolInfo, setSymbolInfo } = usePriceStore()
-  const { setSymbolInfo: setTradeSymbolInfo } = useTradePageStore()
+  const { tab } = usePriceStore()
+  const { symbolInfo, setSymbolInfo, setPoolConfig } = useGlobalStore()
 
   const { chainId, poolId } = useParams()
   const { getDetail, client } = useMarketDetail()
@@ -35,10 +37,14 @@ const Price = () => {
       }
       if (marketDetail && _chainId === marketDetail?.chainId && poolId === marketDetail?.poolId) {
         setSymbolInfo(marketDetail)
-        setTradeSymbolInfo(marketDetail)
       }
     })
-  }, [chainId, poolId, getDetail, setSymbolInfo, setTradeSymbolInfo, navigate, client])
+    getPoolLevelConfig(poolId as string, parseInt(chainId) as number).then((res: any) => {
+      if (res.code === 0) {
+        setPoolConfig(res.data as unknown as PoolConfig)
+      }
+    })
+  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, client, setPoolConfig])
 
   useMount(() => {
     if (chainId && poolId) {

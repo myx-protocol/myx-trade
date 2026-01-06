@@ -22,7 +22,7 @@ const DangerButton = ({
     background: 'linear-gradient(135deg, #C23749 0%, #BA4C47 100%)',
     border: '1px solid transparent',
     backgroundImage:
-      'linear-gradient(135deg, #C23749 0%, #BA4C47 100%), linear-gradient(135deg, #F6627680 0%, #EC645E80 100%)',
+      'linear-gradient(135deg, #C23749 0%, #BA4C47 81.25%), linear-gradient(135deg, #F6627680 0%, #EC645E80 100%)',
     backgroundOrigin: 'border-box',
     backgroundClip: 'padding-box, border-box',
     color: 'white',

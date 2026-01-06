@@ -18,10 +18,6 @@ export function isUatMode(): boolean {
   return getCurrentEnv() === 'dev'
 }
 
-export function isDev2Mode(): boolean {
-  return getCurrentEnv() === 'dev_2'
-}
-
 export function isTestMode(): boolean {
   return getCurrentEnv() === 'test'
 }

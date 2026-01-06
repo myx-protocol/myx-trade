@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from 'swiper/react'
-import CreateMarketPng from '@/assets/home/create-market.png'
+import CreateMarketPng from '@/assets/home/create-market.svg'
 
 import { SwiperItem } from './SwiperItem'
 import { Autoplay } from 'swiper/modules'

@@ -12,7 +12,7 @@ export const Card = ({
 }) => {
   return (
     <Box
-      className={`bg-base flex flex-col gap-[12px] rounded-[16px] px-[16px] py-[20px] ${className}`}
+      className={`bg-base flex flex-col gap-[12px] rounded-[10px] px-[16px] py-[20px] ${className}`}
     >
       <Box className={'text-regular flex items-center justify-between text-[14px] font-[500]'}>
         {title}

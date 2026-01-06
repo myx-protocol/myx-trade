@@ -5,8 +5,6 @@ import { BrowserProvider, type Signer } from 'ethers'
 import { useUnmount, useUpdateEffect } from 'ahooks'
 import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import CryptoJS from 'crypto-js'
-import { getAccessToken } from '@/api'
 import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { WalletClient } from 'viem'
@@ -31,12 +29,25 @@ const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
   const validChainId = getAsSupportedChainIdFn(chainId)
 
   const brokerAddress = brokerAddressMap[chainId]
+
+  // 根据打包模式区分环境
+  const mode = import.meta.env.MODE // 'test' | 'beta' | 'development' | 'production'
+
+  // 环境配置
+  const isTestnet = mode === 'test' || mode === 'development' // test 和 development 使用测试网
+  const isBetaMode = mode === 'beta' // beta 模式
+  const logLevel = mode === 'development' ? 'debug' : 'info' // 开发环境显示 debug 日志
+
   const options: MyxClientConfig = {
     chainId: validChainId,
     brokerAddress: brokerAddress,
-    isTestnet: true,
-    logLevel: 'info',
+    isTestnet,
+    isBetaMode,
+    logLevel: logLevel as 'debug' | 'info' | 'warn' | 'error',
   }
+
+  console.log(`MYX SDK 环境: ${mode}`, { isTestnet, isBetaMode, logLevel })
+
   return new MyxClient(options)
 }
 
@@ -52,28 +63,32 @@ const getSigner = async (walletClient: WalletClient | undefined) => {
 }
 
 // 为 SDK 提供的 accessToken 获取方法
-const createGetAccessTokenMethod = (address: string) => {
+const createGetAccessTokenMethod = () => {
   return async (): Promise<{ accessToken: string; expireAt: number }> => {
-    console.log('MYX SDK getAccessToken called')
-    const appId = 'test1'
-    const timestamp = Math.floor(Date.now() / 1000)
-    const expireTime = 3600 * 24
-    const allowAccount = address!
-    const secret = '69v9kHey9b746PseJ0TP'
+    // console.log('MYX SDK getAccessToken called')
+    // const appId = 'test1'
+    // const timestamp = Math.floor(Date.now() / 1000)
+    // const expireTime = 3600 * 24
+    // const allowAccount = address!
+    // const secret = '69v9kHey9b746PseJ0TP'
 
-    const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`
-    const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex)
+    // const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`
+    // const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex)
 
-    const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
+    // const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
 
-    if (response.code === 0) {
-      return {
-        accessToken: response.data.accessToken,
-        expireAt: response.data.expireAt, // 到期时间戳（秒）
-      }
-    } else {
-      throw new Error(response.msg || 'Failed to get access token')
+    return {
+      accessToken: 'access_token',
+      expireAt: 0,
     }
+    // if (response.code === 0) {
+    //   return {
+    //     accessToken: response.data.accessToken,
+    //     expireAt: response.data.expireAt, // 到期时间戳（秒）
+    //   }
+    // } else {
+    //   throw new Error(response.msg || 'Failed to get access token')
+    // }
   }
 }
 
@@ -125,8 +140,9 @@ export const useMyxSdkClient = (chainId?: number) => {
 }
 
 const brokerAddressMap: Record<number, string> = {
-  [ChainId.ARB_TESTNET]: '0xb99C0f50a5Db8D516Ff3FC7B945dab94eB154508',
-  [ChainId.LINEA_SEPOLIA]: '0xBBEB6aeF72E12aC24Add9bd68eA261B050eE5133',
+  [ChainId.ARB_TESTNET]: '0x783458e2954f653f873BD8a5939e60499Fdf9471',
+  [ChainId.LINEA_SEPOLIA]: '0xEabf7D265adE94F7d4E0f3bb9bAfd14E7FDAd086',
+  [ChainId.BSC_TESTNET]: '0xB6570a909d428D80889fC73f0180dEDBf09C1723',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
@@ -168,7 +184,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
             _client.auth({
               signer,
               walletClient: walletClient as any,
-              getAccessToken: createGetAccessTokenMethod(address ?? ''),
+              getAccessToken: createGetAccessTokenMethod(),
             } as any)
             setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
             console.log('authed-emit-authenticated-->', Date.now(), chainId)
@@ -189,10 +205,13 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   })
 
   const { data: markets } = useQuery({
-    queryKey: [{ key: 'getMarkets' }],
+    queryKey: [{ key: 'getMarkets' }, myxSdkClientRef.current?.size],
     queryFn: async () => {
-      const result = await getMarketList()
-      return result?.data || ([] as MarketInfo[])
+      if (myxSdkClientRef.current?.size) {
+        const result = await getMarketList()
+        return result?.data || ([] as MarketInfo[])
+      }
+      return []
     },
   })
 

@@ -98,6 +98,7 @@ async function publish() {
     });
     
     console.log('\n✅ 发布成功！');
+    process.exit(0);
   } catch (error) {
     console.error('\n❌ 发布失败:', error.message);
     process.exit(1);
@@ -105,4 +106,3 @@ async function publish() {
 }
 
 publish();
-

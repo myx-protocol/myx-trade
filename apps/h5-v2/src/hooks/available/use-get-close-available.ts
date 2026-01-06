@@ -1,4 +1,4 @@
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useMemo } from 'react'
 import { useGetPositionList } from '../position/use-get-position-list'
 import { Direction } from '@myx-trade/sdk'
@@ -7,7 +7,7 @@ import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 
 export const useGetCloseAvailable = () => {
   const positionList = useGetPositionList()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { price, amountUnit } = useTradePanelStore()
 
   const maxCloseLongAmount = useMemo(() => {

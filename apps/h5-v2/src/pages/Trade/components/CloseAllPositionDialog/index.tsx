@@ -8,7 +8,7 @@ import { t } from '@lingui/core/macro'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useState } from 'react'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import {
@@ -30,7 +30,7 @@ export const CloseAllPositionDialog = () => {
     usePositionStore()
   const { client } = useMyxSdkClient(Number(selectChainId))
   const [loading, setLoading] = useState(false)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { address } = useWalletConnection()
   const { tickerData } = useMarketStore()
   const positions = useGetPositionList(true)

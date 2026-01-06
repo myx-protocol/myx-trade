@@ -46,7 +46,7 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
   )
 
   return (
-    <div className="relative !h-[140px] px-[16px]">
+    <div className="relative !h-[140px]">
       <EChartsReact option={option} className="!h-[140px]" />
 
       {isLoading && (

@@ -6,16 +6,15 @@ import { useGetAccountVipInfoByContract } from './use-get-account-vip-info-by-co
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
-export const useCheckUserVipInfo = () => {
-  const { chainId } = useParams()
+export const useCheckUserVipInfo = (positionChainId?: string) => {
+  const { chainId: currentChainId } = useParams()
+  const chainId = positionChainId ?? currentChainId
   const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
   const { address } = useWalletConnection()
-  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract()
+  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract(chainId)
+
   const checkUserVipInfo = useCallback(async () => {
     if (!client || !clientIsAuthenticated || !address) return {}
-
-    console.log('parseInt(chainId)-->', parseInt(chainId as string))
-    console.log('address-->', address)
 
     const userVipInfoByContract = await getAccountVipInfoByContract()
 
@@ -29,28 +28,36 @@ export const useCheckUserVipInfo = () => {
     )
 
     const vipInfo = res.data ?? {}
-    if (vipInfo?.vipTier.toString() !== userVipInfoByContract?.tier.toString()) {
+    if (
+      vipInfo &&
+      userVipInfoByContract &&
+      (vipInfo?.vipTier.toString() !== userVipInfoByContract?.tier.toString() ||
+        vipInfo?.rebatePct.toString() !==
+          userVipInfoByContract?.totalReferralRebatePct.toString() ||
+        vipInfo?.rebateReferrerPct.toString() !==
+          userVipInfoByContract?.referrerRebatePct.toString())
+    ) {
       const rs = await client?.account.setUserFeeData(
         address as string,
+        parseInt(chainId as string),
         userVipInfoByContract?.deadline as number,
         {
           tier: vipInfo?.vipTier as number,
           referrer: vipInfo?.rebateAddr as string,
-          totalReferralRebatePct: vipInfo?.rebateReturnPct as number,
-          referrerRebatePct: vipInfo?.rebatePct as number,
+          totalReferralRebatePct: vipInfo?.rebatePct as number,
+          referrerRebatePct: vipInfo?.rebateReferrerPct as number,
           nonce: nonce.toString(),
         },
         vipInfo?.signature as string,
       )
 
       if (rs?.code !== 0) {
-        console.log('rs-->', rs)
         toast.error({
           title: t`${client.utils.formatErrorMessage(rs)}`,
         })
       }
     }
-  }, [client, clientIsAuthenticated, address, chainId])
+  }, [client, clientIsAuthenticated, address, chainId, positionChainId])
 
   return {
     checkUserVipInfo,

@@ -1,5 +1,3 @@
-import { ChainId } from "@/config/chain"
-import { getContractAddressByChainId } from "@/config/address/index";
 import { Contract } from "ethers";
 
 export type ChainDomainType = {
@@ -9,29 +7,12 @@ export type ChainDomainType = {
   verifyingContract: string
 }
 
-export function getChainDomainConfig(chainId: number, address: string): ChainDomainType | undefined {
-  return CHAIN_DOMAIN?.[chainId]?.[address]
-}
-
-type ChainDomainMapType = Record<number, Record<string, ChainDomainType>>
-
-
-const CHAIN_DOMAIN: ChainDomainMapType = {
-
-  [ChainId.ARB_TESTNET]: {
-    [getContractAddressByChainId(ChainId.ARB_TESTNET).USDC]: {
-      name: 'USDC',
-      version: '2',
-      chainId: ChainId.ARB_TESTNET.toString(),
-      verifyingContract: getContractAddressByChainId(ChainId.ARB_TESTNET).USDC
-    },
-  },
-}
-
 export const getEIP712Domain = async (contract: Contract) => {
   try {
     // @ts-ignore
     const eip712Domain = await contract.eip712Domain()
+    console.log('eip712Domain-->', eip712Domain.name);
+    console.log('eip712Domain.version-->', eip712Domain.version);
     return {
       name: eip712Domain.name,
       version: eip712Domain.version,

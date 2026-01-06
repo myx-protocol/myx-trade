@@ -65,17 +65,18 @@ export const Claim = () => {
   }, [chainId, poolId, account, refetch, onAction, reward])
 
   return (
-    <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
+    <Box className={'mt-[8px] flex flex-col gap-[10px]'}>
       <Box className={'relative z-[1] flex flex-col gap-[6px]'}>
         <Card
           title={
-            <>
+            <span className={'text-secondary'}>
               <Trans>Amount</Trans>
-            </>
+            </span>
           }
+          className={'border-dark-border !bg-base-bg border-1'}
         >
           <Box className={'flex items-center justify-end gap-[12px]'}>
-            <span className={'text-warning flex gap-[.5em] text-[32px] font-[700]'}>
+            <span className={'text-warning flex gap-[.5em] text-[24px] font-[700]'}>
               {formatNumberPrecision(reward, COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
               <span>{quoteLpDetail?.quoteSymbol}</span>
             </span>

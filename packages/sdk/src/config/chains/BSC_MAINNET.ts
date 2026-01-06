@@ -1,6 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
 import { GAS_FEE_RESERVED_RATIO } from './../fee'
-import OpbnbLogo from '@/assets/icons/chain/logo/opbnb.png'
 
 export default {
   chainId: ChainId.BSC_MAINNET,
@@ -12,7 +11,7 @@ export default {
     explorer: 'https://bscscan.com/',
     explorerOfTX: 'https://bscscan.com/tx/',
     faucetUrl: 'https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/',
-    logoUrl: OpbnbLogo,
+    logoUrl: '',
     gasPriceRatio: 1.5,
     gasLimitRatio: 1.3,
     gasAmountRatio: 2,

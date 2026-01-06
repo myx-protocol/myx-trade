@@ -37,7 +37,8 @@ import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
 
 export const Redeem = () => {
-  const { pool, quoteLpDetail, chainId, poolId, price, genesisFeeRate } = useContext(PoolContext)
+  const { pool, quoteLpDetail, chainId, poolId, price, genesisFeeRate, poolInfoRefetch } =
+    useContext(PoolContext)
   const { slippage, setSlippage } = useContext(TradeContext)
   const { address: account } = useWalletConnection()
   const [retainLPShare, setRetailLpShare] = useState(true)
@@ -149,14 +150,15 @@ export const Redeem = () => {
       })
 
       toast.success(t`Successfully redeem`)
-      await refetch()
       setAmount('')
+      await refetch()
+      poolInfoRefetch()
     } catch (error) {
       toast.error(JSON.stringify(error))
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''

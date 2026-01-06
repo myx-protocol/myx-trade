@@ -14,6 +14,7 @@ import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
+import { OrderStatus } from '@/pages/Trade/components/OrderStatus'
 
 export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
   const symbolInfo = usePoolSymbol({
@@ -37,26 +38,28 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
               quoteLogo={chainInfo?.logoUrl}
               quoteClassName=" ml-[-8px]!"
             />
-            <p className="text-[14px] font-medium text-white">
-              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
-            </p>
-          </div>
-          <div className="mt-[4px] flex gap-[4px]">
-            <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>
-              <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
-            </Tag>
-            <Tag type="info">
-              <Trans>{item.orderType === OrderTypeEnum.Limit ? t`Limit` : t`Market`}</Trans>
-            </Tag>
-            <Tag type="info">
-              <Trans>Isolated {item.userLeverage}x</Trans>
-            </Tag>
+            <div className="flex flex-col items-start gap-[4px]">
+              <p className="text-[14px] font-medium text-white">
+                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+              </p>
+              <div className="flex gap-[4px]">
+                <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>
+                  <Trans>{item.direction === DirectionEnum.Long ? t`Long` : t`Short`}</Trans>
+                </Tag>
+                <Tag type="info">
+                  <Trans>{item.orderType === OrderTypeEnum.Limit ? t`Limit` : t`Market`}</Trans>
+                </Tag>
+                <Tag type="info">
+                  <Trans>Isolated {item.userLeverage}x</Trans>
+                </Tag>
+              </div>
+            </div>
           </div>
         </div>
         {/* right */}
         <div className="flex shrink-0 flex-col items-end gap-[6px] text-[12px] text-[#848E9C]">
           <p>
-            <OrderType orderType={item.orderType} operation={item.operation} />
+            <OrderStatus orderStatus={item.orderStatus} cancelReason={item.cancelReason} />
           </p>
           <p>{dayjs.unix(item.txTime).format('YYYY/MM/DD HH:mm:ss')}</p>
         </div>

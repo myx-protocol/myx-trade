@@ -11,7 +11,7 @@ export const Rank = () => {
       <SecondHeader title={<Trans>榜单</Trans>} />
       <Tabs />
       <TypeSelector />
-      <div className="mt-[16px] flex items-center justify-between gap-[60px] px-[6px]">
+      <div className="mt-[16px] flex items-center justify-between gap-[60px] px-[16px]">
         <div className="flex-[1_1_0%]">
           <ResolutionTabs />
         </div>
