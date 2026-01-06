@@ -1,5 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
-import LineaLogo from '@/assets/icons/chain/logo/linea.png'
+// import LineaLogo from '@/assets/icons/chain/logo/linea.png'
 import { GAS_FEE_RESERVED_RATIO } from './../fee'
 
 export default  {
@@ -7,7 +7,7 @@ export default  {
   chainInfo: {
     label: 'Linea Mainnet',
     explorer: 'https://lineascan.build/',
-    logoUrl: LineaLogo,
+    logoUrl: '',
     explorerOfTX: 'https://lineascan.build/tx/',
     publicJsonRPCUrl: [
       'https://rpc.linea.build/',

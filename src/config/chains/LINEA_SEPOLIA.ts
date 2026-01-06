@@ -1,5 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
-import LineaLogo from '@/assets/icons/chain/logo/linea.png'
+// import LineaLogo from '@/assets/icons/chain/logo/linea.png'
 import { GAS_FEE_RESERVED_RATIO } from './../fee'
 
 export default {
@@ -12,7 +12,7 @@ export default {
       'https://linea-sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
     ],
     label: 'Linea Sepolia',
-    logoUrl: LineaLogo,
+    logoUrl: '',
     faucetUrl: '',
     chainSymbol: 'Linea',
     gasPriceRatio: 1.3,
