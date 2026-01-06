@@ -48,4 +48,8 @@ export class BaseMyxClient {
     }
     return getBrokerContract(config.chainId, config.brokerAddress);
   }
+
+  protected get config() {
+    return this.getConfig();
+  }
 }
