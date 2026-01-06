@@ -92,6 +92,7 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
+    address: string,
     chainId: number,
     quoteAddress: string,
     spenderAddress?: string
@@ -100,16 +101,6 @@ export class Utils {
       const erc20Abi = [
         "function allowance(address owner, address spender) external view returns (uint256)",
       ];
-
-      const config: MyxClientConfig = this.configManager.getConfig();
-      if (!config.signer) {
-        throw new MyxSDKError(
-          MyxErrorCode.InvalidSigner,
-          "Invalid signer"
-        );
-      }
-
-      const owner = await config.signer.getAddress();
 
       const spender =
         spenderAddress ??
@@ -122,7 +113,7 @@ export class Utils {
         provider
       );
 
-      const allowance = await tokenContract.allowance(owner, spender);
+      const allowance = await tokenContract.allowance(address, spender);
 
       return {
         code: 0,
@@ -137,6 +128,7 @@ export class Utils {
   }
 
   async needsApproval(
+    address: string,
     chainId: number,
     quoteAddress: string,
     requiredAmount: string,
@@ -144,6 +136,7 @@ export class Utils {
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
+        address,
         chainId,
         quoteAddress,
         spenderAddress
@@ -180,11 +173,14 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
+      console.log('approveAuthorization: signer-->', signer)
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         signer ?? config.signer
       );
+
+      console.log('approveAuthorization: usdcContract-->', usdcContract)
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ??
@@ -223,7 +219,7 @@ export class Utils {
         assetClass,
         riskTier
       );
-      
+
       return {
         code: 0,
         data: {
@@ -331,13 +327,12 @@ export class Utils {
     }
   }
 
-  async checkSeamlessGas(userAddress: string) {
-    const config = this.configManager.getConfig();
-    const forwarderContract = await getForwarderContract(config.chainId);
+  async checkSeamlessGas(userAddress: string, chainId: number) {
+    const forwarderContract = await getForwarderContract(chainId);
     const relayFee = await forwarderContract.getRelayFee()
-    const provider = await getJSONProvider(config.chainId)
+    const provider = await getJSONProvider(chainId)
     // const { gasPrice } = await provider.getFeeData()
-    const contractAddress = getContractAddressByChainId(config.chainId);
+    const contractAddress = getContractAddressByChainId(chainId);
 
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
@@ -385,23 +380,23 @@ export class Utils {
     if (error instanceof MyxSDKError) {
       return error.message;
     }
-    
+
     // 处理用户拒绝交易的情况
     if (
       error?.code === "ACTION_REJECTED" ||
       error?.code === 4001 ||
       error?.info?.error?.code === 4001 ||
-      (typeof error?.message === "string" && 
-       (error.message.toLowerCase().includes("user rejected") ||
-        error.message.toLowerCase().includes("denied")))
+      (typeof error?.message === "string" &&
+        (error.message.toLowerCase().includes("user rejected") ||
+          error.message.toLowerCase().includes("denied")))
     ) {
       return "User Rejected";
     }
-    
+
     // 尝试解析自定义错误 selector
     // 首先尝试从 error.data 中获取
     let errorData = error?.data;
-    
+
     // 如果 error.data 不存在，尝试从 error.message 中提取 data 字段
     if (!errorData && error?.message && typeof error.message === "string") {
       // 匹配 data="0x..." 格式
@@ -410,13 +405,13 @@ export class Utils {
         errorData = dataMatch[1];
       }
     }
-    
+
     if (errorData) {
       // 提取 selector (前10个字符: 0x + 8个十六进制字符)
-      const selector = typeof errorData === "string" && errorData.startsWith("0x") 
+      const selector = typeof errorData === "string" && errorData.startsWith("0x")
         ? errorData.slice(0, 10).toLowerCase()
         : null;
-      
+
       if (selector) {
         // 在错误映射中查找
         const errorKey = Object.keys(customErrorMapping).find(
@@ -427,7 +422,7 @@ export class Utils {
         }
       }
     }
-    
+
     // 尝试从 error.reason 或 error.message 中提取信息
     if (error?.reason) {
       return error.reason;
@@ -435,7 +430,7 @@ export class Utils {
     if (error?.message) {
       return error.message;
     }
-    
+
     return JSON.stringify(error);
   }
 }

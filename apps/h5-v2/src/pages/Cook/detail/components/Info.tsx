@@ -45,18 +45,9 @@ const SecurityInfo = () => {
     <SafeList
       chainId={baseLpDetail?.chainId as number}
       address={baseLpDetail?.baseToken || ''}
-      className={'px-[0px]'}
+      className={'mt-[20px]'}
       poolId={baseLpDetail?.poolId as string}
-    >
-      <span
-        className={`text-green flex items-center gap-[4px] ${securityInfo?.danger_count > 0 ? 'text-wrong' : 'text-green'}`}
-      >
-        {securityInfo?.danger_count > 0 ? <Danger size={13} /> : <Security size={13} />}
-        <span>
-          {securityInfo?.security_count || '--'}/{securityInfo?.count || '--'}
-        </span>
-      </span>
-    </SafeList>
+    />
   )
 }
 
