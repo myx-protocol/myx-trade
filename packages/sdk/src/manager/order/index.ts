@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import { Account } from "../account";
 import { ChainId } from "@/config/chain";
 import { Api } from "../api";
+import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
 
 export class Order {
   private configManager: ConfigManager;
@@ -195,7 +196,7 @@ export class Order {
           { ...depositData },
           data,
           {
-            gasLimit: (gasLimit * 120n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       } else {
@@ -212,7 +213,7 @@ export class Order {
           { ...depositData },
           data,
           {
-            gasLimit: (gasLimit * 120n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       }
@@ -394,7 +395,7 @@ export class Order {
 
       const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, positionIds, dataMap);
       const transaction = await brokerContract.placeOrdersWithPosition(depositData, positionIds, dataMap, {
-        gasLimit: (gasLimit * 120n) / 100n,
+        gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
       // this.logger.info("Transaction sent:", transaction.hash);
@@ -562,7 +563,7 @@ export class Order {
           depositData,
           data,
           {
-            gasLimit: (gasLimit * 130n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       } else {
@@ -573,7 +574,7 @@ export class Order {
           depositData,
           data,
           {
-            gasLimit: (gasLimit * 130n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       }
@@ -771,13 +772,13 @@ export class Order {
             const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data);
 
             transaction = await brokerContract.placeOrdersWithSalt({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data, {
-              gasLimit: (gasLimit * 120n) / 100n,
+              gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           } else {
             const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data);
 
             transaction = await brokerContract.placeOrdersWithPosition({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data, {
-              gasLimit: (gasLimit * 120n) / 100n,
+              gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           }
 
@@ -938,13 +939,13 @@ export class Order {
           const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
 
           transaction = await brokerContract.placeOrderWithSalt(positionId.toString(), depositData, data, {
-            gasLimit: (gasLimit * 120n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         } else {
           this.logger.info("createPositionTpOrSlOrder nft position data--->", data);
           const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
           transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(), depositData, data, {
-            gasLimit: (gasLimit * 120n) / 100n,
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         }
 
@@ -1179,7 +1180,7 @@ export class Order {
       const gasLimit = await brokerContract.updateOrder.estimateGas(depositData, data);
 
       const request = await brokerContract.updateOrder(depositData, data, {
-        gasLimit: (gasLimit * 120n) / 100n,
+        gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
       const receipt = await request?.wait();

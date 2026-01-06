@@ -22,12 +22,14 @@ import { verifyTpSlPrice } from '@/utils/verify'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
+import { getAsSupportedChainIdFn } from '@/config/chain'
 
 export const useSubmitOrder = () => {
   const [longLoading, setLongLoading] = useState(false)
   const [shortLoading, setShortLoading] = useState(false)
 
-  const { chainId, address } = useWalletConnection()
+  const { chainId: currChainId, address } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
   const positionList = useGetPositionList()
   const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
