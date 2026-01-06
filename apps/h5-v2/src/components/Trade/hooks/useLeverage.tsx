@@ -1,11 +1,12 @@
 import { useLeverageDialogStore } from '../Dialog/Leverage/store'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { ChainId } from '@/config/chain'
+import { ChainId, getAsSupportedChainIdFn } from '@/config/chain'
 import useGlobalStore from '@/store/globalStore'
 const DEFAULT_LEVERAGE = 1
 
 export const useLeverage = (poolId?: string) => {
-  const { chainId } = useWalletConnection()
+  const { chainId: currChainId } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
   const { leverageMap } = useLeverageDialogStore()
   const { maxLeverage } = useGlobalStore()
 

@@ -6,14 +6,15 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import type { Address } from 'viem'
+import { getAsSupportedChainIdFn } from '@/config/chain'
 
 export function useClaimReferralRebate() {
   const [claimChainId, setClaimChainId] = useState<ChainId>()
   const [targetDate, setTargetDate] = useState<number>()
 
   const { fetchRefBonus, fetchRefBonusInfoByChain, accessToken } = useReferralStore()
-  const { chainId } = useWalletConnection()
-
+  const { chainId: currChainId } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const seamlessAccount = seamlessAccountList.find(
     (a) => a.seamlessAddress === activeSeamlessAddress,
