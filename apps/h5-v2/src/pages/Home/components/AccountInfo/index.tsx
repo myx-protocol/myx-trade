@@ -25,7 +25,7 @@ export const AccountInfo = () => {
     enabled: Boolean(client && clientIsAuthenticated),
     queryKey: ['home-getAccountBalance', homeStore.chainId, address],
     queryFn: () => {
-      return client?.account.getWalletQuoteTokenBalance()
+      return client?.account.getWalletQuoteTokenBalance(homeStore.chainId, address)
     },
     select: (data) => {
       return formatUnits(data?.data || '0', 6).toString()
