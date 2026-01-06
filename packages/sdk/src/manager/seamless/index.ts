@@ -280,7 +280,7 @@ export class Seamless {
     const masterAddress = await config.signer?.getAddress() ?? ''
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance(masterAddress)
+      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId,masterAddress)
       const balance = balanceRes.data
       const forwarderContract = await getForwarderContract(chainId)
 
