@@ -205,12 +205,12 @@ export class Utils {
     }
   }
 
-  async getUserTradingFeeRate(assetClass: number, riskTier: number) {
+  async getUserTradingFeeRate(assetClass: number, riskTier: number, chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(config.chainId);
+      const provider = await getJSONProvider(chainId)
       const brokerContract = new ethers.Contract(
         brokerAddress,
         Broker_ABI,

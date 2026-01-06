@@ -99,7 +99,7 @@ export const useMyxSdkClient = (chainId?: number) => {
   const { client, setClient, clientIsAuthenticated, markets } = useContext(myxSdkContext)
 
   useEffect(() => {
-    const _chainId = chainId ?? getAsSupportedChainIdFn()
+    const _chainId = getAsSupportedChainIdFn(chainId)
     if (_chainId && client && isSupportedChainFn(_chainId)) {
       const _client = client[_chainId]
       if (!_client) {
