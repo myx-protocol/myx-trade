@@ -7,6 +7,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { BytesLike, Signer } from "ethers";
 import { Address } from "viem";
 import { BaseMyxClient } from "../base/BaseMyxClient";
+import { AppealVoteParams } from "./type";
 
 export class Appeal extends BaseMyxClient {
   constructor(client: MyxClient) {
@@ -31,7 +32,13 @@ export class Appeal extends BaseMyxClient {
    */
   async submitAppeal(poolId: string, poolToken: string) {
     const contract = await this.getDisputeCourtContract();
-    const tx = await contract.fileDispute(poolId, poolToken);
+    const _gasLimit = await contract.fileDispute.estimateGas(poolId, poolToken);
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
+    const tx = await contract.fileDispute(poolId, poolToken, {
+      gasLimit,
+      gasPrice,
+    });
     const receipt = await tx.wait();
     return receipt;
   }
@@ -42,9 +49,40 @@ export class Appeal extends BaseMyxClient {
    * @param isFor - true if for the appeal, false if against the appeal
    * @returns the transaction receipt
    */
-  async voteForAppeal(caseId: number, isFor: boolean) {
+  async voteForAppeal({
+    caseId,
+    validator,
+    isFor,
+    deadline,
+    v,
+    r,
+    s,
+  }: AppealVoteParams) {
     const contract = await this.getDisputeCourtContract();
-    const tx = await contract.vote(caseId, isFor ? 1 : 0);
+    const _gasLimit = await contract.vote.estimateGas(
+      caseId,
+      validator,
+      isFor ? 1 : 0,
+      deadline,
+      v,
+      r,
+      s
+    );
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
+    const tx = await contract.vote(
+      caseId,
+      validator,
+      isFor ? 1 : 0,
+      deadline,
+      v,
+      r,
+      s,
+      {
+        gasLimit,
+        gasPrice,
+      }
+    );
     const receipt = await tx.wait();
     return receipt;
   }
@@ -56,7 +94,13 @@ export class Appeal extends BaseMyxClient {
    */
   async claimAppealMargin(caseId: number) {
     const contract = await this.getDisputeCourtContract();
-    const tx = await contract.claimBond(caseId);
+    const _gasLimit = await contract.claimBond.estimateGas(caseId);
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
+    const tx = await contract.claimBond(caseId, {
+      gasLimit,
+      gasPrice,
+    });
     const receipt = await tx.wait();
     return receipt;
   }
@@ -76,13 +120,34 @@ export class Appeal extends BaseMyxClient {
     merkleProof: BytesLike[]
   ) {
     const contract = await this.getReimbursementContract();
-    const tx = await contract.claimReimbursement(
+    const _gasLimit = await contract.claimReimbursement.estimateGas(
       caseId,
       baseAmount,
       quoteAmount,
       merkleProof
     );
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
+    const tx = await contract.claimReimbursement(
+      caseId,
+      baseAmount,
+      quoteAmount,
+      merkleProof,
+      {
+        gasLimit,
+        gasPrice,
+      }
+    );
     const receipt = await tx.wait();
     return receipt;
+  }
+
+  /**
+   * get dispute configuration
+   */
+  async getDisputeConfiguration() {
+    const contract = await this.getDisputeCourtContract();
+    const configuration = await contract.getDisputeConfiguration();
+    return configuration;
   }
 }
