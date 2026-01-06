@@ -1,15 +1,9 @@
-import type {
-  KlineDataResponse,
-  KlineResolution,
-  MarketDetailResponse,
-  MyxClient,
-} from '@myx-trade/sdk'
+import type { KlineDataResponse, KlineResolution, MyxClient } from '@myx-trade/sdk'
 import type {
   IBasicDataFeed,
   LibrarySymbolInfo,
   Bar,
 } from '@public/charting_library/charting_library'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { resolution } from '../const'
 import { parseTradingViewSymbol } from '../TradingView/utils'
 type SymbolInfo = Omit<LibrarySymbolInfo, 'ticker'> & {

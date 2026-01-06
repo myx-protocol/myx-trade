@@ -15,7 +15,7 @@ export const ChainsBar = ({
 }) => {
   return (
     <ul
-      className={`no-scrollbar flex w-full snap-x snap-mandatory items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] ${className}`}
+      className={`no-scrollbar flex w-full snap-x snap-mandatory items-center gap-[12px] overflow-x-auto px-[16px] py-[8px] text-[12px] ${className}`}
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
       <li
@@ -23,8 +23,8 @@ export const ChainsBar = ({
         className={`flex shrink-0 snap-start items-center gap-[2px] rounded-[4px] px-[8px] py-[6px] transition-all ${chainId === undefined ? 'bg-base text-white' : 'text-secondary'}`}
         onClick={() => setChainId(undefined)}
       >
-        <Box className={'h-[12px] w-[12px]'}>
-          <GlobalLine size={12} />
+        <Box className={'h-[16px] w-[16px]'}>
+          <GlobalLine size={16} />
         </Box>
         <span>
           <Trans>All</Trans>
@@ -39,7 +39,13 @@ export const ChainsBar = ({
             onClick={() => setChainId(_chainId)}
           >
             <Box className={''}>
-              <img src={logoUrl} alt="Logo" width={12} height={12} />
+              <img
+                src={logoUrl}
+                alt="Logo"
+                width={16}
+                height={16}
+                className={'border-light-border rounded-full border-1'}
+              />
             </Box>
             <span>{label}</span>
           </li>

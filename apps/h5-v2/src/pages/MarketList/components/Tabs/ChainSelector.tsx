@@ -33,6 +33,7 @@ export const ChainSelector = () => {
 
         {chainInfoList.map((chainInfo) => (
           <div
+            key={chainInfo.chainId}
             className={clsx(
               'flex min-w-fit items-center gap-[2px] rounded-[6px] py-[6px] pr-[10px] pl-[8px]',
               {

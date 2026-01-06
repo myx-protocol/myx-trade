@@ -33,26 +33,32 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
               quoteLogo={chainInfo?.logoUrl}
               quoteClassName=" ml-[-8px]!"
             />
-            <p className="text-[14px] font-medium text-white">
-              {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
-            </p>
-          </div>
-          <div className="mt-[4px] flex gap-[4px]">
-            <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
-              {order.direction === DirectionEnum.Long ? <Trans>Long</Trans> : <Trans>Short</Trans>}
-            </Tag>
-            <Tag type="info">
-              {order.orderType === OrderTypeEnum.Limit ? (
-                <Trans>Limit</Trans>
-              ) : order.orderType === OrderTypeEnum.Market ? (
-                <Trans>Market</Trans>
-              ) : (
-                <Trans>TPSL</Trans>
-              )}
-            </Tag>
-            <Tag type="info">
-              <Trans>Isolated {order.userLeverage}x</Trans>
-            </Tag>
+            <div className="flex flex-col items-start gap-[4px]">
+              <p className="text-[14px] font-medium text-white">
+                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+              </p>
+              <div className="flex gap-[4px]">
+                <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
+                  {order.direction === DirectionEnum.Long ? (
+                    <Trans>Long</Trans>
+                  ) : (
+                    <Trans>Short</Trans>
+                  )}
+                </Tag>
+                <Tag type="info">
+                  {order.orderType === OrderTypeEnum.Limit ? (
+                    <Trans>Limit</Trans>
+                  ) : order.orderType === OrderTypeEnum.Market ? (
+                    <Trans>Market</Trans>
+                  ) : (
+                    <Trans>TPSL</Trans>
+                  )}
+                </Tag>
+                <Tag type="info">
+                  <Trans>Isolated {order.userLeverage}x</Trans>
+                </Tag>
+              </div>
+            </div>
           </div>
         </div>
         {/* time */}
@@ -83,7 +89,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
             </p>
           </div>
           {/* price */}
-          <div className="text-center">
+          <div className="text-right">
             <p>
               <Trans>Price</Trans>
             </p>

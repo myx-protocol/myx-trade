@@ -1,5 +1,5 @@
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
-import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
+import type { PoolConfig } from '@/store/globalStore'
 import { usePoolLiquidityInfo } from '@/components/Trade/TradePanel/PoolsInfo/usePoolLiquidityInfo'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import { parseBigNumber } from '@/utils/bn'
@@ -10,9 +10,11 @@ import { ethers } from 'ethers'
 import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
+import useGlobalStore from '@/store/globalStore'
+import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig } = useTradePageStore()
+  const { symbolInfo, poolConfig } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   const leverage = useLeverage(symbolInfo?.poolId)
   const { autoMarginMode, collateralAmount, price } = useTradePanelStore()
@@ -84,7 +86,7 @@ export const useGetOpenAvailable = () => {
     const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
     const windowCaps = parseBigNumber(
-      ethers.formatUnits(windowCapsStr, symbolInfo?.quoteDecimals ?? 18).toString(),
+      ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
     )
     const openInterest = parseBigNumber(
       ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),

@@ -335,11 +335,8 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 </span>
                 <span className="ml-[4px] text-[#CED1D9]">
                   {adjustType === 'increase'
-                    ? displayAmount(
-                        accountAssets?.availableMargin?.toString() ?? '0',
-                        pool?.quoteDecimals ?? 6,
-                      )
-                    : displayAmount(maxDecreaseAmount, pool?.quoteDecimals ?? 6)}{' '}
+                    ? displayAmount(accountAssets?.availableMargin?.toString() ?? '0', 6)
+                    : displayAmount(maxDecreaseAmount, 6)}{' '}
                   {position?.quoteSymbol}
                 </span>
               </div>

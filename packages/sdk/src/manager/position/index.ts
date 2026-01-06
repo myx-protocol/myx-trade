@@ -68,13 +68,8 @@ export class Position {
   }
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+  
     const res = await this.api.getPositionHistory(
       { accessToken, ...params, address: address },
     );
@@ -130,6 +125,7 @@ export class Position {
 
       if (Number(adjustAmount) > 0) {
         needsApproval = await this.utils.needsApproval(
+          address,
           chainId,
           quoteToken,
           adjustAmount
@@ -162,21 +158,22 @@ export class Position {
       };
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: chainId,
-            quoteAddress: quoteToken,
-            amount: ethers.MaxUint256.toString(),
-            signer: seamlessWallet as Signer,
-          });
+        // if (needsApproval) {
+        //   const approvalResult = await this.utils.approveAuthorization({
+        //     chainId: chainId,
+        //     quoteAddress: quoteToken,
+        //     amount: ethers.MaxUint256.toString(),
+        //     signer: seamlessWallet as Signer,
+        //   });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+        //   if (approvalResult.code !== 0) {
+        //     throw new Error(approvalResult.message);
+        //   }
+        // }
 
         const isEnoughGas = await this.utils.checkSeamlessGas(
-          config.seamlessAccount?.masterAddress as string
+          config.seamlessAccount?.masterAddress as string,
+          chainId
         );
 
         if (!isEnoughGas) {

@@ -1,4 +1,4 @@
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { usePoolInfo } from '../../hooks/usePoolInfo'
 import { availableLiquiditySizeWad } from '@/utils/liquidity'
 import { Big } from 'big.js'
@@ -9,7 +9,7 @@ import { useMarketStore } from '../../store/MarketStore'
 const BASE_RESERVE_RATIO = '100'
 const QUOTE_RESERVE_RATIO = '100'
 export const usePoolLiquidityInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { data: poolInfo } = usePoolInfo({
     poolId: symbolInfo?.poolId,
     chainId: symbolInfo?.chainId,

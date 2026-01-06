@@ -2,7 +2,6 @@ import { DangerButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { useTradePanelStore } from '../store'
 import { AmountUnitEnum } from '../../type'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { displayAmount } from '@/utils/number'
 import { parseBigNumber } from '@/utils/bn'
 import { useMemo } from 'react'
@@ -13,30 +12,37 @@ import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
 
-export const OpenPosition = () => {
+interface OpenPositionProps {
+  showOrderSize?: boolean
+}
+
+export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   const { longSize, shortSize, amountUnit } = useTradePanelStore()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
-  const { symbolInfo } = useTradePageStore()
-  const { submitOrder } = useSubmitOrder()
+  const { symbolInfo } = useGlobalStore()
+  const { submitOrder, submitLongLoading, submitShortLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
 
   const displayLongSize = useMemo(() => {
+    if (!showOrderSize) return '0'
     if (parseBigNumber(longSize).eq(0)) {
       return '0'
     }
     return `${displayAmount(longSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
-  }, [longSize, amountUnit, symbolInfo])
+  }, [longSize, amountUnit, symbolInfo, showOrderSize])
 
   const displayShortSize = useMemo(() => {
+    if (!showOrderSize) return '0'
     if (parseBigNumber(shortSize).eq(0)) {
       return '0'
     }
     return `${displayAmount(shortSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
-  }, [shortSize, amountUnit, symbolInfo])
+  }, [shortSize, amountUnit, symbolInfo, showOrderSize])
 
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
       <PrimaryButton
+        loading={submitLongLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -78,7 +84,7 @@ export const OpenPosition = () => {
           <p>
             <Trans>Open Long</Trans>
           </p>
-          {parseBigNumber(longSize).gt(0) && (
+          {showOrderSize && parseBigNumber(longSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayLongSize}
             </p>
@@ -86,6 +92,7 @@ export const OpenPosition = () => {
         </div>
       </PrimaryButton>
       <DangerButton
+        loading={submitShortLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -111,7 +118,7 @@ export const OpenPosition = () => {
             (amountUnit === AmountUnitEnum.QUOTE && parseBigNumber(shortSize).gt(quoteAmount))
           ) {
             toast.error({
-              title: `open size must be less than max size`,
+              title: t`open size must be less than max size`,
             })
             return
           }
@@ -127,7 +134,7 @@ export const OpenPosition = () => {
           <p>
             <Trans>Open Short</Trans>
           </p>
-          {parseBigNumber(shortSize).gt(0) && (
+          {showOrderSize && parseBigNumber(shortSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayShortSize}
             </p>

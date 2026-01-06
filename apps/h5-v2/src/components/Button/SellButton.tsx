@@ -7,7 +7,7 @@ export const SellButton = styled(Button)` {}
       height: 44px;
       padding: 0 20px;
       border-radius: 8px;
-      border: 1px solid var(--sell-border);
+      box-shadow: inset 0 0 0 0.5px rgba(246, 98, 118, 1);
       background: var(--sell-gradient);
       font-size: 13px;
       font-style: normal;

@@ -18,7 +18,7 @@ const Content = ({ title, children }: { title: ReactNode; children?: ReactNode }
 export const Introduction = ({ className = '' }: { className?: string }) => {
   const { quoteLpDetail, pool } = useContext(PoolContext)
   return (
-    <Box className={`flex w-full flex-col py-[12px] ${className}`}>
+    <Box className={`mt-[8px] flex w-full flex-col py-[12px] ${className}`}>
       <Content title={<Trans>What is the {quoteLpDetail?.mQuoteBaseSymbol || '--'} Vault?</Trans>}>
         <p className={'leading-[1.5]'}>
           <Trans>

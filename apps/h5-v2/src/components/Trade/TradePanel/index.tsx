@@ -20,7 +20,6 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { CanSwitchWalletNetwork } from '@/components/CanSwitchWalletNetwork'
 import { ReceiveDialog } from './MarginAccount/ReceiveDialog'
-import { useTradePageStore } from '../store/TradePageStore'
 import { getSlippage, getSlippageConfig, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { truncateAddress } from '@/utils/string'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -39,10 +38,17 @@ import { CloseConfirmDialog } from '@/components/CloseConfirmDialog'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { GlobalContractSearch } from '@/components/GlobalContractSearch/GlobalContractSearch'
 import { useNavigate } from 'react-router-dom'
+import SettingIcon from '@/components/Icon/set/SettingIcon'
+import KlineIcon from '@/components/Icon/set/KlineIcon'
+import ChartsIcon from '@/components/Icon/set/ChartsIcon'
+import { PairLogo } from '@/components/UI/PairLogo'
+import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
+import { useScroll, useThrottle, useThrottleFn } from 'ahooks'
+import clsx from 'clsx'
 
 export const TradePanel = () => {
   const { positionAction, resetStore } = useTradePanelStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo, showCharts, setShowCharts } = useGlobalStore()
   const { setLoginModalOpen } = useWalletStore()
   const [isOpenGlobalContractSearch, setIsOpenGlobalContractSearch] = useState(false)
   const { poolConfig } = useGetPoolConfig(
@@ -112,12 +118,37 @@ export const TradePanel = () => {
   }, [poolConfig?.level])
   const navigate = useNavigate()
 
+  const { data: baseTokenInfo } = useBaseTokenInfo({
+    chainId: symbolInfo?.chainId,
+    poolId: symbolInfo?.poolId,
+  })
+
+  const chainInfo = useMemo(() => {
+    if (!symbolInfo?.chainId) return null
+    try {
+      return getChainInfo(symbolInfo?.chainId as ChainId)
+    } catch (_) {
+      return null
+    }
+  }, [symbolInfo?.chainId])
+
+  const position = useScroll()
+
+  const isFixedHeader = useThrottle(
+    () => {
+      return position?.top && position.top > 100
+    },
+    {
+      wait: 200,
+    },
+  )
+
   return (
     <>
-      <div className="w-full py-[16px]">
-        <div className="px-[16px]">
+      <div className="w-full pb-[16px]">
+        <div className="bg-deep sticky top-0 z-10 px-[16px] pt-[16px] pb-[12px]">
           <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-[4px]">
+            <div className="flex items-center gap-[12px]">
               <img
                 src={menuIcon}
                 alt=""
@@ -127,10 +158,27 @@ export const TradePanel = () => {
                   setIsOpenGlobalContractSearch(true)
                 }}
               />
-              <span className="ml-[4px] text-[20px] font-[700] font-medium">
-                {symbolInfo?.baseSymbol}
-                {symbolInfo?.quoteSymbol}
-              </span>
+              <div className="flex items-center gap-[4px]">
+                <PairLogo
+                  baseSymbol={symbolInfo?.baseSymbol}
+                  quoteSymbol={symbolInfo?.quoteSymbol}
+                  baseLogo={baseTokenInfo?.tokenIcon}
+                  quoteLogo={chainInfo?.logoUrl}
+                  baseLogoSize={24}
+                  quoteLogoSize={10}
+                  quoteClassName=" ml-[-8px]!"
+                />
+                <span className="ml-[4px] text-[20px] font-[700] font-medium">
+                  {symbolInfo?.baseSymbol}
+                  {symbolInfo?.quoteSymbol}
+                </span>
+                <RiseFallTextPrecent
+                  className={clsx({
+                    hidden: isFixedHeader,
+                  })}
+                  value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
+                />
+              </div>
             </div>
             <div
               className="flex items-center gap-[4px]"
@@ -143,10 +191,7 @@ export const TradePanel = () => {
                 setLoginModalOpen(true)
               }}
             >
-              {symbolInfo?.chainId && (
-                <img src={getChainInfo(symbolInfo?.chainId as ChainId)?.logoUrl} alt="" />
-              )}
-              <span className="text-[12px] leading-[12px] text-[#fff]">
+              <span className="text-[16px] leading-[12px] text-[#fff]">
                 {truncateAddress(address || '') || ''}
               </span>
               <ArrowDownIconFill size={8} />
@@ -159,13 +204,51 @@ export const TradePanel = () => {
                 value={marketPrice}
                 showUnit={false}
               />
-              <RiseFallTextPrecent value={tickerData[symbolInfo?.poolId as string]?.change ?? 0} />
+              <RiseFallTextPrecent
+                className={clsx({
+                  hidden: !isFixedHeader,
+                })}
+                value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
+              />
+            </div>
+            <div className="flex items-center justify-end gap-[16px]">
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  setShowCharts(!showCharts)
+                }}
+              >
+                <ChartsIcon size={18} />
+              </div>
+
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  navigate(`/price/${symbolInfo?.chainId}/${symbolInfo?.poolId}`)
+                }}
+              >
+                <KlineIcon size={18} />
+              </div>
+              <div
+                role="button"
+                className="flex"
+                onClick={() => {
+                  setSettingDialogOpen(true)
+                }}
+              >
+                <SettingIcon size={18} />
+              </div>
             </div>
           </div>
         </div>
-        <div className="mt-[12px]">
-          <Charts />
-        </div>
+        {showCharts && (
+          <div>
+            <Charts />
+          </div>
+        )}
+
         <div className="px-[16px]">
           <div className="flex h-full gap-[4px]">
             <PositionMode />

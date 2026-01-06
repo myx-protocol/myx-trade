@@ -11,7 +11,7 @@ import { OpenOrderList } from './components/OpenOrderList'
 import { OrderHistoryList } from './components/OrderHistoryList'
 import { PositionHistoryList } from './components/PositionHistoryList'
 import { FinanceList } from './components/FinanceList'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useLocation } from 'react-router-dom'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
 import { usePositionStore } from '@/store/position/createStore'
@@ -31,7 +31,7 @@ const Record = () => {
     selectChainId,
   } = usePositionStore()
   const { search } = useLocation()
-  const { setSymbolInfo } = useTradePageStore()
+  const { setSymbolInfo } = useGlobalStore()
   const params = new URLSearchParams(search)
   const chainId = params.get('chainId') ?? ''
   const poolId = params.get('poolId') ?? ''

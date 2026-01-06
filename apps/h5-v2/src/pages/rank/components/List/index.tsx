@@ -31,7 +31,7 @@ export const List = () => {
       return getLeaderboard({
         timeInterval,
         type,
-        chainId,
+        chainId: chainId || 0,
         sortField: tabsType,
       })
     },

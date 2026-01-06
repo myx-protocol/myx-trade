@@ -23,7 +23,7 @@ export const PROD_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 
-export const BETA_ENV_CHAIN_IDS = [ChainId.LINEA_SEPOLIA, ChainId.ARB_TESTNET] as const
+export const BETA_ENV_CHAIN_IDS = [ ChainId.BSC_TESTNET] as const
 export type SupportedBetaEnvChainId = [typeof BETA_ENV_CHAIN_IDS][number]
 
 export const TEST_ENV_CHAIN_IDS = [
@@ -44,7 +44,7 @@ export const DEV_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
-export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_SEPOLIA]
+export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_SEPOLIA, ChainId.BSC_TESTNET, ChainId.ARB_MAINNET,ChainId.LINEA_MAINNET, ChainId.BSC_MAINNET] as const
 // export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
 //   if (isTestMode()) {
 //     return TEST_ENV_CHAIN_IDS

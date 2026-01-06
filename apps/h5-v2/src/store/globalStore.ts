@@ -4,6 +4,33 @@ import { immer } from 'zustand/middleware/immer'
 import { shallow } from 'zustand/shallow'
 import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from '@/locales/locale'
 import { TradeMode } from '@/pages/Trade/types'
+import type { RedeemResponse } from '@/request/vip'
+import type { MarketDetailResponse } from '@myx-trade/sdk'
+import { KlineTypeEnum } from '@/components/Trade/Charts/type'
+
+export interface PoolConfig {
+  level: number
+  levelConfig: {
+    assetClass: number
+    fundingFeeRate1: number
+    fundingFeeRate1Max: number
+    fundingFeeRate2: number
+    fundingFeeSeconds: number
+    leverage: number
+    lockLiquidity: number
+    lockPriceRate: number
+    lockSeconds: number
+    maintainCollateralRate: number
+    minOrderSizeInUsd: number
+    name: string
+    slip: number
+  }
+  levelName: string
+}
+
+interface VipRedeemResultData extends RedeemResponse {
+  oldLevel: number
+}
 
 interface GlobalStore {
   theme: 'light' | 'dark'
@@ -51,6 +78,36 @@ interface GlobalStore {
   setAccountDialogOpen: (open: boolean) => void
   poolList: any
   setPoolList: (list: any) => void
+
+  /**
+   * vip redeem dialog
+   */
+  vipRedeemDialogOpen: boolean
+  setVipRedeemDialogOpen: (open: boolean) => void
+  vipRedeemResultDialogOpen: boolean
+  vipRedeemResultData: VipRedeemResultData | null
+  setVipRedeemResultData: (data: VipRedeemResultData | null) => void
+  setVipRedeemResultDialogOpen: (open: boolean) => void
+
+  // trade page
+  symbolInfo: MarketDetailResponse | null
+  setSymbolInfo: (symbolInfo: MarketDetailResponse | null) => void
+
+  // kline
+  resolutionFixed: string | number
+  setResolutionFixed: (resolutionFixed: string | number) => void
+  resolutionActive: string | number
+  setResolutionActive: (resolutionActive: string | number) => void
+  klineType: KlineTypeEnum
+  setKlineType: (klineType: KlineTypeEnum) => void
+  maxLeverage: number
+  setMaxLeverage: (maxLeverage: number) => void
+
+  poolConfig: PoolConfig | null
+  setPoolConfig: (poolConfig: PoolConfig | null) => void
+
+  showCharts: boolean
+  setShowCharts: (showCharts: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -102,6 +159,38 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             setAccountDialogOpen: (open: boolean) => set({ accountDialogOpen: open }),
             poolList: [],
             setPoolList: (list: any[]) => set({ poolList: list }),
+
+            vipRedeemDialogOpen: false,
+            setVipRedeemDialogOpen: (open: boolean) => set({ vipRedeemDialogOpen: open }),
+            vipRedeemResultDialogOpen: false,
+            vipRedeemResultData: null,
+            setVipRedeemResultData: (data) => set({ vipRedeemResultData: data }),
+            setVipRedeemResultDialogOpen: (open: boolean) =>
+              set({ vipRedeemResultDialogOpen: open }),
+
+            // trade page
+            symbolInfo: null,
+            setSymbolInfo: (symbolInfo) => set({ symbolInfo }),
+
+            /**
+             * kline resolution fixed
+             */
+            resolutionFixed: '1d',
+            setResolutionFixed: (resolutionFixed: string | number) => set({ resolutionFixed }),
+            resolutionActive: '1d',
+            setResolutionActive: (resolutionActive: string | number) => set({ resolutionActive }),
+
+            klineType: KlineTypeEnum.Candle,
+            setKlineType: (klineType: KlineTypeEnum) => set({ klineType }),
+            maxLeverage: 100,
+            setMaxLeverage: (maxLeverage: number) => set({ maxLeverage }),
+            poolConfig: null,
+            setPoolConfig: (poolConfig: PoolConfig | null) => set({ poolConfig }),
+
+            showCharts: false,
+            setShowCharts(showCharts) {
+              set({ showCharts })
+            },
           }) as GlobalStore,
       ),
       {

@@ -5,12 +5,12 @@ import YesIcon from '@/components/Icon/set/Yes'
 import CloseIcon from '@/components/Icon/set/CloseIcon'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 export const TpslSlippage = () => {
   const [isEdit, setIsEdit] = useState(false)
   const [value, setValue] = useState(0)
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const tpSlSlippage = getSlippage({
     chainId: symbolInfo?.chainId ?? 0,
     poolId: symbolInfo?.poolId ?? '',

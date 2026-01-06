@@ -4,7 +4,6 @@ import Reverse from '@/components/Icon/set/ReverseV2'
 import { ArrowDown } from '@/components/Icon'
 import { useTradePanelStore } from '../store'
 import clsx from 'clsx'
-import { useTradePageStore } from '../../store/TradePageStore'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -75,7 +74,7 @@ const useCountdown = (targetTimestamp: number) => {
 export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }) => {
   const [open, setOpen] = useState(false)
   const { poolList } = useGlobalStore()
-  const { symbolInfo: tradeSymbol } = useTradePageStore()
+  const { symbolInfo: tradeSymbol } = useGlobalStore()
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const symbolInfo = symbol ?? tradeSymbol
@@ -338,7 +337,12 @@ export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }
               />
             </div>
             <div className="mt-[20px] flex gap-[10px]">
-              <PrimaryButton className="w-full" onClick={onReceive} loading={isSwitchNetwork}>
+              <PrimaryButton
+                className="w-full"
+                style={{ height: '40px' }}
+                onClick={onReceive}
+                loading={isSwitchNetwork}
+              >
                 <Trans>Receive</Trans>
               </PrimaryButton>
               <TransferDialogButton />
@@ -351,7 +355,7 @@ export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }
 }
 
 export const Balance = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   return (

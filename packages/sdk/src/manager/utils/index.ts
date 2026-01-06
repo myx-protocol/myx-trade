@@ -12,9 +12,16 @@ import { KlineResolution } from "../subscription/types";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
-import { getDataProviderContract, getForwarderContract } from "@/web3/providers";
+import {
+  getDataProviderContract,
+  getForwarderContract,
+} from "@/web3/providers";
 import { getJSONProvider } from "@/web3";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
+import {
+  bigintTradingGasPriceWithRatio,
+  bigintTradingGasToRatioCalculator,
+} from "@/common";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -46,7 +53,6 @@ export class Utils {
     const eventTopic = ethers.id(
       "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
     );
-
 
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
@@ -92,6 +98,7 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
+    address: string,
     chainId: number,
     quoteAddress: string,
     spenderAddress?: string
@@ -101,28 +108,17 @@ export class Utils {
         "function allowance(address owner, address spender) external view returns (uint256)",
       ];
 
-      const config: MyxClientConfig = this.configManager.getConfig();
-      if (!config.signer) {
-        throw new MyxSDKError(
-          MyxErrorCode.InvalidSigner,
-          "Invalid signer"
-        );
-      }
-
-      const owner = await config.signer.getAddress();
-
       const spender =
-        spenderAddress ??
-        getContractAddressByChainId(chainId).Account;
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
 
-      const provider = await getJSONProvider(chainId)
+      const provider = await getJSONProvider(chainId);
       const tokenContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         provider
       );
 
-      const allowance = await tokenContract.allowance(owner, spender);
+      const allowance = await tokenContract.allowance(address, spender);
 
       return {
         code: 0,
@@ -137,6 +133,7 @@ export class Utils {
   }
 
   async needsApproval(
+    address: string,
     chainId: number,
     quoteAddress: string,
     requiredAmount: string,
@@ -144,6 +141,7 @@ export class Utils {
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
+        address,
         chainId,
         quoteAddress,
         spenderAddress
@@ -166,7 +164,7 @@ export class Utils {
     quoteAddress,
     amount,
     spenderAddress,
-    signer
+    signer,
   }: {
     chainId: number;
     quoteAddress: string;
@@ -180,15 +178,17 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
+      console.log("approveAuthorization: signer-->", signer);
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         signer ?? config.signer
       );
+
+      console.log("approveAuthorization: usdcContract-->", usdcContract);
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
-        spenderAddress ??
-        getContractAddressByChainId(chainId).Account;
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
@@ -210,20 +210,22 @@ export class Utils {
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(config.chainId)
+      const provider = await getJSONProvider(config.chainId);
       const brokerContract = new ethers.Contract(
         brokerAddress,
         Broker_ABI,
         provider
-      )
-      const targetAddress = config.seamlessMode ? config.seamlessAccount?.masterAddress : config.signer?.getAddress()
+      );
+      const targetAddress = config.seamlessMode
+        ? config.seamlessAccount?.masterAddress
+        : config.signer?.getAddress();
 
       const userFeeRate = await brokerContract.getUserFeeRate(
         targetAddress,
         assetClass,
         riskTier
       );
-      
+
       return {
         code: 0,
         data: {
@@ -244,10 +246,9 @@ export class Utils {
   }
 
   async getNetworkFee(quoteAddress: string, chainId: number) {
-    const orderManagerAddress = getContractAddressByChainId(
-      chainId,
-    ).ORDER_MANAGER;
-    const provider = await getJSONProvider(chainId)
+    const orderManagerAddress =
+      getContractAddressByChainId(chainId).ORDER_MANAGER;
+    const provider = await getJSONProvider(chainId);
     const orderManagerContract = new ethers.Contract(
       orderManagerAddress,
       OrderManager_ABI,
@@ -331,13 +332,12 @@ export class Utils {
     }
   }
 
-  async checkSeamlessGas(userAddress: string) {
-    const config = this.configManager.getConfig();
-    const forwarderContract = await getForwarderContract(config.chainId);
-    const relayFee = await forwarderContract.getRelayFee()
-    const provider = await getJSONProvider(config.chainId)
+  async checkSeamlessGas(userAddress: string, chainId: number) {
+    const forwarderContract = await getForwarderContract(chainId);
+    const relayFee = await forwarderContract.getRelayFee();
+    const provider = await getJSONProvider(chainId);
     // const { gasPrice } = await provider.getFeeData()
-    const contractAddress = getContractAddressByChainId(config.chainId);
+    const contractAddress = getContractAddressByChainId(chainId);
 
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
@@ -347,14 +347,16 @@ export class Utils {
     const balance = await erc20Contract.balanceOf(userAddress);
 
     if (BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
-      return false
+      return false;
     }
 
-    return true
+    return true;
   }
 
   async getLiquidityInfo({
-    chainId, poolId, marketPrice
+    chainId,
+    poolId,
+    marketPrice,
   }: {
     chainId: number;
     poolId: string;
@@ -362,7 +364,10 @@ export class Utils {
   }) {
     try {
       const dataProviderContract = await getDataProviderContract(chainId);
-      const poolInfo = await dataProviderContract.getPoolInfo(poolId, marketPrice);
+      const poolInfo = await dataProviderContract.getPoolInfo(
+        poolId,
+        marketPrice
+      );
 
       return {
         code: 0,
@@ -385,27 +390,39 @@ export class Utils {
     if (error instanceof MyxSDKError) {
       return error.message;
     }
-    
+
     // 处理用户拒绝交易的情况
     if (
       error?.code === "ACTION_REJECTED" ||
       error?.code === 4001 ||
       error?.info?.error?.code === 4001 ||
-      (typeof error?.message === "string" && 
-       (error.message.toLowerCase().includes("user rejected") ||
-        error.message.toLowerCase().includes("denied")))
+      (typeof error?.message === "string" &&
+        (error.message.toLowerCase().includes("user rejected") ||
+          error.message.toLowerCase().includes("denied")))
     ) {
       return "User Rejected";
     }
-    
+
     // 尝试解析自定义错误 selector
-    if (error?.data) {
-      const errorData = error.data;
+    // 首先尝试从 error.data 中获取
+    let errorData = error?.data;
+
+    // 如果 error.data 不存在，尝试从 error.message 中提取 data 字段
+    if (!errorData && error?.message && typeof error.message === "string") {
+      // 匹配 data="0x..." 格式
+      const dataMatch = error.message.match(/data=["'](0x[0-9a-fA-F]+)["']/i);
+      if (dataMatch && dataMatch[1]) {
+        errorData = dataMatch[1];
+      }
+    }
+
+    if (errorData) {
       // 提取 selector (前10个字符: 0x + 8个十六进制字符)
-      const selector = typeof errorData === "string" && errorData.startsWith("0x") 
-        ? errorData.slice(0, 10).toLowerCase()
-        : null;
-      
+      const selector =
+        typeof errorData === "string" && errorData.startsWith("0x")
+          ? errorData.slice(0, 10).toLowerCase()
+          : null;
+
       if (selector) {
         // 在错误映射中查找
         const errorKey = Object.keys(customErrorMapping).find(
@@ -416,7 +433,7 @@ export class Utils {
         }
       }
     }
-    
+
     // 尝试从 error.reason 或 error.message 中提取信息
     if (error?.reason) {
       return error.reason;
@@ -424,7 +441,15 @@ export class Utils {
     if (error?.message) {
       return error.message;
     }
-    
+
     return JSON.stringify(error);
+  }
+
+  async getGasPriceByRatio(chainId: number) {
+    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice
+  }
+
+  async getGasLimitByRatio(chainId: number, gasLimit: bigint) {
+    return bigintTradingGasToRatioCalculator(gasLimit, chainId);
   }
 }

@@ -1,5 +1,5 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { usePositionStore } from '@/store/position/createStore'
 import useSWR from 'swr'
 import { useWalletConnection } from '../wallet/useWalletConnection'
@@ -8,7 +8,7 @@ import { tradePubSub } from '@/utils/pubsub'
 
 export const useGetOrderList = (filter = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { isWrongNetwork } = useWalletConnection()
   const { hideOthersSymbols, selectChainId } = usePositionStore()
   const { address } = useWalletConnection()

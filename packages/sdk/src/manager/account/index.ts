@@ -109,13 +109,8 @@ export class Account {
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+    
     const res = await this.client.api.getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
@@ -133,7 +128,7 @@ export class Account {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(receiver)
+        const isEnoughGas = await this.utils.checkSeamlessGas(receiver, chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -194,6 +189,7 @@ export class Account {
 
     try {
       const needApproval = await this.utils.needsApproval(
+        account,
         chainId,
         tokenAddress,
         amount,
@@ -204,21 +200,21 @@ export class Account {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(account)
+        const isEnoughGas = await this.utils.checkSeamlessGas(account, chainId)
 
-        if (needApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId,
-            quoteAddress: tokenAddress,
-            amount: ethers.MaxUint256.toString(),
-            spenderAddress: contractAddress.Account,
-            signer: seamlessWallet as Signer,
-          });
+        // if (needApproval) {
+        //   const approvalResult = await this.utils.approveAuthorization({
+        //     chainId,
+        //     quoteAddress: tokenAddress,
+        //     amount: ethers.MaxUint256.toString(),
+        //     spenderAddress: contractAddress.Account,
+        //     signer: seamlessWallet as Signer,
+        //   });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+        //   if (approvalResult.code !== 0) {
+        //     throw new Error(approvalResult.message);
+        //   }
+        // }
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -314,7 +310,9 @@ export class Account {
   async getAccountVipInfo(chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
+
     const provider = await getJSONProvider(chainId)
+
 
     const brokerContract = new ethers.Contract(
       config.brokerAddress,
@@ -346,13 +344,8 @@ export class Account {
   }
 
   async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     try {
       const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
       if (res.code !== 9200) {
@@ -373,24 +366,10 @@ export class Account {
     }
   }
 
-  async setUserFeeData(address: string, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number, nonce: string }, signature: string) {
+  async setUserFeeData(address: string, chainId: number, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number, nonce: string }, signature: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
-
-    const brokerContract = new ethers.Contract(
-      config.brokerAddress,
-      Broker_ABI,
-      config.signer
-    );
-
-    const nonce = await brokerContract.userNonces(address);
-
-    if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
-      throw new MyxSDKError(
-        MyxErrorCode.RequestFailed,
-        "Invalid nonce, please try again"
-      );
-    }
-
+    const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+    const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
     if (deadline < dayjs().unix()) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
@@ -411,16 +390,66 @@ export class Account {
       signature: signature,
     }
 
-    this.logger.info("setUserFeeData params --->", feeData)
-
     try {
-      const rs = await brokerContract.setUserFeeData(feeData);
-      const receipt = await rs?.wait(1);
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId)
 
-      return {
-        code: 0,
-        data: receipt,
-      };
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const accountContract = new ethers.Contract(
+          config.brokerAddress,
+          Account_ABI,
+          seamlessWallet as Signer
+        );
+        const functionHash = accountContract.interface.encodeFunctionData('setUserFeeData', [feeData])
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: config.brokerAddress,
+          value: '0',
+          gas: '350000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+
+        return {
+          code: 0,
+          data: rs,
+        };
+      } else {
+        const brokerContract = new ethers.Contract(
+          config.brokerAddress,
+          Broker_ABI,
+          config.signer
+        );
+
+        const nonce = await brokerContract.userNonces(address);
+
+        if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
+          throw new MyxSDKError(
+            MyxErrorCode.RequestFailed,
+            "Invalid nonce, please try again"
+          );
+        }
+
+        const rs = await brokerContract.setUserFeeData(feeData);
+        const receipt = await rs?.wait(1);
+
+        return {
+          code: 0,
+          data: receipt,
+        };
+      }
+
+
+
+
     } catch (error) {
       return {
         code: -1,

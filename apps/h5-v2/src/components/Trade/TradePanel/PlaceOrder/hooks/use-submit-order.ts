@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import { useTradePanelStore } from '../../store'
 import { Direction, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { ethers } from 'ethers'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AmountUnitEnum, PositionActionEnum, TpSlTypeEnum } from '@/components/Trade/type'
@@ -18,17 +18,18 @@ import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { getSlippage } from '@/utils/slippage'
 import { SlippageTypeEnum } from '@/utils/slippage'
-import useGlobalStore from '@/store/globalStore'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 
 export const useSubmitOrder = () => {
-  const [loading, setLoading] = useState(false)
+  const [longLoading, setLongLoading] = useState(false)
+  const [shortLoading, setShortLoading] = useState(false)
+
   const { chainId, address } = useWalletConnection()
   const positionList = useGetPositionList()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { oraclePriceData } = useMarketStore()
   const { setCloseOrderConfirmDialogOpen, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
@@ -41,7 +42,6 @@ export const useSubmitOrder = () => {
   )
 
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
-
   const marketPrice = oraclePriceData[symbolInfo?.poolId as string]?.price ?? 0
   const {
     longSize,
@@ -304,10 +304,15 @@ export const useSubmitOrder = () => {
       }
 
       try {
-        setLoading(true)
+        if (direction === Direction.LONG) {
+          setLongLoading(true)
+        } else {
+          setShortLoading(true)
+        }
         await checkUserVipInfo()
         if (positionAction === PositionActionEnum.OPEN) {
           const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
+
           if (rs?.code === 0) {
             resetStore()
             toast.success({
@@ -345,7 +350,11 @@ export const useSubmitOrder = () => {
           title: t`${client?.utils.formatErrorMessage(error)}`,
         })
       } finally {
-        setLoading(false)
+        if (direction === Direction.LONG) {
+          setLongLoading(false)
+        } else {
+          setShortLoading(false)
+        }
       }
     },
     [
@@ -375,6 +384,8 @@ export const useSubmitOrder = () => {
 
   return {
     submitOrder,
-    submitLoading: loading,
+    submitLongLoading: longLoading,
+    submitShortLoading: shortLoading,
+    submitLoading: longLoading || shortLoading,
   }
 }

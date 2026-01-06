@@ -3,8 +3,14 @@ import { t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { useReferralStore } from '@/store/referrals'
 import { useAccessParams } from '@/hooks/useAccessParams'
-import { getUserReferralData, getRefereeReferralFlow, extractReferralFlow } from '@/api/referrals'
-import { formatNumberPrecision } from '@/utils/formatNumber'
+import {
+  getUserReferralData,
+  getRefereeReferralFlow,
+  extractReferralFlow,
+  type RefereeReferralFlowType,
+  type ExtractReferralFlowType,
+  type UserReferralDataType,
+} from '@/api/referrals'
 import { encryptionAddress } from '@/utils'
 import { ModuleTitle } from '../ModuleTitle'
 import { StatisticsDialog } from '../StatisticsDialog'
@@ -17,7 +23,8 @@ import { getChainInfo } from '@/config/chainInfo'
 import { TransactionHash } from '@/components/TransactionHash'
 import { Loading } from '../Loading'
 import { ReferralsEmpty } from '../Empty'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import type { ApiResponse } from '@/api/type'
+import { formatNumber } from '@/utils/number'
 
 enum RecordTypeEnum {
   Invite = 0,
@@ -29,61 +36,86 @@ const PAGE_SIZE = 10
 
 export const RecordCard = () => {
   const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig } = useReferralStore()
-  const { address } = useWalletConnection()
   const accessParams = useAccessParams()
   const [recordType, setRecordType] = useState<RecordTypeEnum>(RecordTypeEnum.Invite)
-  const [list, setList] = useState<any[]>([])
+  const [list, setList] = useState<
+    Array<RefereeReferralFlowType | ExtractReferralFlowType | UserReferralDataType>
+  >([])
   const [loading, setLoading] = useState(false)
   const [before, setBefore] = useState<number>(0)
   const [after, setAfter] = useState<number>(0)
   const [statisticsOpen, setStatisticsOpen] = useState(false)
   const [currentReferee, setCurrentReferee] = useState<string>('')
+  const [hasBefore, setHasBefore] = useState(false)
+  const [hasAfter, setHasAfter] = useState(false)
 
   const fetchData = async () => {
     if (!accessParams?.accessToken || !accessParams.account) return // Only check accessToken, 'account' is not used here
-    setLoading(true)
+    if (!before && !after) {
+      setLoading(true)
+    }
     try {
-      let res: any
-      // New APIs do not support pagination params in the interface definition
-      // const params = { limit: PAGE_SIZE, before, after }
+      let res: ApiResponse<
+        RefereeReferralFlowType[] | ExtractReferralFlowType[] | UserReferralDataType[]
+      >
+
+      const requestLimit = PAGE_SIZE + 1
 
       if (recordType === RecordTypeEnum.Invite) {
         res = await getUserReferralData(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       } else if (recordType === RecordTypeEnum.Rebase) {
         res = await getRefereeReferralFlow(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       } else {
         res = await extractReferralFlow(
           {
-            limit: PAGE_SIZE,
+            limit: requestLimit,
             before,
             after,
           },
           accessParams,
         )
-        // Map to expected format
-        const data = res.data || []
-        setList(data)
       }
+      if (!res.data?.length) {
+        if (before) {
+          setHasBefore(false)
+        }
+        if (after) {
+          setHasAfter(false)
+        }
+        setLoading(false)
+        return
+      }
+      if (res.data?.length === requestLimit) {
+        if (before) {
+          setList(res.data?.slice(1) || [])
+        } else {
+          setList(res.data?.slice(0, PAGE_SIZE) || [])
+        }
+      } else {
+        setList(res.data || [])
+      }
+      setHasBefore(
+        Boolean(before && res.data.length === requestLimit) ||
+          Boolean(after && res.data.length !== requestLimit),
+      )
+      setHasAfter(
+        Boolean(res.data.length === requestLimit) ||
+          Boolean(before && res.data.length !== requestLimit),
+      )
     } catch (e) {
       console.error(e)
       setList([])
@@ -100,19 +132,11 @@ export const RecordCard = () => {
 
   useEffect(() => {
     fetchInitialData()
-  }, [accessParams?.accessToken, accessParams?.account, address])
+  }, [accessParams?.accessToken, accessParams?.account])
 
   useEffect(() => {
     fetchData()
-  }, [
-    accessParams,
-    recordType,
-    before,
-    after,
-    accessParams?.accessToken,
-    accessParams?.account,
-    address,
-  ]) // Added accessToken to dependencies
+  }, [accessParams, recordType, before, after, accessParams?.accessToken, accessParams?.account]) // Added accessToken to dependencies
 
   const handlePrev = () => {
     if (list.length > 0) {
@@ -285,17 +309,17 @@ export const RecordCard = () => {
       {list.length > 0 && (
         <div className="mt-4 flex justify-end gap-4">
           <div
-            className={`cursor-pointer ${!after && !before ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
+            className={`cursor-pointer ${!hasBefore ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
             onClick={() => {
-              if (after || before) handlePrev()
+              if (hasBefore) handlePrev()
             }}
           >
             <Prev size={12} />
           </div>
           <div
-            className={`cursor-pointer ${list.length < PAGE_SIZE ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
+            className={`cursor-pointer ${!hasAfter ? 'cursor-not-allowed text-[#31333D]' : 'text-white'}`}
             onClick={() => {
-              if (list.length === PAGE_SIZE) handleNext()
+              if (hasAfter) handleNext()
             }}
           >
             <Next size={12} />
@@ -324,7 +348,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
             type === RecordTypeEnum.Rebase
               ? item.rebateTime * 1000
               : type === RecordTypeEnum.Claim
-                ? item.claimTime * 1000
+                ? item.txTime * 1000
                 : item.createTime,
           ).format('YYYY-MM-DD HH:mm:ss')}
         </div>
@@ -357,7 +381,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
             <div className="text-xs text-[#CED1D9]">
               <Trans>Rebate</Trans>
             </div>
-            <div className="text-sm text-white">{formatNumberPrecision(item.contribute, 2)}</div>
+            <div className="text-sm text-white">{formatNumber(item.contribute)}</div>
           </div>
           <div className="flex justify-between">
             <div className="text-xs text-[#CED1D9]">
@@ -396,14 +420,16 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
               <Trans>Amount</Trans>
             </div>
             <div className="text-sm text-white">
-              {formatNumberPrecision(item.amount, 2)} {item.token}
+              {formatNumber(item.receiveAmount)} {item.tokenName}
             </div>
           </div>
           <div className="flex justify-between">
             <div className="text-xs text-[#CED1D9]">
               <Trans>Type</Trans>
             </div>
-            <div className="text-sm text-white">{item.rebateType}</div>
+            <div className="text-sm text-white">
+              {item.rebateType === 1 ? <Trans>Rebates</Trans> : <Trans>Refund</Trans>}
+            </div>
           </div>
         </>
       )}
@@ -429,7 +455,7 @@ const MobileRecordItem = ({ type, item, onStatistics }: any) => {
               <Trans>Amount</Trans>
             </div>
             <div className="text-sm text-white">
-              {formatNumberPrecision(item.amount, 2)} {item.token}
+              {formatNumber(item.claimAmount)} {item.tokenName}
             </div>
           </div>
         </>
@@ -444,9 +470,9 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
       <td className="py-3">
         {dayjs(
           type === RecordTypeEnum.Rebase
-            ? item.rebateTime * 1000
+            ? item.txTime * 1000
             : type === RecordTypeEnum.Claim
-              ? item.claimTime * 1000
+              ? item.txTime * 1000
               : item.createTime,
         ).format('YYYY-MM-DD HH:mm:ss')}
       </td>
@@ -461,7 +487,7 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
           </td>
           <td className="py-3">{item.referrerRatio}%</td>
           <td className="py-3">{item.refereeRatio}%</td>
-          <td className="py-3">{formatNumberPrecision(item.contribute, 2)}</td>
+          <td className="py-3">{formatNumber(item.contribute)}</td>
           <td className="py-3 text-right">
             <div
               className="flex cursor-pointer items-center justify-end gap-1 text-[#00E3A5]"
@@ -484,9 +510,11 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
           </td>
           <td className="py-3">{getChainInfo(item.chainId)?.label ?? '--'}</td>
           <td className="py-3 text-right">
-            {formatNumberPrecision(item.amount, 2)} {item.token}
+            {formatNumber(item.receiveAmount)} {item.tokenName}
           </td>
-          <td className="py-3 text-right">{item.rebateType}</td>
+          <td className="py-3 text-right">
+            {item.rebateType === 1 ? <Trans>Rebates</Trans> : <Trans>Refund</Trans>}
+          </td>
         </>
       )}
 
@@ -497,7 +525,7 @@ const DesktopRecordItem = ({ type, item, onStatistics }: any) => {
             <TransactionHash hash={item.txHash} />
           </td>
           <td className="py-3 text-right">
-            {formatNumberPrecision(item.amount, 2)} {item.token}
+            {formatNumber(item.claimAmount)} {item.tokenName}
           </td>
         </>
       )}

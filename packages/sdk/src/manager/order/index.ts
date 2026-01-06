@@ -56,14 +56,8 @@ export class Order {
         totalNetWorkFee += BigInt(networkFee)
       }
 
-      const needsApproval = await this.utils.needsApproval(
-        params.chainId,
-        params.executionFeeToken,
-        params.collateralAmount,
-      );
+
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
-
-
 
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
 
@@ -102,21 +96,10 @@ export class Order {
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+
       if (config.seamlessMode && authorized && seamlessWallet) {
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: params.chainId,
-            quoteAddress: params.executionFeeToken,
-            amount: ethers.MaxUint256.toString(),
-            signer: seamlessWallet as Signer,
-          });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
-
-        const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
+        const isEnoughGas = await this.utils.checkSeamlessGas(params.address, params.chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -128,6 +111,7 @@ export class Order {
           this.configManager.getConfig().brokerAddress,
           seamlessWallet as Signer
         );
+
         let functionHash = ''
         if (!params.positionId) {
           this.logger.info("createIncreaseOrder placeOrderWithSalt data --->", [
@@ -162,7 +146,6 @@ export class Order {
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
         const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
@@ -170,6 +153,13 @@ export class Order {
           data: rs,
         };
       }
+
+      const needsApproval = await this.utils.needsApproval(
+        params.address,
+        params.chainId,
+        params.executionFeeToken,
+        params.collateralAmount,
+      );
 
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
@@ -288,6 +278,7 @@ export class Order {
       }
 
       const needsApproval = await this.utils.needsApproval(
+        params[0].address,
         chainId,
         params[0].executionFeeToken,
         depositAmount.toString(),
@@ -328,20 +319,20 @@ export class Order {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
       if (config.seamlessMode && authorized && seamlessWallet) {
 
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: chainId,
-            quoteAddress: params[0].executionFeeToken,
-            amount: ethers.MaxUint256.toString(),
-            signer: seamlessWallet as Signer,
-          });
+        // if (needsApproval) {
+        //   const approvalResult = await this.utils.approveAuthorization({
+        //     chainId: chainId,
+        //     quoteAddress: params[0].executionFeeToken,
+        //     amount: ethers.MaxUint256.toString(),
+        //     signer: seamlessWallet as Signer,
+        //   });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+        //   if (approvalResult.code !== 0) {
+        //     throw new Error(approvalResult.message);
+        //   }
+        // }
 
-        const isEnoughGas = await this.utils.checkSeamlessGas(params[0].address)
+        const isEnoughGas = await this.utils.checkSeamlessGas(params[0].address, chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -479,6 +470,7 @@ export class Order {
       }
 
       const needsApproval = await this.utils.needsApproval(
+        params.address,
         params.chainId,
         params.executionFeeToken,
         depositAmount.toString(),
@@ -487,7 +479,7 @@ export class Order {
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
       if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
+        const isEnoughGas = await this.utils.checkSeamlessGas(params.address, params.chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -688,6 +680,7 @@ export class Order {
           const depositAmount = BigInt(networkFee) * BigInt(2)
 
           const needsApproval = await this.utils.needsApproval(
+            params.address,
             params.chainId,
             params.executionFeeToken,
             depositAmount.toString(),
@@ -697,20 +690,20 @@ export class Order {
           const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
           if (config.seamlessMode && authorized && seamlessWallet) {
 
-            if (needsApproval) {
-              const approvalResult = await this.utils.approveAuthorization({
-                chainId: params.chainId,
-                quoteAddress: params.executionFeeToken,
-                amount: ethers.MaxUint256.toString(),
-                signer: seamlessWallet as Signer,
-              });
+            // if (needsApproval) {
+            //   const approvalResult = await this.utils.approveAuthorization({
+            //     chainId: params.chainId,
+            //     quoteAddress: params.executionFeeToken,
+            //     amount: ethers.MaxUint256.toString(),
+            //     signer: seamlessWallet as Signer,
+            //   });
 
-              if (approvalResult.code !== 0) {
-                throw new Error(approvalResult.message);
-              }
-            }
+            //   if (approvalResult.code !== 0) {
+            //     throw new Error(approvalResult.message);
+            //   }
+            // }
 
-            const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
+            const isEnoughGas = await this.utils.checkSeamlessGas(params.address, params.chainId)
 
             if (!isEnoughGas) {
               throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -855,6 +848,7 @@ export class Order {
         }
 
         const needsApproval = await this.utils.needsApproval(
+          params.address,
           params.chainId,
           params.executionFeeToken,
           networkFee.toString(),
@@ -864,20 +858,20 @@ export class Order {
         const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
         if (config.seamlessMode && authorized && seamlessWallet) {
 
-          if (needsApproval) {
-            const approvalResult = await this.utils.approveAuthorization({
-              chainId: params.chainId,
-              quoteAddress: params.executionFeeToken,
-              amount: ethers.MaxUint256.toString(),
-              signer: seamlessWallet as Signer,
-            });
+          // if (needsApproval) {
+          //   const approvalResult = await this.utils.approveAuthorization({
+          //     chainId: params.chainId,
+          //     quoteAddress: params.executionFeeToken,
+          //     amount: ethers.MaxUint256.toString(),
+          //     signer: seamlessWallet as Signer,
+          //   });
 
-            if (approvalResult.code !== 0) {
-              throw new Error(approvalResult.message);
-            }
-          }
+          //   if (approvalResult.code !== 0) {
+          //     throw new Error(approvalResult.message);
+          //   }
+          // }
 
-          const isEnoughGas = await this.utils.checkSeamlessGas(params.address)
+          const isEnoughGas = await this.utils.checkSeamlessGas(params.address, params.chainId)
 
           if (!isEnoughGas) {
             throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -1014,7 +1008,7 @@ export class Order {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
       if (config.seamlessMode && authorized && seamlessWallet) {
 
-        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string)
+        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string, chainId)
 
         if (!isEnoughGas) {
           throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
@@ -1127,7 +1121,7 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number,) {
+  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
@@ -1164,6 +1158,7 @@ export class Order {
 
     try {
       const needsApproval = await this.utils.needsApproval(
+        address,
         chainId,
         params.executionFeeToken,
         networkFee.toString(),
@@ -1230,14 +1225,8 @@ export class Order {
   }
 
   async getOrderHistory(params: GetHistoryOrdersParams, address: string) {
-    const config = this.configManager.getConfig();
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     const res = await this.api.getHistoryOrders({ accessToken, ...params, address });
     return {
       code: 0,

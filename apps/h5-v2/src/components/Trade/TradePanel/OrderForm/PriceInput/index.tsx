@@ -4,14 +4,14 @@ import { useTradePanelStore } from '../../store'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { Trans } from '@lingui/react/macro'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useEffect } from 'react'
 import { OrderType } from '@myx-trade/sdk'
 
 export const PriceInput = () => {
   const { orderType, setOrderType, price, setPrice } = useTradePanelStore()
   const { tickerData } = useMarketStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
 
@@ -26,7 +26,7 @@ export const PriceInput = () => {
       className="mb-[6px]"
       title={
         <div className="flex items-center">
-          <p className="text-[#CED1D9]">
+          <p style={{ color: orderType === OrderType.MARKET ? '#848E9C' : '#CED1D9' }}>
             <Trans>Price</Trans>
           </p>
         </div>
@@ -65,7 +65,7 @@ export const PriceInput = () => {
               <Trans>Last</Trans>
             </p>
           )}
-          <div className="ml-[12px] border-l-[1px] border-[#31333D] pl-[12px]">
+          <div className="ml-[12px] pl-[12px]">
             <TradeSelect
               value={orderType}
               onChange={(value) => {

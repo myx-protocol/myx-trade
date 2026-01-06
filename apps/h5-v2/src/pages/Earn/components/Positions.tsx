@@ -27,7 +27,7 @@ import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { encodeSortValue } from '@/utils/sort.ts'
 const sortField = SortField.tvl
 const sortOrder = 'desc'
-const limit = 3
+const limit = 20
 
 export const Positions = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()

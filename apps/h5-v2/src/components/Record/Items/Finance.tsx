@@ -39,6 +39,7 @@ const TradeFlowType: Record<TradeFlowTypeEnum, () => string> = {
 }
 
 const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
+  const [open, setOpen] = useState(false)
   const tokenInfo = useMemo(() => {
     if (item.token) return getChainsTokenInfo(item.chainId, item.token)
     return null
@@ -50,7 +51,11 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
   }, [item.chainId])
   return (
     <div className="w-full border-b border-[#202129] p-[16px]">
-      <div className="flex items-center justify-between" role="button">
+      <div
+        className="flex items-center justify-between"
+        role="button"
+        onClick={() => setOpen(!open)}
+      >
         {/* symbol info */}
         <div className="flex items-center gap-[4px]">
           <PairLogo
@@ -64,49 +69,68 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
             <p className="text-[14px] font-medium text-white">
               {tokenInfo ? <>{tokenInfo?.symbol}</> : <>--</>}
             </p>
-            <p className="text-[12px] text-[#6D7180]">
-              {dayjs.unix(item.txTime).format('M/D HH:mm:ss')}
-            </p>
+            <div className="mt-[4px] flex items-center gap-[4px]">
+              <Tag type="info">{TradeFlowType[item.type]?.()}</Tag>
+              <p className="text-[12px] text-[#6D7180]">
+                {dayjs.unix(item.txTime).format('M/D HH:mm:ss')}
+              </p>
+            </div>
           </div>
         </div>
         {/* margin amount */}
-        <div className="flex flex-col items-end gap-[6px]">
-          {Big(item.collateralAmount || '0')
-            .abs()
-            .gt(0) && (
-            <p>
-              {formatNumber(item.collateralAmount, {
-                showSign: true,
-                showUnit: false,
-              })}
-              <span className="ml-[2px]">{tokenInfo?.symbol}</span>
-            </p>
-          )}
-          {Big(item.collateralBase || '0')
-            .abs()
-            .gt(0) && (
-            <p>
-              {formatNumber(item.collateralBase, {
-                showSign: true,
-                showUnit: false,
-              })}
-              <span className="ml-[2px]">{tokenInfo?.symbol}</span>
-            </p>
-          )}
+        <div className="flex shrink-0 items-center gap-[2px] text-[14px] text-white font-stretch-semi-condensed">
+          <div className="flex flex-col items-end gap-[6px]">
+            {Big(item.collateralAmount || '0')
+              .abs()
+              .gt(0) && (
+              <p>
+                {formatNumber(item.collateralAmount, {
+                  showSign: true,
+                  showUnit: false,
+                })}
+                <span className="ml-[2px]">{tokenInfo?.symbol}</span>
+              </p>
+            )}
+            {Big(item.collateralBase || '0')
+              .abs()
+              .gt(0) && (
+              <p>
+                {formatNumber(item.collateralBase, {
+                  showSign: true,
+                  showUnit: false,
+                })}
+                <span className="ml-[2px]">{tokenInfo?.symbol}</span>
+              </p>
+            )}
+          </div>
+          <span role="button" className="ml-[2px] flex">
+            <SortDownIcon size={8} color="#848E9C" />
+          </span>
         </div>
       </div>
-      <div className="mt-[8px] flex items-center justify-between text-[12px] font-normal text-[#CED1D9]">
-        <p className="text-[#848E9C]">
-          <Trans>流入/流出</Trans>
-        </p>
-        <p>
-          {item.type === TradeFlowTypeEnum.TransferToWallet ? (
-            <Trans>钱包账户</Trans>
-          ) : (
-            <Trans>保证金账户</Trans>
-          )}
-        </p>
-      </div>
+      {open && (
+        <motion.div
+          className="mt-[16px] flex flex-col gap-[10px] text-[12px] text-[#9397A3]"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
+          style={{ overflow: 'hidden' }}
+        >
+          <div className="mt-[8px] flex items-center justify-between text-[12px] font-normal text-[#CED1D9]">
+            <p className="text-[#848E9C]">
+              <Trans>流入/流出</Trans>
+            </p>
+            <p>
+              {item.type === TradeFlowTypeEnum.TransferToWallet ? (
+                <Trans>钱包账户</Trans>
+              ) : (
+                <Trans>保证金账户</Trans>
+              )}
+            </p>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }
@@ -155,10 +179,18 @@ export const FinanceDetailItem = ({ item }: { item: TradeFlowItem }) => {
       case TradeFlowTypeEnum.Increase:
       case TradeFlowTypeEnum.Decrease:
       case TradeFlowTypeEnum.AddTPSL:
+      case TradeFlowTypeEnum.AddMargin:
+      case TradeFlowTypeEnum.ReferralRewardClaim:
+      case TradeFlowTypeEnum.ReferralReward:
         return <Tag type="success">{TradeFlowType[item.type]?.()}</Tag>
       case TradeFlowTypeEnum.ADL:
       case TradeFlowTypeEnum.Liquidation:
+      case TradeFlowTypeEnum.RemoveMargin:
         return <Tag type="danger">{TradeFlowType[item.type]?.()}</Tag>
+      case TradeFlowTypeEnum.MarketClose:
+      case TradeFlowTypeEnum.SecurityDeposit:
+      case TradeFlowTypeEnum.EarlyClose:
+        return <Tag type="warning">{TradeFlowType[item.type]?.()}</Tag>
       default:
         return <Tag type="info">{TradeFlowType[item.type]?.()}</Tag>
     }

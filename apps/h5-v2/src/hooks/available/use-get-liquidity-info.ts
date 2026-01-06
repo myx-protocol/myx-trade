@@ -1,6 +1,6 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import useSWR from 'swr'
-import { useTradePageStore } from '@/components/Trade/store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
@@ -16,7 +16,7 @@ const DEFAULT_LIQUIDITY_INFO: LiquidityInfo = {
 }
 
 export const useGetLiquidityInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
 
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[symbolInfo?.poolId || '']?.price

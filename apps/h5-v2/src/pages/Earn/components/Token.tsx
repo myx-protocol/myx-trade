@@ -24,7 +24,7 @@ export const Token = ({ token }: { token?: Vault }) => {
           {token ? (
             <CoinIcon size={10} icon={CHAIN_INFO?.[token?.chainId]?.logoUrl ?? ''} />
           ) : (
-            <Skeleton className={'rounded-full'} width={10} height={10} />
+            <Skeleton width={10} height={10} />
           )}
         </Box>
       </Box>

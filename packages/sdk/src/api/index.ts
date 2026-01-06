@@ -22,16 +22,16 @@ import { ChainId } from "@/config/chain";
 import sdk from "@/web3";
 
 
-
-export const getBaseUrlByEnv = (isProd?: boolean) => {
-  const _isProd =  !!isProd || (sdk?.getConfigManager() ? !sdk?.getConfigManager()?.getConfig()?.isTestnet : false)
-  return _isProd ? "https://api.myx.finance" : "https://api-test.myx.cash";
+export const getBaseUrlByEnv = () => {
+  const { isTestnet, isBetaMode } = sdk?.getConfigManager()?.getConfig() || {};
+  if (isBetaMode) {
+    return 'https://api-beta.myx.finance';
+  } else if (isTestnet) {
+    return 'https://api-test.myx.cash';
+  } else {
+    return 'https://api.myx.finance';
+  }
 };
-
-export const getForwardUrlByEnv = (isProd?: boolean) => {
-  return `${getBaseUrlByEnv(isProd)}/v2/agent`
-};
-
 
 export const getOraclePrice = async (
   chainId: ChainId,
@@ -97,10 +97,9 @@ export interface GetPoolLevelConfigParams {
 export const getPoolDetail = async (
   chainId: number,
   poolId: string,
-  isProd?: boolean
 ): Promise<PoolResponse> => {
   return await http.get<PoolResponse>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
+    `${getBaseUrlByEnv()}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
   );
 };
 
@@ -207,9 +206,8 @@ export const getTickerData = async (
   { chainId, poolIds }: GetTickerDataParams,
   envParams: HttpEnvParams
 ) => {
-  const isProd = envParams?.isProd ?? true;
   return http.get<ApiResponse<TickerDataItem[]>>(
-    `${getBaseUrlByEnv(isProd)}/openapi/gateway/quote/candle/tickers`,
+    `${getBaseUrlByEnv()}/openapi/gateway/quote/candle/tickers`,
     {
       chainId,
       poolIds: poolIds.join(","),

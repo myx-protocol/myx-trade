@@ -28,6 +28,7 @@ export const OrderTips = () => {
       baseLpDetail?.marketId,
       baseLpDetail?.chainId,
       baseLpDetail?.state,
+      baseLpDetail?.totalTvl,
     ],
     enabled:
       !!baseLpDetail?.marketId &&

@@ -5,7 +5,7 @@ import { FormControlLabel } from '@/components/UI/FormControlLabel'
 import { TPSLInput } from './TPSLInput'
 import { useMemo } from 'react'
 import { TpSlTypeEnum } from '../../type'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 
 export const TPSL = () => {
   const {
@@ -20,7 +20,7 @@ export const TPSL = () => {
     slValue,
     setSlValue,
   } = useTradePanelStore()
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const [tpPlaceHolder, slPlaceHolder] = useMemo(() => {
     let tpPlaceHolder = `TP(${symbolInfo?.quoteSymbol})`
     let slPlaceHolder = `SL(${symbolInfo?.quoteSymbol})`

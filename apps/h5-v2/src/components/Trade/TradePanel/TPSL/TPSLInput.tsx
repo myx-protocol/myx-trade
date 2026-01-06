@@ -22,6 +22,7 @@ export const TPSLInput = ({
   placeHolder?: string
   quoteToken: string
   inputPrefix?: string
+  inputSuffix?: string
 }) => {
   const [isFocused, setIsFocused] = useState(false)
   const [open, setOpen] = useState(false)
@@ -38,6 +39,21 @@ export const TPSLInput = ({
         return <Trans>Price</Trans>
     }
   }
+
+  const renderInputSuffix = () => {
+    switch (type) {
+      case TpSlTypeEnum.ROI:
+        return '%'
+      case TpSlTypeEnum.Change:
+        return '%'
+      case TpSlTypeEnum.Pnl:
+        return `${quoteToken}`
+      case TpSlTypeEnum.PRICE:
+        return ''
+      default:
+        return `${quoteToken}`
+    }
+  }
   return (
     <div
       className={clsx(
@@ -50,12 +66,18 @@ export const TPSLInput = ({
         className="text-[12px] font-medium"
         placeholder={placeHolder ?? ''}
         value={value}
+        allowLeadingZeros
+        allowNegative={
+          type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
+        }
+        inputMode="decimal"
         onValueChange={(values) => {
           onChange(values.value ?? '')
         }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         prefix={inputPrefix}
+        suffix={renderInputSuffix()}
       />
       <div
         className="flex flex-shrink-0 items-center gap-[4px]"

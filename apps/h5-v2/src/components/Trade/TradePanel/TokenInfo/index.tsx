@@ -3,7 +3,7 @@ import { Collapse } from '../../components/Collapse'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { formatNumber } from '@/utils/number'
 import { CoinIcon } from '@/components/UI/CoinIcon'
-import { useTradePageStore } from '../../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import { useBaseTokenInfo } from '../../hooks/useBaseTokenInfo'
 import { Copy } from '@/components/Copy'
 import { truncateAddress } from '@/utils/string'
@@ -11,7 +11,7 @@ import { useMemo } from 'react'
 import { getRelativeTime } from '@/utils'
 
 export const TokenInfo = () => {
-  const { symbolInfo } = useTradePageStore()
+  const { symbolInfo } = useGlobalStore()
   const { data: baseTokenInfo } = useBaseTokenInfo({
     chainId: symbolInfo?.chainId,
     poolId: symbolInfo?.poolId,

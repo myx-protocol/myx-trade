@@ -26,7 +26,9 @@ export class SubScription {
     this.logger = logger;
     const socketUrl = configManager.getConfig()?.isTestnet
       ? WEBSOCKET_URL.TestNet
-      : WEBSOCKET_URL.MainNet;
+      : configManager.getConfig()?.isBetaMode
+        ? WEBSOCKET_URL.BetaNet
+        : WEBSOCKET_URL.MainNet;
 
     this.wsClient = new MyxWebSocketClient({
       logLevel: this.configManager.getConfig()?.logLevel,
@@ -136,13 +138,8 @@ export class SubScription {
   }
 
   private async getAccessToken() {
-    const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidAccessToken,
-        "Invalid access token"
-      );
-    }
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
     return accessToken;
   }
   private clientAuth = false;

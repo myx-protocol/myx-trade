@@ -38,12 +38,13 @@ export const NavBar = ({ className, children }: { className?: string; children?:
 
             <Box
               className={
-                'absolute right-[-2px] bottom-0 aspect-square h-[8px] w-[8px] min-w-[8px] overflow-hidden rounded-full'
+                'absolute right-[-2px] bottom-0 aspect-square h-[10px] w-[10px] min-w-[10px] overflow-hidden rounded-full'
               }
             >
               <CoinIcon
-                size={8}
+                size={10}
                 icon={CHAIN_INFO?.[baseLpDetail?.chainId as number]?.logoUrl ?? ''}
+                className={'border-deep overflow-hidden rounded-full border-1'}
               />
             </Box>
           </Box>

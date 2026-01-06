@@ -1,11 +1,11 @@
 import { LeverageDialog } from '@/components/Trade/Dialog/Leverage/Leverage'
 import { TradePanel } from '@/components/Trade/TradePanel'
 import { useMount, useUnmount, useUpdateEffect } from 'ahooks'
-import { useTradePageStore, type PoolConfig } from '@/components/Trade/store/TradePageStore'
+import type { PoolConfig } from '@/store/globalStore'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { DEFAULT_PAIR_PATH } from '@/config/trade'
 import { useMarketDetail } from '@/components/Trade/hooks/useMarketDetail'
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
@@ -15,10 +15,13 @@ import { getPoolLevelConfig } from '@/api'
 import { usePositionStore } from '@/store/position/createStore'
 import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
+
+import useGlobalStore from '@/store/globalStore'
+
 export const Trade = () => {
   const { chainId, poolId } = useParams()
-  const { setSymbolInfo, symbolInfo, setPoolConfig } = useTradePageStore()
-  const { client } = useMyxSdkClient()
+  const { setSymbolInfo, symbolInfo, setPoolConfig } = useGlobalStore()
+  const { client } = useMyxSdkClient(chainId ? parseInt(chainId) : undefined)
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
   const { subscribeOraclePrice, unsubscribeOraclePrice } = useOraclePricePolling()
@@ -91,7 +94,6 @@ export const Trade = () => {
     }
 
     return () => {
-      console.log('unsubscribe', unsubscribe)
       // unsubscribe oracle price
       if (symbolInfo) {
         unsubscribeOraclePrice({ poolId: symbolInfo.poolId })

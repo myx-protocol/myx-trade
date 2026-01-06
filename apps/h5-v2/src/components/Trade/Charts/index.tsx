@@ -3,7 +3,7 @@ import { TradingView, type TradingViewInstance } from './TradingView'
 import { useMount, useUnmount } from 'ahooks'
 import { klinePubSub } from '@/utils/pubsub'
 import { toggleFullScreen } from '@/utils'
-import { useTradePageStore } from '../store/TradePageStore'
+import useGlobalStore from '@/store/globalStore'
 import type {
   ChartingLibraryWidgetOptions,
   ResolutionString,
@@ -12,7 +12,7 @@ import type { KlineTypeEnum } from './type'
 import { ToolBar } from './Toolbar/index'
 export const Charts = () => {
   const chartsRoot = useRef<HTMLDivElement>(null)
-  const { resolutionActive, symbolInfo } = useTradePageStore()
+  const { resolutionActive, symbolInfo } = useGlobalStore()
 
   const onFullScreenToggle = () => {
     if (chartsRoot.current) {

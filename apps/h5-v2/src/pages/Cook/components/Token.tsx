@@ -45,7 +45,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
         {isPending(props) ? (
           <Skeleton width={44} height={44} />
         ) : (
-          <CoinIcon icon={props.icon} size={44} symbol={props.label} className={'!rounded-[6px]'} />
+          <CoinIcon icon={props.icon} size={44} symbol={props.label} />
           // <img className={'h-full w-full rounded-[6px]'} src={props.icon} />
         )}
 
@@ -58,6 +58,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
             <Skeleton width={16} height={16} />
           ) : (
             <CoinIcon
+              className={'border-deep overflow-hidden rounded-full border-1'}
               size={16}
               icon={CHAIN_INFO?.[props?.chainId as keyof typeof CHAIN_INFO]?.logoUrl ?? ''}
             />
@@ -95,7 +96,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
               <Skeleton width={'60%'} />
             ) : (
               <>
-                <span className={'text-brand'}>{getTimeDiff(props?.time as number)}</span>
+                <span className={'text-regular'}>{getTimeDiff(props?.time as number)}</span>
                 <Address address={props.address} />
               </>
             )}
