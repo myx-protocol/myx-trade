@@ -445,11 +445,13 @@ export class Utils {
     return JSON.stringify(error);
   }
 
-  async getGasPriceByRatio(chainId: number) {
-    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice
+  async getGasPriceByRatio() {
+    const chainId = this.configManager.getConfig().chainId;
+    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice;
   }
 
-  async getGasLimitByRatio(chainId: number, gasLimit: bigint) {
+  async getGasLimitByRatio(gasLimit: bigint) {
+    const chainId = this.configManager.getConfig().chainId;
     return bigintTradingGasToRatioCalculator(gasLimit, chainId);
   }
 }
