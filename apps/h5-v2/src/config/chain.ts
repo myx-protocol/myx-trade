@@ -22,7 +22,7 @@ export const PROD_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 
-export const BETA_ENV_CHAIN_IDS = [ChainId.ARB_TESTNET, ChainId.BSC_TESTNET] as const
+export const BETA_ENV_CHAIN_IDS = [ChainId.BSC_TESTNET] as const
 export type SupportedBetaEnvChainId = [typeof BETA_ENV_CHAIN_IDS][number]
 
 export const TEST_ENV_CHAIN_IDS = [ChainId.LINEA_SEPOLIA, ChainId.ARB_TESTNET] as const
