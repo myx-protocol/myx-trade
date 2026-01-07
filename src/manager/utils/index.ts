@@ -22,6 +22,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator,
 } from "@/common";
+import { Address } from "viem";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -98,9 +99,9 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
-    address: string,
+    account: string,
     chainId: number,
-    quoteAddress: string,
+    tokenAddress: string,
     spenderAddress?: string
   ) {
     try {
@@ -113,12 +114,12 @@ export class Utils {
 
       const provider = await getJSONProvider(chainId);
       const tokenContract = new ethers.Contract(
-        quoteAddress,
+        tokenAddress,
         erc20Abi,
         provider
       );
 
-      const allowance = await tokenContract.allowance(address, spender);
+      const allowance = await tokenContract.allowance(account, spender);
 
       return {
         code: 0,
@@ -133,17 +134,17 @@ export class Utils {
   }
 
   async needsApproval(
-    address: string,
+    account: string,
     chainId: number,
-    quoteAddress: string,
+    tokenAddress: string,
     requiredAmount: string,
     spenderAddress?: string
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
-        address,
+        account,
         chainId,
-        quoteAddress,
+        tokenAddress,
         spenderAddress
       );
       const currentAllowance = currentAllowanceRes.data;
@@ -189,7 +190,16 @@ export class Utils {
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ?? getContractAddressByChainId(chainId).Account;
-      const tx = await usdcContract.approve(spender, approveAmount);
+      const gasPrice = await this.getGasPriceByRatio();
+      const _gasLimit = await usdcContract.approve.estimateGas(
+        spender,
+        approveAmount
+      );
+      const gasLimit = await this.getGasLimitByRatio(_gasLimit);
+      const tx = await usdcContract.approve(spender, approveAmount, {
+        gasLimit,
+        gasPrice,
+      });
       await tx.wait();
       return {
         code: 0,
@@ -274,14 +284,22 @@ export class Utils {
       return priceData;
     } catch (error) {
       this.logger.error("Error getting oracle price:", error);
-      return {
-        price: "0",
-        vaa: "",
-        publishTime: 0,
-        poolId: "",
-        value: 0,
-      };
+      throw error;
     }
+  }
+
+  async buildUpdatePriceParams(poolId: string, chainId: number) {
+    const priceData = await this.getOraclePrice(poolId, chainId);
+    if (!priceData) throw new Error("Failed to get price data");
+    return [
+      {
+        poolId: poolId,
+        referencePrice: ethers.parseUnits(priceData.price, 30),
+        oracleUpdateData: priceData.vaa,
+        publishTime: priceData.publishTime,
+        oracleType: priceData.oracleType,
+      },
+    ];
   }
 
   transferKlineResolutionToInterval(resolution: KlineResolution) {
