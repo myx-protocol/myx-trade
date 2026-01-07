@@ -48,7 +48,7 @@ export const CloseAllPositionDialog = () => {
       <p className="mt-[5px] text-center text-[16px] leading-[16px] text-[#F29D39]">
         <Trans>close all positions at market price?</Trans>
       </p>
-      <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
+      <div className="left-0 mt-[40px] flex w-full justify-center">
         <PrimaryButton
           onClick={async () => {
             console.log('positions-->', positions)
