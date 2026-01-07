@@ -26,7 +26,7 @@ export class Account {
     this.client = client;
   }
 
-  async getWalletQuoteTokenBalance(address?: string) {
+  async getWalletQuoteTokenBalance(chainId: number, address?: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
       throw new MyxSDKError(
@@ -35,8 +35,8 @@ export class Account {
       );
     }
 
-    const contractAddress = getContractAddressByChainId(config.chainId);
-    const provider = await getJSONProvider(config.chainId)
+    const contractAddress = getContractAddressByChainId(chainId);
+    const provider = await getJSONProvider(chainId)
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20Token_ABI,

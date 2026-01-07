@@ -64,9 +64,9 @@ const Price = () => {
 
   useUpdateEffect(() => {
     if (symbolInfo?.poolId && symbolInfo?.chainId) {
-      subscribeOraclePrice({ poolId: symbolInfo.poolId })
+      subscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
       return () => {
-        unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
+        unsubscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
       }
     }
   }, [symbolInfo?.poolId, symbolInfo?.chainId, subscribeOraclePrice, unsubscribeOraclePrice])
