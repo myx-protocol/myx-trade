@@ -25,6 +25,7 @@ export const useGetOpenAvailable = () => {
   )
   const { liquidityInfo } = useGetLiquidityInfo()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+  console.log('liquidityInfo-->', liquidityInfo)
 
   // 缓存所有异步数据源，避免 refetch 期间的闪烁
   // 只有当新数据有效且非零时才更新缓存
@@ -85,11 +86,9 @@ export const useGetOpenAvailable = () => {
     const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
     const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
-    console.log('openInterestStr-->', openInterestStr)
     const windowCaps = parseBigNumber(
       ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
     )
-    console.log('windowCaps-->', windowCaps.toString())
     const openInterest = parseBigNumber(
       ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
     )
