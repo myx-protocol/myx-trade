@@ -12,7 +12,7 @@ import { ChainId } from '@/config/chain.ts'
 import { getMarketData, getMarketPoolStateData, type MarketDataSearchParams } from '@/request'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
-import { encryptionAddress } from '@/utils'
+import { encryptionAddress, isSafeNumber } from '@/utils'
 import { formatNumber } from '@/utils/number.ts'
 import { CoinIcon } from '../UI/CoinIcon'
 import { Empty } from '@/components/Empty.tsx'
@@ -34,6 +34,14 @@ interface TokenItemProps {
 }
 type MarketStateKey = `${ChainId}-0x${string}`
 type MarketStateMap = Record<MarketStateKey, MarketPoolStateData>
+
+const style = {
+  '.MuiPaper-root': {
+    maxWidth: '390px',
+    minHeight: '433px',
+    overflow: 'hidden',
+  },
+}
 
 const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
   const disabled = useMemo(() => {
@@ -115,8 +123,8 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
           {asset?.balance ? formatNumber(asset?.balance) : <Skeleton width={60} />}
         </Box>
         <Box className={'text-secondary text-[12px] font-[500]'}>
-          {asset?.price && asset?.balance ? (
-            `$${formatNumber(new Big(asset.price).mul(new Big(asset.balance)), { showUnit: false })}`
+          {isSafeNumber(asset?.price) && asset?.balance ? (
+            `$${formatNumber(new Big(asset?.price || '0').mul(new Big(asset.balance)), { showUnit: false })}`
           ) : (
             <Skeleton width={50} />
           )}
@@ -352,17 +360,7 @@ export const DialogTokenSelect = memo(
     onClose?: (e?: React.ReactNode, asset?: Asset) => void
   }) => {
     return (
-      <DialogTheme
-        onClose={() => onClose?.()}
-        open={open}
-        sx={{
-          '.MuiPaper-root': {
-            maxWidth: '390px',
-            minHeight: '433px',
-            overflow: 'hidden',
-          },
-        }}
-      >
+      <DialogTheme onClose={() => onClose?.()} open={open} sx={style}>
         <DialogTitleTheme onClose={onClose}>
           <Trans>Select a Token</Trans>
         </DialogTitleTheme>
