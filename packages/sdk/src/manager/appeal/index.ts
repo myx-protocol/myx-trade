@@ -54,17 +54,17 @@ export class Appeal extends BaseMyxClient {
       this.config.chainId
     );
     this.client.logger.debug("prices", prices);
-    const _gasLimit = await contract.fileDispute.estimateGas(
-      prices,
-      poolId,
-      lpToken
-    );
-    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
-    const gasPrice = await this.client.utils.getGasPriceByRatio();
-    this.client.logger.debug("txParams", {
-      gasLimit,
-      gasPrice,
-    });
+    // const _gasLimit = await contract.fileDispute.estimateGas(
+    //   prices,
+    //   poolId,
+    //   lpToken
+    // );
+    // const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    // const gasPrice = await this.client.utils.getGasPriceByRatio();
+    // this.client.logger.debug("txParams", {
+    //   gasLimit,
+    //   gasPrice,
+    // });
     const tx = await contract.fileDispute(prices, poolId, lpToken);
     const receipt = await tx.wait();
     return receipt;
