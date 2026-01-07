@@ -13,7 +13,11 @@ export const useGetTradingFee = (chainId?: number) => {
 
   const getTradingFee = useCallback(
     async ({ size, price, assetClass }: { size: string; price: string; assetClass: number }) => {
-      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
+      const rs = await client?.utils.getUserTradingFeeRate(
+        assetClass,
+        poolConfig?.level ?? 1,
+        chainId ?? 0,
+      )
       const fundingFeeInfo = rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
       const tradingFee = parseBigNumber(size)
         .mul(parseBigNumber(price))
@@ -49,7 +53,11 @@ export const useGetTradingFeeInfo = ({
   const { data: fundingFeeInfo } = useSWR(
     ['getFundingFeeInfo', assetClass, poolConfig?.level ?? 1],
     async () => {
-      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
+      const rs = await client?.utils.getUserTradingFeeRate(
+        assetClass,
+        poolConfig?.level ?? 1,
+        chainId ?? 0,
+      )
       return rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
     },
   )
@@ -74,7 +82,11 @@ export const useGetUserTradingFeeRate = (
   const { data: fundingFeeRate } = useSWR(
     ['getFundingFeeRate', assetClass, poolConfig?.level ?? 1],
     async () => {
-      const rs = await client?.utils.getUserTradingFeeRate(assetClass, poolConfig?.level ?? 1)
+      const rs = await client?.utils.getUserTradingFeeRate(
+        assetClass,
+        poolConfig?.level ?? 1,
+        chainId ?? 0,
+      )
       return rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
     },
     {
