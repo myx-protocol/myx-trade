@@ -15,12 +15,12 @@ export class Appeal extends BaseMyxClient {
   }
 
   private async getDisputeCourtContract() {
-    const contract = await getDisputeCourtContract(this.getConfig()?.chainId);
+    const contract = await getDisputeCourtContract(this.config.chainId);
     return this.connectContract(contract);
   }
 
   private async getReimbursementContract() {
-    const contract = await getReimbursementContract(this.getConfig()?.chainId);
+    const contract = await getReimbursementContract(this.config.chainId);
     return this.connectContract(contract);
   }
 
@@ -30,12 +30,36 @@ export class Appeal extends BaseMyxClient {
    * @param poolToken - the pool token
    * @returns the transaction receipt
    */
-  async submitAppeal(poolId: string, poolToken: string) {
+  async submitAppeal(poolId: string, lpToken: Address, lpAmount: string) {
+    // lp approve check
+    const account = (await this.config.signer?.getAddress()) ?? "";
+    const needApprove = await this.client.utils.needsApproval(
+      account,
+      this.config.chainId,
+      lpToken,
+      lpAmount,
+      this.getAddressConfig().DISPUTE_COURT
+    );
+    if (needApprove) {
+      await this.client.utils.approveAuthorization({
+        chainId: this.config.chainId,
+        quoteAddress: lpToken,
+        spenderAddress: this.getAddressConfig().DISPUTE_COURT,
+      });
+    }
     const contract = await this.getDisputeCourtContract();
-    const _gasLimit = await contract.fileDispute.estimateGas(poolId, poolToken);
+    const prices = await this.client.utils.buildUpdatePriceParams(
+      poolId,
+      this.config.chainId
+    );
+    const _gasLimit = await contract.fileDispute.estimateGas(
+      prices,
+      poolId,
+      lpToken
+    );
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const tx = await contract.fileDispute(poolId, poolToken, {
+    const tx = await contract.fileDispute(prices, poolId, lpToken, {
       gasLimit,
       gasPrice,
     });

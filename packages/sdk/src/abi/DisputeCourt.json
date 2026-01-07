@@ -899,8 +899,35 @@
     "type": "function",
     "name": "fileDispute",
     "constant": false,
-    "payable": false,
+    "stateMutability": "payable",
+    "payable": true,
     "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "prices",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          }
+        ]
+      },
       {
         "type": "bytes32",
         "name": "poolId"
@@ -1128,6 +1155,10 @@
             "name": "expireTime"
           }
         ]
+      },
+      {
+        "type": "bytes32[]",
+        "name": "zeroMerkleProof"
       }
     ],
     "outputs": []
