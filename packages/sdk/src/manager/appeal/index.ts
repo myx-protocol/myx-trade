@@ -40,6 +40,7 @@ export class Appeal extends BaseMyxClient {
       lpAmount,
       this.getAddressConfig().DISPUTE_COURT
     );
+    console.log('needApproved', this.getAddressConfig())
     if (needApprove) {
       await this.client.utils.approveAuthorization({
         chainId: this.config.chainId,
