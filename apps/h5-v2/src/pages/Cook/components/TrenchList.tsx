@@ -1,33 +1,20 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { styled, TableCell, tableCellClasses, TableContainer, TableRow } from '@mui/material'
-import { Next, Prev } from '@/components/Icon'
 import { CookType, type Token, TrenchType } from '@/pages/Cook/type.ts'
 import Box from '@mui/material/Box'
-import { Copy } from '@/components/Copy.tsx'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getTrenchList } from '@/request'
 import type { PriceMapType, Trench } from '@/request/lp/type.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
-import { encryptionAddress } from '@/utils'
-import { getTimeDiff } from '@/utils/date.ts'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { formatNumber } from '@/utils/number.ts'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
-import {
-  type Address,
-  Interval,
-  PageDirection,
-  type SortOrder,
-  type TrenchSortField,
-} from '@/request/type.ts'
+import { Interval, PageDirection, type SortOrder, type TrenchSortField } from '@/request/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
-import { base as Base, COMMON_PRICE_DECIMALS, formatUnits, getBalanceOf } from '@myx-trade/sdk'
+import { base as Base, COMMON_PRICE_DECIMALS, formatUnits } from '@myx-trade/sdk'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Empty } from '@/components/Empty.tsx'
-import { encodeSortValue } from '@/utils/sort.ts'
 import { Trans } from '@lingui/react/macro'
 import { Change } from '@/components/Change.tsx'
 
@@ -190,40 +177,6 @@ export const TrenchList = ({
     refetchInterval: 5000,
   })
 
-  const { data: valueMap } = useQuery({
-    queryKey: [{ key: 'getTrendLpAssetsBalance' }, priceQueryParams, account, sortField],
-    queryFn: async () => {
-      if (sortField !== TrenchType.Eligible) return {} as PriceMapType
-      const balances = await Promise.all(
-        (data.data || []).map(async (item) => {
-          let balance = ''
-          try {
-            // 更改为 mobula 的价值
-            const _balance = await getBalanceOf(
-              item.chainId,
-              account as Address,
-              item.market.address,
-            )
-            balance = formatUnits(_balance, 6) //item.baseDecimals
-          } catch (_e) {
-            console.error(_e)
-          }
-          return {
-            poolId: item.poolId,
-            balance,
-          }
-        }),
-      )
-      const map = (balances || []).reduce((acc, cur) => {
-        return {
-          ...acc,
-          [cur.poolId]: cur.balance,
-        } as PriceMapType
-      }, {} as PriceMapType)
-      return map
-    },
-  })
-
   useEffect(() => {
     setOrder('desc')
     setBefore(undefined)
@@ -231,11 +184,7 @@ export const TrenchList = ({
   }, [sortField])
 
   const sortedData = useMemo(() => {
-    if (!data?.data?.length) return data?.data
-    if (!(account && sortField === TrenchType.Eligible)) return data?.data
-    return [...(data?.data || [])].sort(
-      (a, b) => Number(valueMap?.[b.poolId]) - Number(valueMap?.[a.poolId]) || 0,
-    )
+    return data?.data || []
   }, [data.data])
 
   return (
