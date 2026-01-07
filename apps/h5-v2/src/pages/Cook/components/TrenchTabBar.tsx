@@ -11,6 +11,10 @@ interface TrenchTabBarProps {
 }
 const items = [
   {
+    label: <Trans>All</Trans>,
+    value: TrenchType.Eligible,
+  },
+  {
     label: <Trans> Gainers </Trans>,
     value: TrenchType.Gainers,
   },
@@ -21,10 +25,6 @@ const items = [
   {
     label: <Trans> APR </Trans>,
     value: TrenchType.APR,
-  },
-  {
-    label: <Trans> Eligible </Trans>,
-    value: TrenchType.Eligible,
   },
 ]
 
