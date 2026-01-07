@@ -190,16 +190,7 @@ export class Utils {
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ?? getContractAddressByChainId(chainId).Account;
-      const gasPrice = await this.getGasPriceByRatio();
-      const _gasLimit = await usdcContract.approve.estimateGas(
-        spender,
-        approveAmount
-      );
-      const gasLimit = await this.getGasLimitByRatio(_gasLimit);
-      const tx = await usdcContract.approve(spender, approveAmount, {
-        gasLimit,
-        gasPrice,
-      });
+      const tx = await usdcContract.approve(spender, approveAmount);
       await tx.wait();
       return {
         code: 0,
