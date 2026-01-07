@@ -35,7 +35,8 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
             />
             <div className="flex flex-col items-start gap-[4px]">
               <p className="text-[14px] font-medium text-white">
-                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+                {symbolInfo?.baseSymbol}
+                {symbolInfo?.quoteSymbol}
               </p>
               <div className="flex gap-[4px]">
                 <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
@@ -45,15 +46,24 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
                     <Trans>Short</Trans>
                   )}
                 </Tag>
-                <Tag type="info">
-                  {order.orderType === OrderTypeEnum.Limit ? (
+                {/* limit */}
+                {order.orderType === OrderTypeEnum.Limit && (
+                  <Tag type="info">
                     <Trans>Limit</Trans>
-                  ) : order.orderType === OrderTypeEnum.Market ? (
+                  </Tag>
+                )}
+                {/* market */}
+                {order.orderType === OrderTypeEnum.Market && (
+                  <Tag type="info">
                     <Trans>Market</Trans>
-                  ) : (
+                  </Tag>
+                )}
+                {/* tpsl */}
+                {order.orderType === OrderTypeEnum.Stop && (
+                  <Tag type="info">
                     <Trans>TPSL</Trans>
-                  )}
-                </Tag>
+                  </Tag>
+                )}
                 <Tag type="info">
                   <Trans>Isolated {order.userLeverage}x</Trans>
                 </Tag>
