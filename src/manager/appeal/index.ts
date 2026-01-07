@@ -40,7 +40,7 @@ export class Appeal extends BaseMyxClient {
       lpAmount,
       this.getAddressConfig().DISPUTE_COURT
     );
-    console.log('needApproved', this.getAddressConfig())
+    this.client.logger.debug("need-approve", needApprove);
     if (needApprove) {
       await this.client.utils.approveAuthorization({
         chainId: this.config.chainId,
@@ -53,6 +53,7 @@ export class Appeal extends BaseMyxClient {
       poolId,
       this.config.chainId
     );
+    this.client.logger.debug("prices", prices);
     const _gasLimit = await contract.fileDispute.estimateGas(
       prices,
       poolId,
@@ -60,10 +61,11 @@ export class Appeal extends BaseMyxClient {
     );
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const tx = await contract.fileDispute(prices, poolId, lpToken, {
+    this.client.logger.debug("txParams", {
       gasLimit,
       gasPrice,
     });
+    const tx = await contract.fileDispute(prices, poolId, lpToken);
     const receipt = await tx.wait();
     return receipt;
   }
