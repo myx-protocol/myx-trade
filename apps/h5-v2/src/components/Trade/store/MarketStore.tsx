@@ -17,8 +17,8 @@ interface MarketStore {
   removeTickerDataBatch: (poolIdList: string[]) => void
 
   // oracle price data
-  watchOraclePoolIdMap: Map<string, number>
-  setwatchOraclePoolIdMap: (poolId: string, isWatch: boolean) => void
+  watchOraclePoolIdMap: Map<number, Map<string, number>>
+  setwatchOraclePoolIdMap: (chainId: number, poolId: string, isWatch: boolean) => void
   oraclePriceData: Record<string, PriceType>
   setOraclePriceData: (poolId: string, oraclePriceData: PriceType) => void
   setOraclePriceDataBatch: (oraclePriceData: Record<string, PriceType>) => void
@@ -64,16 +64,18 @@ export const useMarketStore = create<MarketStore>((set) => ({
     })),
 
   watchOraclePoolIdMap: new Map(),
-  setwatchOraclePoolIdMap: (poolId, isWatch) => {
+  setwatchOraclePoolIdMap: (chainId, poolId, isWatch) => {
     set((state) => {
-      const countValue = state.watchOraclePoolIdMap.get(poolId) || 0
+      const chainIdMap = state.watchOraclePoolIdMap.get(chainId) || new Map()
+      const countValue = chainIdMap.get(poolId) || 0
       const nextCountValue = isWatch ? countValue + 1 : countValue - 1
-      state.watchOraclePoolIdMap.set(poolId, nextCountValue)
+      chainIdMap.set(poolId, nextCountValue)
       if (nextCountValue <= 0) {
-        state.watchOraclePoolIdMap.delete(poolId)
+        chainIdMap.delete(poolId)
       }
+      state.watchOraclePoolIdMap.set(chainId, chainIdMap)
       return {
-        watchOraclePoolIdMap: state.watchOraclePoolIdMap,
+        watchOraclePoolIdMap: new Map(state.watchOraclePoolIdMap),
       }
     })
   },

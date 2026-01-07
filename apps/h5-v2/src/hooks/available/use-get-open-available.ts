@@ -86,9 +86,11 @@ export const useGetOpenAvailable = () => {
     const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
     const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
+    console.log('openInterestStr-->', openInterestStr)
     const windowCaps = parseBigNumber(
       ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
     )
+    console.log('windowCaps-->', windowCaps.toString())
     const openInterest = parseBigNumber(
       ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
     )
