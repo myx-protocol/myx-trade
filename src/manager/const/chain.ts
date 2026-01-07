@@ -29,5 +29,5 @@ export const TESTNET_CHAIN_IDS = [
 
 export const BETA_ENV_CHAIN_IDS = [
   ChainIdEnum.BSC_TESTNET,
-  ChainIdEnum.LINEA_SEPOLIA,
+  ChainIdEnum.ARB_TESTNET,
 ] as const;
