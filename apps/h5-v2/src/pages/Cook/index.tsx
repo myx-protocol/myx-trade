@@ -14,6 +14,7 @@ import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
 import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
 import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
 import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
@@ -31,7 +32,7 @@ const Cook = () => {
 
   return (
     <Box className={'overflow-x w-full pb-[var(--tabbar-height)]'}>
-      <SearchBar />
+      <SearchBar defaultTab={SearchTypeEnum.Cook} />
       <Banner />
       <CookContext.Provider
         value={{
