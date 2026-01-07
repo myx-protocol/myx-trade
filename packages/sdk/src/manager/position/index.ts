@@ -18,6 +18,8 @@ import {
 import dayjs from "dayjs";
 import { Account } from "../account";
 import { Api } from "../api";
+import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
+import { ChainId } from "@/config/chain";
 
 export class Position {
   private configManager: ConfigManager;
@@ -248,6 +250,13 @@ export class Position {
         }
       }
 
+      const gasLimit = await brokerContract.updatePriceAndAdjustCollateral.estimateGas(
+        [updateParams],
+        depositData,
+        positionId,
+        adjustAmount
+      );
+
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
         depositData,
@@ -255,10 +264,12 @@ export class Position {
         adjustAmount,
         {
           value: BigInt(priceData?.value ?? "1"),
-          gas: 10000000n,
+          gas: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
         }
       );
+
       const hash = await transaction.wait();
+
       return {
         code: 0,
         data: { hash },

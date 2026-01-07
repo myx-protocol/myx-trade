@@ -33,24 +33,28 @@ export const UnlockAccountDialog = () => {
   const { address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const [password, setPassword] = useState('')
-  const { seamlessAccountList, activeSeamlessAddress, setActiveSeamlessAddress } =
-    useSeamlessStore()
+  const {
+    seamlessAccountList,
+    activeSeamlessAddress,
+    setActiveSeamlessAddress,
+    setSeamlessAccountList,
+  } = useSeamlessStore()
   const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
 
   useEffect(() => {
-    if (activeSeamlessAddress) {
-      return
-    }
-    const currentSeamlessAccount = seamlessAccountList.find(
-      (item) => item.masterAddress === address,
-    )
+    if (address && seamlessAccountList.length !== 0) {
+      const seamlessAccount = seamlessAccountList.find((item) => item.masterAddress === address)
 
-    if (currentSeamlessAccount) {
-      setActiveSeamlessAddress(currentSeamlessAccount?.masterAddress || '')
-    } else {
+      if (seamlessAccount) {
+        setActiveSeamlessAddress(seamlessAccount.masterAddress)
+        return
+      }
+
       setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
     }
-  }, [activeSeamlessAddress, address, setActiveSeamlessAddress])
+
+    setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
+  }, [address, setActiveSeamlessAddress, seamlessAccountList])
 
   return (
     <DialogBase
@@ -157,6 +161,16 @@ export const UnlockAccountDialog = () => {
                 setUnlockAccountDialogOpen(false)
                 setActiveSeamlessAddress(activeSeamlessAccount?.masterAddress as string)
                 setTradeMode(TradeMode.Seamless)
+                const idx = seamlessAccountList.findIndex(
+                  (item) => item.masterAddress === activeSeamlessAddress,
+                )
+                seamlessAccountList[idx] = {
+                  ...seamlessAccountList[idx],
+                  authorized: {
+                    [symbolInfo?.chainId as number]: { authorized: true },
+                  },
+                }
+                setSeamlessAccountList([...seamlessAccountList])
               }
             }}
           >
