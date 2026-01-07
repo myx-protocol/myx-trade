@@ -85,9 +85,11 @@ export const useGetOpenAvailable = () => {
     const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
     const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
+    console.log('openInterestStr-->', openInterestStr)
     const windowCaps = parseBigNumber(
       ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
     )
+    console.log('windowCaps-->', windowCaps.toString())
     const openInterest = parseBigNumber(
       ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
     )
@@ -124,8 +126,11 @@ export const useGetOpenAvailable = () => {
     // 6. 计算 Short 的最大可开仓量
     // 需要取三个值的最小值：用户保证金、滑点配置限额、池子流动性限额
     const shortLimit1 = collateralValue // 用户可用保证金
+    console.log('shortLimit1-->', shortLimit1.toString())
     const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
+    console.log('shortLimit2-->', shortLimit2.toString())
     const shortLimit3 = parseBigNumber(maxOpenShortQuoteAmountByLiquidity) // 池子流动性限额
+    console.log('shortLimit3-->', shortLimit3.toString())
 
     // 取最小值
     let shortQuoteAmount = shortLimit1.toString()
