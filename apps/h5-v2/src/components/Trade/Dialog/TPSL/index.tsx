@@ -194,13 +194,13 @@ export const TpSlButton = ({ position, poolInfo }: { position: any; poolInfo: an
             paddingTop: '24px',
             paddingBottom: '24px',
           },
-          '& .MuiDialogTitle-root': {
-            marginLeft: '20px',
-            marginRight: '20px',
-          },
+          // '& .MuiDialogTitle-root': {
+          //   marginLeft: '20px',
+          //   marginRight: '20px',
+          // },
         }}
       >
-        <div className="px-[20px]">
+        <div>
           {/* tabs */}
           <div className="mt-[6px]">
             <Tabs

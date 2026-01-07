@@ -178,12 +178,14 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
+      console.log("approveAuthorization: signer-->", signer);
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         signer ?? config.signer
       );
 
+      console.log("approveAuthorization: usdcContract-->", usdcContract);
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ?? getContractAddressByChainId(chainId).Account;

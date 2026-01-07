@@ -40,7 +40,6 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
   const { client } = useMyxSdkClient()
   const { address } = useWalletConnection()
   // chain select
-  const [chainSelectOpen, setChainSelectOpen] = useState(false)
 
   const [isFocused, { setTrue: setIsFocusedTrue, setFalse: setIsFocusedFalse }] = useBoolean(false)
   const {
@@ -52,6 +51,7 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
     setSearchLoading,
     addSearchHistory,
     searchChainId,
+    setSearchTab,
   } = useGlobalSearchStore()
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -73,6 +73,8 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
 
   // 用于实现“逻辑取消”：每次发起新请求时递增，旧请求返回时如果 id 不匹配就丢弃结果
   const latestRequestIdRef = useRef(0)
+
+  const latestSearchKeywordRef = useRef<string | null>(null)
 
   const searchFunc = useCallback(
     async ({
@@ -119,6 +121,15 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
         // 如果这期间又发起了新的请求，就丢弃本次结果
         if (latestRequestIdRef.current !== currentId) {
           return null
+        }
+
+        if (searchKey !== latestSearchKeywordRef.current) {
+          if (searchKey) {
+            setSearchTab(SearchTypeEnum.All)
+          } else if (searchType === SearchTypeEnum.All) {
+            setSearchTab(SearchTypeEnum.Contract)
+          }
+          latestSearchKeywordRef.current = searchKey ?? null
         }
 
         setSearchResult(res ?? null)
