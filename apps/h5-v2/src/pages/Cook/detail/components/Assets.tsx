@@ -103,10 +103,12 @@ const AssetItem = ({
   asset,
   onClaim,
   children,
+  canClaim = false,
 }: {
   asset?: LpAsset
   children: ReactNode
   onClaim: (asset: LpAsset) => void
+  canClaim: boolean
 }) => {
   return (
     <Box className={'border-base flex flex-col gap-[20px] border-b-1 py-[16px]'}>
@@ -117,6 +119,7 @@ const AssetItem = ({
             variant={'contained'}
             className={'!text-deep !rounded-[24px] !bg-white !text-[10px]'}
             onClick={() => onClaim(asset)}
+            disabled={!canClaim}
           >
             <Trans>Claim</Trans>
           </Button>
@@ -317,6 +320,7 @@ export const Assets = () => {
               <AssetItem
                 key={index}
                 asset={item as LpAsset}
+                canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
                 onClaim={(asset) => onHandleClaim(asset)}
               >
                 <Value label={<Trans>Quantity</Trans>}>
