@@ -1073,6 +1073,46 @@ export class Order {
   async cancelOrder(orderId: string, chainId: ChainId) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string, chainId)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+
+        const brokerContract = await getSeamlessBrokerContract(
+          this.configManager.getConfig().brokerAddress,
+          seamlessWallet as Signer
+        );
+        const forwarderContract = await getForwarderContract(chainId)
+        let functionHash = brokerContract.interface.encodeFunctionData('cancelOrder', [BigInt(orderId)])
+
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '800000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
+
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+
+        return {
+          code: 0,
+          message: "cancel order success",
+          data: rs,
+        };
+      }
+
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
@@ -1099,6 +1139,49 @@ export class Order {
   async cancelOrders(orderIds: string[], chainId: ChainId) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
+
+
+      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+      if (config.seamlessMode && authorized && seamlessWallet) {
+        const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string, chainId)
+
+        if (!isEnoughGas) {
+          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+        }
+
+        const forwarderContract = await getForwarderContract(chainId)
+
+        const brokerContract = await getSeamlessBrokerContract(
+          this.configManager.getConfig().brokerAddress,
+          seamlessWallet as Signer
+        );
+        let functionHash = brokerContract.interface.encodeFunctionData('cancelOrders', [orderIds])
+  
+        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+  
+        const forwardTxParams = {
+          from: seamlessWallet.address ?? '',
+          to: this.configManager.getConfig().brokerAddress,
+          value: '0',
+          gas: '800000',
+          deadline: dayjs().add(60, 'minute').unix(),
+          data: functionHash,
+          nonce: nonce.toString(),
+        }
+
+        this.logger.info("cancel orders forward tx params --->", forwardTxParams)
+
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+
+        return {
+          code: 0,
+          message: "cancel orders success",
+          data: rs,
+        };
+      }
+
+
       if (!config.signer) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
@@ -1124,16 +1207,8 @@ export class Order {
 
   async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    if (!config.signer) {
-      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-    }
 
     const networkFee = await this.utils.getNetworkFee(quoteAddress, chainId)
-
-    const brokerContract = await getBrokerSingerContract(
-      chainId,
-      config.brokerAddress
-    );
 
     const data = {
       orderId: params.orderId,
@@ -1148,14 +1223,62 @@ export class Order {
         paymentType: 0,
       },
     };
+
     const depositData = {
       token: quoteAddress,
       amount: networkFee.toString()
     }
 
+    const authorized = this.configManager.getConfig().seamlessAccount?.authorized
+    const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
+    if (config.seamlessMode && authorized && seamlessWallet) {
+      const isEnoughGas = await this.utils.checkSeamlessGas(config.seamlessAccount?.masterAddress as string, chainId)
+
+      if (!isEnoughGas) {
+        throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+      }
+
+      const brokerContract = await getSeamlessBrokerContract(
+        this.configManager.getConfig().brokerAddress,
+        seamlessWallet as Signer
+      );
+      const forwarderContract = await getForwarderContract(chainId)
+      let functionHash = brokerContract.interface.encodeFunctionData('updateOrder', [depositData, data])
+
+      const nonce = await forwarderContract.nonces(seamlessWallet.address)
+
+      const forwardTxParams = {
+        from: seamlessWallet.address ?? '',
+        to: this.configManager.getConfig().brokerAddress,
+        value: '0',
+        gas: '800000',
+        deadline: dayjs().add(60, 'minute').unix(),
+        data: functionHash,
+        nonce: nonce.toString(),
+      }
+
+      this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
+
+      const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+
+      return {
+        code: 0,
+        message: "update order success",
+        data: rs,
+      };
+    }
+
+
+    if (!config.signer) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+    }
+
+    const brokerContract = await getBrokerSingerContract(
+      chainId,
+      config.brokerAddress
+    );
+
     this.logger.info("updateOrderTpSl params", data);
-
-
 
     try {
       const needsApproval = await this.utils.needsApproval(
