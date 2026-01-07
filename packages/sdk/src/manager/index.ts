@@ -23,7 +23,7 @@ export class MyxClient {
    * private properties
    */
   private configManager: ConfigManager;
-  private logger: Logger;
+  public logger: Logger;
 
   /**
    * public properties
