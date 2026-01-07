@@ -289,6 +289,8 @@ export class Utils {
         oracleUpdateData: priceData.vaa,
         publishTime: priceData.publishTime,
         oracleType: priceData.oracleType,
+        value: priceData.value,
+        price: priceData.price
       },
     ];
   }
