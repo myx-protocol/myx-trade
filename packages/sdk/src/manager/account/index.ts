@@ -48,6 +48,7 @@ export class Account {
       data: balance,
     };
   }
+  
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {

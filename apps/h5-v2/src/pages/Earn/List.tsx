@@ -11,6 +11,7 @@ import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
 import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
 import { SearchContext } from './context'
 import { Positions } from '@/pages/Earn/components/Positions.tsx'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
@@ -19,7 +20,7 @@ const EarnList = () => {
 
   return (
     <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
-      <SearchBar />
+      <SearchBar defaultTab={SearchTypeEnum.Earn} />
       <Box className={'mt-[20px]'}>
         <Carousel />
       </Box>

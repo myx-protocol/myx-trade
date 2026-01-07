@@ -9,7 +9,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useHomeStore } from '../../store'
 import { useQuery } from '@tanstack/react-query'
-import { formatUnits, parseUnits } from 'ethers'
+import { formatUnits } from 'ethers'
 import { Tooltips } from '@/components/UI/Tooltips'
 import useGlobalStore from '@/store/globalStore'
 import { ReceiveDialog } from '@/components/ReceiveDialog'
@@ -24,7 +24,7 @@ export const AccountInfo = () => {
   const { data: accountBalance, isLoading } = useQuery({
     enabled: Boolean(client && clientIsAuthenticated),
     queryKey: ['home-getAccountBalance', homeStore.chainId, address],
-    queryFn: () => {
+    queryFn: async () => {
       return client?.account.getWalletQuoteTokenBalance(homeStore.chainId, address)
     },
     select: (data) => {

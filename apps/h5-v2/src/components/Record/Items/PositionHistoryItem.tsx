@@ -55,7 +55,8 @@ export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType })
             />
             <div className="flex flex-col items-start gap-[4px]">
               <p className="text-[14px] font-medium text-white">
-                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+                {symbolInfo?.baseSymbol}
+                {symbolInfo?.quoteSymbol}
               </p>
               <div className="mt-[4px] flex gap-[4px]">
                 <Tag type="success">
