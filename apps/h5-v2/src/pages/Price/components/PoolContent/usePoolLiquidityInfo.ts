@@ -20,13 +20,13 @@ export const usePoolLiquidityInfo = () => {
 
   useMount(() => {
     if (symbolInfo?.poolId && symbolInfo?.chainId) {
-      subscribeOraclePrice({ poolId: symbolInfo.poolId })
+      subscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
     }
   })
 
   useUnmount(() => {
     if (symbolInfo?.poolId && symbolInfo?.chainId) {
-      unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
+      unsubscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
     }
   })
 
