@@ -216,7 +216,8 @@ export const FinanceDetailItem = ({ item }: { item: TradeFlowItem }) => {
             <p className="text-[14px] font-medium text-white">
               {symbolInfo ? (
                 <>
-                  {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+                  {symbolInfo?.baseSymbol}
+                  {symbolInfo?.quoteSymbol}
                 </>
               ) : (
                 <>--</>
