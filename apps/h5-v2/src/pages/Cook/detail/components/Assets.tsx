@@ -118,7 +118,9 @@ const AssetItem = ({
         {asset ? (
           <Button
             variant={'contained'}
-            className={'!text-deep !rounded-[24px] !bg-white !text-[10px]'}
+            className={
+              '!text-deep !rounded-[24px] !bg-white !text-[10px] [&.Mui-disabled]:opacity-[0.3]'
+            }
             onClick={() => onClaim(asset)}
             disabled={!canClaim}
           >
@@ -332,11 +334,7 @@ export const Assets = () => {
                   {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
                 </Value>
                 <Value className={'items-end justify-self-end'} label={<Trans>Cost Basis</Trans>}>
-                  $
-                  {formatNumber(
-                    new Big(item?.lastTotal).mul(new Big(PriceMap?.[item?.poolId])).toString(),
-                    { showUnit: false },
-                  )}
+                  ${formatNumber(item?.avgPrice, { showUnit: false })}
                 </Value>
                 <Value label={<Trans>Unrealized PnL</Trans>}>
                   {pnlMap?.[item?.poolId as string] !== '' ? (
