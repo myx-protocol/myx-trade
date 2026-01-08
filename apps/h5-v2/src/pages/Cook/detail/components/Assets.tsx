@@ -24,6 +24,7 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import Big from 'big.js'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
+import { formatNumber } from '@/utils/number.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -103,10 +104,12 @@ const AssetItem = ({
   asset,
   onClaim,
   children,
+  canClaim = false,
 }: {
   asset?: LpAsset
   children: ReactNode
   onClaim: (asset: LpAsset) => void
+  canClaim: boolean
 }) => {
   return (
     <Box className={'border-base flex flex-col gap-[20px] border-b-1 py-[16px]'}>
@@ -117,6 +120,7 @@ const AssetItem = ({
             variant={'contained'}
             className={'!text-deep !rounded-[24px] !bg-white !text-[10px]'}
             onClick={() => onClaim(asset)}
+            disabled={!canClaim}
           >
             <Trans>Claim</Trans>
           </Button>
@@ -317,6 +321,7 @@ export const Assets = () => {
               <AssetItem
                 key={index}
                 asset={item as LpAsset}
+                canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
                 onClaim={(asset) => onHandleClaim(asset)}
               >
                 <Value label={<Trans>Quantity</Trans>}>
@@ -352,7 +357,7 @@ export const Assets = () => {
                   className={'items-end justify-self-end'}
                   label={<Trans>Unclaimed Fees</Trans>}
                 >
-                  {formatNumberPrecision(rewardsMap?.[item?.poolId], COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
+                  {formatNumber(rewardsMap?.[item?.poolId], { showUnit: false })}{' '}
                   {item?.quoteSymbol}
                 </Value>
               </AssetItem>

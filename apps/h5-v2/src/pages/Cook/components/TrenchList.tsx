@@ -17,6 +17,8 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Empty } from '@/components/Empty.tsx'
 import { Trans } from '@lingui/react/macro'
 import { Change } from '@/components/Change.tsx'
+import { decimalToPercent } from '@/utils/number.ts'
+import { isSafeNumber } from '@/utils'
 
 interface Data {
   id: number | string
@@ -112,7 +114,7 @@ export const TrenchList = ({
             market: {
               icon: item.tokenIcon,
               name: item.mBaseQuoteSymbol,
-              label: item.mSymbol,
+              label: item.symbol,
               chainId: item.chainId,
               address: item.baseToken,
               time: item.tokenCreateTime,
@@ -234,9 +236,9 @@ export const TrenchList = ({
                     ) : (
                       <>
                         <span className={'text-[14px] font-[700] text-white'}>
-                          {row.market.label}
+                          {row.market.name}
                         </span>
-                        <span className={'text-secondary text-[12px]'}>{row.market.name}</span>
+                        <span className={'text-secondary text-[12px]'}>{row.market.label}</span>
                       </>
                     )}
                   </Box>
@@ -248,9 +250,9 @@ export const TrenchList = ({
                         <span className={'text-secondary'}>
                           <Trans>APR</Trans>
                         </span>
-                        <span className={'font-[500] text-white'}>
-                          {formatNumberPercent(row?.apr)}
-                        </span>
+                        <Change change={row?.apr} className={'font-[500] text-white'}>
+                          {isSafeNumber(row?.apr) ? decimalToPercent(row?.apr) : '--'}
+                        </Change>
                       </>
                     )}
                   </Box>
@@ -272,8 +274,7 @@ export const TrenchList = ({
                     <Trans>Chg</Trans>
                   </span>
                   <Change className={'font-[500]'} change={row?.change}>
-                    {' '}
-                    {formatNumberPercent(row?.change)}
+                    {isSafeNumber(row?.change) ? decimalToPercent(row?.change) : '--'}
                   </Change>
                 </Box>
               </Box>
