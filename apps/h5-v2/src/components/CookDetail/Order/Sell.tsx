@@ -26,24 +26,33 @@ import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
-import { Big } from 'big.js'
 import { TipsFill } from '@/components/Icon'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
+import Big from 'big.js'
+import { formatNumber } from '@/utils/number.ts'
+const inputStyle = {
+  htmlInput: {
+    style: {
+      fontSize: 20,
+      fontWeight: 700,
+    },
+  },
+}
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
-  const { pool, baseLpDetail, chainId, poolId, genesisFeeRate, refreshAsset, poolInfoRefetch } =
-    usePoolContext()
+  const { pool, baseLpDetail, chainId, poolId, genesisFeeRate, poolInfoRefetch } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   // const [balance, setBalance] = useState<string>('')
 
-  const { data: balance, refetch: refetchBalance } = useQuery({
+  const { data: balance, refetch } = useQuery({
     queryKey: [{ key: 'getQuoteBalance' }, chainId, poolId, account],
     refetchInterval: 5000,
     queryFn: async () => {
@@ -124,10 +133,10 @@ export const Sell = () => {
   }, [retainGenesisLPShares, balance, userShareBase, amount, isInsufficient])
 
   const onHandleMax = useCallback(() => {
-    if (balance) {
-      setAmount(balance)
+    if (trueBalance) {
+      setAmount(trueBalance)
     }
-  }, [balance])
+  }, [trueBalance])
 
   const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
     setAmount(floatValue?.toString() || '')
@@ -147,8 +156,7 @@ export const Sell = () => {
       })
       toast.success({ title: t`Successfully sell` })
       setAmount('')
-      await refetchBalance()
-      refreshAsset()
+      await refetch()
       poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
@@ -169,7 +177,9 @@ export const Sell = () => {
           <p className="flex items-center gap-[4px]">
             <Wallet size={14} color="#848E9C" />
             <span className="text-[14px] font-medium text-[#CED1D9]">
-              {formatNumberPrecision(trueBalance, COMMON_BASE_DISPLAY_DECIMALS)}{' '}
+              {formatNumber(trueBalance, {
+                showUnit: false,
+              })}{' '}
               {baseLpDetail?.mBaseQuoteSymbol}
             </span>
           </p>
@@ -184,6 +194,8 @@ export const Sell = () => {
               autoFocus={true}
               value={amount}
               onValueChange={onAmountChange}
+              slotProps={inputStyle}
+              min={0}
             />
           </div>
           {/* action */}
@@ -227,9 +239,9 @@ export const Sell = () => {
         <div className="mt-[12px] flex items-center">
           <div className="flex-[1_1_0%]">
             <span className="text-[32px] leading-[38px] font-bold text-white">
-              {receive?.coin
-                ? formatNumberPrecision(receive.coin, COMMON_BASE_DISPLAY_DECIMALS)
-                : '--'}
+              {formatNumber(receive?.coin, {
+                showUnit: false,
+              })}
             </span>
           </div>
           {/* action */}
@@ -260,9 +272,9 @@ export const Sell = () => {
         <div className="mt-[12px] flex items-center">
           <div className="flex-[1_1_0%]">
             <span className="text-[32px] leading-[38px] font-bold text-white">
-              {receive?.profit
-                ? formatNumberPrecision(receive.profit, COMMON_PRICE_DISPLAY_DECIMALS)
-                : '--'}
+              {formatNumber(receive?.profit, {
+                showUnit: false,
+              })}
             </span>
           </div>
           {/* action */}
@@ -328,15 +340,17 @@ export const Sell = () => {
         </Box>
       )}
       <Box className="mt-[12px] w-full">
-        <SellButton
-          variant="contained"
-          className={'w-full'}
-          disabled={!amount || isInsufficient}
-          loading={loading}
-          onClick={onHandleSell}
-        >
-          <Trans>Sell</Trans>
-        </SellButton>
+        <ConnectButton>
+          <SellButton
+            variant="contained"
+            className={'w-full'}
+            disabled={!amount || isInsufficient}
+            loading={loading}
+            onClick={onHandleSell}
+          >
+            <Trans>Sell</Trans>
+          </SellButton>
+        </ConnectButton>
       </Box>
     </div>
   )

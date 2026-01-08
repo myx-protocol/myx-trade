@@ -15,6 +15,8 @@ import { Token } from './Token'
 import { encodeSortValue } from '@/utils/sort'
 import type { QuotePool } from '@/request/lp/type.ts'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
+import { isSafeNumber } from '@/utils'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 
 const sortField = SortField.tvl
 const sortOrder = 'desc'
@@ -133,11 +135,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               <Token token={item} />
               <Box className={'flex flex-col items-end gap-[4px]'}>
                 <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
-                  {!item ? (
-                    <Skeleton width={95} />
-                  ) : (
-                    <>${formatNumberPrecision(item.tvl, COMMON_BASE_DISPLAY_DECIMALS)}</>
-                  )}
+                  {!item ? <Skeleton width={95} /> : <>${formatNumber(item.tvl)}</>}
                 </Box>
 
                 <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
@@ -145,7 +143,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
                     <Skeleton width={60} />
                   ) : (
                     <Change change={item.apr} className={'text-secondary'}>
-                      {formatNumberPercent(item.apr)}
+                      {isSafeNumber(item?.apr) ? decimalToPercent(item.apr) : '--%'}
                     </Change>
                   )}
                 </Box>

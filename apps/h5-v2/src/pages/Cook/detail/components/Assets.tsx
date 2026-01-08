@@ -24,6 +24,7 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import Big from 'big.js'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
+import { formatNumber } from '@/utils/number.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -103,10 +104,12 @@ const AssetItem = ({
   asset,
   onClaim,
   children,
+  canClaim = false,
 }: {
   asset?: LpAsset
   children: ReactNode
   onClaim: (asset: LpAsset) => void
+  canClaim: boolean
 }) => {
   return (
     <Box className={'border-base flex flex-col gap-[20px] border-b-1 py-[16px]'}>
@@ -115,8 +118,11 @@ const AssetItem = ({
         {asset ? (
           <Button
             variant={'contained'}
-            className={'!text-deep !rounded-[24px] !bg-white !text-[10px]'}
+            className={
+              '!text-deep !rounded-[24px] !bg-white !text-[10px] [&.Mui-disabled]:opacity-[0.3]'
+            }
             onClick={() => onClaim(asset)}
+            disabled={!canClaim}
           >
             <Trans>Claim</Trans>
           </Button>
@@ -317,22 +323,18 @@ export const Assets = () => {
               <AssetItem
                 key={index}
                 asset={item as LpAsset}
-                onClaim={(asset) => onHandleClaim(asset)}
+                canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
+                onClaim={(asset) => {
+                  setLpAsset(asset)
+                  onHandleClaim(asset)
+                }}
               >
                 <Value label={<Trans>Quantity</Trans>}>
-                  {item?.lastTotal
-                    ? formatNumberPrecision(+item?.lastTotal, COMMON_BASE_DISPLAY_DECIMALS)
-                    : '--'}{' '}
+                  {formatNumber(+item?.lastTotal)}
                   {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
                 </Value>
                 <Value className={'items-end justify-self-end'} label={<Trans>Cost Basis</Trans>}>
-                  $
-                  {item?.lastTotal && PriceMap?.[item?.poolId]
-                    ? formatNumberPrecision(
-                        new Big(item?.lastTotal).mul(new Big(PriceMap?.[item?.poolId])).toString(),
-                        COMMON_PRICE_DISPLAY_DECIMALS,
-                      )
-                    : '--'}
+                  ${formatNumber(item?.avgPrice, { showUnit: false })}
                 </Value>
                 <Value label={<Trans>Unrealized PnL</Trans>}>
                   {pnlMap?.[item?.poolId as string] !== '' ? (
@@ -352,7 +354,7 @@ export const Assets = () => {
                   className={'items-end justify-self-end'}
                   label={<Trans>Unclaimed Fees</Trans>}
                 >
-                  {formatNumberPrecision(rewardsMap?.[item?.poolId], COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
+                  {formatNumber(rewardsMap?.[item?.poolId], { showUnit: false })}{' '}
                   {item?.quoteSymbol}
                 </Value>
               </AssetItem>

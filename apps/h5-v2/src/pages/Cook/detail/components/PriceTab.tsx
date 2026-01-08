@@ -1,7 +1,5 @@
 import { Box } from '@mui/material'
 import { usePoolContext } from '@/pages/Cook/hook'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent.tsx'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import { formatNumber } from '@/utils/number.ts'
@@ -33,7 +31,7 @@ export const PriceTab = () => {
         <Box className={'flex-1'}>
           <Box className={'text-[28px] leading-[1] font-[700]'}>
             <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
-              ${formatNumberPrecision(price, COMMON_PRICE_DISPLAY_DECIMALS)}
+              ${formatNumber(price, { showUnit: false })}
             </span>
           </Box>
           <Box

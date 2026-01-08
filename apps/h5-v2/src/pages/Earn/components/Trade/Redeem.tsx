@@ -25,7 +25,7 @@ import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
-import toast from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { getLpAssets } from '@/request'
@@ -35,9 +35,21 @@ import { Big } from 'big.js'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
+import { showErrorToast } from '@/config/error'
+import { formatNumber } from '@/utils/number.ts'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
+
+const inputStyle = {
+  htmlInput: {
+    style: {
+      fontSize: 20,
+      fontWeight: 700,
+    },
+  },
+}
 
 export const Redeem = () => {
-  const { pool, quoteLpDetail, chainId, poolId, price, genesisFeeRate, poolInfoRefetch } =
+  const { pool, quoteLpDetail, chainId, poolId, price, poolInfoRefetch, genesisFeeRate } =
     useContext(PoolContext)
   const { slippage, setSlippage } = useContext(TradeContext)
   const { address: account } = useWalletConnection()
@@ -127,10 +139,10 @@ export const Redeem = () => {
   }, [price, asset, balance])
 
   const onHandleMax = useCallback(() => {
-    if (balance) {
-      setAmount(balance)
+    if (trueBalance) {
+      setAmount(trueBalance)
     }
-  }, [balance])
+  }, [trueBalance])
 
   const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
     setAmount(floatValue?.toString() || '')
@@ -149,12 +161,12 @@ export const Redeem = () => {
         slippage: Number(slippage),
       })
 
-      toast.success(t`Successfully redeem`)
+      toast.success({ title: t`Successfully redeem` })
       setAmount('')
       await refetch()
       poolInfoRefetch()
     } catch (error) {
-      toast.error(JSON.stringify(error))
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }
@@ -178,8 +190,7 @@ export const Redeem = () => {
               <Box className={'flex items-center gap-[4px] text-[12px]'}>
                 <WalletLine size={14} />
                 <span>
-                  {formatNumberPrecision(trueBalance, COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
-                  {quoteLpDetail?.mQuoteBaseSymbol}
+                  {formatNumber(trueBalance, { showUnit: false })} {quoteLpDetail?.mQuoteBaseSymbol}
                 </span>
               </Box>
             </>
@@ -192,6 +203,8 @@ export const Redeem = () => {
               autoFocus={true}
               value={amount}
               onValueChange={onAmountChange}
+              slotProps={inputStyle}
+              min={0}
             />
             <Box className={'flex items-center gap-[12px]'}>
               <Button variant="text" className={'!min-w-[auto] !p-[0px]'} onClick={onHandleMax}>
@@ -237,10 +250,9 @@ export const Redeem = () => {
             <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
               <span className={'text-[32px] text-white'}>
                 {amount && price
-                  ? formatNumberPrecision(
-                      Number(amount) * Number(price),
-                      COMMON_PRICE_DISPLAY_DECIMALS,
-                    )
+                  ? formatNumber(new Big(amount).mul(new Big(price)), {
+                      showUnit: false,
+                    })
                   : '--'}
               </span>
             </Box>
@@ -313,16 +325,18 @@ export const Redeem = () => {
           </Box>
         )}
         <Box className={'mt-[8px] mb-[4px] w-full'}>
-          <TradeButton
-            variant="contained"
-            className={'w-full'}
-            disabled={!amount || isInsufficient}
-            loading={loading}
-            onClick={onHandleRedeem}
-            loadingPosition="start"
-          >
-            <Trans>Redeem</Trans>
-          </TradeButton>
+          <ConnectButton>
+            <TradeButton
+              variant="contained"
+              className={'w-full'}
+              disabled={!amount || isInsufficient}
+              loading={loading}
+              onClick={onHandleRedeem}
+              loadingPosition="start"
+            >
+              <Trans>Redeem</Trans>
+            </TradeButton>
+          </ConnectButton>
         </Box>
       </Box>
       <Describe>
