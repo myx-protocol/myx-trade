@@ -2,9 +2,7 @@ import { MYXSDKErrorMapping, type SDKError } from './MYX_SDK_ERRORS.tsx'
 import { toast } from '@/components/UI/Toast'
 
 const isSDKError = (err: any): err is SDKError => {
-  return (
-    err && typeof err === 'object' && err.error === 'object' && typeof err.error.code === 'string'
-  )
+  return err && err.error
 }
 
 export const showErrorToast = (error?: any) => {
