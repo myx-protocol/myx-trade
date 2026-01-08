@@ -1,10 +1,8 @@
 import { Box } from '@mui/material'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { type QueryKey, useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getACQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import type { PriceMapType } from '@/request/lp/type.ts'
 import {
@@ -25,6 +23,9 @@ import { SortField, type Vault } from '../type'
 import { Token } from './Token'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { encodeSortValue } from '@/utils/sort.ts'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
+import { isSafeInteger } from 'lodash-es'
+import { isSafeNumber } from '@/utils'
 const sortField = SortField.tvl
 const sortOrder = 'desc'
 const limit = 20
@@ -237,13 +238,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
                 {!item ? (
                   <Skeleton width={95} />
                 ) : (
-                  <>
-                    $
-                    {formatNumberPrecision(
-                      depositMap?.[item?.poolId],
-                      COMMON_BASE_DISPLAY_DECIMALS,
-                    )}
-                  </>
+                  <>${formatNumber(depositMap?.[item?.poolId], { showUnit: false })}</>
                 )}
               </Box>
 
@@ -252,7 +247,10 @@ export const Positions = ({ className = '' }: { className?: string }) => {
                   <Skeleton width={60} />
                 ) : (
                   <Change change={pnlMap?.[item?.poolId]}>
-                    ${formatNumberPrecision(pnlMap?.[item?.poolId], COMMON_BASE_DISPLAY_DECIMALS)}
+                    $
+                    {isSafeNumber(pnlMap?.[item?.poolId])
+                      ? formatNumber(pnlMap?.[item?.poolId], { showUnit: false })
+                      : '--'}
                   </Change>
                 )}
               </Box>

@@ -2,12 +2,12 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { CookType, type Token, TrenchType } from '@/pages/Cook/type.ts'
 import Box from '@mui/material/Box'
 import { useQuery } from '@tanstack/react-query'
-import { DEFAULT_LIMIT, getTrenchList } from '@/request'
+import { getTrenchList } from '@/request'
 import type { PriceMapType, Trench } from '@/request/lp/type.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { Interval, PageDirection, type SortOrder, type TrenchSortField } from '@/request/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
@@ -17,6 +17,11 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Empty } from '@/components/Empty.tsx'
 import { Trans } from '@lingui/react/macro'
 import { Change } from '@/components/Change.tsx'
+import { decimalToPercent } from '@/utils/number.ts'
+import { isSafeNumber } from '@/utils'
+import { InfiniteScrollView } from '@/components/InfiniteScrollView'
+import { encodeSortValue } from '@/utils/sort.ts'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 
 interface Data {
   id: number | string
@@ -32,6 +37,8 @@ interface Data {
   sortValue: string
 }
 
+const limit = 20
+
 export const TrenchList = ({
   sortField,
   interval,
@@ -43,10 +50,11 @@ export const TrenchList = ({
 }) => {
   const navigate = useNavigate()
   const { type } = useContext(CookContext)
+  const { markets } = useMyxSdkClient()
   const { address: account } = useWalletConnection()
-  const [order, setOrder] = useState<SortOrder>('desc')
-  const [before, setBefore] = useState<string | undefined>(undefined)
   const [after, setAfter] = useState<string | undefined>(undefined)
+  const [hasMore, setHasMore] = useState<boolean>(true)
+  const [list, setList] = useState<Data[]>([])
 
   const getSortValue = (item: Trench) => {
     switch (sortField) {
@@ -61,90 +69,63 @@ export const TrenchList = ({
     }
   }
 
-  const { data = { data: [], hasNextPage: false, hasPrevPage: false }, isLoading } = useQuery({
-    queryKey: [
-      { key: 'TokenNewList' },
-      type,
-      interval,
-      chainId,
-      sortField,
-      order,
-      account,
-      before,
-      after,
-    ],
+  const { isLoading } = useQuery({
+    queryKey: [{ key: 'TokenNewList' }, type, interval, chainId, sortField, account, after],
     enabled: type === CookType.Trench,
     queryFn: async () => {
-      const limit = DEFAULT_LIMIT
       const paginatedLimit = limit + 1
       const result = await getTrenchList({
         timeInterval: interval || undefined,
         chainId: chainId || undefined,
         sortField: sortField as unknown as TrenchSortField,
-        sortOrder: order,
+        sortOrder: 'desc',
         limit: paginatedLimit,
-        direction: before ? PageDirection.Prev : after ? PageDirection.Next : undefined,
-        cursor: before || after,
+        direction: after ? PageDirection.Next : undefined,
+        cursor: after,
       })
 
-      let hasNextPage = true
-      let hasPrevPage = true
-      if (paginatedLimit) {
-        const hasNoMoreData = (result.data || []).length < paginatedLimit
+      const hasNoMoreData = (result.data || []).length < paginatedLimit
+      setHasMore(!hasNoMoreData)
 
-        if (!after && !before) {
-          hasPrevPage = false
-          if (hasNoMoreData) {
-            hasNextPage = false
-          }
-        } else if (after && hasNoMoreData) {
-          hasNextPage = false
-        } else if (before && hasNoMoreData) {
-          hasPrevPage = false
-        }
-      }
-
-      const paginatedData = {
-        data: (limit ? result.data.slice(0, limit) : result.data).map((item: Trench) => {
-          return {
-            id: item.id,
-            sortValue: getSortValue(item),
-            market: {
-              icon: item.tokenIcon,
-              name: item.mBaseQuoteSymbol,
-              label: item.mSymbol,
-              chainId: item.chainId,
-              address: item.baseToken,
-              time: item.tokenCreateTime,
-            },
-            price: '',
-            change: item.lpPriceChange,
-            apr: item.apr,
-            tvl: item.tvl,
-            volume: item.volume,
-            open: item.oi,
+      const data = (result?.data || []).slice(0, limit).map((item: Trench) => {
+        return {
+          id: item.id,
+          sortValue: getSortValue(item),
+          market: {
+            icon: item.tokenIcon,
+            name: item.mBaseQuoteSymbol,
+            label: item.symbol,
             chainId: item.chainId,
-            poolId: item.poolId,
-          } as Data
-        }),
-        hasNextPage,
-        hasPrevPage,
+            address: item.baseToken,
+            time: item.tokenCreateTime,
+          },
+          price: '',
+          change: item.lpPriceChange,
+          apr: item.apr,
+          tvl: item.tvl,
+          volume: item.volume,
+          open: item.oi,
+          chainId: item.chainId,
+          poolId: item.poolId,
+        } as Data
+      })
+      if (after) {
+        setList((prev) => [...prev, ...(data || [])])
+      } else {
+        setList([...data])
       }
-
-      return paginatedData
+      return data
     },
-    refetchOnWindowFocus: true, // 默认 true
-    refetchOnMount: true, // 组件重新挂载时刷新
-    refetchOnReconnect: true, // 网络恢复时刷新
+    placeholderData: (prev) => prev,
   })
 
   const priceQueryParams = useMemo(() => {
-    return (data.data || []).map((item) => ({ poolId: item.poolId, chainId: item.chainId }))
-  }, [data.data])
+    return (list || []).map((item) => ({ poolId: item.poolId, chainId: item.chainId }))
+  }, [list])
 
   const { data: priceMap } = useQuery({
     queryKey: [{ key: 'getTrendLpAssetsPrice' }, priceQueryParams],
-    enabled: !!priceQueryParams.length,
+    enabled: !!priceQueryParams.length && !!markets?.length,
     queryFn: async () => {
       if (!priceQueryParams.length) return {} as PriceMapType
       const result = await Promise.all(
@@ -177,18 +158,32 @@ export const TrenchList = ({
     refetchInterval: 5000,
   })
 
-  useEffect(() => {
-    setOrder('desc')
-    setBefore(undefined)
-    setAfter(undefined)
-  }, [sortField])
+  const loadMore = () => {
+    // 触底回调
+    // if (isLoading || !data.hasNextPage) return
+    console.log('loadMore......')
+
+    setAfter(() => (list && list.length ? encodeSortValue(list?.[list?.length - 1]) : undefined))
+  }
 
   const sortedData = useMemo(() => {
-    return data?.data || []
-  }, [data.data])
+    return list || []
+  }, [list])
+
+  useEffect(() => {
+    setAfter(undefined)
+    setHasMore(true)
+    setList([])
+    // set(true)
+  }, [chainId, interval, sortField])
 
   return (
-    <Box>
+    <InfiniteScrollView
+      dataLength={list.length}
+      loadMore={loadMore}
+      hasMore={hasMore}
+      scrollableTarget={'scrollView'}
+    >
       {(isLoading ? (Array.from({ length: 3 }).fill(null) as Data[]) : sortedData || []).map(
         (row, index) => {
           return (
@@ -234,9 +229,9 @@ export const TrenchList = ({
                     ) : (
                       <>
                         <span className={'text-[14px] font-[700] text-white'}>
-                          {row.market.label}
+                          {row.market.name}
                         </span>
-                        <span className={'text-secondary text-[12px]'}>{row.market.name}</span>
+                        <span className={'text-secondary text-[12px]'}>{row.market.label}</span>
                       </>
                     )}
                   </Box>
@@ -248,9 +243,9 @@ export const TrenchList = ({
                         <span className={'text-secondary'}>
                           <Trans>APR</Trans>
                         </span>
-                        <span className={'font-[500] text-white'}>
-                          {formatNumberPercent(row?.apr)}
-                        </span>
+                        <Change change={row?.apr} className={'font-[500] text-white'}>
+                          {isSafeNumber(row?.apr) ? decimalToPercent(row?.apr) : '--'}
+                        </Change>
                       </>
                     )}
                   </Box>
@@ -272,8 +267,7 @@ export const TrenchList = ({
                     <Trans>Chg</Trans>
                   </span>
                   <Change className={'font-[500]'} change={row?.change}>
-                    {' '}
-                    {formatNumberPercent(row?.change)}
+                    {isSafeNumber(row?.change) ? decimalToPercent(row?.change) : '--'}
                   </Change>
                 </Box>
               </Box>
@@ -282,11 +276,11 @@ export const TrenchList = ({
         },
       )}
 
-      {!isLoading && data?.data?.length === 0 && (
+      {!isLoading && list?.length === 0 && (
         <Box>
           <Empty />
         </Box>
       )}
-    </Box>
+    </InfiniteScrollView>
   )
 }

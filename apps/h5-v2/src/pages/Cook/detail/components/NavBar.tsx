@@ -6,11 +6,10 @@ import { CoinIcon } from '@/components/UI/CoinIcon'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import Dropdown from '@/components/Icon/set/Dropdown.tsx'
 import { usePoolContext } from '@/pages/Cook/hook'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent.tsx'
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Cook/type.ts'
+import { formatNumber } from '@/utils/number.ts'
 
 export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
@@ -60,8 +59,9 @@ export const NavBar = ({ className, children }: { className?: string; children?:
             </Box>
             <Box className={'flex items-center gap-[6px] text-[12px] leading-[1] font-[500]'}>
               <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
-                ${formatNumberPrecision(price, COMMON_PRICE_DISPLAY_DECIMALS)}
+                ${formatNumber(price, { showUnit: false })}
               </span>
+
               <RiseFallTextPrecent value={Number(baseLpDetail?.lpPriceChange)} />
             </Box>
           </Box>

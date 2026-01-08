@@ -19,6 +19,7 @@ import { SearchTypeEnum } from '@myx-trade/sdk'
 import { Change } from '@/components/Change'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
+import { formatNumber } from '@/utils/number.ts'
 
 interface ChartProps {
   className?: string
@@ -84,7 +85,7 @@ const IntervalSelector = () => {
   )
 }
 const ChartHeader = () => {
-  const { quoteLpDetail, price } = useContext(PoolContext)
+  const { price } = useContext(PoolContext)
   const [time] = useState<number>(new Date().valueOf())
 
   /*const { data: price } = useQuery({
@@ -112,7 +113,7 @@ const ChartHeader = () => {
       </Box>
       <Box className={'flex flex-col gap-[4px]'}>
         <Box className={'text-[24px] leading-[1] font-[700] text-white'}>
-          {price ? formatNumberPrecision(price, COMMON_BASE_DISPLAY_DECIMALS) : '--'}
+          {formatNumber(price, { showUnit: false })}
         </Box>
         <Box
           className={
