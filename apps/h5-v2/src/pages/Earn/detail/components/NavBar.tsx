@@ -6,8 +6,6 @@ import { CoinIcon } from '@/components/UI/CoinIcon'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import Dropdown from '@/components/Icon/set/Dropdown.tsx'
 
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent.tsx'
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Earn/type.ts'

@@ -40,6 +40,7 @@ export const ClaimRewardsDialog = ({
       await Base.claimBasePoolRebate({ chainId: lpAsset.chainId, poolId: lpAsset.poolId })
       toast.success({ title: t`Claim successfully claimed` })
       refetch?.()
+      onClose()
     } catch (e) {
       showErrorToast(e)
     } finally {

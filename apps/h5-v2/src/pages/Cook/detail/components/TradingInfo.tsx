@@ -7,10 +7,12 @@ import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Box } from '@mui/material'
-import { formatNumber } from '@/utils/number.ts'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
+import { isSafeNumber } from '@/utils'
+import Big from 'big.js'
 
 export const TradingInfo = () => {
   const { baseLpDetail, poolId } = usePoolContext()
@@ -28,15 +30,20 @@ export const TradingInfo = () => {
         </DescribeItem>
 
         <DescribeItem title={<Trans>Long Positions</Trans>}>
-          ${formatNumberPrecision(baseLpDetail?.longPosition, COMMON_PRICE_DISPLAY_DECIMALS)}
+          ${formatNumber(baseLpDetail?.longPosition)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Short Positions</Trans>}>
-          ${formatNumberPrecision(baseLpDetail?.shortPosition, COMMON_PRICE_DISPLAY_DECIMALS)}
+          ${formatNumber(baseLpDetail?.shortPosition)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Funding Rate</Trans>}>
-          {formatNumberPercent(baseLpDetail?.fundingRate)}
+          {isSafeNumber(baseLpDetail?.fundingRate)
+            ? decimalToPercent(new Big(baseLpDetail?.fundingRate?.toString() || '0'), {
+                showSign: false,
+              })
+            : '--'}
+          /h{' '}
         </DescribeItem>
 
         <DescribeItem

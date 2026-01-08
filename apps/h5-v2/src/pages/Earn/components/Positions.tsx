@@ -3,8 +3,6 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getACQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import type { PriceMapType } from '@/request/lp/type.ts'
 import {
@@ -27,6 +25,7 @@ import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { encodeSortValue } from '@/utils/sort.ts'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { isSafeInteger } from 'lodash-es'
+import { isSafeNumber } from '@/utils'
 const sortField = SortField.tvl
 const sortOrder = 'desc'
 const limit = 20
@@ -249,8 +248,8 @@ export const Positions = ({ className = '' }: { className?: string }) => {
                 ) : (
                   <Change change={pnlMap?.[item?.poolId]}>
                     $
-                    {isSafeInteger(pnlMap?.[item?.poolId])
-                      ? decimalToPercent(pnlMap?.[item?.poolId])
+                    {isSafeNumber(pnlMap?.[item?.poolId])
+                      ? formatNumber(pnlMap?.[item?.poolId], { showUnit: false })
                       : '--'}
                   </Change>
                 )}

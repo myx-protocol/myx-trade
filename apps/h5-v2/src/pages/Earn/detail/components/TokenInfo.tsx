@@ -38,11 +38,11 @@ export const TokenInfo = ({ className = '' }: { className?: string }) => {
         </DescribeItem>
         <DescribeItem title={<Trans>FDV</Trans>}>${formatNumber(quoteLpDetail?.fdv)}</DescribeItem>
         <DescribeItem title={<Trans>Holders</Trans>}>
-          {formatNumberPrecision(quoteLpDetail?.holders, 0)}
+          {formatNumber(quoteLpDetail?.holders)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Traders</Trans>}>
-          {formatNumberPrecision(quoteLpDetail?.traders, 0)}
+          {formatNumber(quoteLpDetail?.traders)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Total Spot liq</Trans>}>

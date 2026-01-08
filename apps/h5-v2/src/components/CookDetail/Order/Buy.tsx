@@ -25,10 +25,18 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
-
+import Big from 'big.js'
+const inputStyle = {
+  htmlInput: {
+    style: {
+      fontSize: 20,
+      fontWeight: 700,
+    },
+  },
+}
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId, refreshAsset, poolInfoRefetch } = usePoolContext()
+  const { chainId, baseLpDetail, pool, poolId, poolInfoRefetch } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
@@ -36,7 +44,7 @@ export const Buy = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const rate = useExchangeRate()
 
-  const { data: balance, refetch: refetchBalance } = useQuery({
+  const { data: balance, refetch } = useQuery({
     queryKey: [{ key: 'getBaseBalance' }, chainId, poolId, account],
     refetchInterval: 5000,
     queryFn: async () => {
@@ -84,15 +92,14 @@ export const Buy = () => {
       })
       toast.success({ title: t`Successfully buy` })
       setAmount('')
-      await refetchBalance()
-      refreshAsset()
+      await refetch()
       poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
+  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch])
 
   return (
     <>
@@ -107,7 +114,9 @@ export const Buy = () => {
             <p className="flex items-center gap-[4px]">
               <Wallet size={14} color="#848E9C" />
               <span className="text-[14px] font-medium text-[#CED1D9]">
-                {formatNumberPrecision(balance, COMMON_BASE_DISPLAY_DECIMALS)}
+                {formatNumber(balance, {
+                  showUnit: false,
+                })}{' '}
                 {pool?.baseSymbol}
               </span>
             </p>
@@ -122,6 +131,8 @@ export const Buy = () => {
                 autoFocus={true}
                 value={amount}
                 onValueChange={onAmountChange}
+                slotProps={inputStyle}
+                min={0}
               />
             </div>
             {/* action */}
@@ -165,7 +176,11 @@ export const Buy = () => {
           <div className="mt-[12px] flex items-center">
             <div className="flex-[1_1_0%]">
               <span className="text-[32px] leading-[38px] font-bold text-white">
-                {amount && rate ? formatNumber(Number(amount) * Number(rate)) : '--'}
+                {amount && rate
+                  ? formatNumber(new Big(amount).mul(new Big(1)).div(new Big(rate)), {
+                      showUnit: false,
+                    })
+                  : '--'}
               </span>
             </div>
             {/* action */}

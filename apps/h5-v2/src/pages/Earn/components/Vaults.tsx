@@ -135,11 +135,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
               <Token token={item} />
               <Box className={'flex flex-col items-end gap-[4px]'}>
                 <Box className={'text-[14px] leading-[1] font-[500] text-white'}>
-                  {!item ? (
-                    <Skeleton width={95} />
-                  ) : (
-                    <>${formatNumber(item.tvl, { showUnit: false })}</>
-                  )}
+                  {!item ? <Skeleton width={95} /> : <>${formatNumber(item.tvl)}</>}
                 </Box>
 
                 <Box className={'text-[12px] leading-[1] font-[500] text-white'}>
