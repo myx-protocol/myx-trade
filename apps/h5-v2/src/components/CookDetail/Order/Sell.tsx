@@ -344,7 +344,7 @@ export const Sell = () => {
           <SellButton
             variant="contained"
             className={'w-full'}
-            disabled={!amount || isInsufficient}
+            disabled={!amount || isInsufficient || Number(amount) <= 0}
             loading={loading}
             onClick={onHandleSell}
           >

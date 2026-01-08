@@ -220,7 +220,8 @@ export const Subscribe = () => {
                 !amount ||
                 isInsufficient ||
                 pool?.state === MarketPoolState.PreBench ||
-                pool?.state === MarketPoolState.Bench
+                pool?.state === MarketPoolState.Bench ||
+                Number(amount) <= 0
               }
               loading={loading}
               onClick={onHandleSubscribe}
