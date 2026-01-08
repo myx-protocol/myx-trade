@@ -64,7 +64,11 @@ export const Info = () => {
           </DescribeItem>
 
           <DescribeItem title={<Trans>creat time</Trans>}>
-            {dayjs(baseLpDetail?.tokenCreateTime).utc().format('YYYY/MM/DD HH:mm:ss')}
+            {baseLpDetail?.tokenCreateTime
+              ? dayjs(baseLpDetail?.tokenCreateTime * 1000)
+                  .utc()
+                  .format('YYYY/MM/DD HH:mm:ss')
+              : '--'}
           </DescribeItem>
 
           <DescribeItem title={<Trans>Total supply</Trans>}>
@@ -80,11 +84,11 @@ export const Info = () => {
             ${baseLpDetail?.fdv ? formatNumber(baseLpDetail.fdv) : '--'}
           </DescribeItem>
           <DescribeItem title={<Trans>Holders</Trans>}>
-            {baseLpDetail?.holders ? formatNumber(baseLpDetail.holders) : '--'}
+            {formatNumber(baseLpDetail?.holders)}
           </DescribeItem>
 
           <DescribeItem title={<Trans>Traders</Trans>}>
-            {baseLpDetail?.traders ? formatNumber(baseLpDetail.traders) : '--'}
+            {formatNumber(baseLpDetail?.traders)}
           </DescribeItem>
 
           <DescribeItem title={<Trans>Total Spot liq</Trans>}>
