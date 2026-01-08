@@ -144,29 +144,14 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId)
     const forwarderAddress = forwarderContract.target
 
-    const brokerAddress = config.brokerAddress
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
       config.signer
     );
 
-
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
-
-      const brokerSignPermit = await signPermit(
-        config.signer,  // 使用 signer 而不是 provider
-        erc20Contract,
-        masterAddress,
-        brokerAddress,
-        ethers.MaxUint256.toString(),
-        nonces.toString(),
-        deadline.toString(),
-      )
-
-     
-
 
       const forwarderSignPermit = await signPermit(
         config.signer,  // 使用 signer 而不是 provider
@@ -174,7 +159,7 @@ export class Seamless {
         masterAddress,
         forwarderAddress as string,
         ethers.MaxUint256.toString(),
-        (nonces + BigInt(1)).toString(),
+        nonces.toString(),
         deadline.toString(),
       )
 
@@ -184,20 +169,9 @@ export class Seamless {
         masterAddress,
         contractAddress.Account,
         ethers.MaxUint256.toString(),
-        (nonces + BigInt(2)).toString(),
+        (nonces + BigInt(1)).toString(),
         deadline.toString(),
       )
-
-      const brokerSeamlessUSDPermitParams = {
-        token: erc20Contract.target,
-        owner: masterAddress,
-        spender: brokerAddress,
-        value: ethers.MaxUint256,
-        deadline,
-        v: brokerSignPermit.v,
-        r: brokerSignPermit.r,
-        s: brokerSignPermit.s,
-      }
 
       const forwarderPermitParams = {
         token: erc20Contract.target,
@@ -221,10 +195,7 @@ export class Seamless {
         s: accountSignPermit.s,
       }
 
-      return [brokerSeamlessUSDPermitParams, forwarderPermitParams, accountPermitParams]
-
-      // return [forwarderPermitParams]
-
+      return [forwarderPermitParams, accountPermitParams]
     } catch (error) {
       this.logger.error('error-->', error);
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
@@ -280,7 +251,7 @@ export class Seamless {
     const masterAddress = await config.signer?.getAddress() ?? ''
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId,masterAddress)
+      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
       const balance = balanceRes.data
       const forwarderContract = await getForwarderContract(chainId)
 

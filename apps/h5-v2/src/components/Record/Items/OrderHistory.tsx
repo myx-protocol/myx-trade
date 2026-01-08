@@ -40,7 +40,8 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
             />
             <div className="flex flex-col items-start gap-[4px]">
               <p className="text-[14px] font-medium text-white">
-                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+                {symbolInfo?.baseSymbol}
+                {symbolInfo?.quoteSymbol}
               </p>
               <div className="flex gap-[4px]">
                 <Tag type={item.direction === DirectionEnum.Long ? 'success' : 'danger'}>

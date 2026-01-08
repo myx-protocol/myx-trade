@@ -12,48 +12,8 @@ import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { t } from '@lingui/core/macro'
 import useGlobalStore from '@/store/globalStore'
-import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
-import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { PositionList } from '@/pages/record/components/PositionList'
 import { OpenOrderList } from '@/pages/record/components/OpenOrderList'
-
-// const TabButton = ({
-//   activeTab,
-//   onClick,
-//   tabType,
-//   children,
-// }: {
-//   activeTab: TabType
-//   onClick: () => void
-//   tabType: TabType
-//   children: React.ReactNode
-// }) => {
-//   const isActive = activeTab === tabType
-//   return (
-//     <div
-//       className="cursor-pointer text-[14px]"
-//       style={{
-//         color: isActive ? '#FFFFFF' : '#848E9C',
-//         fontWeight: '500',
-//         textShadow: isActive ? '0.3px 0 0 currentColor, -0.3px 0 0 currentColor' : 'none',
-//       }}
-//       onClick={onClick}
-//     >
-//       {children}
-//     </div>
-//   )
-// }
-
-const CHAIN_LIST: Array<
-  BaseChainInfo & {
-    chainId: number
-  }
-> = getSupportedChainIdsByEnv().map((chainId) => {
-  return {
-    ...getChainInfo(chainId),
-    chainId,
-  }
-})
 
 export const Tables = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.POSITION)
