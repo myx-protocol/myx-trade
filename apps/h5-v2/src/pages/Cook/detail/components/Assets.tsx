@@ -24,6 +24,7 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import Big from 'big.js'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
+import { formatNumber } from '@/utils/number.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -356,7 +357,7 @@ export const Assets = () => {
                   className={'items-end justify-self-end'}
                   label={<Trans>Unclaimed Fees</Trans>}
                 >
-                  {formatNumberPrecision(rewardsMap?.[item?.poolId], COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
+                  {formatNumber(rewardsMap?.[item?.poolId], { showUnit: false })}{' '}
                   {item?.quoteSymbol}
                 </Value>
               </AssetItem>
