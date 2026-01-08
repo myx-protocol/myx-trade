@@ -32,6 +32,7 @@ import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
 
 export const Sell = () => {
   const { retainGenesisLPShares, setRetainGenesisLPShares, slippage } = useCookOrderStore()
@@ -328,15 +329,17 @@ export const Sell = () => {
         </Box>
       )}
       <Box className="mt-[12px] w-full">
-        <SellButton
-          variant="contained"
-          className={'w-full'}
-          disabled={!amount || isInsufficient}
-          loading={loading}
-          onClick={onHandleSell}
-        >
-          <Trans>Sell</Trans>
-        </SellButton>
+        <ConnectButton>
+          <SellButton
+            variant="contained"
+            className={'w-full'}
+            disabled={!amount || isInsufficient}
+            loading={loading}
+            onClick={onHandleSell}
+          >
+            <Trans>Sell</Trans>
+          </SellButton>
+        </ConnectButton>
       </Box>
     </div>
   )

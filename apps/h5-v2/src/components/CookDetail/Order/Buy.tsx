@@ -24,6 +24,7 @@ import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
 
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
@@ -195,15 +196,17 @@ export const Buy = () => {
               </DefaultButton>
             </>
           ) : (
-            <TradeButton
-              variant="contained"
-              className={'w-full'}
-              disabled={!amount || isInsufficient}
-              loading={loading}
-              onClick={onHandleBuy}
-            >
-              <Trans>Buy</Trans>
-            </TradeButton>
+            <ConnectButton>
+              <TradeButton
+                variant="contained"
+                className={'w-full'}
+                disabled={!amount || isInsufficient}
+                loading={loading}
+                onClick={onHandleBuy}
+              >
+                <Trans>Buy</Trans>
+              </TradeButton>
+            </ConnectButton>
           )}
         </Box>
       </Box>

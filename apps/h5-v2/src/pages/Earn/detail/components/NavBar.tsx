@@ -13,6 +13,7 @@ import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Earn/type.ts'
 import { usePoolContext } from '../../hook'
 import { RatingLevel } from '@/components/Rating.tsx'
+import { formatNumber } from '@/utils/number.ts'
 
 export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
@@ -61,7 +62,7 @@ export const NavBar = ({ className, children }: { className?: string; children?:
             </Box>
             <Box className={'flex items-center gap-[6px] text-[12px] leading-[1] font-[500]'}>
               <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
-                ${formatNumberPrecision(price, COMMON_PRICE_DISPLAY_DECIMALS)}
+                ${formatNumber(price, { showUnit: false })}
               </span>
 
               {quoteLpDetail?.rating && <RatingLevel rating={quoteLpDetail?.rating} />}
