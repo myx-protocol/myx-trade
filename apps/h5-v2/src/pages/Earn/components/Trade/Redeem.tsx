@@ -37,6 +37,7 @@ import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { formatNumber } from '@/utils/number.ts'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
 
 const inputStyle = {
   htmlInput: {
@@ -324,16 +325,18 @@ export const Redeem = () => {
           </Box>
         )}
         <Box className={'mt-[8px] mb-[4px] w-full'}>
-          <TradeButton
-            variant="contained"
-            className={'w-full'}
-            disabled={!amount || isInsufficient}
-            loading={loading}
-            onClick={onHandleRedeem}
-            loadingPosition="start"
-          >
-            <Trans>Redeem</Trans>
-          </TradeButton>
+          <ConnectButton>
+            <TradeButton
+              variant="contained"
+              className={'w-full'}
+              disabled={!amount || isInsufficient}
+              loading={loading}
+              onClick={onHandleRedeem}
+              loadingPosition="start"
+            >
+              <Trans>Redeem</Trans>
+            </TradeButton>
+          </ConnectButton>
         </Box>
       </Box>
       <Describe>

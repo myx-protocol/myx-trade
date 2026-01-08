@@ -28,6 +28,7 @@ import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { showErrorToast } from '@/config/error'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Change } from '@/components/Change'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
 
 const inputStyle = {
   htmlInput: {
@@ -211,21 +212,23 @@ export const Subscribe = () => {
             </DefaultButton>
           </>
         ) : (
-          <TradeButton
-            variant="contained"
-            className={'w-full'}
-            disabled={
-              !amount ||
-              isInsufficient ||
-              pool?.state === MarketPoolState.PreBench ||
-              pool?.state === MarketPoolState.Bench
-            }
-            loading={loading}
-            onClick={onHandleSubscribe}
-            loadingPosition="start" // 图标显示在文字前面
-          >
-            <Trans>Subscribe</Trans>
-          </TradeButton>
+          <ConnectButton>
+            <TradeButton
+              variant="contained"
+              className={'w-full'}
+              disabled={
+                !amount ||
+                isInsufficient ||
+                pool?.state === MarketPoolState.PreBench ||
+                pool?.state === MarketPoolState.Bench
+              }
+              loading={loading}
+              onClick={onHandleSubscribe}
+              loadingPosition="start" // 图标显示在文字前面
+            >
+              <Trans>Subscribe</Trans>
+            </TradeButton>
+          </ConnectButton>
         )}
       </Box>
       <Describe>
