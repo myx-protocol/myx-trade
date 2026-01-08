@@ -322,22 +322,21 @@ export const Assets = () => {
                 key={index}
                 asset={item as LpAsset}
                 canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
-                onClaim={(asset) => onHandleClaim(asset)}
+                onClaim={(asset) => {
+                  setLpAsset(asset)
+                  onHandleClaim(asset)
+                }}
               >
                 <Value label={<Trans>Quantity</Trans>}>
-                  {item?.lastTotal
-                    ? formatNumberPrecision(+item?.lastTotal, COMMON_BASE_DISPLAY_DECIMALS)
-                    : '--'}{' '}
+                  {formatNumber(+item?.lastTotal)}
                   {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
                 </Value>
                 <Value className={'items-end justify-self-end'} label={<Trans>Cost Basis</Trans>}>
                   $
-                  {item?.lastTotal && PriceMap?.[item?.poolId]
-                    ? formatNumberPrecision(
-                        new Big(item?.lastTotal).mul(new Big(PriceMap?.[item?.poolId])).toString(),
-                        COMMON_PRICE_DISPLAY_DECIMALS,
-                      )
-                    : '--'}
+                  {formatNumber(
+                    new Big(item?.lastTotal).mul(new Big(PriceMap?.[item?.poolId])).toString(),
+                    { showUnit: false },
+                  )}
                 </Value>
                 <Value label={<Trans>Unrealized PnL</Trans>}>
                   {pnlMap?.[item?.poolId as string] !== '' ? (
