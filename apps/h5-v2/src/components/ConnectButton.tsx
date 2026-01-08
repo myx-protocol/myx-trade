@@ -4,12 +4,11 @@ import type { ReactNode } from 'react'
 import { Trans } from '@lingui/react/macro'
 
 export const ConnectButton = ({ children }: { children: ReactNode }) => {
-  const { address: account, isWalletConnected, setLoginModalOpen } = useWalletConnection()
-  if (account && isWalletConnected)
-    return (
-      <TradeButton variant="contained" className={'w-full'} onClick={() => setLoginModalOpen(true)}>
-        <Trans>Connect Wallet</Trans>
-      </TradeButton>
-    )
-  return children
+  const { address: account, isConnected, setLoginModalOpen } = useWalletConnection()
+  if (account && isConnected) return children
+  return (
+    <TradeButton variant="contained" className={'w-full'} onClick={() => setLoginModalOpen(true)}>
+      <Trans>Connect Wallet</Trans>
+    </TradeButton>
+  )
 }
