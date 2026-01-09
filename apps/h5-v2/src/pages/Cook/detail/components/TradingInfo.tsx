@@ -1,10 +1,5 @@
 import { Describe, DescribeItem } from '@/components/Describe.tsx'
 import { Trans } from '@lingui/react/macro'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
-import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
-import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Box } from '@mui/material'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
@@ -15,7 +10,7 @@ import { isSafeNumber } from '@/utils'
 import Big from 'big.js'
 
 export const TradingInfo = () => {
-  const { baseLpDetail, poolId } = usePoolContext()
+  const { baseLpDetail, poolId, fundingRate } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   return (
@@ -38,12 +33,11 @@ export const TradingInfo = () => {
         </DescribeItem>
 
         <DescribeItem title={<Trans>Funding Rate</Trans>}>
-          {isSafeNumber(baseLpDetail?.fundingRate)
-            ? decimalToPercent(new Big(baseLpDetail?.fundingRate?.toString() || '0'), {
+          {isSafeNumber(fundingRate)
+            ? decimalToPercent(new Big(fundingRate || '0'), {
                 showSign: false,
               })
             : '--'}
-          /h{' '}
         </DescribeItem>
 
         <DescribeItem
