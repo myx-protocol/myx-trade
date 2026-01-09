@@ -7,7 +7,7 @@ import { PoolType } from '@/request/type.ts'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, mode, genesisFeeRate, refetch, lpDetail, poolInfoRefetch } =
+  const { pool, poolInfo, mode, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, fundingRate } =
     usePoolDetail(PoolType.base)
 
   const [refreshAssetKey, setRefreshAssetKey] = useState(Date.now())
@@ -32,6 +32,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         exchangeRate: poolInfo?.exchangeRate,
         tvl: poolInfo?.tvl,
         poolInfoRefetch,
+        fundingRate: fundingRate?.nextFundingRatePercent,
       }}
     >
       {children}

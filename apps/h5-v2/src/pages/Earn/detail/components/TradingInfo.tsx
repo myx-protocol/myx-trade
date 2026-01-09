@@ -8,7 +8,7 @@ import { isSafeNumber } from '@/utils'
 import Big from 'big.js'
 
 export const TradingInfo = ({ className = '' }: { className?: string }) => {
-  const { quoteLpDetail } = useContext(PoolContext)
+  const { quoteLpDetail, fundingRate } = useContext(PoolContext)
   return (
     <Box className={`${className}`}>
       <Box className={'mb-[16px] text-[14px] leading-[1] font-[500] text-white'}>
@@ -29,12 +29,11 @@ export const TradingInfo = ({ className = '' }: { className?: string }) => {
         </DescribeItem>
 
         <DescribeItem title={<Trans>Funding Rate</Trans>}>
-          {isSafeNumber(quoteLpDetail?.fundingRate)
-            ? decimalToPercent(new Big(quoteLpDetail?.fundingRate?.toString() || '0'), {
+          {isSafeNumber(fundingRate)
+            ? decimalToPercent(new Big(fundingRate || '0'), {
                 showSign: false,
               })
             : '--'}
-          /h{' '}
         </DescribeItem>
       </Describe>
     </Box>
