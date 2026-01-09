@@ -87,6 +87,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
       } else {
         setList([...data])
       }
+      return data
     },
     placeholderData: (prev) => prev,
   })

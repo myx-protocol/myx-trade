@@ -1,4 +1,5 @@
 import type { SvgIconProps } from '../types'
+import withIconColor from '@/components/Icon/withIconColor.tsx'
 
 export const LinkLockLine = (props: SvgIconProps) => {
   return (
@@ -44,3 +45,6 @@ export const LinkLockLine = (props: SvgIconProps) => {
     </svg>
   )
 }
+
+const Icon = withIconColor(LinkLockLine)
+export default Icon // 在这里用！

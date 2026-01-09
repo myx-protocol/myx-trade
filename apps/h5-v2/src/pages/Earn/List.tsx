@@ -12,11 +12,14 @@ import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx
 import { SearchContext } from './context'
 import { Positions } from '@/pages/Earn/components/Positions.tsx'
 import { SearchTypeEnum } from '@myx-trade/sdk'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
+import { ConnectWallet } from '@/pages/Earn/components/ConnectWallet.tsx'
 
 const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
   const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
   const [type, setType] = useState<VaultType>(VaultType.Vaults)
+  const { address } = useWalletConnection()
 
   return (
     <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
@@ -56,9 +59,16 @@ const EarnList = () => {
           </Box>
         </Box>
       </Box>
+
       <SearchContext.Provider value={{ chainId, setChainId, interval, setInterval }}>
         {/*<Box className={'flex-1'}>*/}
-        {type === VaultType.Positions ? <Positions /> : <Vaults />}
+        {type === VaultType.Positions ? (
+          <ConnectWallet>
+            <Positions />
+          </ConnectWallet>
+        ) : (
+          <Vaults />
+        )}
         {/*</Box>*/}
       </SearchContext.Provider>
     </Box>

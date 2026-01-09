@@ -156,7 +156,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
               item?.quotePoolToken,
             )
             balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
-            console.log(balance)
+            // console.log(balance)
           } catch (_e) {
             console.error(_e)
           }
@@ -258,7 +258,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
           </Box>
         )
       })}
-      {!isLoading && list?.length === 0 && (
+      {!isLoading && positions?.length === 0 && (
         <Box>
           <Empty />
         </Box>
