@@ -1,5 +1,5 @@
 import { PoolType } from '@/request/type'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Mode, type PoolInfo } from '@/pages/Cook/type.ts'
 import { useUpdateEffect } from 'ahooks'
 import { useQuery } from '@tanstack/react-query'
@@ -16,6 +16,8 @@ import {
 } from '@myx-trade/sdk'
 import { getBaseLPDetail, getPoolRiskLevelConfig, getQuoteLPDetail } from '@/request'
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
+import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
+import Big from 'big.js'
 type BaseQuotePoolInfo = {
   poolToken: string
   poolTokenSupply: bigint
@@ -94,9 +96,8 @@ export const usePoolDetail = (poolType: PoolType) => {
             price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
             exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
             tvl: calculationTvl(result),
+            fundingInfo: result.fundingInfo,
           } as PoolInfo
-
-          console.log(info)
 
           return info
         }
@@ -120,18 +121,18 @@ export const usePoolDetail = (poolType: PoolType) => {
     },
   })
 
-  const { data: genesisFeeRate } = useQuery({
+  const { data: levelConfig } = useQuery({
     queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
     enabled: !!poolId && !!chainId,
     queryFn: async () => {
       // console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return ''
+      if (!poolId || !chainId) return null
       try {
         const result = await getPoolRiskLevelConfig(poolId, +chainId)
 
-        return result?.data?.levelConfig?.genesisFeeRate as string
+        return result?.data?.levelConfig
       } catch (error) {
-        return ''
+        return null
       }
     },
   })
@@ -142,6 +143,27 @@ export const usePoolDetail = (poolType: PoolType) => {
       prevPriceRef.current = poolInfo?.price
     }
   }, [poolInfo?.price])
+
+  const fundingRate = useMemo(() => {
+    const fundingInfo = poolInfo?.fundingInfo
+    if (!fundingInfo) return
+    const nextFundingRatePercent = Big(
+      formatUnits(fundingInfo.nextFundingRate, FUNDING_FEE_TRACKER_DECIMALS),
+    ).toString()
+
+    // if fundingFeeSeconds is 1, return hourly funding rate
+    if (levelConfig?.fundingFeeSeconds === 1) {
+      // console.log('fundingRate:', Big(nextFundingRatePercent).mul(3600).toString())
+      return {
+        nextFundingRatePercent: Big(nextFundingRatePercent).mul(3600).toString(),
+      }
+    }
+    // console.log('fundingRate:', nextFundingRatePercent)
+
+    return {
+      nextFundingRatePercent,
+    }
+  }, [poolInfo?.fundingInfo, levelConfig?.fundingFeeSeconds])
 
   useUpdateEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
@@ -165,7 +187,8 @@ export const usePoolDetail = (poolType: PoolType) => {
   }, [poolId, client, lpDetail?.globalId])
 
   return {
-    genesisFeeRate,
+    genesisFeeRate: levelConfig?.genesisFeeRate,
+    fundingRate,
     pool,
     poolInfo,
     mode,

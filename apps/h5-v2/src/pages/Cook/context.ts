@@ -40,6 +40,7 @@ export interface PoolContextValue {
   refreshAsset: () => void
   tvl?: string
   poolInfoRefetch: () => void
+  fundingRate?: string
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
