@@ -71,6 +71,7 @@ export const TPSLInput = ({
           type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
         }
         inputMode="decimal"
+        decimalScale={6}
         onValueChange={(values) => {
           onChange(values.value ?? '')
         }}

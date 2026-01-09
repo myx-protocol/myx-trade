@@ -194,7 +194,7 @@ export const SetPasswordDialog = () => {
                   }
 
                   setActiveSeamlessAddress(seamlessAccount.masterAddress)
-                  setTradeMode(TradeMode.Seamless)
+                  // setTradeMode(TradeMode.Seamless)
                   changeSdkTradeMode(true)
                   setSeamlessPasswordDialogOpen(false)
                 } else {
