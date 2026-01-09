@@ -547,8 +547,11 @@ export const ClosePositionButton = ({
 
                 const rs = await client?.order.createDecreaseOrder(data)
                 if (rs?.code === 0) {
-                  console.log('market close success')
-                  toast.success({ title: t`Market close success` })
+                  if (orderType === OrderType.MARKET) {
+                    toast.success({ title: t`Market close success` })
+                  } else {
+                    toast.success({ title: t`Limit close success` })
+                  }
                   setCloseDialogOpen(false)
                 } else {
                   console.log('market close failed')

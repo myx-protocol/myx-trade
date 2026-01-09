@@ -9,11 +9,13 @@ import { memo } from 'react'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 // import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 // import Big from 'big.js'
+import useGlobalStore from '@/store/globalStore'
 
 export const MaxTradeAmount = memo(() => {
   const openAvailable = useGetOpenAvailable()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { amountUnit, positionAction } = useTradePanelStore()
+  const { symbolInfo } = useGlobalStore()
   // const { poolConfig } = useGetPoolConfig(
   //   symbolInfo?.poolId as string,
   //   symbolInfo?.chainId as number,
@@ -59,7 +61,10 @@ export const MaxTradeAmount = memo(() => {
             <Trans>Max</Trans>
           </p>
         </Tooltips>
-        <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">{maxLongAmount}</p>
+        <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+          {maxLongAmount}{' '}
+          {amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}
+        </p>
       </div>
       <div className="flex w-full min-w-0 justify-end gap-[4px]">
         <Tooltips
@@ -69,7 +74,10 @@ export const MaxTradeAmount = memo(() => {
             <Trans>Max</Trans>
           </p>
         </Tooltips>
-        <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">{maxShortAmount}</p>
+        <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+          {maxShortAmount}{' '}
+          {amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}
+        </p>
       </div>
     </div>
   )
