@@ -355,7 +355,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 <NumberInputPrimitive
                   placeholder={t`Please enter the amount.`}
                   value={adjustMargin}
-                  decimalScale={pool?.quoteDecimals ?? 6}
+                  decimalScale={6}
                   onValueChange={(e) => setAdjustMargin(e.value)}
                 />
                 <div
@@ -398,13 +398,13 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 {parseBigNumber(adjustMargin).gt(0) && (
                   <div className="mt-[8px]">
                     {parseBigNumber(paidOrigin.walletBalance ?? '0').gt(0) && (
-                      <p className="text-right text-[12px] text-[#848E9C]">{t`Paid from Wallet: ${displayAmount(paidOrigin?.walletBalance ?? '0', pool?.quoteDecimals ?? 6)} ${position?.quoteSymbol}`}</p>
+                      <p className="text-right text-[12px] text-[#848E9C]">{t`Paid from Wallet: ${displayAmount(paidOrigin?.walletBalance ?? '0', 6)} ${position?.quoteSymbol}`}</p>
                     )}
                     {parseBigNumber(paidOrigin.quoteProfit ?? '0').gt(0) && (
-                      <p className="mt-[4px] text-right text-[12px] text-[#848E9C]">{t`Paid from Locked Realized PnL: ${displayAmount(paidOrigin?.quoteProfit ?? '0', pool?.quoteDecimals ?? 6)} ${position?.quoteSymbol}`}</p>
+                      <p className="mt-[4px] text-right text-[12px] text-[#848E9C]">{t`Paid from Locked Realized PnL: ${displayAmount(paidOrigin?.quoteProfit ?? '0', 6)} ${position?.quoteSymbol}`}</p>
                     )}
                     {parseBigNumber(paidOrigin.freeMargin ?? '0').gt(0) && (
-                      <p className="mt-[4px] text-right text-[12px] text-[#848E9C]">{t`Paid from Free Margin: ${displayAmount(paidOrigin?.freeMargin ?? '0', pool?.quoteDecimals ?? 6)} ${position?.quoteSymbol}`}</p>
+                      <p className="mt-[4px] text-right text-[12px] text-[#848E9C]">{t`Paid from Free Margin: ${displayAmount(paidOrigin?.freeMargin ?? '0', 6)} ${position?.quoteSymbol}`}</p>
                     )}
                   </div>
                 )}
