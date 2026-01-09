@@ -52,4 +52,9 @@ export interface PoolInfo {
   price?: string
   exchangeRate?: string
   tvl?: string
+  fundingInfo?: {
+    nextFundingRate: bigint
+    lastFundingFeeTracker: bigint
+    nextEpochTime: bigint
+  }
 }
