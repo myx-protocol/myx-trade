@@ -29,10 +29,6 @@ msgid " APR "
 msgstr ""
 
 #: src/pages/Cook/components/TrenchTabBar.tsx
-msgid " Eligible "
-msgstr " 可借 "
-
-#: src/pages/Cook/components/TrenchTabBar.tsx
 msgid " Gainers "
 msgstr " 涨幅榜 "
 
@@ -293,6 +289,7 @@ msgstr "空投"
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
 #: src/pages/Cook/components/ChainsBar.tsx
+#: src/pages/Cook/components/TrenchTabBar.tsx
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "All"
@@ -866,11 +863,13 @@ msgstr "恭喜！"
 msgid "Congratulations! You’ve unlocked the highest VIP level."
 msgstr "恭喜！您已解锁最高 VIP 级别。"
 
+#: src/pages/Earn/components/ConnectWallet.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Connect wallet"
 msgstr "连接钱包"
 
 #: src/components/CanSwitchWalletNetwork/index.tsx
+#: src/components/ConnectButton.tsx
 #: src/components/WalletConnect/index.tsx
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Connect Wallet"
@@ -1580,6 +1579,10 @@ msgstr "创世奖励"
 msgid "Get Started"
 msgstr "立即开始"
 
+#: src/pages/Earn/components/ConnectWallet.tsx
+msgid "Get Started to view"
+msgstr ""
+
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
 msgstr "知道了"
@@ -1968,10 +1971,13 @@ msgstr "最新"
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 #: src/pages/Home/components/MarketList/index.tsx
-#: src/pages/MarketList/components/List/index.tsx
 #: src/pages/rank/components/List/index.tsx
 msgid "Last Price"
 msgstr "最新价"
+
+#: src/pages/MarketList/components/List/index.tsx
+msgid "Last Price/TVL"
+msgstr ""
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Later"
@@ -1997,6 +2003,10 @@ msgstr "杠杆调整将影响您新开仓的订单。开新仓时，系统将根
 #: src/components/Trade/TradePanel/OrderType/index.tsx
 msgid "Limit"
 msgstr "限价"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Limit close success"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Link Referral Relationship"
@@ -2641,19 +2651,19 @@ msgstr "无效的所有者 (address)"
 msgid "OwnableUnauthorizedAccount(address)"
 msgstr "未授权账户 (address)"
 
-#. placeholder {0}: displayAmount(paidOrigin?.freeMargin ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.freeMargin ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Free Margin: {0} {1}"
 msgstr "从自由保证金中支付：{0} {1}"
 
-#. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Locked Realized PnL: {0} {1}"
 msgstr "从锁定已实现盈亏中支付：{0} {1}"
 
-#. placeholder {0}: displayAmount(paidOrigin?.walletBalance ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.walletBalance ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Wallet: {0} {1}"
@@ -3850,8 +3860,8 @@ msgstr "查看我的邀请人"
 msgid "View referral rules"
 msgstr "查看邀请规则"
 
-#: src/components/Tabbar/const.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
+#: src/pages/VIP/provider/index.tsx
 msgid "VIP"
 msgstr ""
 
@@ -4051,6 +4061,10 @@ msgstr ""
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 msgid "保证金账户"
+msgstr ""
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "保证金账户可划转到钱包的余额"
 msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4510,6 +4524,10 @@ msgstr ""
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "部分平仓"
+msgstr ""
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "钱包内可划转至保证金账户的余额"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
