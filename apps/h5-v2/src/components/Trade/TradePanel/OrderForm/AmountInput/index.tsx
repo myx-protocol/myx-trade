@@ -237,7 +237,7 @@ export const AmountInput = () => {
             <NumberInputPrimitive
               value={tempInputValue}
               className="w-full text-[20px] font-bold text-[#fff]"
-              decimalScale={symbolInfo?.quoteDecimals ?? 6}
+              decimalScale={6}
               onFocus={() => {
                 setUseSlider(false)
                 setSliderValue(0)
