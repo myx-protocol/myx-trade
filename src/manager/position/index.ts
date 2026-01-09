@@ -250,13 +250,6 @@ export class Position {
         }
       }
 
-      const gasLimit = await brokerContract.updatePriceAndAdjustCollateral.estimateGas(
-        [updateParams],
-        depositData,
-        positionId,
-        adjustAmount
-      );
-
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
         depositData,
@@ -264,7 +257,7 @@ export class Position {
         adjustAmount,
         {
           value: BigInt(priceData?.value ?? "1"),
-          gas: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
+          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
         }
       );
 
