@@ -236,7 +236,7 @@ export const Dashboard = () => {
 
   return (
     <Box className={'flex h-[226px] w-full gap-[16px]'}>
-      <Card icon={<New size={16} />} title={<Trans>New</Trans>}>
+      <Card icon={<New size={16} />} title={<Trans>Tag_New</Trans>}>
         <DashboardTable<Vault> columns={columns} data={NewTop} isLoading={isNewLoading} />
       </Card>
       <Card icon={<Hot size={16} />} title={<Trans>Hot</Trans>}>

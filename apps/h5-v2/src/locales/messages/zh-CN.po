@@ -901,6 +901,10 @@ msgstr "兑换金额不匹配，请重试 (uint256,uint256)"
 msgid "Cook"
 msgstr ""
 
+#: src/pages/Cook/components/CookSubBar.tsx
+msgid "Cook_Sub_Bar_New"
+msgstr ""
+
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
 msgid "Cooking : Gathering initial liquidity. Become a \"Genesis LP\" now for a permanent 2% fee share."
@@ -2310,8 +2314,6 @@ msgstr "名称/市值"
 msgid "Network error"
 msgstr "网络错误"
 
-#: src/pages/Cook/components/CookSubBar.tsx
-#: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "New"
@@ -3462,6 +3464,10 @@ msgstr "申购成功"
 #: src/components/CanSwitchWalletNetwork/index.tsx
 msgid "Switch Network"
 msgstr "切换网络"
+
+#: src/pages/Earn/components/Dashboard.tsx
+msgid "Tag_New"
+msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Taker"
