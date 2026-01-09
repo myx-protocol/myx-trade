@@ -95,7 +95,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
               <Trans>Amount</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(order.size, { showUnit: false })}
+              {formatNumber(order.size, { showUnit: false })} {order.baseSymbol}
             </p>
           </div>
           {/* price */}

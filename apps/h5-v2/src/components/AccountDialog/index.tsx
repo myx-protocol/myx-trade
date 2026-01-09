@@ -107,6 +107,7 @@ export const AccountDialog = () => {
           style={{ height: '44px', borderRadius: '44px' }}
           onClick={() => {
             setReceiveDialogOpen(true)
+            setAccountDialogOpen(false)
           }}
         >
           <Trans>Deposit</Trans>
