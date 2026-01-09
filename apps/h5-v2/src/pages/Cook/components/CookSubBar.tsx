@@ -13,7 +13,7 @@ const items = [
     value: CookListType.Sniper,
   },
   {
-    label: <Trans>New</Trans>,
+    label: <Trans>Cook_Sub_Bar_New</Trans>,
     value: CookListType.New,
   },
   {

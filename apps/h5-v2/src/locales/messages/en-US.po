@@ -901,6 +901,10 @@ msgstr "Conversion amount mismatch, please try again (uint256,uint256)"
 msgid "Cook"
 msgstr ""
 
+#: src/pages/Cook/components/CookSubBar.tsx
+msgid "Cook_Sub_Bar_New"
+msgstr "Cook_Sub_Bar_New"
+
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
 msgid "Cooking : Gathering initial liquidity. Become a \"Genesis LP\" now for a permanent 2% fee share."
@@ -2310,8 +2314,6 @@ msgstr ""
 msgid "Network error"
 msgstr ""
 
-#: src/pages/Cook/components/CookSubBar.tsx
-#: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "New"
@@ -3462,6 +3464,10 @@ msgstr ""
 #: src/components/CanSwitchWalletNetwork/index.tsx
 msgid "Switch Network"
 msgstr ""
+
+#: src/pages/Earn/components/Dashboard.tsx
+msgid "Tag_New"
+msgstr "Tag_New"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Taker"
