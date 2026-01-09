@@ -131,7 +131,7 @@ export const PositionItem = ({
         <div role="button" className="shrink-0 text-white">
           <SharePositionDialog
             position={position}
-            roe={marketPrice ? rate : '--'}
+            roe={marketPrice ? parseBigNumber(rate).mul(100).toFixed(2) : '--'}
             price={marketPrice}
           />
         </div>
