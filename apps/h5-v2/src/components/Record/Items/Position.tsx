@@ -113,7 +113,8 @@ export const PositionItem = ({
             />
             <div className="flex flex-col items-start gap-[4px]">
               <p className="text-[14px] text-white">
-                {position.baseSymbol}/{position.quoteSymbol}
+                {position.baseSymbol}
+                {position.quoteSymbol}
               </p>
               <div className="flex gap-[4px]">
                 <Tag type={position.direction === DirectionEnum.Long ? 'success' : 'danger'}>

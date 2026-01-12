@@ -65,10 +65,9 @@ export const AccountInfo = () => {
           <p className="flex-[1_1_0%] truncate text-[28px] font-bold">
             {isLoading
               ? '--'
-              : formatNumber(accountBalance ?? '0', {
+              : `$ ${formatNumber(accountBalance ?? '0', {
                   showUnit: false,
-                })}
-            <span className="ml-[4px] flex-shrink-0 text-[14px] leading-[28px]">USDC</span>
+                })}`}
           </p>
         </Tooltips>
 
