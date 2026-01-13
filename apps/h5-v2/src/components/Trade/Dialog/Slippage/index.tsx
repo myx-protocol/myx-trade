@@ -6,6 +6,7 @@ import { SlippageInput } from './SlippageInput'
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { useEffect, useState } from 'react'
 import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { t } from '@lingui/core/macro'
 import useGlobalStore from '@/store/globalStore'
 
 interface SlippageDialogProps {
@@ -62,7 +63,7 @@ export const SlippageDialog = ({
             <p>
               <Trans>开仓滑点设置</Trans>
             </p>
-            <Tooltips title="开仓滑点设置">
+            <Tooltips title={t`开仓滑点设置`}>
               <span className="inline-flex">
                 <IconWarningOutline size={12} />
               </span>
