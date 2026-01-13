@@ -26,11 +26,11 @@ const provider = new BrowserProvider(walletClient.transport);
 const signer = await provider.getSigner();
 
 const myxClient = new MyxClient({
-  chainId: 421614, // 测试网使用 421614，主网使用 42161
+  chainId: 421614, // 测试网链 ID
   signer,
   brokerAddress: BROKER_ADDRESS, // 从 MYX 团队获取
-  isTestnet: true, // true 为测试网，false 为主网
-  isBetaMode: false, // true 为 Beta 环境，false 为生产环境
+  isTestnet: true, // true 为测试网，false 为 Beta
+  isBetaMode: false, // true 为 Beta 环境
 });
 ```
 
@@ -38,7 +38,7 @@ const myxClient = new MyxClient({
 
 ```typescript
 // 切换到不同的链
-myxClient.updateClientChainId(42161, NEW_BROKER_ADDRESS);
+myxClient.updateClientChainId(newChainId, NEW_BROKER_ADDRESS);
 ```
 
 ## 模块：订单（Order）
@@ -684,21 +684,512 @@ const receipt = await myxClient.referrals.claimRebate(
 );
 ```
 
-## 模块：LP 管理
+## 模块：LP（流动性提供者）
 
-`pool`、`quote`、`base` 下的导出保持不变。
+LP 模块为流动性提供者提供管理池流动性的功能。
+
+### 池管理
+
+#### pool.createPool
+
+创建新的流动性池。
 
 ```typescript
-import { pool, quote, base, formatUnits, COMMON_PRICE_DECIMALS } from '@myx-trade/sdk';
+import { pool } from '@myx-trade/sdk';
 
-const poolId = await pool.createPool({ chainId: 421614, baseToken: tokenAddress });
+const poolId = await pool.createPool({
+  chainId: chainId,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+```
+
+**参数：**
+```typescript
+interface CreatePoolRequest {
+  chainId: ChainId;
+  baseToken: AddressLike;
+  marketId: string;
+}
+```
+
+#### pool.getPoolDetail
+
+获取池的详细信息。
+
+```typescript
 const detail = await pool.getPoolDetail(poolId);
-await quote.deposit({ chainId: 421614, poolId, amount: 2000, slippage: 0.01 });
-await quote.withdraw({ chainId: 421614, poolId, amount: 2000, slippage: 0.01 });
-await base.deposit({ chainId: 421614, poolId, amount: 0.01, slippage: 0.01 });
-await base.withdraw({ chainId: 421614, poolId, amount: 0.01, slippage: 0.01 });
-const qPrice = await quote.getLpPrice(421614, poolId);
-const bPrice = await base.getLpPrice(421614, poolId);
+```
+
+#### pool.getMarketPoolId
+
+获取特定市场的池 ID。
+
+```typescript
+const poolId = await pool.getMarketPoolId({
+  chainId: chainId,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+```
+
+#### pool.getMarketPools
+
+获取市场的所有池。
+
+```typescript
+const pools = await pool.getMarketPools({
+  chainId: chainId,
+  marketId: marketId,
+});
+```
+
+#### pool.getPoolInfo
+
+获取池信息。
+
+```typescript
+const info = await pool.getPoolInfo(chainId, poolId);
+```
+
+#### pool.getUserGenesisShare
+
+获取用户在池中的创世份额。
+
+```typescript
+const share = await pool.getUserGenesisShare({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+#### pool.addTpSl
+
+为 LP 仓位添加止盈/止损订单。
+
+```typescript
+import { PoolType, TriggerType } from '@myx-trade/sdk';
+
+await pool.addTpSl({
+  chainId: chainId,
+  poolId: poolId,
+  poolType: PoolType.Quote, // PoolType.Quote 或 PoolType.Base
+  slippage: 0.01,
+  tpsl: [
+    {
+      amount: 100,
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+    {
+      amount: 100,
+      triggerPrice: 2800,
+      triggerType: TriggerType.SL,
+    },
+  ],
+});
+```
+
+**参数：**
+```typescript
+enum PoolType {
+  Base = 0,
+  Quote = 1
+}
+
+enum TriggerType {
+  TP = 1,  // 止盈
+  SL = 2,  // 止损
+}
+
+interface TpSl {
+  amount: number;
+  triggerPrice: number;
+  triggerType: TriggerType;
+}
+
+interface AddTpSLParams {
+  chainId: ChainId;
+  poolId: string;
+  poolType: PoolType;
+  slippage: number;
+  tpsl: TpSl[];
+}
+```
+
+#### pool.cancelTpSl
+
+取消止盈/止损订单。
+
+```typescript
+await pool.cancelTpSl({
+  chainId: chainId,
+  orderId: orderId,
+});
+```
+
+#### pool.reprime
+
+重新启动池。
+
+```typescript
+await pool.reprime({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+#### pool.getOpenOrders
+
+获取未成交的 LP 订单。
+
+```typescript
+const orders = await pool.getOpenOrders({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+### Quote 池操作
+
+#### quote.deposit
+
+存入报价代币（如 USDC）提供流动性。
+
+```typescript
+import { quote } from '@myx-trade/sdk';
+
+const tx = await quote.deposit({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 2000,
+  slippage: 0.01,
+  tpsl: [  // 可选
+    {
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+  ],
+});
+```
+
+**参数：**
+```typescript
+interface Deposit {
+  chainId: ChainId;
+  poolId: string;
+  amount: number;
+  slippage: number;
+  tpsl?: DepositTpSl[];  // 可选的止盈/止损
+}
+
+type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>;
+```
+
+#### quote.withdraw
+
+从池中提取报价代币。
+
+```typescript
+const tx = await quote.withdraw({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 1000,
+  slippage: 0.01,
+});
+```
+
+**参数：**
+```typescript
+interface WithdrawParams {
+  chainId: ChainId;
+  poolId: string;
+  amount: number;
+  slippage: number;
+}
+```
+
+#### quote.transfer
+
+转移 Quote LP 代币。
+
+```typescript
+const tx = await quote.transfer({
+  chainId: chainId,
+  poolId: poolId,
+  recipient: recipientAddress,
+  amount: amount,
+});
+```
+
+#### quote.getLpPrice
+
+获取 Quote LP 代币的当前价格。
+
+```typescript
+const price = await quote.getLpPrice(chainId, poolId);
+```
+
+#### quote.getRewards
+
+获取 Quote LP 的待领取奖励。
+
+```typescript
+const rewards = await quote.getRewards({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+**参数：**
+```typescript
+interface RewardsParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+}
+```
+
+#### quote.claimQuotePoolRebate
+
+从单个 Quote 池领取返佣。
+
+```typescript
+const tx = await quote.claimQuotePoolRebate({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+**参数：**
+```typescript
+interface ClaimParams {
+  chainId: ChainId;
+  poolId: string;
+}
+```
+
+#### quote.claimQuotePoolRebates
+
+从多个 Quote 池领取返佣。
+
+```typescript
+const tx = await quote.claimQuotePoolRebates({
+  chainId: chainId,
+  poolIds: [poolId1, poolId2, poolId3],
+});
+```
+
+**参数：**
+```typescript
+interface ClaimRebatesParams {
+  chainId: ChainId;
+  poolIds: string[];
+}
+```
+
+### Base 池操作
+
+#### base.deposit
+
+存入基础代币提供流动性。
+
+```typescript
+import { base } from '@myx-trade/sdk';
+
+const tx = await base.deposit({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 0.01,
+  slippage: 0.01,
+  tpsl: [  // 可选
+    {
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+  ],
+});
+```
+
+#### base.withdraw
+
+从池中提取基础代币。
+
+```typescript
+const tx = await base.withdraw({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 0.005,
+  slippage: 0.01,
+});
+```
+
+#### base.getLpPrice
+
+获取 Base LP 代币的当前价格。
+
+```typescript
+const price = await base.getLpPrice(chainId, poolId);
+```
+
+#### base.getRewards
+
+获取 Base LP 的待领取奖励。
+
+```typescript
+const rewards = await base.getRewards({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+#### base.claimBasePoolRebate
+
+从单个 Base 池领取返佣。
+
+```typescript
+const tx = await base.claimBasePoolRebate({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+#### base.claimBasePoolRebates
+
+从多个 Base 池领取返佣。
+
+```typescript
+const tx = await base.claimBasePoolRebates({
+  chainId: chainId,
+  poolIds: [poolId1, poolId2, poolId3],
+});
+```
+
+#### base.previewUserWithdrawData
+
+在执行前预览提取数据。
+
+```typescript
+const withdrawData = await base.previewUserWithdrawData({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+  amount: amount,
+});
+```
+
+**参数：**
+```typescript
+interface PreviewWithdrawDataParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+  amount: string | number;
+}
+```
+
+### 市场操作
+
+#### market.getMarket
+
+获取市场信息。
+
+```typescript
+import { market } from '@myx-trade/sdk';
+
+const marketInfo = await market.getMarket(chainId);
+```
+
+#### market.getOracleFee
+
+获取价格更新的预言机费用。
+
+```typescript
+const oracleFee = await market.getOracleFee(chainId, poolId);
+```
+
+### 工具函数
+
+LP 模块还导出了有用的工具函数：
+
+```typescript
+import { 
+  formatUnits, 
+  parseUnits, 
+  COMMON_PRICE_DECIMALS, 
+  COMMON_LP_AMOUNT_DECIMALS 
+} from '@myx-trade/sdk';
+
+// 从 wei 格式化为可读格式
+const formattedAmount = formatUnits(bigIntAmount, decimals);
+
+// 从可读格式解析为 wei
+const weiAmount = parseUnits("100", decimals);
+
+// 常用精度常量
+console.log(COMMON_PRICE_DECIMALS);       // 价格精度（30）
+console.log(COMMON_LP_AMOUNT_DECIMALS);   // LP 代币精度
+```
+
+### 完整 LP 示例
+
+```typescript
+import { pool, quote, base, formatUnits } from '@myx-trade/sdk';
+
+// 创建池
+const poolId = await pool.createPool({
+  chainId: 421614,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+
+// 获取池详情
+const detail = await pool.getPoolDetail(poolId);
+
+// 存入报价代币（USDC）
+await quote.deposit({
+  chainId: 421614,
+  poolId,
+  amount: 2000,
+  slippage: 0.01,
+});
+
+// 存入基础代币
+await base.deposit({
+  chainId: 421614,
+  poolId,
+  amount: 0.01,
+  slippage: 0.01,
+});
+
+// 检查 LP 代币价格
+const quoteLpPrice = await quote.getLpPrice(421614, poolId);
+const baseLpPrice = await base.getLpPrice(421614, poolId);
+
+// 检查奖励
+const quoteRewards = await quote.getRewards({
+  chainId: 421614,
+  poolId,
+  account: userAddress,
+});
+
+// 领取奖励
+await quote.claimQuotePoolRebate({
+  chainId: 421614,
+  poolId,
+});
+
+// 提取流动性
+await quote.withdraw({
+  chainId: 421614,
+  poolId,
+  amount: 1000,
+  slippage: 0.01,
+});
 ```
 
 ## 模块：订阅（Subscription）- WebSocket
@@ -1035,12 +1526,12 @@ export interface KlineDataResponse {
 
 ```typescript
 export interface MyxClientConfig {
-  chainId: number;                    // 链 ID（测试网 421614，主网 42161）
+  chainId: number;                    // 链 ID（测试网 421614）
   signer?: ethers.Signer;             // Ethers signer
   walletClient?: any;                 // Wagmi 钱包客户端
   brokerAddress: string;              // Broker 合约地址
-  isTestnet?: boolean;                // true 为测试网，false 为主网（默认：false）
-  isBetaMode?: boolean;               // true 为 Beta 环境，false 为生产环境（默认：false）
+  isTestnet?: boolean;                // true 为测试网，false 为 Beta（默认：false）
+  isBetaMode?: boolean;               // true 为 Beta 环境（默认：false）
   seamlessMode?: boolean;             // 启用无 Gas 模式（默认：false）
   logLevel?: 'debug' | 'info' | 'warn' | 'error'; // 日志级别（默认：'info'）
   socketConfig?: {
@@ -1210,15 +1701,6 @@ const betaClient = new MyxClient({
   brokerAddress: BETA_BROKER_ADDRESS,
   isTestnet: false,
   isBetaMode: true,
-});
-
-// 主网
-const mainnetClient = new MyxClient({
-  chainId: 42161,
-  signer,
-  brokerAddress: MAINNET_BROKER_ADDRESS,
-  isTestnet: false,
-  isBetaMode: false,
 });
 ```
 
