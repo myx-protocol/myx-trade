@@ -3,7 +3,7 @@ import { ConfigManager, MyxClientConfig } from "../config";
 import { ethers } from "ethers";
 import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
-import OrderManager_ABI from "@/abi/OrderManager.json";
+import MarketManager_ABI from "@/abi/MarketManager.json";
 import { Logger } from "@/logger";
 import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
@@ -245,19 +245,19 @@ export class Utils {
     }
   }
 
-  async getNetworkFee(quoteAddress: string, chainId: number) {
-    const orderManagerAddress =
-      getContractAddressByChainId(chainId).ORDER_MANAGER;
+  async getNetworkFee(marketId: string, chainId: number) {
+    const marketManagerAddress =
+      getContractAddressByChainId(chainId).MARKET_MANAGER;
     const provider = await getJSONProvider(chainId);
-    const orderManagerContract = new ethers.Contract(
-      orderManagerAddress,
-      OrderManager_ABI,
+    const marketManagerContract = new ethers.Contract(
+      marketManagerAddress,
+      MarketManager_ABI,
       provider
     );
 
     try {
-      const networkFee = await orderManagerContract.getExecutionFee(
-        quoteAddress
+      const networkFee = await marketManagerContract.getExecutionFee(
+        marketId
       );
 
       return networkFee.toString();
