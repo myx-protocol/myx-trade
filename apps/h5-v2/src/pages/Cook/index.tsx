@@ -14,13 +14,14 @@ import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
 import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
 import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
 import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
   const [cookType, setCookType] = useState<CookListType>(CookListType.Sniper)
   const [chainId, setChainId] = useState<number | undefined>(undefined)
   const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
-  const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Latest)
+  const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Eligible)
 
   const [age, setAge] = useState<[string, string]>(['', ''])
   const [mc, setMC] = useState<[string, string]>(['', ''])
@@ -30,8 +31,8 @@ const Cook = () => {
   const [holders, setHolders] = useState<[string, string]>(['', ''])
 
   return (
-    <Box className={'overflow-x w-full pb-[var(--tabbar-height)]'}>
-      <SearchBar />
+    <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
+      <SearchBar defaultTab={SearchTypeEnum.Cook} />
       <Banner />
       <CookContext.Provider
         value={{

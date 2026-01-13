@@ -70,7 +70,8 @@ export const CloseConfirmDialog = () => {
     >
       <div className="mt-[10px] flex items-center gap-[4px] text-[16px] leading-[16px] text-[#EC605A]">
         <p>
-          {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+          {symbolInfo?.baseSymbol}
+          {symbolInfo?.quoteSymbol}
         </p>
         <p>{position?.userLeverage}x</p>
       </div>

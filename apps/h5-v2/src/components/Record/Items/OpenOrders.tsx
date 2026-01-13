@@ -1,15 +1,45 @@
 import { Tag } from '@/components/Tag/index'
 import { OrderTpSlButton } from '@/components/Trade/Dialog/OrderTpSl'
-import { InfoButton } from '@/components/UI/Button'
 import { CancelOrderButton } from '@/pages/Trade/components/CancelOrderButton'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
-import { DirectionEnum, OrderTypeEnum } from '@myx-trade/sdk'
+import { Direction, DirectionEnum, OrderTypeEnum, TriggerType } from '@myx-trade/sdk'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
+import { parseBigNumber } from '@/utils/bn'
+
+const RenderTpSl = (order: any) => {
+  if (order.orderType === OrderTypeEnum.Stop) {
+    if (order.triggerType === TriggerType.GTE && order.direction === Direction.LONG) {
+      return (
+        <Tag type="info">
+          <Trans>TP</Trans>
+        </Tag>
+      )
+    } else if (order.triggerType === TriggerType.LTE && order.direction === Direction.LONG) {
+      return (
+        <Tag type="info">
+          <Trans>SL</Trans>
+        </Tag>
+      )
+    } else if (order.triggerType === TriggerType.GTE && order.direction === Direction.SHORT) {
+      return (
+        <Tag type="info">
+          <Trans>SL</Trans>
+        </Tag>
+      )
+    } else if (order.triggerType === TriggerType.LTE && order.direction === Direction.SHORT) {
+      return (
+        <Tag type="info">
+          <Trans>TP</Trans>
+        </Tag>
+      )
+    }
+  }
+}
 
 export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
   const symbolInfo = usePoolSymbol({
@@ -35,7 +65,8 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
             />
             <div className="flex flex-col items-start gap-[4px]">
               <p className="text-[14px] font-medium text-white">
-                {symbolInfo?.baseSymbol}/{symbolInfo?.quoteSymbol}
+                {symbolInfo?.baseSymbol}
+                {symbolInfo?.quoteSymbol}
               </p>
               <div className="flex gap-[4px]">
                 <Tag type={order.direction === DirectionEnum.Long ? 'success' : 'danger'}>
@@ -45,15 +76,20 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
                     <Trans>Short</Trans>
                   )}
                 </Tag>
-                <Tag type="info">
-                  {order.orderType === OrderTypeEnum.Limit ? (
+                {/* limit */}
+                {order.orderType === OrderTypeEnum.Limit && (
+                  <Tag type="info">
                     <Trans>Limit</Trans>
-                  ) : order.orderType === OrderTypeEnum.Market ? (
+                  </Tag>
+                )}
+                {/* market */}
+                {order.orderType === OrderTypeEnum.Market && (
+                  <Tag type="info">
                     <Trans>Market</Trans>
-                  ) : (
-                    <Trans>TPSL</Trans>
-                  )}
-                </Tag>
+                  </Tag>
+                )}
+                {/* tpsl */}
+                {order.orderType === OrderTypeEnum.Stop && <>{<RenderTpSl order={order} />}</>}
                 <Tag type="info">
                   <Trans>Isolated {order.userLeverage}x</Trans>
                 </Tag>
@@ -76,7 +112,9 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
               <Trans>Margin({order.quoteSymbol})</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(order.collateralAmount, { showUnit: false })}
+              {parseBigNumber(order.collateralAmount).eq(0)
+                ? '--'
+                : formatNumber(order.collateralAmount, { showUnit: false })}
             </p>
           </div>
           {/* amount */}
@@ -85,7 +123,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
               <Trans>Amount</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {formatNumber(order.size, { showUnit: false })}
+              {formatNumber(order.size, { showUnit: false })} {order.baseSymbol}
             </p>
           </div>
           {/* price */}

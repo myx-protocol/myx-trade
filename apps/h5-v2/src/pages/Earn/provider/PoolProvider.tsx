@@ -7,7 +7,7 @@ import { PoolType } from '@/request/type.ts'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, mode } =
+  const { pool, poolInfo, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, mode, fundingRate } =
     usePoolDetail(PoolType.quote)
 
   return (
@@ -24,6 +24,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         tvl: poolInfo?.tvl,
         poolInfoRefetch,
         mode,
+        fundingRate: fundingRate?.nextFundingRatePercent,
       }}
     >
       {children}

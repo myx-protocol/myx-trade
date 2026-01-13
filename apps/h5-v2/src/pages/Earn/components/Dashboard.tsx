@@ -20,6 +20,8 @@ import { Skeleton } from '@/components/UI/Skeleton'
 import { useContext } from 'react'
 import { SearchContext } from '@/pages/Earn/context.ts'
 import { Change } from '@/components/Change.tsx'
+import { decimalToPercent } from '@/utils/number.ts'
+import { isSafeNumber } from '@/utils'
 
 interface Column<T> {
   key: keyof T
@@ -160,7 +162,11 @@ export const Dashboard = () => {
       label: <Trans>APR</Trans>,
       align: 'right',
       render: (row: Vault) => {
-        return <Change change={row?.apr}>{formatNumberPercent(row?.apr)}</Change>
+        return (
+          <Change change={row?.apr}>
+            {isSafeNumber(row?.apr) ? decimalToPercent(row?.apr) : '--%'}
+          </Change>
+        )
       },
     },
   ]
@@ -230,7 +236,7 @@ export const Dashboard = () => {
 
   return (
     <Box className={'flex h-[226px] w-full gap-[16px]'}>
-      <Card icon={<New size={16} />} title={<Trans>New</Trans>}>
+      <Card icon={<New size={16} />} title={<Trans>Tag_New</Trans>}>
         <DashboardTable<Vault> columns={columns} data={NewTop} isLoading={isNewLoading} />
       </Card>
       <Card icon={<Hot size={16} />} title={<Trans>Hot</Trans>}>

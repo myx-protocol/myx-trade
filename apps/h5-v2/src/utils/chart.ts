@@ -2,8 +2,6 @@ import dayjs from 'dayjs'
 import { ChartInterval } from '@/pages/Earn/type.ts'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import type { EChartsOption } from 'echarts'
 
 import * as echarts from 'echarts/core'
@@ -11,6 +9,7 @@ import { GraphicComponent, GridComponent, TooltipComponent } from 'echarts/compo
 import { BarChart, LineChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
+import { formatNumber } from '@/utils/number.ts'
 
 type AxisExtent = { min: number; max: number }
 echarts.use([
@@ -37,7 +36,7 @@ export const formatter = (interval: ChartInterval, params: any[]) => {
                      .format(`YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''))}</p>
                    <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${i18n._(
                      t`Price`,
-                   )} <span style="color: white">${formatNumberPrecision(data, COMMON_BASE_DISPLAY_DECIMALS)}
+                   )} <span style="color: white">${formatNumber(data, { showUnit: false })}
                   </span></p>
                 </div>`
 }
@@ -155,10 +154,10 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
                   colorStops: [
                     {
                       offset: 0,
-                      color: 'rgba(0, 227, 165, 0.6)',
+                      color: 'rgba(0, 227, 165, 0.4)',
                     },
                     {
-                      offset: 1,
+                      offset: 0.9,
                       color: 'rgba(0, 227, 165, 0)',
                     },
                   ],

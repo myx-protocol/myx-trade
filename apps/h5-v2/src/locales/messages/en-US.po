@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-05 07:32\n"
+"PO-Revision-Date: 2026-01-11 02:40\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -29,10 +29,6 @@ msgid " APR "
 msgstr ""
 
 #: src/pages/Cook/components/TrenchTabBar.tsx
-msgid " Eligible "
-msgstr ""
-
-#: src/pages/Cook/components/TrenchTabBar.tsx
 msgid " Gainers "
 msgstr ""
 
@@ -49,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -118,7 +113,7 @@ msgstr "{pendingTransactionsLength} transactions pending"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
-msgstr "Insufficient tradable amount in account (uint256,uint256)"
+msgstr "Insufficient tradable amount in account "
 
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
 msgid "1-day rebate"
@@ -173,11 +168,11 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlBadConfirmation()"
-msgstr "Access control confirmation failed()"
+msgstr "Access control confirmation failed"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlUnauthorizedAccount(address,bytes32)"
-msgstr "Unauthorized account (address,bytes32)"
+msgstr "Unauthorized account"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -187,7 +182,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccountInsufficientFreeAmount()"
-msgstr "Insufficient available balance in account()"
+msgstr "Insufficient available balance in account"
 
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -236,7 +231,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AddressEmptyCode(address)"
-msgstr "Address cannot be empty (address)"
+msgstr "Address cannot be empty"
 
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 msgid "Adjust Leverage"
@@ -293,6 +288,7 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
 #: src/pages/Cook/components/ChainsBar.tsx
+#: src/pages/Cook/components/TrenchTabBar.tsx
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "All"
@@ -320,19 +316,19 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyClaimed(CaseId,address)"
-msgstr "Already claimed (CaseId,address)"
+msgstr "Already claimed "
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyInitialized()"
-msgstr "Already initialized()"
+msgstr "Already initialized"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyMinted()"
-msgstr "Already minted()"
+msgstr "Already minted"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyVoted()"
-msgstr "Already voted()"
+msgstr "Already voted"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
@@ -387,7 +383,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ArrayEmpty()"
-msgstr "Cannot be empty()"
+msgstr "Cannot be empty"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Asset"
@@ -479,7 +475,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BaseFeeNotSoldOut()"
-msgstr "Base fee not sold out()"
+msgstr "Base fee not sold out"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Be the first to create a market, provide the initial liquidity, and earn a fixed 2% share of all trading fees."
@@ -521,7 +517,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BondNotReleased()"
-msgstr "Bond not unlocked()"
+msgstr "Bond not unlocked"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
@@ -538,11 +534,11 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerAlreadyExists()"
-msgstr "Broker already exists()"
+msgstr "Broker already exists"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerNotFound()"
-msgstr "Broker not found()"
+msgstr "Broker not found"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/OrderSide/index.tsx
@@ -602,35 +598,35 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseAppealNotFinished()"
-msgstr "Appeal not finished()"
+msgstr "Appeal not finished"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseCanNotAppeal()"
-msgstr "Cannot appeal()"
+msgstr "Cannot appeal"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineNotReached()"
-msgstr "Deadline not reached()"
+msgstr "Deadline not reached"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineReached()"
-msgstr "Deadline reached()"
+msgstr "Deadline reached"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotAccepted()"
-msgstr "Case not accepted()"
+msgstr "Case not accepted"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotExist(CaseId)"
-msgstr "Case does not exist (CaseId)"
+msgstr "Case does not exist "
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotInVoting()"
-msgstr "Case not in voting()"
+msgstr "Case not in voting"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseRespondentAppealed(CaseId,address)"
-msgstr "Counter-appeal in progress (CaseId,address)"
+msgstr "Counter-appeal in progress"
 
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -866,11 +862,13 @@ msgstr ""
 msgid "Congratulations! You’ve unlocked the highest VIP level."
 msgstr ""
 
+#: src/pages/Earn/components/ConnectWallet.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Connect wallet"
 msgstr ""
 
 #: src/components/CanSwitchWalletNetwork/index.tsx
+#: src/components/ConnectButton.tsx
 #: src/components/WalletConnect/index.tsx
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Connect Wallet"
@@ -891,7 +889,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
-msgstr "Conversion amount mismatch, please try again (uint256,uint256)"
+msgstr "Conversion amount mismatch, please try again"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -900,6 +898,10 @@ msgstr "Conversion amount mismatch, please try again (uint256,uint256)"
 #: src/pages/Cook/components/ToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Cook"
+msgstr ""
+
+#: src/pages/Cook/components/CookSubBar.tsx
+msgid "Cook_Sub_Bar_New"
 msgstr ""
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
@@ -1063,7 +1065,7 @@ msgstr ""
 
 #: src/components/SafeList/index.tsx
 msgid "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
-msgstr "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
+msgstr ""
 
 #: src/components/Footer/index.tsx
 msgid "Developers"
@@ -1071,7 +1073,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DifferentMarket(PoolId,PoolId)"
-msgstr "Market mismatch (PoolId,PoolId)"
+msgstr "Market mismatch"
 
 #: src/components/Footer/index.tsx
 msgid "Discord"
@@ -1083,7 +1085,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DisputeNotAllowed()"
-msgstr "Dispute not allowed()"
+msgstr "Dispute not allowed"
 
 #: src/components/Footer/index.tsx
 msgid "Documentation"
@@ -1125,15 +1127,15 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignature()"
-msgstr "Invalid signature()"
+msgstr "Invalid signature"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureLength(uint256)"
-msgstr "Invalid signature length (uint256)"
+msgstr "Invalid signature length"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureS(bytes32)"
-msgstr "Invalid signature (bytes32)"
+msgstr "Invalid signature"
 
 #: src/components/Footer/index.tsx
 msgid "Ecosystem"
@@ -1165,7 +1167,7 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "EnforcedPause()"
-msgstr "Enforced pause()"
+msgstr "Enforced pause"
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 #: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
@@ -1214,39 +1216,39 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967InvalidImplementation(address)"
-msgstr "Invalid implementation (address)"
+msgstr "Invalid implementation"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967NonPayable()"
-msgstr "Non-payable()"
+msgstr "Non-payable"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientAllowance(address,uint256,uint256)"
-msgstr "Allowance exceeded (address,uint256,uint256)"
+msgstr "Allowance exceeded"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientBalance(address,uint256,uint256)"
-msgstr "Insufficient balance (address,uint256,uint256)"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidApprover(address)"
-msgstr "Invalid approver (address)"
+msgstr "Invalid approver"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidReceiver(address)"
-msgstr "Invalid receiver (address)"
+msgstr "Invalid receiver"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSender(address)"
-msgstr "Invalid sender (address)"
+msgstr "Invalid sender"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSpender(address)"
-msgstr "Invalid spender (address)"
+msgstr "Invalid spender"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612ExpiredSignature(uint256)"
-msgstr "Signature expired (uint256)"
+msgstr "Signature expired"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612InvalidSigner(address,address)"
@@ -1323,7 +1325,7 @@ msgstr ""
 
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Estimated realized PnL for this redemption."
-msgstr ""
+msgstr "Accumulated trading fee dividends earned from your Genesis LP share (lifetime 2% benefit). This amount will be claimed automatically upon redemption."
 
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations."
@@ -1578,6 +1580,10 @@ msgstr ""
 
 #: src/pages/Home/components/Banner/index.tsx
 msgid "Get Started"
+msgstr ""
+
+#: src/pages/Earn/components/ConnectWallet.tsx
+msgid "Get Started to view"
 msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
@@ -1968,9 +1974,12 @@ msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 #: src/pages/Home/components/MarketList/index.tsx
-#: src/pages/MarketList/components/List/index.tsx
 #: src/pages/rank/components/List/index.tsx
 msgid "Last Price"
+msgstr ""
+
+#: src/pages/MarketList/components/List/index.tsx
+msgid "Last Price/TVL"
 msgstr ""
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
@@ -1996,6 +2005,10 @@ msgstr ""
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/OrderType/index.tsx
 msgid "Limit"
+msgstr ""
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Limit close success"
 msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
@@ -2300,8 +2313,6 @@ msgstr ""
 msgid "Network error"
 msgstr ""
 
-#: src/pages/Cook/components/CookSubBar.tsx
-#: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "New"
@@ -2641,19 +2652,19 @@ msgstr "Invalid owner (address)"
 msgid "OwnableUnauthorizedAccount(address)"
 msgstr "Unauthorized account (address)"
 
-#. placeholder {0}: displayAmount(paidOrigin?.freeMargin ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.freeMargin ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Free Margin: {0} {1}"
 msgstr ""
 
-#. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Locked Realized PnL: {0} {1}"
 msgstr ""
 
-#. placeholder {0}: displayAmount(paidOrigin?.walletBalance ?? '0', pool?.quoteDecimals ?? 6)
+#. placeholder {0}: displayAmount(paidOrigin?.walletBalance ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Wallet: {0} {1}"
@@ -2867,7 +2878,7 @@ msgstr ""
 
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Profit"
-msgstr ""
+msgstr "Genesis Earnings"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3453,6 +3464,10 @@ msgstr ""
 msgid "Switch Network"
 msgstr ""
 
+#: src/pages/Earn/components/Dashboard.tsx
+msgid "Tag_New"
+msgstr ""
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "Taker"
 msgstr ""
@@ -3850,8 +3865,8 @@ msgstr ""
 msgid "View referral rules"
 msgstr ""
 
-#: src/components/Tabbar/const.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
+#: src/pages/VIP/provider/index.tsx
 msgid "VIP"
 msgstr ""
 
@@ -4032,7 +4047,7 @@ msgstr "From Wallet"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
-msgstr "仓位已平仓"
+msgstr "Position Closed"
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
@@ -4052,6 +4067,10 @@ msgstr "Margin"
 #: src/components/Record/Items/Finance.tsx
 msgid "保证金账户"
 msgstr "Margin Account"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "保证金账户可划转到钱包的余额"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
@@ -4149,7 +4168,7 @@ msgstr "Closable Amount"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "可领取"
-msgstr ""
+msgstr "Claimable"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 msgid "合约"
@@ -4343,7 +4362,7 @@ msgstr "Docs"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无可执行数量"
-msgstr "无可执行数量"
+msgstr "No Executable Amount"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "无感Gas费"
@@ -4351,11 +4370,11 @@ msgstr "Seamless Gas Fee"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无效订单"
-msgstr "无效订单"
+msgstr "Invalid Order"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无效订单，被Keeper清理"
-msgstr "无效订单，被Keeper清理"
+msgstr "Invalid Order (Cleared by Keeper)"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
@@ -4422,7 +4441,7 @@ msgstr "Slippage"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "滑点超限"
-msgstr "滑点超限"
+msgstr "Slippage Exceeded"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -4434,7 +4453,7 @@ msgstr "Status"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "用户已取消"
-msgstr "用户已取消"
+msgstr "Canceled by User"
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
@@ -4473,11 +4492,11 @@ msgstr "Trigger Price"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
-msgstr "订单执行超时失效"
+msgstr "Order Execution Timed Out"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
-msgstr "订单数量超限"
+msgstr "Order Size Limit Exceeded"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
@@ -4489,7 +4508,7 @@ msgstr "Select Contract Quote Asset"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择币种"
-msgstr ""
+msgstr "Select Token"
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择您的资产"
@@ -4497,7 +4516,7 @@ msgstr "Select Your Assets"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择链接"
-msgstr ""
+msgstr "Select Link"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 msgid "通用滑点容忍设置"
@@ -4511,6 +4530,10 @@ msgstr "Referral Rebate"
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "部分平仓"
 msgstr "Partial Close"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "钱包内可划转至保证金账户的余额"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
@@ -4527,7 +4550,7 @@ msgstr "Limit Open"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "非仓位持有者"
-msgstr "非仓位持有者"
+msgstr "Not Position Owner"
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
@@ -4556,3 +4579,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+

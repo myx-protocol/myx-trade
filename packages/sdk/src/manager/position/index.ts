@@ -18,6 +18,9 @@ import {
 import dayjs from "dayjs";
 import { Account } from "../account";
 import { Api } from "../api";
+import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
+import { ChainId } from "@/config/chain";
+import { getContractAddressByChainId } from "@/config/address/index";
 
 export class Position {
   private configManager: ConfigManager;
@@ -128,7 +131,8 @@ export class Position {
           address,
           chainId,
           quoteToken,
-          adjustAmount
+          adjustAmount,
+          getContractAddressByChainId(chainId).TRADING_ROUTER
         );
       }
 
@@ -242,6 +246,7 @@ export class Position {
           chainId,
           quoteAddress: quoteToken,
           amount: ethers.MaxUint256.toString(),
+          spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
         if (approvalResult.code !== 0) {
           throw new Error(approvalResult.message);
@@ -255,10 +260,12 @@ export class Position {
         adjustAmount,
         {
           value: BigInt(priceData?.value ?? "1"),
-          gas: 10000000n,
+          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
         }
       );
+
       const hash = await transaction.wait();
+
       return {
         code: 0,
         data: { hash },

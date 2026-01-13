@@ -20,7 +20,7 @@ import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { AmountUnitEnum } from '../../type'
-import { MenuItem, Select } from '@mui/material'
+import { MenuItem, Select, Tooltip } from '@mui/material'
 import useGlobalStore from '@/store/globalStore'
 import dayjs from 'dayjs'
 
@@ -344,7 +344,7 @@ export const TransferDialogButton = () => {
                   value={amount}
                   placeholder={t`Please Enter`}
                   inputMode="decimal"
-                  decimalScale={symbolInfo?.quoteDecimals ?? 6}
+                  decimalScale={6}
                   thousandSeparator=","
                   decimalSeparator="."
                   onValueChange={(values, sourceInfo) => {
@@ -374,10 +374,7 @@ export const TransferDialogButton = () => {
               <div className="flex items-center gap-[8px] text-[12px]">
                 {transferType === 'wallet' ? (
                   <span className="text-[white]">
-                    {displayAmount(
-                      accountAssets?.walletBalance?.toString() ?? '0',
-                      symbolInfo?.quoteDecimals ?? 6,
-                    )}{' '}
+                    {displayAmount(accountAssets?.walletBalance?.toString() ?? '0', 6)}{' '}
                     {symbolInfo?.quoteSymbol}
                   </span>
                 ) : (
@@ -388,7 +385,15 @@ export const TransferDialogButton = () => {
                       : symbolInfo?.baseSymbol}
                   </span>
                 )}
-                <InfoIcon className="h-[16px] w-[16px]" />
+                <Tooltip
+                  title={
+                    transferType === TransferType.Wallet
+                      ? t`钱包内可划转至保证金账户的余额`
+                      : t`保证金账户可划转到钱包的余额`
+                  }
+                >
+                  <InfoIcon className="h-[16px] w-[16px]" />
+                </Tooltip>
               </div>
             </div>
             <div className="mt-[20px]">

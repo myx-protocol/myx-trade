@@ -59,10 +59,10 @@ export const SearchTabs = () => {
   const [chainSelectOpen, setChainSelectOpen] = useState(false)
 
   const debouncedSearchValue = useDebounce(searchValue, {
-    wait: 500,
+    wait: 200,
   })
   const searchLoadingDebounced = useDebounce(searchLoading, {
-    wait: 500,
+    wait: 200,
   })
   return (
     <div>

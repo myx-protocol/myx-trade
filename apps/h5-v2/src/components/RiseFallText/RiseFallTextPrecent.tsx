@@ -20,9 +20,10 @@ export const RiseFallTextPrecent = ({
       if (render) {
         return render(value || '0')
       }
-      if (value) {
+      if (value || Number(value) === 0) {
         return decimalToPercent(value, renderOptions)
       }
+
       return '--'
     },
     [render, renderOptions],

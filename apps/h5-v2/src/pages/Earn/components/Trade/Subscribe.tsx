@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { Box, Button } from '@mui/material'
-import { Refresh, TipsFill, WalletLine } from '@/components/Icon'
+import { TipsFill, WalletLine } from '@/components/Icon'
 import { NumericInputWithAdornment } from '@/pages/Earn/components/Trade/NumericInput.tsx'
 import ArrowDownLong from '@/components/Icon/set/ArrowDownLong.tsx'
 import { Describe } from '@/components/Describe.tsx'
@@ -12,20 +12,32 @@ import { useCallback, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { PoolContext } from '../../context'
 import { useQuery } from '@tanstack/react-query'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
 import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { isSafeNumber } from '@/utils'
-import toast from 'react-hot-toast'
+import { toast } from '@/components/UI/Toast'
 import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { Fee } from '@/pages/Earn/components/Trade/Fee.tsx'
+import { showErrorToast } from '@/config/error'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
+import { Change } from '@/components/Change'
+import { ConnectButton } from '@/components/ConnectButton.tsx'
 
+const inputStyle = {
+  htmlInput: {
+    style: {
+      fontSize: 20,
+      fontWeight: 700,
+    },
+  },
+}
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
   const { pool, quoteLpDetail, poolInfoRefetch } = useContext(PoolContext)
@@ -83,12 +95,12 @@ export const Subscribe = () => {
         amount: Number(amount),
         slippage: Number(slippage),
       })
-      toast.success(t`Successfully subscribe`)
+      toast.success({ title: t`Successfully subscribe` })
       setAmount('')
       await refetch()
       poolInfoRefetch()
     } catch (error) {
-      toast.error(JSON.stringify(error))
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }
@@ -103,8 +115,7 @@ export const Subscribe = () => {
               <Box className={'flex items-center gap-[4px] text-[12px]'}>
                 <WalletLine size={14} />
                 <span>
-                  {balance ? formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS) : '--'}{' '}
-                  {pool?.quoteSymbol}
+                  {formatNumber(balance, { showUnit: false })} {pool?.quoteSymbol}
                 </span>
               </Box>
             </>
@@ -117,6 +128,8 @@ export const Subscribe = () => {
               autoFocus={true}
               value={amount}
               onValueChange={onAmountChange}
+              slotProps={inputStyle}
+              min={0}
             />
             <Box className={'flex items-center gap-[12px]'}>
               <Button variant="text" className={'!min-w-[auto] !p-[0px]'} onClick={onHandleMax}>
@@ -164,20 +177,22 @@ export const Subscribe = () => {
           }
         >
           <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
-            <span
-              className={`text-[32px] text-white ${Number(quoteLpDetail?.apr) > 0 ? 'text-rise' : 'text-fall'}`}
+            <Change className={`text-[32px] text-white`} change={quoteLpDetail?.apr}>
+              {isSafeNumber(quoteLpDetail?.apr)
+                ? decimalToPercent(quoteLpDetail?.apr as string)
+                : '--%'}
+            </Change>
+            <Change
+              className={'text-secondary text-[16px]'}
+              change={(Number(amount) * Number(quoteLpDetail?.apr)).toString()}
             >
-              {formatNumberPercent(quoteLpDetail?.apr)}
-            </span>
-            <span className={'text-secondary text-[16px]'}>
-              {amount && quoteLpDetail?.apr
-                ? formatNumberPrecision(
-                    Number(amount) * Number(quoteLpDetail?.apr),
-                    COMMON_PRICE_DISPLAY_DECIMALS,
-                  )
+              {isSafeNumber(amount) && isSafeNumber(quoteLpDetail?.apr)
+                ? formatNumber(Number(amount) * Number(quoteLpDetail?.apr), {
+                    showUnit: false,
+                  })
                 : '--'}{' '}
               {pool?.quoteSymbol}
-            </span>
+            </Change>
           </Box>
         </Card>
       </Box>
@@ -197,21 +212,24 @@ export const Subscribe = () => {
             </DefaultButton>
           </>
         ) : (
-          <TradeButton
-            variant="contained"
-            className={'w-full'}
-            disabled={
-              !amount ||
-              isInsufficient ||
-              pool?.state === MarketPoolState.PreBench ||
-              pool?.state === MarketPoolState.Bench
-            }
-            loading={loading}
-            onClick={onHandleSubscribe}
-            loadingPosition="start" // 图标显示在文字前面
-          >
-            <Trans>Subscribe</Trans>
-          </TradeButton>
+          <ConnectButton>
+            <TradeButton
+              variant="contained"
+              className={'w-full'}
+              disabled={
+                !amount ||
+                isInsufficient ||
+                pool?.state === MarketPoolState.PreBench ||
+                pool?.state === MarketPoolState.Bench ||
+                Number(amount) <= 0
+              }
+              loading={loading}
+              onClick={onHandleSubscribe}
+              loadingPosition="start" // 图标显示在文字前面
+            >
+              <Trans>Subscribe</Trans>
+            </TradeButton>
+          </ConnectButton>
         )}
       </Box>
       <Describe>
