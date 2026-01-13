@@ -1,8 +1,8 @@
-# MYX Trade SDK Integration Guide (Regenerated)
+# MYX Trade SDK Integration Guide
 
 ## Overview
 
-MYX Trade SDK is a TypeScript/JavaScript SDK for derivatives trading. It provides order placement, position management, order management, market data, subscriptions, and LP operations.
+MYX Trade SDK is a TypeScript/JavaScript SDK for derivatives trading. It provides order placement, position management, market data, subscriptions, account management, seamless wallet, and LP operations.
 
 ## Installation
 
@@ -26,164 +26,662 @@ const provider = new BrowserProvider(walletClient.transport);
 const signer = await provider.getSigner();
 
 const myxClient = new MyxClient({
-  chainId: 421614,
+  chainId: 421614, // or 42161 for mainnet
   signer,
-  brokerAddress: "0xd3d5b9c4316468697D827389B79622F43BDF6483",
-  isTestnet: true,
+  brokerAddress: BROKER_ADDRESS, // Get from MYX team
+  isTestnet: true, // true for testnet, false for mainnet
+  isBetaMode: false, // true for beta environment, false for production
 });
 ```
 
-### Configure Access Token
+### Update Client Chain
 
 ```typescript
-import CryptoJS from "crypto-js";
-
-const getAccessToken = async (appId: string, timestamp: number, expireTime: number, allowAccount: string, signature: string) => {
-  const rs = await fetch(`https://api-test.myx.cash/openapi/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`);
-  const res = await rs.json();
-  return { code: 0, msg: null, data: { accessToken: res.data.accessToken, expireAt: res.data.expireAt, allowAccount: res.data.allowAccount, appId } };
-};
-
-const handleAccessToken = async () => {
-  const appId = "test1";
-  const timestamp = Math.floor(Date.now() / 1000);
-  const expireTime = 3600 * 24;
-  const allowAccount = address;
-  const secret = "69v9kHey9b746PseJ0TP";
-
-  const signature = CryptoJS.SHA256(`${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`).toString(CryptoJS.enc.Hex);
-  const ok = await myxClient.getConfigManager().callGetAccessToken(getAccessToken, [appId, timestamp, expireTime, address!, signature]);
-  if (!ok) throw new Error("Failed to obtain access token");
-};
+// Switch to different chain
+myxClient.updateClientChainId(42161, NEW_BROKER_ADDRESS);
 ```
 
-## Module: Orders
+## Module: Order
 
-### Create Increase/Decrease Order
+### createIncreaseOrder
+
+Create an increase position order (open or add to position).
 
 ```typescript
-import { OrderType, OperationType, TriggerType, Direction } from '@myx-trade/sdk';
+import { OrderType, TriggerType, Direction } from '@myx-trade/sdk';
 
-const common = {
+const result = await myxClient.order.createIncreaseOrder({
   chainId: 421614,
-  address: address as `0x${string}`,
-  poolId: "0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d",
-  positionId: 0,
+  address: userAddress as `0x${string}`,
+  poolId: poolId, // Pool ID from market list
+  positionId: "0", // 0 for new position, or existing positionId
   orderType: OrderType.LIMIT,
   triggerType: TriggerType.NONE,
   direction: Direction.LONG,
-  collateralAmount: "1000000000",
-  size: "1000000000000000000",
+  collateralAmount: "1000000000", // in quote token decimals
+  size: "1000000000000000000", // position size
+  price: "3000000000000000000000000000000000", // 30 decimals
+  postOnly: false,
+  slippagePct: "100", // in bps
+  executionFeeToken: quoteTokenAddress, // Quote token address (e.g., USDC)
+  leverage: 10,
+  tpSize: "0", // optional take profit size
+  tpPrice: "0", // optional take profit price
+  slSize: "0", // optional stop loss size
+  slPrice: "0", // optional stop loss price
+}, tradingFee);
+```
+
+### createDecreaseOrder
+
+Create a decrease position order (close or reduce position).
+
+```typescript
+const result = await myxClient.order.createDecreaseOrder({
+  chainId: 421614,
+  address: userAddress as `0x${string}`,
+  poolId: poolId,
+  positionId: existingPositionId,
+  orderType: OrderType.MARKET,
+  triggerType: TriggerType.NONE,
+  direction: Direction.SHORT,
+  collateralAmount: "0",
+  size: "500000000000000000",
   price: "3000000000000000000000000000000000",
   postOnly: false,
   slippagePct: "100",
-  executionFeeToken: "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28",
+  executionFeeToken: quoteTokenAddress,
   leverage: 10,
-  tpSize: "0",
-  tpPrice: "0",
-  slSize: "0",
-  slPrice: "0",
-};
-
-const incRes = await myxClient.order.createIncreaseOrder(common);
-const decRes = await myxClient.order.createDecreaseOrder({ ...common, positionId: 14, direction: Direction.SHORT });
+});
 ```
 
-### Create TP/SL For Existing Position
+### closeAllPositions
+
+Close all positions in a pool at once.
+
+```typescript
+const result = await myxClient.order.closeAllPositions(
+  421614, // chainId
+  [
+    { /* PlaceOrderParams for position 1 */ },
+    { /* PlaceOrderParams for position 2 */ },
+  ],
+  tradingFee
+);
+```
+
+### createPositionTpSlOrder
+
+Create take profit and/or stop loss orders for an existing position.
 
 ```typescript
 import { TriggerType, Direction } from '@myx-trade/sdk';
 
 await myxClient.order.createPositionTpSlOrder({
   chainId: 421614,
-  address: address as `0x${string}`,
-  poolId,
-  positionId: 14,
+  address: userAddress as `0x${string}`,
+  poolId: poolId,
+  positionId: existingPositionId,
   direction: Direction.LONG,
+  leverage: 10,
   tpSize: "100000000000000000",
-  tpPrice: "1200000000000000000000000000000000",
+  tpPrice: "3500000000000000000000000000000000",
   tpTriggerType: TriggerType.GTE,
   slSize: "100000000000000000",
-  slPrice: "1000000000000000000000000000000000",
+  slPrice: "2800000000000000000000000000000000",
   slTriggerType: TriggerType.LTE,
-  executionFeeToken: "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28",
+  executionFeeToken: quoteTokenAddress,
 });
 ```
 
-### Update Order TP/SL
+### updateOrderTpSl
+
+Update take profit and stop loss for an existing order.
 
 ```typescript
 await myxClient.order.updateOrderTpSl({
-  orderId: 107,
-  tpSize: "0",
-  tpPrice: "0",
-  slSize: "0",
-  slPrice: "0",
-  executionFeeToken: "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28",
+  orderId: orderId,
+  size: "1000000000000000000",
+  price: "3000000000000000000000000000000000",
+  tpSize: "500000000000000000",
+  tpPrice: "3500000000000000000000000000000000",
+  slSize: "500000000000000000",
+  slPrice: "2800000000000000000000000000000000",
   useOrderCollateral: true,
-});
+  executionFeeToken: quoteTokenAddress,
+}, quoteTokenAddress, chainId, userAddress);
 ```
 
-### Cancel Orders
+### cancelOrder
+
+Cancel a single order.
 
 ```typescript
-await myxClient.order.cancelOrder("107");
-await myxClient.order.cancelOrders(["107", "108"]);
+await myxClient.order.cancelOrder(orderId, chainId);
 ```
 
-## Module: Positions
+### cancelOrders
 
-### List Positions
+Cancel multiple orders.
 
 ```typescript
-const positionsResult = await myxClient.position.listPositions();
-if (positionsResult.code === 0) {
-  const positions = positionsResult.data;
+await myxClient.order.cancelOrders([orderId1, orderId2, orderId3], chainId);
+```
+
+### cancelAllOrders
+
+Cancel all open orders.
+
+```typescript
+await myxClient.order.cancelAllOrders([orderId1, orderId2, orderId3], chainId);
+```
+
+### getOrders
+
+Get all open orders for the current account.
+
+```typescript
+const result = await myxClient.order.getOrders(userAddress);
+if (result.code === 0) {
+  console.log(result.data); // array of open orders
 }
 ```
 
-### Adjust Collateral
+### getOrderHistory
+
+Get historical orders.
 
 ```typescript
+const result = await myxClient.order.getOrderHistory({
+  chainId: 421614,
+  poolId: poolId, // optional filter by pool
+  page: 1,
+  limit: 20,
+}, userAddress);
+```
+
+## Module: Position
+
+### listPositions
+
+Get all open positions for the current account.
+
+```typescript
+const result = await myxClient.position.listPositions(userAddress);
+if (result.code === 0) {
+  const positions = result.data;
+  // positions array contains all open positions
+}
+```
+
+### getPositionHistory
+
+Get historical closed positions.
+
+```typescript
+const result = await myxClient.position.getPositionHistory({
+  chainId: 421614,
+  poolId: poolId, // optional filter by pool
+  page: 1,
+  limit: 20,
+}, userAddress);
+```
+
+### adjustCollateral
+
+Add or remove collateral from a position.
+
+```typescript
+import { OracleType } from '@myx-trade/sdk';
+
 await myxClient.position.adjustCollateral({
-  poolId: "0x7ffff60e4cbf30b25184a7265e5adae24245e02a18884f7d46b44cc7e773cc3d",
-  positionId: "14",
-  adjustAmount: "100",
+  poolId: poolId,
+  positionId: positionId,
+  adjustAmount: "100000000", // positive to add, negative to remove
+  quoteToken: quoteTokenAddress,
+  poolOracleType: OracleType.Pyth,
+  chainId: 421614,
+  address: userAddress,
 });
 ```
 
-## Module: Orders Data
+## Module: Utils
+
+### needsApproval
+
+Check if token approval is needed.
 
 ```typescript
-const ordersResult = await myxClient.order.getOrders();
-if (ordersResult.code === 0) {
-  const orders = ordersResult.data;
-}
+const needApproval = await myxClient.utils.needsApproval(
+  userAddress,
+  chainId,
+  quoteTokenAddress,
+  amount
+);
+```
+
+### approveAuthorization
+
+Approve token spending.
+
+```typescript
+const result = await myxClient.utils.approveAuthorization({
+  chainId: chainId,
+  quoteAddress: quoteTokenAddress,
+  amount: ethers.MaxUint256.toString(),
+});
+```
+
+### getUserTradingFeeRate
+
+Get user's trading fee rates.
+
+```typescript
+const result = await myxClient.utils.getUserTradingFeeRate(
+  assetClass,
+  riskTier,
+  chainId
+);
+// Returns: { takerFeeRate, makerFeeRate, baseTakerFeeRate, baseMakerFeeRate }
+```
+
+### getNetworkFee
+
+Get the network execution fee for orders.
+
+```typescript
+const networkFee = await myxClient.utils.getNetworkFee(
+  quoteTokenAddress,
+  chainId
+);
+```
+
+### getOraclePrice
+
+Get oracle price for a pool.
+
+```typescript
+const priceData = await myxClient.utils.getOraclePrice(poolId, chainId);
+// Returns: { price, vaa, publishTime, poolId, value }
+```
+
+### checkSeamlessGas
+
+Check if seamless account has enough gas.
+
+```typescript
+const hasEnoughGas = await myxClient.utils.checkSeamlessGas(userAddress, chainId);
+```
+
+### getLiquidityInfo
+
+Get pool liquidity information.
+
+```typescript
+const result = await myxClient.utils.getLiquidityInfo({
+  chainId: chainId,
+  poolId: poolId,
+  marketPrice: marketPrice, // 30 decimals
+});
+```
+
+### formatErrorMessage
+
+Format error messages from contract calls.
+
+```typescript
+const errorMsg = myxClient.utils.formatErrorMessage(error);
+```
+
+### getGasPriceByRatio
+
+Get gas price with configured ratio.
+
+```typescript
+const gasPrice = await myxClient.utils.getGasPriceByRatio(chainId);
+```
+
+### getGasLimitByRatio
+
+Get gas limit with configured ratio.
+
+```typescript
+const gasLimit = await myxClient.utils.getGasLimitByRatio(chainId, BigInt(100000));
 ```
 
 ## Module: Markets
 
+### getPoolLevelConfig
+
+Get pool level configuration.
+
 ```typescript
-import { getPools, getOraclePrice, getPoolLevelConfig } from '@myx-trade/sdk';
-
-const pools = (await getPools()).data;
-const priceData = await getOraclePrice(421614, [poolId]);
-const poolCfg = (await getPoolLevelConfig({ poolId, chainId: 421614 })).data;
-
-const pools2 = await myxClient.markets.listPools();
-const level2 = await myxClient.markets.getPoolLevelConfig(poolId);
+const poolConfig = await myxClient.markets.getPoolLevelConfig(poolId, chainId);
 ```
 
-## Module: Utils (Approval & Fees)
+### getKlineList
+
+Get kline/candlestick data.
 
 ```typescript
-const quoteAddress = "0x7E248Ec1721639413A280d9E82e2862Cae2E6E28";
-const need = await myxClient.utils.needsApproval(quoteAddress, "1000000000");
-if (need) {
-  await myxClient.utils.approveAuthorization({ quoteAddress, amount: "1000000000" });
-}
+const klines = await myxClient.markets.getKlineList({
+  poolId: poolId,
+  chainId: chainId,
+  interval: '1h', // '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M'
+  limit: 100,
+  endTime: Date.now(),
+});
+```
 
-const networkFee = await myxClient.utils.getNetworkFee(quoteAddress);
+### getKlineLatestBar
+
+Get the latest kline bar.
+
+```typescript
+const latestBar = await myxClient.markets.getKlineLatestBar({
+  poolId: poolId,
+  chainId: chainId,
+  interval: '1h',
+});
+```
+
+### getTickerList
+
+Get ticker data for multiple pools.
+
+```typescript
+const tickers = await myxClient.markets.getTickerList({
+  chainId: chainId,
+  poolIds: [poolId1, poolId2],
+});
+```
+
+### searchMarket
+
+Search markets (unauthenticated).
+
+```typescript
+const results = await myxClient.markets.searchMarket({
+  chainId: chainId,
+  keyword: "BTC",
+  limit: 10,
+});
+```
+
+### searchMarketAuth
+
+Search markets with authentication (shows favorites).
+
+```typescript
+const results = await myxClient.markets.searchMarketAuth({
+  chainId: chainId,
+  keyword: "BTC",
+  limit: 10,
+}, userAddress);
+```
+
+### getFavoritesList
+
+Get user's favorite markets.
+
+```typescript
+const favorites = await myxClient.markets.getFavoritesList({
+  chainId: chainId,
+  page: 1,
+  limit: 20,
+}, userAddress);
+```
+
+### addFavorite
+
+Add a market to favorites.
+
+```typescript
+await myxClient.markets.addFavorite({
+  chainId: chainId,
+  poolId: poolId,
+}, userAddress);
+```
+
+### removeFavorite
+
+Remove a market from favorites.
+
+```typescript
+await myxClient.markets.removeFavorite({
+  chainId: chainId,
+  poolId: poolId,
+}, userAddress);
+```
+
+### getBaseDetail
+
+Get base token details.
+
+```typescript
+const baseDetail = await myxClient.markets.getBaseDetail({
+  chainId: chainId,
+  baseAddress: baseTokenAddress,
+});
+```
+
+### getMarketDetail
+
+Get market detail information.
+
+```typescript
+const marketDetail = await myxClient.markets.getMarketDetail({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+### getPoolSymbolAll
+
+Get all pool symbols.
+
+```typescript
+const pools = await myxClient.markets.getPoolSymbolAll();
+```
+
+## Module: Account
+
+### getWalletQuoteTokenBalance
+
+Get wallet's quote token balance.
+
+```typescript
+const result = await myxClient.account.getWalletQuoteTokenBalance(chainId, userAddress);
+console.log(result.data); // balance in wei
+```
+
+### getAvailableMarginBalance
+
+Get available margin balance for a pool.
+
+```typescript
+const availableBalance = await myxClient.account.getAvailableMarginBalance({
+  poolId: poolId,
+  chainId: chainId,
+  address: userAddress,
+});
+```
+
+### getTradeFlow
+
+Get account trade flow history.
+
+```typescript
+const result = await myxClient.account.getTradeFlow({
+  chainId: chainId,
+  page: 1,
+  limit: 20,
+}, userAddress);
+```
+
+### deposit
+
+Deposit funds to trading account.
+
+```typescript
+const result = await myxClient.account.deposit({
+  amount: amount,
+  tokenAddress: quoteTokenAddress,
+  chainId: chainId,
+});
+```
+
+### withdraw
+
+Withdraw funds from trading account.
+
+```typescript
+const result = await myxClient.account.withdraw({
+  chainId: chainId,
+  receiver: userAddress,
+  amount: amount,
+  poolId: poolId,
+  isQuoteToken: true,
+});
+```
+
+### getAccountInfo
+
+Get account information for a pool.
+
+```typescript
+const result = await myxClient.account.getAccountInfo(chainId, userAddress, poolId);
+// Returns: { freeMargin, quoteProfit, ... }
+```
+
+### getAccountVipInfo
+
+Get account VIP information from chain.
+
+```typescript
+const result = await myxClient.account.getAccountVipInfo(chainId, userAddress);
+// Returns: { tier, referrer, totalReferralRebatePct, referrerRebatePct, nonce, deadline }
+```
+
+### getAccountVipInfoByBackend
+
+Get account VIP information from backend.
+
+```typescript
+const result = await myxClient.account.getAccountVipInfoByBackend(
+  userAddress,
+  chainId,
+  deadline,
+  nonce
+);
+```
+
+### setUserFeeData
+
+Set user fee data with signature from backend.
+
+```typescript
+const result = await myxClient.account.setUserFeeData(
+  userAddress,
+  chainId,
+  deadline,
+  {
+    tier: 1,
+    referrer: referrerAddress,
+    totalReferralRebatePct: 1000,
+    referrerRebatePct: 500,
+    nonce: nonce,
+  },
+  signature
+);
+```
+
+## Module: Seamless (Gasless Trading)
+
+Seamless mode allows users to trade without paying gas fees by using a relayer account.
+
+### createSeamless
+
+Create a new seamless wallet.
+
+```typescript
+const result = await myxClient.seamless.createSeamless({
+  password: userPassword,
+  chainId: chainId,
+});
+// Returns: { masterAddress, seamlessAccount, authorized, apiKey }
+```
+
+### unLockSeamlessWallet
+
+Unlock an existing seamless wallet.
+
+```typescript
+const result = await myxClient.seamless.unLockSeamlessWallet({
+  masterAddress: userAddress,
+  password: userPassword,
+  apiKey: encryptedApiKey,
+  chainId: chainId,
+});
+```
+
+### authorizeSeamlessAccount
+
+Authorize or revoke seamless account.
+
+```typescript
+const result = await myxClient.seamless.authorizeSeamlessAccount({
+  approve: true, // false to revoke
+  seamlessAddress: seamlessWalletAddress,
+  chainId: chainId,
+});
+```
+
+### startSeamlessMode
+
+Enable or disable seamless mode.
+
+```typescript
+const result = await myxClient.seamless.startSeamlessMode({
+  open: true, // false to disable
+});
+```
+
+### exportSeamlessPrivateKey
+
+Export seamless wallet private key.
+
+```typescript
+const result = await myxClient.seamless.exportSeamlessPrivateKey({
+  password: userPassword,
+  apiKey: encryptedApiKey,
+});
+// Returns: { privateKey }
+```
+
+### importSeamlessPrivateKey
+
+Import seamless wallet from private key.
+
+```typescript
+const result = await myxClient.seamless.importSeamlessPrivateKey({
+  privateKey: privateKey,
+  password: userPassword,
+  chainId: chainId,
+});
+// Returns: { masterAddress, seamlessAccount, authorized, apiKey }
+```
+
+## Module: Referrals
+
+### claimRebate
+
+Claim referral rebates.
+
+```typescript
+const receipt = await myxClient.referrals.claimRebate(
+  tokenAddress // token address to claim rebate in
+);
 ```
 
 ## Module: LP Manage
@@ -203,78 +701,255 @@ const qPrice = await quote.getLpPrice(421614, poolId);
 const bPrice = await base.getLpPrice(421614, poolId);
 ```
 
-## Module: Subscriptions (WebSocket)
+## Module: Subscription (WebSocket)
 
-- URL auto-switches by `isTestnet`.
-- Private topics (`order`, `position`) require `auth()` after AccessToken is configured.
-- Public topics: `ticker`, `candle` (kline).
+The subscription module provides real-time updates for market data, orders, and positions via WebSocket.
+
+### Connection Management
 
 ```typescript
+// Connect to WebSocket
 myxClient.subscription.connect();
+
+// Disconnect from WebSocket
 myxClient.subscription.disconnect();
+
+// Reconnect to WebSocket
 myxClient.subscription.reconnect();
-const connected = myxClient.subscription.isConnected;
 
-const onTickers = (data) => console.log('ticker', data);
+// Check connection status
+const isConnected = myxClient.subscription.isConnected;
+```
+
+### Public Subscriptions (No Auth Required)
+
+#### subscribeTickers / unsubscribeTickers
+
+Subscribe to ticker updates for one or multiple pools.
+
+```typescript
+const onTickers = (data) => {
+  console.log('Ticker update:', data);
+  // data: { type: 'ticker', globalId: number, data: { C, E, T, h, i, l, p, v } }
+};
+
+// Subscribe to single pool
 myxClient.subscription.subscribeTickers(globalId, onTickers);
+
+// Subscribe to multiple pools
+myxClient.subscription.subscribeTickers([globalId1, globalId2, globalId3], onTickers);
+
+// Unsubscribe
 myxClient.subscription.unsubscribeTickers(globalId, onTickers);
+myxClient.subscription.unsubscribeTickers([globalId1, globalId2], onTickers);
+```
 
-const onKline = (data) => console.log('kline', data);
+#### subscribeKline / unsubscribeKline
+
+Subscribe to kline/candlestick updates.
+
+```typescript
+const onKline = (data) => {
+  console.log('Kline update:', data);
+  // data: { type: 'candle', globalId, resolution, data: { E, T, c, h, l, o, t, v } }
+};
+
+// Subscribe
 myxClient.subscription.subscribeKline(globalId, '1m', onKline);
-myxClient.subscription.unsubscribeKline(globalId, '1m', onKline);
+// Resolutions: '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M'
 
+// Unsubscribe
+myxClient.subscription.unsubscribeKline(globalId, '1m', onKline);
+```
+
+### Private Subscriptions (Auth Required)
+
+Private subscriptions require authentication. Call `auth()` before subscribing.
+
+#### auth
+
+Authenticate the WebSocket connection.
+
+```typescript
+await myxClient.subscription.auth();
+```
+
+#### subscribeOrder / unsubscribeOrder
+
+Subscribe to order updates for the authenticated account.
+
+```typescript
+const onOrder = (data) => {
+  console.log('Order update:', data);
+  // Receives updates when orders are created, filled, cancelled, etc.
+};
+
+await myxClient.subscription.subscribeOrder(onOrder);
+
+// Unsubscribe
+myxClient.subscription.unsubscribeOrder(onOrder);
+```
+
+#### subscribePosition / unsubscribePosition
+
+Subscribe to position updates for the authenticated account.
+
+```typescript
+const onPosition = (data) => {
+  console.log('Position update:', data);
+  // Receives updates when positions are opened, modified, or closed
+};
+
+await myxClient.subscription.subscribePosition(onPosition);
+
+// Unsubscribe
+myxClient.subscription.unsubscribePosition(onPosition);
+```
+
+### Event Listeners
+
+Listen to WebSocket connection events.
+
+```typescript
+// Connection opened
+myxClient.subscription.on('open', () => {
+  console.log('WebSocket connected');
+});
+
+// Connection closed
+myxClient.subscription.on('close', () => {
+  console.log('WebSocket closed');
+});
+
+// Connection error
+myxClient.subscription.on('error', (error) => {
+  console.error('WebSocket error:', error);
+});
+
+// Reconnecting
+myxClient.subscription.on('reconnecting', ({ detail }) => {
+  console.log('Reconnecting...', detail);
+});
+
+// Max reconnection attempts reached
+myxClient.subscription.on('maxreconnectattempts', () => {
+  console.log('Max reconnection attempts reached');
+});
+
+// Remove event listener
+const handler = () => console.log('opened');
+myxClient.subscription.on('open', handler);
+myxClient.subscription.off('open', handler);
+```
+
+### Complete Example
+
+```typescript
+// Connect and subscribe to public data
+myxClient.subscription.connect();
+
+// Subscribe to tickers
+const tickerCallback = (data) => {
+  console.log('Ticker:', data.globalId, data.data);
+};
+myxClient.subscription.subscribeTickers([1, 2, 3], tickerCallback);
+
+// Subscribe to klines
+const klineCallback = (data) => {
+  console.log('Kline:', data.globalId, data.resolution, data.data);
+};
+myxClient.subscription.subscribeKline(1, '1h', klineCallback);
+
+// Authenticate and subscribe to private data
 await myxClient.subscription.auth();
 
-const onOrder = (data) => console.log('order', data);
-await myxClient.subscription.subscribeOrder(onOrder);
-myxClient.subscription.unsubscribeOrder(onOrder);
+// Subscribe to orders
+const orderCallback = (data) => {
+  console.log('Order update:', data);
+};
+await myxClient.subscription.subscribeOrder(orderCallback);
 
-const onPosition = (data) => console.log('position', data);
-await myxClient.subscription.subscribePosition(onPosition);
-myxClient.subscription.unsubscribePosition(onPosition);
+// Subscribe to positions
+const positionCallback = (data) => {
+  console.log('Position update:', data);
+};
+await myxClient.subscription.subscribePosition(positionCallback);
 
-myxClient.subscription.on('open', () => console.log('ws open'));
-myxClient.subscription.on('reconnecting', ({ detail }) => console.log('reconnecting', detail));
-myxClient.subscription.on('maxreconnectattempts', () => console.log('max attempts'));
-myxClient.subscription.off('open', () => {});
+// Clean up
+myxClient.subscription.unsubscribeTickers([1, 2, 3], tickerCallback);
+myxClient.subscription.unsubscribeKline(1, '1h', klineCallback);
+myxClient.subscription.unsubscribeOrder(orderCallback);
+myxClient.subscription.unsubscribePosition(positionCallback);
+myxClient.subscription.disconnect();
 ```
 
 ## Types Reference
 
-```typescript
-// Enums
-export const OrderType = { MARKET: 0, LIMIT: 1, STOP: 2, CONDITIONAL: 3 } as const;
-export type OrderType = (typeof OrderType)[keyof typeof OrderType];
-export const TriggerType = { NONE: 0, GTE: 1, LTE: 2 } as const;
-export type TriggerType = (typeof TriggerType)[keyof typeof TriggerType];
-export const OperationType = { INCREASE: 0, DECREASE: 1 } as const;
-export type OperationType = (typeof OperationType)[keyof typeof OperationType];
-export const Direction = { LONG: 0, SHORT: 1 } as const;
-export type Direction = (typeof Direction)[keyof typeof Direction];
-export const TimeInForce = { IOC: 0 } as const;
-export type TimeInForce = (typeof TimeInForce)[keyof typeof TimeInForce];
+### Enums
 
+```typescript
+// Order Types
+export const OrderType = {
+  MARKET: 0,      // Market order
+  LIMIT: 1,       // Limit order
+  STOP: 2,        // Stop order
+  CONDITIONAL: 3  // Conditional order
+} as const;
+export type OrderType = (typeof OrderType)[keyof typeof OrderType];
+
+// Trigger Types
+export const TriggerType = {
+  NONE: 0,  // No trigger
+  GTE: 1,   // Greater than or equal (>=)
+  LTE: 2    // Less than or equal (<=)
+} as const;
+export type TriggerType = (typeof TriggerType)[keyof typeof TriggerType];
+
+// Operation Types
+export const OperationType = {
+  INCREASE: 0,  // Increase position
+  DECREASE: 1   // Decrease position
+} as const;
+export type OperationType = (typeof OperationType)[keyof typeof OperationType];
+
+// Direction
+export const Direction = {
+  LONG: 0,   // Long position
+  SHORT: 1   // Short position
+} as const;
+export type Direction = (typeof Direction)[keyof typeof Direction];
+
+// Time in Force
+export const TimeInForce = {
+  IOC: 0  // Immediate or Cancel
+} as const;
+export type TimeInForce = (typeof TimeInForce)[keyof typeof TimeInForce];
+```
+
+### Interfaces
+
+```typescript
 // Place order parameters
 export interface PlaceOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: string;
   orderType: OrderType;
   triggerType: TriggerType;
   direction: Direction;
-  collateralAmount: string;
-  size: string;
-  price: string; // 30 decimals
+  collateralAmount: string;  // in quote token decimals
+  size: string;              // position size
+  price: string;             // 30 decimals
   timeInForce: TimeInForce;
   postOnly: boolean;
-  slippagePct: string; // bps
+  slippagePct: string;       // basis points (bps)
   executionFeeToken: string;
   leverage: number;
-  tpSize?: string;
-  tpPrice?: string;
-  slSize?: string;
-  slPrice?: string;
+  tpSize?: string;           // optional take profit size
+  tpPrice?: string;          // optional take profit price (30 decimals)
+  slSize?: string;           // optional stop loss size
+  slPrice?: string;          // optional stop loss price (30 decimals)
 }
 
 // TP/SL for position
@@ -286,34 +961,221 @@ export interface PositionTpSlOrderParams {
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;
-  direction: Direction;
-  tpSize?: string;
-  tpPrice?: string;
-  slSize?: string;
-  slPrice?: string;
+  direction: Direction;      // position direction
+  leverage: number;
+  tpSize?: string;           // take profit size
+  tpPrice?: string;          // take profit price (30 decimals)
+  slSize?: string;           // stop loss size
+  slPrice?: string;          // stop loss price (30 decimals)
 }
 
-// Update order TP/SL (used by order.updateOrderTpSl)
+// Update order TP/SL
 export interface UpdateOrderParams {
   orderId: string;
+  size: string;
+  price: string;             // 30 decimals
   tpSize: string;
-  tpPrice: string;
+  tpPrice: string;           // 30 decimals
   slSize: string;
-  slPrice: string;
+  slPrice: string;           // 30 decimals
   useOrderCollateral: boolean;
   executionFeeToken: string;
 }
 
-// WebSocket types
+// History query parameters
+export interface GetHistoryOrdersParams {
+  chainId: number;
+  poolId?: string;
+  page: number;
+  limit: number;
+}
+```
+
+### WebSocket Types
+
+```typescript
+// Kline resolution
 export type KlineResolution = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' | '1M';
-export interface TickersDataResponse { type: 'ticker'; globalId: number; data: { C: string; E: number; T: string; h: string; i: string; l: string; p: string; v: string; }; }
-export interface KlineDataResponse { type: 'candle'; globalId: number; resolution: KlineResolution; data: { E: number; T: string; c: string; h: string; l: string; o: string; t: number; v: string; }; }
+
+// Ticker data
+export interface TickersDataResponse {
+  type: 'ticker';
+  globalId: number;
+  data: {
+    C: string;  // Close price
+    E: number;  // Event time
+    T: string;  // Timestamp
+    h: string;  // High price
+    i: string;  // Index price
+    l: string;  // Low price
+    p: string;  // Price change percent
+    v: string;  // Volume
+  };
+}
+
+// Kline data
+export interface KlineDataResponse {
+  type: 'candle';
+  globalId: number;
+  resolution: KlineResolution;
+  data: {
+    E: number;  // Event time
+    T: string;  // Timestamp
+    c: string;  // Close price
+    h: string;  // High price
+    l: string;  // Low price
+    o: string;  // Open price
+    t: number;  // Time
+    v: string;  // Volume
+  };
+}
+```
+
+### Client Configuration
+
+```typescript
+export interface MyxClientConfig {
+  chainId: number;                    // Chain ID (421614 for testnet, 42161 for mainnet)
+  signer?: ethers.Signer;             // Ethers signer
+  walletClient?: any;                 // Wagmi wallet client
+  brokerAddress: string;              // Broker contract address
+  isTestnet?: boolean;                // true for testnet, false for mainnet (default: false)
+  isBetaMode?: boolean;               // true for beta environment, false for production (default: false)
+  seamlessMode?: boolean;             // Enable seamless (gasless) mode (default: false)
+  logLevel?: 'debug' | 'info' | 'warn' | 'error'; // Log level (default: 'info')
+  socketConfig?: {
+    reconnectInterval?: number;       // WebSocket reconnect interval in ms (default: 5000)
+    maxReconnectAttempts?: number;    // Max reconnection attempts (default: 5)
+  };
+  getAccessToken?: () => Promise<{   // Optional: Access token getter function
+    code: number;
+    msg: string | null;
+    data: {
+      accessToken: string;
+      expireAt: number;
+      allowAccount: string;
+      appId: string;
+    };
+  }>;
+}
 ```
 
 ## Error Handling
 
-- AccessToken auto-refresh: call `handleAccessToken()` again on 9401/expired.
-- Network fee is fetched automatically inside order creation.
+### AccessToken Management
+
+The SDK automatically manages AccessToken. If token expires (error code 9401), call `handleAccessToken()` again:
+
+```typescript
+try {
+  const orders = await myxClient.order.getOrders(address);
+} catch (error) {
+  if (error.code === 9401) {
+    await handleAccessToken();
+    // Retry the request
+    const orders = await myxClient.order.getOrders(address);
+  }
+}
+```
+
+### Transaction Errors
+
+The SDK provides error formatting utilities:
+
+```typescript
+try {
+  await myxClient.order.createIncreaseOrder(params, tradingFee);
+} catch (error) {
+  const errorMessage = myxClient.utils.formatErrorMessage(error);
+  console.error('Transaction failed:', errorMessage);
+}
+```
+
+### Common Error Codes
+
+- `9401`: AccessToken expired
+- `9403`: Unauthorized
+- `-1`: General error (check message for details)
+- `0`: Success
+
+## Best Practices
+
+### 1. Price and Amount Decimals
+
+- **Prices**: Use 30 decimals (e.g., `"3000000000000000000000000000000000"` for $3000)
+- **Amounts**: Use token decimals (typically 6 for USDC, 18 for ETH)
+- **Slippage**: In basis points (100 = 1%)
+
+```typescript
+import { ethers } from 'ethers';
+
+// Convert price to 30 decimals
+const price = ethers.parseUnits("3000", 30).toString();
+
+// Convert amount to token decimals
+const amount = ethers.parseUnits("100", 6).toString(); // 100 USDC
+```
+
+### 2. Check Approval Before Trading
+
+```typescript
+const needApproval = await myxClient.utils.needsApproval(
+  userAddress,
+  chainId,
+  quoteTokenAddress,
+  collateralAmount
+);
+
+if (needApproval) {
+  await myxClient.utils.approveAuthorization({
+    chainId,
+    quoteAddress: quoteTokenAddress,
+    amount: ethers.MaxUint256.toString(),
+  });
+}
+```
+
+### 3. Calculate Trading Fee
+
+```typescript
+const feeRate = await myxClient.utils.getUserTradingFeeRate(
+  assetClass,
+  riskTier,
+  chainId
+);
+
+const tradingFee = (BigInt(collateralAmount) * BigInt(feeRate.data.takerFeeRate)) / BigInt(1e6);
+```
+
+### 4. Monitor WebSocket Connection
+
+```typescript
+myxClient.subscription.on('close', () => {
+  console.log('WebSocket closed, reconnecting...');
+  myxClient.subscription.reconnect();
+});
+
+myxClient.subscription.on('error', (error) => {
+  console.error('WebSocket error:', error);
+});
+```
+
+### 5. Use Seamless Mode for Better UX
+
+Seamless mode allows gasless trading for better user experience:
+
+```typescript
+// Create seamless wallet
+const result = await myxClient.seamless.createSeamless({
+  password: userPassword,
+  chainId,
+});
+
+// Enable seamless mode
+await myxClient.seamless.startSeamlessMode({ open: true });
+
+// Now all transactions will be gasless
+```
 
 ## Dependencies
 
@@ -322,14 +1184,46 @@ export interface KlineDataResponse { type: 'candle'; globalId: number; resolutio
   "dependencies": {
     "@myx-trade/sdk": "latest",
     "ethers": "^6.x.x",
-    "crypto-js": "^4.x.x",
-    "wagmi": "^2.x.x"
+    "crypto-js": "^4.x.x"
   }
 }
 ```
 
-## Notes
+## Network Configuration
 
-- Ensure wallet is on Arbitrum Sepolia (421614) for testnet examples.
-- Convert amounts/decimals properly (wei and 30-decimal prices).
-- Prefer `myxClient.order.*` and `myxClient.position.*` instead of the old `myxClient.trading.*`.
+### Environment Configuration Examples
+
+```typescript
+// Testnet
+const testnetClient = new MyxClient({
+  chainId: 421614,
+  signer,
+  brokerAddress: TESTNET_BROKER_ADDRESS,
+  isTestnet: true,
+  isBetaMode: false,
+});
+
+// Beta
+const betaClient = new MyxClient({
+  chainId: BETA_CHAIN_ID,
+  signer,
+  brokerAddress: BETA_BROKER_ADDRESS,
+  isTestnet: false,
+  isBetaMode: true,
+});
+
+// Mainnet
+const mainnetClient = new MyxClient({
+  chainId: 42161,
+  signer,
+  brokerAddress: MAINNET_BROKER_ADDRESS,
+  isTestnet: false,
+  isBetaMode: false,
+});
+```
+
+> **Note**: Contact MYX team for specific chain IDs, broker addresses, and token addresses for each environment.
+
+## Support
+
+For issues, questions, or feature requests, please contact MYX team.
