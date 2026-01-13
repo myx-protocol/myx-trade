@@ -26,11 +26,11 @@ const provider = new BrowserProvider(walletClient.transport);
 const signer = await provider.getSigner();
 
 const myxClient = new MyxClient({
-  chainId: 421614, // or 42161 for mainnet
+  chainId: 421614, // Testnet chain ID
   signer,
   brokerAddress: BROKER_ADDRESS, // Get from MYX team
-  isTestnet: true, // true for testnet, false for mainnet
-  isBetaMode: false, // true for beta environment, false for production
+  isTestnet: true, // true for testnet, false for beta
+  isBetaMode: false, // true for beta environment
 });
 ```
 
@@ -38,7 +38,7 @@ const myxClient = new MyxClient({
 
 ```typescript
 // Switch to different chain
-myxClient.updateClientChainId(42161, NEW_BROKER_ADDRESS);
+myxClient.updateClientChainId(newChainId, NEW_BROKER_ADDRESS);
 ```
 
 ## Module: Order
@@ -684,21 +684,512 @@ const receipt = await myxClient.referrals.claimRebate(
 );
 ```
 
-## Module: LP Manage
+## Module: LP (Liquidity Provider)
 
-Exports under `pool`, `quote`, `base` remain available as before.
+The LP module provides functionality for liquidity providers to manage pool liquidity.
+
+### Pool Management
+
+#### pool.createPool
+
+Create a new liquidity pool.
 
 ```typescript
-import { pool, quote, base, formatUnits, COMMON_PRICE_DECIMALS } from '@myx-trade/sdk';
+import { pool } from '@myx-trade/sdk';
 
-const poolId = await pool.createPool({ chainId: 421614, baseToken: tokenAddress });
+const poolId = await pool.createPool({
+  chainId: chainId,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+```
+
+**Parameters:**
+```typescript
+interface CreatePoolRequest {
+  chainId: ChainId;
+  baseToken: AddressLike;
+  marketId: string;
+}
+```
+
+#### pool.getPoolDetail
+
+Get detailed information about a pool.
+
+```typescript
 const detail = await pool.getPoolDetail(poolId);
-await quote.deposit({ chainId: 421614, poolId, amount: 2000, slippage: 0.01 });
-await quote.withdraw({ chainId: 421614, poolId, amount: 2000, slippage: 0.01 });
-await base.deposit({ chainId: 421614, poolId, amount: 0.01, slippage: 0.01 });
-await base.withdraw({ chainId: 421614, poolId, amount: 0.01, slippage: 0.01 });
-const qPrice = await quote.getLpPrice(421614, poolId);
-const bPrice = await base.getLpPrice(421614, poolId);
+```
+
+#### pool.getMarketPoolId
+
+Get pool ID for a specific market.
+
+```typescript
+const poolId = await pool.getMarketPoolId({
+  chainId: chainId,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+```
+
+#### pool.getMarketPools
+
+Get all pools for a market.
+
+```typescript
+const pools = await pool.getMarketPools({
+  chainId: chainId,
+  marketId: marketId,
+});
+```
+
+#### pool.getPoolInfo
+
+Get pool information.
+
+```typescript
+const info = await pool.getPoolInfo(chainId, poolId);
+```
+
+#### pool.getUserGenesisShare
+
+Get user's genesis share in a pool.
+
+```typescript
+const share = await pool.getUserGenesisShare({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+#### pool.addTpSl
+
+Add take profit / stop loss orders for LP position.
+
+```typescript
+import { PoolType, TriggerType } from '@myx-trade/sdk';
+
+await pool.addTpSl({
+  chainId: chainId,
+  poolId: poolId,
+  poolType: PoolType.Quote, // PoolType.Quote or PoolType.Base
+  slippage: 0.01,
+  tpsl: [
+    {
+      amount: 100,
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+    {
+      amount: 100,
+      triggerPrice: 2800,
+      triggerType: TriggerType.SL,
+    },
+  ],
+});
+```
+
+**Parameters:**
+```typescript
+enum PoolType {
+  Base = 0,
+  Quote = 1
+}
+
+enum TriggerType {
+  TP = 1,  // Take Profit
+  SL = 2,  // Stop Loss
+}
+
+interface TpSl {
+  amount: number;
+  triggerPrice: number;
+  triggerType: TriggerType;
+}
+
+interface AddTpSLParams {
+  chainId: ChainId;
+  poolId: string;
+  poolType: PoolType;
+  slippage: number;
+  tpsl: TpSl[];
+}
+```
+
+#### pool.cancelTpSl
+
+Cancel take profit / stop loss order.
+
+```typescript
+await pool.cancelTpSl({
+  chainId: chainId,
+  orderId: orderId,
+});
+```
+
+#### pool.reprime
+
+Reprime a pool.
+
+```typescript
+await pool.reprime({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+#### pool.getOpenOrders
+
+Get open LP orders.
+
+```typescript
+const orders = await pool.getOpenOrders({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+### Quote Pool Operations
+
+#### quote.deposit
+
+Deposit quote tokens (e.g., USDC) to provide liquidity.
+
+```typescript
+import { quote } from '@myx-trade/sdk';
+
+const tx = await quote.deposit({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 2000,
+  slippage: 0.01,
+  tpsl: [  // Optional
+    {
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+  ],
+});
+```
+
+**Parameters:**
+```typescript
+interface Deposit {
+  chainId: ChainId;
+  poolId: string;
+  amount: number;
+  slippage: number;
+  tpsl?: DepositTpSl[];  // Optional take profit/stop loss
+}
+
+type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>;
+```
+
+#### quote.withdraw
+
+Withdraw quote tokens from the pool.
+
+```typescript
+const tx = await quote.withdraw({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 1000,
+  slippage: 0.01,
+});
+```
+
+**Parameters:**
+```typescript
+interface WithdrawParams {
+  chainId: ChainId;
+  poolId: string;
+  amount: number;
+  slippage: number;
+}
+```
+
+#### quote.transfer
+
+Transfer quote LP tokens.
+
+```typescript
+const tx = await quote.transfer({
+  chainId: chainId,
+  poolId: poolId,
+  recipient: recipientAddress,
+  amount: amount,
+});
+```
+
+#### quote.getLpPrice
+
+Get the current price of quote LP tokens.
+
+```typescript
+const price = await quote.getLpPrice(chainId, poolId);
+```
+
+#### quote.getRewards
+
+Get pending rewards for quote LP.
+
+```typescript
+const rewards = await quote.getRewards({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+**Parameters:**
+```typescript
+interface RewardsParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+}
+```
+
+#### quote.claimQuotePoolRebate
+
+Claim rebate from a single quote pool.
+
+```typescript
+const tx = await quote.claimQuotePoolRebate({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+**Parameters:**
+```typescript
+interface ClaimParams {
+  chainId: ChainId;
+  poolId: string;
+}
+```
+
+#### quote.claimQuotePoolRebates
+
+Claim rebates from multiple quote pools.
+
+```typescript
+const tx = await quote.claimQuotePoolRebates({
+  chainId: chainId,
+  poolIds: [poolId1, poolId2, poolId3],
+});
+```
+
+**Parameters:**
+```typescript
+interface ClaimRebatesParams {
+  chainId: ChainId;
+  poolIds: string[];
+}
+```
+
+### Base Pool Operations
+
+#### base.deposit
+
+Deposit base tokens to provide liquidity.
+
+```typescript
+import { base } from '@myx-trade/sdk';
+
+const tx = await base.deposit({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 0.01,
+  slippage: 0.01,
+  tpsl: [  // Optional
+    {
+      triggerPrice: 3500,
+      triggerType: TriggerType.TP,
+    },
+  ],
+});
+```
+
+#### base.withdraw
+
+Withdraw base tokens from the pool.
+
+```typescript
+const tx = await base.withdraw({
+  chainId: chainId,
+  poolId: poolId,
+  amount: 0.005,
+  slippage: 0.01,
+});
+```
+
+#### base.getLpPrice
+
+Get the current price of base LP tokens.
+
+```typescript
+const price = await base.getLpPrice(chainId, poolId);
+```
+
+#### base.getRewards
+
+Get pending rewards for base LP.
+
+```typescript
+const rewards = await base.getRewards({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+});
+```
+
+#### base.claimBasePoolRebate
+
+Claim rebate from a single base pool.
+
+```typescript
+const tx = await base.claimBasePoolRebate({
+  chainId: chainId,
+  poolId: poolId,
+});
+```
+
+#### base.claimBasePoolRebates
+
+Claim rebates from multiple base pools.
+
+```typescript
+const tx = await base.claimBasePoolRebates({
+  chainId: chainId,
+  poolIds: [poolId1, poolId2, poolId3],
+});
+```
+
+#### base.previewUserWithdrawData
+
+Preview withdrawal data before executing.
+
+```typescript
+const withdrawData = await base.previewUserWithdrawData({
+  chainId: chainId,
+  poolId: poolId,
+  account: userAddress,
+  amount: amount,
+});
+```
+
+**Parameters:**
+```typescript
+interface PreviewWithdrawDataParams {
+  chainId: ChainId;
+  poolId: string;
+  account: string;
+  amount: string | number;
+}
+```
+
+### Market Operations
+
+#### market.getMarket
+
+Get market information.
+
+```typescript
+import { market } from '@myx-trade/sdk';
+
+const marketInfo = await market.getMarket(chainId);
+```
+
+#### market.getOracleFee
+
+Get oracle fee for price updates.
+
+```typescript
+const oracleFee = await market.getOracleFee(chainId, poolId);
+```
+
+### Utility Functions
+
+The LP module also exports useful utility functions:
+
+```typescript
+import { 
+  formatUnits, 
+  parseUnits, 
+  COMMON_PRICE_DECIMALS, 
+  COMMON_LP_AMOUNT_DECIMALS 
+} from '@myx-trade/sdk';
+
+// Format from wei to human-readable
+const formattedAmount = formatUnits(bigIntAmount, decimals);
+
+// Parse from human-readable to wei
+const weiAmount = parseUnits("100", decimals);
+
+// Common decimals constants
+console.log(COMMON_PRICE_DECIMALS);       // Price decimals (30)
+console.log(COMMON_LP_AMOUNT_DECIMALS);   // LP token decimals
+```
+
+### Complete LP Example
+
+```typescript
+import { pool, quote, base, formatUnits } from '@myx-trade/sdk';
+
+// Create a pool
+const poolId = await pool.createPool({
+  chainId: 421614,
+  baseToken: baseTokenAddress,
+  marketId: marketId,
+});
+
+// Get pool details
+const detail = await pool.getPoolDetail(poolId);
+
+// Deposit quote tokens (USDC)
+await quote.deposit({
+  chainId: 421614,
+  poolId,
+  amount: 2000,
+  slippage: 0.01,
+});
+
+// Deposit base tokens
+await base.deposit({
+  chainId: 421614,
+  poolId,
+  amount: 0.01,
+  slippage: 0.01,
+});
+
+// Check LP token prices
+const quoteLpPrice = await quote.getLpPrice(421614, poolId);
+const baseLpPrice = await base.getLpPrice(421614, poolId);
+
+// Check rewards
+const quoteRewards = await quote.getRewards({
+  chainId: 421614,
+  poolId,
+  account: userAddress,
+});
+
+// Claim rewards
+await quote.claimQuotePoolRebate({
+  chainId: 421614,
+  poolId,
+});
+
+// Withdraw liquidity
+await quote.withdraw({
+  chainId: 421614,
+  poolId,
+  amount: 1000,
+  slippage: 0.01,
+});
 ```
 
 ## Module: Subscription (WebSocket)
@@ -1035,12 +1526,12 @@ export interface KlineDataResponse {
 
 ```typescript
 export interface MyxClientConfig {
-  chainId: number;                    // Chain ID (421614 for testnet, 42161 for mainnet)
+  chainId: number;                    // Chain ID (421614 for testnet)
   signer?: ethers.Signer;             // Ethers signer
   walletClient?: any;                 // Wagmi wallet client
   brokerAddress: string;              // Broker contract address
-  isTestnet?: boolean;                // true for testnet, false for mainnet (default: false)
-  isBetaMode?: boolean;               // true for beta environment, false for production (default: false)
+  isTestnet?: boolean;                // true for testnet, false for beta (default: false)
+  isBetaMode?: boolean;               // true for beta environment (default: false)
   seamlessMode?: boolean;             // Enable seamless (gasless) mode (default: false)
   logLevel?: 'debug' | 'info' | 'warn' | 'error'; // Log level (default: 'info')
   socketConfig?: {
@@ -1210,15 +1701,6 @@ const betaClient = new MyxClient({
   brokerAddress: BETA_BROKER_ADDRESS,
   isTestnet: false,
   isBetaMode: true,
-});
-
-// Mainnet
-const mainnetClient = new MyxClient({
-  chainId: 42161,
-  signer,
-  brokerAddress: MAINNET_BROKER_ADDRESS,
-  isTestnet: false,
-  isBetaMode: false,
 });
 ```
 
