@@ -61,6 +61,11 @@
   },
   {
     "type": "error",
+    "name": "MarketNotExisted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotAddressManager",
     "inputs": []
   },
@@ -111,11 +116,99 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "ExecutionFeeUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oldExecutionFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newExecutionFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ForwardFeeUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oldForwardFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newForwardFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {
         "type": "uint64",
         "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MaxExecutionFeeUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oldMaxExecutionFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newMaxExecutionFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MaxForwardFeeUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oldMaxForwardFee",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newMaxForwardFee",
         "indexed": false
       }
     ]
@@ -182,6 +275,22 @@
           {
             "type": "uint128",
             "name": "poolPrimeThreshold"
+          },
+          {
+            "type": "uint128",
+            "name": "executionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxExecutionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "forwardFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxForwardFee"
           }
         ]
       }
@@ -216,6 +325,78 @@
     "outputs": [
       {
         "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getExecutionFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getExecutionFeeByToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "quoteToken"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getForwardFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getForwardFeeByToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "quoteToken"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   },
@@ -271,6 +452,22 @@
           {
             "type": "uint128",
             "name": "poolPrimeThreshold"
+          },
+          {
+            "type": "uint128",
+            "name": "executionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxExecutionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "forwardFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxForwardFee"
           }
         ]
       }
@@ -350,6 +547,74 @@
         "type": "bytes32"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "updateExecutionFee",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint128",
+        "name": "_executionFee"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateForwardFee",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint128",
+        "name": "_forwardFee"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateMaxExecutionFee",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint128",
+        "name": "_maxExecutionFee"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateMaxForwardFee",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint128",
+        "name": "_maxForwardFee"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
