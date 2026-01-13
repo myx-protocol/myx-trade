@@ -125,7 +125,7 @@ export const List = () => {
             isSorted={sort.by === 'basePrice'}
             label={
               <p>
-                <Trans>Last Price</Trans>
+                <Trans>Last Price/TVL</Trans>
               </p>
             }
           />,

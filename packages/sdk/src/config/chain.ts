@@ -136,6 +136,7 @@ export interface ContractAddress {
   readonly FORWARDER: Address,
   readonly REIMBURSEMENT: Address,
   readonly DISPUTE_COURT: Address,
+  readonly TRADING_ROUTER: Address
 }
 
 export interface ChainInfo {

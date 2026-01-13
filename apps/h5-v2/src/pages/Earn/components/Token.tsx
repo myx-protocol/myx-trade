@@ -32,8 +32,8 @@ export const Token = ({ token }: { token?: Vault }) => {
         <Box className={'flex items-center gap-[4px]'}>
           {token ? (
             <>
-              <h3 className={'text-[14px] font-[500] text-white'}>{token?.name || '--'}</h3>
-              <span className={'text-secondary'}>{token?.label || '--'}</span>
+              <h3 className={'text-[14px] font-[500] text-white'}>{token?.symbol || '--'}</h3>
+              <span className={'text-secondary'}>{token?.name || '--'}</span>
               {/*<span*/}
               {/*  className={'bg-brand-10 text-green rounded-[2px] px-[6px] py-[4px] text-[10px]'}*/}
               {/*>*/}

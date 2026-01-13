@@ -1,8 +1,15 @@
 import { Box } from '@mui/material'
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { SearchIcon } from '@/components/Icon'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
-export const SearchBar = ({ className }: { className?: string }) => {
+export const SearchBar = ({
+  className,
+  defaultTab,
+}: {
+  className?: string
+  defaultTab?: SearchTypeEnum
+}) => {
   const { open } = useGlobalSearchStore()
 
   return (
@@ -10,7 +17,11 @@ export const SearchBar = ({ className }: { className?: string }) => {
       <div
         className="flex rounded-[6px] bg-[#18191F] px-[14px] py-[12px]"
         role="button"
-        onClick={() => open()}
+        onClick={() =>
+          open({
+            defaultTab,
+          })
+        }
       >
         <SearchIcon size={12} color="#6D7180" />
         <p className="ml-[8px] text-[13px] font-medium text-[#6D7180]">BTCUSDC</p>

@@ -2,6 +2,7 @@ import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from './wallet/useWalletConnection'
 import useSWR from 'swr'
 import { getPoolLevelConfig } from '@/api'
+import { getAsSupportedChainIdFn } from '@/config/chain'
 
 interface PoolConfig {
   level: number
@@ -25,7 +26,8 @@ interface PoolConfig {
 
 export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) => {
   const { symbolInfo, setMaxLeverage } = useGlobalStore()
-  const { chainId } = useWalletConnection()
+  const { chainId: currChainId } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
 
   const { data: poolConfig } = useSWR(
     (targetPoolId || symbolInfo?.poolId) && (targetChainId || symbolInfo?.chainId)

@@ -9,7 +9,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useHomeStore } from '../../store'
 import { useQuery } from '@tanstack/react-query'
-import { formatUnits, parseUnits } from 'ethers'
+import { formatUnits } from 'ethers'
 import { Tooltips } from '@/components/UI/Tooltips'
 import useGlobalStore from '@/store/globalStore'
 import { ReceiveDialog } from '@/components/ReceiveDialog'
@@ -24,8 +24,8 @@ export const AccountInfo = () => {
   const { data: accountBalance, isLoading } = useQuery({
     enabled: Boolean(client && clientIsAuthenticated),
     queryKey: ['home-getAccountBalance', homeStore.chainId, address],
-    queryFn: () => {
-      return client?.account.getWalletQuoteTokenBalance()
+    queryFn: async () => {
+      return client?.account.getWalletQuoteTokenBalance(homeStore.chainId, address)
     },
     select: (data) => {
       return formatUnits(data?.data || '0', 6).toString()
@@ -65,10 +65,9 @@ export const AccountInfo = () => {
           <p className="flex-[1_1_0%] truncate text-[28px] font-bold">
             {isLoading
               ? '--'
-              : formatNumber(accountBalance ?? '0', {
+              : `$ ${formatNumber(accountBalance ?? '0', {
                   showUnit: false,
-                })}
-            <span className="ml-[4px] flex-shrink-0 text-[14px] leading-[28px]">USDC</span>
+                })}`}
           </p>
         </Tooltips>
 

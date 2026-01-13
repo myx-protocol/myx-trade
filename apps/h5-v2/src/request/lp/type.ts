@@ -126,6 +126,7 @@ export interface Trench {
   baseToken: string
   marketId: string
   apr: string
+  symbol: string
 }
 
 export interface TrenchResponse extends BaseResponse {

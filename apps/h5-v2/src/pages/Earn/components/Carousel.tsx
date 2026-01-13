@@ -12,6 +12,8 @@ import { Skeleton } from '@/components/UI/Skeleton'
 import { CoinIcon } from '@/components/UI/CoinIcon'
 import { Change } from '@/components/Change.tsx'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { decimalToPercent } from '@/utils/number.ts'
+import { isSafeNumber } from '@/utils'
 
 type Token = {
   icon: string
@@ -111,7 +113,7 @@ const Card = ({ item }: { item?: QuoteAprTop }) => {
         {item ? (
           <>
             <Change className={'text-[18px] font-[700] text-white'} change={item?.apr}>
-              {formatNumberPercent(item?.apr)}
+              {isSafeNumber(item?.apr) ? decimalToPercent(item?.apr) : '--%'}
             </Change>
             <span className={'text-[12px] text-white'}>
               <Trans>24h APR</Trans>

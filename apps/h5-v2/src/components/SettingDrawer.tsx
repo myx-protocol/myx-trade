@@ -19,6 +19,7 @@ import { SecondHeader } from './SecondHeader'
 import { styled } from '@mui/material'
 import { t } from '@lingui/core/macro'
 import { toast } from './UI/Toast'
+import { getAsSupportedChainIdFn } from '@/config/chain'
 
 const StyledSwitch = styled(Switch)({
   '& .MuiSwitch-switchBase': {
@@ -37,7 +38,8 @@ interface SettingDrawerProps {
 
 const RenderAuthButton = () => {
   const { activeSeamlessAddress, seamlessAccountList, setSeamlessAccountList } = useSeamlessStore()
-  const { chainId } = useWalletConnection()
+  const { chainId: currChainId } = useWalletConnection()
+  const chainId = getAsSupportedChainIdFn(currChainId)
   const { client } = useMyxSdkClient(chainId)
   const isAuthorized = useMemo(() => {
     const activeSeamlessAccount = seamlessAccountList.find(

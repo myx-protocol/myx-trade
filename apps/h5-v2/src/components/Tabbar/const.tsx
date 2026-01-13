@@ -45,10 +45,4 @@ export const TAB_LIST: TabItem[] = [
     icon: <EarnIcon size={18} />,
     hidden: false,
   },
-  {
-    label: () => t`VIP`,
-    path: '/vip',
-    icon: <EarnIcon size={18} />,
-    hidden: true,
-  },
 ]

@@ -5,7 +5,7 @@ import useGlobalStore from '@/store/globalStore'
 import { Empty } from '@/components/Empty'
 
 export const PositionList = () => {
-  const positionList = useGetPositionList()
+  const positionList = useGetPositionList(true)
   const { tickerData } = useMarketStore()
   const { poolList } = useGlobalStore()
 

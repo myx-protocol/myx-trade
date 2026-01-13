@@ -81,7 +81,7 @@ export const Trade = () => {
         .then((res) => {
           setTickerData(symbolInfo.poolId, res[0])
           // subscribe oracle price
-          subscribeOraclePrice({ poolId: symbolInfo.poolId })
+          subscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
           // subscribe ticker data
           console.log('xd', currentSymbolGlobalIdRef.current, symbolInfo.globalId)
           if (currentSymbolGlobalIdRef.current === symbolInfo.globalId) {
@@ -96,7 +96,7 @@ export const Trade = () => {
     return () => {
       // unsubscribe oracle price
       if (symbolInfo) {
-        unsubscribeOraclePrice({ poolId: symbolInfo.poolId })
+        unsubscribeOraclePrice({ poolId: symbolInfo.poolId, chainId: symbolInfo.chainId })
       }
       if (unsubscribe && typeof unsubscribe === 'function') {
         unsubscribe()
