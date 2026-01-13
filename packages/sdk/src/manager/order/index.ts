@@ -41,12 +41,12 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string) {
+  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
       const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken,
+        marketId,
         params.chainId
       );
 
@@ -262,32 +262,9 @@ export class Order {
     }
   }
 
-  async closeAllPositions(chainId: number, params: PlaceOrderParams[], tradingFee: string) {
+  async closeAllPositions(chainId: number, params: PlaceOrderParams[]) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-
-      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params[0].poolId, chainId, address: params[0].address });
-
-      // const networkFee = await this.utils.getNetworkFee(
-      //   params[0].executionFeeToken,
-      //   chainId
-      // );
-
-      // const tradingFeeAmount = BigInt(tradingFee) * BigInt(params.length)
-      // const needAmount = tradingFeeAmount + BigInt(params.length) * BigInt(networkFee)
-
-      // let depositAmount = BigInt(0)
-      // if (availableAccountMarginBalance < needAmount) {
-      //   depositAmount = needAmount - availableAccountMarginBalance
-      // }
-
-      // const needsApproval = await this.utils.needsApproval(
-      //   params[0].address,
-      //   chainId,
-      //   params[0].executionFeeToken,
-      //   depositAmount.toString(),
-      //   getContractAddressByChainId(chainId).TRADING_ROUTER,
-      // );
 
       const depositData = {
         token: '0x0000000000000000000000000000000000000000',
@@ -436,19 +413,6 @@ export class Order {
   async createDecreaseOrder(params: PlaceOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-
-      // const networkFee = await this.utils.getNetworkFee(
-      //   params.executionFeeToken,
-      //   params.chainId
-      // );
-
-      // let depositAmount = BigInt(0)
-      // const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-
-      // const needAmount = BigInt(networkFee)
-      // if (availableAccountMarginBalance < needAmount) {
-      //   depositAmount = needAmount - availableAccountMarginBalance
-      // }
 
       const data = {
         user: params.address,
@@ -638,10 +602,6 @@ export class Order {
       );
 
       try {
-        // const networkFee = await this.utils.getNetworkFee(
-        //   params.executionFeeToken,
-        //   params.chainId
-        // );
 
         if (params.tpSize !== "0" && params.slSize !== "0") {
           const data = [
@@ -1221,10 +1181,10 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string) {
+  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string, marketId: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const networkFee = await this.utils.getNetworkFee(quoteAddress, chainId)
+    const networkFee = await this.utils.getNetworkFee(marketId, chainId)
 
     const data = {
       orderId: params.orderId,
