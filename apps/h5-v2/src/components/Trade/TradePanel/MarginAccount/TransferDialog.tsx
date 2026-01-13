@@ -344,7 +344,7 @@ export const TransferDialogButton = () => {
                   value={amount}
                   placeholder={t`Please Enter`}
                   inputMode="decimal"
-                  decimalScale={symbolInfo?.quoteDecimals ?? 6}
+                  decimalScale={6}
                   thousandSeparator=","
                   decimalSeparator="."
                   onValueChange={(values, sourceInfo) => {
