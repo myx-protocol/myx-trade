@@ -19,6 +19,7 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { SelectAccountDialog } from './Seamless/SelectAccountDialog'
+import { ResetSetPasswordDialog } from './Seamless/ResetSetPasswordDialog'
 
 function Layout() {
   const { isOpen } = useGlobalSearchStore()
@@ -45,6 +46,7 @@ function Layout() {
     tradeMode,
     setUnlockAccountDialogOpen,
     selectedSeamlessAccountDialogOpen,
+    resetSeamlessPasswordDialogOpen,
   } = useGlobalStore()
 
   useEffect(() => {
@@ -80,6 +82,7 @@ function Layout() {
         {vipRedeemResultDialogOpen && <VipRedeemResultDialog />}
         {unlockAccountDialogOpen && <UnlockAccountDialog />}
         {seamlessPasswordDialogOpen && <SetPasswordDialog />}
+        {resetSeamlessPasswordDialogOpen && <ResetSetPasswordDialog />}
         {importSeamlessKeyDialogOpen && <ImportDialog />}
         {exportSeamlessInfoDialogOpen && <ExportInfoDialog />}
         {exportSeamlessKeyDialogOpen && <ExportDialog />}
