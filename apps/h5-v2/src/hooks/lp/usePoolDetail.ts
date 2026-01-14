@@ -165,10 +165,10 @@ export const usePoolDetail = (poolType: PoolType) => {
     }
   }, [poolInfo?.fundingInfo, levelConfig?.fundingFeeSeconds])
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
     if (!poolId || !lpDetail?.globalId) return
-    if (client) {
+    try {
       currentSymbolGlobalIdRef.current = lpDetail?.globalId
       // subscribe ticker data
       if (currentSymbolGlobalIdRef.current === lpDetail?.globalId) {
@@ -177,6 +177,8 @@ export const usePoolDetail = (poolType: PoolType) => {
           globalId: lpDetail.globalId,
         })
       }
+    } catch (error) {
+      console.error(error)
     }
 
     return () => {
@@ -184,7 +186,7 @@ export const usePoolDetail = (poolType: PoolType) => {
         unsubscribe()
       }
     }
-  }, [poolId, client, lpDetail?.globalId])
+  }, [poolId, lpDetail?.globalId, subscribeToTicker])
 
   return {
     genesisFeeRate: levelConfig?.genesisFeeRate,
