@@ -6,6 +6,7 @@ import { Box, Button } from '@mui/material'
 import { NumericInput } from '@/components/Dialog/NumberInput.tsx'
 import { t } from '@lingui/core/macro'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
+import { Drawer } from '@/components/Drawer.tsx'
 
 type FilterField = [string, string]
 interface FilterItemProps {
@@ -117,7 +118,7 @@ const FiltersDialogContent = ({
   )
 
   return (
-    <Box className={'px-[20px] py-[24px] pt-[12px]'}>
+    <Box className={'px-[20px] pb-[24px]'}>
       <Box className={'flex w-full flex-col gap-[12px]'}>
         <FilterItem
           label={<Trans>Age(min)</Trans>}
@@ -175,28 +176,22 @@ const FiltersDialogContent = ({
 export const DialogFilters = memo(
   ({ open, onClose, data, isShowProgress = true }: DialogFilters) => {
     return (
-      <DialogTheme
-        onClose={() => onClose()}
+      <Drawer
+        showPuller={false}
         open={open}
-        sx={{
-          '.MuiPaper-root': {
-            maxWidth: '390px',
-          },
-        }}
+        onClose={() => onClose()}
+        onOpen={() => {}}
+        anchor={'bottom'}
+        title={<Trans>Custom Filters</Trans>}
+        className={'py-[0px]'}
       >
-        <DialogTitleTheme onClose={onClose}>
-          <Trans>Custom Filters</Trans>
-        </DialogTitleTheme>
-
-        <DialogSuspense>
-          <FiltersDialogContent
-            isShowProgress={isShowProgress}
-            data={data}
-            onClose={onClose}
-            open={open}
-          />
-        </DialogSuspense>
-      </DialogTheme>
+        <FiltersDialogContent
+          isShowProgress={isShowProgress}
+          data={data}
+          onClose={onClose}
+          open={open}
+        />
+      </Drawer>
     )
   },
 )

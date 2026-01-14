@@ -29,6 +29,7 @@ import { showErrorToast } from '@/config/error'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
+import { Error } from './Error.tsx'
 
 const inputStyle = {
   htmlInput: {
@@ -177,13 +178,14 @@ export const Subscribe = () => {
           }
         >
           <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
-            <Change className={`text-[32px] text-white`} change={quoteLpDetail?.apr}>
+            <Change className={'text-[20px] text-white'} change={quoteLpDetail?.apr}>
               {isSafeNumber(quoteLpDetail?.apr)
                 ? decimalToPercent(quoteLpDetail?.apr as string)
                 : '--%'}
             </Change>
+
             <Change
-              className={'text-secondary text-[16px]'}
+              className={'text-secondary text-[14px]'}
               change={(Number(amount) * Number(quoteLpDetail?.apr)).toString()}
             >
               {isSafeNumber(amount) && isSafeNumber(quoteLpDetail?.apr)
@@ -196,13 +198,7 @@ export const Subscribe = () => {
           </Box>
         </Card>
       </Box>
-      {isInsufficient && (
-        <Box className={'mt-[4px] text-[14px] leading-[1]'}>
-          <p className={'text-wrong'}>
-            <Trans>Insufficient balance</Trans>
-          </p>
-        </Box>
-      )}
+      {isInsufficient && <Error className={'mt-[4px]'} />}
       <Box className="mt-[8px] mb-[4px] w-full">
         {quoteLpDetail?.state === MarketPoolState.PreBench ||
         quoteLpDetail?.state === MarketPoolState.Bench ? (
