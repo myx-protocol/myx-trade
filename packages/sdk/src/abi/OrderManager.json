@@ -36,16 +36,6 @@
   },
   {
     "type": "error",
-    "name": "ExecutionFeeNotSupport",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "FailedCall",
     "inputs": []
   },
@@ -149,16 +139,6 @@
   },
   {
     "type": "error",
-    "name": "SafeERC20FailedOperation",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "UUPSUnauthorizedCallContext",
     "inputs": []
   },
@@ -169,28 +149,6 @@
       {
         "type": "bytes32",
         "name": "slot"
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ExecutionFeeUpdated",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "value",
-        "indexed": false
-      },
-      {
-        "type": "bool",
-        "name": "isActive",
-        "indexed": false
       }
     ]
   },
@@ -259,6 +217,23 @@
   },
   {
     "type": "function",
+    "name": "completeOrder",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "orderId"
+      },
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "fillOrder",
     "constant": false,
     "payable": false,
@@ -274,10 +249,6 @@
           {
             "type": "bytes32",
             "name": "positionId"
-          },
-          {
-            "type": "address",
-            "name": "keeper"
           },
           {
             "type": "uint256",
@@ -298,6 +269,10 @@
           {
             "type": "int256",
             "name": "fundingFee"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
           },
           {
             "type": "bool",
@@ -345,24 +320,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getExecutionFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256"
       }
     ]
   },
@@ -465,24 +422,6 @@
   },
   {
     "type": "function",
-    "name": "getOrderExecutionFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "orderId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getOrderTPSL",
     "constant": true,
     "stateMutability": "view",
@@ -507,19 +446,11 @@
           },
           {
             "type": "uint256",
-            "name": "tpExecutionFee"
-          },
-          {
-            "type": "uint256",
             "name": "slSize"
           },
           {
             "type": "uint256",
             "name": "slPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slExecutionFee"
           }
         ]
       }
@@ -620,19 +551,11 @@
           },
           {
             "type": "uint256",
-            "name": "tpExecutionFee"
-          },
-          {
-            "type": "uint256",
             "name": "slSize"
           },
           {
             "type": "uint256",
             "name": "slPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slExecutionFee"
           }
         ]
       }
@@ -946,27 +869,6 @@
         "name": "orderId"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "setExecutionFee",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token"
-      },
-      {
-        "type": "uint256",
-        "name": "value"
-      },
-      {
-        "type": "bool",
-        "name": "isActive"
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",

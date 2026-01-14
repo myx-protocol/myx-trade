@@ -313,7 +313,11 @@ export const useSubmitOrder = () => {
         }
         await checkUserVipInfo()
         if (positionAction === PositionActionEnum.OPEN) {
-          const rs = await client?.order.createIncreaseOrder(orderData, tradingFee)
+          const rs = await client?.order.createIncreaseOrder(
+            orderData,
+            tradingFee,
+            symbolInfo?.marketId as string,
+          )
 
           if (rs?.code === 0) {
             resetStore()

@@ -2,10 +2,11 @@ import React, { memo, useCallback, useState } from 'react'
 import { DialogTheme, DialogTitleTheme, type DialogBaseProps } from '@/components/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import { DialogSuspense } from '@/components/Loading'
-import { Box, Button } from '@mui/material'
+import { Box, Button, styled } from '@mui/material'
 import { NumericInput } from '@/components/Dialog/NumberInput.tsx'
 import { t } from '@lingui/core/macro'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
+import { Drawer } from '@/components/Drawer.tsx'
 
 type FilterField = [string, string]
 interface FilterItemProps {
@@ -33,6 +34,13 @@ export interface DialogFilters {
   onClose: (e?: React.MouseEvent<HTMLButtonElement>, data?: FilterFields) => void
   isShowProgress?: boolean
 }
+
+const StyledDrawer = styled(Drawer)`
+  .MuiPaper-root {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+`
 
 const FilterItem = ({
   label,
@@ -117,7 +125,7 @@ const FiltersDialogContent = ({
   )
 
   return (
-    <Box className={'px-[20px] py-[24px] pt-[12px]'}>
+    <Box className={'px-[20px] pb-[24px]'}>
       <Box className={'flex w-full flex-col gap-[12px]'}>
         <FilterItem
           label={<Trans>Age(min)</Trans>}
@@ -175,28 +183,22 @@ const FiltersDialogContent = ({
 export const DialogFilters = memo(
   ({ open, onClose, data, isShowProgress = true }: DialogFilters) => {
     return (
-      <DialogTheme
-        onClose={() => onClose()}
+      <StyledDrawer
+        showPuller={false}
         open={open}
-        sx={{
-          '.MuiPaper-root': {
-            maxWidth: '390px',
-          },
-        }}
+        onClose={() => onClose()}
+        onOpen={() => {}}
+        anchor={'bottom'}
+        title={<Trans>Custom Filters</Trans>}
+        className={'[& .MuiPaper-root]:!py-[0px]'}
       >
-        <DialogTitleTheme onClose={onClose}>
-          <Trans>Custom Filters</Trans>
-        </DialogTitleTheme>
-
-        <DialogSuspense>
-          <FiltersDialogContent
-            isShowProgress={isShowProgress}
-            data={data}
-            onClose={onClose}
-            open={open}
-          />
-        </DialogSuspense>
-      </DialogTheme>
+        <FiltersDialogContent
+          isShowProgress={isShowProgress}
+          data={data}
+          onClose={onClose}
+          open={open}
+        />
+      </StyledDrawer>
     )
   },
 )
