@@ -26,6 +26,7 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import Big from 'big.js'
+import { Error } from '@/pages/Earn/components/Trade/Error'
 const inputStyle = {
   htmlInput: {
     style: {
@@ -104,7 +105,7 @@ export const Buy = () => {
   return (
     <>
       <Box className="mt-[12px]">
-        <div className="bg-base relative rounded-[10px] px-[12px] py-[20px] leading-[1]">
+        <div className="bg-base relative rounded-[10px] px-[12px] py-[16px] leading-[1]">
           {/* title */}
           <div className="flex items-center justify-between">
             <p className="text-[14px] font-normal text-[#CED1D9]">
@@ -113,7 +114,7 @@ export const Buy = () => {
             {/* <s[an>] */}
             <p className="flex items-center gap-[4px]">
               <Wallet size={14} color="#848E9C" />
-              <span className="text-[14px] font-medium text-[#CED1D9]">
+              <span className="text-[12px] font-medium text-[#CED1D9]">
                 {formatNumber(balance, {
                   showUnit: false,
                 })}{' '}
@@ -155,7 +156,7 @@ export const Buy = () => {
           </div>
         </div>
 
-        <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
+        <div className="border-base mt-[8px] rounded-[10px] border-1 px-[12px] py-[16px] leading-[1]">
           {/* title */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -175,7 +176,7 @@ export const Buy = () => {
           {/* form input wrap */}
           <div className="mt-[12px] flex items-center">
             <div className="flex-[1_1_0%]">
-              <span className="text-[32px] leading-[38px] font-bold text-white">
+              <span className="text-[20px] leading-[38px] font-bold text-white">
                 {amount && rate
                   ? formatNumber(new Big(amount).mul(new Big(1)).div(new Big(rate)), {
                       showUnit: false,
@@ -195,13 +196,7 @@ export const Buy = () => {
 
         <OrderOptions />
 
-        {isInsufficient && (
-          <Box className={'mt-[4px] text-[14px] leading-[1]'}>
-            <p className={'text-wrong'}>
-              <Trans>Insufficient balance</Trans>
-            </p>
-          </Box>
-        )}
+        {isInsufficient && <Error className={'mt-[8px]'} />}
         <Box className="mt-[12px] w-full">
           {baseLpDetail?.state === MarketPoolState.PreBench ||
           baseLpDetail?.state === MarketPoolState.Bench ? (

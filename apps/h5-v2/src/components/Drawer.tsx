@@ -28,7 +28,11 @@ const Puller = styled('div')(({ theme }) => ({
   //   backgroundColor: grey[900],
   // }),
 }))
-export type TDrawerProps = SwipeableDrawerProps & { title?: ReactNode; children: ReactNode }
+export type TDrawerProps = Omit<SwipeableDrawerProps, 'title'> & {
+  title?: ReactNode
+  children: ReactNode
+  showPuller?: boolean
+}
 
 export const Drawer = ({
   open,
@@ -37,6 +41,8 @@ export const Drawer = ({
   children,
   title,
   anchor = 'bottom',
+  showPuller = true,
+  className,
 }: TDrawerProps) => {
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
   return (
@@ -48,12 +54,12 @@ export const Drawer = ({
       disableDiscovery={iOS}
       anchor={anchor}
     >
-      <Puller onClick={(e) => onClose(e)} />
+      {showPuller && <Puller onClick={(e) => onClose(e)} />}
 
-      <Box className={'bg-base-bg'} display={'flex'} flexDirection={'column'} gap={'24px'}>
+      <Box className={'bg-base-bg'} display={'flex'} flexDirection={'column'} gap={'12px'}>
         {title && (
-          <Box className={'drawer-header'}>
-            <span className={'text-basic-white leading-[1] font-[20px] font-[500]'}>{title}</span>
+          <Box className={'drawer-header !px-[20px]'}>
+            <span className={'leading-[1] font-[20px] font-[500] text-white'}>{title}</span>
             <Box
               width={'16px'}
               height={'16px'}
