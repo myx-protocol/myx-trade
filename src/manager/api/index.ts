@@ -350,4 +350,17 @@ export class Api {
       }
     );
   }
+
+  async getCurrentEpoch({ address, accessToken, broker }: { address: string, accessToken: string, broker: string }) {
+    return http.get<ApiResponse<number>>(
+      `${this.getHost()}/openapi/gateway/scan/get-current-epoch`,
+      { broker },
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
 }
