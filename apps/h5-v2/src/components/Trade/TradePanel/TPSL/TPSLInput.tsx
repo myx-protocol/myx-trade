@@ -66,11 +66,11 @@ export const TPSLInput = ({
         className="text-[12px] font-medium"
         placeholder={placeHolder ?? ''}
         value={value}
+        inputMode="text"
         allowLeadingZeros
         allowNegative={
           type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
         }
-        inputMode="decimal"
         decimalScale={6}
         onValueChange={(values) => {
           onChange(values.value ?? '')

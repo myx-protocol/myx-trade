@@ -43,13 +43,12 @@ export const DialogBase = ({
         }}
       >
         {title && <p className="w-full text-[20px] leading-[1] font-bold text-[white]">{title}</p>}
-        <span
-          className="absolute right-[0] inline-flex text-[#848E9C]"
-          role="button"
+        <div
+          className="absolute right-[0] flex inline-flex h-[20px] w-[20px] justify-end text-[#848E9C]"
           onClick={onClose}
         >
           <CloseIcon size={16} />
-        </span>
+        </div>
       </DialogTitle>
       <DialogContent
         sx={{
