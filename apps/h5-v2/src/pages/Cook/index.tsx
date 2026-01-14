@@ -31,57 +31,62 @@ const Cook = () => {
   const [holders, setHolders] = useState<[string, string]>(['', ''])
 
   return (
-    <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
-      <SearchBar defaultTab={SearchTypeEnum.Cook} />
-      <Banner />
-      <CookContext.Provider
-        value={{
-          type,
-          setType,
-          cookType,
-          setCookType,
-          age,
-          setAge,
-          mc,
-          setMC,
-          progress,
-          setProgress,
-          change,
-          setChange,
-          liq,
-          setLiq,
-          holders,
-          setHolders,
-        }}
+    <Box className={'h-[calc(100vh-var(--tabbar-height))] overflow-hidden'}>
+      <Box
+        id={'scrollView'}
+        className="flex h-full w-full flex-col overflow-x-hidden overflow-y-auto"
       >
-        <Box className={'bg-deep sticky top-[0] z-[1]'}>
-          <ToolBar />
-          {type === CookType.Cook ? (
-            <>
-              <CookSubBar className={'mt-[-4px]'} />
-              <ChainsBar className={'mt-[4px]'} setChainId={setChainId} chainId={chainId} />
-            </>
-          ) : (
-            <>
-              <TrenchTabBar
-                className={'mt-[-4px]'}
-                type={trenchType}
-                onTypeChange={(_type) => setTrenchType(_type)}
-              />
+        <SearchBar defaultTab={SearchTypeEnum.Cook} />
+        <Banner />
+        <CookContext.Provider
+          value={{
+            type,
+            setType,
+            cookType,
+            setCookType,
+            age,
+            setAge,
+            mc,
+            setMC,
+            progress,
+            setProgress,
+            change,
+            setChange,
+            liq,
+            setLiq,
+            holders,
+            setHolders,
+          }}
+        >
+          <Box className={'bg-deep sticky top-[0] z-[1]'}>
+            <ToolBar />
+            {type === CookType.Cook ? (
+              <>
+                <CookSubBar className={'mt-[-4px]'} />
+                <ChainsBar className={'mt-[4px]'} setChainId={setChainId} chainId={chainId} />
+              </>
+            ) : (
+              <>
+                <TrenchTabBar
+                  className={'mt-[-4px]'}
+                  type={trenchType}
+                  onTypeChange={(_type) => setTrenchType(_type)}
+                />
 
-              <TrenchSubBar>
-                <IntervalList interval={interval} setInterval={setInterval} />
-                <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
-              </TrenchSubBar>
-            </>
+                <TrenchSubBar>
+                  <IntervalList interval={interval} setInterval={setInterval} />
+                  <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+                </TrenchSubBar>
+              </>
+            )}
+          </Box>
+          {type === CookType.Cook ? (
+            <CookTabs chainId={chainId} />
+          ) : (
+            <TrenchList sortField={trenchType} interval={interval} chainId={chainId} />
           )}
-        </Box>
-        {type === CookType.Cook ? (
-          <CookTabs chainId={chainId} />
-        ) : (
-          <TrenchList sortField={trenchType} interval={interval} chainId={chainId} />
-        )}
-      </CookContext.Provider>
+        </CookContext.Provider>
+      </Box>
     </Box>
   )
 }
