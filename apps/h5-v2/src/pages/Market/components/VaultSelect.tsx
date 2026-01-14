@@ -367,12 +367,7 @@ export const VaultSelect = ({
           className={'gradient primary long mx-auto w-full rounded'}
           loading={isLoading || !poolInfo}
           onClick={onConfirm}
-          disabled={
-            isLoading ||
-            isInsufficient ||
-            !market ||
-            Number(value) < Number(market?.poolPrimeThreshold)
-          }
+          disabled={isLoading || isInsufficient || !market || !value || Number(value) <= 0}
           loadingPosition={'start'}
         >
           <Trans>Create Market</Trans>
