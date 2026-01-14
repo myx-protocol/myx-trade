@@ -120,11 +120,7 @@ export const CloseAllPositionDialog = () => {
                 }
               })
 
-              const rs = await client?.order.closeAllPositions(
-                Number(selectChainId),
-                data,
-                formattedTradingFee,
-              )
+              const rs = await client?.order.closeAllPositions(Number(selectChainId), data)
 
               if (rs?.code === 0) {
                 toast.success({ title: t`Close all positions success` })

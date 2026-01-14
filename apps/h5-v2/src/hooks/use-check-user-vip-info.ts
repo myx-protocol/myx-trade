@@ -31,11 +31,11 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
     if (
       vipInfo &&
       userVipInfoByContract &&
-      (vipInfo?.vipTier.toString() !== userVipInfoByContract?.tier.toString() ||
-        vipInfo?.rebatePct.toString() !==
-          userVipInfoByContract?.totalReferralRebatePct.toString() ||
-        vipInfo?.rebateReferrerPct.toString() !==
-          userVipInfoByContract?.referrerRebatePct.toString())
+      (vipInfo?.vipTier?.toString() !== userVipInfoByContract?.tier?.toString() ||
+        vipInfo?.rebatePct?.toString() !==
+          userVipInfoByContract?.totalReferralRebatePct?.toString() ||
+        vipInfo?.rebateReferrerPct?.toString() !==
+          userVipInfoByContract?.referrerRebatePct?.toString())
     ) {
       const rs = await client?.account.setUserFeeData(
         address as string,

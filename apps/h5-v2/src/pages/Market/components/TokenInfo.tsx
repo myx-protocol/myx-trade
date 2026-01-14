@@ -22,7 +22,9 @@ export const TokenInfo = () => {
       <Box className={'flex flex-col gap-[6px] leading-[1]'}>
         <Box className={'flex items-center gap-[4px] leading-[1]'}>
           <h3 className={'text-[14px] font-[700] text-white'}>{token?.symbol || '--'}</h3>
-          <span className={'text-secondary text-[12px]'}>{token?.name || '--'}</span>
+          <span className={'text-secondary max-w-[20em] truncate text-[12px]'}>
+            {token?.name || '--'}
+          </span>
         </Box>
         <Box className={'text-secondary flex items-center gap-[4px] text-[12px]'}>
           <span className={''}>{token?.address ? encryptionAddress(token?.address) : '--'}</span>
