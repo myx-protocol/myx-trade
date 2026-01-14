@@ -22,55 +22,60 @@ const EarnList = () => {
   const { address } = useWalletConnection()
 
   return (
-    <Box id={'scrollView'} className="flex w-full flex-col overflow-x-hidden overflow-y-auto">
-      <SearchBar defaultTab={SearchTypeEnum.Earn} />
-      <Box className={'mt-[20px]'}>
-        <Carousel />
-      </Box>
-      <Box className={'bg-deep sticky top-[0] z-[1] pt-[20px] pb-[4px]'}>
-        <h2 className={'my-[8px] px-[16px] text-[18px] leading-[1] font-[700] text-white'}>
-          <Trans>Vaults</Trans>
-        </h2>
-        <TabBar value={type} setValueType={setType} />
-        <Box className={'mt-[8px] flex items-center justify-between pr-[16px] pl-[16px]'}>
-          <IntervalList interval={interval} setInterval={setInterval} />
-          <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+    <Box className={'h-[calc(100vh-var(--tabbar-height))] overflow-hidden'}>
+      <Box
+        id={'scrollView'}
+        className="flex h-full w-full flex-col overflow-x-hidden overflow-y-auto"
+      >
+        <SearchBar defaultTab={SearchTypeEnum.Earn} />
+        <Box className={'mt-[20px]'}>
+          <Carousel />
         </Box>
-        <Box className={'mt-[16px]'}>
-          <Box
-            className={
-              'text-third flex items-center justify-between px-[16px] text-[12px] leading-[1]'
-            }
-          >
-            <span>
-              <Trans>Vault</Trans>
-            </span>
-            <span>
-              {type === VaultType.Positions ? (
-                <>
-                  <Trans>Amount</Trans>/<Trans>24h PnL</Trans>
-                </>
-              ) : (
-                <>
-                  <Trans>TVL</Trans>/<Trans>APR</Trans>
-                </>
-              )}
-            </span>
+        <Box className={'bg-deep sticky top-[0] z-[1] pt-[20px] pb-[4px]'}>
+          <h2 className={'my-[8px] px-[16px] text-[18px] leading-[1] font-[700] text-white'}>
+            <Trans>Vaults</Trans>
+          </h2>
+          <TabBar value={type} setValueType={setType} />
+          <Box className={'mt-[8px] flex items-center justify-between pr-[16px] pl-[16px]'}>
+            <IntervalList interval={interval} setInterval={setInterval} />
+            <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
+          </Box>
+          <Box className={'mt-[16px]'}>
+            <Box
+              className={
+                'text-third flex items-center justify-between px-[16px] text-[12px] leading-[1]'
+              }
+            >
+              <span>
+                <Trans>Vault</Trans>
+              </span>
+              <span>
+                {type === VaultType.Positions ? (
+                  <>
+                    <Trans>Amount</Trans>/<Trans>24h PnL</Trans>
+                  </>
+                ) : (
+                  <>
+                    <Trans>TVL</Trans>/<Trans>APR</Trans>
+                  </>
+                )}
+              </span>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <SearchContext.Provider value={{ chainId, setChainId, interval, setInterval }}>
-        {/*<Box className={'flex-1'}>*/}
-        {type === VaultType.Positions ? (
-          <ConnectWallet>
-            <Positions />
-          </ConnectWallet>
-        ) : (
-          <Vaults />
-        )}
-        {/*</Box>*/}
-      </SearchContext.Provider>
+        <SearchContext.Provider value={{ chainId, setChainId, interval, setInterval }}>
+          {/*<Box className={'flex-1'}>*/}
+          {type === VaultType.Positions ? (
+            <ConnectWallet>
+              <Positions />
+            </ConnectWallet>
+          ) : (
+            <Vaults />
+          )}
+          {/*</Box>*/}
+        </SearchContext.Provider>
+      </Box>
     </Box>
   )
 }
