@@ -53,6 +53,7 @@ export const Drawer = ({
       disableBackdropTransition={!iOS}
       disableDiscovery={iOS}
       anchor={anchor}
+      className={className}
     >
       {showPuller && <Puller onClick={(e) => onClose(e)} />}
 
