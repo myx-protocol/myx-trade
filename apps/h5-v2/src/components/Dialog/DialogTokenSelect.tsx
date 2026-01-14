@@ -62,7 +62,7 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
   }, [state])
   return (
     <Box
-      className={`flex items-center justify-between gap-[10px] rounded-[6px] py-[12px] ${disabled ? 'cursor-not-allowed opacity-[0.35]' : 'cursor-pointer'}`}
+      className={`hover:bg-base mx-[-8px] flex items-center justify-between gap-[10px] rounded-[6px] px-[8px] py-[12px] ${disabled ? 'cursor-not-allowed opacity-[0.35]' : 'cursor-pointer'}`}
       onClick={() => {
         if (!disabled) {
           onSelected?.(asset as Asset)
@@ -89,7 +89,9 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
           <Box className={'flex items-center gap-[6px]'}>
             {asset ? (
               <>
-                <span className={'text-[14px] leading-[1] font-[500] text-white'}>
+                <span
+                  className={'max-w-[10em] truncate text-[14px] leading-[1] font-[500] text-white'}
+                >
                   {asset.symbol}
                 </span>
 
@@ -106,7 +108,7 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
           <Box className={'text-secondary flex gap-[6px] text-[12px] leading-[1]'}>
             {asset ? (
               <>
-                <span>{asset.name}</span>
+                <span className={'max-w-[10em] truncate'}>{asset.name}</span>
                 <span>{encryptionAddress(asset.address)}</span>
               </>
             ) : (
@@ -290,18 +292,20 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
           onChange={onSearch}
           onBlur={onBlur}
           placeholder={t`Search name or paste address`}
+          className={'!bg-base'}
         >
           <ChainSelector
+            className={'ml-[-12px]'}
             value={chainId || null}
             onChange={(id) => setChainId(id as ChainId)}
             showLabelText={false}
           />
         </Search>
       </Box>
-      <Box className={'px-[16px]'}>
+      <Box className={'px-[16px] pb-[12px]'}>
         {!!input && (
           <>
-            <Box className={'text-secondary text-[14px] leading-[1] font-[500]'}>
+            <Box className={'text-secondary mb-[4px] text-[14px] leading-[1] font-[500]'}>
               <Trans>搜索结果</Trans>
             </Box>
 
@@ -327,7 +331,7 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
         )}
         {!input && (
           <>
-            <Box className={'text-secondary text-[14px] leading-[1] font-[500]'}>
+            <Box className={'text-secondary mb-[4px] text-[14px] leading-[1] font-[500]'}>
               <Trans>My Tokens</Trans>
             </Box>
 
