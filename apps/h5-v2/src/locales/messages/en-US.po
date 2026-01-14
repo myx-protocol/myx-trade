@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-11 02:40\n"
+"PO-Revision-Date: 2026-01-14 04:07\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -902,7 +902,7 @@ msgstr ""
 
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
-msgstr ""
+msgstr "New"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -3466,7 +3466,7 @@ msgstr ""
 
 #: src/pages/Earn/components/Dashboard.tsx
 msgid "Tag_New"
-msgstr ""
+msgstr "New"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Taker"
