@@ -142,7 +142,7 @@ const RenderAuthButton = () => {
 export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   const {
     tradeMode,
-    setSeamlessPasswordDialogOpen,
+    setResetSeamlessPasswordDialogOpen,
     setExportSeamlessInfoDialogOpen,
     setVipRedeemDialogOpen,
     activeLocale,
@@ -286,7 +286,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
                 className="flex cursor-pointer items-center justify-between py-[14px]"
                 onClick={() => {
                   onOpenChange(false)
-                  setSeamlessPasswordDialogOpen(true)
+                  setResetSeamlessPasswordDialogOpen(true)
                 }}
               >
                 <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
