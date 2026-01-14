@@ -8,6 +8,16 @@ import { BytesLike, Signer } from "ethers";
 import { Address } from "viem";
 import { BaseMyxClient } from "../base/BaseMyxClient";
 import { AppealVoteParams } from "./type";
+import {
+  AppealReimbursementParams,
+  AppealUploadEvidenceParams,
+  GetAppealDetailParams,
+  GetAppealListParams,
+  GetAppealNodeVoteListParams,
+  GetAppealReconsiderationDetailParams,
+  GetAppealReconsiderationListParams,
+  GetIsVoteNodeParams,
+} from "../api/appeal-type";
 
 export class Appeal extends BaseMyxClient {
   constructor(client: MyxClient) {
@@ -186,5 +196,45 @@ export class Appeal extends BaseMyxClient {
     const contract = await this.getDisputeCourtContract();
     const configuration = await contract.getDisputeConfiguration();
     return configuration;
+  }
+
+  /**
+   * http api
+   */
+
+  async getAppealList(params: GetAppealListParams) {
+    return this.client.api.getAppealList(params);
+  }
+
+  async getAppealDetail(params: GetAppealDetailParams) {
+    return this.client.api.getAppealDetail(params);
+  }
+
+  async uploadAppealEvidence(params: AppealUploadEvidenceParams) {
+    return this.client.api.uploadAppealEvidence(params);
+  }
+
+  async getAppealReconsiderationList(
+    params: GetAppealReconsiderationListParams
+  ) {
+    return this.client.api.getAppealReconsiderationList(params);
+  }
+
+  async getAppealReconsiderationDetail(
+    params: GetAppealReconsiderationDetailParams
+  ) {
+    return this.client.api.getAppealReconsiderationDetail(params);
+  }
+
+  async getAppealReimbursementList(params: AppealReimbursementParams) {
+    return this.client.api.getAppealReimbursementList(params);
+  }
+
+  async getAppealNodeVoteList(params: GetAppealNodeVoteListParams) {
+    return this.client.api.getAppealNodeVoteList(params);
+  }
+
+  async getIsVoteNode(params: GetIsVoteNodeParams) {
+    return this.client.api.getIsVoteNode(params);
   }
 }
