@@ -108,6 +108,9 @@ interface GlobalStore {
 
   showCharts: boolean
   setShowCharts: (showCharts: boolean) => void
+
+  resetSeamlessPasswordDialogOpen: boolean
+  setResetSeamlessPasswordDialogOpen: (open: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -134,6 +137,9 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             exportSeamlessKeyDialogOpen: false,
             setExportSeamlessKeyDialogOpen: (open: string | false) =>
               set({ exportSeamlessKeyDialogOpen: open }),
+            resetSeamlessPasswordDialogOpen: false,
+            setResetSeamlessPasswordDialogOpen: (open: boolean) =>
+              set({ resetSeamlessPasswordDialogOpen: open }),
             exportSeamlessInfoDialogOpen: false,
             setExportSeamlessInfoDialogOpen: (open: boolean) =>
               set({ exportSeamlessInfoDialogOpen: open }),
