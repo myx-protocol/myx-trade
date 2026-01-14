@@ -38,6 +38,7 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { formatNumber } from '@/utils/number.ts'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
+import { Error } from './Error.tsx'
 
 const inputStyle = {
   htmlInput: {
@@ -248,7 +249,7 @@ export const Redeem = () => {
         >
           <Box className={'flex items-center justify-between'}>
             <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
-              <span className={'text-[32px] text-white'}>
+              <span className={'text-[20px] text-white'}>
                 {amount && price
                   ? formatNumber(new Big(amount).mul(new Big(price)), {
                       showUnit: false,
@@ -317,13 +318,7 @@ export const Redeem = () => {
           </>
         )}
 
-        {isInsufficient && (
-          <Box className={'mt-[4px] text-[14px] leading-[1]'}>
-            <p className={'text-wrong'}>
-              <Trans>Insufficient balance</Trans>
-            </p>
-          </Box>
-        )}
+        {isInsufficient && <Error className={'mt-[4px]'} />}
         <Box className={'mt-[8px] mb-[4px] w-full'}>
           <ConnectButton>
             <TradeButton

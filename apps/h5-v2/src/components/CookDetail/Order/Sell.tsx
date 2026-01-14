@@ -12,6 +12,7 @@ import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Error } from '@/pages/Earn/components/Trade/Error'
 import {
   getBalanceOf,
   base as Base,
@@ -167,7 +168,7 @@ export const Sell = () => {
 
   return (
     <div className="mt-[12px]">
-      <div className="bg-base relative rounded-[10px] px-[12px] py-[20px] leading-[1]">
+      <div className="bg-base relative rounded-[10px] px-[12px] py-[16px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <p className="text-[14px] font-normal text-[#CED1D9]">
@@ -176,7 +177,7 @@ export const Sell = () => {
           {/* <s[an>] */}
           <p className="flex items-center gap-[4px]">
             <Wallet size={14} color="#848E9C" />
-            <span className="text-[14px] font-medium text-[#CED1D9]">
+            <span className="text-[12px] font-medium text-[#CED1D9]">
               {formatNumber(trueBalance, {
                 showUnit: false,
               })}{' '}
@@ -218,7 +219,7 @@ export const Sell = () => {
         </div>
       </div>
 
-      <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
+      <div className="border-base mt-[8px] rounded-[10px] border-1 px-[12px] py-[16px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -238,7 +239,7 @@ export const Sell = () => {
         {/* form input wrap */}
         <div className="mt-[12px] flex items-center">
           <div className="flex-[1_1_0%]">
-            <span className="text-[32px] leading-[38px] font-bold text-white">
+            <span className="text-[20px] leading-[38px] font-bold text-white">
               {formatNumber(receive?.coin, {
                 showUnit: false,
               })}
@@ -253,7 +254,7 @@ export const Sell = () => {
           </div>
         </div>
       </div>
-      <div className="border-base mt-[4px] rounded-[10px] border-1 px-[12px] py-[20px] leading-[1]">
+      <div className="border-base mt-[8px] rounded-[10px] border-1 px-[12px] py-[16px] leading-[1]">
         {/* title */}
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -271,7 +272,7 @@ export const Sell = () => {
         {/* form input wrap */}
         <div className="mt-[12px] flex items-center">
           <div className="flex-[1_1_0%]">
-            <span className="text-[32px] leading-[38px] font-bold text-white">
+            <span className="text-[20px] leading-[38px] font-bold text-white">
               {formatNumber(receive?.profit, {
                 showUnit: false,
               })}
@@ -286,7 +287,7 @@ export const Sell = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[4px]">
+      <div className="mt-[8px]">
         <FormControlLabel
           control={
             <CheckBox
@@ -311,13 +312,7 @@ export const Sell = () => {
         />
       </div>
       <OrderOptions />
-      {isInsufficient && (
-        <Box className={'mt-[4px] text-[14px] leading-[1]'}>
-          <p className={'text-wrong'}>
-            <Trans>Insufficient balance</Trans>
-          </p>
-        </Box>
-      )}
+      {isInsufficient && <Error className={'mt-[8px]'} />}
 
       {burned && Number(burned) > 0 && (
         <Box className={'border-base mt-[8px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>
