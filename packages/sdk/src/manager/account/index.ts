@@ -48,7 +48,7 @@ export class Account {
       data: balance,
     };
   }
-  
+
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
@@ -111,7 +111,7 @@ export class Account {
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken() ?? ''
-    
+
     const res = await this.client.api.getTradeFlow({ accessToken, ...params, address });
     return {
       code: 0,
@@ -240,8 +240,6 @@ export class Account {
           nonce: nonce.toString(),
         }
 
-        this.logger.info("deposit forward tx params --->", forwardTxParams)
-
         const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
 
         return {
@@ -308,12 +306,15 @@ export class Account {
     }
   }
 
+  async getCurrentEpoch() {
+
+  }
+
   async getAccountVipInfo(chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
 
     const provider = await getJSONProvider(chainId)
-
 
     const brokerContract = new ethers.Contract(
       config.brokerAddress,
@@ -323,15 +324,18 @@ export class Account {
 
     const latestBlock = await provider.getBlock('latest')
     const deadline = (latestBlock?.timestamp ?? dayjs().unix()) + 60 * 5
+    const accessToken = await this.configManager.getAccessToken() ?? ''
 
-    this.logger.info('deadline-->', deadline)
     try {
-      this.logger.info('brokerContract-->', config.brokerAddress)
-      this.logger.info('address-->', address)
-      const accountVipInfo = await brokerContract.userFeeData(address);
-      this.logger.info('accountVipInfo-->', accountVipInfo)
+      const currentEpoch = await this.client.api.getCurrentEpoch({ address, accessToken, broker: config.brokerAddress });
+      if (currentEpoch.code !== 9200) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          currentEpoch.msg ?? "Failed to get current epoch"
+        );
+      }
+      const accountVipInfo = await brokerContract.userFeeData(currentEpoch?.data ?? 0, address);
       const nonce = await brokerContract.userNonces(address);
-      this.logger.info('nonce-->', nonce)
       return {
         code: 0,
         data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
