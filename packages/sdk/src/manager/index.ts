@@ -17,6 +17,7 @@ import { Referrals } from "./referrals";
 // types
 export type { MyxClientConfig } from "./config/index";
 export * from "./subscription/types";
+export * from "./api/type";
 
 export class MyxClient {
   /**
@@ -36,7 +37,7 @@ export class MyxClient {
   public account: Account;
   public seamless: Seamless;
   public api: Api;
-  public appeal: Appeal
+  public appeal: Appeal;
   public referrals: Referrals;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
