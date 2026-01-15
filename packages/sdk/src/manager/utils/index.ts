@@ -23,6 +23,8 @@ import {
   bigintTradingGasToRatioCalculator,
 } from "@/common";
 import { Address } from "viem";
+import { CHAIN_INFO } from "@/config/chains/index";
+import { getChainInfo } from "@/config/chains";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -206,12 +208,16 @@ export class Utils {
     }
   }
 
-  async getUserTradingFeeRate(assetClass: number, riskTier: number, chainId: number) {
+  async getUserTradingFeeRate(
+    assetClass: number,
+    riskTier: number,
+    chainId: number
+  ) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(chainId)
+      const provider = await getJSONProvider(chainId);
       const brokerContract = new ethers.Contract(
         brokerAddress,
         Broker_ABI,
@@ -257,9 +263,7 @@ export class Utils {
     );
 
     try {
-      const networkFee = await marketManagerContract.getExecutionFee(
-        marketId
-      );
+      const networkFee = await marketManagerContract.getExecutionFee(marketId);
 
       return networkFee.toString();
     } catch (error) {
@@ -290,7 +294,7 @@ export class Utils {
         publishTime: priceData.publishTime,
         oracleType: priceData.oracleType,
         value: priceData.value,
-        price: priceData.price
+        price: priceData.price,
       },
     ];
   }
@@ -463,6 +467,10 @@ export class Utils {
 
   async getGasLimitByRatio(gasLimit: bigint) {
     const chainId = this.configManager.getConfig().chainId;
-    return bigintTradingGasToRatioCalculator(gasLimit, chainId);
+    const chainInfo = CHAIN_INFO[chainId];
+    return bigintTradingGasToRatioCalculator(
+      gasLimit,
+      chainInfo?.gasLimitRatio ?? 1.3
+    );
   }
 }
