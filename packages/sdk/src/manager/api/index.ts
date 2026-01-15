@@ -58,6 +58,8 @@ import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
 import { Request } from "./request";
 
+export * from "./appeal-type";
+
 export class Api extends Request {
   private logger: Logger;
   constructor(configManager: ConfigManager, logger: Logger) {
