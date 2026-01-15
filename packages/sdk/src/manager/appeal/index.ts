@@ -74,6 +74,7 @@ export class Appeal extends BaseMyxClient {
         value,
       }
     );
+    this.client.logger.debug('_gasLimit', _gasLimit);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
     this.client.logger.debug("txParams", {
