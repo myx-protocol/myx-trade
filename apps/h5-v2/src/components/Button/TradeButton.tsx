@@ -6,7 +6,7 @@ export const TradeButton = styled(Button)` {}
       height: 44px;
       padding: 0 20px;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 0.5px rgba(128, 255, 149, 1);
+      box-shadow: inset 0 0 0 0.5px rgba(128, 255, 149, .5);
       background: var(--brand-deep-gradient);
       font-size: 13px;
       font-style: normal;
