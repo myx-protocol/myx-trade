@@ -83,8 +83,8 @@ export class Appeal extends BaseMyxClient {
     });
     const tx = await contract.fileDispute(prices, poolId, lpToken, {
       value,
-      // gasLimit,
-      // gasPrice,
+      gasLimit,
+      gasPrice,
     });
     const receipt = await tx.wait();
     return receipt;
