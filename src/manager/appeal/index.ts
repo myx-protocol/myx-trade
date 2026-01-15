@@ -4,7 +4,7 @@ import {
 } from "@/web3/providers";
 import { MyxClient } from "..";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { BytesLike, Signer } from "ethers";
+import { BytesLike, EventLog, Signer } from "ethers";
 import { Address } from "viem";
 import { BaseMyxClient } from "../base/BaseMyxClient";
 import { AppealVoteParams } from "./type";
@@ -90,7 +90,28 @@ export class Appeal extends BaseMyxClient {
       gasPrice,
     });
     const receipt = await tx.wait();
-    return receipt;
+    // receipt.
+    const DisputeFiledLog = receipt?.logs.find((item) => {
+      if ((item as EventLog).eventName === "DisputeFiled") {
+        return true;
+      }
+      return false;
+    });
+    if (!DisputeFiledLog || !receipt) {
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "DisputeFiledLog not found"
+      );
+    }
+    const caseId = (DisputeFiledLog as EventLog).args.getValue(
+      "caseId"
+    ) as bigint;
+    this.client.logger.debug("caseId", caseId);
+    this.client.logger.debug("event", DisputeFiledLog);
+    return {
+      transaction: receipt,
+      caseId: caseId,
+    };
   }
 
   /**

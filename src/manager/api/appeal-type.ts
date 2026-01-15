@@ -115,7 +115,7 @@ export interface AppealDetail {
 export interface AppealUploadEvidenceParams {
   caseId: number
   poolId: string
-  evidence: string
+  evidenceUrl: string
 }
 
 export interface GetAppealReconsiderationListParams {
