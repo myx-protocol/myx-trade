@@ -16,7 +16,9 @@ import {
   GetAppealNodeVoteListParams,
   GetAppealReconsiderationDetailParams,
   GetAppealReconsiderationListParams,
+  GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
+  PostVoteSignatureParams,
 } from "../api/appeal-type";
 
 export class Appeal extends BaseMyxClient {
@@ -74,7 +76,7 @@ export class Appeal extends BaseMyxClient {
         value,
       }
     );
-    this.client.logger.debug('_gasLimit', _gasLimit);
+    this.client.logger.debug("_gasLimit", _gasLimit);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
     this.client.logger.debug("txParams", {
@@ -235,7 +237,23 @@ export class Appeal extends BaseMyxClient {
     return this.client.api.getAppealNodeVoteList(params);
   }
 
+  async getAppealNodeVoteDetail(params: GetAppealVoteNodeDetailParams) {
+    return this.client.api.getAppealNodeVoteDetails(params);
+  }
+
   async getIsVoteNode(params: GetIsVoteNodeParams) {
     return this.client.api.getIsVoteNode(params);
+  }
+
+  async postVoteSignature(params: PostVoteSignatureParams) {
+    return this.client.api.postVoteSignature(params);
+  }
+
+  async getPedingVoteCount() {
+    return this.client.api.getPedingVoteCount();
+  }
+
+  async getMyAppealCount() {
+    return this.client.api.getMyAppealCount();
   }
 }
