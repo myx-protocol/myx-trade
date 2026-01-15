@@ -15,5 +15,7 @@ export interface PoolSymbolAllResponse {
   baseSymbol: string;
   quoteSymbol: string;
   baseTokenIcon: string;
+  baseToken: string
+  quoteToken: string
 }
 

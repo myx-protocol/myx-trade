@@ -10,6 +10,7 @@ import {
   AppealDetail,
   AppealListItem,
   AppealNodeVoteItem,
+  AppealNodeVoteListItem,
   AppealReconsiderationDetail,
   AppealReconsiderationListItem,
   AppealReimbursementItem,
@@ -20,8 +21,11 @@ import {
   GetAppealNodeVoteListParams,
   GetAppealReconsiderationDetailParams,
   GetAppealReconsiderationListParams,
+  GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
   IsVoteNodeEnum,
+  PostVoteResponse,
+  PostVoteSignatureParams,
 } from "./appeal-type";
 import { Logger } from "@/logger";
 import {
@@ -451,6 +455,13 @@ export class Api extends Request {
   }
 
   async getAppealNodeVoteList(params: GetAppealNodeVoteListParams) {
+    return this.get<ApiResponse<AppealNodeVoteListItem[]>>(
+      "/openapi/gateway/scan/node/vote-list",
+      params
+    );
+  }
+
+  async getAppealNodeVoteDetails(params: GetAppealVoteNodeDetailParams) {
     return this.get<ApiResponse<AppealNodeVoteItem[]>>(
       "/openapi/gateway/scan/node/vote-details",
       params
@@ -463,6 +474,37 @@ export class Api extends Request {
       params
     );
   }
+
+  async postVoteSignature(params: PostVoteSignatureParams) {
+    return this.get<ApiResponse<PostVoteResponse>>(
+      `/openapi/gateway/scan/node/vote`,
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getPedingVoteCount() {
+    return this.get<ApiResponse<number>>(
+      "/openapi/gateway/scan/node/pending-vote-total",
+      {},
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getMyAppealCount() {
+    return this.get<ApiResponse<number>>(
+      "/openapi/gateway/scan/processing-total",
+      {},
+      {
+        auth: true,
+      }
+    );
+  }
+
   /**
    * appeal module end ------>
    */
