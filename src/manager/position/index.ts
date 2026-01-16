@@ -118,10 +118,10 @@ export class Position {
       }
       const updateParams = {
         poolId: poolId,
+        oracleType: poolOracleType,
         referencePrice: ethers.parseUnits(priceData?.price ?? "0", 30),
         oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
-        oracleType: poolOracleType,
       };
 
       let needsApproval = false;

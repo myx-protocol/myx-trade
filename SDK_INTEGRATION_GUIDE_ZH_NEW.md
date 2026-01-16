@@ -105,8 +105,7 @@ const result = await myxClient.order.closeAllPositions(
   [
     { /* 仓位 1 的 PlaceOrderParams */ },
     { /* 仓位 2 的 PlaceOrderParams */ },
-  ],
-  tradingFee
+  ]
 );
 ```
 
