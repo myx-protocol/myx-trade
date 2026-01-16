@@ -14,6 +14,8 @@ import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { Api } from "../api";
+import TradingRouter_ABI from "@/abi/TradingRouter.json";
+import { executeAddressByChainId } from "@/config/address";
 
 const contractTypes = {
   ForwardRequest: [
@@ -141,9 +143,13 @@ export class Seamless {
 
     const contractAddress = getContractAddressByChainId(chainId);
     const masterAddress = await config.signer.getAddress()
-    const forwarderContract = await getForwarderContract(chainId)
-    const forwarderAddress = forwarderContract.target
-
+    // const forwarderContract = await getForwarderContract(chainId)
+    // const forwarderAddress = forwarderContract.target
+   const tradingRouterContract = new ethers.Contract(
+    contractAddress.TRADING_ROUTER,
+    TradingRouter_ABI,
+    config.signer
+   );
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
@@ -152,52 +158,30 @@ export class Seamless {
 
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
-
-      const forwarderSignPermit = await signPermit(
-        config.signer,  // 使用 signer 而不是 provider
-        erc20Contract,
+      
+      const tradingRouterSignPermit = await signPermit(
+        config.signer,
+        tradingRouterContract,
         masterAddress,
-        forwarderAddress as string,
+        contractAddress.TRADING_ROUTER,
         ethers.MaxUint256.toString(),
         nonces.toString(),
         deadline.toString(),
       )
 
-      const accountSignPermit = await signPermit(
-        config.signer,  // 使用 signer 而不是 provider
-        erc20Contract,
-        masterAddress,
-        contractAddress.Account,
-        ethers.MaxUint256.toString(),
-        (nonces + BigInt(1)).toString(),
-        deadline.toString(),
-      )
-
-      const forwarderPermitParams = {
-        token: erc20Contract.target,
+      const tradingRouterPermitParams = {
+        token: contractAddress.ERC20,
         owner: masterAddress,
-        spender: forwarderAddress as string,
-        value: ethers.MaxUint256,
-        deadline,
-        v: forwarderSignPermit.v,
-        r: forwarderSignPermit.r,
-        s: forwarderSignPermit.s,
+        spender: contractAddress.TRADING_ROUTER,
+        value: ethers.MaxUint256.toString(),
+        deadline: deadline.toString(),
+        v: tradingRouterSignPermit.v,
+        r: tradingRouterSignPermit.r,
+        s: tradingRouterSignPermit.s,
       }
 
-      const accountPermitParams = {
-        token: erc20Contract.target,
-        owner: masterAddress,
-        spender: contractAddress.Account,
-        value: ethers.MaxUint256,
-        deadline,
-        v: accountSignPermit.v,
-        r: accountSignPermit.r,
-        s: accountSignPermit.s,
-      }
-
-      return [forwarderPermitParams, accountPermitParams]
+      return [tradingRouterPermitParams]
     } catch (error) {
-      this.logger.error('error-->', error);
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -241,7 +225,10 @@ export class Seamless {
       data
     })
 
-    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId)
+    const forwardFeeToken = executeAddressByChainId(chainId)
+
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken}, chainId)
+
     return txRs
   }
 
