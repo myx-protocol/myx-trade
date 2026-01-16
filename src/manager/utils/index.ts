@@ -22,6 +22,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator,
 } from "@/common";
+import { executeAddressByChainId } from "@/config/address";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -333,9 +334,14 @@ export class Utils {
   }
 
   async checkSeamlessGas(userAddress: string, chainId: number) {
-    const forwarderContract = await getForwarderContract(chainId);
-    const relayFee = await forwarderContract.getRelayFee();
     const provider = await getJSONProvider(chainId);
+    const marketManagerContract = new ethers.Contract(
+      getContractAddressByChainId(chainId).MARKET_MANAGER,
+      MarketManager_ABI,
+      provider
+    )
+    const forwardFeeToken = executeAddressByChainId(chainId)
+    const relayFee = await marketManagerContract.getRelayFee(forwardFeeToken);
     // const { gasPrice } = await provider.getFeeData()
     const contractAddress = getContractAddressByChainId(chainId);
 
