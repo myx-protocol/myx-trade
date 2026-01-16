@@ -16,6 +16,7 @@ import { splitSignature } from "@ethersproject/bytes"
 import { Api } from "../api";
 import TradingRouter_ABI from "@/abi/TradingRouter.json";
 import { executeAddressByChainId } from "@/config/address";
+import MarketManager_ABI from "@/abi/MarketManager.json";
 
 const contractTypes = {
   ForwardRequest: [
@@ -145,11 +146,7 @@ export class Seamless {
     const masterAddress = await config.signer.getAddress()
     // const forwarderContract = await getForwarderContract(chainId)
     // const forwarderAddress = forwarderContract.target
-   const tradingRouterContract = new ethers.Contract(
-    contractAddress.TRADING_ROUTER,
-    TradingRouter_ABI,
-    config.signer
-   );
+
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
       ERC20_ABI,
@@ -161,7 +158,7 @@ export class Seamless {
       
       const tradingRouterSignPermit = await signPermit(
         config.signer,
-        tradingRouterContract,
+        erc20Contract,
         masterAddress,
         contractAddress.TRADING_ROUTER,
         ethers.MaxUint256.toString(),
@@ -182,6 +179,7 @@ export class Seamless {
 
       return [tradingRouterPermitParams]
     } catch (error) {
+      console.log('error-->', error)
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -236,18 +234,24 @@ export class Seamless {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const masterAddress = await config.signer?.getAddress() ?? ''
-
+    const provider = await getSignerProvider(chainId)
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
       const balance = balanceRes.data
-      const forwarderContract = await getForwarderContract(chainId)
+      const marketManagerContract = new ethers.Contract(
+        getContractAddressByChainId(chainId).MARKET_MANAGER,
+        MarketManager_ABI,
+        provider
+      )
+      const forwardFeeToken = executeAddressByChainId(chainId)
+      const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
 
-      const pledgeFee = await forwarderContract.getRelayFee()
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
       if (gasFee > 0 && gasFee > BigInt(balance)) {
         throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient balance");
       }
     }
+
 
     const deadline = dayjs().add(60, 'minute').unix()
     let permitParams: any[] = []
@@ -269,6 +273,7 @@ export class Seamless {
       approve,
       permitParams,
     ])
+
 
     const txRs = await this.forwarderTx({
       from: masterAddress ?? '',
@@ -307,7 +312,6 @@ export class Seamless {
     })
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
-
     let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
     if (!isAuthorized) {
