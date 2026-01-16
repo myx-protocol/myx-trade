@@ -47,12 +47,13 @@ export const DialogBase = ({
           className="absolute right-[0] flex inline-flex h-[20px] w-[20px] justify-end text-[#848E9C]"
           onClick={onClose}
         >
-          <CloseIcon size={16} />
+          <CloseIcon size={24} />
         </div>
       </DialogTitle>
       <DialogContent
         sx={{
           padding: '0',
+          paddingBottom: '20px',
         }}
       >
         {children}

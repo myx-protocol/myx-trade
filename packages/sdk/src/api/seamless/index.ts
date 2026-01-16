@@ -9,6 +9,7 @@ export type ForwarderTxParams = {
   data: string;
   deadline: number
   signature: string
+  forwardFeeToken: string
 }
 
 export type FetchForwarderGetParams = {
