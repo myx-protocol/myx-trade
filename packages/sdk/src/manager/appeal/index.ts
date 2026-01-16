@@ -222,6 +222,19 @@ export class Appeal extends BaseMyxClient {
     return configuration;
   }
 
+  async appealReconsideration(caseId: number) {
+    const contract = await this.getDisputeCourtContract();
+    const _gasLimit = await contract.appeal.estimateGas(caseId);
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
+    const tx = await contract.appeal(caseId, {
+      gasLimit,
+      gasPrice,
+    });
+    const receipt = await tx.wait();
+    return receipt;
+  }
+
   /**
    * http api
    */
