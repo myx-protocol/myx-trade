@@ -51,28 +51,17 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
         const usedMargin = orderList.reduce((acc: Big, order: any) => {
           return acc.plus(parseBigNumber(order.collateralAmount))
         }, parseBigNumber(0))
-        let lockedMargin = parseBigNumber(0)
         const quoteProfit = parseBigNumber(
           ethers.formatUnits(assets.quoteProfit, pool?.quoteDecimals ?? 6).toString(),
         )
         const walletBalance = parseBigNumber(
           ethers.formatUnits(assets.walletBalance, pool?.quoteDecimals ?? 6).toString(),
         )
-        let freeMargin = parseBigNumber(
+        const freeMargin = parseBigNumber(
           ethers.formatUnits(assets.freeMargin, pool?.quoteDecimals ?? 6).toString(),
         )
-        let diff = parseBigNumber(0)
 
-        if (usedMargin.gte(quoteProfit)) {
-          diff = usedMargin.minus(quoteProfit)
-          freeMargin = freeMargin.minus(diff)
-          lockedMargin = parseBigNumber(0)
-        } else {
-          diff = quoteProfit.minus(usedMargin)
-          lockedMargin = diff
-        }
-
-        const availableMargin = lockedMargin.plus(walletBalance).plus(freeMargin).toString()
+        const availableMargin = walletBalance.plus(freeMargin).toString()
 
         return {
           availableMargin: availableMargin.toString(),
@@ -84,7 +73,7 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
             .formatUnits(assets.freeBaseAmount, pool?.baseDecimals ?? 6)
             .toString(),
           baseProfit: ethers.formatUnits(assets.baseProfit, pool?.baseDecimals ?? 6).toString(),
-          quoteProfit: lockedMargin.toString(),
+          quoteProfit: quoteProfit.toString(),
           releaseTime: Number(assets.releaseTime),
           usedMargin: usedMargin.toString(),
         }
