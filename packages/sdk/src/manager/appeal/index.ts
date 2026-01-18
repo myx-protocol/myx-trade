@@ -241,7 +241,6 @@ export class Appeal extends BaseMyxClient {
       const res = await this.client.utils.approveAuthorization({
         chainId: this.config.chainId,
         quoteAddress: appealToken,
-        amount: appealAmount,
         spenderAddress,
       });
       if (res.code !== 0) {
