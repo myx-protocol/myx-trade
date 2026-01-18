@@ -222,8 +222,32 @@ export class Appeal extends BaseMyxClient {
     return configuration;
   }
 
-  async appealReconsideration(caseId: number) {
+  async appealReconsideration(
+    caseId: number,
+    appealToken: Address,
+    appealAmount: string
+  ) {
     const contract = await this.getDisputeCourtContract();
+    const account = (await this.config.signer?.getAddress()) ?? "";
+    const spenderAddress = this.getAddressConfig().DISPUTE_COURT;
+    const isNeedApprove = await this.client.utils.needsApproval(
+      account,
+      this.config.chainId,
+      appealToken,
+      appealAmount,
+      spenderAddress
+    );
+    if (isNeedApprove) {
+      const res = await this.client.utils.approveAuthorization({
+        chainId: this.config.chainId,
+        quoteAddress: appealToken,
+        amount: appealAmount,
+        spenderAddress,
+      });
+      if (res.code !== 0) {
+        throw new MyxSDKError(MyxErrorCode.TransactionFailed, res.message);
+      }
+    }
     const _gasLimit = await contract.appeal.estimateGas(caseId);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
