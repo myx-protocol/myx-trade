@@ -22,7 +22,7 @@
     "prepare": "husky",
     "type-check": "turbo run type-check",
     "dev:sdk": "pnpm --filter @myx-trade/sdk dev",
-    "publish:sdk": "pnpm --filter @myx-trade/sdk publish:patch"
+    "publish:sdk": "pnpm --filter @myx-trade/sdk custom-publish"
   },
   "author": "",
   "license": "ISC",
