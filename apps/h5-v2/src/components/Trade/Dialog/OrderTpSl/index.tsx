@@ -98,6 +98,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         poolInfo?.quoteToken,
         order.chainId as number,
         address ?? '',
+        order.marketId as string,
       )
 
       if (rs?.code === 0) {

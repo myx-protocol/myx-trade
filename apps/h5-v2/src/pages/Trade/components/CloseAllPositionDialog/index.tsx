@@ -51,8 +51,6 @@ export const CloseAllPositionDialog = () => {
       <div className="left-0 mt-[40px] flex w-full justify-center">
         <PrimaryButton
           onClick={async () => {
-            console.log('positions-->', positions)
-
             if (positions.length === 0) {
               toast.error({ title: t`No positions` })
               return
@@ -120,11 +118,7 @@ export const CloseAllPositionDialog = () => {
                 }
               })
 
-              const rs = await client?.order.closeAllPositions(
-                Number(selectChainId),
-                data,
-                formattedTradingFee,
-              )
+              const rs = await client?.order.closeAllPositions(Number(selectChainId), data)
 
               if (rs?.code === 0) {
                 toast.success({ title: t`Close all positions success` })
@@ -134,6 +128,10 @@ export const CloseAllPositionDialog = () => {
               }
             } catch (error) {
               console.log(error)
+              toast.error({
+                title: t`Close all positions failed`,
+                content: (error as Error).message,
+              })
             } finally {
               setLoading(false)
             }

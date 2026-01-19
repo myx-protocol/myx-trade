@@ -3,7 +3,7 @@ import { ConfigManager, MyxClientConfig } from "../config";
 import { ethers } from "ethers";
 import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index";
-import OrderManager_ABI from "@/abi/OrderManager.json";
+import MarketManager_ABI from "@/abi/MarketManager.json";
 import { Logger } from "@/logger";
 import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
@@ -22,6 +22,10 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator,
 } from "@/common";
+import { Address } from "viem";
+import { CHAIN_INFO } from "@/config/chains/index";
+import { getChainInfo } from "@/config/chains";
+import { executeAddressByChainId } from "@/config/address";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -98,9 +102,9 @@ export class Utils {
   }
 
   private async getApproveQuoteAmount(
-    address: string,
+    account: string,
     chainId: number,
-    quoteAddress: string,
+    tokenAddress: string,
     spenderAddress?: string
   ) {
     try {
@@ -113,12 +117,12 @@ export class Utils {
 
       const provider = await getJSONProvider(chainId);
       const tokenContract = new ethers.Contract(
-        quoteAddress,
+        tokenAddress,
         erc20Abi,
         provider
       );
 
-      const allowance = await tokenContract.allowance(address, spender);
+      const allowance = await tokenContract.allowance(account, spender);
 
       return {
         code: 0,
@@ -133,17 +137,17 @@ export class Utils {
   }
 
   async needsApproval(
-    address: string,
+    account: string,
     chainId: number,
-    quoteAddress: string,
+    tokenAddress: string,
     requiredAmount: string,
     spenderAddress?: string
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
-        address,
+        account,
         chainId,
-        quoteAddress,
+        tokenAddress,
         spenderAddress
       );
       const currentAllowance = currentAllowanceRes.data;
@@ -178,18 +182,23 @@ export class Utils {
       ];
 
       const config: MyxClientConfig = this.configManager.getConfig();
-      console.log("approveAuthorization: signer-->", signer);
       const usdcContract = new ethers.Contract(
         quoteAddress,
         erc20Abi,
         signer ?? config.signer
       );
 
-      console.log("approveAuthorization: usdcContract-->", usdcContract);
       const approveAmount = amount ?? ethers.MaxUint256;
       const spender =
         spenderAddress ?? getContractAddressByChainId(chainId).Account;
-      const tx = await usdcContract.approve(spender, approveAmount);
+      const gasPrice = await this.getGasPriceByRatio();
+      const gasLimit = await this.getGasLimitByRatio(
+        await usdcContract.approve.estimateGas(spender, approveAmount)
+      );
+      const tx = await usdcContract.approve(spender, approveAmount, {
+        gasLimit,
+        gasPrice,
+      });
       await tx.wait();
       return {
         code: 0,
@@ -205,12 +214,16 @@ export class Utils {
     }
   }
 
-  async getUserTradingFeeRate(assetClass: number, riskTier: number, chainId: number) {
+  async getUserTradingFeeRate(
+    assetClass: number,
+    riskTier: number,
+    chainId: number
+  ) {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(chainId)
+      const provider = await getJSONProvider(chainId);
       const brokerContract = new ethers.Contract(
         brokerAddress,
         Broker_ABI,
@@ -245,20 +258,18 @@ export class Utils {
     }
   }
 
-  async getNetworkFee(quoteAddress: string, chainId: number) {
-    const orderManagerAddress =
-      getContractAddressByChainId(chainId).ORDER_MANAGER;
+  async getNetworkFee(marketId: string, chainId: number) {
+    const marketManagerAddress =
+      getContractAddressByChainId(chainId).MARKET_MANAGER;
     const provider = await getJSONProvider(chainId);
-    const orderManagerContract = new ethers.Contract(
-      orderManagerAddress,
-      OrderManager_ABI,
+    const marketManagerContract = new ethers.Contract(
+      marketManagerAddress,
+      MarketManager_ABI,
       provider
     );
 
     try {
-      const networkFee = await orderManagerContract.getExecutionFee(
-        quoteAddress
-      );
+      const networkFee = await marketManagerContract.getExecutionFee(marketId);
 
       return networkFee.toString();
     } catch (error) {
@@ -274,14 +285,24 @@ export class Utils {
       return priceData;
     } catch (error) {
       this.logger.error("Error getting oracle price:", error);
-      return {
-        price: "0",
-        vaa: "",
-        publishTime: 0,
-        poolId: "",
-        value: 0,
-      };
+      throw error;
     }
+  }
+
+  async buildUpdatePriceParams(poolId: string, chainId: number) {
+    const priceData = await this.getOraclePrice(poolId, chainId);
+    if (!priceData) throw new Error("Failed to get price data");
+    return [
+      {
+        poolId: poolId,
+        referencePrice: ethers.parseUnits(priceData.price, 30),
+        oracleUpdateData: priceData.vaa,
+        publishTime: priceData.publishTime,
+        oracleType: priceData.oracleType,
+        value: priceData.value,
+        price: priceData.price,
+      },
+    ];
   }
 
   transferKlineResolutionToInterval(resolution: KlineResolution) {
@@ -333,9 +354,14 @@ export class Utils {
   }
 
   async checkSeamlessGas(userAddress: string, chainId: number) {
-    const forwarderContract = await getForwarderContract(chainId);
-    const relayFee = await forwarderContract.getRelayFee();
     const provider = await getJSONProvider(chainId);
+    const marketManagerContract = new ethers.Contract(
+      getContractAddressByChainId(chainId).MARKET_MANAGER,
+      MarketManager_ABI,
+      provider
+    )
+    const forwardFeeToken = executeAddressByChainId(chainId)
+    const relayFee = await marketManagerContract.getRelayFee(forwardFeeToken);
     // const { gasPrice } = await provider.getFeeData()
     const contractAddress = getContractAddressByChainId(chainId);
 
@@ -445,11 +471,17 @@ export class Utils {
     return JSON.stringify(error);
   }
 
-  async getGasPriceByRatio(chainId: number) {
-    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice
+  async getGasPriceByRatio() {
+    const chainId = this.configManager.getConfig().chainId;
+    return (await bigintTradingGasPriceWithRatio(chainId)).gasPrice;
   }
 
-  async getGasLimitByRatio(chainId: number, gasLimit: bigint) {
-    return bigintTradingGasToRatioCalculator(gasLimit, chainId);
+  async getGasLimitByRatio(gasLimit: bigint) {
+    const chainId = this.configManager.getConfig().chainId;
+    const chainInfo = CHAIN_INFO[chainId];
+    return bigintTradingGasToRatioCalculator(
+      gasLimit,
+      chainInfo?.gasLimitRatio ?? 1.3
+    );
   }
 }

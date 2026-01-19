@@ -1,38 +1,79 @@
-import { GetHistoryOrdersParams, HistoryOrderItem, PositionHistoryItem, TradeFlowItem } from "@/api/account";
+import {
+  GetHistoryOrdersParams,
+  HistoryOrderItem,
+  PositionHistoryItem,
+  TradeFlowItem,
+} from "@/api/account";
 import { ConfigManager } from "../config";
 import { http } from "@/api/request";
-
+import {
+  AppealDetail,
+  AppealListItem,
+  AppealNodeVoteItem,
+  AppealNodeVoteListItem,
+  AppealReconsiderationDetail,
+  AppealReconsiderationListItem,
+  AppealReimbursementItem,
+  AppealReimbursementParams,
+  AppealUploadEvidenceParams,
+  GetAppealDetailParams,
+  GetAppealListParams,
+  GetAppealNodeVoteListParams,
+  GetAppealReconsiderationDetailParams,
+  GetAppealReconsiderationListParams,
+  GetAppealVoteNodeDetailParams,
+  GetIsVoteNodeParams,
+  IsVoteNodeEnum,
+  PostVoteResponse,
+  PostVoteSignatureParams,
+} from "./appeal-type";
 import { Logger } from "@/logger";
-import { AccessTokenRequest, ApiResponse, BaseDetailResponse, FavoritesListItem, KlineDataItemType, MarketDetailResponse, MarketInfo, PoolOpenOrdersResponse, PoolResponse, PositionResponse, SearchResultResponse, TickerDataItem } from "@/api/type";
-import { AddFavoriteParams, FavoritesListParams, FetchForwarderGetParams, FetchForwarderGetResponse, ForwarderTxParams, GetBaseDetailParams, GetKlineDataParams, GetMarketDetailParams, GetPoolLevelConfigParams, GetTickerDataParams, PoolLevelConfig, PoolSymbolAllResponse, RemoveFavoriteParams, SearchMarketParams } from "@/api";
+import {
+  AccessTokenRequest,
+  ApiResponse,
+  BaseDetailResponse,
+  FavoritesListItem,
+  KlineDataItemType,
+  MarketDetailResponse,
+  MarketInfo,
+  PoolOpenOrdersResponse,
+  PoolResponse,
+  PositionResponse,
+  SearchResultResponse,
+  TickerDataItem,
+} from "@/api/type";
+import {
+  AddFavoriteParams,
+  FavoritesListParams,
+  FetchForwarderGetParams,
+  FetchForwarderGetResponse,
+  ForwarderTxParams,
+  GetBaseDetailParams,
+  GetKlineDataParams,
+  GetMarketDetailParams,
+  GetPoolLevelConfigParams,
+  GetTickerDataParams,
+  PoolLevelConfig,
+  PoolSymbolAllResponse,
+  RemoveFavoriteParams,
+  SearchMarketParams,
+} from "@/api";
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
+import { Request } from "./request";
 
-
-export class Api {
-  private configManager: ConfigManager;
+export class Api extends Request {
   private logger: Logger;
   constructor(configManager: ConfigManager, logger: Logger) {
-    this.configManager = configManager;
+    super(configManager);
     this.logger = logger;
-  }
-
-  getHost() {
-    const { isTestnet, isBetaMode } = this.configManager.getConfig();
-    if (isBetaMode) {
-      return 'https://api-beta.myx.finance';
-    } else if (isTestnet) {
-      return 'https://api-test.myx.cash';
-    } else {
-      return 'https://api.myx.finance';
-    }
   }
 
   async getTradeFlow({
     accessToken,
     address,
     ...params
-  }: GetHistoryOrdersParams & AccessTokenRequest,) {
+  }: GetHistoryOrdersParams & AccessTokenRequest) {
     return http.get<ApiResponse<TradeFlowItem[]>>(
       `${this.getHost()}/openapi/gateway/scan/trade/flow`,
       params,
@@ -43,21 +84,20 @@ export class Api {
         },
       }
     );
-  };
-
+  }
 
   async getPoolSymbolAll() {
     return http.get<ApiResponse<PoolSymbolAllResponse[]>>(
       `${this.getHost()}/openapi/gateway/scan/pools`
     );
-  };
+  }
 
   async fetchForwarderGetApi(params: FetchForwarderGetParams) {
     const rs: FetchForwarderGetResponse = await http.get(
-      `${this.getHost()}/v2/agent/forwarder/get${addQueryParams(params)}`,
-    )
+      `${this.getHost()}/v2/agent/forwarder/get${addQueryParams(params)}`
+    );
 
-    return rs
+    return rs;
   }
 
   async getPoolList() {
@@ -72,54 +112,41 @@ export class Api {
       params,
       {
         headers: {
-          'myx-chain-id': chainId.toString(),
+          "myx-chain-id": chainId.toString(),
         },
-      },
+      }
     );
   }
 
-  async getOraclePrice(
-    chainId: ChainId,
-    poolIds: string[] = [],
-  ) {
+  async getOraclePrice(chainId: ChainId, poolIds: string[] = []) {
     if (!!poolIds.length) {
-      return http.get(
-        `${this.getHost()}/openapi/gateway/quote/price/oracles`,
-        {
-          chainId,
-          poolIds: poolIds.join(","),
-        }
-      );
+      return http.get(`${this.getHost()}/openapi/gateway/quote/price/oracles`, {
+        chainId,
+        poolIds: poolIds.join(","),
+      });
     }
 
     throw new Error("Invalid pool id");
-  };
+  }
 
-  async getPoolDetail(
-    chainId: number,
-    poolId: string,
-  ): Promise<PoolResponse> {
+  async getPoolDetail(chainId: number, poolId: string): Promise<PoolResponse> {
     return await http.get<PoolResponse>(
       `${this.getHost()}/openapi/gateway/scan/market/info?chainId=${chainId}&poolId=${poolId}`
     );
-  };
+  }
 
-  async getPoolLevelConfig({
-    poolId,
-    chainId,
-  }: GetPoolLevelConfigParams) {
+  async getPoolLevelConfig({ poolId, chainId }: GetPoolLevelConfigParams) {
     return http.get<ApiResponse<PoolLevelConfig>>(
-      `${this.getHost()}/openapi/gateway/risk/market_pool/level_config${addQueryParams({
-        poolId,
-        chainId,
-      })}`
+      `${this.getHost()}/openapi/gateway/risk/market_pool/level_config${addQueryParams(
+        {
+          poolId,
+          chainId,
+        }
+      )}`
     );
   }
 
-  async getPositions(
-    accessToken: string,
-    address: string,
-  ) {
+  async getPositions(accessToken: string, address: string) {
     return await http.get<PositionResponse>(
       `${this.getHost()}/openapi/gateway/scan/position/open`,
       undefined,
@@ -130,12 +157,9 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async getOrders(
-    accessToken: string,
-    address: string,
-  ) {
+  async getOrders(accessToken: string, address: string) {
     return await http.get<PositionResponse>(
       `${this.getHost()}/openapi/gateway/scan/order/open`,
       undefined,
@@ -146,12 +170,12 @@ export class Api {
         },
       }
     );
-  };
+  }
 
   async getPoolOpenOrders(
     accessToken: string,
     address: string,
-    chainId: ChainId,
+    chainId: ChainId
   ) {
     return await http.get<PoolOpenOrdersResponse>(
       `${this.getHost()}/openapi/gateway/scan/market/pool-order/open?chainId=${chainId}`,
@@ -163,11 +187,15 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async getKlineData(
-    { chainId, poolId, endTime, limit, interval }: GetKlineDataParams
-  ) {
+  async getKlineData({
+    chainId,
+    poolId,
+    endTime,
+    limit,
+    interval,
+  }: GetKlineDataParams) {
     return http.get<ApiResponse<KlineDataItemType[]>>(
       `${this.getHost()}/openapi/gateway/quote/candles`,
       {
@@ -178,20 +206,18 @@ export class Api {
         interval,
       }
     );
-  };
+  }
 
   async getKlineLatestBar(
-    params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">,
+    params: Pick<GetKlineDataParams, "chainId" | "poolId" | "interval">
   ) {
     return http.get<ApiResponse<KlineDataItemType>>(
       `${this.getHost()}/openapi/gateway/quote/candle/latest`,
       params
     );
-  };
+  }
 
-  async getTickerData(
-    { chainId, poolIds }: GetTickerDataParams,
-  ) {
+  async getTickerData({ chainId, poolIds }: GetTickerDataParams) {
     return http.get<ApiResponse<TickerDataItem[]>>(
       `${this.getHost()}/openapi/gateway/quote/candle/tickers`,
       {
@@ -199,17 +225,19 @@ export class Api {
         poolIds: poolIds.join(","),
       }
     );
-  };
+  }
 
   async getAllTickers() {
     return http.get<ApiResponse<TickerDataItem[]>>(
       `${this.getHost()}/v2/mx-gateway/quote/candle/all_tickers`
     );
-  };
+  }
 
-  async searchMarketAuth(
-    { accessToken, address, ...params }: SearchMarketParams & AccessTokenRequest,
-  ) {
+  async searchMarketAuth({
+    accessToken,
+    address,
+    ...params
+  }: SearchMarketParams & AccessTokenRequest) {
     return http.get<ApiResponse<SearchResultResponse>>(
       `${this.getHost()}/openapi/gateway/scan/market/ac-search`,
       params,
@@ -220,20 +248,20 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async searchMarket(
-    { ...params }: SearchMarketParams,
-  ) {
+  async searchMarket({ ...params }: SearchMarketParams) {
     return http.get<ApiResponse<SearchResultResponse>>(
       `${this.getHost()}/openapi/gateway/scan/market/search`,
       params
     );
-  };
+  }
 
-  async addFavorite(
-    { accessToken, address, ...params }: AddFavoriteParams & AccessTokenRequest,
-  ) {
+  async addFavorite({
+    accessToken,
+    address,
+    ...params
+  }: AddFavoriteParams & AccessTokenRequest) {
     return http.get<ApiResponse<null>>(
       `${this.getHost()}/openapi/gateway/scan/market/add-favorites`,
       params,
@@ -244,11 +272,13 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async removeFavorite(
-    { accessToken, address, ...params }: RemoveFavoriteParams & AccessTokenRequest,
-  ) {
+  async removeFavorite({
+    accessToken,
+    address,
+    ...params
+  }: RemoveFavoriteParams & AccessTokenRequest) {
     return http.get<ApiResponse<null>>(
       `${this.getHost()}/openapi/gateway/scan/market/cancel-favorites`,
       params,
@@ -259,11 +289,13 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async getFavoritesList(
-    { accessToken, address, ...params }: FavoritesListParams & AccessTokenRequest,
-  ) {
+  async getFavoritesList({
+    accessToken,
+    address,
+    ...params
+  }: FavoritesListParams & AccessTokenRequest) {
     return http.get<ApiResponse<FavoritesListItem[]>>(
       `${this.getHost()}/openapi/gateway/scan/market/favorites`,
       params,
@@ -274,33 +306,27 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async getBaseDetail(
-    { ...params }: GetBaseDetailParams
-  ) {
+  async getBaseDetail({ ...params }: GetBaseDetailParams) {
     return http.get<ApiResponse<BaseDetailResponse>>(
       `${this.getHost()}/openapi/gateway/scan/market/base-details`,
       params
     );
-  };
+  }
 
-  async getMarketDetail(
-    { ...params }: GetMarketDetailParams
-  ) {
+  async getMarketDetail({ ...params }: GetMarketDetailParams) {
     return http.get<ApiResponse<MarketDetailResponse>>(
       `${this.getHost()}/openapi/gateway/scan/market/detail`,
       params
     );
-  };
+  }
 
-  async getHistoryOrders(
-    {
-      accessToken,
-      address,
-      ...params
-    }: GetHistoryOrdersParams & AccessTokenRequest,
-  ) {
+  async getHistoryOrders({
+    accessToken,
+    address,
+    ...params
+  }: GetHistoryOrdersParams & AccessTokenRequest) {
     return http.get<ApiResponse<HistoryOrderItem[]>>(
       `${this.getHost()}/openapi/gateway/scan/order/closed`,
       params,
@@ -311,15 +337,13 @@ export class Api {
         },
       }
     );
-  };
+  }
 
-  async getPositionHistory(
-    {
-      accessToken,
-      address,
-      ...params
-    }: GetHistoryOrdersParams & AccessTokenRequest,
-  ) {
+  async getPositionHistory({
+    accessToken,
+    address,
+    ...params
+  }: GetHistoryOrdersParams & AccessTokenRequest) {
     return http.get<ApiResponse<PositionHistoryItem[]>>(
       `${this.getHost()}/openapi/gateway/scan/position/closed`,
       params,
@@ -330,18 +354,172 @@ export class Api {
         },
       }
     );
-  };
+  }
 
   async getMarketList() {
     return http.get<ApiResponse<MarketInfo[]>>(
       `${this.getHost()}/openapi/gateway/scan/market`
     );
-  };
+  }
 
-  async getAccountVipInfo({ address, accessToken, chainId, deadline, nonce }: { address: string, accessToken: string, chainId: number, deadline: number, nonce: string }) {
+  async getAccountVipInfo({
+    address,
+    accessToken,
+    chainId,
+    deadline,
+    nonce,
+  }: {
+    address: string;
+    accessToken: string;
+    chainId: number;
+    deadline: number;
+    nonce: string;
+  }) {
     return http.get<ApiResponse<any>>(
       `${this.getHost()}/openapi/gateway/vip/trade_config`,
       { chainId, deadline, nonce },
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
+
+  /**
+   * appeal module start ------>
+   */
+  async getAppealList(params: GetAppealListParams) {
+    return this.get<ApiResponse<AppealListItem[]>>(
+      "/openapi/gateway/scan/dispute/list",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getAppealDetail(params: GetAppealDetailParams) {
+    return this.get<ApiResponse<AppealDetail>>(
+      "/openapi/gateway/scan/dispute/details",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async uploadAppealEvidence(params: AppealUploadEvidenceParams) {
+    return this.get<ApiResponse<null>>(
+      "/openapi/gateway/scan/dispute/upload/evidence",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getAppealReconsiderationList(
+    params: GetAppealReconsiderationListParams
+  ) {
+    return this.get<ApiResponse<AppealReconsiderationListItem[]>>(
+      "/openapi/gateway/scan/dispute/appeal/list",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getAppealReconsiderationDetail(
+    params: GetAppealReconsiderationDetailParams
+  ) {
+    return this.get<ApiResponse<AppealReconsiderationDetail>>(
+      "/openapi/gateway/scan/appeal/details",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getAppealReimbursementList(params: AppealReimbursementParams) {
+    return this.get<ApiResponse<AppealReimbursementItem[]>>(
+      "/openapi/gateway/scan/reimbursement/list",
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getAppealNodeVoteList(params: GetAppealNodeVoteListParams) {
+    return this.get<ApiResponse<AppealNodeVoteListItem[]>>(
+      "/openapi/gateway/scan/node/vote-list",
+      params
+    );
+  }
+
+  async getAppealNodeVoteDetails(params: GetAppealVoteNodeDetailParams) {
+    return this.get<ApiResponse<AppealNodeVoteItem[]>>(
+      "/openapi/gateway/scan/node/vote-details",
+      params
+    );
+  }
+
+  async getIsVoteNode(params: GetIsVoteNodeParams) {
+    return this.get<ApiResponse<IsVoteNodeEnum>>(
+      "/openapi/gateway/scan/node/vote-node-check",
+      params
+    );
+  }
+
+  async postVoteSignature(params: PostVoteSignatureParams) {
+    return this.get<ApiResponse<PostVoteResponse>>(
+      `/openapi/gateway/scan/node/vote`,
+      params,
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getPedingVoteCount() {
+    return this.get<ApiResponse<number>>(
+      "/openapi/gateway/scan/node/pending-vote-total",
+      {},
+      {
+        auth: true,
+      }
+    );
+  }
+
+  async getMyAppealCount() {
+    return this.get<ApiResponse<number>>(
+      "/openapi/gateway/scan/processing-total",
+      {},
+      {
+        auth: true,
+      }
+    );
+  }
+
+  /**
+   * appeal module end ------>
+   */
+  async getCurrentEpoch({
+    address,
+    accessToken,
+    broker,
+  }: {
+    address: string;
+    accessToken: string;
+    broker: string;
+  }) {
+    return http.get<ApiResponse<number>>(
+      `${this.getHost()}/openapi/gateway/scan/get-current-epoch`,
+      { broker },
       {
         headers: {
           myx_openapi_account: address,
