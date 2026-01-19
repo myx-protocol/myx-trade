@@ -3,7 +3,7 @@ import { Logger } from "@/logger";
 import CryptoJS from 'crypto-js'
 
 import { Utils } from "../utils";
-import { getSignerProvider } from "@/web3";
+import { getSignerProvider, getJSONProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { getForwarderContract, ProviderType } from "@/web3/providers";
@@ -14,9 +14,9 @@ import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { Api } from "../api";
-import TradingRouter_ABI from "@/abi/TradingRouter.json";
 import { executeAddressByChainId } from "@/config/address";
 import MarketManager_ABI from "@/abi/MarketManager.json";
+import Forwarder_ABI from "@/abi/Forwarder.json";
 
 const contractTypes = {
   ForwardRequest: [
@@ -252,7 +252,6 @@ export class Seamless {
       }
     }
 
-
     const deadline = dayjs().add(60, 'minute').unix()
     let permitParams: any[] = []
     if (approve) {
@@ -260,23 +259,28 @@ export class Seamless {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
         console.log('error-->', error);
-        console.warn('Failed to get USD permit params, proceeding without permit:', error)
+        console.warn('Failed to get USD permit params, proceeding without permit:', error) 
         permitParams = []
       }
     }
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
-    const nonce = await forwarderContract.nonces(masterAddress)
+    const jsonProvider = getJSONProvider(chainId)
+    const getNonceForwarderContract = new ethers.Contract(
+      getContractAddressByChainId(chainId).FORWARDER,
+      Forwarder_ABI,
+      jsonProvider
+    )
 
+    const nonce = await getNonceForwarderContract.nonces(masterAddress)
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
       approve,
       permitParams,
     ])
 
-
     const txRs = await this.forwarderTx({
-      from: masterAddress ?? '',
+      from: masterAddress,
       to: forwarderContract?.target as string,
       value: '0',
       gas: '800000',//gas.toString(),
@@ -286,14 +290,45 @@ export class Seamless {
     }, chainId)
 
     if (txRs.data?.txHash) {
+      // 轮询链上查询交易状态
+      const maxAttempts = 5 // 最多尝试5次
+      const pollInterval = 1000 // 每1秒轮询一次
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const rs = await this.api.fetchForwarderGetApi({requestId: txRs.data.requestId})
+
+          if(rs.data?.status === 9) {
+            return {
+              code: 0,
+              data: {
+                seamlessAccount: seamlessAddress,
+                authorized: approve,
+              },
+            }
+          }
+
+          // 如果还没上链，等待后继续轮询
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        } catch (error) {
+          console.error('Poll transaction from chain error:', error)
+          // 如果不是最后一次尝试，继续轮询
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        }
+      }
+      
+      // 轮询超时，返回失败
       return {
-        code: 0,
-        data: {
-          seamlessAccount: seamlessAddress,
-          authorized: approve,
-        },
+        code: -1,
+        data: null,
+        message: 'Transaction confirmation timeout, please check later',
       }
     } else {
+      console.log('txRs-->', txRs)
       return {
         code: -1,
         data: null,
