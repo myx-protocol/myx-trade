@@ -105,8 +105,7 @@ const result = await myxClient.order.closeAllPositions(
   [
     { /* PlaceOrderParams for position 1 */ },
     { /* PlaceOrderParams for position 2 */ },
-  ],
-  tradingFee
+  ]
 );
 ```
 
