@@ -52,31 +52,6 @@ export class Account {
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
-      const poolListRes = await this.client.api.getPoolList();
-      if (poolListRes.code !== 9200) {
-        throw new MyxSDKError(
-          MyxErrorCode.RequestFailed,
-          "Failed to get pool list"
-        );
-      }
-      const poolList = poolListRes.data;
-      const pool = poolList?.find((pool: any) => pool.poolId === poolId);
-      const orderRes = await this.client.order.getOrders(address);
-      if (orderRes.code !== 0) {
-
-        throw new MyxSDKError(
-          MyxErrorCode.RequestFailed,
-          "Failed to get orders"
-        );
-      }
-      const orders = orderRes.data;
-      const openOrders = orders?.filter((order: any) => order.poolId === poolId);
-      const used = openOrders?.reduce((acc: string, order: any) => {
-        const prev = BigInt(ethers.parseUnits(acc, pool?.quoteDecimals ?? 6))
-        const curr = BigInt(ethers.parseUnits(order.collateralAmount ?? '0', pool?.quoteDecimals ?? 6)) + prev
-        return curr.toString();
-      }, '0');
-
 
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
@@ -87,20 +62,12 @@ export class Account {
       }
 
       const marginAccountBalance = marginAccountBalanceRes.data;
-      const usedMargin = BigInt(used ?? '0');
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
       const accountMargin = freeAmount + quoteProfit
 
-
-      if (accountMargin < usedMargin) {
-        return BigInt(0)
-      }
-
-      const availableAccountMarginBalance = accountMargin - usedMargin;
-
-      return availableAccountMarginBalance
+      return accountMargin
     } catch (error) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
@@ -304,10 +271,6 @@ export class Account {
         message: (error as Error).message,
       };
     }
-  }
-
-  async getCurrentEpoch() {
-
   }
 
   async getAccountVipInfo(chainId: number, address: string) {

@@ -88,6 +88,10 @@
             "name": "quoteProfit"
           },
           {
+            "type": "uint256",
+            "name": "reservedAmount"
+          },
+          {
             "type": "uint64",
             "name": "releaseTime"
           }
@@ -141,8 +145,8 @@
         "name": "assetClasses"
       },
       {
-        "type": "uint8[][]",
-        "name": "assetRiskTiers"
+        "type": "uint8[]",
+        "name": "riskTiers"
       },
       {
         "type": "bool",
@@ -653,6 +657,33 @@
       {
         "type": "int256",
         "name": "fundingFee"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getSumProfitLock",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address[]",
+        "name": "respondents"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "baseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount"
       }
     ]
   },

@@ -167,6 +167,24 @@
   },
   {
     "type": "error",
+    "name": "MismatchExecuteFee",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "balanceBefore"
+      },
+      {
+        "type": "uint256",
+        "name": "balanceAfter"
+      },
+      {
+        "type": "uint256",
+        "name": "expected"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "MismatchedSender",
     "inputs": [
       {
@@ -241,13 +259,8 @@
   },
   {
     "type": "error",
-    "name": "SafeERC20FailedOperation",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "token"
-      }
-    ]
+    "name": "RemoveRelayerFailed",
+    "inputs": []
   },
   {
     "type": "error",
@@ -272,6 +285,28 @@
       {
         "type": "address",
         "name": "target",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ChargeForwardFee",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "feeToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "relayFee",
         "indexed": false
       }
     ]
@@ -382,6 +417,50 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "UpdateAcquiescentFeeToken",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "sender",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "oldRelayGas",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "newRelayGas",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "UpdateEquilibriumGas",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "sender",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "oldRelayGas",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "newRelayGas",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "UpdateMaxRelayFee",
     "inputs": [
       {
@@ -397,38 +476,6 @@
       {
         "type": "uint256",
         "name": "newMaxRelayFee",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "UpdateRelayInfo",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "oldRelayFee",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "newRelayFee",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "oldRelayGas",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "newRelayGas",
         "indexed": false
       }
     ]
@@ -491,6 +538,10 @@
     "stateMutability": "payable",
     "payable": true,
     "inputs": [
+      {
+        "type": "address",
+        "name": "forwardFeeToken"
+      },
       {
         "type": "tuple[]",
         "name": "bundleParams",
@@ -568,6 +619,19 @@
   },
   {
     "type": "function",
+    "name": "equilibriumGas",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "execute",
     "constant": false,
     "stateMutability": "payable",
@@ -606,6 +670,10 @@
             "name": "signature"
           }
         ]
+      },
+      {
+        "type": "address",
+        "name": "masterAccount"
       }
     ],
     "outputs": []
@@ -653,6 +721,10 @@
       },
       {
         "type": "address",
+        "name": "masterAccount"
+      },
+      {
+        "type": "address",
         "name": "refundReceiver"
       }
     ],
@@ -665,6 +737,10 @@
     "stateMutability": "payable",
     "payable": true,
     "inputs": [
+      {
+        "type": "address",
+        "name": "forwardFeeToken"
+      },
       {
         "type": "tuple",
         "name": "params",
@@ -704,16 +780,11 @@
   },
   {
     "type": "function",
-    "name": "feeToken",
-    "constant": true,
-    "stateMutability": "view",
+    "name": "exitForwardMode",
+    "constant": false,
     "payable": false,
     "inputs": [],
-    "outputs": [
-      {
-        "type": "address"
-      }
-    ]
+    "outputs": []
   },
   {
     "type": "function",
@@ -761,7 +832,7 @@
   },
   {
     "type": "function",
-    "name": "getFeeToken",
+    "name": "getDesignatedToken",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -769,6 +840,19 @@
     "outputs": [
       {
         "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getEquilibriumGas",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   },
@@ -782,45 +866,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getMaxRelayFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRelayFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRelayGas",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
       }
     ]
   },
@@ -844,6 +889,19 @@
   },
   {
     "type": "function",
+    "name": "inForwardMode",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "initialize",
     "constant": false,
     "payable": false,
@@ -853,23 +911,29 @@
         "name": "addressManager"
       },
       {
-        "type": "address",
-        "name": "_feeToken"
-      },
-      {
         "type": "uint256",
-        "name": "_relayFee"
-      },
-      {
-        "type": "uint256",
-        "name": "_relayGas"
-      },
-      {
-        "type": "uint256",
-        "name": "_maxRelayFee"
+        "name": "_equilibriumGas"
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "isAllowedTargets",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "contractAddr"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
   },
   {
     "type": "function",
@@ -908,19 +972,6 @@
     "outputs": [
       {
         "type": "bool"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "maxRelayFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
       }
     ]
   },
@@ -1031,32 +1082,6 @@
   },
   {
     "type": "function",
-    "name": "relayFee",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "relayGas",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "removeAllowedTarget",
     "constant": false,
     "payable": false,
@@ -1083,30 +1108,13 @@
   },
   {
     "type": "function",
-    "name": "updateMaxRelayFee",
+    "name": "updateEquilibriumGas",
     "constant": false,
     "payable": false,
     "inputs": [
       {
         "type": "uint256",
-        "name": "_maxRelayFee"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "updateRelayInfo",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_relayFee"
-      },
-      {
-        "type": "uint256",
-        "name": "_relayGas"
+        "name": "_equilibriumGas"
       }
     ],
     "outputs": []
