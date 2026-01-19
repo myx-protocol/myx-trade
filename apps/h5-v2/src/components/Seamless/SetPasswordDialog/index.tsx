@@ -14,7 +14,6 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from 'react-hot-toast'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { TradeMode } from '@/pages/Trade/types'
 import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
 
 export const SetPasswordDialog = () => {

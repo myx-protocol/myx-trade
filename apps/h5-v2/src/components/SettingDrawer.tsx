@@ -72,6 +72,8 @@ const RenderAuthButton = () => {
             chainId: chainId as number,
           })
 
+          console.log('authRs-->', authRs)
+
           if (authRs?.code === 0) {
             const idx = seamlessAccountList.findIndex(
               (item) => item.masterAddress === activeSeamlessAddress,
