@@ -32,6 +32,7 @@
     "prepublishOnly": "npm run build",
     "prepare": "pnpm gen:abi",
     "custom-publish": "node scripts/customPublish.js",
+    "publish": "pnpm custom-publish",
     "type-check": "echo 'Skipping type-check for @myx-trade/sdk'"
   },
   "keywords": [
