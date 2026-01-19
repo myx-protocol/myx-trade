@@ -31,11 +31,7 @@
     "version:major": "node scripts/bump-version.js major",
     "prepublishOnly": "npm run build",
     "prepare": "pnpm gen:abi",
-    "publish": "node scripts/publish.js patch",
-    "publish:patch": "node scripts/publish.js patch",
-    "publish:minor": "node scripts/publish.js minor",
-    "publish:major": "node scripts/publish.js major",
-    "publish:no-bump": "npm run build && npm publish --access public",
+    "publish": "node scripts/customPublish.js",
     "type-check": "echo 'Skipping type-check for @myx-trade/sdk'"
   },
   "keywords": [

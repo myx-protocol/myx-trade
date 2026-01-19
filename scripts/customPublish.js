@@ -74,4 +74,6 @@ inquirer.prompt([
             stdio: 'inherit',
         })
     }
+
+    console.log('✅ 发布成功！')
 });
