@@ -4,7 +4,7 @@ import {
 } from "@/web3/providers";
 import { MyxClient } from "..";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { BytesLike, EventLog, Signer } from "ethers";
+import { BytesLike, EventLog, Log, Signer } from "ethers";
 import { Address } from "viem";
 import { BaseMyxClient } from "../base/BaseMyxClient";
 import { AppealVoteParams } from "./type";
@@ -91,7 +91,7 @@ export class Appeal extends BaseMyxClient {
     });
     const receipt = await tx.wait();
     // receipt.
-    const DisputeFiledLog = receipt?.logs.find((item: EventLog) => {
+    const DisputeFiledLog = receipt?.logs.find((item: EventLog | Log) => {
       if ((item as EventLog).eventName === "DisputeFiled") {
         return true;
       }
