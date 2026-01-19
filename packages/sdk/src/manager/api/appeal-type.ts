@@ -173,6 +173,7 @@ export interface AppealReconsiderationDetail {
   appealVotes: AppealVoteItem[]; // 反诉投票
   appealTotalVoteCount: number; //可投票总数
   appealVotedCount: number; // 已投票数
+  appealCaseId?: number; // 反诉案件ID
 }
 
 export interface AppealReimbursementParams {
