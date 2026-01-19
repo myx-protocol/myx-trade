@@ -1,6 +1,6 @@
 {
   "name": "@myx-trade/sdk",
-  "version": "0.1.251",
+  "version": "0.1.252",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,7 @@
     "version:minor": "node scripts/bump-version.js minor",
     "version:major": "node scripts/bump-version.js major",
     "prepublishOnly": "npm run build",
-    "postinstall": "pnpm gen:abi",
+    "prepare": "pnpm gen:abi",
     "publish": "node scripts/publish.js patch",
     "publish:patch": "node scripts/publish.js patch",
     "publish:minor": "node scripts/publish.js minor",
