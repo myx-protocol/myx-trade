@@ -436,7 +436,7 @@ export class Api extends Request {
     params: GetAppealReconsiderationDetailParams
   ) {
     return this.get<ApiResponse<AppealReconsiderationDetail>>(
-      "/openapi/gateway/scan/appeal/details",
+      "/openapi/gateway/scan/dispute/appeal/details",
       params,
       {
         auth: true,
