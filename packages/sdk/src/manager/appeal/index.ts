@@ -91,7 +91,7 @@ export class Appeal extends BaseMyxClient {
     });
     const receipt = await tx.wait();
     // receipt.
-    const DisputeFiledLog = receipt?.logs.find((item) => {
+    const DisputeFiledLog = receipt?.logs.find((item: EventLog) => {
       if ((item as EventLog).eventName === "DisputeFiled") {
         return true;
       }
