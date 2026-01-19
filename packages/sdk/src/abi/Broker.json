@@ -6,6 +6,16 @@
   },
   {
     "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "ECDSAInvalidSignature",
     "inputs": []
   },
@@ -31,7 +41,27 @@
   },
   {
     "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "ExpiredFeeData",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
     "inputs": []
   },
   {
@@ -96,6 +126,11 @@
   },
   {
     "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "OwnableInvalidOwner",
     "inputs": [
       {
@@ -140,6 +175,21 @@
       {
         "type": "address",
         "name": "token"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
       }
     ]
   },
@@ -274,6 +324,40 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "UserFeeDataReset",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "signer",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "epoch",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "UserFeeDataUpdated",
     "inputs": [
       {
@@ -289,6 +373,11 @@
       {
         "type": "address",
         "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "epoch",
         "indexed": false
       },
       {
@@ -323,6 +412,19 @@
     "outputs": [
       {
         "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
       }
     ]
   },
@@ -403,37 +505,6 @@
         "type": "address"
       }
     ]
-  },
-  {
-    "type": "function",
-    "name": "adjustCollateral",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "bytes32",
-        "name": "positionId"
-      },
-      {
-        "type": "int256",
-        "name": "adjustAmount"
-      }
-    ],
-    "outputs": []
   },
   {
     "type": "function",
@@ -565,6 +636,32 @@
   },
   {
     "type": "function",
+    "name": "currentFeeDataEpoch",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "domainSeparatorV4",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "eip712Domain",
     "constant": true,
     "stateMutability": "view",
@@ -663,6 +760,19 @@
   },
   {
     "type": "function",
+    "name": "getImplementation",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getSpecialFeeTier",
     "constant": true,
     "stateMutability": "view",
@@ -689,6 +799,55 @@
       {
         "type": "uint32",
         "name": "takerFeeRate"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUserFeeDataDigest",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "uint64",
+        "name": "nonce"
+      },
+      {
+        "type": "uint64",
+        "name": "deadline"
+      },
+      {
+        "type": "tuple",
+        "name": "feeData",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "tier"
+          },
+          {
+            "type": "address",
+            "name": "referrer"
+          },
+          {
+            "type": "uint32",
+            "name": "totalReferralRebatePct"
+          },
+          {
+            "type": "uint32",
+            "name": "referrerRebatePct"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": "digest"
       }
     ]
   },
@@ -1292,7 +1451,28 @@
   },
   {
     "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "renounceOwnership",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "resetAllUserFeeData",
     "constant": false,
     "payable": false,
     "inputs": [],
@@ -1546,41 +1726,6 @@
   },
   {
     "type": "function",
-    "name": "updateFeeTiers",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "assetClass"
-      },
-      {
-        "type": "uint8",
-        "name": "riskTier"
-      },
-      {
-        "type": "uint8[]",
-        "name": "feeTiers"
-      },
-      {
-        "type": "tuple[]",
-        "name": "feeRates",
-        "components": [
-          {
-            "type": "uint32",
-            "name": "takerFeeRate"
-          },
-          {
-            "type": "uint32",
-            "name": "makerFeeRate"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "updateOrder",
     "constant": false,
     "payable": false,
@@ -1702,11 +1847,86 @@
   },
   {
     "type": "function",
+    "name": "updateUserFeeData",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "tuple",
+        "name": "feeData",
+        "components": [
+          {
+            "type": "uint8",
+            "name": "tier"
+          },
+          {
+            "type": "address",
+            "name": "referrer"
+          },
+          {
+            "type": "uint32",
+            "name": "totalReferralRebatePct"
+          },
+          {
+            "type": "uint32",
+            "name": "referrerRebatePct"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeTo",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "userFeeData",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
     "inputs": [
+      {
+        "type": "uint256",
+        "name": "userFeeDataEpoch"
+      },
       {
         "type": "address",
         "name": "user"

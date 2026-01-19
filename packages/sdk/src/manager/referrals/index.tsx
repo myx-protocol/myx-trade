@@ -14,13 +14,8 @@ export class Referrals extends BaseMyxClient {
     const _gasLimit = await brokerContract.claimRebate.estimateGas(
       tokenAddress
     );
-    const gasLimit = await this.client.utils.getGasLimitByRatio(
-      this.config.chainId,
-      _gasLimit
-    );
-    const gasPrice = await this.client.utils.getGasPriceByRatio(
-      this.config.chainId
-    );
+    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
+    const gasPrice = await this.client.utils.getGasPriceByRatio();
     const tx = await brokerContract.claimRebate(tokenAddress, {
       gasPrice,
       gasLimit,

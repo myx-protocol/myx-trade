@@ -3,7 +3,7 @@ import { Logger } from "@/logger";
 import CryptoJS from 'crypto-js'
 
 import { Utils } from "../utils";
-import { getSignerProvider } from "@/web3";
+import { getSignerProvider, getJSONProvider } from "@/web3";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { getForwarderContract, ProviderType } from "@/web3/providers";
@@ -14,6 +14,9 @@ import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
 import { Api } from "../api";
+import { executeAddressByChainId } from "@/config/address";
+import MarketManager_ABI from "@/abi/MarketManager.json";
+import Forwarder_ABI from "@/abi/Forwarder.json";
 
 const contractTypes = {
   ForwardRequest: [
@@ -141,8 +144,8 @@ export class Seamless {
 
     const contractAddress = getContractAddressByChainId(chainId);
     const masterAddress = await config.signer.getAddress()
-    const forwarderContract = await getForwarderContract(chainId)
-    const forwarderAddress = forwarderContract.target
+    // const forwarderContract = await getForwarderContract(chainId)
+    // const forwarderAddress = forwarderContract.target
 
     const erc20Contract = new ethers.Contract(
       contractAddress.ERC20,
@@ -152,52 +155,31 @@ export class Seamless {
 
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
-
-      const forwarderSignPermit = await signPermit(
-        config.signer,  // 使用 signer 而不是 provider
+      
+      const tradingRouterSignPermit = await signPermit(
+        config.signer,
         erc20Contract,
         masterAddress,
-        forwarderAddress as string,
+        contractAddress.TRADING_ROUTER,
         ethers.MaxUint256.toString(),
         nonces.toString(),
         deadline.toString(),
       )
 
-      const accountSignPermit = await signPermit(
-        config.signer,  // 使用 signer 而不是 provider
-        erc20Contract,
-        masterAddress,
-        contractAddress.Account,
-        ethers.MaxUint256.toString(),
-        (nonces + BigInt(1)).toString(),
-        deadline.toString(),
-      )
-
-      const forwarderPermitParams = {
-        token: erc20Contract.target,
+      const tradingRouterPermitParams = {
+        token: contractAddress.ERC20,
         owner: masterAddress,
-        spender: forwarderAddress as string,
-        value: ethers.MaxUint256,
-        deadline,
-        v: forwarderSignPermit.v,
-        r: forwarderSignPermit.r,
-        s: forwarderSignPermit.s,
+        spender: contractAddress.TRADING_ROUTER,
+        value: ethers.MaxUint256.toString(),
+        deadline: deadline.toString(),
+        v: tradingRouterSignPermit.v,
+        r: tradingRouterSignPermit.r,
+        s: tradingRouterSignPermit.s,
       }
 
-      const accountPermitParams = {
-        token: erc20Contract.target,
-        owner: masterAddress,
-        spender: contractAddress.Account,
-        value: ethers.MaxUint256,
-        deadline,
-        v: accountSignPermit.v,
-        r: accountSignPermit.r,
-        s: accountSignPermit.s,
-      }
-
-      return [forwarderPermitParams, accountPermitParams]
+      return [tradingRouterPermitParams]
     } catch (error) {
-      this.logger.error('error-->', error);
+      console.log('error-->', error)
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -241,7 +223,10 @@ export class Seamless {
       data
     })
 
-    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature }, chainId)
+    const forwardFeeToken = executeAddressByChainId(chainId)
+
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken}, chainId)
+
     return txRs
   }
 
@@ -249,13 +234,18 @@ export class Seamless {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const masterAddress = await config.signer?.getAddress() ?? ''
-
+    const provider = await getSignerProvider(chainId)
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
       const balance = balanceRes.data
-      const forwarderContract = await getForwarderContract(chainId)
+      const marketManagerContract = new ethers.Contract(
+        getContractAddressByChainId(chainId).MARKET_MANAGER,
+        MarketManager_ABI,
+        provider
+      )
+      const forwardFeeToken = executeAddressByChainId(chainId)
+      const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
 
-      const pledgeFee = await forwarderContract.getRelayFee()
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
       if (gasFee > 0 && gasFee > BigInt(balance)) {
         throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient balance");
@@ -269,14 +259,20 @@ export class Seamless {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
         console.log('error-->', error);
-        console.warn('Failed to get USD permit params, proceeding without permit:', error)
+        console.warn('Failed to get USD permit params, proceeding without permit:', error) 
         permitParams = []
       }
     }
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
-    const nonce = await forwarderContract.nonces(masterAddress)
+    const jsonProvider = getJSONProvider(chainId)
+    const getNonceForwarderContract = new ethers.Contract(
+      getContractAddressByChainId(chainId).FORWARDER,
+      Forwarder_ABI,
+      jsonProvider
+    )
 
+    const nonce = await getNonceForwarderContract.nonces(masterAddress)
     const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
       seamlessAddress,
       approve,
@@ -284,7 +280,7 @@ export class Seamless {
     ])
 
     const txRs = await this.forwarderTx({
-      from: masterAddress ?? '',
+      from: masterAddress,
       to: forwarderContract?.target as string,
       value: '0',
       gas: '800000',//gas.toString(),
@@ -294,14 +290,45 @@ export class Seamless {
     }, chainId)
 
     if (txRs.data?.txHash) {
+      // 轮询链上查询交易状态
+      const maxAttempts = 5 // 最多尝试5次
+      const pollInterval = 1000 // 每1秒轮询一次
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const rs = await this.api.fetchForwarderGetApi({requestId: txRs.data.requestId})
+
+          if(rs.data?.status === 9) {
+            return {
+              code: 0,
+              data: {
+                seamlessAccount: seamlessAddress,
+                authorized: approve,
+              },
+            }
+          }
+
+          // 如果还没上链，等待后继续轮询
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        } catch (error) {
+          console.error('Poll transaction from chain error:', error)
+          // 如果不是最后一次尝试，继续轮询
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        }
+      }
+      
+      // 轮询超时，返回失败
       return {
-        code: 0,
-        data: {
-          seamlessAccount: seamlessAddress,
-          authorized: approve,
-        },
+        code: -1,
+        data: null,
+        message: 'Transaction confirmation timeout, please check later',
       }
     } else {
+      console.log('txRs-->', txRs)
       return {
         code: -1,
         data: null,
@@ -320,7 +347,6 @@ export class Seamless {
     })
     const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
     const wallet = new ethers.Wallet(privateKey)
-
     let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
     if (!isAuthorized) {

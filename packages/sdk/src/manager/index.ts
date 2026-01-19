@@ -11,18 +11,20 @@ import { Api } from "./api";
 
 import { MxSDK } from "@/web3";
 import { Seamless } from "./seamless";
+import { Appeal } from "./appeal";
 import { Referrals } from "./referrals";
 
 // types
 export type { MyxClientConfig } from "./config/index";
 export * from "./subscription/types";
+export * from "./api/type";
 
 export class MyxClient {
   /**
    * private properties
    */
   private configManager: ConfigManager;
-  private logger: Logger;
+  public logger: Logger;
 
   /**
    * public properties
@@ -35,6 +37,7 @@ export class MyxClient {
   public account: Account;
   public seamless: Seamless;
   public api: Api;
+  public appeal: Appeal;
   public referrals: Referrals;
   /**
    * 获取配置管理器（用于访问 accessToken 相关方法）
@@ -113,6 +116,10 @@ export class MyxClient {
     this.subscription = new SubScription(this.configManager, this.logger);
 
     /**
+     * initialize appeal
+     */
+    this.appeal = new Appeal(this);
+    /*
      * initialize referrals
      */
     this.referrals = new Referrals(this);

@@ -20,6 +20,7 @@ import { Account } from "../account";
 import { Api } from "../api";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
 import { ChainId } from "@/config/chain";
+import { getContractAddressByChainId } from "@/config/address/index";
 
 export class Position {
   private configManager: ConfigManager;
@@ -117,10 +118,10 @@ export class Position {
       }
       const updateParams = {
         poolId: poolId,
+        oracleType: poolOracleType,
         referencePrice: ethers.parseUnits(priceData?.price ?? "0", 30),
         oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
-        oracleType: poolOracleType,
       };
 
       let needsApproval = false;
@@ -130,7 +131,8 @@ export class Position {
           address,
           chainId,
           quoteToken,
-          adjustAmount
+          adjustAmount,
+          getContractAddressByChainId(chainId).TRADING_ROUTER
         );
       }
 
@@ -244,6 +246,7 @@ export class Position {
           chainId,
           quoteAddress: quoteToken,
           amount: ethers.MaxUint256.toString(),
+          spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
         if (approvalResult.code !== 0) {
           throw new Error(approvalResult.message);

@@ -23,6 +23,7 @@ import { Account } from "../account";
 import { ChainId } from "@/config/chain";
 import { Api } from "../api";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
+import { getContractAddressByChainId } from "@/config/address/index";
 
 export class Order {
   private configManager: ConfigManager;
@@ -40,12 +41,12 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string) {
+  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
       const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken,
+        marketId,
         params.chainId
       );
 
@@ -160,6 +161,7 @@ export class Order {
         params.chainId,
         params.executionFeeToken,
         params.collateralAmount,
+        getContractAddressByChainId(params.chainId).TRADING_ROUTER,
       );
 
       if (!config.signer) {
@@ -171,6 +173,7 @@ export class Order {
           chainId: params.chainId,
           quoteAddress: params.executionFeeToken,
           amount: ethers.MaxUint256.toString(),
+          spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
         });
 
         if (approvalResult.code !== 0) {
@@ -259,35 +262,13 @@ export class Order {
     }
   }
 
-  async closeAllPositions(chainId: number, params: PlaceOrderParams[], tradingFee: string) {
+  async closeAllPositions(chainId: number, params: PlaceOrderParams[]) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
-      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params[0].poolId, chainId, address: params[0].address });
-
-      const networkFee = await this.utils.getNetworkFee(
-        params[0].executionFeeToken,
-        chainId
-      );
-
-      const tradingFeeAmount = BigInt(tradingFee) * BigInt(params.length)
-      const needAmount = tradingFeeAmount + BigInt(params.length) * BigInt(networkFee)
-
-      let depositAmount = BigInt(0)
-      if (availableAccountMarginBalance < needAmount) {
-        depositAmount = needAmount - availableAccountMarginBalance
-      }
-
-      const needsApproval = await this.utils.needsApproval(
-        params[0].address,
-        chainId,
-        params[0].executionFeeToken,
-        depositAmount.toString(),
-      );
-
       const depositData = {
-        token: params[0].executionFeeToken,
-        amount: depositAmount.toString()
+        token: '0x0000000000000000000000000000000000000000',
+        amount: '0'
       };
 
       const positionIds = params.map((param: PlaceOrderParams) => param.positionId.toString());
@@ -380,17 +361,18 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      if (needsApproval) {
-        const approvalResult = await this.utils.approveAuthorization({
-          chainId: chainId,
-          quoteAddress: params[0].executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
-        });
+      // if (needsApproval) {
+      //   const approvalResult = await this.utils.approveAuthorization({
+      //     chainId: chainId,
+      //     quoteAddress: params[0].executionFeeToken,
+      //     amount: ethers.MaxUint256.toString(),
+      //     spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
+      //   });
 
-        if (approvalResult.code !== 0) {
-          throw new Error(approvalResult.message);
-        }
-      }
+      //   if (approvalResult.code !== 0) {
+      //     throw new Error(approvalResult.message);
+      //   }
+      // }
 
 
       const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, positionIds, dataMap);
@@ -432,19 +414,6 @@ export class Order {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
-      const networkFee = await this.utils.getNetworkFee(
-        params.executionFeeToken,
-        params.chainId
-      );
-
-      let depositAmount = BigInt(0)
-      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-
-      const needAmount = BigInt(networkFee)
-      if (availableAccountMarginBalance < needAmount) {
-        depositAmount = needAmount - availableAccountMarginBalance
-      }
-
       const data = {
         user: params.address,
         poolId: params.poolId,
@@ -466,16 +435,17 @@ export class Order {
       }
 
       const depositData = {
-        token: params.executionFeeToken,
-        amount: depositAmount.toString()
+        token: '0x0000000000000000000000000000000000000000',
+        amount: '0'
       }
 
-      const needsApproval = await this.utils.needsApproval(
-        params.address,
-        params.chainId,
-        params.executionFeeToken,
-        depositAmount.toString(),
-      );
+      // const needsApproval = await this.utils.needsApproval(
+      //   params.address,
+      //   params.chainId,
+      //   params.executionFeeToken,
+      //   depositAmount.toString(),
+      //   getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+      // );
 
       const authorized = this.configManager.getConfig().seamlessAccount?.authorized
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
@@ -540,17 +510,18 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      if (needsApproval) {
-        const approvalResult = await this.utils.approveAuthorization({
-          chainId: params.chainId,
-          quoteAddress: params.executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
-        });
+      // if (needsApproval) {
+      //   const approvalResult = await this.utils.approveAuthorization({
+      //     chainId: params.chainId,
+      //     quoteAddress: params.executionFeeToken,
+      //     amount: ethers.MaxUint256.toString(),
+      //     spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+      //   });
 
-        if (approvalResult.code !== 0) {
-          throw new Error(approvalResult.message);
-        }
-      }
+      //   if (approvalResult.code !== 0) {
+      //     throw new Error(approvalResult.message);
+      //   }
+      // }
 
 
       let transaction;
@@ -631,10 +602,6 @@ export class Order {
       );
 
       try {
-        const networkFee = await this.utils.getNetworkFee(
-          params.executionFeeToken,
-          params.chainId
-        );
 
         if (params.tpSize !== "0" && params.slSize !== "0") {
           const data = [
@@ -678,14 +645,20 @@ export class Order {
             },
           ];
 
-          const depositAmount = BigInt(networkFee) * BigInt(2)
+          // const depositAmount = BigInt(networkFee) * BigInt(2)
 
-          const needsApproval = await this.utils.needsApproval(
-            params.address,
-            params.chainId,
-            params.executionFeeToken,
-            depositAmount.toString(),
-          );
+          // const needsApproval = await this.utils.needsApproval(
+          //   params.address,
+          //   params.chainId,
+          //   params.executionFeeToken,
+          //   depositAmount.toString(),
+          //   getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+          // );
+
+          const depositData = {
+            token: '0x0000000000000000000000000000000000000000',
+            amount: '0'
+          }
 
           const authorized = this.configManager.getConfig().seamlessAccount?.authorized
           const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
@@ -720,11 +693,11 @@ export class Order {
 
             if (!params.positionId) {
               functionHash = brokerContract.interface.encodeFunctionData('placeOrdersWithSalt', [
-                { token: params.executionFeeToken, amount: depositAmount.toString() }, ['1', '1'], data
+                depositData, ['1', '1'], data
               ])
             } else {
               functionHash = brokerContract.interface.encodeFunctionData('placeOrdersWithPosition', [
-                { token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data
+                depositData, [params.positionId.toString(), params.positionId.toString()], data
               ])
             }
 
@@ -752,32 +725,33 @@ export class Order {
             };
           }
 
-          if (needsApproval) {
-            const approvalResult = await this.utils.approveAuthorization({
-              chainId: params.chainId,
-              quoteAddress: params.executionFeeToken,
-              amount: ethers.MaxUint256.toString(),
-            });
+          // if (needsApproval) {
+          //   const approvalResult = await this.utils.approveAuthorization({
+          //     chainId: params.chainId,
+          //     quoteAddress: params.executionFeeToken,
+          //     amount: ethers.MaxUint256.toString(),
+          //     spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+          //   });
 
-            if (approvalResult.code !== 0) {
-              throw new Error(approvalResult.message);
-            }
-          }
+          //   if (approvalResult.code !== 0) {
+          //     throw new Error(approvalResult.message);
+          //   }
+          // }
 
           let transaction
           if (!params.positionId) {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
             const positionId = 1
-            const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data);
+            const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas(depositData, [positionId.toString(), positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithSalt({ token: params.executionFeeToken, amount: depositAmount.toString() }, [positionId.toString(), positionId.toString()], data, {
+            transaction = await brokerContract.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data, {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           } else {
-            const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data);
+            const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, [params.positionId.toString(), params.positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithPosition({ token: params.executionFeeToken, amount: depositAmount.toString() }, [params.positionId.toString(), params.positionId.toString()], data, {
+            transaction = await brokerContract.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data, {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           }
@@ -844,16 +818,17 @@ export class Order {
         };
 
         const depositData = {
-          token: params.executionFeeToken,
-          amount: networkFee
+          token: '0x0000000000000000000000000000000000000000',
+          amount: '0'
         }
 
-        const needsApproval = await this.utils.needsApproval(
-          params.address,
-          params.chainId,
-          params.executionFeeToken,
-          networkFee.toString(),
-        );
+        // const needsApproval = await this.utils.needsApproval(
+        //   params.address,
+        //   params.chainId,
+        //   params.executionFeeToken,
+        //   networkFee.toString(),
+        //   getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+        // );
 
         const authorized = this.configManager.getConfig().seamlessAccount?.authorized
         const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
@@ -920,17 +895,18 @@ export class Order {
           };
         }
 
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: params.chainId,
-            quoteAddress: params.executionFeeToken,
-            amount: ethers.MaxUint256.toString(),
-          });
+        // if (needsApproval) {
+        //   const approvalResult = await this.utils.approveAuthorization({
+        //     chainId: params.chainId,
+        //     quoteAddress: params.executionFeeToken,
+        //     amount: ethers.MaxUint256.toString(),
+        //     spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+        //   });
 
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
+        //   if (approvalResult.code !== 0) {
+        //     throw new Error(approvalResult.message);
+        //   }
+        // }
 
         let transaction;
         if (!params.positionId) {
@@ -1205,10 +1181,10 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string) {
+  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string, marketId: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const networkFee = await this.utils.getNetworkFee(quoteAddress, chainId)
+    const networkFee = await this.utils.getNetworkFee(marketId, chainId)
 
     const data = {
       orderId: params.orderId,
@@ -1286,6 +1262,7 @@ export class Order {
         chainId,
         params.executionFeeToken,
         networkFee.toString(),
+        getContractAddressByChainId(chainId).TRADING_ROUTER,
       );
 
       if (needsApproval) {
@@ -1293,6 +1270,7 @@ export class Order {
           chainId: chainId,
           quoteAddress: params.executionFeeToken,
           amount: ethers.MaxUint256.toString(),
+          spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
 
         if (approvalResult.code !== 0) {
