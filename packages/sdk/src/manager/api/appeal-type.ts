@@ -143,6 +143,8 @@ export interface AppealReconsiderationListItem {
   appealDeadline: number; // appeal deadline
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
+  appealCaseId?: number; // 反诉案件ID
+  votedCount: number
 }
 
 export interface GetAppealReconsiderationDetailParams {
