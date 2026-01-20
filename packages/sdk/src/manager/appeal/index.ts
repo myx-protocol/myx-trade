@@ -255,7 +255,28 @@ export class Appeal extends BaseMyxClient {
       gasPrice,
     });
     const receipt = await tx.wait();
-    return receipt;
+
+    const AppealFiledLog = receipt?.logs.find((item: EventLog | Log) => {
+      if ((item as EventLog).eventName === "AppealFiled") {
+        return true;
+      }
+      return false;
+    });
+    if (!AppealFiledLog || !receipt) {
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "AppealFiledLog not found"
+      );
+    }
+
+    const appealCaseId = (AppealFiledLog as EventLog).args.getValue(
+      "appealCaseId"
+    ) as bigint;
+    return {
+      tx: receipt,
+      appealCaseId,
+      caseId
+    };
   }
 
   /**
