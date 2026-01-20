@@ -236,13 +236,15 @@ export class Seamless {
 
     const masterAddress = await config.signer?.getAddress() ?? ''
     const provider = await getSignerProvider(chainId)
+    const jsonProvider = getJSONProvider(chainId)
+
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
       const balance = balanceRes.data
       const marketManagerContract = new ethers.Contract(
         getContractAddressByChainId(chainId).MARKET_MANAGER,
         MarketManager_ABI,
-        provider
+        jsonProvider
       )
       const forwardFeeToken = executeAddressByChainId(chainId)
       this.logger.info('forwardFeeToken-->', forwardFeeToken, chainId)
@@ -269,7 +271,6 @@ export class Seamless {
     }
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
-    const jsonProvider = getJSONProvider(chainId)
     const getNonceForwarderContract = new ethers.Contract(
       getContractAddressByChainId(chainId).FORWARDER,
       Forwarder_ABI,
