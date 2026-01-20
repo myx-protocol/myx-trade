@@ -510,7 +510,9 @@ export class Api extends Request {
   async getWarmholeSign(params: GetWarmholeSignParams) {
     return this.get<ApiResponse<GetWarmholeSignResponse>>(
       "/openapi/gateway/scan/get-warmhole-sign",
-      params
+      params, {
+      auth: true
+    }
     );
   }
 
