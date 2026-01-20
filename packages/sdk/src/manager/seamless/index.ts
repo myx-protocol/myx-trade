@@ -245,6 +245,9 @@ export class Seamless {
         provider
       )
       const forwardFeeToken = executeAddressByChainId(chainId)
+      this.logger.info('forwardFeeToken-->', forwardFeeToken, chainId)
+      this.logger.info('marketManagerContract-->', marketManagerContract.target, chainId)
+      this.logger.info('marketManagerContract.getForwardFeeByToken-->', marketManagerContract.getForwardFeeByToken)
       const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
 
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
