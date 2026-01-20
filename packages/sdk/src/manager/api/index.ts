@@ -23,6 +23,8 @@ import {
   GetAppealReconsiderationListParams,
   GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
+  GetWarmholeSignParams,
+  GetWarmholeSignResponse,
   IsVoteNodeEnum,
   PostVoteResponse,
   PostVoteSignatureParams,
@@ -502,6 +504,13 @@ export class Api extends Request {
       {
         auth: true,
       }
+    );
+  }
+
+  async getWarmholeSign(params: GetWarmholeSignParams) {
+    return this.get<ApiResponse<GetWarmholeSignResponse>>(
+      "/openapi/gateway/scan/get-warmhole-sign",
+      params
     );
   }
 

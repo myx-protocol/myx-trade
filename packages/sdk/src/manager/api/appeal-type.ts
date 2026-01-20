@@ -278,3 +278,21 @@ export interface PostVoteSignatureParams {
 }
 
 export type PostVoteResponse = 1 | 0;
+
+
+export interface GetWarmholeSignParams {
+  account: string
+}
+
+export interface GuardianSignatureItem {
+  r: string
+  s: string
+  v: string
+  guardianIndex: number
+}
+export interface GetWarmholeSignResponse {
+  epoch: number // 质押期数
+  response: string // data
+  guardianSignatures: GuardianSignatureItem[]
+
+}
