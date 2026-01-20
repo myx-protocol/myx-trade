@@ -3,7 +3,7 @@ import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "
 import { ChainId } from "@/config/chain";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
-import Address from "@/config/address";
+import { getContractAddressByChainId } from "@/config/address";
 import sdk from "@/web3";
 
 export const getMarketInfo = (chainId: ChainId, quoteToken: string) => {
@@ -24,7 +24,7 @@ export const getMarketPoolId = async ({
       throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);
     }
     const chainInfo = CHAIN_INFO[chainId];
-    const addresses = Address[chainId as keyof typeof Address];
+    const addresses = getContractAddressByChainId(chainId);
     const address = addresses.POOL_MANAGER;
     const contract = await getPoolManagerContract(chainId, ProviderType.JSON);
 
