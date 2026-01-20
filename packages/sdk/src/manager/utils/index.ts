@@ -14,7 +14,6 @@ import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
 import {
   getDataProviderContract,
-  getForwarderContract,
 } from "@/web3/providers";
 import { getJSONProvider } from "@/web3";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
