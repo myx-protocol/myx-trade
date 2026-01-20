@@ -18,6 +18,8 @@ import {
   GetAppealReconsiderationListParams,
   GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
+  GetWarmholeSignParams,
+  GuardianSignatureItem,
   PostVoteSignatureParams,
 } from "../api/appeal-type";
 
@@ -222,6 +224,25 @@ export class Appeal extends BaseMyxClient {
     return configuration;
   }
 
+  /**
+   * 
+   * vote node for submit appeal
+   */
+  async submitAppealByVoteNode(poolId: string, response: string, guardianSignatures: GuardianSignatureItem[]) {
+    const contract = await this.getDisputeCourtContract();
+    const gasPrice = await this.client.utils.getGasPriceByRatio()
+    const gasLimit = await this.client.utils.getGasLimitByRatio(await contract.fileDisputeFromStaker.estimateGas(poolId, response, guardianSignatures))
+    const tx = await contract.fileDisputeFromStaker(poolId, response, guardianSignatures, {
+      gasLimit,
+      gasPrice,
+    })
+    const receipt = await tx.wait()
+    return {
+      tx: receipt,
+      caseId: 1n,
+    }
+  }
+
   async appealReconsideration(
     caseId: number,
     appealToken: Address,
@@ -333,5 +354,9 @@ export class Appeal extends BaseMyxClient {
 
   async getMyAppealCount() {
     return this.client.api.getMyAppealCount();
+  }
+
+  async getWarmholeSign(params: GetWarmholeSignParams) {
+    return this.client.api.getWarmholeSign(params)
   }
 }
