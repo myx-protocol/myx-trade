@@ -1,13 +1,5 @@
 import { ChainId } from "./chain";
-import { ARB_TEST_SEPOLIA } from "./address/ARB_TEST_SEPOLIA";
-import { LINEA_SEPOLIA } from './address/LINEA_SEPOLIA'
-import { BSC_TEST_NET } from './address/BSC_TEST_NET';
-
-export default {
-  [ChainId.ARB_TESTNET]: ARB_TEST_SEPOLIA,
-  [ChainId.LINEA_SEPOLIA]: LINEA_SEPOLIA,
-  [ChainId.BSC_TESTNET]: BSC_TEST_NET,
-}
+export { getContractAddressByChainId } from "./address/index";
 
 export const executeAddressByChainId = (chainId: ChainId) => {
   if (chainId === ChainId.ARB_TESTNET) {
@@ -19,7 +11,7 @@ export const executeAddressByChainId = (chainId: ChainId) => {
   }
 
   if (chainId === ChainId.BSC_TESTNET) {
-    return ''
+    return '0xe944d7c0f7005a76e898ee3b9ec10479eba9cc02'
   }
 
   return ''
