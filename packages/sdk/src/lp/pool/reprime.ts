@@ -5,10 +5,9 @@ import { getAccount, getPoolManagerContract } from "@/web3/providers";
 import { checkParams } from "@/common/checkParams";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-import Address from "@/config/address";
 import { getOracleFee } from "@/lp/market";
-import { getMarketInfo } from "./get";
 import { formatUnits } from "ethers";
+import { getContractAddressByChainId } from "@/config/address";
 
 export const reprime = async (chainId: ChainId, poolId: string, marketId:string) => {
   try {
@@ -27,7 +26,7 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId:string)
     
     await checkParams ({
       tokenAddress: pool.quoteToken,
-      contractAddress: Address[chainId as keyof typeof Address].ORACLE_RESERVE,
+      contractAddress: getContractAddressByChainId(chainId).ORACLE_RESERVE,
       decimals: pool.quoteDecimals,
       account,
       chainId,
