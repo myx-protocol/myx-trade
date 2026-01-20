@@ -225,6 +225,7 @@ export class Seamless {
 
     const forwardFeeToken = executeAddressByChainId(chainId)
 
+    this.logger.info('forwarderTx-->', { from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId)
     const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken}, chainId)
 
     return txRs
