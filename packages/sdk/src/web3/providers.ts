@@ -1,6 +1,5 @@
 import LiquidityRouter_ABI from "@/abi/LiquidityRouter.json";
 import { ChainId } from "@/config/chain";
-import Address from "@/config/address";
 import {
   getContract,
   getJSONProvider,
@@ -39,6 +38,7 @@ import DataProvider_ABI from "@/abi/DataProvider.json";
 import Forwarder_ABI from "@/abi/Forwarder.json";
 import Reimbursement_ABI from "@/abi/Reimbursement.json";
 import DisputeCourt_ABI from "@/abi/DisputeCourt.json";
+import { getContractAddressByChainId } from "@/config/address";
 export enum ProviderType {
   JSON,
   Signer,
@@ -83,7 +83,7 @@ export const getAccount = async (chainId: ChainId) => {
 };
 
 export const getLiquidityRouterContract = async (chainId: ChainId) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.LIQUIDITY_ROUTER;
   // console.log("LiquidityRouter address", address);
   const provider = await getSignerProvider(chainId as number);
@@ -99,7 +99,7 @@ export const getPoolManagerContract = async (
   chainId: ChainId,
   type = ProviderType.Signer
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.POOL_MANAGER;
   const provider =
     type === ProviderType.JSON
@@ -114,7 +114,7 @@ export const getPoolManagerContract = async (
 };
 
 export const getPoolConfiguratorContract = async (chainId: ChainId) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.POOL_MANAGER;
   const provider = await getSignerProvider(chainId as number);
 
@@ -129,7 +129,7 @@ export const getQuotePoolContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.QUOTE_POOL;
   const provider =
     type === ProviderType.JSON
@@ -143,7 +143,7 @@ export const getBasePoolContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.BASE_POOL;
   const provider =
     type === ProviderType.JSON
@@ -178,7 +178,7 @@ export const getBrokerContract = async (chainId: ChainId, brokerAddress: string)
 
 
 export const getOrderManagerSingerContract = async (chainId: ChainId) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.ORDER_MANAGER;
   const provider = await getSignerProvider(chainId as number);
 
@@ -193,7 +193,7 @@ export const getPythContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.PYTH;
   const provider =
     type === ProviderType.JSON
@@ -221,7 +221,7 @@ export const getMarketManageContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.MARKET_MANAGER;
   console.log(addresses.MARKET_MANAGER);
   const provider =
@@ -240,7 +240,7 @@ export const getDataProviderContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.DATA_PROVIDER;
   const provider =
     type === ProviderType.JSON
@@ -258,7 +258,7 @@ export const getForwarderContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
 
   const address = addresses.FORWARDER;
   const provider =
@@ -273,7 +273,7 @@ export const getReimbursementContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.REIMBURSEMENT;
   const provider =
     type === ProviderType.JSON
@@ -291,7 +291,7 @@ export const getDisputeCourtContract = async (
   chainId: ChainId,
   type: ProviderType = ProviderType.JSON
 ) => {
-  const addresses = Address[chainId as keyof typeof Address];
+  const addresses = getContractAddressByChainId(chainId);
   const address = addresses.DISPUTE_COURT;
   const provider =
     type === ProviderType.JSON

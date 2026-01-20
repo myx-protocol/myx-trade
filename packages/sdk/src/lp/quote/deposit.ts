@@ -6,7 +6,6 @@ import {
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
 import { CHAIN_INFO } from "@/config/chains/index";
-import Address from "@/config/address";
 import { Deposit } from "@/lp/type";
 import { checkParams } from "@/common/checkParams";
 import { previewLpAmountOut } from "@/lp/quote/preview";
@@ -18,6 +17,7 @@ import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import type { TpSl } from "@/lp/pool";
 import { getTpSlParams } from "@/common/getTpSlParams";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
+import { getContractAddressByChainId } from "@/config/address";
 
 
 export const deposit = async (params: Deposit) => {
@@ -31,7 +31,7 @@ export const deposit = async (params: Deposit) => {
     const chainInfo =  CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
-    const addresses = Address[chainId as keyof typeof Address];
+    const addresses = getContractAddressByChainId(chainId);
     const contractAddress = addresses.QUOTE_POOL;
     
     const tokenAddress = pool.quoteToken;
