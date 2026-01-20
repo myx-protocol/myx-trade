@@ -361,7 +361,7 @@ export class Utils {
       provider
     )
     const forwardFeeToken = executeAddressByChainId(chainId)
-    const relayFee = await marketManagerContract.getRelayFee(forwardFeeToken);
+    const relayFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken);
     // const { gasPrice } = await provider.getFeeData()
     const contractAddress = getContractAddressByChainId(chainId);
 
