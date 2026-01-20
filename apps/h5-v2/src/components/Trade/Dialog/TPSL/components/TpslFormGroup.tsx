@@ -275,6 +275,7 @@ export const TpslFormGroup = ({
           className="flex-1 text-left"
           placeholder={t`数量`}
           allowLeadingZeros
+          decimalScale={6}
           onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
               // 将中文小数点转换为英文小数点
