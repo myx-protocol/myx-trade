@@ -54,7 +54,7 @@ export const SharePositionDialog = ({
 
   return (
     <>
-      <Share size={16} onClick={() => setOpen(true)} />
+      <Share size={14} onClick={() => setOpen(true)} />
       <Dialog
         ref={containerRef}
         open={open}
