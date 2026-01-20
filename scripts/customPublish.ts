@@ -3,6 +3,8 @@ import { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import path from 'path'
 
+const npmRegistry = 'https://registry.npmjs.org';
+
 const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync('git add package.json', {
         stdio: 'inherit',
@@ -25,6 +27,17 @@ const updateVersion = (publishType = 'main', versionType = 'patch') => {
         execSync('pnpm version prerelease --preid=beta')
     } else {
         execSync(`pnpm version ${versionType}`)
+    }
+}
+
+const checkNPMLogined = async () => {
+    try {
+        execSync(`pnpm whoami --registry=${npmRegistry}`, {
+            stdio: 'inherit',
+        });
+        return true
+    } catch (error) {
+        return false
     }
 }
 
@@ -66,10 +79,20 @@ inquirer.prompt([
             },
         ],
     }
-]).then((answers) => {
+]).then(async (answers) => {
     const { publishTag, versionType } = answers;
     updateVersion(publishTag, versionType)
     const latestVersion = commitVersionUpdate(publishTag, versionType);
+
+    const isLoggedIn = await checkNPMLogined();
+
+    if (!isLoggedIn) {
+        console.log('🚨 检测到未登录 npm，先登录 npm')
+        execSync(`pnpm login --registry=${npmRegistry}`, {
+            stdio: 'inherit',
+        });
+        console.log('✅ pnpm registry 登录成功！')
+    }
 
     if (publishTag === 'beta') {
         execSync('pnpm publish --tag beta', {
@@ -83,4 +106,4 @@ inquirer.prompt([
 
     console.log('✅ 发布成功！')
     console.log(`🚀 最新版本: v${latestVersion}`)
-});
+})
