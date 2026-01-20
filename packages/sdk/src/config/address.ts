@@ -11,7 +11,7 @@ export const executeAddressByChainId = (chainId: ChainId) => {
   }
 
   if (chainId === ChainId.BSC_TESTNET) {
-    return ''
+    return '0xe944d7c0f7005a76e898ee3b9ec10479eba9cc02'
   }
 
   return ''
