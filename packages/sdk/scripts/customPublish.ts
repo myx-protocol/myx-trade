@@ -85,13 +85,14 @@ inquirer.prompt([
     const latestVersion = commitVersionUpdate(publishTag, versionType);
 
     const isLoggedIn = await checkNPMLogined();
-
     if (!isLoggedIn) {
         console.log('🚨 检测到未登录 npm，先登录 npm')
         execSync(`pnpm login --registry=${npmRegistry}`, {
             stdio: 'inherit',
         });
         console.log('✅ pnpm registry 登录成功！')
+    } else {
+        console.log('✅ pnpm registry 无需登录！')
     }
 
     if (publishTag === 'beta') {
