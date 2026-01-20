@@ -150,85 +150,90 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
     queryKey: [{ key: 'getAssetsSearch' }, chainId, keyword],
     enabled: !!keyword,
     queryFn: async () => {
-      if (!keyword) return [] as Asset[]
-      const type = detectInputType(keyword)
+      try {
+        if (!keyword) return [] as Asset[]
+        const type = detectInputType(keyword)
 
-      if (type === 'unknown') return [] as Asset[]
+        if (type === 'unknown') return [] as Asset[]
 
-      let params: MarketDataSearchParams
-      if (type === 'symbol') {
-        params = { chainId: chainId, symbol: keyword }
-      } else {
-        params = { chainId: chainId, asset: keyword }
-      }
-      const result = await getMarketData(params)
-      if (result.data) {
-        console.log(result.data)
-        return (result.data?.contracts || [])
-          .filter((item: any) => isSupportedChainId(item?.blockchainId))
-          ?.map((item: any) => {
-            /*   {
-           "id": 59313,
-           "name": "MYX Finance",
-           "symbol": "MYX",
-           "decimals": 18,
-           "logo": "https://metadata.mobula.io/assets/logos/27381cfaedc7961f07aa99f3d27af167278263841e303637b6e23d516d9d3505.png",
-           "rank": 190,
-           "price": 2.500862957159864,
-           "market_cap": 477101305.367397,
-           "market_cap_diluted": 2500862957.15986,
-           "volume": 1457570.310834008,
-           "volume_change_24h": 0,
-           "volume_7d": 0,
-           "liquidity": 614460.2365173926,
-           "liquidityMax": 614460.2365173926,
-           "ath": 2.536288278998393,
-           "atl": 2.500862957159864,
-           "off_chain_volume": 31914988,
-           "is_listed": true,
-           "price_change_1h": -0.2777187708955553,
-           "price_change_24h": -4.439836272199036,
-           "price_change_7d": 0.1185800264169198,
-           "price_change_1m": -4.087638311756054,
-           "price_change_1y": 0,
-           "total_supply": 1000000000,
-           "circulating_supply": 190774670,
-           "contracts": [
-           {
-             "address": "0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16",
-             "blockchainId": "56",
-             "blockchain": "BNB Smart Chain (BEP20)",
-             "decimals": 18
-           }
-         ],
-           "native": {
-           "name": "BNB",
-             "symbol": "BNB",
-             "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-             "type": "native",
+        let params: MarketDataSearchParams
+        if (type === 'symbol') {
+          params = { chainId: chainId, symbol: keyword }
+        } else {
+          params = { chainId: chainId, asset: keyword }
+        }
+        const result = await getMarketData(params)
+        if (result.data) {
+          console.log(result.data)
+          return (result.data?.contracts || [])
+            .filter((item: any) => isSupportedChainId(item?.blockchainId))
+            ?.map((item: any) => {
+              /*   {
+             "id": 59313,
+             "name": "MYX Finance",
+             "symbol": "MYX",
              "decimals": 18,
-             "logo": "https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
-         }
-         }*/
-            const token = {
-              chainId: +item.blockchainId,
-              address: item.address,
-              decimals: item.decimals,
-              logo: result.data.logo,
-              name: result.data.name,
-              symbol: result.data.symbol,
-              price: result.data.price,
-              change: result.data.price_change_24h,
-              balance: '',
-              mca: result.data.market_cap,
-              liq: result.data.liquidity,
-            } as Asset
+             "logo": "https://metadata.mobula.io/assets/logos/27381cfaedc7961f07aa99f3d27af167278263841e303637b6e23d516d9d3505.png",
+             "rank": 190,
+             "price": 2.500862957159864,
+             "market_cap": 477101305.367397,
+             "market_cap_diluted": 2500862957.15986,
+             "volume": 1457570.310834008,
+             "volume_change_24h": 0,
+             "volume_7d": 0,
+             "liquidity": 614460.2365173926,
+             "liquidityMax": 614460.2365173926,
+             "ath": 2.536288278998393,
+             "atl": 2.500862957159864,
+             "off_chain_volume": 31914988,
+             "is_listed": true,
+             "price_change_1h": -0.2777187708955553,
+             "price_change_24h": -4.439836272199036,
+             "price_change_7d": 0.1185800264169198,
+             "price_change_1m": -4.087638311756054,
+             "price_change_1y": 0,
+             "total_supply": 1000000000,
+             "circulating_supply": 190774670,
+             "contracts": [
+             {
+               "address": "0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16",
+               "blockchainId": "56",
+               "blockchain": "BNB Smart Chain (BEP20)",
+               "decimals": 18
+             }
+           ],
+             "native": {
+             "name": "BNB",
+               "symbol": "BNB",
+               "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+               "type": "native",
+               "decimals": 18,
+               "logo": "https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
+           }
+           }*/
+              const token = {
+                chainId: +item.blockchainId,
+                address: item.address,
+                decimals: item.decimals,
+                logo: result.data.logo,
+                name: result.data.name,
+                symbol: result.data.symbol,
+                price: result.data.price,
+                change: result.data.price_change_24h,
+                balance: '',
+                mca: result.data.market_cap,
+                liq: result.data.liquidity,
+              } as Asset
 
-            return token
-          })
+              return token
+            })
+        }
+
+        return [] as Asset[]
+      } catch (e) {
+        console.error(e)
+        return [] as Asset[]
       }
-
-      return [] as Asset[]
     },
   })
 
@@ -236,26 +241,32 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
     queryKey: [{ key: 'searchMarketStateData' }, account, keyword, searchList, walletAssets],
     enabled: !!account,
     queryFn: async () => {
-      const map = {} as MarketStateMap
-      const list = keyword ? searchList : walletAssets
-      if (!list || list.length === 0) return map
-      const result = await getMarketPoolStateData(
-        list.map((token: { chainId: number; address: string }) => {
-          return {
-            chainId: token.chainId,
-            address: token.address,
-          }
-        }),
-      )
+      try {
+        const map = {} as MarketStateMap
+        const list = keyword ? searchList : walletAssets
+        if (!list || list.length === 0) return map
 
-      if (!result?.data) {
-        return undefined
+        const result = await getMarketPoolStateData(
+          list.map((token: { chainId: number; address: string }) => {
+            return {
+              chainId: token.chainId,
+              address: token.address,
+            }
+          }),
+        )
+
+        if (!result?.data) {
+          return undefined
+        }
+
+        return (result?.data || []).reduce((prev, curr) => {
+          prev[`${curr.chainId}-${curr.baseToken}` as MarketStateKey] = curr
+          return prev
+        }, {} as MarketStateMap)
+      } catch (e) {
+        console.error(e)
+        return {} as MarketStateMap
       }
-
-      return (result?.data || []).reduce((prev, curr) => {
-        prev[`${curr.chainId}-${curr.baseToken}` as MarketStateKey] = curr
-        return prev
-      }, {} as MarketStateMap)
     },
   })
 
