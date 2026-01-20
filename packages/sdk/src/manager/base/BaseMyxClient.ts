@@ -2,8 +2,8 @@ import { Contract, Signer } from "ethers";
 import { MyxClient, MyxClientConfig } from "..";
 import { MyxErrorCode, MyxSDKError } from "../error/const";
 import { getBrokerContract } from "@/web3/providers";
-import address from "@/config/address";
-import { ContractAddress, isSupportedChainFn } from "@/config/chain";
+import { getContractAddressByChainId } from "@/config/address";
+import { isSupportedChainFn } from "@/config/chain";
 
 export class BaseMyxClient {
   protected client: MyxClient;
@@ -29,7 +29,7 @@ export class BaseMyxClient {
     if (!chainId || !isSupportedChainFn(chainId)) {
       throw new MyxSDKError(MyxErrorCode.InvalidChainId, "Invalid chain id");
     }
-    return address[chainId as keyof typeof address] as ContractAddress;
+    return getContractAddressByChainId(chainId);
   }
 
   protected async connectContract<T extends Record<string, any>>(
