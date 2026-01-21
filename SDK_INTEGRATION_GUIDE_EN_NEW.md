@@ -34,6 +34,86 @@ const myxClient = new MyxClient({
 });
 ```
 
+### SDK Authentication and Access Token
+
+After creating the SDK instance, you must call the `auth` method to complete authentication.
+
+The `auth` method requires three mandatory parameters:
+
+1. **signer** - Used to sign transactions.
+2. **walletClient** - The current wallet client instance.
+3. **getAccessToken** - A callback function used to obtain the accessToken.
+
+After the SDK object is created, call the `auth` method and provide the parameters above.
+
+#### getAccessToken Callback
+
+The `getAccessToken` parameter is a callback function. The SDK will invoke this function whenever an access token is required.
+
+The callback should request an access token from the following API.
+
+**Request API:** `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token`
+
+**Request Method:** `GET`
+
+**Request Parameters:**
+
+1. `appId` (string) - Application ID.
+2. `timestamp` (number) - Current timestamp in seconds.
+3. `expireTime` (number) - Token expiration time in seconds.
+4. `allowAccount` (string) - Allowed EOA address.
+5. `signature` (string) - Request signature.
+
+**Signature Generation:**
+
+```typescript
+const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+```
+
+**Expected Return Value of getAccessToken:**
+
+The `getAccessToken` callback must return an object in the following format:
+
+```typescript
+{
+  code: number,        // 0 indicates success, non-zero indicates failure
+  msg: string,
+  data: {
+    accessToken: string, // Access token
+    expireAt: number     // Expiration time in seconds
+  }
+}
+```
+
+**Example Usage:**
+
+```typescript
+import CryptoJS from 'crypto-js';
+
+const getAccessToken = async () => {
+  const appId = 'YOUR_APP_ID';
+  const secret = 'YOUR_SECRET';
+  const timestamp = Math.floor(Date.now() / 1000);
+  const expireTime = timestamp + 3600; // Token expires in 1 hour
+  const allowAccount = userAddress;
+
+  // Generate signature
+  const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+  const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+
+  // Request access token
+  const response = await fetch(
+    `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`
+  );
+
+  return await response.json();
+};
+
+// Authenticate the SDK
+await myxClient.auth(signer, walletClient, getAccessToken);
+```
+
 ### Update Client Chain
 
 ```typescript
@@ -1543,8 +1623,6 @@ export interface MyxClientConfig {
     data: {
       accessToken: string;
       expireAt: number;
-      allowAccount: string;
-      appId: string;
     };
   }>;
 }
