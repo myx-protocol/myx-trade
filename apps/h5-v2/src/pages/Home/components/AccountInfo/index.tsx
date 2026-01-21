@@ -56,7 +56,7 @@ export const AccountInfo = () => {
         </div>
       </div>
       {/* balance */}
-      <div className="mt-[10px] flex w-full items-center gap-[17px]">
+      <div className="mt-[10px] flex w-full items-center">
         <Tooltips
           title={formatNumber(accountBalance ?? '0', {
             showUnit: false,
@@ -70,6 +70,7 @@ export const AccountInfo = () => {
                 })}`}
           </p>
         </Tooltips>
+        <p className="mr-[17px] shrink-0 text-[28px] font-bold">USDC</p>
 
         <PrimaryButton
           style={{

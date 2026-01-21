@@ -195,6 +195,8 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
         padding: '0px',
         borderRadius: '0',
         background: '#101114',
+        borderTop: 'none',
+        borderBottom: 'none',
       }}
     >
       <SecondHeader onBack={() => onOpenChange(false)} title={<Trans>Setting</Trans>} />

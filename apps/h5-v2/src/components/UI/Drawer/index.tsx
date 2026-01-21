@@ -2,6 +2,7 @@ import { Drawer as MuiDrawer } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import type { ReactNode } from 'react'
 import IconClose from '@/assets/svg/close.svg?react'
+import { merge } from 'lodash-es'
 
 interface CustomDrawerProps {
   children: ReactNode
@@ -34,14 +35,16 @@ export const Drawer = ({
       variant={variant}
       slotProps={{
         paper: {
-          sx: {
-            backgroundColor: '#18191F',
-            border: '1px solid #31333D',
-            padding: '20px',
-            width: anchor === 'left' || anchor === 'right' ? 'auto' : '100%',
-            height: anchor === 'top' || anchor === 'bottom' ? 'auto' : '100%',
-            ...sx,
-          },
+          sx: merge(
+            {
+              backgroundColor: '#18191F',
+              border: '1px solid #31333D',
+              padding: '20px',
+              width: anchor === 'left' || anchor === 'right' ? 'auto' : '100%',
+              height: anchor === 'top' || anchor === 'bottom' ? 'auto' : '100%',
+            },
+            sx,
+          ),
         },
       }}
       className={className}
