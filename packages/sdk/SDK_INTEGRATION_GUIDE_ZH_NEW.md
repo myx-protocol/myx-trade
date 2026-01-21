@@ -34,6 +34,86 @@ const myxClient = new MyxClient({
 });
 ```
 
+### SDK 认证和访问令牌
+
+创建 SDK 实例后，必须调用 `auth` 方法完成认证。
+
+`auth` 方法需要三个必需参数：
+
+1. **signer** - 用于签署交易。
+2. **walletClient** - 当前钱包客户端实例。
+3. **getAccessToken** - 用于获取 accessToken 的回调函数。
+
+创建 SDK 对象后，调用 `auth` 方法并提供上述参数。
+
+#### getAccessToken 回调
+
+`getAccessToken` 参数是一个回调函数。每当需要访问令牌时，SDK 会调用此函数。
+
+该回调应从以下 API 请求访问令牌。
+
+**请求 API：** `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token`
+
+**请求方法：** `GET`
+
+**请求参数：**
+
+1. `appId` (string) - 应用程序 ID。
+2. `timestamp` (number) - 当前时间戳（秒）。
+3. `expireTime` (number) - 令牌过期时间（秒）。
+4. `allowAccount` (string) - 允许的 EOA 地址。
+5. `signature` (string) - 请求签名。
+
+**签名生成：**
+
+```typescript
+const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+```
+
+**getAccessToken 的预期返回值：**
+
+`getAccessToken` 回调必须返回以下格式的对象：
+
+```typescript
+{
+  code: number,        // 0 表示成功，非零表示失败
+  msg: string,
+  data: {
+    accessToken: string, // 访问令牌
+    expireAt: number     // 过期时间（秒）
+  }
+}
+```
+
+**使用示例：**
+
+```typescript
+import CryptoJS from 'crypto-js';
+
+const getAccessToken = async () => {
+  const appId = 'YOUR_APP_ID';
+  const secret = 'YOUR_SECRET';
+  const timestamp = Math.floor(Date.now() / 1000);
+  const expireTime = timestamp + 3600; // 令牌在 1 小时后过期
+  const allowAccount = userAddress;
+
+  // 生成签名
+  const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
+  const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+
+  // 请求访问令牌
+  const response = await fetch(
+    `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`
+  );
+
+  return await response.json();
+};
+
+// 认证 SDK
+await myxClient.auth(signer, walletClient, getAccessToken);
+```
+
 ### 更新客户端链
 
 ```typescript
