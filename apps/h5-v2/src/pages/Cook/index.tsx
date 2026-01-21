@@ -1,6 +1,6 @@
 import { ToolBar } from '@/pages/Cook/components/ToolBar.tsx'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CookListType, CookType, TrenchType } from '@/pages/Cook/type.ts'
 import { Box } from '@mui/material'
 import { TrenchTabBar } from '@/pages/Cook/components/TrenchTabBar.tsx'
@@ -15,6 +15,7 @@ import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
 import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
 import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
 import { SearchTypeEnum } from '@myx-trade/sdk'
+import { useSearchParams } from 'react-router-dom'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
@@ -29,6 +30,18 @@ const Cook = () => {
   const [change, setChange] = useState<[string, string]>(['', ''])
   const [liq, setLiq] = useState<[string, string]>(['', ''])
   const [holders, setHolders] = useState<[string, string]>(['', ''])
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    let type = searchParams.get('type')
+    if (Array.isArray(type)) {
+      type = type[0]
+    }
+    if (!type) return
+    if (type === CookType.Cook || type === CookType.Trench) {
+      setType(type)
+    }
+  }, [searchParams])
 
   return (
     <Box className={'h-[calc(100vh-var(--tabbar-height))] overflow-hidden'}>

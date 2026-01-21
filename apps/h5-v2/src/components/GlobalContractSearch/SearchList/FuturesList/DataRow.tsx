@@ -10,6 +10,7 @@ import { tradePubSub } from '@/utils/pubsub'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { Price } from '@/components/Price'
 import { Favorite } from '../../SymbolInfo/Favorite'
+import { getVolumeQuoteAmount } from '@/utils/trade'
 
 interface FuturesListDataRowProps {
   item: SearchResultContractItem
@@ -67,6 +68,11 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
         })
     }
   }
+
+  const volumeQuoteAmount = useMemo(() => {
+    const latestPrice = tickerData?.price || item.basePrice
+    return getVolumeQuoteAmount(tickerData?.volume || item.volume || '0', latestPrice)
+  }, [tickerData?.volume, tickerData?.price, item.basePrice, item.volume])
   return (
     <div
       className="flex justify-between gap-[24px] rounded-[6px] py-[12px] text-[#6D7180] hover:bg-[#202129]"
@@ -80,7 +86,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
           onFavoriteChange={handleFavoriteChange}
           baseSymbol={item.baseSymbol || '-'}
           quoteSymbol={item.quoteSymbol || '-'}
-          volume={tickerData?.volume || item.volume}
+          volume={volumeQuoteAmount}
         />
       </div>
       <div className="flex flex-[1_1_0%] items-center gap-[20px]">

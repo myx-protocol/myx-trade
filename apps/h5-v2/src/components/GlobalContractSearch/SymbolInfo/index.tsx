@@ -123,7 +123,9 @@ export const SymbolInfo = ({
           </div>
           {/* info */}
           <div className="text-normal mt-[2px] flex items-center gap-[8px] text-[12px] text-[#848E9C]">
-            <p className="line-clamp-1 leading-[1.2]">{volume ? formatNumber(volume) : '--'}</p>
+            <p className="line-clamp-1 leading-[1.2]">
+              {volume ? '$' + formatNumber(volume) : '--'}
+            </p>
           </div>
         </div>
       </div>
