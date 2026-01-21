@@ -265,12 +265,21 @@ export const VaultSelect = ({
   }, [type, poolId, amount, slippage, chainId, curChainId, onAction])
 
   const isInsufficient = useMemo(() => {
-    console.log(111111)
+    // console.log(111111)
     if (!amount) return false
     if (Number(amount) >= Number(balance)) return true
     // if () return true
     return false
-  }, [market, value, amount, balance])
+  }, [amount, balance])
+
+  const isInvalidAmount = useMemo(() => {
+    if (type === VaultType.Quote) {
+      return !quoteAmount || Number(quoteAmount) <= 0
+    } else if (type === VaultType.Base) {
+      return !baseAmount || Number(baseAmount) <= 0
+    }
+    return false
+  }, [type, quoteAmount, baseAmount])
 
   return (
     <Box className={'flex flex-1 flex-col'}>
@@ -367,7 +376,7 @@ export const VaultSelect = ({
           className={'gradient primary long mx-auto w-full rounded'}
           loading={isLoading || !poolInfo}
           onClick={onConfirm}
-          disabled={isLoading || isInsufficient || !market || !value || Number(value) <= 0}
+          disabled={isLoading || isInsufficient || !market || isInvalidAmount}
           loadingPosition={'start'}
         >
           <Trans>Create Market</Trans>
