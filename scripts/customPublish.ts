@@ -1,18 +1,25 @@
 import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import path from 'path'
+
+const npmRegistry = 'https://registry.npmjs.org';
 
 const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync('git add package.json', {
         stdio: 'inherit',
     });
-    execSync(`git commit -m "chore: bump version ${publishTag} ${versionType}"`, {
+    const packageJson = JSON.parse(readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'));
+    const latestVersion = packageJson.version as string;
+    execSync(`git commit -m "chore: bump version v${latestVersion}"`, {
         stdio: 'inherit',
     });
 
     execSync('git push', {
         stdio: 'inherit',
     });
+    return latestVersion;
+
 }
 
 const updateVersion = (publishType = 'main', versionType = 'patch') => {
@@ -20,6 +27,17 @@ const updateVersion = (publishType = 'main', versionType = 'patch') => {
         execSync('pnpm version prerelease --preid=beta')
     } else {
         execSync(`pnpm version ${versionType}`)
+    }
+}
+
+const checkNPMLogined = async () => {
+    try {
+        execSync(`pnpm whoami --registry=${npmRegistry}`, {
+            stdio: 'inherit',
+        });
+        return true
+    } catch (error) {
+        return false
     }
 }
 
@@ -61,10 +79,22 @@ inquirer.prompt([
             },
         ],
     }
-]).then((answers) => {
+]).then(async (answers) => {
     const { publishTag, versionType } = answers;
     updateVersion(publishTag, versionType)
-    commitVersionUpdate(publishTag, versionType);
+    const latestVersion = commitVersionUpdate(publishTag, versionType);
+
+    const isLoggedIn = await checkNPMLogined();
+    if (!isLoggedIn) {
+        console.log('🚨 检测到未登录 npm，先登录 npm')
+        execSync(`pnpm login --registry=${npmRegistry}`, {
+            stdio: 'inherit',
+        });
+        console.log('✅ pnpm registry 登录成功！')
+    } else {
+        console.log('✅ pnpm registry 无需登录！')
+    }
+
     if (publishTag === 'beta') {
         execSync('pnpm publish --tag beta', {
             stdio: 'inherit',
@@ -76,4 +106,5 @@ inquirer.prompt([
     }
 
     console.log('✅ 发布成功！')
-});
+    console.log(`🚀 最新版本: v${latestVersion}`)
+})

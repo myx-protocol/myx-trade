@@ -176,6 +176,8 @@ export interface AppealReconsiderationDetail {
   appealTotalVoteCount: number; //可投票总数
   appealVotedCount: number; // 已投票数
   appealCaseId?: number; // 反诉案件ID
+  appealType: AppealReconsiderationType; // 反诉类型-与当前用户绑定
+  appealStage: AppealStage; // 反诉阶段-与当前用户绑定
 }
 
 export interface AppealReimbursementParams {
@@ -278,3 +280,21 @@ export interface PostVoteSignatureParams {
 }
 
 export type PostVoteResponse = 1 | 0;
+
+
+export interface GetWarmholeSignParams {
+  account: string
+}
+
+export interface GuardianSignatureItem {
+  r: string
+  s: string
+  v: string
+  guardianIndex: number
+}
+export interface GetWarmholeSignResponse {
+  epoch: number // 质押期数
+  response: string // data
+  guardianSignatures: GuardianSignatureItem[]
+
+}
