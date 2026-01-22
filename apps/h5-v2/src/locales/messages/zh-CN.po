@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-11 02:40\n"
+"PO-Revision-Date: 2026-01-22 02:12\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -148,6 +148,7 @@ msgstr "30日返佣"
 msgid "7-day rebate"
 msgstr "7日返佣"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
 msgstr "8 到 128 个字符"
@@ -393,10 +394,12 @@ msgstr "资产"
 msgid "Assets"
 msgstr "资产"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 number"
 msgstr "至少 1 个数字"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 upper case letter"
 msgstr "至少 1 个大写字母"
@@ -409,6 +412,14 @@ msgstr "审计报告"
 #: src/components/SettingDrawer.tsx
 msgid "Authorize"
 msgstr "授权"
+
+#: src/components/SettingDrawer.tsx
+msgid "Authorize seamless account failed"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Authorize seamless account success"
+msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -766,6 +777,7 @@ msgid "close all positions at market price?"
 msgstr "按市价平掉所有仓位？"
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Close all positions failed"
 msgstr "平掉所有仓位失败"
 
@@ -902,7 +914,7 @@ msgstr "Cook"
 
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
-msgstr "新币榜"
+msgstr "新创建的"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -1022,10 +1034,6 @@ msgstr "自定义过滤器"
 #: src/utils/index.ts
 msgid "D"
 msgstr "天"
-
-#: src/pages/Home/components/ExpressMenu/const.tsx
-msgid "Data"
-msgstr "数据"
 
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
@@ -1161,6 +1169,7 @@ msgstr "邮件已发送"
 msgid "Email login"
 msgstr "邮箱登录"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Enable Seamless Trading"
 msgstr "开启无感交易"
@@ -1187,6 +1196,7 @@ msgid "Enter your email"
 msgstr "输入您的邮箱"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Enter your password"
@@ -1199,7 +1209,7 @@ msgstr "输入您的密码"
 #. placeholder {0}: orderList.length
 #: src/pages/record/components/RecordTab.tsx
 msgid "Entrusts({0})"
-msgstr "委托记录({0})"
+msgstr "当前委托 ({0})"
 
 #: src/components/Record/Items/Position.tsx
 msgid "Entry price"
@@ -1500,7 +1510,7 @@ msgstr "永久免费"
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Free Margin"
-msgstr "自由保证金"
+msgstr "可提保证金"
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Frequent traders on one chain"
@@ -1715,10 +1725,7 @@ msgstr "初始化函数回滚 (address,bytes)"
 msgid "InRewindMode()"
 msgstr "处于回溯模式()"
 
-#: src/components/CookDetail/Order/Buy.tsx
-#: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Earn/components/Trade/Redeem.tsx
-#: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Earn/components/Trade/Error.tsx
 #: src/pages/Market/components/activeMarket.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Insufficient balance"
@@ -2316,7 +2323,7 @@ msgstr "网络错误"
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "New"
-msgstr "新"
+msgstr "新币榜"
 
 #: src/components/Login/EmailForm.tsx
 #: src/pages/Market/components/TokenSelect.tsx
@@ -2656,7 +2663,7 @@ msgstr "未授权账户 (address)"
 #. placeholder {1}: position?.quoteSymbol
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Free Margin: {0} {1}"
-msgstr "从自由保证金中支付：{0} {1}"
+msgstr "从可提保证金中支付：{0} {1}"
 
 #. placeholder {0}: displayAmount(paidOrigin?.quoteProfit ?? '0', 6)
 #. placeholder {1}: position?.quoteSymbol
@@ -2671,8 +2678,8 @@ msgid "Paid from Wallet: {0} {1}"
 msgstr "从钱包中支付：{0} {1}"
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
-msgid "Pair"
-msgstr "交易对"
+msgid "Pair/Vol"
+msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Search.tsx
@@ -2834,7 +2841,7 @@ msgstr "仓位"
 
 #: src/pages/Price/components/PriceContent/index.tsx
 msgid "Positions "
-msgstr "仓位 "
+msgstr "仓位"
 
 #: src/pages/record/components/RecordTab.tsx
 msgid "Positions History"
@@ -3079,6 +3086,10 @@ msgstr "重置"
 msgid "Reset Password"
 msgstr "重置密码"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+msgid "Reset Your Password"
+msgstr ""
+
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Retain Genesis LP Share"
 msgstr "保留创世 LP 份额"
@@ -3090,6 +3101,14 @@ msgstr "返回"
 #: src/components/SettingDrawer.tsx
 msgid "Revoke"
 msgstr "撤销"
+
+#: src/components/SettingDrawer.tsx
+msgid "Revoke seamless account failed"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Revoke seamless account success"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "Reward Claim"
@@ -3334,6 +3353,11 @@ msgstr "空头仓位"
 msgid "Size({0})"
 msgstr "仓位({0})"
 
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+msgid "SL"
+msgstr ""
+
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL Est. PNL"
@@ -3341,11 +3365,11 @@ msgstr "止损预估盈亏"
 
 #: src/utils/verify.ts
 msgid "SL price must be greater than entry price"
-msgstr "止损价格必须大于成交价格"
+msgstr "止损价格必须大于委托价格"
 
 #: src/utils/verify.ts
 msgid "SL price must be less than entry price"
-msgstr "止损价格必须小于成交价格"
+msgstr "止损价格必须小于委托价格"
 
 #. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
 #: src/components/PlaceOrderConfirm/index.tsx
@@ -3438,7 +3462,7 @@ msgstr "成功"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Successful"
-msgstr "成功"
+msgstr "已成交"
 
 #: src/components/CookDetail/Order/Buy.tsx
 msgid "Successfully buy"
@@ -3594,7 +3618,7 @@ msgstr "APR榜"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "Total Amount"
-msgstr "总金额"
+msgstr "总数量"
 
 #. placeholder {0}: symbolInfo?.quoteSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -3626,6 +3650,11 @@ msgstr "总现货流动性"
 msgid "Total supply"
 msgstr "总供应量"
 
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+msgid "TP"
+msgstr ""
+
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "TP Est. PNL"
@@ -3633,11 +3662,11 @@ msgstr "预估盈亏"
 
 #: src/utils/verify.ts
 msgid "TP price must be greater than entry price"
-msgstr "止盈价格必须大于成交价格"
+msgstr "止盈价格必须大于委托价格"
 
 #: src/utils/verify.ts
 msgid "TP price must be less than entry price"
-msgstr "止盈价格必须小于成交价格"
+msgstr "止盈价格必须小于委托价格"
 
 #. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
 #: src/components/PlaceOrderConfirm/index.tsx
@@ -3658,10 +3687,6 @@ msgstr "止盈/止损设置"
 #: src/components/Trade/Dialog/TPSL/index.tsx
 msgid "TP&SL"
 msgstr "止盈 & 止损"
-
-#: src/components/Record/Items/OpenOrders.tsx
-msgid "TPSL"
-msgstr "止盈止损"
 
 #: src/components/Footer/index.tsx
 #: src/components/Header/const.tsx
@@ -3729,6 +3754,7 @@ msgid "TransferFailed()"
 msgstr "转账失败()"
 
 #: src/pages/Cook/components/ToolBar.tsx
+#: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Trench"
 msgstr "Trench"
 
@@ -3927,6 +3953,7 @@ msgstr "欢迎来到 MYX！"
 msgid "What are the risks?"
 msgstr "有哪些风险？"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "What infomation am i signing?"
 msgstr "我签署的是什么信息？"
@@ -4012,6 +4039,7 @@ msgstr "您当前可分配的分佣比例。"
 msgid "Your max commission rate"
 msgstr "您的最高分佣比例"
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Your Password"
@@ -4266,6 +4294,7 @@ msgstr "开仓二次确认"
 msgid "开仓价格"
 msgstr "开仓价格"
 
+#: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "开仓滑点设置"
 msgstr "开仓滑点设置"
