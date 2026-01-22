@@ -118,7 +118,7 @@ export const FuturesList = ({ onSelected }: FuturesListProps) => {
         {/* pair */}
         <div className="flex w-[107px] items-center gap-[2px]">
           <Sort
-            label={<Trans>Pair</Trans>}
+            label={<Trans>Pair/Vol</Trans>}
             onChange={(direction) =>
               setSort({
                 by: direction === 'none' ? undefined : 'baseToken',
