@@ -48,15 +48,9 @@ export class Position {
   async listPositions(address: string) {
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      return {
-        code: -1,
-        message: "Failed to obtain accessToken",
-      };
-    }
 
     try {
-      const res = await this.api.getPositions(accessToken, address);
+      const res = await this.api.getPositions(accessToken ?? '', address);
       return {
         code: 0,
         data: res.data,
@@ -100,13 +94,6 @@ export class Position {
     address: string;
   }) {
     const config: MyxClientConfig = this.configManager.getConfig();
-
-    this.logger.debug("adjustCollateral params-->", {
-      poolId,
-      positionId,
-      adjustAmount,
-      quoteToken,
-    });
 
     try {
       /**

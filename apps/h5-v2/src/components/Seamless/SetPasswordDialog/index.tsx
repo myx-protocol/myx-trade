@@ -175,7 +175,7 @@ export const SetPasswordDialog = () => {
                       chainId: symbolInfo?.chainId as number,
                     })
 
-                    if (!authRes) {
+                    if (authRes?.code === 0) {
                       const idx = seamlessAccountList.findIndex(
                         (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
                       )
