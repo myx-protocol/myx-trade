@@ -14,9 +14,11 @@ export interface SeamlessAccount {
 export interface SeamlessState {
   seamlessAccountList: SeamlessAccount[]
   activeSeamlessAddress: string
+  selectedSeamlessAddress: string
 }
 
 export const seamlessState: SeamlessState = {
   seamlessAccountList: [],
   activeSeamlessAddress: '',
+  selectedSeamlessAddress: '',
 }

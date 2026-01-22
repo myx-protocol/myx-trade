@@ -4,7 +4,6 @@ import { t } from '@lingui/core/macro'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { encryptionAddress } from '@/utils'
 import walletIcon from '@/assets/icon/commons/wallet.svg'
-import { useEffect } from 'react'
 
 export const SelectAccountDialog = () => {
   const {
@@ -13,19 +12,8 @@ export const SelectAccountDialog = () => {
     setUnlockAccountDialogOpen,
   } = useGlobalStore()
 
-  const {
-    seamlessAccountList,
-    setSeamlessAccountList,
-    setActiveSeamlessAddress,
-    activeSeamlessAddress,
-  } = useSeamlessStore()
-
-  useEffect(() => {
-    const firstSeamlessAccount = activeSeamlessAddress
-      ? seamlessAccountList.find((item) => item.masterAddress === activeSeamlessAddress)
-      : seamlessAccountList[0]
-    setActiveSeamlessAddress(firstSeamlessAccount?.masterAddress || '')
-  }, [activeSeamlessAddress])
+  const { seamlessAccountList, activeSeamlessAddress, setSelectedSeamlessAddress } =
+    useSeamlessStore()
 
   return (
     <DialogBase
@@ -51,23 +39,10 @@ export const SelectAccountDialog = () => {
             return (
               <div
                 key={item.seamlessAddress}
-                className="flex items-center gap-[4px] rounded-[8px] border-[1px] p-[20px]"
+                className="flex cursor-pointer items-center gap-[4px] rounded-[8px] border-[1px] p-[20px]"
                 style={{ borderColor: isActive ? '#00E3A5' : '#3A404A' }}
                 onClick={() => {
-                  const newSeamlessAccountList = seamlessAccountList.map((item) => ({
-                    ...item,
-                    active: false,
-                  }))
-
-                  const idx = newSeamlessAccountList.findIndex(
-                    (item) => item.seamlessAddress === item.seamlessAddress,
-                  )
-                  if (idx !== -1) {
-                    newSeamlessAccountList[idx].active = true
-                  }
-
-                  setSeamlessAccountList(newSeamlessAccountList)
-                  setActiveSeamlessAddress(item.masterAddress)
+                  setSelectedSeamlessAddress(item.masterAddress)
                   setSelectedSeamlessAccountDialogOpen(false)
                   setUnlockAccountDialogOpen(true)
                 }}
