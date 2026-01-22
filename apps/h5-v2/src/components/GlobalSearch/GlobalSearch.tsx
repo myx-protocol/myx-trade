@@ -16,12 +16,13 @@ export const GlobalSearch = () => {
         '& .MuiDrawer-paper': {
           width: '100%',
           backgroundColor: '#18191F',
-          borderRadius: '16px',
+          borderTopLeftRadius: '16px',
+          borderTopRightRadius: '16px',
           height: 'calc(var(--vh, 1vh) * 70)',
         },
       }}
     >
-      <div className="flex h-[637px] max-h-[80vh] flex-col pb-[16px]">
+      <div className="flex h-full max-h-[80vh] flex-col pb-[16px]">
         <GlobalSearchHeader onClose={close} />
         <SearchHistory />
         <SearchTabs />

@@ -53,7 +53,6 @@ export const AllList = () => {
 
   // subscribe ticker data
   useUpdateEffect(() => {
-    console.log('activePool')
     if (activePool.length) {
       const unSubscribe = subscribeToTicker(activePool)
       return () => {
