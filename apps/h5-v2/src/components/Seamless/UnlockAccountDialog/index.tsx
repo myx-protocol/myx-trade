@@ -38,10 +38,20 @@ export const UnlockAccountDialog = () => {
     activeSeamlessAddress,
     setActiveSeamlessAddress,
     setSeamlessAccountList,
+    selectedSeamlessAddress,
+    setSelectedSeamlessAddress,
   } = useSeamlessStore()
   const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
 
   useEffect(() => {
+    if (!unlockAccountDialogOpen) return
+
+    // 如果已经有选中的地址（从 SelectAccountDialog 选择的），直接使用
+    if (selectedSeamlessAddress) {
+      return
+    }
+
+    // 否则，尝试匹配当前钱包地址对应的无感账号
     if (address && seamlessAccountList.length !== 0) {
       const seamlessAccount = seamlessAccountList.find((item) => item.masterAddress === address)
 
@@ -49,12 +59,19 @@ export const UnlockAccountDialog = () => {
         setActiveSeamlessAddress(seamlessAccount.masterAddress)
         return
       }
-
-      setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
     }
 
-    setActiveSeamlessAddress(seamlessAccountList[0]?.masterAddress || '')
-  }, [address, setActiveSeamlessAddress, seamlessAccountList])
+    // 如果都没有，默认选择第一个
+    if (seamlessAccountList.length > 0) {
+      setActiveSeamlessAddress(seamlessAccountList[0].masterAddress)
+    }
+  }, [
+    unlockAccountDialogOpen,
+    address,
+    seamlessAccountList,
+    selectedSeamlessAddress,
+    setActiveSeamlessAddress,
+  ])
 
   return (
     <DialogBase
@@ -64,6 +81,7 @@ export const UnlockAccountDialog = () => {
         setUnlockAccountDialogOpen(false)
         setTradeMode(TradeMode.Classic)
         setActiveSeamlessAddress('')
+        setSelectedSeamlessAddress('')
       }}
       sx={{
         '& .MuiDialog-paper': {
@@ -80,7 +98,9 @@ export const UnlockAccountDialog = () => {
       <div className="p-[16px]">
         <div className="flex items-center gap-[4px]">
           <img src={walletIcon} className="h-[14px] w-[14px]" />
-          <p className="text-[white]">{encryptionAddress(activeSeamlessAddress)}</p>
+          <p className="text-[white]">
+            {encryptionAddress(selectedSeamlessAddress || activeSeamlessAddress)}
+          </p>
           <div
             className="cursor-pointer"
             onClick={() => {
@@ -142,27 +162,35 @@ export const UnlockAccountDialog = () => {
               fontWeight: 500,
             }}
             onClick={async () => {
-              const activeSeamlessAccount = seamlessAccountList.find(
-                (item) => item.masterAddress === activeSeamlessAddress,
+              // 优先使用用户选择的地址，否则使用当前激活的地址
+              const targetAddress = selectedSeamlessAddress || activeSeamlessAddress
+              const targetSeamlessAccount = seamlessAccountList.find(
+                (item) => item.masterAddress === targetAddress,
               )
-              if (!activeSeamlessAccount) {
+
+              if (!targetSeamlessAccount) {
                 return
               }
 
               const rs = await client?.seamless.unLockSeamlessWallet({
                 password,
-                masterAddress: activeSeamlessAccount?.masterAddress as string,
-                apiKey: activeSeamlessAccount?.apiKey as string,
+                masterAddress: targetSeamlessAccount.masterAddress as string,
+                apiKey: targetSeamlessAccount.apiKey as string,
                 chainId: symbolInfo?.chainId as number,
               })
 
               if (rs?.code === 0) {
-                changeSdkTradeMode(true)
+                // 先设置 activeSeamlessAddress，然后再切换模式
+                setActiveSeamlessAddress(targetSeamlessAccount.masterAddress)
+
+                await changeSdkTradeMode(true)
                 setUnlockAccountDialogOpen(false)
-                setActiveSeamlessAddress(activeSeamlessAccount?.masterAddress as string)
-                setTradeMode(TradeMode.Seamless)
+
+                // 清空选中的地址
+                setSelectedSeamlessAddress('')
+
                 const idx = seamlessAccountList.findIndex(
-                  (item) => item.masterAddress === activeSeamlessAddress,
+                  (item) => item.masterAddress === targetSeamlessAccount.masterAddress,
                 )
                 seamlessAccountList[idx] = {
                   ...seamlessAccountList[idx],
