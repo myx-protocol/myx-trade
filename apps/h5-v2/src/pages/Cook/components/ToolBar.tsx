@@ -3,6 +3,7 @@ import { CookContext } from '@/pages/Cook/context.ts'
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { CookType } from '@/pages/Cook/type.ts'
+import { useSearchParams } from 'react-router-dom'
 const Tabs = ({ value, onChange }: { value: CookType; onChange: (value: CookType) => void }) => {
   const tabs = [
     {
@@ -33,10 +34,15 @@ const Tabs = ({ value, onChange }: { value: CookType; onChange: (value: CookType
 
 export const ToolBar = ({ children }: { children?: ReactNode }) => {
   const { type, setType } = useContext(CookContext)
+  const [, setSearchParams] = useSearchParams()
+  const handleTypeChange = (value: CookType) => {
+    setType(value)
+    setSearchParams({ type: value })
+  }
   return (
     <>
       <Box className={'flex h-[34px] w-screen items-center justify-between px-[16px] py-[8px]'}>
-        <Tabs value={type} onChange={setType}></Tabs>
+        <Tabs value={type} onChange={handleTypeChange}></Tabs>
       </Box>
       <Box>{children}</Box>
     </>
