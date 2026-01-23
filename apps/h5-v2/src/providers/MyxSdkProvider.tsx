@@ -77,10 +77,12 @@ const createGetAccessTokenMethod = () => {
 
     // const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
 
-    return {
-      accessToken: 'access_token',
-      expireAt: 0,
-    }
+    return new Promise((resolve) => {
+      resolve({
+        accessToken: 'myx',
+        expireAt: Math.floor(Date.now() / 1000) + 3600 * 24, // 到期时间戳（秒）
+      })
+    })
     // if (response.code === 0) {
     //   return {
     //     accessToken: response.data.accessToken,
@@ -143,6 +145,7 @@ const brokerAddressMap: Record<number, string> = {
   [ChainId.ARB_TESTNET]: '0x71930d2D1d59db4e79b4b02de0163D93f9204644',
   [ChainId.LINEA_SEPOLIA]: '0xa81AE4136dA521b99148A3487316Afe17bc8e6aa',
   [ChainId.BSC_TESTNET]: '0xcadA07b3D93e1D61C06A2c3e8323669c890C12A0',
+  [ChainId.BSC_MAINNET]: '0x100121F45b81A41bB81712ad6e60e14c37bd9D93',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
