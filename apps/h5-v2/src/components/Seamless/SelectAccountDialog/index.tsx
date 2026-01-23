@@ -17,7 +17,7 @@ export const SelectAccountDialog = () => {
 
   return (
     <DialogBase
-      title={t`Select  Account`}
+      title={t`Select Account`}
       open={selectedSeamlessAccountDialogOpen}
       onClose={() => setSelectedSeamlessAccountDialogOpen(false)}
       sx={{
@@ -33,7 +33,7 @@ export const SelectAccountDialog = () => {
       }}
     >
       <div className="p-[16px]">
-        <div className="mt-[32px] flex flex-col gap-[10px]">
+        <div className="mt-[12px] flex flex-col gap-[10px]">
           {seamlessAccountList.map((item) => {
             const isActive = item.masterAddress === activeSeamlessAddress
             return (
