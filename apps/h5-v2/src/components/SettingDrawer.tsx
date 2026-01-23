@@ -157,6 +157,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
     setVipRedeemDialogOpen,
     activeLocale,
     setAccountDialogOpen,
+    setImportSeamlessKeyDialogOpen,
   } = useGlobalStore()
   const {
     showPlaceOrderConfirmDialog,
@@ -284,6 +285,17 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
                       ]}
                     />
                     {/* <IconArrowRight className="h-[16px] w-[16px]" /> */}
+                  </p>
+                </div>
+                <div
+                  className="flex cursor-pointer items-center justify-between py-[16px]"
+                  onClick={() => setImportSeamlessKeyDialogOpen(true)}
+                >
+                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                    <Trans>Import Seamless Key</Trans>
+                  </p>
+                  <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                    <IconArrowRight className="h-[16px] w-[16px]" />
                   </p>
                 </div>
                 {tradeMode === TradeMode.Seamless && (
