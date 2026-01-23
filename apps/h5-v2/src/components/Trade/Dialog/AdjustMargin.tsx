@@ -11,8 +11,6 @@ import { DirectionEnum, OracleType } from '@myx-trade/sdk'
 import clsx from 'clsx'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
-import usdcIcon from '@/assets/icon/chainIcon/usdc.svg'
-import usdtIcon from '@/assets/icon/chainIcon/usdt.svg'
 import { displayAmount, formatNumber } from '@/utils/number'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
@@ -25,6 +23,7 @@ import { useGetTradingFeeInfo } from '@/hooks/calculate/use-get-trading-fee'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import useGlobalStore from '@/store/globalStore'
+import { getQuoteTokenInfo } from '@/config/token'
 
 function AdjustMarginSelect({
   adjustType,
@@ -382,7 +381,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                   </p>
                   <div className="flex gap-[4px]">
                     <img
-                      src={position?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
+                      src={getQuoteTokenInfo(position.chainId, position.quoteToken)?.logoUrl}
                       alt=""
                       className="h-[16px] w-[16px]"
                     />

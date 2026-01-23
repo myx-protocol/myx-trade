@@ -27,12 +27,15 @@ export const GlobalContractSearch = ({
       onClose={onClose}
       anchor="bottom"
       sx={{
-        '& .MuiDrawer-paper': {
+        '& .MuiPaper-root': {
           width: '100%',
           backgroundColor: '#18191F',
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
           height: 'calc(var(--vh, 1vh) * 70)',
+        },
+        '& .drawer-body': {
+          flex: '1',
         },
       }}
     >
