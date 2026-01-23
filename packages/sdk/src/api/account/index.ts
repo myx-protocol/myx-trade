@@ -69,7 +69,7 @@ export interface HistoryOrderItem {
   poolId: string; // poolId
   orderId: number; // orderId
   txTime: number; // txTime
-  txHash: number; // txHash
+  txHash: string; // txHash
   orderType: OrderTypeEnum; // orderType
   operation: OperationEnum; // operation
   triggerType: TriggerTypeEnum; // triggerType
