@@ -157,6 +157,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
     setVipRedeemDialogOpen,
     activeLocale,
     setAccountDialogOpen,
+    setImportSeamlessKeyDialogOpen,
   } = useGlobalStore()
   const {
     showPlaceOrderConfirmDialog,
@@ -248,91 +249,101 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
 
         {/* split line */}
         <>
-          {isTradePage ||
-            (isPricePage && (
-              <>
-                <div className="my-[8px] h-[1px] w-full bg-[#3E3F47]"></div>
+          {(isTradePage || isPricePage) && (
+            <>
+              <div className="my-[8px] h-[1px] w-full bg-[#3E3F47]"></div>
 
-                <div className="px-[16px] pt-[16px]">
-                  {/* trade settings */}
-                  <div className="mb-[10px] text-[14px] font-medium text-[#848E9C]">
-                    <Trans>Trading Setting</Trans>
-                  </div>
-                  {/* account mode setting*/}
-                  <div
-                    className="flex cursor-pointer items-center justify-between py-[14px]"
-                    onClick={() => {
-                      onOpenChange(false)
-                      setAccountDialogOpen(true)
-                    }}
-                  >
-                    <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                      <Trans>Account Mode</Trans>
-                    </p>
-                    <p className="flex items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                      <LangSwitch<TradeMode>
-                        value={tradeMode}
-                        onChange={() => {}}
-                        options={[
-                          {
-                            label: t`Classic`,
-                            value: TradeMode.Classic,
-                          },
-                          {
-                            label: t`Seamless`,
-                            value: TradeMode.Seamless,
-                          },
-                        ]}
-                      />
-                      {/* <IconArrowRight className="h-[16px] w-[16px]" /> */}
-                    </p>
-                  </div>
-                  {tradeMode === TradeMode.Seamless && (
-                    <>
-                      <div className="flex items-center justify-between py-[14px]">
-                        <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                          <Trans>Seamless Trading</Trans>
-                        </p>
-                        <div className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                          <div className="flex items-center">
-                            <RenderAuthButton />
-                            <IconArrowRight className="h-[16px] w-[16px]" />
-                          </div>
+              <div className="px-[16px] pt-[16px]">
+                {/* trade settings */}
+                <div className="mb-[10px] text-[14px] font-medium text-[#848E9C]">
+                  <Trans>Trading Setting</Trans>
+                </div>
+                {/* account mode setting*/}
+                <div
+                  className="flex cursor-pointer items-center justify-between py-[14px]"
+                  onClick={() => {
+                    onOpenChange(false)
+                    setAccountDialogOpen(true)
+                  }}
+                >
+                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                    <Trans>Account Mode</Trans>
+                  </p>
+                  <p className="flex items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                    <LangSwitch<TradeMode>
+                      value={tradeMode}
+                      onChange={() => {}}
+                      options={[
+                        {
+                          label: t`Classic`,
+                          value: TradeMode.Classic,
+                        },
+                        {
+                          label: t`Seamless`,
+                          value: TradeMode.Seamless,
+                        },
+                      ]}
+                    />
+                    {/* <IconArrowRight className="h-[16px] w-[16px]" /> */}
+                  </p>
+                </div>
+                <div
+                  className="flex cursor-pointer items-center justify-between py-[16px]"
+                  onClick={() => setImportSeamlessKeyDialogOpen(true)}
+                >
+                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                    <Trans>Import Seamless Key</Trans>
+                  </p>
+                  <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                    <IconArrowRight className="h-[16px] w-[16px]" />
+                  </p>
+                </div>
+                {tradeMode === TradeMode.Seamless && (
+                  <>
+                    <div className="flex items-center justify-between py-[14px]">
+                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                        <Trans>Seamless Trading</Trans>
+                      </p>
+                      <div className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                        <div className="flex items-center">
+                          <RenderAuthButton />
+                          <IconArrowRight className="h-[16px] w-[16px]" />
                         </div>
                       </div>
-                      <div
-                        className="flex cursor-pointer items-center justify-between py-[14px]"
-                        onClick={() => {
-                          onOpenChange(false)
-                          setResetSeamlessPasswordDialogOpen(true)
-                        }}
-                      >
-                        <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                          <Trans>Reset Password</Trans>
-                        </p>
-                        <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                          <IconArrowRight className="h-[16px] w-[16px]" />
-                        </p>
-                      </div>
-                      <div
-                        className="flex cursor-pointer items-center justify-between py-[14px]"
-                        onClick={() => {
-                          onOpenChange(false)
-                          setExportSeamlessInfoDialogOpen(true)
-                        }}
-                      >
-                        <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                          <Trans>Export Seamless Key</Trans>
-                        </p>
-                        <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                          <IconArrowRight className="h-[16px] w-[16px]" />
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </>
-            ))}
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between py-[14px]"
+                      onClick={() => {
+                        onOpenChange(false)
+                        setResetSeamlessPasswordDialogOpen(true)
+                      }}
+                    >
+                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                        <Trans>Reset Password</Trans>
+                      </p>
+                      <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                        <IconArrowRight className="h-[16px] w-[16px]" />
+                      </p>
+                    </div>
+                    <div
+                      className="flex cursor-pointer items-center justify-between py-[14px]"
+                      onClick={() => {
+                        onOpenChange(false)
+                        setExportSeamlessInfoDialogOpen(true)
+                      }}
+                    >
+                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                        <Trans>Export Seamless Key</Trans>
+                      </p>
+                      <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                        <IconArrowRight className="h-[16px] w-[16px]" />
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </>
 
         {/* split line */}

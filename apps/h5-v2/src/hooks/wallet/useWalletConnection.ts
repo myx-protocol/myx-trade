@@ -4,9 +4,14 @@ import { useWalletStore } from '@/store/wallet/createStore'
 import { LoginChannelEnum } from '@/store/wallet/types'
 import { isSupportedChainFn } from '@/config/chain'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
+import useGlobalStore from '@/store/globalStore'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { TradeMode } from '@/pages/Trade/types'
 
 export const useWalletConnection = () => {
   const { address, isConnected, isConnecting, chainId } = useAccount()
+  const { tradeMode } = useGlobalStore()
+  const { activeSeamlessAddress } = useSeamlessStore()
   const { connect, connectors, error, isPending } = useConnect()
   const { resetStore } = useTradePanelStore()
   const { disconnect } = useDisconnect()
@@ -19,9 +24,12 @@ export const useWalletConnection = () => {
     setLoginChannel,
     setLoginModalOpen,
   } = useWalletStore()
+
   useEffect(() => {
     setActiveAddress(address || '')
-  }, [address, setActiveAddress, resetStore])
+  }, [address, setActiveAddress, resetStore, tradeMode, activeSeamlessAddress])
+
+  // console.log('activeSeamlessAddress-->',tradeMode, activeSeamlessAddress)
 
   const connectWallet = useCallback(
     async (walletItem: { id: string; connectorId: string; name: string }) => {
@@ -60,9 +68,11 @@ export const useWalletConnection = () => {
     return Boolean(address && isConnected && !isSupportedChainFn(chainId))
   }, [address, isConnected, chainId])
 
+  // console.log('activeSeamlessAddress-->', activeSeamlessAddress)
+
   return {
     // 状态
-    address,
+    address: tradeMode === TradeMode.Seamless ? activeSeamlessAddress : address,
     isConnected,
     isConnecting: isConnecting || isPending,
     error,

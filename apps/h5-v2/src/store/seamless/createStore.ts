@@ -7,6 +7,7 @@ import { shallow } from 'zustand/shallow'
 interface Action {
   setSeamlessAccountList: (seamlessAccountList: SeamlessAccount[]) => void
   setActiveSeamlessAddress: (activeSeamlessAddress: string) => void
+  setSelectedSeamlessAddress: (selectedSeamlessAddress: string) => void
 }
 
 type SeamlessStore = SeamlessState & Action
@@ -22,6 +23,8 @@ export const useSeamlessStore = createWithEqualityFn<SeamlessStore>()(
               set({ seamlessAccountList }),
             setActiveSeamlessAddress: (activeSeamlessAddress: string) =>
               set({ activeSeamlessAddress }),
+            setSelectedSeamlessAddress: (selectedSeamlessAddress: string) =>
+              set({ selectedSeamlessAddress }),
           }) as SeamlessStore,
       ),
       {

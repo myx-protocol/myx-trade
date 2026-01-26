@@ -94,8 +94,16 @@ export const AccountDialog = () => {
                   return
                 }
 
-                setTradeMode(TradeMode.Seamless)
-                // setUnlockAccountDialogOpen(true)
+                const seamlessAccount = seamlessAccountList.findIndex(
+                  (account) => account.masterAddress === address,
+                )
+
+                if (seamlessAccount === -1) {
+                  setSeamlessPasswordDialogOpen(true)
+                  return
+                }
+
+                setUnlockAccountDialogOpen(true)
               }}
             >{t`Seamless`}</p>
           </div>
