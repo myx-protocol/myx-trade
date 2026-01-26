@@ -6,8 +6,6 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { parseUnits } from "ethers";
-import {  COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import {  getPricesData } from "@/common/price";
 import { getErrorTextFormError } from "@/config/error";
 
@@ -34,7 +32,6 @@ export const claimBasePoolRebate = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: poolId,
-        referencePrice: parseUnits(item?.price ?? '0', COMMON_PRICE_DECIMALS),
         oracleUpdateData: item?.vaa ?? '0',
         publishTime: item.publishTime,
         oracleType: item.oracleType,
@@ -51,12 +48,12 @@ export const claimBasePoolRebate = async (
     const contract = await getLiquidityRouterContract(chainId)
     
     // estimateGas
-    const _gasLimit = await contract["claimBasePoolRebate((bytes32,uint8,uint256,bytes,uint64)[],bytes32,address)"].estimateGas(prices, poolId, account, {
+    const _gasLimit = await contract["claimBasePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"].estimateGas(prices, poolId, account, {
       value: values[0]
     })
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract["claimBasePoolRebate((bytes32,uint8,uint256,bytes,uint64)[],bytes32,address)"] (prices, poolId, account, {
+    const response = await contract["claimBasePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"] (prices, poolId, account, {
       gasLimit,
       gasPrice,
       value: values[0],
@@ -92,7 +89,6 @@ export const claimBasePoolRebates = async (
     const prices = priceData.map ((item) => {
       return {
         poolId: item.poolId,
-        referencePrice: parseUnits (item?.price ?? '0', COMMON_PRICE_DECIMALS),
         oracleUpdateData: item?.vaa ?? '0',
         publishTime: item.publishTime,
         oracleType: item.oracleType,
@@ -113,12 +109,12 @@ export const claimBasePoolRebates = async (
     const contract = await getLiquidityRouterContract (chainId)
     
     // estimateGas
-    const _gasLimit = await contract["claimBasePoolRebates((bytes32,uint8,uint256,bytes,uint64)[],bytes32[],address)"].estimateGas (prices, poolIds, account, {
+    const _gasLimit = await contract["claimBasePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"].estimateGas (prices, poolIds, account, {
       value
     })
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
-    const response = await contract["claimBasePoolRebates((bytes32,uint8,uint256,bytes,uint64)[],bytes32[],address)"](prices, poolIds, account, {
+    const response = await contract["claimBasePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"](prices, poolIds, account, {
       gasLimit,
       gasPrice,
       value
