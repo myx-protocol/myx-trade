@@ -43,6 +43,7 @@ export const Drawer = ({
   anchor = 'bottom',
   showPuller = true,
   className,
+  sx,
 }: TDrawerProps) => {
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
   return (
@@ -54,10 +55,11 @@ export const Drawer = ({
       disableDiscovery={iOS}
       anchor={anchor}
       className={className}
+      sx={sx}
     >
       {showPuller && <Puller onClick={(e) => onClose(e)} />}
 
-      <Box className={'bg-base-bg'} display={'flex'} flexDirection={'column'} gap={'12px'}>
+      <Box className={'bg-base-bg flex-1'} display={'flex'} flexDirection={'column'} gap={'12px'}>
         {title && (
           <Box className={'drawer-header !px-[20px]'}>
             <span className={'leading-[1] font-[20px] font-[500] text-white'}>{title}</span>

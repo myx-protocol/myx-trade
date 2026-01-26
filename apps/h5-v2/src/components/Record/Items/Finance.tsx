@@ -18,7 +18,9 @@ import { getChainInfo } from '@/config/chainInfo'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useNavigate } from 'react-router-dom'
 import IconArrowRight from '@/components/UI/Icon/ArrowRightIcon'
-import { getChainsTokenInfo } from '@/config/address'
+import { getQuoteTokenInfo } from '@/config/token'
+import { usePoolSymbolsAll } from '@/hooks/pool/usePoolSymbolsAll'
+import { isAddressEqual, type Address } from 'viem'
 
 const TradeFlowType: Record<TradeFlowTypeEnum, () => string> = {
   [TradeFlowTypeEnum.Increase]: () => t`开仓`,
@@ -40,15 +42,43 @@ const TradeFlowType: Record<TradeFlowTypeEnum, () => string> = {
 
 const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
   const [open, setOpen] = useState(false)
-  const tokenInfo = useMemo(() => {
-    if (item.token) return getChainsTokenInfo(item.chainId, item.token)
-    return null
-  }, [item.token, item.chainId])
 
   const chainInfo = useMemo(() => {
     if (!item.chainId) return null
     return getChainInfo(item.chainId)
   }, [item.chainId])
+  const isMarginTransfer =
+    item.type === TradeFlowTypeEnum.TransferToWallet ||
+    item.type === TradeFlowTypeEnum.MarginAccountDeposit
+  const { symbolDataAll } = usePoolSymbolsAll()
+
+  const matchMarginTokenInfo = useMemo(() => {
+    if (
+      item.type === TradeFlowTypeEnum.TransferToWallet ||
+      item.type === TradeFlowTypeEnum.MarginAccountDeposit
+    ) {
+      // return null
+      if (!symbolDataAll || !item.token) return null
+      for (let i = 0; i < symbolDataAll.length; i++) {
+        const poolInfo = symbolDataAll[i]
+        // is quote token equal
+        if (isAddressEqual(poolInfo.quoteToken as Address, item.token)) {
+          return {
+            symbol: poolInfo.quoteSymbol,
+            logoUrl: getQuoteTokenInfo(poolInfo.chainId, poolInfo.quoteToken as Address)?.logoUrl,
+          }
+        }
+        // is base token equal
+        if (isAddressEqual(poolInfo.baseToken as Address, item.token)) {
+          return {
+            symbol: poolInfo.baseSymbol,
+            logoUrl: poolInfo.baseTokenIcon,
+          }
+        }
+      }
+    }
+    return null
+  }, [item.token, item.chainId, symbolDataAll, item.type])
   return (
     <div className="w-full border-b border-[#202129] p-[16px]">
       <div
@@ -58,17 +88,39 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
       >
         {/* symbol info */}
         <div className="flex items-center gap-[4px]">
-          <PairLogo
-            baseLogoSize={24}
-            quoteLogoSize={10}
-            baseLogo={tokenInfo?.logo}
-            quoteLogo={chainInfo?.logoUrl}
-            quoteClassName=" ml-[-8px]!"
-          />
+          {!isMarginTransfer && (
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={matchMarginTokenInfo?.logoUrl}
+              baseSymbol={matchMarginTokenInfo?.symbol}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+          )}
+          {isMarginTransfer && (
+            <PairLogo
+              baseLogoSize={24}
+              quoteLogoSize={10}
+              baseLogo={matchMarginTokenInfo?.logoUrl}
+              baseSymbol={matchMarginTokenInfo?.symbol}
+              quoteLogo={chainInfo?.logoUrl}
+              quoteClassName=" ml-[-8px]!"
+            />
+          )}
+
           <div>
-            <p className="text-[14px] font-medium text-white">
-              {tokenInfo ? <>{tokenInfo?.symbol}</> : <>--</>}
-            </p>
+            {!isMarginTransfer && (
+              <p className="text-[14px] font-medium text-white">
+                {matchMarginTokenInfo?.symbol || '--'}
+              </p>
+            )}
+            {isMarginTransfer && (
+              <p className="text-[14px] font-medium text-white">
+                {matchMarginTokenInfo?.symbol || '--'}
+              </p>
+            )}
+
             <div className="mt-[4px] flex items-center gap-[4px]">
               <Tag type="info">{TradeFlowType[item.type]?.()}</Tag>
               <p className="text-[12px] text-[#6D7180]">
@@ -88,7 +140,7 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
                   showSign: true,
                   showUnit: false,
                 })}
-                <span className="ml-[2px]">{tokenInfo?.symbol}</span>
+                <span className="ml-[2px]">{matchMarginTokenInfo?.symbol || '--'}</span>
               </p>
             )}
             {Big(item.collateralBase || '0')
@@ -99,7 +151,7 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
                   showSign: true,
                   showUnit: false,
                 })}
-                <span className="ml-[2px]">{tokenInfo?.symbol}</span>
+                <span className="ml-[2px]">{matchMarginTokenInfo?.symbol || '--'}</span>
               </p>
             )}
           </div>
@@ -129,6 +181,15 @@ const FinanceTransferItem = ({ item }: { item: TradeFlowItem }) => {
               )}
             </p>
           </div>
+          <FlexRowLayout
+            left={<Trans>Hash</Trans>}
+            right={
+              <p className="flex items-center gap-[4px] font-medium text-white">
+                <span>{truncateString(item.txHash || '', 10, 4)}</span>
+                <Copy content={item.txHash || ''} />
+              </p>
+            }
+          />
         </motion.div>
       )}
     </div>

@@ -6,8 +6,9 @@ import { SearchTypeEnum, SearchSecondTypeEnum } from '@myx-trade/sdk'
 import { useDebounce } from 'ahooks'
 import { Trans } from '@lingui/react/macro'
 import { ArrowDown } from '@/components/Icon'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ChainsDrawer } from '@/components/ChainsDrawer'
+import { getChainInfo } from '@/config/chainInfo'
 
 const SearchSecondTabs = styled(Tabs)({
   minHeight: 'auto',
@@ -25,10 +26,13 @@ const SearchSecondTabs = styled(Tabs)({
       content: '""',
     },
   },
+  '& .MuiTabs-list': {
+    gap: '20px',
+  },
 })
 
 export const SearchSecondTab = styled(Tab)({
-  padding: '11px 10px',
+  padding: '11px 0px',
   fontSize: '12px',
   fontWeight: '500',
   lineHeight: '1',
@@ -64,6 +68,14 @@ export const SearchTabs = () => {
   const searchLoadingDebounced = useDebounce(searchLoading, {
     wait: 200,
   })
+  const chainSelectInfo = useMemo(() => {
+    if (!searchChainId) return null
+    try {
+      return getChainInfo(searchChainId)
+    } catch (_) {
+      return null
+    }
+  }, [searchChainId])
   return (
     <div>
       <div className="flex items-center justify-between gap-[20px]">
@@ -129,7 +141,7 @@ export const SearchTabs = () => {
           onClick={() => setChainSelectOpen(true)}
         >
           <span className="text-[12px]">
-            <Trans>All Chain</Trans>
+            {chainSelectInfo ? chainSelectInfo.label : t`All Chain`}
           </span>
           <ArrowDown size={12} color="#CED1D9" />
         </div>
@@ -146,14 +158,13 @@ export const SearchTabs = () => {
 
       {/* second tabs */}
       {searchTab === SearchTypeEnum.Contract && (
-        <div className="mx-[16px] mt-[8px] mb-[4px] border-b-[1px] border-b-[#202129] px-[6px]">
+        <div className="mx-[16px] mt-[8px] mb-[4px] border-b-[1px] border-b-[#202129]">
           <SearchSecondTabs
             value={secondSearchTab}
             onChange={(_, newValue) => setSecondSearchTab(newValue)}
           >
             <SearchSecondTab
               sx={{
-                padding: '11px 10px',
                 fontSize: '12px',
                 fontWeight: '700',
                 lineHeight: '1',
@@ -165,7 +176,6 @@ export const SearchTabs = () => {
 
             <SearchSecondTab
               sx={{
-                padding: '11px 10px',
                 fontSize: '12px',
                 fontWeight: '700',
                 lineHeight: '1',
@@ -176,7 +186,6 @@ export const SearchTabs = () => {
             />
             <SearchSecondTab
               sx={{
-                padding: '11px 10px',
                 fontSize: '12px',
                 fontWeight: '700',
                 lineHeight: '1',

@@ -56,21 +56,23 @@ export const AccountInfo = () => {
         </div>
       </div>
       {/* balance */}
-      <div className="mt-[10px] flex w-full items-center">
-        <Tooltips
-          title={formatNumber(accountBalance ?? '0', {
-            showUnit: false,
-          })}
-        >
-          <p className="flex-[1_1_0%] truncate text-[28px] font-bold">
-            {isLoading
-              ? '--'
-              : `$ ${formatNumber(accountBalance ?? '0', {
-                  showUnit: false,
-                })}`}
-          </p>
-        </Tooltips>
-        <p className="mr-[17px] shrink-0 text-[28px] font-bold">USDC</p>
+      <div className="mt-[10px] flex w-full items-center justify-between gap-[17px]">
+        <div className="flex min-w-0 flex-1 items-center">
+          <Tooltips
+            title={formatNumber(accountBalance ?? '0', {
+              showUnit: false,
+            })}
+          >
+            <p className="truncate text-[28px] font-bold">
+              {isLoading
+                ? '--'
+                : `${formatNumber(accountBalance ?? '0', {
+                    showUnit: false,
+                  })}`}
+            </p>
+          </Tooltips>
+          <p className="ml-[4px] shrink-0 text-[14px] leading-none font-bold">USDC</p>
+        </div>
 
         <PrimaryButton
           style={{

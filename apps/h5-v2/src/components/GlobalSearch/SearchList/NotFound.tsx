@@ -13,11 +13,11 @@ export const NotFound = () => {
     navigate(`/market`)
   }
   return (
-    <div className="pt-[64px]">
+    <div className="flex h-full flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center px-[16px] px-[20px] py-[16px]">
         <img src={EmptyPng} alt="empty" className="h-[56px] w-[56px]" />
-        <div className="mt-[16px] leading-[1] font-medium text-[#848E9C] text-[12x]">{t`No results found`}</div>
-        <p className="mt-[12px] text-center leading-[1] font-medium text-[#848E9C] text-[12x]">
+        <div className="mt-[16px] text-[12px] leading-[1] font-medium text-[#848E9C]">{t`No results found`}</div>
+        <p className="mt-[12px] text-center text-[12px] leading-[1.2] font-medium text-[#848E9C]">
           {t`Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!`}
         </p>
         <div

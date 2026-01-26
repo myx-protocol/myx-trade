@@ -18,6 +18,8 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
 import clsx from 'clsx'
 import { t } from '@lingui/core/macro'
+import { PriceTabEnum, usePriceStore } from '../store'
+import { twMerge } from 'tailwind-merge'
 
 export const Header = () => {
   const navigate = useNavigate()
@@ -137,6 +139,8 @@ export const Header = () => {
     },
   )
 
+  const { tab } = usePriceStore()
+
   return (
     <>
       <div className="bg-deep sticky top-0 z-20 flex h-auto shrink-0 items-center justify-between px-[16px] pt-[16px] pb-[12px]">
@@ -175,9 +179,11 @@ export const Header = () => {
                 </span>
               </div>
               <div
-                className={clsx('text-[12px] font-medium text-white', {
-                  hidden: !isFixedHeader,
-                })}
+                className={twMerge(
+                  clsx('hidden text-[12px] font-medium text-white', {
+                    block: isFixedHeader || tab !== PriceTabEnum.Price,
+                  }),
+                )}
               >
                 <Price value={tickerData?.price ?? 0} showUnit={false} />
                 <RiseFallTextPrecent className="ml-[6px]" value={tickerData?.change ?? 0} />
