@@ -55,6 +55,11 @@ export interface AppealListItem {
   appealDeadline: number; // 反诉截止时间
   compClaimDeadline: number; // 补偿领取时间
   updateTime: number; // update time
+  disputeBondState: AppealClaimStatusEnum
+  disputeBondClaimTime: number
+  claimStatus: AppealClaimStatusEnum // 补偿金领取状态
+  baseAmount?: string
+  quoteAmount?: string
 }
 
 export interface GetAppealDetailParams {
@@ -110,6 +115,10 @@ export interface AppealDetail {
   disputeTime: number; // 申诉时间
   txHash: string; // 申诉交易hash
   disputeBondState: AppealClaimStatusEnum;
+  disputeBondClaimTime: number
+  claimStatus: AppealClaimStatusEnum
+  baseAmount?: string
+  quoteAmount?: string
 }
 
 export interface AppealUploadEvidenceParams {
@@ -134,17 +143,17 @@ export interface AppealReconsiderationListItem {
   caseId: number;
   poolId: string;
   respondent: string;
-  type: AppealReconsiderationType;
-  stage: AppealStage;
-  voteCount: number;
-  totalVoteCount: number;
   appealToken: string; // margin token address
   appealBond: string; // margin amount
+  type: AppealReconsiderationType;
+  stage: AppealStage;
+  totalVoteCount: number;
+  votedCount: number
   appealDeadline: number; // appeal deadline
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
   appealCaseId?: number; // 反诉案件ID
-  votedCount: number
+  aappealBondClaimTime?: number
 }
 
 export interface GetAppealReconsiderationDetailParams {
@@ -179,6 +188,7 @@ export interface AppealReconsiderationDetail {
   appealType: AppealReconsiderationType; // 反诉类型-与当前用户绑定
   appealStage: AppealStage; // 反诉阶段-与当前用户绑定
   appealBondState: AppealClaimStatusEnum; // 反诉保证金状态
+  appealBondClaimTime?: number
 }
 
 export interface AppealReimbursementParams {
@@ -199,10 +209,10 @@ export interface AppealReimbursementItem {
   poolId: string;
   baseAmount: string;
   quoteAmount: string;
+  claimStatus: AppealClaimStatusEnum
   claimTime: number;
   expireTime: number;
   createTime: number;
-  claimStatus: AppealClaimStatusEnum;
 }
 
 export interface GetAppealNodeVoteListParams {
