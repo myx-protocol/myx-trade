@@ -37,8 +37,6 @@ export const AccountInfo = () => {
     },
   )
 
-  console.log('accountBalance-->', accountBalance)
-
   return (
     <div className="mt-[9px] w-full px-[16px]">
       {/* wallet */}
