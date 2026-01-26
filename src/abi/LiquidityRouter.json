@@ -299,8 +299,31 @@
     "type": "function",
     "name": "claimBasePoolRebate",
     "constant": false,
-    "payable": false,
+    "stateMutability": "payable",
+    "payable": true,
     "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "prices",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          }
+        ]
+      },
       {
         "type": "bytes32",
         "name": "poolId"
@@ -316,35 +339,8 @@
     "type": "function",
     "name": "claimBasePoolRebate",
     "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
+    "payable": false,
     "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint256",
-            "name": "referencePrice"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          }
-        ]
-      },
       {
         "type": "bytes32",
         "name": "poolId"
@@ -376,16 +372,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -454,16 +446,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -498,16 +486,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -625,16 +609,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -758,16 +738,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -868,16 +844,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -1159,16 +1131,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -1279,16 +1247,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
