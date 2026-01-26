@@ -1,6 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
 import {parseUnits } from "ethers";
-import { WithdrawParams } from "@/lp/type";
+import { OracleUpdatePrice, WithdrawParams } from "@/lp/type";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import { getPoolInfo } from "@/lp/getPoolInfo";
@@ -10,8 +10,7 @@ import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas";
-import { MarketPoolState, OracleType } from "@/api";
-import { BigNumberish, type BytesLike, Typed } from "ethers/lib.esm";
+import { MarketPoolState } from "@/api";
 import { getPriceData } from "@/common/price";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getErrorTextFormError } from "@/config/error";
@@ -41,7 +40,7 @@ export const withdraw = async (
     
     const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
     
-    const price : Typed | { poolId: BytesLike; referencePrice: BigNumberish; oracleUpdateData: BytesLike; publishTime: BigNumberish; oracleType: OracleType}[] =[]
+    const price : OracleUpdatePrice[] =[]
     let value = 0n;
     let amountOut;
     if (isNeedPrice) {
@@ -51,7 +50,6 @@ export const withdraw = async (
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
         poolId,
-        referencePrice ,
         oracleUpdateData: priceData.vaa,
         publishTime: priceData.publishTime,
         oracleType: priceData.oracleType,
@@ -72,10 +70,10 @@ export const withdraw = async (
     const contract = await getLiquidityRouterContract(chainId)
     
       // estimateGas
-      const _gasLimit = await contract["withdrawBase((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"].estimateGas(price, data, { value })
+      const _gasLimit = await contract["withdrawBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"].estimateGas(price, data, { value })
       const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
       const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-      const response = await contract["withdrawBase((bytes32,uint8,uint256,bytes,uint64)[],(bytes32,uint256,uint256,address))"] (price, data, {
+      const response = await contract["withdrawBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"] (price, data, {
         gasLimit,
         gasPrice,
         value,
