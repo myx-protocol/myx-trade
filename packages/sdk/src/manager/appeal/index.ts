@@ -188,8 +188,8 @@ export class Appeal extends BaseMyxClient {
    */
   async claimReimbursement(
     caseId: number,
-    baseAmount: number,
-    quoteAmount: number,
+    baseAmount: string,
+    quoteAmount: string,
     merkleProof: BytesLike[]
   ) {
     const contract = await this.getReimbursementContract();
