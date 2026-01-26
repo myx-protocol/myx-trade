@@ -239,6 +239,7 @@ export const ClosePositionButton = ({
               onValueChange={(e) => {
                 setPrice(e.value)
               }}
+              decimalScale={6}
               disabled={orderType === OrderType.MARKET}
               value={orderType === OrderType.MARKET ? marketPrice : price}
               className="w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"

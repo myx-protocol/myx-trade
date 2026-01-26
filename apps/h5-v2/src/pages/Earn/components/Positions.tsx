@@ -49,7 +49,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
     queryFn: async ({ pageParam }) => {
       const cursor = pageParam as undefined | string
 
-      const result = await getACQuoteLpList(account!, accessToken!, {
+      const result = await getACQuoteLpList(account as Address, accessToken!, {
         timeInterval: interval,
         chainId,
         sortField,

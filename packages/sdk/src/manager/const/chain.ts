@@ -15,7 +15,6 @@ export const MAINNET_CHAIN_IDS = [
   ChainIdEnum.BSC_MAINNET,
   ChainIdEnum.LINEA_MAINNET,
   ChainIdEnum.ARB_MAINNET,
-  ChainIdEnum.BSC_MAINNET,
 ] as const;
 
 /**
