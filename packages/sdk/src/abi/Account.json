@@ -6,6 +6,11 @@
   },
   {
     "type": "error",
+    "name": "AccountInsufficientReservedAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "AccountInsufficientTradableAmount",
     "inputs": [
       {
@@ -52,16 +57,6 @@
     "type": "error",
     "name": "InvalidInitialization",
     "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NotActiveBroker",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "broker"
-      }
-    ]
   },
   {
     "type": "error",
@@ -147,6 +142,28 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "ExecuteCompensation",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {
@@ -210,7 +227,145 @@
       },
       {
         "type": "uint256",
+        "name": "usedFreeAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "usedRestrictedAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReleaseForOrder",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
         "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReleaseProfit",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReserveForOrder",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "orderId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "SettleToAccount",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "freeBase",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "profitBase",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "freeAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "profitAmount",
         "indexed": false
       }
     ]
@@ -298,21 +453,25 @@
   },
   {
     "type": "function",
-    "name": "depositFromBroker",
+    "name": "executeCompensation",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "address",
-        "name": "account"
+        "type": "bytes32",
+        "name": "poolId"
       },
       {
         "type": "address",
-        "name": "token"
+        "name": "reimbursement"
       },
       {
         "type": "uint256",
-        "name": "amount"
+        "name": "baseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount"
       }
     ],
     "outputs": []
@@ -363,6 +522,29 @@
   },
   {
     "type": "function",
+    "name": "getPoolWithdrawableBaseToken",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "baseAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getTradableAmount",
     "constant": true,
     "stateMutability": "view",
@@ -380,6 +562,9 @@
     "outputs": [
       {
         "type": "bool"
+      },
+      {
+        "type": "uint256"
       },
       {
         "type": "uint256"
@@ -478,6 +663,10 @@
     "payable": false,
     "inputs": [
       {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
         "type": "address",
         "name": "account"
       },
@@ -488,6 +677,10 @@
       {
         "type": "uint256",
         "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "receiver"
       }
     ],
     "outputs": []
@@ -501,6 +694,10 @@
       {
         "type": "bytes32",
         "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "orderId"
       },
       {
         "type": "address",
@@ -541,6 +738,31 @@
   },
   {
     "type": "function",
+    "name": "releaseForCancelOrder",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "orderId"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "releaseFromProfitUnlock",
     "constant": false,
     "payable": false,
@@ -566,10 +788,43 @@
   },
   {
     "type": "function",
+    "name": "reserveForOrder",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "orderId"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "settlementDeposit",
     "constant": false,
     "payable": false,
     "inputs": [
+      {
+        "type": "bytes32",
+        "name": "positionId"
+      },
       {
         "type": "address",
         "name": "account"
@@ -625,10 +880,6 @@
           {
             "type": "address",
             "name": "poolVault"
-          },
-          {
-            "type": "address",
-            "name": "settler"
           },
           {
             "type": "address",
@@ -725,27 +976,6 @@
       {
         "type": "bytes",
         "name": "data"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "withdraw",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "receiver"
-      },
-      {
-        "type": "address",
-        "name": "token"
-      },
-      {
-        "type": "uint256",
-        "name": "amount"
       }
     ],
     "outputs": []
