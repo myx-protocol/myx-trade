@@ -1,5 +1,10 @@
 [
   {
+    "type": "constructor",
+    "payable": false,
+    "inputs": []
+  },
+  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -36,6 +41,11 @@
   },
   {
     "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "NotDependencyManager",
     "inputs": []
   },
@@ -65,6 +75,16 @@
   },
   {
     "type": "error",
+    "name": "PoolNotExist",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "UUPSUnauthorizedCallContext",
     "inputs": []
   },
@@ -75,6 +95,28 @@
       {
         "type": "bytes32",
         "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExecutionFeeUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "value",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "isActive",
+        "indexed": false
       }
     ]
   },
@@ -171,7 +213,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
@@ -218,14 +260,6 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "baseAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "quoteAmount"
-          },
-          {
             "type": "string",
             "name": "remark"
           }
@@ -262,24 +296,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
       }
     ]
   },
@@ -348,7 +364,7 @@
           },
           {
             "type": "uint256",
-            "name": "initPrice"
+            "name": "referencePrice"
           }
         ]
       }
@@ -370,13 +386,31 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
+    "name": "setOracleFeedParameters",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32[]",
-        "name": "identifiers"
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "bytes32",
+            "name": "oracleFeedId"
+          },
+          {
+            "type": "uint32",
+            "name": "decimals"
+          }
+        ]
       }
     ],
     "outputs": []
@@ -400,6 +434,10 @@
             "name": "oracleFeedId"
           },
           {
+            "type": "uint32",
+            "name": "oracleDecimals"
+          },
+          {
             "type": "uint8",
             "name": "oracleType"
           },
@@ -412,23 +450,10 @@
             "name": "riskTier"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
       }
     ],
     "outputs": []
@@ -517,7 +542,7 @@
             "name": "poolId"
           },
           {
-            "type": "uint128",
+            "type": "uint64",
             "name": "windowCapUsd"
           }
         ]
