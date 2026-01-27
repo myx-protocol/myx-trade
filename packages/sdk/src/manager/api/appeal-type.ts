@@ -20,6 +20,7 @@ export enum AppealReconsiderationType {
   PlatformRuling = 6,
   PlatformRevoked = 7,
   ReconsiderationVoting = 8,
+  AppealRevert = 9,
 }
 
 export enum AppealStage {
