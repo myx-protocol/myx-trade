@@ -17,11 +17,12 @@ type AccountAssets = {
   quoteProfit: string
   releaseTime: number
   usedMargin: string
+  reservedAmount: string
 }
 
 export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient(chainId)
-  const orderList = useGetOrderList(true)
+
   const { address } = useWalletConnection()
   const { poolList } = useGlobalStore()
   const pool = useMemo(() => {
@@ -37,7 +38,6 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
           poolId: poolId as string,
           clientIsAuthenticated,
           client,
-          orderList,
         }
       : null,
     async () => {
@@ -48,9 +48,6 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
       )
       const assets = rs.data as AccountAssets
       if (rs.code === 0) {
-        const usedMargin = orderList.reduce((acc: Big, order: any) => {
-          return acc.plus(parseBigNumber(order.collateralAmount))
-        }, parseBigNumber(0))
         const quoteProfit = parseBigNumber(
           ethers.formatUnits(assets.quoteProfit, pool?.quoteDecimals ?? 6).toString(),
         )
@@ -59,6 +56,10 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
         )
         const freeMargin = parseBigNumber(
           ethers.formatUnits(assets.freeMargin, pool?.quoteDecimals ?? 6).toString(),
+        )
+
+        const reservedAmount = parseBigNumber(
+          ethers.formatUnits(assets.reservedAmount, pool?.quoteDecimals ?? 6).toString(),
         )
 
         const availableMargin = walletBalance.plus(freeMargin).toString()
@@ -75,7 +76,7 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
           baseProfit: ethers.formatUnits(assets.baseProfit, pool?.baseDecimals ?? 6).toString(),
           quoteProfit: quoteProfit.toString(),
           releaseTime: Number(assets.releaseTime),
-          usedMargin: usedMargin.toString(),
+          usedMargin: reservedAmount,
         }
       } else {
         return {
