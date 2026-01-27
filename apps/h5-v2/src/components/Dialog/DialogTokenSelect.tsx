@@ -244,13 +244,13 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
       try {
         const map = {} as MarketStateMap
         const list = keyword ? searchList : walletAssets
-        if (!list || list.length === 0) return map
+        if (!list || list?.length === 0) return map
 
         const result = await getMarketPoolStateData(
           list.map((token: { chainId: number; address: string }) => {
             return {
               chainId: token.chainId,
-              address: token.address,
+              baseToken: token.address,
             }
           }),
         )
@@ -283,8 +283,8 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
       return undefined
     }
     console.log(marketStateMap)
-    return marketStateMap
-      ? marketStateMap?.[`${asset.chainId}-${asset.address}` as MarketStateKey]?.state || null
+    return marketStateMap && marketStateMap?.[`${asset.chainId}-${asset.address}` as MarketStateKey]
+      ? marketStateMap?.[`${asset.chainId}-${asset.address}` as MarketStateKey]?.state
       : undefined
   }
 
@@ -326,7 +326,7 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
                   key={index}
                   asset={{
                     ...asset,
-                    balance: walletAssets.length
+                    balance: walletAssets?.length
                       ? walletAssets.find(
                           (_asset: { address: string }) => _asset.address === asset.address,
                         )?.balance

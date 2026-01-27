@@ -195,4 +195,5 @@ export const MYXSDKErrorMapping: Record<string, ReactElement> = {
   '0xcd4891b6': <Trans>NotInDisputeMode()</Trans>,
   '0x1ad308dc': <Trans>OrderExpired(OrderId)</Trans>,
   '0x486aa307': <Trans>PoolNotInitialized()</Trans>,
+  ACTION_REJECTED: <Trans>User Rejected</Trans>,
 } as const
