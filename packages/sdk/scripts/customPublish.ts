@@ -14,12 +14,22 @@ const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync(`git commit -m "chore: bump version v${latestVersion}"`, {
         stdio: 'inherit',
     });
-
-    execSync('git push', {
-        stdio: 'inherit',
-    });
+    console.log('✅ 提交 commit 成功！')
     return latestVersion;
 
+}
+
+const pushCommit = () => {
+    try {
+        execSync('git push', {
+            stdio: 'inherit',
+        });
+        console.log('✅ 推送 commit 成功！')
+    } catch (error) {
+        console.error('🚨 推送 commit 失败, 请手动执行 git push', error);
+        return false;
+    }
+    return true;
 }
 
 const updateVersion = (publishType = 'main', versionType = 'patch') => {
@@ -92,7 +102,7 @@ inquirer.prompt([
         });
         console.log('✅ pnpm registry 登录成功！')
     } else {
-        console.log('✅ pnpm registry 无需登录！')
+        console.log('🔄 pnpm registry 无需登录！')
     }
 
     if (publishTag === 'beta') {
@@ -104,7 +114,10 @@ inquirer.prompt([
             stdio: 'inherit',
         })
     }
-
+    const isPushed = pushCommit();
+    if (!isPushed) {
+        console.log('🚨 推送 commit 失败, 请手动执行 git push')
+    }
     console.log('✅ 发布成功！')
     console.log(`🚀 最新版本: v${latestVersion}`)
 })
