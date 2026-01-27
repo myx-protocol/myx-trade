@@ -12,13 +12,13 @@ const checkBranch = () => {
         const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', {
             encoding: 'utf-8',
         }).trim();
-        
+
         if (currentBranch !== PUBLISH_BRANCH) {
             console.error(`🚨 错误: 当前分支 "${currentBranch}" 与发布分支 "${PUBLISH_BRANCH}" 不一致！`);
             console.error(`请切换到 ${PUBLISH_BRANCH} 分支后再执行发布操作。`);
             process.exit(1);
         }
-        
+
         console.log(`✅ 当前分支检查通过: ${currentBranch}`);
     } catch (error) {
         console.error('🚨 检测分支时出错:', error);
@@ -128,11 +128,11 @@ inquirer.prompt([
     }
 
     if (publishTag === 'beta') {
-        execSync('pnpm publish --tag beta', {
+        execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
             stdio: 'inherit',
         })
     } else {
-        execSync('pnpm publish', {
+        execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
             stdio: 'inherit',
         })
     }
