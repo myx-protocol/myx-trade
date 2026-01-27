@@ -3,7 +3,28 @@ import { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import path from 'path'
 
+const PUBLISH_BRANCH = 'release/sdk'
+
 const npmRegistry = 'https://registry.npmjs.org';
+
+const checkBranch = () => {
+    try {
+        const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', {
+            encoding: 'utf-8',
+        }).trim();
+        
+        if (currentBranch !== PUBLISH_BRANCH) {
+            console.error(`🚨 错误: 当前分支 "${currentBranch}" 与发布分支 "${PUBLISH_BRANCH}" 不一致！`);
+            console.error(`请切换到 ${PUBLISH_BRANCH} 分支后再执行发布操作。`);
+            process.exit(1);
+        }
+        
+        console.log(`✅ 当前分支检查通过: ${currentBranch}`);
+    } catch (error) {
+        console.error('🚨 检测分支时出错:', error);
+        process.exit(1);
+    }
+}
 
 const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync('git add package.json', {
@@ -51,6 +72,7 @@ const checkNPMLogined = async () => {
     }
 }
 
+checkBranch();
 
 inquirer.prompt([
     {
