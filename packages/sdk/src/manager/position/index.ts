@@ -206,7 +206,6 @@ export class Position {
           chainId,
           seamlessWallet as Signer
         );
-        console.log("rs-->", rs);
 
         return {
           code: 0,
