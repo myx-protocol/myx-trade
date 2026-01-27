@@ -1,4 +1,3 @@
-      
 [
   {
     "type": "constructor",
@@ -928,12 +927,16 @@
             "name": "oracleType"
           },
           {
-            "type": "uint64",
-            "name": "publishTime"
+            "type": "uint256",
+            "name": "referencePrice"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
           }
         ]
       },
@@ -1454,5 +1457,3 @@
     "outputs": []
   }
 ]
-
-    

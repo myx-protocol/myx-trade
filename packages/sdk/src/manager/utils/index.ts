@@ -294,6 +294,7 @@ export class Utils {
     return [
       {
         poolId: poolId,
+        referencePrice: ethers.parseUnits(priceData.price, 30),
         oracleUpdateData: priceData.vaa,
         publishTime: priceData.publishTime,
         oracleType: priceData.oracleType,
