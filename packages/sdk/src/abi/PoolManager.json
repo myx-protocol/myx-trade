@@ -200,18 +200,6 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "baseAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "baseQuoteAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "quoteAmount"
-          },
-          {
             "type": "string",
             "name": "remark"
           }
@@ -519,8 +507,81 @@
           {
             "type": "uint128",
             "name": "poolPrimeThreshold"
+          },
+          {
+            "type": "uint128",
+            "name": "executionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxExecutionFee"
+          },
+          {
+            "type": "uint128",
+            "name": "forwardFee"
+          },
+          {
+            "type": "uint128",
+            "name": "maxForwardFee"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolMarketExecutionFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "executionFee"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolMarketForwardFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "forwardFee"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolMarketId",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
       }
     ]
   },

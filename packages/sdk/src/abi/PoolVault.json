@@ -29,11 +29,29 @@
   },
   {
     "type": "error",
-    "name": "InsufficientLiquidity",
+    "name": "ExceedReservable",
     "inputs": [
       {
         "type": "uint256",
         "name": "available"
+      },
+      {
+        "type": "uint256",
+        "name": "request"
+      },
+      {
+        "type": "uint256",
+        "name": "reserved"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InsufficientLiquidity",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "total"
       },
       {
         "type": "uint256",
@@ -370,7 +388,7 @@
   },
   {
     "type": "function",
-    "name": "disburseToOracleVault",
+    "name": "disburseToOracleReserve",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -471,24 +489,6 @@
   },
   {
     "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "initialize",
     "constant": false,
     "payable": false,
@@ -540,7 +540,7 @@
   },
   {
     "type": "function",
-    "name": "receiveFromOracleVault",
+    "name": "receiveFromOracleReserve",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -568,19 +568,6 @@
       {
         "type": "uint256",
         "name": "amount"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
       }
     ],
     "outputs": []
@@ -667,36 +654,6 @@
   },
   {
     "type": "function",
-    "name": "unregisterDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "update",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "updatePoolReserve",
     "constant": false,
     "payable": false,
@@ -712,6 +669,14 @@
       {
         "type": "uint256",
         "name": "executePrice"
+      },
+      {
+        "type": "int256",
+        "name": "beforeTracker"
+      },
+      {
+        "type": "int256",
+        "name": "afterTracker"
       }
     ],
     "outputs": []
