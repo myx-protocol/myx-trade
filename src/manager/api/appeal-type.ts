@@ -214,7 +214,7 @@ export interface AppealReimbursementItem {
   claimTime: number;
   expireTime: number;
   createTime: number;
-  proof: string[]
+  proof: string
 }
 
 export interface GetAppealNodeVoteListParams {
