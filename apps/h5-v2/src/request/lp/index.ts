@@ -169,7 +169,7 @@ export const getAccountHoldings = async (
         period,
         pnl: 'true',
         test: 'true',
-        // blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
+        blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
       })}`,
     )
     .then((result) => {
@@ -220,9 +220,9 @@ export const getMarketData = async (params: MarketDataSearchParams) => {
 }
 
 export const getMarketPoolStateData = async (
-  params: { chainId: number; address: string }[],
+  params: { chainId: number; baseToken: string }[],
 ): Promise<MarketPoolStateDataResponse> => {
-  return await http.post(`${baseUrl}/openapi/gateway/scan/market/state`, params)
+  return await http.post(`${baseUrl}/openapi/gateway/scan/market/base_token_state`, params)
 }
 
 export const getPoolRiskLevelConfig = async (
