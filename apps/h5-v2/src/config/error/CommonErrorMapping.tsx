@@ -9,4 +9,5 @@ export const CommonErrorMapping: Record<string, ReactElement> = {
     <Trans>Upfront cost exceeds account balance</Trans>,
   UserRejectedRequestError: <Trans>User Rejected</Trans>,
   ACTION_REJECTED: <Trans>User Rejected</Trans>,
+  'User Rejected': <Trans>User Rejected</Trans>,
 }
