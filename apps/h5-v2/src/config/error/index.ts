@@ -9,10 +9,18 @@ const isSDKError = (err: any): err is SDKError => {
 export const showErrorToast = (error?: any) => {
   // string
   if (typeof error === 'string') {
+    if (CommonErrorMapping[error]) {
+      toast.error({ title: CommonErrorMapping[error] })
+      return
+    }
     toast.error({ title: error })
     return
   }
   if ('error' in error && typeof error.error === 'string') {
+    if (error.error && CommonErrorMapping[error.error]) {
+      toast.error({ title: CommonErrorMapping[error.error] })
+      return
+    }
     toast.error({ title: error.error })
     return
   }
