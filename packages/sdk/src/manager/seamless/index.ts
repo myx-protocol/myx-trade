@@ -155,7 +155,7 @@ export class Seamless {
 
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
-      
+
       const tradingRouterSignPermit = await signPermit(
         config.signer,
         erc20Contract,
@@ -226,7 +226,7 @@ export class Seamless {
     const forwardFeeToken = executeAddressByChainId(chainId)
 
     this.logger.info('forwarderTx-->', { from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId)
-    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken}, chainId)
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken }, chainId)
 
     return txRs
   }
@@ -247,9 +247,6 @@ export class Seamless {
         jsonProvider
       )
       const forwardFeeToken = executeAddressByChainId(chainId)
-      this.logger.info('forwardFeeToken-->', forwardFeeToken, chainId)
-      this.logger.info('marketManagerContract-->', marketManagerContract.target, chainId)
-      this.logger.info('marketManagerContract.getForwardFeeByToken-->', marketManagerContract.getForwardFeeByToken)
       const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
 
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
@@ -265,7 +262,7 @@ export class Seamless {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
         console.log('error-->', error);
-        console.warn('Failed to get USD permit params, proceeding without permit:', error) 
+        console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
@@ -301,9 +298,9 @@ export class Seamless {
 
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
-          const rs = await this.api.fetchForwarderGetApi({requestId: txRs.data.requestId})
+          const rs = await this.api.fetchForwarderGetApi({ requestId: txRs.data.requestId })
 
-          if(rs.data?.status === 9) {
+          if (rs.data?.status === 9) {
             return {
               code: 0,
               data: {
@@ -325,7 +322,7 @@ export class Seamless {
           }
         }
       }
-      
+
       // 轮询超时，返回失败
       return {
         code: -1,
