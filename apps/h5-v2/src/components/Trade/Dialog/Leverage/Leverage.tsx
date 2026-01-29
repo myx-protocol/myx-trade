@@ -101,7 +101,7 @@ function LeverageDialogContent() {
   return (
     <div className="flex flex-col">
       {/* 杠杆输入区域 */}
-      <div className="px-[20px]">
+      <div className="">
         <div className="mt-[24px] flex items-center gap-[10px] rounded-lg border border-[#31333D] bg-[#18191F] px-[16px] py-[12px]">
           {/* 减少按钮 */}
           <div
@@ -142,7 +142,7 @@ function LeverageDialogContent() {
       </div>
 
       {/* 滑块区域 */}
-      <div className="mt-[12px] px-[20px]">
+      <div className="mt-[12px]">
         <CustomSlider
           value={leverageInput}
           marks={marks}
@@ -153,7 +153,7 @@ function LeverageDialogContent() {
       </div>
 
       {/* 说明文字 */}
-      <div className="mt-[20px] px-[20px] text-[12px] leading-[1.2] font-normal text-[#848E9C]">
+      <div className="mt-[20px] text-[12px] leading-[1.2] font-normal text-[#848E9C]">
         <Trans>
           Leverage adjustments will impact your new opening orders. When opening a new position,
           your minimum maintenance margin will be calculated according to the new leverage
