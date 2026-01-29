@@ -147,14 +147,21 @@ export class ConfigManager {
   }
 
   /**
-   * 获取有效的 accessToken，自动处理获取和刷新
-   * @param forceRefresh 是否强制刷新
-   * @returns Promise<string | null> 有效的 accessToken 或 null
+   * 获取当前存储的 accessToken（不会自动刷新）
+   * @returns Promise<string | null> 当前的 accessToken 或 null
    */
+  async getAccessToken(): Promise<string | null> {
+    return this.accessToken ?? null;
+  }
 
+  /**
+   * 主动刷新 accessToken（需要前端明确调用）
+   * @param forceRefresh 是否强制刷新
+   * @returns Promise<string | null> 刷新后的 accessToken 或 null
+   */
   private _getAccessTokenQueue: Array<GetAccessTokenQueueItem> = [];
   private _isGettingAccessToken = false;
-  async getAccessToken(forceRefresh: boolean = false): Promise<string | null> {
+  async refreshAccessToken(forceRefresh: boolean = false): Promise<string | null> {
     return new Promise((resolve, reject) => {
       this._getAccessTokenQueue.push({
         resolve,
@@ -172,7 +179,7 @@ export class ConfigManager {
     this._isGettingAccessToken = true;
     const item = this._getAccessTokenQueue.shift();
     if (item) {
-      this._getAccessToken(item.forceRefresh)
+      this._refreshAccessToken(item.forceRefresh)
         .then(item.resolve)
         .catch(item.reject)
         .finally(() => {
@@ -186,7 +193,7 @@ export class ConfigManager {
     }
   }
 
-  private async _getAccessToken(
+  private async _refreshAccessToken(
     forceRefresh: boolean = false
   ): Promise<string | null> {
     // 如果当前 token 有效且不需要强制刷新，直接返回
@@ -202,7 +209,7 @@ export class ConfigManager {
     }
 
     try {
-      console.log("Automatically fetching accessToken...");
+      console.log("Manually refreshing accessToken...");
 
       // 调用前端提供的方法获取新的 token
       const response = (await this.config.getAccessToken()) ?? {
@@ -210,7 +217,6 @@ export class ConfigManager {
         expireAt: 0,
       };
 
-      // return response.accessToken;
       if (response && response.accessToken) {
         // expireAt 是到期时间戳，需要转换为有效期秒数
         let expiryInSeconds = 3600; // 默认1小时
@@ -226,7 +232,7 @@ export class ConfigManager {
         }
 
         this.setAccessToken(response.accessToken, expiryInSeconds);
-        console.log("✅ AccessToken fetched and stored successfully", {
+        console.log("✅ AccessToken refreshed and stored successfully", {
           expiryInSeconds,
           expireAt: response.expireAt,
         });
@@ -236,7 +242,7 @@ export class ConfigManager {
         return null;
       }
     } catch (error) {
-      console.error("❌ Failed to fetch accessToken:", error);
+      console.error("❌ Failed to refresh accessToken:", error);
       return null;
     }
   }
