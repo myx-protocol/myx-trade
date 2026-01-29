@@ -56,6 +56,10 @@ export const TradeSelect = ({
           PaperProps: {
             sx: {
               backgroundColor: '#202129 !important',
+              '& .MuiList-root': {
+                paddingTop: 0,
+                paddingBottom: 0,
+              },
               '& .MuiMenuItem-root': {
                 display: 'flex',
                 alignItems: 'center',
