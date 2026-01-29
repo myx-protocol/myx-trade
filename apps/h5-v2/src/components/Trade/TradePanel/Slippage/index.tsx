@@ -5,6 +5,7 @@ import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import useGlobalStore from '@/store/globalStore'
 import { tradePubSub } from '@/utils/pubsub'
 import type { MarketDetailResponse } from '@myx-trade/sdk'
+import { formatNumber } from '@/utils/number'
 
 export const Slippage = ({
   defaultSlippage,
@@ -50,11 +51,19 @@ export const Slippage = ({
           className="rounded-[6px] bg-[#18191F] px-[10px] py-[8px] text-[12px] font-medium text-[#CED1D9]"
           onClick={() => setOpen(true)}
         >
-          <p>{slippageDisplay ? slippageDisplay * 100 : '--'}%</p>
+          <p>
+            {slippageDisplay
+              ? `${formatNumber(slippageDisplay * 100, { decimals: 4 })}%`
+              : `${formatNumber(defaultSlippage * 100, { decimals: 4 })}%`}
+          </p>
         </div>
       ) : (
         <div onClick={() => setOpen(true)}>
-          <p>{slippageDisplay ? slippageDisplay * 100 : '--'}%</p>
+          <p>
+            {slippageDisplay
+              ? `${formatNumber(slippageDisplay * 100, { decimals: 4 })}%`
+              : `${formatNumber(defaultSlippage * 100, { decimals: 4 })}%`}
+          </p>
         </div>
       )}
       <SlippageDialog
