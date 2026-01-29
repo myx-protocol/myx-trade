@@ -21,6 +21,7 @@ export enum AppealReconsiderationType {
   PlatformRevoked = 7,
   ReconsiderationVoting = 8,
   AppealRevert = 9,
+  NotAppealFailed = 10
 }
 
 export enum AppealStage {
