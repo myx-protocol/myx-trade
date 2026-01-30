@@ -4,35 +4,9 @@ import { Trans } from '@lingui/react/macro'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Address } from '@/components/Address.tsx'
 import dayjs from 'dayjs'
-import { decimalToPercent, formatNumber } from '@/utils/number.ts'
-import Security from '@/components/Icon/set/Security.tsx'
+import { formatNumber } from '@/utils/number.ts'
 import { useSecurityInfo } from '@/api'
-import type { ReactNode } from 'react'
-import Danger from '@/components/Icon/set/Danger.tsx'
-import Big from 'big.js'
 import { SafeList } from '@/components/SafeList'
-
-const Yes = ({ children = <Trans>Yes</Trans> }: { children?: ReactNode }) => {
-  return (
-    <span className={'flex items-center gap-[6px] text-[12px] font-[400]'}>
-      <span>{children}</span>
-      <span className={'text-green'}>
-        <Security size={12} />
-      </span>
-    </span>
-  )
-}
-
-const No = ({ children = <Trans>No</Trans> }: { children?: ReactNode }) => {
-  return (
-    <span className={'flex items-center gap-[6px] text-[12px] font-[400]'}>
-      <span>{children}</span>
-      <span className={'text-wrong'}>
-        <Danger size={12} />
-      </span>
-    </span>
-  )
-}
 
 const SecurityInfo = () => {
   const { baseLpDetail } = usePoolContext()
