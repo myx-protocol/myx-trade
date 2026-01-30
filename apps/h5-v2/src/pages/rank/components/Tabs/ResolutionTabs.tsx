@@ -21,6 +21,7 @@ export const Tab = styled(MuiTab)({
   minHeight: 'auto',
   minWidth: 'auto',
   borderRadius: '500px',
+  textTransform: 'none',
   '&.Mui-selected': {
     color: '#101114',
     backgroundColor: '#fff',

@@ -17,6 +17,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useDebounceFn, useMount, useUnmount, useUpdateEffect } from 'ahooks'
 import { useNavigate } from 'react-router-dom'
+import Big from 'big.js'
 
 const previewLimit = 3
 
@@ -115,58 +116,27 @@ export const AllList = () => {
   return (
     <div className="flex flex-[1_1_0%] flex-col gap-[12px] overflow-y-auto">
       {/* contract list */}
-      <div>
-        <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
-          <Trans>合约</Trans>
-        </p>
-        <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
-          {/* pair */}
-          <div className="w-[210px]">
-            <span>{t`交易对`}</span>
-          </div>
-          {/* change 24h */}
-          <div className="flex w-[103px] justify-end">
-            <span>{t`最新价/24h涨跌幅`}</span>
-          </div>
-        </div>
+      {Big(searchResult?.contractInfo.list?.length || 0).gt(0) && (
         <div>
-          {futuresList?.map((item) => (
-            <FuturesListDataRow
-              key={`futures-${item.chainId}-${item.poolId}`}
-              item={item}
-              onItemClick={toTradePage}
-            />
-          ))}
-        </div>
-        <div className="px-[12px] py-[12px] leading-[1]">
-          <span
-            className="text-[12px] font-medium text-[#00E3A5]"
-            role="button"
-            onClick={() => setSearchTab(SearchTypeEnum.Contract)}
-          >{t`查看所有结果(${searchResult.contractInfo?.total || '0'})`}</span>
-        </div>
-      </div>
-
-      {/* cook list */}
-      <div>
-        <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
-          <Trans>Cook</Trans>
-        </p>
-        <div>
+          <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
+            <Trans>合约</Trans>
+          </p>
           <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
+            {/* pair */}
             <div className="w-[210px]">
               <span>{t`交易对`}</span>
             </div>
+            {/* change 24h */}
             <div className="flex w-[103px] justify-end">
               <span>{t`最新价/24h涨跌幅`}</span>
             </div>
           </div>
           <div>
-            {searchResult?.cookInfo.list?.slice(0, previewLimit).map((item) => (
-              <CookListDataRow
-                key={`cook-${item.chainId}-${item.poolId}`}
+            {futuresList?.map((item) => (
+              <FuturesListDataRow
+                key={`futures-${item.chainId}-${item.poolId}`}
                 item={item}
-                onItemClick={toCookPage}
+                onItemClick={toTradePage}
               />
             ))}
           </div>
@@ -174,41 +144,79 @@ export const AllList = () => {
             <span
               className="text-[12px] font-medium text-[#00E3A5]"
               role="button"
-              onClick={() => setSearchTab(SearchTypeEnum.Cook)}
-            >{t`查看所有结果(${searchResult.cookInfo?.total || '0'})`}</span>
+              onClick={() => setSearchTab(SearchTypeEnum.Contract)}
+            >{t`查看所有结果(${searchResult.contractInfo?.total || '0'})`}</span>
           </div>
         </div>
-      </div>
-      {/* earn list */}
-      <div>
-        <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
-          <Trans>Earn</Trans>
-        </p>
+      )}
+
+      {/* cook list */}
+      {Big(searchResult?.cookInfo.list?.length || 0).gt(0) && (
         <div>
-          <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
-            <div className="w-[210px]">
-              <span>{t`交易对`}</span>
+          <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
+            <Trans>Cook</Trans>
+          </p>
+          <div>
+            <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
+              <div className="w-[210px]">
+                <span>{t`交易对`}</span>
+              </div>
+              <div className="flex w-[103px] justify-end">
+                <span>{t`最新价/24h涨跌幅`}</span>
+              </div>
             </div>
-            <div className="flex w-[103px] justify-end">
-              <span>{t`APR`}</span>
+            <div>
+              {searchResult?.cookInfo.list?.slice(0, previewLimit).map((item) => (
+                <CookListDataRow
+                  key={`cook-${item.chainId}-${item.poolId}`}
+                  item={item}
+                  onItemClick={toCookPage}
+                />
+              ))}
+            </div>
+            <div className="px-[12px] py-[12px] leading-[1]">
+              <span
+                className="text-[12px] font-medium text-[#00E3A5]"
+                role="button"
+                onClick={() => setSearchTab(SearchTypeEnum.Cook)}
+              >{t`查看所有结果(${searchResult.cookInfo?.total || '0'})`}</span>
             </div>
           </div>
-          {searchResult?.earnInfo.list?.slice(0, previewLimit).map((item) => (
-            <EarnListDataRow
-              key={`earn-${item.chainId}-${item.poolId}`}
-              item={item}
-              onItemClick={toEarnPage}
-            />
-          ))}
         </div>
-        <div className="px-[12px] py-[12px] leading-[1]">
-          <span
-            className="text-[12px] font-medium text-[#00E3A5]"
-            role="button"
-            onClick={() => setSearchTab(SearchTypeEnum.Earn)}
-          >{t`查看所有结果(${searchResult.earnInfo?.total || '0'})`}</span>
+      )}
+
+      {/* earn list */}
+      {Big(searchResult?.earnInfo.list?.length || 0).gt(0) && (
+        <div>
+          <p className="mb-[8px] px-[12px] text-[14px] leading-[14px] font-medium text-[#CED1D9]">
+            <Trans>Earn</Trans>
+          </p>
+          <div>
+            <div className="flex justify-between pt-[8px] pb-[4px] text-[12px] font-normal text-[#6D7180]">
+              <div className="w-[210px]">
+                <span>{t`交易对`}</span>
+              </div>
+              <div className="flex w-[103px] justify-end">
+                <span>{t`APR`}</span>
+              </div>
+            </div>
+            {searchResult?.earnInfo.list?.slice(0, previewLimit).map((item) => (
+              <EarnListDataRow
+                key={`earn-${item.chainId}-${item.poolId}`}
+                item={item}
+                onItemClick={toEarnPage}
+              />
+            ))}
+          </div>
+          <div className="px-[12px] py-[12px] leading-[1]">
+            <span
+              className="text-[12px] font-medium text-[#00E3A5]"
+              role="button"
+              onClick={() => setSearchTab(SearchTypeEnum.Earn)}
+            >{t`查看所有结果(${searchResult.earnInfo?.total || '0'})`}</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
