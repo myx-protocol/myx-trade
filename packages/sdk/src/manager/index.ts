@@ -147,9 +147,17 @@ export class MyxClient {
   }
 
   /**
-   * get access token
+   * 获取当前存储的 access token（不会自动刷新）
    */
   public async getAccessToken() {
     return await this.configManager.getAccessToken();
+  }
+
+  /**
+   * 主动刷新 access token（需要前端明确调用）
+   * @param forceRefresh 是否强制刷新
+   */
+  public async refreshAccessToken(forceRefresh: boolean = false) {
+    return await this.configManager.refreshAccessToken(forceRefresh);
   }
 }
