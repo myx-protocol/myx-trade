@@ -239,7 +239,11 @@ export const TpslFormGroup = ({
                     .plus(averagePnl)
                     .toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Change) {
-                  const radio = parseBigNumber(1).plus(parseBigNumber(floatValue ?? 0).div(100))
+                  const rateRatio = parseBigNumber(floatValue ?? 0).div(100)
+                  const radio =
+                    position.direction === Direction.LONG
+                      ? parseBigNumber(1).plus(rateRatio)
+                      : parseBigNumber(1).minus(rateRatio)
                   calculatedTargetPrice = parseBigNumber(position.entryPrice).mul(radio).toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
                   const totalPnl = parseBigNumber(floatValue ?? 0)
