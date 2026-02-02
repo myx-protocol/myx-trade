@@ -174,6 +174,7 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
             placeholder={t`触发价格`}
             autoFocus={type === 'tp'}
             value={targetPrice}
+            inputMode="text"
             allowLeadingZeros
             onValueChange={({ value }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
