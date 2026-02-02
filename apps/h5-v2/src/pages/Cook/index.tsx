@@ -21,7 +21,7 @@ const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
   const [cookType, setCookType] = useState<CookListType>(CookListType.Sniper)
   const [chainId, setChainId] = useState<number | undefined>(undefined)
-  const [interval, setInterval] = useState<Interval | undefined>(Interval['10m'])
+  const [interval, setInterval] = useState<Interval | undefined>(Interval["24h"])
   const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Eligible)
 
   const [age, setAge] = useState<[string, string]>(['', ''])
