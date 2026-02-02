@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, Button } from '@mui/material'
 import { Step } from '@/pages/Market/components/steps.tsx'
 import { Trans } from '@lingui/react/macro'
-import Container from '@/components/Container.tsx'
 import { TokenSelect } from '@/pages/Market/components/TokenSelect.tsx'
 import { ConfirmToken } from '@/pages/Market/components/confirmToken.tsx'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -25,15 +24,17 @@ import { showErrorToast } from '@/config/error'
 import { TitleBar } from '@/components/TitleBar.tsx'
 
 const Market = () => {
+  const navigate = useNavigate()
   const { markets: Markets } = useMyxSdkClient()
   const { chainId: curChainId } = useWalletConnection()
   const [loading, setLoading] = useState(false)
   // const { address: account } = useWalletConnection()
-  const navigate = useNavigate()
+
   const { chainId, address } = useParams()
   const [step, setStep] = useState<number>(-1)
   const [token, setToken] = useState<Asset>()
   const [poolId, setPoolId] = useState<string>()
+  const [marketIndex, setMarketIndex] = useState<number>(0)
   const onAction = useWalletActions()
 
   // const [quote, setQuote] = useState<Token>()
@@ -45,9 +46,9 @@ const Market = () => {
   }, [chainId, Markets])
 
   const marketInfo = useMemo(() => {
-    const _market = markets?.[0]
+    const _market = markets?.[marketIndex]
     return _market
-  }, [markets])
+  }, [markets, marketIndex])
 
   // todo test
   const quoteToken = useMemo(() => {
@@ -140,16 +141,14 @@ const Market = () => {
 
   const onNext = useCallback(async () => {
     try {
-      setStep(2)
-      return
-      /* if (!chainId || !marketInfo) return
+      if (!chainId || !marketInfo) return
       const checked = await onAction()
       if (!checked) return
       // check marketId.
       if (token?.address) {
         // const marketId = marketInfo.marketId
         if (token.address === quoteToken) {
-          toast.error({ title: t`Invalid token address` })
+          showErrorToast(t`Invalid token address`)
           return
         }
 
@@ -178,15 +177,16 @@ const Market = () => {
             baseToken: token.address,
             marketId: marketInfo?.marketId,
           })
-          if (poolId) {
+          if (poolId && poolId.startsWith('0x')) {
             setPoolId(poolId)
             setStep(2)
           }
         }
-      }*/
+      }
     } catch (e) {
       console.error(e)
       if (e) {
+        // toast.error(JSON.stringify(e))
         showErrorToast(e)
       }
     }
@@ -240,7 +240,17 @@ const Market = () => {
       )}
       {step > 0 && (
         <TokenContext.Provider
-          value={{ quote, token, setToken, market: marketInfo, poolId, setPoolId }}
+          value={{
+            quote,
+            token,
+            setToken,
+            markets,
+            market: marketInfo,
+            poolId,
+            setPoolId,
+            marketIndex,
+            setMarketIndex,
+          }}
         >
           <div className={'flex w-full gap-[48px] px-[16px] pt-[24px]'}>
             {/*<Box className={'w-[360px] min-w-[360px]'}>*/}
