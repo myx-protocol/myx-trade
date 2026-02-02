@@ -84,10 +84,10 @@ export const getQuoteLpList = async (
 // todo api header
 export const getACQuoteLpList = async (
   account: Address,
-  accessToken: string,
+  accessToken: string = '',
   params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
-  if (!accessToken || !account) return await getQuoteLpList(params)
+  if (!account) return await getQuoteLpList(params)
   return await http.get<QuotePoolResponse>(
     `${baseUrl}/openapi/gateway/scan/market/ac-lp-quote${addQueryParams(params)}`,
     undefined,
@@ -136,7 +136,7 @@ export const getQuoteTokenTop = async (params: {
 // todo api header
 export const getLpAssets = async (
   account: string,
-  accessToken: string,
+  accessToken: string = '',
   params: LpAssetsRequest,
 ) => {
   return await http.get<LpAssetsResponse>(
