@@ -63,7 +63,7 @@ export const PriceInfo = () => {
   if (tab !== PriceTabEnum.Price) return null
 
   return (
-    <div className="mb-[12px] flex items-center justify-between px-[16px]">
+    <div className="mt-[12px] flex items-center justify-between px-[16px]">
       <div>
         <Price className="text-[28px] font-bold" value={tickerData?.price || 0} />
         <p className="text-[12px] leading-[1.5] font-medium text-[#CED1D9]">

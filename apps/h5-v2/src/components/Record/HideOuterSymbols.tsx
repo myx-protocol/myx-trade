@@ -6,6 +6,7 @@ import { usePositionStore } from '@/store/position/createStore'
 import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { t } from '@lingui/core/macro'
+import allChainIcon from '@/assets/icon/allChain.svg'
 
 interface HideOuterSymbolsProps {
   checked: boolean
@@ -40,6 +41,7 @@ export const HideOuterSymbols = ({ checked, onChange, right }: HideOuterSymbolsP
             {
               label: <span className="text-[12px] text-[#FFFFFF]">{t`All Chains`}</span>,
               value: '0',
+              icon: <img src={allChainIcon} alt="allChain" className="h-[14px] w-[14px]" />,
             },
             ...CHAIN_LIST.map((chain) => ({
               label: <span className="text-[12px] text-[#FFFFFF]">{chain.label}</span>,
