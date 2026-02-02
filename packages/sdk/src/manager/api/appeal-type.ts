@@ -191,6 +191,8 @@ export interface AppealReconsiderationDetail {
   appealBondState: AppealClaimStatusEnum; // 反诉保证金状态
   appealBondClaimTime?: number
   txHash: string
+  appealStartTime: number
+  appealEndTime: number
 }
 
 export interface AppealReimbursementParams {
