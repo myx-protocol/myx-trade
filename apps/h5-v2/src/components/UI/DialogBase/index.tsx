@@ -48,19 +48,37 @@ export const DialogBase = ({
         sx={{
           padding: '0',
           position: 'relative',
+          minHeight: '16px',
         }}
       >
         {title && <p className="w-full text-[20px] leading-[1] font-bold text-[white]">{title}</p>}
         <IconButton
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClose()
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onClose()
+          }}
           sx={{
             position: 'absolute',
-            right: 0,
-            top: 0,
-            padding: 0,
+            right: '-8px',
+            top: '-8px',
+            padding: '8px',
+            minWidth: '40px',
+            minHeight: '40px',
             color: '#848E9C',
+            cursor: 'pointer',
+            zIndex: 1000,
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'manipulation',
             '&:hover': {
               backgroundColor: 'transparent',
+            },
+            '&:active': {
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
             },
           }}
           disableRipple

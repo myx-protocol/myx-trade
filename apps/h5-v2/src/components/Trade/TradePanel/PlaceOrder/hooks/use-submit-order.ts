@@ -227,22 +227,24 @@ export const useSubmitOrder = () => {
           formatSlSize = formatSize
           if (slType === TpSlTypeEnum.Change) {
             // 按用户输入的百分比计算，根据方向调整
-            // 做多：止损时价格下跌 price * (1 + change%) (change 为负)
-            // 做空：止损时价格上涨 price * (1 - change%) (change 为负，所以实际是 1 + |change|)
-            const changeRatio = parseBigNumber(slValue).div(100)
+            // 做多：止损时价格下跌 price * (1 - |change%|)
+            // 做空：止损时价格上涨 price * (1 + |change%|)
+            // 注意：用户可能输入正数或负数，都取绝对值处理
+            const changeRatio = parseBigNumber(slValue).abs().div(100)
             const radio =
               direction === Direction.LONG
-                ? parseBigNumber(1).plus(changeRatio)
-                : parseBigNumber(1).minus(changeRatio)
+                ? parseBigNumber(1).minus(changeRatio)
+                : parseBigNumber(1).plus(changeRatio)
             const targetPrice = parseBigNumber(price).mul(radio)
             formatSlValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()
               : '0'
           } else if (slType === TpSlTypeEnum.ROI) {
             // 按用户输入的 ROI 计算，根据方向调整
-            // 做多：price + averagePnl (averagePnl 为负)
-            // 做空：price - averagePnl (averagePnl 为负，所以实际是 price + |averagePnl|)
-            const radio = parseBigNumber(slValue).div(100)
+            // 做多：price - |averagePnl|
+            // 做空：price + |averagePnl|
+            // 注意：用户可能输入正数或负数，都取绝对值处理
+            const radio = parseBigNumber(slValue).abs().div(100)
             const totalPnl = parseBigNumber(
               ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
             ).mul(radio)
@@ -250,8 +252,8 @@ export const useSubmitOrder = () => {
             const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
             const targetPrice =
               direction === Direction.LONG
-                ? parseBigNumber(price).plus(averagePnl)
-                : parseBigNumber(price).minus(averagePnl)
+                ? parseBigNumber(price).minus(averagePnl)
+                : parseBigNumber(price).plus(averagePnl)
             formatSlValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()
               : '0'

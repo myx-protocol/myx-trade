@@ -358,7 +358,7 @@ export const PlaceOrderConfirmDialog = () => {
           </p>
         </div>
         {/* order info  */}
-        <div className="rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
+        <div className="mt-[12px] rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
           {/* top */}
           <div className="flex flex-col gap-[16px] border-b-[1px] border-[#31333D] pb-[20px]">
             <FlexRowLayout

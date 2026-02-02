@@ -77,8 +77,8 @@ const Price = () => {
   return (
     <div>
       <Header />
-      <PriceInfo />
       <Tabs />
+      <PriceInfo />
       {tab === PriceTabEnum.Price ? <PriceContent /> : <></>}
       {tab === PriceTabEnum.Pool ? <PoolContent /> : <></>}
       {tab === PriceTabEnum.Info ? <InfoContent /> : <></>}

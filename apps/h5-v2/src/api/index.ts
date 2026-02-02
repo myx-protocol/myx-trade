@@ -94,6 +94,10 @@ interface GetSecurityInfoResponse {
   is_proxy: '0' | '1' // is proxy
 }
 
+export const isValidSafeItem = (value: any): boolean => {
+  return value !== undefined && value !== null && value !== ''
+}
+
 export const getSecurityInfo = async (
   params: GetSecurityInfoParams,
 ): Promise<ApiResponse<GetSecurityInfoResponse>> =>
@@ -107,7 +111,7 @@ export const useSecurityInfo = (params: GetSecurityInfoParams) => {
       let isSafe = true
       const validKeys = Object.keys(res.data).filter((key) => {
         const value = res.data[key as keyof GetSecurityInfoResponse]
-        return value !== undefined && value !== null && value !== ''
+        return isValidSafeItem(value)
       })
       const total = validKeys.length
       let dangerCount = 0

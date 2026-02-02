@@ -3,7 +3,28 @@ import { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import path from 'path'
 
+const PUBLISH_BRANCH = 'release/sdk'
+
 const npmRegistry = 'https://registry.npmjs.org';
+
+const checkBranch = () => {
+    try {
+        const currentBranch = execSync('git rev-parse --abbrev-ref HEAD', {
+            encoding: 'utf-8',
+        }).trim();
+
+        if (currentBranch !== PUBLISH_BRANCH) {
+            console.error(`🚨 错误: 当前分支 "${currentBranch}" 与发布分支 "${PUBLISH_BRANCH}" 不一致！`);
+            console.error(`请切换到 ${PUBLISH_BRANCH} 分支后再执行发布操作。`);
+            process.exit(1);
+        }
+
+        console.log(`✅ 当前分支检查通过: ${currentBranch}`);
+    } catch (error) {
+        console.error('🚨 检测分支时出错:', error);
+        process.exit(1);
+    }
+}
 
 const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync('git add package.json', {
@@ -14,12 +35,22 @@ const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync(`git commit -m "chore: bump version v${latestVersion}"`, {
         stdio: 'inherit',
     });
-
-    execSync('git push', {
-        stdio: 'inherit',
-    });
+    console.log('✅ 提交 commit 成功！')
     return latestVersion;
 
+}
+
+const pushCommit = () => {
+    try {
+        execSync('git push', {
+            stdio: 'inherit',
+        });
+        console.log('✅ 推送 commit 成功！')
+    } catch (error) {
+        console.error('🚨 推送 commit 失败, 请手动执行 git push', error);
+        return false;
+    }
+    return true;
 }
 
 const updateVersion = (publishType = 'main', versionType = 'patch') => {
@@ -41,6 +72,7 @@ const checkNPMLogined = async () => {
     }
 }
 
+checkBranch();
 
 inquirer.prompt([
     {
@@ -92,19 +124,22 @@ inquirer.prompt([
         });
         console.log('✅ pnpm registry 登录成功！')
     } else {
-        console.log('✅ pnpm registry 无需登录！')
+        console.log('🔄 pnpm registry 无需登录！')
     }
 
     if (publishTag === 'beta') {
-        execSync('pnpm publish --tag beta', {
+        execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
             stdio: 'inherit',
         })
     } else {
-        execSync('pnpm publish', {
+        execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
             stdio: 'inherit',
         })
     }
-
+    const isPushed = pushCommit();
+    if (!isPushed) {
+        console.log('🚨 推送 commit 失败, 请手动执行 git push')
+    }
     console.log('✅ 发布成功！')
     console.log(`🚀 最新版本: v${latestVersion}`)
 })

@@ -14,9 +14,9 @@ const BETA_DEFAULT_PRICE_PATH =
 
 // Prod 环境配置
 const PROD_DEFAULT_PAIR_PATH =
-  '/trade/56/0x7176a4ebd00b33db90b6f5cf97e957979fba0d6f66db4ec7d818fae0218ba9b8'
+  '/trade/56/0xb899a1f1a956730ebe47600cfc64751b8c628a4b1d7dbe0b51d73b59519c0873'
 const PROD_DEFAULT_PRICE_PATH =
-  '/price/56/0x7176a4ebd00b33db90b6f5cf97e957979fba0d6f66db4ec7d818fae0218ba9b8'
+  '/price/56/0xb899a1f1a956730ebe47600cfc64751b8c628a4b1d7dbe0b51d73b59519c0873'
 
 // 根据环境返回不同的配置
 export const DEFAULT_PAIR_PATH = isProdMode()

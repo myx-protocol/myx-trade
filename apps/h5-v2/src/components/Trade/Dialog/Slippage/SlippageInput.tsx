@@ -29,10 +29,12 @@ export const SlippageInput = ({
         <NumberInputPrimitive
           suffix="%"
           max={maxSlippage}
+          min={0.01}
           className="text-right text-[12px] font-medium"
           value={value.toString()}
           onValueChange={onValueChange}
-          placeholder="1%-10%"
+          decimalScale={2}
+          placeholder="0.01%-10%"
         />
       </div>
     </div>
