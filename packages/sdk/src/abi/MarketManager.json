@@ -293,6 +293,28 @@
             "name": "maxForwardFee"
           }
         ]
+      },
+      {
+        "type": "tuple",
+        "name": "quoteParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "priceContract"
+          },
+          {
+            "type": "bool",
+            "name": "applyExchangeRate"
+          },
+          {
+            "type": "bool",
+            "name": "isUsdQuote"
+          },
+          {
+            "type": "uint16",
+            "name": "minDeviationRatio"
+          }
+        ]
       }
     ],
     "outputs": []
@@ -578,6 +600,41 @@
       {
         "type": "uint128",
         "name": "_forwardFee"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateMarketQuoteConfiguration",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "tuple",
+        "name": "quoteParams",
+        "components": [
+          {
+            "type": "address",
+            "name": "priceContract"
+          },
+          {
+            "type": "bool",
+            "name": "applyExchangeRate"
+          },
+          {
+            "type": "bool",
+            "name": "isUsdQuote"
+          },
+          {
+            "type": "uint16",
+            "name": "minDeviationRatio"
+          }
+        ]
       }
     ],
     "outputs": []

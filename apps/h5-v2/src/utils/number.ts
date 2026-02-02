@@ -20,6 +20,14 @@ export const getSuperDecimalScale = (value: number) => {
   return firstNonZeroIndex === -1 ? 6 : firstNonZeroIndex + 1 + 4
 }
 
+const stripTrailingDecimalZeros = (s: string): string => {
+  const dotIndex = s.indexOf('.')
+  if (dotIndex === -1) return s
+  const intPart = s.slice(0, dotIndex)
+  const decPart = s.slice(dotIndex + 1).replace(/0+$/, '')
+  return decPart ? `${intPart}.${decPart}` : intPart
+}
+
 const formatSuperDecimal = (
   value: number,
   options?: Pick<NumberFormatOptions, 'showSign'>,
@@ -183,6 +191,8 @@ export const formatNumber = (num?: BigSource, options: NumberFormatOptions = {})
       result += '.' + decimalPart
     }
   }
+
+  result = stripTrailingDecimalZeros(result)
 
   // 添加负号
   if (isNegative) {

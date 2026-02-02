@@ -19,7 +19,7 @@ const PositionActionButton = ({
   } = useTradePanelStore()
   return (
     <div
-      className={`w-[calc(50%-6px)] p-[12px] text-center text-[12px] ${positionAction === value ? 'bg-[transparent]' : 'bg-[#18191F]'} leading-[1] font-medium ${positionAction === value ? 'text-[#FFFFFF]' : 'text-[#848E9C]'}`}
+      className={`w-[50%] p-[12px] text-center text-[12px] ${positionAction === value ? 'bg-[transparent]' : 'bg-[#18191F]'} leading-[1] font-medium ${positionAction === value ? 'text-[#FFFFFF]' : 'text-[#848E9C]'}`}
       role="button"
       style={{
         clipPath:
@@ -70,7 +70,7 @@ export const PositionAction = () => {
         }}
       ></div>
       {/* tabs */}
-      <div className="absolute top-0 left-0 flex h-full w-full justify-between gap-[12px]">
+      <div className="absolute top-0 left-0 flex h-full w-full justify-between">
         <PositionActionButton value={PositionActionEnum.OPEN}>
           <Trans>Open</Trans>
         </PositionActionButton>

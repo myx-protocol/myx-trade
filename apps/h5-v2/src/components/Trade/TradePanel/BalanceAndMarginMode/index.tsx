@@ -162,13 +162,9 @@ export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }
               paddingRight: 0,
               width: '390px',
             },
-            '& .MuiDialogTitle-root': {
-              paddingLeft: '20px',
-              marginRight: '20px',
-            },
           }}
         >
-          <div className="mt-[16px] flex flex-col gap-[14px] px-[16px] text-[12px] font-medium text-white">
+          <div className="mt-[16px] flex flex-col gap-[14px] text-[12px] font-medium text-white">
             <FlexRowLayout
               left={
                 <Tooltips
@@ -381,7 +377,6 @@ const MarginMode = () => {
       className="flex items-center text-[12px] leading-[1] font-medium"
       role="button"
       onClick={() => {
-        console.log('autoMarginMode-->', autoMarginMode)
         setAutoMarginMode(!autoMarginMode)
       }}
     >

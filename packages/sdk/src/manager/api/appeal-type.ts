@@ -20,6 +20,7 @@ export enum AppealReconsiderationType {
   PlatformRuling = 6,
   PlatformRevoked = 7,
   ReconsiderationVoting = 8,
+  AppealRevert = 9,
 }
 
 export enum AppealStage {
@@ -189,6 +190,9 @@ export interface AppealReconsiderationDetail {
   appealStage: AppealStage; // 反诉阶段-与当前用户绑定
   appealBondState: AppealClaimStatusEnum; // 反诉保证金状态
   appealBondClaimTime?: number
+  txHash: string
+  appealStartTime: number
+  appealEndTime: number
 }
 
 export interface AppealReimbursementParams {
@@ -213,6 +217,7 @@ export interface AppealReimbursementItem {
   claimTime: number;
   expireTime: number;
   createTime: number;
+  proof: string
 }
 
 export interface GetAppealNodeVoteListParams {

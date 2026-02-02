@@ -71,12 +71,12 @@ export const AccountInfo = () => {
             <p className="truncate text-[28px] font-bold">
               {isLoading
                 ? '--'
-                : `${formatNumber(accountBalance ?? '0', {
+                : `$${formatNumber(accountBalance ?? '0', {
                     showUnit: false,
                   })}`}
             </p>
           </Tooltips>
-          <p className="ml-[4px] shrink-0 text-[14px] leading-none font-bold">USDC</p>
+          {/* <p className="ml-[4px] shrink-0 text-[14px] leading-none font-bold">USDC</p> */}
         </div>
 
         <PrimaryButton

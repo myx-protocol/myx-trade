@@ -64,6 +64,11 @@
   },
   {
     "type": "error",
+    "name": "InvalidParameter",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "MerkleTreeVerificationFailed",
     "inputs": [
       {
@@ -132,6 +137,11 @@
   },
   {
     "type": "error",
+    "name": "TreeAlreadySet",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "UUPSUnauthorizedCallContext",
     "inputs": []
   },
@@ -160,6 +170,43 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "ReimbursementClaimExpired",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "baseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quoteAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "ReimbursementClaimed",
     "inputs": [
       {
@@ -170,6 +217,16 @@
       {
         "type": "address",
         "name": "user",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "baseToken",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "quoteToken",
         "indexed": false
       },
       {
@@ -260,6 +317,23 @@
         "type": "string"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "claimExpiredCases",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256[]",
+        "name": "caseIds"
+      },
+      {
+        "type": "address",
+        "name": "receiver"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -455,6 +529,10 @@
             "name": "expireTime"
           }
         ]
+      },
+      {
+        "type": "bytes32[]",
+        "name": "zeroMerkleProof"
       }
     ],
     "outputs": []
