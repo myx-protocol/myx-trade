@@ -28,6 +28,17 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
     if (parseBigNumber(longSize).eq(0)) {
       return '0'
     }
+
+    if (amountUnit === AmountUnitEnum.BASE) {
+      if (parseBigNumber(longSize).gt(parseBigNumber(maxOpenLong.baseAmount))) {
+        return `${displayAmount(maxOpenLong.baseAmount)} ${symbolInfo?.baseSymbol}`
+      }
+    } else {
+      if (parseBigNumber(longSize).gt(parseBigNumber(maxOpenLong.quoteAmount))) {
+        return `${displayAmount(maxOpenLong.quoteAmount)} ${symbolInfo?.quoteSymbol}`
+      }
+    }
+
     return `${displayAmount(longSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
   }, [longSize, amountUnit, symbolInfo, showOrderSize])
 
@@ -36,6 +47,17 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
     if (parseBigNumber(shortSize).eq(0)) {
       return '0'
     }
+
+    if (amountUnit === AmountUnitEnum.BASE) {
+      if (parseBigNumber(shortSize).gt(parseBigNumber(maxOpenShort.baseAmount))) {
+        return `${displayAmount(maxOpenShort.baseAmount)} ${symbolInfo?.baseSymbol}`
+      }
+    } else {
+      if (parseBigNumber(shortSize).gt(parseBigNumber(maxOpenShort.quoteAmount))) {
+        return `${displayAmount(maxOpenShort.quoteAmount)} ${symbolInfo?.quoteSymbol}`
+      }
+    }
+
     return `${displayAmount(shortSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
   }, [shortSize, amountUnit, symbolInfo, showOrderSize])
 
