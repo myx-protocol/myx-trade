@@ -44,12 +44,12 @@ export const Positions = ({ className = '' }: { className?: string }) => {
 
   const infiniteQuery = useInfiniteQuery<{ list: Vault[]; nextCursor?: string }>({
     queryKey: ['quotePositionList', account, accessToken, chainId, interval],
-    enabled: !!account && !!accessToken,
+    enabled: !!account,
     initialPageParam: undefined,
     queryFn: async ({ pageParam }) => {
       const cursor = pageParam as undefined | string
 
-      const result = await getACQuoteLpList(account as Address, accessToken!, {
+      const result = await getACQuoteLpList(account as Address, accessToken || '', {
         timeInterval: interval,
         chainId,
         sortField,
