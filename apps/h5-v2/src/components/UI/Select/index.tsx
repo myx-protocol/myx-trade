@@ -35,14 +35,14 @@ export const Select = ({
         },
         '& .MuiSelect-select': {
           padding: isSingle ? '0' : '8px 12px',
-          paddingRight: '4px !important',
+          paddingRight: '0px !important',
           display: 'flex !important',
           alignItems: 'center !important',
           whiteSpace: 'nowrap !important',
           overflow: 'hidden !important',
         },
         '& .MuiSelect-icon': {
-          right: '4px',
+          right: '0px',
         },
         ...sx,
       }}
@@ -53,6 +53,10 @@ export const Select = ({
         PaperProps: {
           sx: {
             backgroundColor: '#202129 !important',
+            '& .MuiList-root': {
+              paddingTop: 0,
+              paddingBottom: 0,
+            },
             '& .MuiMenuItem-root': {
               display: 'flex',
               alignItems: 'center',
@@ -72,7 +76,7 @@ export const Select = ({
         <MenuItem
           key={option.value}
           value={option.value}
-          className="flex items-center px-[12px] py-[8px] text-[12px]"
+          className="flex items-center px-[6px] py-[8px] text-[12px]"
         >
           {option.icon && (
             <>
@@ -83,7 +87,7 @@ export const Select = ({
               )}
             </>
           )}
-          <div className="px-[12px] py-[8px] text-[14px] text-[#FFFFFF]">{option.label}</div>
+          <div className="px-[4px] py-[2px] text-[12px] text-[#FFFFFF]">{option.label}</div>
         </MenuItem>
       ))}
     </MuiSelect>

@@ -29,7 +29,7 @@ export const RecordTab = ({ tab, setTab }: { tab: TabType; setTab: (tab: TabType
   }, [tab])
 
   return (
-    <div className="w-full px-[16px]">
+    <div className="w-full border-b border-[#202129] px-[16px]">
       <TradeRecordTabs
         ref={tabsRef}
         variant="scrollable"

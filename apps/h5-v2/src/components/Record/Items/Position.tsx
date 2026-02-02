@@ -146,7 +146,7 @@ export const PositionItem = ({
             <p>
               <Trans>unPnl</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               <RiseFallText value={pnl} />
             </p>
           </div>
@@ -155,7 +155,7 @@ export const PositionItem = ({
             <p>
               <Trans>Roe</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               <RiseFallTextPrecent value={marketPrice ? rate : '--'} />
             </p>
           </div>
@@ -164,7 +164,7 @@ export const PositionItem = ({
             <p>
               <Trans>Margin ratio</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               {marketPrice ? ratio : '--'}%
             </p>
           </div>
@@ -173,7 +173,7 @@ export const PositionItem = ({
             <p>
               <Trans>Size({position.baseSymbol})</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               {formatNumber(position.size, { showUnit: false })}
             </p>
           </div>
@@ -182,7 +182,7 @@ export const PositionItem = ({
             <p>
               <Trans>Entry price</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               {formatNumber(position.entryPrice, { showUnit: false })}
             </p>
           </div>
@@ -191,7 +191,7 @@ export const PositionItem = ({
             <p>
               <Trans>Margin({position.quoteSymbol})</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               {formatNumber(position.collateralAmount, { showUnit: false })}
             </p>
           </div>
@@ -201,7 +201,7 @@ export const PositionItem = ({
               <Trans>Funding fee</Trans>
             </p>
             <p
-              className="mt-[4px] text-[14px] font-medium text-white"
+              className="mt-[4px] text-[13px] font-medium text-white"
               style={{ color: parseBigNumber(fundingFee ?? '0').gt(0) ? '#00E3A5' : '#EC605A' }}
             >
               {formatNumber(fundingFee ?? '0', { showUnit: false })}
@@ -212,7 +212,7 @@ export const PositionItem = ({
             <p>
               <Trans>Liq.Price</Trans>
             </p>
-            <p className="text-warning mt-[4px] text-[14px] font-medium">
+            <p className="text-warning mt-[4px] text-[13px] font-medium">
               {parseBigNumber(liqPrice ?? '0').gt(0)
                 ? formatNumber(liqPrice ?? '0', { showUnit: false })
                 : '--'}
@@ -223,7 +223,7 @@ export const PositionItem = ({
             <p>
               <Trans>Auto TP Price</Trans>
             </p>
-            <p className="mt-[4px] text-[14px] font-medium text-white">
+            <p className="mt-[4px] text-[13px] font-medium text-white">
               {parseBigNumber(position.earlyClosePrice ?? '0').gt(0)
                 ? formatNumber(position.earlyClosePrice ?? '0', { showUnit: false })
                 : '--'}

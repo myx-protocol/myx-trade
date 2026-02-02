@@ -78,8 +78,8 @@ export const useGetOpenAvailable = () => {
       : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
 
     // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
-    const ratio = openSlippage / slipValue
-    const maxOpenByConfigRatio = Math.log(ratio)
+    const ratio = openSlippage / (slipValue ?? 1)
+    const maxOpenByConfigRatio = ratio > 0 ? Math.log(ratio) : 0
     const configTotalRatio = parseBigNumber(1).plus(maxOpenByConfigRatio)
 
     const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
