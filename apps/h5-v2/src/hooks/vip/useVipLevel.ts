@@ -116,8 +116,8 @@ export function useFetchUserVipInfo() {
       },
     ],
     queryFn: async () => {
-      if (!account || !accessToken) return {} as VipInfoType
-      const rs = await fetchVipInfo(account, accessToken)
+      if (!account) return {} as VipInfoType
+      const rs = await fetchVipInfo(account, accessToken || '')
       return rs.data ?? ({} as VipInfoType)
     },
     enabled: !!accessToken && !!account,
