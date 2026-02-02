@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-02 10:09\n"
+"PO-Revision-Date: 2026-02-02 10:48\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -906,7 +905,7 @@ msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "contract runner does not support gas estimation"
-msgstr "contract runner does not support gas estimation"
+msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
@@ -1110,7 +1109,7 @@ msgstr ""
 
 #: src/components/Trade/components/DontShowAgain/index.tsx
 msgid "Dont show again"
-msgstr "Dont show again"
+msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
@@ -1704,7 +1703,7 @@ msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Import seamless key success"
-msgstr "Import seamless key success"
+msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "Inactive"
@@ -1831,7 +1830,7 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
-msgstr "Invalid token address"
+msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAccountNonce(address,uint256)"
@@ -2203,7 +2202,7 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "market is created"
-msgstr "market is created"
+msgstr ""
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -2711,7 +2710,7 @@ msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
-msgstr "Password"
+msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Search.tsx
@@ -3262,7 +3261,7 @@ msgstr ""
 
 #: src/components/Seamless/SelectAccountDialog/index.tsx
 msgid "Select Account"
-msgstr "Select Account"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Select Chain"
@@ -3859,7 +3858,7 @@ msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "Upfront cost exceeds account balance"
-msgstr "Upfront cost exceeds account balance"
+msgstr ""
 
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Upgrade"
@@ -3888,7 +3887,7 @@ msgstr ""
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
-msgstr "User Rejected"
+msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "User who prefer classic DeFi UX"
@@ -4650,3 +4649,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
