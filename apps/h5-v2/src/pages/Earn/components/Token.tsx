@@ -33,7 +33,7 @@ export const Token = ({ token }: { token?: Vault }) => {
           {token ? (
             <>
               <h3 className={'text-[14px] font-[500] text-white'}>{token?.symbol || '--'}</h3>
-              <span className={'text-secondary'}>{token?.name || '--'}</span>
+              <span className={'text-secondary max-w-[6em] truncate'}>{token?.name || '--'}</span>
               {/*<span*/}
               {/*  className={'bg-brand-10 text-green rounded-[2px] px-[6px] py-[4px] text-[10px]'}*/}
               {/*>*/}
