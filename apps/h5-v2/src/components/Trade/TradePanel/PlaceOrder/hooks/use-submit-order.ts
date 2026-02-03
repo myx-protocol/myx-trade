@@ -175,14 +175,8 @@ export const useSubmitOrder = () => {
         if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
           formatTpSize = formatSize
           if (tpType === TpSlTypeEnum.Change) {
-            // 按用户输入的百分比计算，根据方向调整
-            // 做多：盈利时价格上涨 price * (1 + change%)
-            // 做空：盈利时价格下跌 price * (1 - change%)
-            const changeRatio = parseBigNumber(tpValue).div(100)
-            const radio =
-              direction === Direction.LONG
-                ? parseBigNumber(1).plus(changeRatio)
-                : parseBigNumber(1).minus(changeRatio)
+            // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
+            const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
             const targetPrice = parseBigNumber(price).mul(radio)
             formatTpValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()
@@ -226,15 +220,8 @@ export const useSubmitOrder = () => {
         if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
           formatSlSize = formatSize
           if (slType === TpSlTypeEnum.Change) {
-            // 按用户输入的百分比计算，根据方向调整
-            // 做多：止损时价格下跌 price * (1 - |change%|)
-            // 做空：止损时价格上涨 price * (1 + |change%|)
-            // 注意：用户可能输入正数或负数，都取绝对值处理
-            const changeRatio = parseBigNumber(slValue).abs().div(100)
-            const radio =
-              direction === Direction.LONG
-                ? parseBigNumber(1).minus(changeRatio)
-                : parseBigNumber(1).plus(changeRatio)
+            // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
+            const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
             const targetPrice = parseBigNumber(price).mul(radio)
             formatSlValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()
