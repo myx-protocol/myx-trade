@@ -280,6 +280,7 @@ export const PlaceOrderConfirmDialog = () => {
         ? collateralAmount
         : parseBigNumber(formatSlSize).mul(parseBigNumber(price)).div(leverage).toString()
       if (slType === TpSlTypeEnum.Change) {
+        // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
         const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
         formatSlPrice = parseBigNumber(price).mul(radio).toString()
       } else if (slType === TpSlTypeEnum.ROI) {
