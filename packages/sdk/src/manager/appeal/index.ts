@@ -28,14 +28,20 @@ export class Appeal extends BaseMyxClient {
     super(client);
   }
 
-  private async getDisputeCourtContract() {
+  private async getDisputeCourtContract(auth: boolean = true) {
     const contract = await getDisputeCourtContract(this.config.chainId);
-    return this.connectContract(contract);
+    if (auth) {
+      return this.connectContract(contract);
+    }
+    return contract;
   }
 
-  private async getReimbursementContract() {
+  private async getReimbursementContract(auth: boolean = true) {
     const contract = await getReimbursementContract(this.config.chainId);
-    return this.connectContract(contract);
+    if (auth) {
+      return this.connectContract(contract);
+    }
+    return contract;
   }
 
   /**
@@ -219,7 +225,7 @@ export class Appeal extends BaseMyxClient {
    * get dispute configuration
    */
   async getDisputeConfiguration() {
-    const contract = await this.getDisputeCourtContract();
+    const contract = await this.getDisputeCourtContract(false);
     const configuration = await contract.getDisputeConfiguration();
     return configuration;
   }
