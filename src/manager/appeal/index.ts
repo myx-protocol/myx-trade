@@ -380,4 +380,13 @@ export class Appeal extends BaseMyxClient {
   async getWarmholeSign(params: GetWarmholeSignParams) {
     return this.client.api.getWarmholeSign(params)
   }
+  async getDisputeTotalCount() {
+    return this.client.api.getDisputeTotalCount();
+  }
+  async getAppealTotalCount() {
+    return this.client.api.getAppealTotalCount();
+  }
+  async getReimbursementTotalCount() {
+    return this.client.api.getReimbursementTotalCount();
+  }
 }
