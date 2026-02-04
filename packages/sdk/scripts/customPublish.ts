@@ -180,4 +180,7 @@ inquirer.prompt([
     }
     console.log('✅ 发布成功！')
     console.log(`🚀 最新版本: v${latestVersion}`)
+}).catch(err => {
+    console.error('🚨 发布失败:', err);
+    process.exit(1);
 })
