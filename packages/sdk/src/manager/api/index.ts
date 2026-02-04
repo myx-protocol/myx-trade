@@ -516,6 +516,25 @@ export class Api extends Request {
     );
   }
 
+  async getDisputeTotalCount() {
+    return this.get<ApiResponse<number>>('/openapi/gateway/scan/dispute/dispute-total', {}, {
+      auth: true
+    })
+  }
+
+  async getAppealTotalCount() {
+    return this.get<ApiResponse<number>>('/openapi/gateway/scan/dispute/appeal-total', {}, {
+      auth: true
+    })
+  }
+
+  async getReimbursementTotalCount() {
+    return this.get<ApiResponse<number>>('/openapi/gateway/scan/dispute/reimbursement-total', {}, {
+      auth: true
+    })
+  }
+
+
   /**
    * appeal module end ------>
    */
