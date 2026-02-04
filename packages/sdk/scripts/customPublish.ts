@@ -26,6 +26,43 @@ const checkBranch = () => {
     }
 }
 
+const checkGitRemote = () => {
+    try {
+        // 拉取最新远程信息
+        execSync('git fetch', {
+            stdio: 'inherit',
+        });
+
+        // 比较本地分支与远程分支的提交数量
+        // 格式："<remote_ahead>\t<local_ahead>"
+        const result = execSync(
+            `git rev-list --left-right --count origin/${PUBLISH_BRANCH}...${PUBLISH_BRANCH}`,
+            {
+                encoding: 'utf-8',
+            },
+        ).trim();
+
+        const [remoteAheadStr] = result.split('\t');
+        const remoteAhead = parseInt(remoteAheadStr, 10);
+
+        if (Number.isNaN(remoteAhead)) {
+            console.error('🚨 无法解析远程分支提交差异结果:', result);
+            process.exit(1);
+        }
+
+        if (remoteAhead > 0) {
+            console.error('🚨 检测到远程分支有未拉取的提交，请先执行 `git pull` 再发布。');
+            process.exit(1);
+        }
+
+        console.log('✅ 远程分支已是最新，无未拉取提交。');
+        return true;
+    } catch (error) {
+        console.error('🚨 检测远程仓库状态失败:', error);
+        process.exit(1);
+    }
+}
+
 const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync('git add package.json', {
         stdio: 'inherit',
@@ -73,6 +110,7 @@ const checkNPMLogined = async () => {
 }
 
 checkBranch();
+checkGitRemote();
 
 inquirer.prompt([
     {
