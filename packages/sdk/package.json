@@ -25,7 +25,7 @@
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'",
-    "prepublishOnly": "npm run build --log-level error",
+    "prepublishOnly": "npm run build",
     "prepare": "pnpm gen:abi",
     "custom-publish": "tsx scripts/customPublish.ts",
     "type-check": "echo 'Skipping type-check for @myx-trade/sdk'"
