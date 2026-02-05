@@ -2,20 +2,6 @@ import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import path from 'path'
-import ora from 'ora';
-
-
-const loadingAdapter = async <T = any>(message: string, fn: () => T | Promise<T>): Promise<T> => {
-    const spinner = ora(message).start();
-    try {
-        const result = await fn();
-        spinner.succeed();
-        return result;
-    } catch (error) {
-        spinner.fail();
-        throw error
-    }
-}
 
 const PUBLISH_BRANCH = 'release/sdk'
 
@@ -128,83 +114,78 @@ const checkNPMLogined = async () => {
     }
 }
 
+checkBranch();
+checkGitRemote();
 
-loadingAdapter('检查当前分支', () => checkBranch())
-    .then(() => loadingAdapter('检查远程仓库状态', () => checkGitRemote())
-    )
-    .then(() => inquirer.prompt([
-        {
-            type: 'select',
-            name: 'publishTag',
-            message: '请选择发布标签(main: 正式, beta: 测试)',
-            default: 'main',
-            choices: [
-                {
-                    name: 'Main',
-                    value: 'main',
-                },
-                {
-                    name: 'Beta',
-                    value: 'beta',
-                }
-            ],
-        }, {
-            type: 'select',
-            name: 'versionType',
-            message: '请选择版本类型(patch: 补丁, minor: 小版本, major: 大版本)',
-            default: 'patch',
-            when: answers => answers.publishTag === 'main',
-            choices: [
-                {
-                    name: '补丁版本(patch)',
-                    value: 'patch',
-                },
-                {
-                    name: '次版本(minor)',
-                    value: 'minor',
-                },
-                {
-                    name: '主版本(major)',
-                    value: 'major',
-                },
-            ],
-        }
-    ]))
-    .then(async (answers) => {
-        const { publishTag, versionType } = answers;
-        updateVersion(publishTag, versionType)
-        const latestVersion = commitVersionUpdate(publishTag, versionType);
-        const isLoggedIn = await loadingAdapter('检查 npm 登录状态', () => checkNPMLogined())
-        if (!isLoggedIn) {
-            console.log('🚨 检测到未登录 npm，先登录 npm')
-            execSync(`pnpm login --registry=${npmRegistry}`, {
-                stdio: 'inherit',
-            });
-            console.log('✅ pnpm registry 登录成功！')
-        } else {
-            console.log('🔄 pnpm registry 无需登录！')
-        }
+inquirer.prompt([
+    {
+        type: 'select',
+        name: 'publishTag',
+        message: '请选择发布标签(main: 正式, beta: 测试)',
+        default: 'main',
+        choices: [
+            {
+                name: 'Main',
+                value: 'main',
+            },
+            {
+                name: 'Beta',
+                value: 'beta',
+            }
+        ],
+    }, {
+        type: 'select',
+        name: 'versionType',
+        message: '请选择版本类型(patch: 补丁, minor: 小版本, major: 大版本)',
+        default: 'patch',
+        when: answers => answers.publishTag === 'main',
+        choices: [
+            {
+                name: '补丁版本(patch)',
+                value: 'patch',
+            },
+            {
+                name: '次版本(minor)',
+                value: 'minor',
+            },
+            {
+                name: '主版本(major)',
+                value: 'major',
+            },
+        ],
+    }
+]).then(async (answers) => {
+    const { publishTag, versionType } = answers;
+    updateVersion(publishTag, versionType)
+    const latestVersion = commitVersionUpdate(publishTag, versionType);
 
-        if (publishTag === 'beta') {
-            await loadingAdapter('发布 beta 版本', () => {
-                execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
-                    stdio: 'inherit',
-                })
-            })
-        } else {
-            await loadingAdapter('发布正式版本', () => {
-                execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
-                    stdio: 'inherit',
-                })
-            })
-        }
-        const isPushed = await loadingAdapter('推送 commit', () => pushCommit());
-        if (!isPushed) {
-            console.log('🚨 推送 commit 失败, 请手动执行 git push')
-        }
-        console.log('✅ 发布成功！')
-        console.log(`🚀 最新版本: v${latestVersion}`)
-    }).catch(err => {
-        console.error('🚨 发布失败:', err);
-        process.exit(1);
-    })
+    const isLoggedIn = await checkNPMLogined();
+    if (!isLoggedIn) {
+        console.log('🚨 检测到未登录 npm，先登录 npm')
+        execSync(`pnpm login --registry=${npmRegistry}`, {
+            stdio: 'inherit',
+        });
+        console.log('✅ pnpm registry 登录成功！')
+    } else {
+        console.log('🔄 pnpm registry 无需登录！')
+    }
+
+    if (publishTag === 'beta') {
+        execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
+            stdio: 'inherit',
+        })
+    } else {
+        execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
+            stdio: 'inherit',
+        })
+    }
+    const isPushed = pushCommit();
+    if (!isPushed) {
+        console.log('🚨 推送 commit 失败, 请手动执行 git push')
+    }
+    console.log('✅ 发布成功！')
+    console.log(`🚀 最新版本: v${latestVersion}`)
+}).catch(err => {
+    console.error('🚨 发布失败:', err);
+    process.exit(1);
+})
