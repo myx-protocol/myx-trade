@@ -136,7 +136,7 @@ export const TradePanel = () => {
 
   const isFixedHeader = useThrottle(
     () => {
-      return position?.top && position.top > 100
+      return Boolean(position?.top && position.top > 100)
     },
     {
       wait: 200,
@@ -168,53 +168,103 @@ export const TradePanel = () => {
                   quoteLogoSize={10}
                   quoteClassName=" ml-[-8px]!"
                 />
-                <span className="ml-[4px] text-[20px] font-[700] font-medium">
-                  {symbolInfo?.baseSymbol}
-                  {symbolInfo?.quoteSymbol}
-                </span>
-                <RiseFallTextPrecent
-                  className={clsx({
-                    hidden: isFixedHeader,
-                  })}
-                  value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
-                />
+                <div className="ml-[4px]">
+                  <p className="text-[20px] font-[700] font-medium">
+                    {symbolInfo?.baseSymbol}
+                    {symbolInfo?.quoteSymbol}
+                  </p>
+                  <div
+                    className={clsx(
+                      'font-middle mt-[4px] flex items-center gap-[6px] text-[12px] leading-none',
+                      {
+                        hidden: !isFixedHeader,
+                      },
+                    )}
+                  >
+                    <Price value={marketPrice} showUnit={false} />
+                    <RiseFallTextPrecent
+                      value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <div
-              className="flex items-center gap-[4px]"
-              onClick={() => {
-                if (address) {
-                  setAccountDialogOpen(true)
-                  return
-                }
+            <>
+              <div
+                className={clsx('flex items-center gap-[4px]', {
+                  hidden: isFixedHeader,
+                })}
+                onClick={() => {
+                  if (address) {
+                    setAccountDialogOpen(true)
+                    return
+                  }
 
-                setLoginModalOpen(true)
-              }}
-            >
-              <span className="text-[16px] leading-[12px] text-[#fff]">
-                {truncateAddress(address || '') || ''}
-              </span>
-              <ArrowDownIconFill size={8} />
-            </div>
+                  setLoginModalOpen(true)
+                }}
+              >
+                <span className="text-[16px] leading-[12px] text-[#fff]">
+                  {truncateAddress(address || '') || ''}
+                </span>
+                <ArrowDownIconFill size={8} />
+              </div>
+              <div
+                className={clsx('flex items-center justify-end gap-[16px]', {
+                  hidden: !isFixedHeader,
+                })}
+              >
+                <div
+                  role="button"
+                  className={clsx('flex', {
+                    'text-green': showCharts,
+                  })}
+                  onClick={() => {
+                    setShowCharts(!showCharts)
+                  }}
+                >
+                  <ChartsIcon size={18} />
+                </div>
+
+                <div
+                  role="button"
+                  className="flex"
+                  onClick={() => {
+                    navigate(`/price/${symbolInfo?.chainId}/${symbolInfo?.poolId}`)
+                  }}
+                >
+                  <KlineIcon size={18} />
+                </div>
+                <div
+                  role="button"
+                  className="flex"
+                  onClick={() => {
+                    setSettingDialogOpen(true)
+                  }}
+                >
+                  <SettingIcon size={18} />
+                </div>
+              </div>
+            </>
           </div>
-          <div className="mt-[8px] flex items-center justify-between">
+          <div
+            className={clsx('mt-[8px] flex items-center justify-between', {
+              hidden: isFixedHeader,
+            })}
+          >
             <div className="flex items-center gap-[4px]">
               <Price
                 className="text-[22px] font-[700] font-medium"
                 value={marketPrice}
                 showUnit={false}
               />
-              <RiseFallTextPrecent
-                className={clsx({
-                  hidden: !isFixedHeader,
-                })}
-                value={tickerData[symbolInfo?.poolId as string]?.change ?? 0}
-              />
+              <RiseFallTextPrecent value={tickerData[symbolInfo?.poolId as string]?.change ?? 0} />
             </div>
             <div className="flex items-center justify-end gap-[16px]">
               <div
                 role="button"
-                className="flex"
+                className={clsx('flex', {
+                  'text-green': showCharts,
+                })}
                 onClick={() => {
                   setShowCharts(!showCharts)
                 }}

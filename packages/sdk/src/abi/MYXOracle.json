@@ -31,7 +31,22 @@
   },
   {
     "type": "error",
+    "name": "ExchangeRateAlreadyApplied",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ExchangeRateAlreadyDisabled",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDeviationRatio",
     "inputs": []
   },
   {
@@ -42,6 +57,16 @@
   {
     "type": "error",
     "name": "InvalidRewindPrice",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidUpdateFee",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NonUSDQuoteMustApplyExchangeRate",
     "inputs": []
   },
   {
@@ -66,11 +91,6 @@
   },
   {
     "type": "error",
-    "name": "OracleInsufficientFee",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "PermissionDenied",
     "inputs": [
       {
@@ -82,6 +102,16 @@
         "name": "target"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "PriceDeviationBelowMinimum",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PriceDeviationThresholdReached",
+    "inputs": []
   },
   {
     "type": "error",
@@ -125,11 +155,67 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "ExchangeRateApplied",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExchangeRateDisabled",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {
         "type": "uint64",
         "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MarketConfigurationUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "priceContract",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "applyExchangeRate",
+        "indexed": false
+      },
+      {
+        "type": "bool",
+        "name": "isUsdQuote",
+        "indexed": false
+      },
+      {
+        "type": "uint16",
+        "name": "maxDeviationRatio",
         "indexed": false
       }
     ]
@@ -147,6 +233,28 @@
       {
         "type": "address",
         "name": "newOracleAdmin",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "OracleFeedIdUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "oracleType",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "oracleFeedId",
         "indexed": false
       }
     ]
@@ -208,6 +316,23 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "RefundVerifyFee",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "receiver",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "vaule",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Upgraded",
     "inputs": [
       {
@@ -229,6 +354,32 @@
         "type": "string"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "disableExchangeRateOnDeviation",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "enableExchangeRateOnDeviation",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -258,24 +409,6 @@
     "outputs": [
       {
         "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDependencyIdentifier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "contractAddress"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32"
       }
     ]
   },
@@ -406,50 +539,6 @@
   },
   {
     "type": "function",
-    "name": "registerDependencies",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32[]",
-        "name": "identifiers"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "removeRewindPrice",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "referencePrice"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "safeOraclePrice",
     "constant": true,
     "stateMutability": "view",
@@ -468,30 +557,66 @@
   },
   {
     "type": "function",
-    "name": "unregisterDependencies",
+    "name": "setMarketQuoteConfiguration",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32[]",
-        "name": "identifiers"
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "tuple",
+        "name": "config",
+        "components": [
+          {
+            "type": "address",
+            "name": "priceContract"
+          },
+          {
+            "type": "bool",
+            "name": "applyExchangeRate"
+          },
+          {
+            "type": "bool",
+            "name": "isUsdQuote"
+          },
+          {
+            "type": "uint16",
+            "name": "minDeviationRatio"
+          }
+        ]
       }
     ],
     "outputs": []
   },
   {
     "type": "function",
-    "name": "update",
+    "name": "setOracleFeedParameter",
     "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "bytes32",
-        "name": "identifier"
-      },
-      {
-        "type": "address",
-        "name": "newAddress"
+        "type": "tuple",
+        "name": "param",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "bytes32",
+            "name": "oracleFeedId"
+          },
+          {
+            "type": "uint32",
+            "name": "decimals"
+          }
+        ]
       }
     ],
     "outputs": []
@@ -525,16 +650,56 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
+            "type": "uint8",
+            "name": "oracleType"
           },
           {
             "type": "uint64",
             "name": "publishTime"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updatePrices",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          },
+          {
+            "type": "uint80",
+            "name": "roundId"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
           }
         ]
       }
@@ -561,12 +726,20 @@
             "name": "referencePrice"
           },
           {
-            "type": "bytes",
-            "name": "oracleUpdateData"
+            "type": "uint8",
+            "name": "oracleType"
           },
           {
             "type": "uint64",
             "name": "publishTime"
+          },
+          {
+            "type": "uint80",
+            "name": "roundId"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
           }
         ]
       }

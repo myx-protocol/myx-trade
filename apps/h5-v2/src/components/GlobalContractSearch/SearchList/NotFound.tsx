@@ -3,7 +3,7 @@ import { t } from '@lingui/core/macro'
 
 export const NotFound = () => {
   return (
-    <div className="pt-[64px]">
+    <div className="flex h-full flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center px-[16px] px-[20px] py-[16px]">
         <img src={EmptyPng} alt="empty" className="h-[56px] w-[56px]" />
         <div className="mt-[16px] leading-[1] font-medium text-[#848E9C] text-[12x]">{t`No results found`}</div>

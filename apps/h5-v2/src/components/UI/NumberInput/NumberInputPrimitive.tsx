@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react'
+import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { isUndefined } from 'lodash-es'
 import { scrollIntroView } from '@/utils'
 import { parseBigNumber } from '@/utils/bn'
@@ -25,6 +25,7 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
       onValueChange,
       decimalPlaceholder = false,
       max,
+      autoFocus,
       onFocus,
       inputMode = 'decimal',
       placeholder,
@@ -36,14 +37,18 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
   ) => {
     const [displayValue, setDisplayValue] = useState<string>('')
     const inputRef = useRef<HTMLInputElement>(null)
+    const originalInputRef = useRef<HTMLInputElement>(null)
 
     // 合并 refs
     React.useImperativeHandle(ref, () => inputRef.current!)
 
-    const decimalPlaceholderLabel =
-      !isUndefined(decimalScale) && decimalScale > 0 ? `0.${'0'.repeat(decimalScale)}` : '0'
-    const placeholderLabel =
-      placeholder ?? (decimalPlaceholder ? decimalPlaceholderLabel : undefined)
+    const placeholderLabel = useMemo(() => {
+      if (placeholder) return placeholder
+      if (!decimalPlaceholder) return undefined
+
+      const scale = !isUndefined(decimalScale) && decimalScale > 0 ? decimalScale : 0
+      return scale > 0 ? `0.${'0'.repeat(scale)}` : '0'
+    }, [placeholder, decimalPlaceholder, decimalScale])
 
     // 处理焦点事件
     const handleFocus = useCallback(
@@ -84,16 +89,9 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
           return
         }
 
-        // 允许负号（只能在开头输入）
+        // 允许负号
         if (e.key === '-' && allowNegative) {
-          // 如果已经有负号，或者光标不在开头，则阻止
-          if (displayValue.includes('-')) {
-            e.preventDefault()
-          }
-          // 如果输入框不为空且光标不在开头，阻止输入负号
-          const input = e.target as HTMLInputElement
-          const cursorPosition = input.selectionStart || 0
-          if (displayValue.length > 0 && cursorPosition !== 0) {
+          if (displayValue.includes('-') || displayValue.length > 0) {
             e.preventDefault()
           }
           return
@@ -146,35 +144,71 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
     // 同步外部值变化
     useEffect(() => {
       if (value !== undefined) {
-        // 直接使用外部传入的值，不进行格式化，保持用户输入的原始格式
-        setDisplayValue(String(value))
-      }
-    }, [value])
+        let newValue = String(value)
 
-    // 动态计算小数位数：如果整数部分有值，则显示2位小数
-    const getEffectiveDecimalScale = useCallback(
-      (inputValue: string) => {
-        if (isUndefined(decimalScale)) {
-          // 如果没有指定 decimalScale，检查整数部分
-          const numValue = parseFloat(inputValue || '0')
-          if (!isNaN(numValue) && Math.abs(Math.floor(numValue)) > 0) {
-            return 2
+        // 如果设置了 decimalScale，确保外部传入的值也遵守小数位限制（截断）
+        if (!isUndefined(decimalScale) && newValue) {
+          const parts = newValue.split('.')
+          if (parts.length === 2 && parts[1].length > decimalScale) {
+            newValue = `${parts[0]}.${parts[1].substring(0, decimalScale)}`
           }
         }
-        return decimalScale
-      },
-      [decimalScale],
-    )
 
-    const effectiveDecimalScale = getEffectiveDecimalScale(displayValue)
+        setDisplayValue(newValue)
+      }
+    }, [value, decimalScale])
+
+    // 计算有效的小数位数
+    const effectiveDecimalScale = useMemo(() => {
+      // 如果明确指定了 decimalScale，直接使用
+      if (!isUndefined(decimalScale)) {
+        return decimalScale
+      }
+
+      // 如果没有指定 decimalScale，根据整数部分动态判断
+      const numValue = parseFloat(displayValue || '0')
+      if (!isNaN(numValue) && Math.abs(Math.floor(numValue)) > 0) {
+        return 2
+      }
+
+      return undefined
+    }, [decimalScale, displayValue])
+
+    // 处理自动聚焦
+    useEffect(() => {
+      if (autoFocus && originalInputRef.current) {
+        // 延迟聚焦，确保 DOM 完全渲染
+        const timer = setTimeout(() => {
+          originalInputRef.current?.focus()
+        }, 100)
+
+        return () => clearTimeout(timer)
+      }
+    }, [autoFocus])
 
     return (
       <NumericFormat
         // @ts-expect-error NumericFormat ref type issue
         ref={inputRef}
+        getInputRef={originalInputRef}
         value={displayValue}
         onValueChange={(values, sourceInfo) => {
           if (values.value === '.') values.value = ''
+
+          // 处理小数位数截取（不四舍五入）
+          if (!isUndefined(effectiveDecimalScale) && values.value) {
+            const parts = values.value.split('.')
+            if (parts.length === 2 && parts[1].length > effectiveDecimalScale) {
+              // 直接截取，不四舍五入
+              const truncatedValue = `${parts[0]}.${parts[1].substring(0, effectiveDecimalScale)}`
+              values = {
+                ...values,
+                value: truncatedValue,
+                floatValue: parseFloat(truncatedValue),
+                formattedValue: truncatedValue,
+              }
+            }
+          }
 
           if (!isUndefined(max) && !isUndefined(values.floatValue)) {
             const valueForBN = parseBigNumber(values.value || 0)
@@ -196,6 +230,15 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
         }}
         isAllowed={(values) => {
           const { value: inputValue } = values
+
+          // 限制小数位数输入（直接阻止超过限制的输入，实现截断效果）
+          if (!isUndefined(effectiveDecimalScale) && inputValue) {
+            const parts = inputValue.split('.')
+            if (parts.length === 2 && parts[1].length > effectiveDecimalScale) {
+              return false
+            }
+          }
+
           if (!isUndefined(max) && !isUndefined(inputValue)) {
             const newValueForBN = parseBigNumber(inputValue)
             const valueForBN = parseBigNumber(value ?? 0)
@@ -210,7 +253,6 @@ const NumberInputPrimitiveBase = React.forwardRef<HTMLInputElement, NumberInputP
         onKeyDown={handleKeyDown}
         onBeforeInput={handleBeforeInput}
         placeholder={placeholderLabel}
-        decimalScale={effectiveDecimalScale}
         inputMode={inputMode}
         allowLeadingZeros
         thousandSeparator={thousandSeparator}

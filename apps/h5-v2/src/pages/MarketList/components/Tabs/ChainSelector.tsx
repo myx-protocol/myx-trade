@@ -1,9 +1,10 @@
 import clsx from 'clsx'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import ChainAllIcon from '@/components/Icon/set/ChainAll'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMarketPageStore } from '../../store'
+import { CoinIcon } from '@/components/UI/CoinIcon'
 
 export const ChainSelector = () => {
   // const [selectedChain, setSelectedChain] = useState<'all' | number>('all')
@@ -43,6 +44,7 @@ export const ChainSelector = () => {
             )}
             onClick={() => setChainId(chainInfo.chainId)}
           >
+            <CoinIcon icon={chainInfo.logoUrl} size={14} />
             <p className="text-[12px]">{chainInfo.label}</p>
           </div>
         ))}

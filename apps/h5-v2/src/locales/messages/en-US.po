@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-14 04:07\n"
+"PO-Revision-Date: 2026-02-02 10:48\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -64,6 +64,7 @@ msgstr ""
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
@@ -148,6 +149,8 @@ msgstr ""
 msgid "7-day rebate"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
 msgstr ""
@@ -393,10 +396,14 @@ msgstr ""
 msgid "Assets"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 number"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 upper case letter"
 msgstr ""
@@ -408,6 +415,14 @@ msgstr ""
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "Authorize"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Authorize seamless account failed"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Authorize seamless account success"
 msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
@@ -766,6 +781,7 @@ msgid "close all positions at market price?"
 msgstr ""
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Close all positions failed"
 msgstr ""
 
@@ -885,6 +901,10 @@ msgstr ""
 
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 msgid "Contract"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "contract runner does not support gas estimation"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1023,10 +1043,6 @@ msgstr ""
 msgid "D"
 msgstr ""
 
-#: src/pages/Home/components/ExpressMenu/const.tsx
-msgid "Data"
-msgstr ""
-
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Day"
@@ -1047,7 +1063,7 @@ msgstr ""
 
 #: src/components/SafeList/index.tsx
 msgid "Degen Audit"
-msgstr ""
+msgstr "Audit"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -1089,6 +1105,10 @@ msgstr "Dispute not allowed"
 
 #: src/components/Footer/index.tsx
 msgid "Documentation"
+msgstr ""
+
+#: src/components/Trade/components/DontShowAgain/index.tsx
+msgid "Dont show again"
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
@@ -1161,6 +1181,7 @@ msgstr ""
 msgid "Email login"
 msgstr ""
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Enable Seamless Trading"
 msgstr ""
@@ -1187,6 +1208,8 @@ msgid "Enter your email"
 msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Enter your password"
@@ -1199,7 +1222,7 @@ msgstr ""
 #. placeholder {0}: orderList.length
 #: src/pages/record/components/RecordTab.tsx
 msgid "Entrusts({0})"
-msgstr "Open({0})"
+msgstr "Open Orders({0})"
 
 #: src/components/Record/Items/Position.tsx
 msgid "Entry price"
@@ -1252,7 +1275,7 @@ msgstr "Signature expired"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612InvalidSigner(address,address)"
-msgstr "Invalid signer (address,address)"
+msgstr "Invalid signer"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderExpiredRequest(uint48)"
@@ -1337,7 +1360,7 @@ msgstr "Transfer failed()"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed(address,uint256)"
-msgstr "Transfer failed (address,uint256)"
+msgstr "Transfer failed"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseCollateral(uint256,uint256)"
@@ -1595,6 +1618,8 @@ msgid "H"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/OrderHistory.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
@@ -1672,7 +1697,12 @@ msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/SettingDrawer.tsx
 msgid "Import Seamless Key"
+msgstr ""
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Import seamless key success"
 msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
@@ -1715,10 +1745,7 @@ msgstr "Initialization reverted (address,bytes)"
 msgid "InRewindMode()"
 msgstr "In rewind mode()"
 
-#: src/components/CookDetail/Order/Buy.tsx
-#: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Earn/components/Trade/Redeem.tsx
-#: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Earn/components/Trade/Error.tsx
 #: src/pages/Market/components/activeMarket.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Insufficient balance"
@@ -1731,23 +1758,23 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
-msgstr "Insufficient balance()"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(address,uint256,uint256)"
-msgstr "Insufficient balance (address,uint256,uint256)"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(uint256,uint256)"
-msgstr "Insufficient balance (uint256,uint256)"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(PositionId,uint256)"
-msgstr "Insufficient margin (PositionId,uint256)"
+msgstr "Insufficient margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(uint256,uint256)"
-msgstr "Insufficient margin (uint256,uint256)"
+msgstr "Insufficient margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeAllowance(address,uint256,uint256)"
@@ -1755,27 +1782,27 @@ msgstr "Fee allowance insufficient (address,uint256,uint256)"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeBalance(address,uint256,uint256)"
-msgstr "Fee balance insufficient (address,uint256,uint256)"
+msgstr "Fee balance insufficient"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFreeCollateral(PositionId,uint256)"
-msgstr "Insufficient available margin (PositionId,uint256)"
+msgstr "Insufficient available margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLiquidity(uint256,uint256,uint256)"
-msgstr "Insufficient liquidity (uint256,uint256,uint256)"
+msgstr "Insufficient liquidity"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLockedCollateral(PositionId,uint256)"
-msgstr "Insufficient locked margin (PositionId,uint256)"
+msgstr "Insufficient locked margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientOutputAmount()"
-msgstr "Insufficient amount()"
+msgstr "Insufficient amount"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientPoolProfit()"
-msgstr "Insufficient pool profit()"
+msgstr "Insufficient pool profit"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientQuoteIn(uint256,uint256,uint256)"
@@ -1799,6 +1826,10 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid Market"
+msgstr ""
+
+#: src/pages/Market/index.tsx
+msgid "Invalid token address"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2169,6 +2200,10 @@ msgstr ""
 msgid "Market close success"
 msgstr ""
 
+#: src/pages/Market/index.tsx
+msgid "market is created"
+msgstr ""
+
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
 msgstr ""
@@ -2331,7 +2366,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "No"
 msgstr ""
 
@@ -2534,7 +2568,7 @@ msgstr "Only relayer()"
 
 #: src/components/Trade/TradePanel/PositionAction/index.tsx
 msgid "Open"
-msgstr ""
+msgstr "Open Orders"
 
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open  amount must be greater than 0"
@@ -2671,7 +2705,11 @@ msgid "Paid from Wallet: {0} {1}"
 msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
-msgid "Pair"
+msgid "Pair/Vol"
+msgstr ""
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Password"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
@@ -3079,6 +3117,10 @@ msgstr ""
 msgid "Reset Password"
 msgstr ""
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+msgid "Reset Your Password"
+msgstr ""
+
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Retain Genesis LP Share"
 msgstr ""
@@ -3089,6 +3131,14 @@ msgstr ""
 
 #: src/components/SettingDrawer.tsx
 msgid "Revoke"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Revoke seamless account failed"
+msgstr ""
+
+#: src/components/SettingDrawer.tsx
+msgid "Revoke seamless account success"
 msgstr ""
 
 #: src/store/transactions/options.ts
@@ -3197,10 +3247,6 @@ msgstr ""
 msgid "Search name or paste address"
 msgstr ""
 
-#: src/components/Seamless/SelectAccountDialog/index.tsx
-msgid "Select  Account"
-msgstr ""
-
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
 msgstr ""
@@ -3211,6 +3257,10 @@ msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Select a vault to provide initial liquidity"
+msgstr ""
+
+#: src/components/Seamless/SelectAccountDialog/index.tsx
+msgid "Select Account"
 msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
@@ -3334,6 +3384,11 @@ msgstr ""
 msgid "Size({0})"
 msgstr ""
 
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+msgid "SL"
+msgstr ""
+
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL Est. PNL"
@@ -3438,7 +3493,7 @@ msgstr ""
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Successful"
-msgstr ""
+msgstr "Filled"
 
 #: src/components/CookDetail/Order/Buy.tsx
 msgid "Successfully buy"
@@ -3626,6 +3681,11 @@ msgstr ""
 msgid "Total supply"
 msgstr ""
 
+#: src/components/Record/Items/OpenOrders.tsx
+#: src/components/Record/Items/OpenOrders.tsx
+msgid "TP"
+msgstr ""
+
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "TP Est. PNL"
@@ -3657,10 +3717,6 @@ msgstr ""
 
 #: src/components/Trade/Dialog/TPSL/index.tsx
 msgid "TP&SL"
-msgstr ""
-
-#: src/components/Record/Items/OpenOrders.tsx
-msgid "TPSL"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -3729,6 +3785,7 @@ msgid "TransferFailed()"
 msgstr "Transfer failed()"
 
 #: src/pages/Cook/components/ToolBar.tsx
+#: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Trench"
 msgstr ""
 
@@ -3799,6 +3856,10 @@ msgstr "Unsupported fee tier (uint8)"
 msgid "Updated successfully"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Upfront cost exceeds account balance"
+msgstr ""
+
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Upgrade"
 msgstr ""
@@ -3819,6 +3880,13 @@ msgstr ""
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "User Rejected"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
@@ -3927,6 +3995,7 @@ msgstr ""
 msgid "What are the risks?"
 msgstr ""
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "What infomation am i signing?"
 msgstr ""
@@ -3968,7 +4037,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "Yes"
 msgstr ""
 
@@ -4012,6 +4080,7 @@ msgstr ""
 msgid "Your max commission rate"
 msgstr ""
 
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Your Password"
@@ -4070,7 +4139,7 @@ msgstr "Margin Account"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "保证金账户可划转到钱包的余额"
-msgstr ""
+msgstr "Margin Account balance available to transfer to Wallet"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
@@ -4266,6 +4335,7 @@ msgstr "Open Double-Confirmation"
 msgid "开仓价格"
 msgstr "Open Price"
 
+#: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "开仓滑点设置"
 msgstr "Open Slippage Settings"
@@ -4533,7 +4603,7 @@ msgstr "Partial Close"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "钱包内可划转至保证金账户的余额"
-msgstr ""
+msgstr "Wallet balance available to transfer to Margin Account"
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx

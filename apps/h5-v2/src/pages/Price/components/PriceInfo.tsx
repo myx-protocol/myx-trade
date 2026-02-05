@@ -10,6 +10,7 @@ import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useFundingInfo } from '@/components/Trade/hooks/useFundingInfo'
 import { t } from '@lingui/core/macro'
 import useGlobalStore from '@/store/globalStore'
+import { PriceTabEnum, usePriceStore } from '../store'
 
 export const PriceInfo = () => {
   const { symbolInfo } = useGlobalStore()
@@ -57,8 +58,12 @@ export const PriceInfo = () => {
     poolId: symbolInfo?.poolId || '',
     chainId: symbolInfo?.chainId,
   })
+  const { tab } = usePriceStore()
+
+  if (tab !== PriceTabEnum.Price) return null
+
   return (
-    <div className="mb-[12px] flex items-center justify-between px-[16px]">
+    <div className="mt-[12px] flex items-center justify-between px-[16px]">
       <div>
         <Price className="text-[28px] font-bold" value={tickerData?.price || 0} />
         <p className="text-[12px] leading-[1.5] font-medium text-[#CED1D9]">

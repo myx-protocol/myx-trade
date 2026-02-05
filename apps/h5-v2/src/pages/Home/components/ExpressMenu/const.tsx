@@ -3,8 +3,10 @@ import MenuReferral from '@/assets/home/referral.png'
 import MenuVip from '@/assets/home/vip.png'
 import MenuDate from '@/assets/home/date.png'
 import MenuCook from '@/assets/home/cook.png'
+import MenuTrench from '@/assets/home/trench.png'
 
 import { Trans } from '@lingui/react/macro'
+import { CookType } from '@/pages/Cook/type'
 
 interface MenuItem {
   icon: string
@@ -24,8 +26,9 @@ export const EXPRESS_MENU_LIST: MenuItem[] = [
     href: '/vip',
   },
   {
-    title: () => <Trans>Data</Trans>,
-    icon: MenuDate,
+    title: () => <Trans>Trench</Trans>,
+    icon: MenuTrench,
+    href: `/cook?type=${CookType.Trench}`,
   },
   {
     title: () => <Trans>Cook</Trans>,

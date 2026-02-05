@@ -156,9 +156,6 @@ export const ResetSetPasswordDialog = () => {
                       (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
                     )
 
-                    console.log('seamlessAccountList-->', seamlessAccountList)
-                    console.log('idx-->', idx)
-
                     if (idx !== -1) {
                       seamlessAccountList[idx] = { ...seamlessAccount }
                     } else {
@@ -166,7 +163,6 @@ export const ResetSetPasswordDialog = () => {
                     }
                   }
 
-                  console.log('seamlessAccount.authorized-->', seamlessAccount)
                   if (!seamlessAccount.authorized[symbolInfo?.chainId as number]?.authorized) {
                     const authRes = await client?.seamless.authorizeSeamlessAccount({
                       approve: true,
@@ -174,7 +170,7 @@ export const ResetSetPasswordDialog = () => {
                       chainId: symbolInfo?.chainId as number,
                     })
 
-                    if (!authRes) {
+                    if (authRes?.code === 0) {
                       const idx = seamlessAccountList.findIndex(
                         (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
                       )

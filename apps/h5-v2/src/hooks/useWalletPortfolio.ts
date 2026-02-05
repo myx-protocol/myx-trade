@@ -32,29 +32,31 @@ export const useWalletPortfolio = () => {
             ? ((getSupportedChainIdsByEnv() as unknown as ChainId[]) ?? undefined)
             : [chainId],
         )
-        return (result?.data?.assets || []).map((item: any) => {
-          console.log(item)
-          const address = item.asset.contracts.filter(
-            (_address: string) =>
-              _address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-          )?.[0]
-          const asset = item.contracts_balances.find(
-            (s: { address: string }) => s.address === address,
-          )
-          const token = {
-            chainId: Number(asset.chainId.replace('evm:', '')),
-            address,
-            decimals: asset.decimals,
-            logo: item.asset.logo,
-            name: item.asset.name,
-            symbol: item.asset.symbol,
-            price: item.price,
-            change: item.price_change_24h * 100,
-            balance: asset.balance.toString(),
-          } as Asset
-          console.log(token)
-          return token
-        })
+        return (result?.data?.assets || [])
+          .map((item: any) => {
+            console.log(item)
+            const address = item.asset.contracts?.[0]
+            if (!address) {
+              return undefined
+            }
+            const asset = item.contracts_balances.find(
+              (s: { address: string }) => s.address === address,
+            )
+            const token = {
+              chainId: Number(asset.chainId.replace('evm:', '')),
+              address,
+              decimals: asset.decimals,
+              logo: item.asset.logo,
+              name: item.asset.name,
+              symbol: item.asset.symbol,
+              price: item.price,
+              change: item.price_change_24h * 100,
+              balance: asset.balance.toString(),
+            } as Asset
+            console.log(token)
+            return token
+          })
+          .filter((asset?: Asset) => !!asset)
       } catch (error) {
         return [] as Asset[]
       }

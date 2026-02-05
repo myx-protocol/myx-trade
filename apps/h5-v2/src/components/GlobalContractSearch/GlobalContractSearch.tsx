@@ -27,15 +27,19 @@ export const GlobalContractSearch = ({
       onClose={onClose}
       anchor="bottom"
       sx={{
-        '& .MuiDrawer-paper': {
+        '& .MuiPaper-root': {
           width: '100%',
           backgroundColor: '#18191F',
-          borderRadius: '16px',
+          borderTopLeftRadius: '16px',
+          borderTopRightRadius: '16px',
           height: 'calc(var(--vh, 1vh) * 70)',
+        },
+        '& .drawer-body': {
+          flex: '1',
         },
       }}
     >
-      <div className="flex h-[637px] max-h-[80vh] flex-col pb-[16px]">
+      <div className="flex h-full max-h-[80vh] flex-col pb-[16px]">
         <GlobalSearchHeader onClose={close} />
         <SearchTabs />
         <div className="px-[12px] py-[10px]">
