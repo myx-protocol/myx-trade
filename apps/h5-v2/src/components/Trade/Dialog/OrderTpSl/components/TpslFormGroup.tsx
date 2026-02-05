@@ -230,11 +230,9 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
           <NumberInputPrimitive
             allowNegative={true}
             value={targetRate}
-            allowLeadingZeros
-            onValueChange={({ value, floatValue }, { source }) => {
+            onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
-                // 用 value 保留负号输入过程（如只输入 "-" 时 floatValue 为 undefined）
-                setTargetRate(value ?? floatValue?.toString() ?? '')
+                setTargetRate(floatValue?.toString() ?? '')
                 if (tpslType === TpSlTypeEnum.ROI) {
                   const radio = parseBigNumber(floatValue ?? 0).div(100)
                   const totalPnl = parseBigNumber(order.collateralAmount).mul(radio)

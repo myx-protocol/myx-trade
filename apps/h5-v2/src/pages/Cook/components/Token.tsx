@@ -17,6 +17,7 @@ import { t } from '@lingui/core/macro'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { Change } from '@/components/Change.tsx'
 import { Address } from '@/components/Address.tsx'
+import { MarketPoolState } from '@myx-trade/sdk'
 export interface TokenPendingType {
   isLoading: boolean
 }
@@ -74,13 +75,14 @@ export const Token = (props: TokenPendingType | TokenType) => {
               <Box className={'flex flex-1 items-center'}>
                 <span className={'text-[14px] font-[500] text-white'}>{props.label}</span>
                 <span className={'ml-[8px] max-w-[6em] truncate text-[12px]'}>{props.name}</span>
-                {'progress' in props && Number(props?.progress) >= 100 && (
-                  <Tooltips title={t`待上架`}>
-                    <span className={'ml-[8px]'}>
-                      <Primed size={12} />
-                    </span>
-                  </Tooltips>
-                )}
+                {'progress' in props &&
+                  (props?.state === MarketPoolState.Primed || Number(props?.progress) >= 100) && (
+                    <Tooltips title={t`待上架`}>
+                      <span className={'ml-[8px]'}>
+                        <Primed size={12} />
+                      </span>
+                    </Tooltips>
+                  )}
               </Box>
               {'progress' in props && (
                 <Box className={'w-[100px] min-w-[100px]'}>
@@ -102,7 +104,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
             )}
           </Box>
 
-          <Box className={'flex flex-1 items-center justify-end gap-[4px] text-[12px] leading-[1]'}>
+          {/*<Box className={'flex flex-1 items-center justify-end gap-[4px] text-[12px] leading-[1]'}>
             {isPending(props) ? (
               <Skeleton width={'50%'} />
             ) : (
@@ -113,7 +115,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
                 </span>
               </>
             )}
-          </Box>
+          </Box>*/}
         </Box>
         <Box className={'flex items-center gap-[4px] text-[12px] leading-[1]'}>
           <Box className={'flex items-center gap-[4px]'}>

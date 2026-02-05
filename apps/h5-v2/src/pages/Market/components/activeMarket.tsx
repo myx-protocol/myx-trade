@@ -3,8 +3,8 @@ import { Trans } from '@lingui/react/macro'
 import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { WalletLine } from '@/components/Icon'
 import { Tips } from '@/pages/Market/components/tips.tsx'
-import { formatUnits, getBalanceOf, market as _Market, pool as Pool } from '@myx-trade/sdk'
-import { useCallback, useContext, useState } from 'react'
+import { formatUnits, getBalanceOf, pool as Pool } from '@myx-trade/sdk'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { TokenContext } from '@/pages/Market/context.ts'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
@@ -20,8 +20,6 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { showErrorToast } from '@/config/error'
-// import { useContext } from 'react'
-// import { TokenContext } from '@/pages/Market/context.ts'
 
 export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
   const { chainId } = useParams()
@@ -29,22 +27,10 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
   const { poolId, market } = useContext(TokenContext)
   const onAction = useWalletActions()
   const [loading, setLoading] = useState<boolean>(false)
-  // const market = useMemo(() => {
-  //   if(chainId) {
-  //     return markets?.find(_market => _market.chainId === )
-  //   }
-  // }, [chainId, markets])
-  const { data: fee } = useQuery({
-    queryKey: [{ key: 'market_fee_Info' }, chainId, market],
-    enabled: !!market?.marketId,
-    queryFn: async () => {
-      if (!chainId || !market?.marketId) return null
-      const result = await _Market.getOracleFee(+chainId, market?.marketId)
-      console.log(result)
 
-      return result ? formatUnits(result, market.quoteDecimals) : undefined
-    },
-  })
+  const fee = useMemo(() => {
+    return market?.oracleFeeUsd
+  }, [market])
   const { data: quoteLpDetail } = useQuery({
     queryKey: [{ key: 'QuotePoolDetail' }, chainId, poolId],
     queryFn: async () => {
@@ -135,13 +121,11 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
           </Box>
           <Box className={'flex items-center justify-between gap-[8px]'}>
             <Box className={'text-regular flex-1 font-[500]'}>
-              ${formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
+              ${formatNumberPrecision(fee, COMMON_PRICE_DISPLAY_DECIMALS)}
             </Box>
             <Box className={'flex flex-1 items-center justify-end gap-[4px]'}>
               <WalletLine className={'text-secondary'} size={14} />
-              <span className={'font-[500]'}>
-                {formatNumberPrecision(balance, COMMON_PRICE_DISPLAY_DECIMALS)}
-              </span>
+              <span className={'font-[500]'}>{formatNumber(balance, { showUnit: false })}</span>
               <span className={'font-[500]'}>{quoteLpDetail?.quoteSymbol}</span>
             </Box>
           </Box>
