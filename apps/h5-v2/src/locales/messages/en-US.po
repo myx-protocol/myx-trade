@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-22 02:12\n"
+"PO-Revision-Date: 2026-02-02 10:48\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -64,6 +64,7 @@ msgstr ""
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
@@ -148,6 +149,7 @@ msgstr ""
 msgid "7-day rebate"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
@@ -394,11 +396,13 @@ msgstr ""
 msgid "Assets"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 number"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 upper case letter"
@@ -899,6 +903,10 @@ msgstr ""
 msgid "Contract"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "contract runner does not support gas estimation"
+msgstr ""
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
 msgstr "Conversion amount mismatch, please try again"
@@ -1055,7 +1063,7 @@ msgstr ""
 
 #: src/components/SafeList/index.tsx
 msgid "Degen Audit"
-msgstr ""
+msgstr "Audit"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -1097,6 +1105,10 @@ msgstr "Dispute not allowed"
 
 #: src/components/Footer/index.tsx
 msgid "Documentation"
+msgstr ""
+
+#: src/components/Trade/components/DontShowAgain/index.tsx
+msgid "Dont show again"
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
@@ -1196,6 +1208,7 @@ msgid "Enter your email"
 msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
@@ -1262,7 +1275,7 @@ msgstr "Signature expired"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612InvalidSigner(address,address)"
-msgstr "Invalid signer (address,address)"
+msgstr "Invalid signer"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderExpiredRequest(uint48)"
@@ -1347,7 +1360,7 @@ msgstr "Transfer failed()"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed(address,uint256)"
-msgstr "Transfer failed (address,uint256)"
+msgstr "Transfer failed"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseCollateral(uint256,uint256)"
@@ -1605,6 +1618,8 @@ msgid "H"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/OrderHistory.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
@@ -1682,7 +1697,12 @@ msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/SettingDrawer.tsx
 msgid "Import Seamless Key"
+msgstr ""
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Import seamless key success"
 msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
@@ -1738,23 +1758,23 @@ msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
-msgstr "Insufficient balance()"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(address,uint256,uint256)"
-msgstr "Insufficient balance (address,uint256,uint256)"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(uint256,uint256)"
-msgstr "Insufficient balance (uint256,uint256)"
+msgstr "Insufficient balance"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(PositionId,uint256)"
-msgstr "Insufficient margin (PositionId,uint256)"
+msgstr "Insufficient margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(uint256,uint256)"
-msgstr "Insufficient margin (uint256,uint256)"
+msgstr "Insufficient margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeAllowance(address,uint256,uint256)"
@@ -1762,27 +1782,27 @@ msgstr "Fee allowance insufficient (address,uint256,uint256)"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeBalance(address,uint256,uint256)"
-msgstr "Fee balance insufficient (address,uint256,uint256)"
+msgstr "Fee balance insufficient"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFreeCollateral(PositionId,uint256)"
-msgstr "Insufficient available margin (PositionId,uint256)"
+msgstr "Insufficient available margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLiquidity(uint256,uint256,uint256)"
-msgstr "Insufficient liquidity (uint256,uint256,uint256)"
+msgstr "Insufficient liquidity"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLockedCollateral(PositionId,uint256)"
-msgstr "Insufficient locked margin (PositionId,uint256)"
+msgstr "Insufficient locked margin"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientOutputAmount()"
-msgstr "Insufficient amount()"
+msgstr "Insufficient amount"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientPoolProfit()"
-msgstr "Insufficient pool profit()"
+msgstr "Insufficient pool profit"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientQuoteIn(uint256,uint256,uint256)"
@@ -1806,6 +1826,10 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid Market"
+msgstr ""
+
+#: src/pages/Market/index.tsx
+msgid "Invalid token address"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2176,6 +2200,10 @@ msgstr ""
 msgid "Market close success"
 msgstr ""
 
+#: src/pages/Market/index.tsx
+msgid "market is created"
+msgstr ""
+
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
 msgstr ""
@@ -2338,7 +2366,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "No"
 msgstr ""
 
@@ -2679,6 +2706,10 @@ msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
+msgstr ""
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Password"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
@@ -3216,10 +3247,6 @@ msgstr ""
 msgid "Search name or paste address"
 msgstr ""
 
-#: src/components/Seamless/SelectAccountDialog/index.tsx
-msgid "Select  Account"
-msgstr ""
-
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
 msgstr ""
@@ -3230,6 +3257,10 @@ msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Select a vault to provide initial liquidity"
+msgstr ""
+
+#: src/components/Seamless/SelectAccountDialog/index.tsx
+msgid "Select Account"
 msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
@@ -3825,6 +3856,10 @@ msgstr "Unsupported fee tier (uint8)"
 msgid "Updated successfully"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Upfront cost exceeds account balance"
+msgstr ""
+
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Upgrade"
 msgstr ""
@@ -3845,6 +3880,13 @@ msgstr ""
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "User Rejected"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
@@ -3995,7 +4037,6 @@ msgstr ""
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "Yes"
 msgstr ""
 

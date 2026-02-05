@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-01-22 02:12\n"
+"PO-Revision-Date: 2026-02-02 10:48\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -64,6 +64,7 @@ msgstr " 交易 "
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
@@ -113,7 +114,7 @@ msgstr "{pendingTransactionsLength} 笔交易正在确认"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
-msgstr "账户可用余额不足 (uint256,uint256)"
+msgstr "账户可用余额不足"
 
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
 msgid "1-day rebate"
@@ -148,6 +149,7 @@ msgstr "30日返佣"
 msgid "7-day rebate"
 msgstr "7日返佣"
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
@@ -173,7 +175,7 @@ msgstr "访问控制确认失败()"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlUnauthorizedAccount(address,bytes32)"
-msgstr "未授权账户 (address,bytes32)"
+msgstr "未授权账户"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -232,7 +234,7 @@ msgstr "地址"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AddressEmptyCode(address)"
-msgstr "地址不可为空 (address)"
+msgstr "地址不可为空"
 
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 msgid "Adjust Leverage"
@@ -317,19 +319,19 @@ msgstr "Alpha"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyClaimed(CaseId,address)"
-msgstr "已领取 (CaseId,address)"
+msgstr "已领取"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyInitialized()"
-msgstr "已初始化()"
+msgstr "已初始化"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyMinted()"
-msgstr "已铸造()"
+msgstr "已铸造"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyVoted()"
-msgstr "已投票()"
+msgstr "已投票"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
@@ -384,7 +386,7 @@ msgstr "您确定要"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ArrayEmpty()"
-msgstr "不可为空()"
+msgstr "不可为空"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Asset"
@@ -394,11 +396,13 @@ msgstr "资产"
 msgid "Assets"
 msgstr "资产"
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 number"
 msgstr "至少 1 个数字"
 
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "At least 1 upper case letter"
@@ -415,15 +419,15 @@ msgstr "授权"
 
 #: src/components/SettingDrawer.tsx
 msgid "Authorize seamless account failed"
-msgstr ""
+msgstr "无感账户授权失败"
 
 #: src/components/SettingDrawer.tsx
 msgid "Authorize seamless account success"
-msgstr ""
+msgstr "无感账户授权成功"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
-msgstr "授权中"
+msgstr "立即授权"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Auto Margin"
@@ -528,7 +532,7 @@ msgstr "蓝筹"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BondNotReleased()"
-msgstr "保证金未解锁()"
+msgstr "保证金未解锁"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
@@ -545,7 +549,7 @@ msgstr "跨链/兑换"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerAlreadyExists()"
-msgstr "经纪商已存在()"
+msgstr "经纪商已存在"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerNotFound()"
@@ -609,7 +613,7 @@ msgstr "已取消"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseAppealNotFinished()"
-msgstr "申诉未结束()"
+msgstr "申诉未结束"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseCanNotAppeal()"
@@ -617,27 +621,27 @@ msgstr "无法申诉()"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineNotReached()"
-msgstr "未到截止日期()"
+msgstr "未到截止日期"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineReached()"
-msgstr "已到截止日期()"
+msgstr "已到截止日期"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotAccepted()"
-msgstr "案件未被接受()"
+msgstr "案件未被接受"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotExist(CaseId)"
-msgstr "案件不存在 (CaseId)"
+msgstr "案件不存在"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotInVoting()"
-msgstr "案件未处于投票中()"
+msgstr "案件未处于投票中"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseRespondentAppealed(CaseId,address)"
-msgstr "反诉中 (CaseId,address)"
+msgstr "反诉中"
 
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -899,9 +903,13 @@ msgstr "继续使用无感账户"
 msgid "Contract"
 msgstr "合约"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "contract runner does not support gas estimation"
+msgstr "无法估算 Gas 费，请稍后再试"
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
-msgstr "兑换金额不匹配，请重试 (uint256,uint256)"
+msgstr "兑换金额不匹配，请重试"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -914,7 +922,7 @@ msgstr "Cook"
 
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
-msgstr "新创建的"
+msgstr "新创建"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -1055,7 +1063,7 @@ msgstr "默认邀请"
 
 #: src/components/SafeList/index.tsx
 msgid "Degen Audit"
-msgstr "Degen 审计"
+msgstr "审计"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -1081,7 +1089,7 @@ msgstr "开发者"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DifferentMarket(PoolId,PoolId)"
-msgstr "市场不一致 (PoolId,PoolId)"
+msgstr "市场不一致"
 
 #: src/components/Footer/index.tsx
 msgid "Discord"
@@ -1098,6 +1106,10 @@ msgstr "不允许发起申诉()"
 #: src/components/Footer/index.tsx
 msgid "Documentation"
 msgstr "文档"
+
+#: src/components/Trade/components/DontShowAgain/index.tsx
+msgid "Dont show again"
+msgstr "不再显示"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
@@ -1196,6 +1208,7 @@ msgid "Enter your email"
 msgstr "输入您的邮箱"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
@@ -1234,11 +1247,11 @@ msgstr "ERC1967 不可支付()"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientAllowance(address,uint256,uint256)"
-msgstr "授权额度不足 (address,uint256,uint256)"
+msgstr "授权额度不足"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientBalance(address,uint256,uint256)"
-msgstr "余额不足 (address,uint256,uint256)"
+msgstr "余额不足"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidApprover(address)"
@@ -1270,7 +1283,7 @@ msgstr "ERC2771 请求已过期 (uint48)"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderInvalidSigner(address,address)"
-msgstr "ERC2771 无效的签名者 (address,address)"
+msgstr "无效的签名者"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderMismatchedValue(uint256,uint256)"
@@ -1286,11 +1299,11 @@ msgstr "ERC721 所有者不正确 (address,uint256,address)"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InsufficientApproval(address,uint256)"
-msgstr "ERC721 授权不足 (address,uint256)"
+msgstr "授权额度不足"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidApprover(address)"
-msgstr "ERC721 无效的授权者 (address)"
+msgstr "无效的授权者"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidOperator(address)"
@@ -1605,6 +1618,8 @@ msgid "H"
 msgstr "小时"
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/OrderHistory.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
@@ -1682,8 +1697,13 @@ msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
 msgstr "如果问题仍然存在，请加入 <0>MYX Discord</0> 社区寻求支持"
 
 #: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/SettingDrawer.tsx
 msgid "Import Seamless Key"
 msgstr "导入无感密钥"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Import seamless key success"
+msgstr "导入无感密钥成功"
 
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "Inactive"
@@ -1807,6 +1827,10 @@ msgstr "简介"
 #: src/pages/Market/index.tsx
 msgid "Invalid Market"
 msgstr "无效市场"
+
+#: src/pages/Market/index.tsx
+msgid "Invalid token address"
+msgstr "无效代币地址"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAccountNonce(address,uint256)"
@@ -2025,7 +2049,7 @@ msgstr "绑定邀请关系"
 #: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "Liq"
-msgstr "流动性"
+msgstr "Liq"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -2176,6 +2200,10 @@ msgstr "市价平仓"
 msgid "Market close success"
 msgstr "市价平仓成功"
 
+#: src/pages/Market/index.tsx
+msgid "market is created"
+msgstr "市场已创建"
+
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
 msgstr "市价"
@@ -2223,7 +2251,7 @@ msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0}
 #: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
-msgstr "市值"
+msgstr "MC"
 
 #: src/components/Footer/index.tsx
 msgid "Medium"
@@ -2338,7 +2366,6 @@ msgstr "下一步"
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "No"
 msgstr "否"
 
@@ -2679,7 +2706,11 @@ msgstr "从钱包中支付：{0} {1}"
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
-msgstr ""
+msgstr "交易对/Vol"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+msgid "Password"
+msgstr "密码"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Search.tsx
@@ -3088,7 +3119,7 @@ msgstr "重置密码"
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
-msgstr ""
+msgstr "重置您的密码"
 
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Retain Genesis LP Share"
@@ -3104,11 +3135,11 @@ msgstr "撤销"
 
 #: src/components/SettingDrawer.tsx
 msgid "Revoke seamless account failed"
-msgstr ""
+msgstr "撤销无感账户授权失败"
 
 #: src/components/SettingDrawer.tsx
 msgid "Revoke seamless account success"
-msgstr ""
+msgstr "撤销无感账户授权成功"
 
 #: src/store/transactions/options.ts
 msgid "Reward Claim"
@@ -3216,10 +3247,6 @@ msgstr "搜索历史"
 msgid "Search name or paste address"
 msgstr "搜索名称或粘贴地址"
 
-#: src/components/Seamless/SelectAccountDialog/index.tsx
-msgid "Select  Account"
-msgstr "选择账户"
-
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
 msgstr "选择一个代币"
@@ -3231,6 +3258,10 @@ msgstr "选择一个代币"
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Select a vault to provide initial liquidity"
 msgstr "选择一个金库以提供初始流动性"
+
+#: src/components/Seamless/SelectAccountDialog/index.tsx
+msgid "Select Account"
+msgstr "选择账户"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Select Chain"
@@ -3356,7 +3387,7 @@ msgstr "仓位({0})"
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 msgid "SL"
-msgstr ""
+msgstr "止损"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
@@ -3653,7 +3684,7 @@ msgstr "总供应量"
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 msgid "TP"
-msgstr ""
+msgstr "止盈"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
@@ -3825,6 +3856,10 @@ msgstr "不支持的费用等级 (uint8)"
 msgid "Updated successfully"
 msgstr "更新成功"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Upfront cost exceeds account balance"
+msgstr "可用余额不足"
+
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Upgrade"
 msgstr "升级"
@@ -3846,6 +3881,13 @@ msgstr "通过交易升级到 VIP{0}"
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
 msgstr "占用保证金"
+
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "User Rejected"
+msgstr "用户已拒绝"
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "User who prefer classic DeFi UX"
@@ -3995,7 +4037,6 @@ msgstr "Y"
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
 #: src/components/SafeList/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
 msgid "Yes"
 msgstr "是"
 

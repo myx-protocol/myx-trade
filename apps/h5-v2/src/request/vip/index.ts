@@ -27,7 +27,7 @@ export const listFeeLevel = async (riskTier: number) => {
   return rs
 }
 
-export const fetchVipInfo = async (account: string, accessToken: string) => {
+export const fetchVipInfo = async (account: string, accessToken: string = '') => {
   const rs: VipInfoResponse = await http.get(`${fetchVipApiBaseUrl()}/status`, undefined, {
     headers: {
       myx_openapi_access_token: accessToken,
