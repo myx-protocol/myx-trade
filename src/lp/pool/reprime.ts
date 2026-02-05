@@ -5,9 +5,9 @@ import { getAccount, getPoolManagerContract } from "@/web3/providers";
 import { checkParams } from "@/common/checkParams";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common";
 import { getPoolInfo } from "@/lp/getPoolInfo";
-import { getOracleFee } from "@/lp/market";
-import { formatUnits } from "ethers";
+import { formatUnits, parseUnits } from "ethers";
 import { getContractAddressByChainId } from "@/config/address";
+import sdk from "@/web3";
 
 export const reprime = async (chainId: ChainId, poolId: string, marketId:string) => {
   try {
@@ -17,12 +17,17 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId:string)
       throw new Error(Errors[ErrorCode.Invalid_Params])
     }
     const account = await getAccount (chainId);
-    const _amount = await getOracleFee(chainId, marketId);
+    const markets = sdk?.Markets?.length ? sdk?.Markets : ( await sdk.getMarkets());
+    const market = (markets || [])?.find((m) => m.chainId === chainId && m.marketId === marketId);
+    if (!market) {
+      throw new Error('Invalid Market');
+    }
+    
+    const _amount = parseUnits(market.oracleFeeUsd.toString(), pool.quoteDecimals)
     
     if (!_amount) {
       throw new Error('Invalid Market');
     }
-    // console.log(Number(formatUnits(_amount, pool.quoteDecimals)))
     
     await checkParams ({
       tokenAddress: pool.quoteToken,
