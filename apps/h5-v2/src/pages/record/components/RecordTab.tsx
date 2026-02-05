@@ -6,7 +6,7 @@ import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { useEffect, useRef } from 'react'
 
 export const RecordTab = ({ tab, setTab }: { tab: TabType; setTab: (tab: TabType) => void }) => {
-  const positionList = useGetPositionList()
+  const positionList = useGetPositionList(true)
   const orderList = useGetOrderList()
   const tabsRef = useRef<HTMLDivElement>(null)
 

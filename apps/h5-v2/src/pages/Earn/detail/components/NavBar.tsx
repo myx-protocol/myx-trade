@@ -12,6 +12,7 @@ import { Mode } from '@/pages/Earn/type.ts'
 import { usePoolContext } from '../../hook'
 import { RatingLevel } from '@/components/Rating.tsx'
 import { formatNumber } from '@/utils/number.ts'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
@@ -54,7 +55,14 @@ export const NavBar = ({ className, children }: { className?: string; children?:
                 {quoteLpDetail?.mBaseQuoteSymbol}
               </span>
 
-              <Box className={'text-secondary'} onClick={() => openGlobalSearch()}>
+              <Box
+                className={'text-secondary'}
+                onClick={() =>
+                  openGlobalSearch({
+                    defaultTab: SearchTypeEnum.Earn,
+                  })
+                }
+              >
                 <Dropdown size={10} />
               </Box>
             </Box>

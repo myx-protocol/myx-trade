@@ -3,17 +3,19 @@ import { Empty } from '@/components/Empty'
 import { useQuery } from '@tanstack/react-query'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { usePositionStore } from '@/store/position/createStore'
 export const FinanceList = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address } = useWalletConnection()
+  const { selectChainId } = usePositionStore()
   const { data: financeData, isLoading } = useQuery({
-    queryKey: ['financeList', address],
+    queryKey: ['financeList', address, selectChainId],
     enabled: Boolean(address && !!client && clientIsAuthenticated),
     queryFn: async () => {
       if (!client || !clientIsAuthenticated) return null
       const res = await client.account.getTradeFlow(
         {
-          chainId: 0,
+          chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
           poolId: undefined,
         },
         address ?? '',

@@ -19,6 +19,7 @@ import { CancelAllOrdersDialog } from '../Trade/components/CancelAllOrdersDialog
 import { CloseAllPositionDialog } from '../Trade/components/CloseAllPositionDialog'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import { useMount } from 'ahooks'
 
 const Record = () => {
   const [tab, setTab] = React.useState<TabType>(TabType.POSITION)
@@ -32,11 +33,16 @@ const Record = () => {
   } = usePositionStore()
   const { search } = useLocation()
   const { setSymbolInfo } = useGlobalStore()
+  const { setHideOthersSymbols } = usePositionStore()
   const params = new URLSearchParams(search)
   const chainId = params.get('chainId') ?? ''
   const poolId = params.get('poolId') ?? ''
   const positionList = useGetPositionList(true)
   const orderList = useGetOrderList(true)
+
+  useMount(() => {
+    setHideOthersSymbols(false)
+  })
 
   const { getDetail } = useMarketDetail({
     poolId: poolId || '',
@@ -98,6 +104,7 @@ const Record = () => {
       <HideOuterSymbols
         checked={hideOuterSymbols}
         onChange={setHideOuterSymbols}
+        showHideOther={false}
         right={renderCloseAllButton()}
       />
       {tab === TabType.POSITION && <PositionList />}
