@@ -19,9 +19,6 @@ import { Empty } from '@/components/Empty.tsx'
 import { ClaimRewardsDialog } from '@/components/CookDetail/Dialog/ClaimRewards.tsx'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
-import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import Big from 'big.js'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
 import { formatNumber } from '@/utils/number.ts'
@@ -158,12 +155,12 @@ export const Assets = () => {
       pool?.basePoolToken,
       showAllAssets,
     ],
-    enabled: !!account && !!accessToken,
+    enabled: !!account,
     queryFn: async () => {
       // console.log('getMineBaseLpAssets:', poolId, pool?.basePoolToken, accessToken)
-      if (!account || !accessToken) return [] as LpAsset[]
+      if (!account) return [] as LpAsset[]
       if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
-      const request = await getLpAssets(account, accessToken, {
+      const request = await getLpAssets(account, accessToken || '', {
         poolType: PoolType.base,
         poolId: showAllAssets ? undefined : poolId,
         poolToken: showAllAssets ? undefined : pool?.basePoolToken,
