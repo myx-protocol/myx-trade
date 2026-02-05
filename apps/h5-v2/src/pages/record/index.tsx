@@ -20,6 +20,7 @@ import { CloseAllPositionDialog } from '../Trade/components/CloseAllPositionDial
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { useMount } from 'ahooks'
+import { t } from '@lingui/core/macro'
 
 const Record = () => {
   const [tab, setTab] = React.useState<TabType>(TabType.POSITION)
@@ -99,6 +100,7 @@ const Record = () => {
   }
   return (
     <div>
+      <title>{t`My trades - Permissionless Listing for Any Asset | MYX`}</title>
       <SecondHeader title={<Trans>My trades</Trans>} />
       <RecordTab tab={tab} setTab={setTab} />
       <HideOuterSymbols

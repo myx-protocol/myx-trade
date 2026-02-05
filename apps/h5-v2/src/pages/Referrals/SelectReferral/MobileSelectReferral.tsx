@@ -35,6 +35,7 @@ export function MobileSelectReferral() {
 
   return (
     <div>
+      <title>{t`Referral - Invite & Earn Lifetime Commissions | MYX`}</title>
       <SecondHeader title={<Trans>Select Referral</Trans>} />
       <Stack direction="column" px="20px" flex={1} height="100%">
         <Box flex={1} minHeight={0} maxHeight="100%" overflow="auto">

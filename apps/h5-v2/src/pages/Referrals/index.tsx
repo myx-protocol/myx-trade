@@ -12,6 +12,7 @@ import { isSupportedChainFn } from '@/config/chain'
 import { useAccessParams } from '@/hooks/useAccessParams'
 import { SecondHeader } from '@/components/SecondHeader'
 import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 const Referrals = () => {
   const { isConnected, address, chainId, switchChain } = useWalletConnection()
   const [ratio, setRatio] = useState<number>(0)
@@ -58,6 +59,7 @@ const Referrals = () => {
 
   return (
     <div>
+      <title>{t`Referral - Invite & Earn Lifetime Commissions | MYX`}</title>
       <SecondHeader title={<Trans>Referrals</Trans>} />
       <div className="flex justify-center bg-[#0B090B] px-4 pb-[50px] lg:px-5">
         <div className="flex w-full flex-col items-center lg:min-w-[1440px]">

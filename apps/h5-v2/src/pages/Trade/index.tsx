@@ -17,6 +17,8 @@ import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
 
 import useGlobalStore from '@/store/globalStore'
+import { decimalToPercent, formatNumber } from '@/utils/number'
+import { t } from '@lingui/core/macro'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
@@ -104,12 +106,27 @@ export const Trade = () => {
     }
   }, [symbolInfo, client, chainId])
 
+  const tickerData = useMarketStore((state) => state.tickerData[symbolInfo?.poolId || ''])
+
+  const latestPrice = tickerData?.price || 0
+  const change = tickerData?.change || 0
+  const symbol =
+    symbolInfo?.baseSymbol && symbolInfo.quoteSymbol
+      ? `${symbolInfo.baseSymbol}${symbolInfo.quoteSymbol}`
+      : '--'
+
   if (!chainId || !poolId) {
     return <Navigate to={DEFAULT_PAIR_PATH} />
   }
 
   return (
     <>
+      <title>{t`${formatNumber(latestPrice, {
+        showUnit: false,
+      })} | ${symbol} | ${decimalToPercent(change, {
+        showSign: false,
+        removeTrailingZeros: true,
+      })} | MYX`}</title>
       <TradePanel />
       <LeverageDialog />
       {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
