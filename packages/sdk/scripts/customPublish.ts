@@ -11,9 +11,11 @@ const loadingAdapter = async <T = any>(message: string, fn: () => T | Promise<T>
     try {
         const result = await fn();
         spinner.succeed();
+        spinner.stop()
         return result;
     } catch (error) {
         spinner.fail();
+        spinner.stop()
         throw error
     }
 }
@@ -131,7 +133,6 @@ const checkNPMLogined = async () => {
 
 loadingAdapter('检测发布分支', () => checkBranch())
     .then(() => loadingAdapter('检测远程仓库状态', () => checkGitRemote()))
-loadingAdapter('检测远程仓库状态', () => checkGitRemote())
     .then(() => inquirer.prompt([
         {
             type: 'select',
