@@ -28,7 +28,7 @@ export const Trade = () => {
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
-  const { getDetail } = useMarketDetail({
+  const { getDetail, client: getDetailClient } = useMarketDetail({
     poolId: poolId || '',
     chainId: chainId ? parseInt(chainId) : undefined,
   })
@@ -36,7 +36,7 @@ export const Trade = () => {
   const navigate = useNavigate()
 
   const getMarketDetail = useCallback(() => {
-    if (!chainId || !poolId) return Promise.resolve(null)
+    if (!chainId || !poolId || !getDetailClient) return Promise.resolve(null)
     const _chainId = parseInt(chainId)
 
     getDetail().then((marketDetail) => {
@@ -52,7 +52,7 @@ export const Trade = () => {
         setPoolConfig(res.data as unknown as PoolConfig)
       }
     })
-  }, [chainId, poolId, getDetail, setSymbolInfo, navigate])
+  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, getDetailClient])
 
   useMount(() => {
     if (chainId && poolId) {
