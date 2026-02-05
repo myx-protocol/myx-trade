@@ -1,8 +1,8 @@
 import { TrenchSortField } from '@/request/type.ts'
 
 export enum CookType {
-  Cook,
-  Trench,
+  Cook = 'cook',
+  Trench = 'trench',
 }
 export enum CookListType {
   Sniper,

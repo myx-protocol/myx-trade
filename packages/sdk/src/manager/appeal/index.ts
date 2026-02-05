@@ -18,6 +18,8 @@ import {
   GetAppealReconsiderationListParams,
   GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
+  GetWarmholeSignParams,
+  GuardianSignatureItem,
   PostVoteSignatureParams,
 } from "../api/appeal-type";
 
@@ -186,8 +188,8 @@ export class Appeal extends BaseMyxClient {
    */
   async claimReimbursement(
     caseId: number,
-    baseAmount: number,
-    quoteAmount: number,
+    baseAmount: string,
+    quoteAmount: string,
     merkleProof: BytesLike[]
   ) {
     const contract = await this.getReimbursementContract();
@@ -220,6 +222,40 @@ export class Appeal extends BaseMyxClient {
     const contract = await this.getDisputeCourtContract();
     const configuration = await contract.getDisputeConfiguration();
     return configuration;
+  }
+
+  /**
+   * 
+   * vote node for submit appeal
+   */
+  async submitAppealByVoteNode(poolId: string, response: string, guardianSignatures: GuardianSignatureItem[]) {
+    const contract = await this.getDisputeCourtContract();
+    const gasPrice = await this.client.utils.getGasPriceByRatio()
+    const gasLimit = await this.client.utils.getGasLimitByRatio(await contract.fileDisputeFromStaker.estimateGas(poolId, response, guardianSignatures))
+    const tx = await contract.fileDisputeFromStaker(poolId, response, guardianSignatures, {
+      gasLimit,
+      gasPrice,
+    })
+    const receipt = await tx.wait()
+    const DisputeFiledLog = receipt?.logs.find((item: EventLog | Log) => {
+      if ((item as EventLog).eventName === "DisputeFiled") {
+        return true;
+      }
+      return false;
+    });
+    if (!DisputeFiledLog || !receipt) {
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "DisputeFiledLog not found"
+      );
+    }
+    const caseId = (DisputeFiledLog as EventLog).args.getValue(
+      "caseId"
+    ) as bigint;
+    return {
+      tx: receipt,
+      caseId,
+    }
   }
 
   async appealReconsideration(
@@ -333,5 +369,9 @@ export class Appeal extends BaseMyxClient {
 
   async getMyAppealCount() {
     return this.client.api.getMyAppealCount();
+  }
+
+  async getWarmholeSign(params: GetWarmholeSignParams) {
+    return this.client.api.getWarmholeSign(params)
   }
 }

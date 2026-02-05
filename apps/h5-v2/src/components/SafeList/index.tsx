@@ -3,7 +3,7 @@ import { ArrowDown } from '../Icon'
 import GoplusLogo from '@/assets/images/third/goplus-logo.svg'
 import Security from '../Icon/set/Security'
 import Danger from '../Icon/set/Danger'
-import { useSecurityInfo } from '@/api'
+import { isValidSafeItem, useSecurityInfo } from '@/api'
 import { decimalToPercent } from '@/utils/number'
 import Big from 'big.js'
 import WarningLine from '@/components/Icon/set/WarningLine.tsx'
@@ -84,7 +84,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
         )}
 
         {/* proxy contract */}
-        {securityInfo?.is_proxy && (
+        {isValidSafeItem(securityInfo?.is_proxy) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Proxy Contract</Trans>
@@ -103,7 +103,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
         )}
 
         {/* Mintable */}
-        {securityInfo?.is_mintable && (
+        {isValidSafeItem(securityInfo?.is_mintable) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Mintable</Trans>
@@ -124,7 +124,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
         )}
 
         {/* Blacklist*/}
-        {securityInfo?.is_blacklisted && (
+        {isValidSafeItem(securityInfo?.is_blacklisted) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Blacklist</Trans>
@@ -142,7 +142,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
           </div>
         )}
         {/* Whitelist*/}
-        {securityInfo?.is_whitelisted && (
+        {isValidSafeItem(securityInfo?.is_whitelisted) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Whitelist</Trans>
@@ -160,7 +160,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo?.buy_tax && (
+        {isValidSafeItem(securityInfo?.buy_tax) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Buy Tax</Trans>
@@ -178,7 +178,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
           </div>
         )}
         {/* Buy Tax */}
-        {securityInfo?.sell_tax && (
+        {isValidSafeItem(securityInfo?.sell_tax) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Sell Tax</Trans>
@@ -196,7 +196,7 @@ export const SafeList = ({ chainId, address, poolId, className = '' }: SafeListP
           </div>
         )}
         {/* Top 10 Holders  */}
-        {securityInfo?.top10_holders_percentage && (
+        {isValidSafeItem(securityInfo?.top10_holders_percentage) && (
           <div className="flex items-center justify-between">
             <p className="text-[#848E9C]">
               <Trans>Top 10 Holders</Trans>

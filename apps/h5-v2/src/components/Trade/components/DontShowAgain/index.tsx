@@ -1,5 +1,6 @@
 import { CheckBox } from '@/components/UI/CheckBox'
 import { FormControlLabel } from '@/components/UI/FormControlLabel'
+import { Trans } from '@lingui/react/macro'
 
 export const DontShowAgain = ({
   onChange,
@@ -11,7 +12,11 @@ export const DontShowAgain = ({
   return (
     <FormControlLabel
       control={<CheckBox onChange={() => onChange(!checked)} checked={checked} />}
-      label={<p>Dont show again</p>}
+      label={
+        <p>
+          <Trans>Dont show again</Trans>
+        </p>
+      }
     />
   )
 }

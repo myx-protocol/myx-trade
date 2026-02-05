@@ -1807,16 +1807,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },

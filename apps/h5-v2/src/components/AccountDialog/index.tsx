@@ -51,7 +51,7 @@ export const AccountDialog = () => {
       <div className="mt-[32px] flex items-center justify-between gap-[4px]">
         <div className="flex items-center gap-[10px]">
           <img src={avatarIcon} className="h-[32px] w-[32px] rounded-[50%]" />
-          <div className="ml-[10px] flex flex-col gap-[4px]">
+          <div className="flex flex-col gap-[4px]">
             <div className="flex items-center gap-[10px] text-[white]">
               <span className="text-[14px] font-[500]">{encryptionAddress(address)}</span>
               <Copy content={address} />
@@ -94,8 +94,16 @@ export const AccountDialog = () => {
                   return
                 }
 
-                setTradeMode(TradeMode.Seamless)
-                // setUnlockAccountDialogOpen(true)
+                const seamlessAccount = seamlessAccountList.findIndex(
+                  (account) => account.masterAddress === address,
+                )
+
+                if (seamlessAccount === -1) {
+                  setSeamlessPasswordDialogOpen(true)
+                  return
+                }
+
+                setUnlockAccountDialogOpen(true)
               }}
             >{t`Seamless`}</p>
           </div>

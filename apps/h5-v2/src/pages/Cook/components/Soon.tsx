@@ -81,7 +81,7 @@ export const Soon = ({ chainId }: { chainId?: number }) => {
                   liq={item.liquidity}
                   chainId={item.chainId}
                   holder={item.holders}
-                  change={'0'}
+                  change={item.basePriceChange}
                   time={item.tokenCreateTime}
                   progress={item.progress}
                   onClick={() => navigate(`/cook/${item.chainId}/${item.poolId}`)}

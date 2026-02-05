@@ -280,6 +280,7 @@ export const PlaceOrderConfirmDialog = () => {
         ? collateralAmount
         : parseBigNumber(formatSlSize).mul(parseBigNumber(price)).div(leverage).toString()
       if (slType === TpSlTypeEnum.Change) {
+        // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
         const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
         formatSlPrice = parseBigNumber(price).mul(radio).toString()
       } else if (slType === TpSlTypeEnum.ROI) {
@@ -358,7 +359,7 @@ export const PlaceOrderConfirmDialog = () => {
           </p>
         </div>
         {/* order info  */}
-        <div className="rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
+        <div className="mt-[12px] rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
           {/* top */}
           <div className="flex flex-col gap-[16px] border-b-[1px] border-[#31333D] pb-[20px]">
             <FlexRowLayout

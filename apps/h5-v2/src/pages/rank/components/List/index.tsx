@@ -19,6 +19,7 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import type { GetLeaderboardItem } from '@/api'
 import dayjs from 'dayjs'
 import { useSortData } from '@/hooks/useSortData'
+import { usePoolSymbolsAll } from '@/hooks/pool/usePoolSymbolsAll'
 
 export const List = () => {
   const navigate = useNavigate()
@@ -140,6 +141,12 @@ export const List = () => {
     },
     [setSort],
   )
+  const { symbolDataAllMap } = usePoolSymbolsAll()
+  const getSymbol = (chainId: number, poolId: string) => {
+    return symbolDataAllMap[chainId]?.[poolId]
+      ? `${symbolDataAllMap[chainId]?.[poolId]?.baseSymbol}${symbolDataAllMap[chainId]?.[poolId]?.quoteSymbol}`
+      : '--'
+  }
   return (
     <div className="mt-[8px] flex min-h-0 flex-[1_1_0%] flex-col">
       {/* header */}
@@ -196,7 +203,7 @@ export const List = () => {
                       {item.index + 1}
                     </p>
                     <SymbolInfo
-                      symbol={item.data.baseQuoteSymbol}
+                      symbol={getSymbol(item.data.chainId, item.data.poolId)}
                       descriptionText={renderSecondColumnValue(item.data)}
                       baseLogoSize={28}
                       quoteTokenSize={10}

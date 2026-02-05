@@ -23,6 +23,7 @@ import { AmountUnitEnum } from '../../type'
 import { MenuItem, Select, Tooltip } from '@mui/material'
 import useGlobalStore from '@/store/globalStore'
 import dayjs from 'dayjs'
+import { getQuoteTokenInfo } from '@/config/token'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -161,7 +162,7 @@ export const TransferDialogButton = () => {
               {transferType === TransferType.Wallet ? (
                 <div className="mt-[12px] flex items-center gap-[8px]">
                   <img
-                    src={symbolInfo?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
+                    src={getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)?.logoUrl}
                     alt=""
                     className="h-[20px] w-[20px]"
                   />
@@ -182,9 +183,8 @@ export const TransferDialogButton = () => {
                         <img
                           src={
                             isQuote
-                              ? pool?.quoteSymbol === 'USDT'
-                                ? usdtIcon
-                                : usdcIcon
+                              ? getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)
+                                  ?.logoUrl
                               : pool?.baseTokenIcon
                           }
                           alt=""
@@ -253,7 +253,9 @@ export const TransferDialogButton = () => {
                     <div className="flex h-[44px] w-full items-center justify-between">
                       <div className="flex items-center gap-[12px]">
                         <img
-                          src={pool?.quoteSymbol === 'USDT' ? usdtIcon : usdcIcon}
+                          src={
+                            getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)?.logoUrl
+                          }
                           alt=""
                           className="h-[20px] w-[20px]"
                         />

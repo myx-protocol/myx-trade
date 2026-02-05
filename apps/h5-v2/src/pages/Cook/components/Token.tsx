@@ -73,7 +73,7 @@ export const Token = (props: TokenPendingType | TokenType) => {
             <>
               <Box className={'flex flex-1 items-center'}>
                 <span className={'text-[14px] font-[500] text-white'}>{props.label}</span>
-                <span className={'ml-[8px] text-[12px]'}>{props.name}</span>
+                <span className={'ml-[8px] max-w-[6em] truncate text-[12px]'}>{props.name}</span>
                 {'progress' in props && Number(props?.progress) >= 100 && (
                   <Tooltips title={t`待上架`}>
                     <span className={'ml-[8px]'}>

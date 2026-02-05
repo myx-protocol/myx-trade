@@ -214,12 +214,12 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
                   const radio = diff.div(entryPrice).mul(100).toFixed(2)
                   setTargetRate(radio)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
-                  const pnl = parseBigNumber(order.collateralAmount).plus(diff).gte(0)
-                    ? diff.toString()
-                    : '0'
+                  const size = type === 'tp' ? tpSize : slSize
+                  const pnl = parseBigNumber(size).eq(0)
+                    ? '0'
+                    : diff.mul(parseBigNumber(size)).toString()
                   setTargetRate(pnl)
                 }
-                return
               }
             }}
           />
@@ -230,9 +230,11 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
           <NumberInputPrimitive
             allowNegative={true}
             value={targetRate}
-            onValueChange={({ floatValue }, { source }) => {
+            allowLeadingZeros
+            onValueChange={({ value, floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
-                setTargetRate(floatValue?.toString() ?? '')
+                // 用 value 保留负号输入过程（如只输入 "-" 时 floatValue 为 undefined）
+                setTargetRate(value ?? floatValue?.toString() ?? '')
                 if (tpslType === TpSlTypeEnum.ROI) {
                   const radio = parseBigNumber(floatValue ?? 0).div(100)
                   const totalPnl = parseBigNumber(order.collateralAmount).mul(radio)

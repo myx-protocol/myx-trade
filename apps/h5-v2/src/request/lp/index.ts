@@ -84,10 +84,10 @@ export const getQuoteLpList = async (
 // todo api header
 export const getACQuoteLpList = async (
   account: Address,
-  accessToken: string,
+  accessToken: string = '',
   params: QuotePoolListRequest = { limit: DEFAULT_LIMIT, sortOrder: 'desc' },
 ) => {
-  if (!accessToken || !account) return await getQuoteLpList(params)
+  if (!account) return await getQuoteLpList(params)
   return await http.get<QuotePoolResponse>(
     `${baseUrl}/openapi/gateway/scan/market/ac-lp-quote${addQueryParams(params)}`,
     undefined,
@@ -136,7 +136,7 @@ export const getQuoteTokenTop = async (params: {
 // todo api header
 export const getLpAssets = async (
   account: string,
-  accessToken: string,
+  accessToken: string = '',
   params: LpAssetsRequest,
 ) => {
   return await http.get<LpAssetsResponse>(
@@ -169,7 +169,7 @@ export const getAccountHoldings = async (
         period,
         pnl: 'true',
         test: 'true',
-        // blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
+        blockchains: chainIds.map((chainId) => `evm:${chainId}`).join(','),
       })}`,
     )
     .then((result) => {
@@ -220,9 +220,9 @@ export const getMarketData = async (params: MarketDataSearchParams) => {
 }
 
 export const getMarketPoolStateData = async (
-  params: { chainId: number; address: string }[],
+  params: { chainId: number; baseToken: string }[],
 ): Promise<MarketPoolStateDataResponse> => {
-  return await http.post(`${baseUrl}/openapi/gateway/scan/market/state`, params)
+  return await http.post(`${baseUrl}/openapi/gateway/scan/market/base_token_state`, params)
 }
 
 export const getPoolRiskLevelConfig = async (
