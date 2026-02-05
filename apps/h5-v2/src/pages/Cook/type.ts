@@ -1,4 +1,5 @@
 import { TrenchSortField } from '@/request/type.ts'
+import { MarketPoolState } from '@myx-trade/sdk'
 
 export enum CookType {
   Cook = 'cook',
@@ -18,6 +19,7 @@ export type Token = {
   time?: number
   rating?: string
   progress?: string
+  state?: MarketPoolState
 }
 
 export type TokenData = {

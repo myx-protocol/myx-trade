@@ -1,9 +1,10 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { PoolContext } from '@/pages/Cook/context.ts'
 import { useParams } from 'react-router-dom'
 import type { BaseLpDetail } from '@/request/lp/type.ts'
 import { usePoolDetail } from '@/hooks/lp/usePoolDetail.ts'
 import { PoolType } from '@/request/type.ts'
+import { t } from '@lingui/core/macro'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
@@ -15,6 +16,10 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const refreshAsset = async () => {
     setRefreshAssetKey(Date.now())
   }
+
+  useEffect(() => {
+    document.title = t`${lpDetail?.mBaseQuoteSymbol || ''} | High Yield Trench | MYX`
+  }, [lpDetail])
 
   return (
     <PoolContext.Provider

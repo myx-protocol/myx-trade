@@ -59,7 +59,7 @@ export const NavBar = ({ className, children }: { className?: string; children?:
             </Box>
             <Box className={'flex items-center gap-[6px] text-[12px] leading-[1] font-[500]'}>
               <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
-                ${formatNumber(price, { showUnit: false })}
+                ${price && Number(price) > 0 ? formatNumber(price, { showUnit: false }) : '--'}
               </span>
 
               <RiseFallTextPrecent value={Number(baseLpDetail?.lpPriceChange)} />
