@@ -80,6 +80,13 @@ msgstr ""
 msgid "{0}"
 msgstr ""
 
+#. placeholder {0}: formatNumber(latestPrice, { showUnit: false, })
+#. placeholder {1}: decimalToPercent(change, { showSign: false, removeTrailingZeros: true, })
+#: src/pages/Price/index.tsx
+#: src/pages/Trade/index.tsx
+msgid "{0} | {symbol} | {1} | MYX"
+msgstr "{0} | {symbol} | {1} | MYX"
+
 #. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
 #: src/pages/Cook/provider/PoolProvider.tsx
 msgid "{0} | High Yield Trench | MYX"
@@ -1516,7 +1523,7 @@ msgstr ""
 msgid "Fee"
 msgstr ""
 
-#. placeholder {0}: item.executionFeeToken?.toString() || '--'
+#. placeholder {0}: symbolInfo?.quoteSymbol?.toString() || '--'
 #: src/components/Record/Items/OrderHistory.tsx
 msgid "Fee({0})"
 msgstr ""
@@ -1656,6 +1663,10 @@ msgstr ""
 msgid "Helper Center"
 msgstr ""
 
+#: src/components/Record/HideOuterSymbols.tsx
+msgid "Hide other"
+msgstr "Hide other"
+
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
 msgstr ""
@@ -1679,6 +1690,10 @@ msgstr ""
 #: src/components/Tabbar/const.tsx
 msgid "Home"
 msgstr ""
+
+#: src/pages/Home/index.tsx
+msgid "Home - Permissionless Listing for Any Asset | MYX"
+msgstr "Home - Permissionless Listing for Any Asset | MYX"
 
 #: src/404.tsx
 msgid "Homepage"
@@ -2252,6 +2267,10 @@ msgstr "Market not initialized()"
 msgid "Markets"
 msgstr ""
 
+#: src/pages/MarketList/index.tsx
+msgid "Markets -  Permissionless Listing for Any Asset | MYX"
+msgstr "Markets -  Permissionless Listing for Any Asset | MYX"
+
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/Dialog/DialogFilters.tsx
@@ -2345,6 +2364,10 @@ msgstr ""
 #: src/pages/record/index.tsx
 msgid "My trades"
 msgstr ""
+
+#: src/pages/record/index.tsx
+msgid "My trades - Permissionless Listing for Any Asset | MYX"
+msgstr "My trades - Permissionless Listing for Any Asset | MYX"
 
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Home/components/MarketList/index.tsx
@@ -2962,6 +2985,10 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
+#: src/pages/rank/index.tsx
+msgid "Rankings - Permissionless Listing for Any Asset | MYX"
+msgstr "Rankings - Permissionless Listing for Any Asset | MYX"
+
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -3050,6 +3077,11 @@ msgstr ""
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "RefereeRatio"
 msgstr ""
+
+#: src/pages/Referrals/index.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Referral - Invite & Earn Lifetime Commissions | MYX"
+msgstr "Referral - Invite & Earn Lifetime Commissions | MYX"
 
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Referral History"
