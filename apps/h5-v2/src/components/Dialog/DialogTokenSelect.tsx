@@ -8,7 +8,7 @@ import { t } from '@lingui/core/macro'
 import { Tag } from '../Tag'
 import { useQuery } from '@tanstack/react-query'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { ChainId } from '@/config/chain.ts'
+import { ChainId, PROD_ENV_CHAIN_IDS } from '@/config/chain.ts'
 import { getMarketData, getMarketPoolStateData, type MarketDataSearchParams } from '@/request'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
@@ -160,7 +160,7 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
         if (type === 'symbol') {
           params = { chainId: chainId, symbol: keyword }
         } else {
-          params = { chainId: chainId, asset: keyword }
+          params = { chainId: !chainId ? PROD_ENV_CHAIN_IDS?.[0] : chainId, asset: keyword }
         }
         const result = await getMarketData(params)
         if (result.data) {
@@ -227,6 +227,10 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
 
               return token
             })
+            .filter(
+              (item: Asset) =>
+                isSupportedChainId(item.chainId) && (!chainId ? true : item.chainId === chainId),
+            )
         }
 
         return [] as Asset[]

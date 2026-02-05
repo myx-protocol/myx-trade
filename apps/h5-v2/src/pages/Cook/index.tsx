@@ -5,23 +5,24 @@ import { CookListType, CookType, TrenchType } from '@/pages/Cook/type.ts'
 import { Box } from '@mui/material'
 import { TrenchTabBar } from '@/pages/Cook/components/TrenchTabBar.tsx'
 import { Interval } from '@/request/type.ts'
-import { SearchBar } from '@/components/SearchBar.tsx'
+import { t } from '@lingui/core/macro'
 import { Banner } from '@/pages/Cook/components/Banner.tsx'
 import { CookSubBar } from '@/pages/Cook/components/CookSubBar.tsx'
 import { ChainsBar } from './components/ChainsBar'
-import { CookTabs } from '@/pages/Cook/components/CookTabs.tsx'
 import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
 import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
-import { ChainDropDownMenu } from '@/pages/Cook/components/ChainDropDownMenu.tsx'
-import { TrenchList } from '@/pages/Cook/components/TrenchList.tsx'
-import { SearchTypeEnum } from '@myx-trade/sdk'
+import { ChainDropDownMenu } from './components/ChainDropDownMenu'
+import { CookTabs } from '@/pages/Cook/components/CookTabs.tsx'
+import { TrenchList } from './components/TrenchList'
 import { useSearchParams } from 'react-router-dom'
+import { SearchBar } from '@/components/SearchBar.tsx'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
   const [cookType, setCookType] = useState<CookListType>(CookListType.Sniper)
   const [chainId, setChainId] = useState<number | undefined>(undefined)
-  const [interval, setInterval] = useState<Interval | undefined>(Interval["24h"])
+  const [interval, setInterval] = useState<Interval | undefined>(Interval['24h'])
   const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Eligible)
 
   const [age, setAge] = useState<[string, string]>(['', ''])
@@ -31,6 +32,10 @@ const Cook = () => {
   const [liq, setLiq] = useState<[string, string]>(['', ''])
   const [holders, setHolders] = useState<[string, string]>(['', ''])
   const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    document.title = t`Cook - Build High-Yield Pools | MYX`
+  }, [])
 
   useEffect(() => {
     let type = searchParams.get('type')

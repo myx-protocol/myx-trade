@@ -219,6 +219,10 @@ const Market = () => {
     setStep(0)
   }, [chainId, address, curChainId])
 
+  useEffect(() => {
+    document.title = t`Create Market - Permissionless Listing for Any Asset | MYX`
+  }, [])
+
   return (
     <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pb-[50px]">
       <Box className={'bg-deep sticky top-[0] z-[3]'}>
