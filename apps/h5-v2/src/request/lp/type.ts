@@ -61,6 +61,7 @@ export interface NewCook {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 
 export interface CookNewsResponse extends BaseResponse {
@@ -81,6 +82,7 @@ export interface CookSoon {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 export interface CookSoonResponse extends BaseResponse {
   data: CookSoon[]
@@ -205,6 +207,7 @@ export interface BaseLpDetail {
   apr: string
   globalId: number
   mBaseQuoteSymbol: string
+  mQuoteBaseSymbol: string
   state: MarketPoolState
   poolPreTime: number
   totalTvl: string

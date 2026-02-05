@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-02 10:48\n"
+"PO-Revision-Date: 2026-02-05 07:24\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -78,6 +79,16 @@ msgstr " 交易 "
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
 msgstr "{0}"
+
+#. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
+#: src/pages/Cook/provider/PoolProvider.tsx
+msgid "{0} | High Yield Trench | MYX"
+msgstr ""
+
+#. placeholder {0}: lpDetail?.mQuoteBaseSymbol || ''
+#: src/pages/Earn/provider/PoolProvider.tsx
+msgid "{0} | Stable Earn | MYX"
+msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -920,6 +931,10 @@ msgstr "兑换金额不匹配，请重试"
 msgid "Cook"
 msgstr "Cook"
 
+#: src/pages/Cook/index.tsx
+msgid "Cook - Build High-Yield Pools | MYX"
+msgstr ""
+
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
 msgstr "新创建"
@@ -993,6 +1008,10 @@ msgstr "创建市场"
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr "创建市场"
+
+#: src/pages/Market/index.tsx
+msgid "Create Market - Permissionless Listing for Any Asset | MYX"
+msgstr ""
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1140,6 +1159,10 @@ msgstr "在有效期内，您可以享受 <0>VIP{level}</0> 体验"
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
 msgstr "赚取"
+
+#: src/pages/Earn/List.tsx
+msgid "Earn - Stable Yields & Low Risk | MYX"
+msgstr ""
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
@@ -3938,6 +3961,10 @@ msgstr "查看邀请规则"
 msgid "VIP"
 msgstr "VIP"
 
+#: src/pages/VIP/index.tsx
+msgid "VIP - Exclusive Privileges & Fee Discounts | MYX"
+msgstr ""
+
 #. placeholder {0}: configData?.maxVipLevel
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
@@ -4041,7 +4068,7 @@ msgid "Yes"
 msgstr "是"
 
 #. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
-#. placeholder {1}: nextLevelInfo?.vipTier
+#. placeholder {1}: nextMyxLevel?.vipTier
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "You need to hold {0} MYX to upgrade to VIP{1}"
 msgstr "您需要持有 {0} MYX 才能升级到 VIP{1}"
@@ -4649,4 +4676,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
