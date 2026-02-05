@@ -11,7 +11,7 @@ import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { parseBigNumber } from '@/utils/bn'
 
-const RenderTpSl = (order: any) => {
+const RenderTpSl = ({ order }: { order: any }) => {
   if (order.orderType === OrderTypeEnum.Stop) {
     if (order.triggerType === TriggerType.GTE && order.direction === Direction.LONG) {
       return (
@@ -89,7 +89,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
                   </Tag>
                 )}
                 {/* tpsl */}
-                {order.orderType === OrderTypeEnum.Stop && <>{<RenderTpSl order={order} />}</>}
+                {order.orderType === OrderTypeEnum.Stop && <RenderTpSl order={order} />}
                 <Tag type="info">
                   <Trans>Isolated {order.userLeverage}x</Trans>
                 </Tag>

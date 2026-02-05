@@ -210,13 +210,20 @@ export const TpslFormGroup = ({
             allowNegative={true}
             inputMode="text"
             value={targetRate}
+            decimalScale={6}
             onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
                 const inputValue = floatValue?.toString() ?? ''
 
+                // Change 和 ROI 最小不能小于 -100%
+                const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
+                const effectiveValue =
+                  isRateType && (floatValue ?? 0) < -100 ? -100 : (floatValue ?? 0)
+                const displayRate = isRateType && (floatValue ?? 0) < -100 ? '-100' : inputValue
+
                 // 标记这是用户输入，避免 useEffect 反向计算覆盖用户输入的值
                 isUserInputRef.current = true
-                setTargetRate(inputValue)
+                setTargetRate(displayRate)
 
                 if (inputValue === '' || floatValue === undefined || floatValue === null) {
                   setTargetPrice('')
@@ -230,7 +237,7 @@ export const TpslFormGroup = ({
 
                 let calculatedTargetPrice = ''
                 if (tpslType === TpSlTypeEnum.ROI) {
-                  const radio = parseBigNumber(floatValue ?? 0).div(100)
+                  const radio = parseBigNumber(effectiveValue).div(100)
                   const totalPnl = parseBigNumber(position.collateralAmount).mul(radio)
                   const averagePnl = totalPnl
                     .div(parseBigNumber(position.size))
@@ -239,7 +246,7 @@ export const TpslFormGroup = ({
                     .plus(averagePnl)
                     .toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Change) {
-                  const rateRatio = parseBigNumber(floatValue ?? 0).div(100)
+                  const rateRatio = parseBigNumber(effectiveValue).div(100)
                   const radio =
                     position.direction === Direction.LONG
                       ? parseBigNumber(1).plus(rateRatio)

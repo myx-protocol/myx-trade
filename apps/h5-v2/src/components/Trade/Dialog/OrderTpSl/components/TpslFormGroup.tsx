@@ -35,14 +35,23 @@ const renderTargetUnit = (type: TpSlTypeEnum, symbol: string) => {
   }
 }
 
-export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }) => {
+export const TpslFormGroup = ({
+  order,
+  type,
+  currentPrice,
+}: {
+  order: any
+  type: 'tp' | 'sl'
+  currentPrice?: string | number
+}) => {
   const [tpslType, setTpslType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
   const [sliderValue, setSliderValue] = useState<number>(
     type === 'tp' ? (order?.tpSize ?? order?.size ?? 0) : (order?.slSize ?? order?.size ?? 0),
   )
   const { tpSize, slSize, setTpSize, setSlSize, setTpPrice, setSlPrice } = useOrderTPSLStore()
-  const [targetPrice, setTargetPrice] = useState<string>('')
+  const [targetPrice, setTargetPrice] = useState<string>(currentPrice?.toString() ?? '')
   const [targetRate, setTargetRate] = useState<string>('')
+  const isInitializedRef = useRef(false)
 
   // 初始化默认值：优先使用 order.tpSize/slSize，否则使用 order.size（100%）
   useEffect(() => {
@@ -59,21 +68,30 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
     }
   }, [order?.size, order?.tpSize, order?.slSize, type, setTpSize, setSlSize])
 
-  // 初始化触发价格和计算对应的 targetRate
+  // 初始化触发价格和计算对应的 targetRate（只初始化一次）
   useEffect(() => {
+    // 如果已经初始化过，跳过
+    if (isInitializedRef.current) return
+
     const initialPrice = type === 'tp' ? order?.tpPrice : order?.slPrice
-    if (initialPrice && parseBigNumber(initialPrice).gt(0)) {
-      setTargetPrice(initialPrice.toString())
+    const priceToUse =
+      initialPrice && parseBigNumber(initialPrice).gt(0)
+        ? initialPrice.toString()
+        : (currentPrice?.toString() ?? '')
+
+    if (priceToUse && parseBigNumber(priceToUse).gt(0)) {
+      isInitializedRef.current = true
+      setTargetPrice(priceToUse)
 
       // 同步到 store
       if (type === 'tp') {
-        setTpPrice(initialPrice.toString())
+        setTpPrice(priceToUse)
       } else {
-        setSlPrice(initialPrice.toString())
+        setSlPrice(priceToUse)
       }
 
       // 根据 tpslType 计算 targetRate
-      const triggerPrice = parseBigNumber(initialPrice)
+      const triggerPrice = parseBigNumber(priceToUse)
       const entryPrice = parseBigNumber(order.price)
       const diff =
         order.direction === Direction.LONG
@@ -98,6 +116,7 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
     order?.tpPrice,
     order?.slPrice,
     order?.price,
+    currentPrice,
     order?.direction,
     order?.collateralAmount,
     type,
@@ -174,6 +193,7 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
             placeholder={t`触发价格`}
             autoFocus={type === 'tp'}
             value={targetPrice}
+            decimalScale={6}
             inputMode="text"
             allowLeadingZeros
             onValueChange={({ value }, { source }) => {
@@ -232,6 +252,7 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
             allowNegative={true}
             value={targetRate}
             allowLeadingZeros
+            decimalScale={6}
             onValueChange={({ value, floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
                 // 用 value 保留负号输入过程（如只输入 "-" 时 floatValue 为 undefined）
@@ -277,6 +298,7 @@ export const TpslFormGroup = ({ order, type }: { order: any; type: 'tp' | 'sl' }
           className="flex-1 text-left"
           placeholder={t`数量`}
           allowLeadingZeros
+          decimalScale={6}
           onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
               // 将中文小数点转换为英文小数点

@@ -148,10 +148,10 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
             paddingTop: '24px',
             paddingBottom: '24px',
           },
-          '& .MuiDialogTitle-root': {
-            marginLeft: '20px',
-            marginRight: '20px',
-          },
+          // '& .MuiDialogTitle-root': {
+          //   marginLeft: '20px',
+          //   marginRight: '20px',
+          // },
         }}
       >
         <div className="px-[20px]">
@@ -177,8 +177,10 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
             entryPrice={formatNumber(order.price, { showUnit: false })}
           />
           {/* tpsl type */}
-          <TpslFormGroup order={order} type={'tp'} />
-          {activeTab === TpSlTabTypeEnum.TPAndSL && <TpslFormGroup order={order} type={'sl'} />}
+          <TpslFormGroup order={order} type={'tp'} currentPrice={marketPrice} />
+          {activeTab === TpSlTabTypeEnum.TPAndSL && (
+            <TpslFormGroup order={order} type={'sl'} currentPrice={marketPrice} />
+          )}
           {/* <TpslSlippage /> */}
           <div className="sticky bottom-0 flex items-center justify-between gap-[12px] bg-[#18191F] pt-[20px]">
             <InfoButton

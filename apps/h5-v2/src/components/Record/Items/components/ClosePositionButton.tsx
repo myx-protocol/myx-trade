@@ -11,7 +11,7 @@ import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
 import { toast } from '@/components/UI/Toast'
-import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { InputWrapper } from '@/components/Trade/components/InputWrapper'
 import { Slider, TextField, Tooltip } from '@mui/material'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -20,6 +20,8 @@ import { AmountUnitEnum } from '@/components/Trade/type'
 import clsx from 'clsx'
 import useGlobalStore from '@/store/globalStore'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
+import { EditText } from '@/components/EditText'
+import { tradePubSub } from '@/utils/pubsub'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -486,9 +488,26 @@ export const ClosePositionButton = ({
           <p className="text-[14px] text-[#848E9C]">
             <Trans>Est. Slippage</Trans>
           </p>
-          <p className="text-[14px] font-[500] text-[white]">
+          <EditText
+            value={`${((closePositionSlippage ?? 0) * 100).toFixed(2)}`}
+            unit="%"
+            onChange={(newSlippage, closeEdit) => {
+              setSlippage({
+                chainId: symbolInfo?.chainId ?? 0,
+                poolId: symbolInfo?.poolId ?? '',
+                type: SlippageTypeEnum.CLOSE,
+                slippage: parseBigNumber(newSlippage).div(100).toNumber(),
+              })
+              tradePubSub.emit('trade:slippage:change', {
+                chainId: symbolInfo?.chainId ?? 0,
+                poolId: symbolInfo?.poolId ?? '',
+              })
+              closeEdit?.()
+            }}
+          />
+          {/* <p className="text-[14px] font-[500] text-[white]">
             {(closePositionSlippage ?? 0) * 100}%
-          </p>
+          </p> */}
         </div>
         <div className="mt-[12px] flex items-center justify-between">
           <p className="text-[14px] text-[#848E9C]">

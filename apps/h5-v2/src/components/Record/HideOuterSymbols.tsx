@@ -7,6 +7,7 @@ import { getChainInfo, type BaseChainInfo } from '@/config/chainInfo'
 import { getSupportedChainIdsByEnv } from '@/config/chain'
 import { t } from '@lingui/core/macro'
 import allChainIcon from '@/assets/icon/allChain.svg'
+import { Trans } from '@lingui/react/macro'
 
 interface HideOuterSymbolsProps {
   checked: boolean
@@ -53,7 +54,11 @@ export const HideOuterSymbols = ({ checked, onChange, right }: HideOuterSymbolsP
         />
         <FormControlLabel
           control={<CheckBox checked={checked} onChange={onCheckedChange} />}
-          label={<span className="text-[12px] text-[#CED1D9]">Hide other</span>}
+          label={
+            <span className="text-[12px] text-[#CED1D9]">
+              <Trans>Hide other</Trans>
+            </span>
+          }
         />
       </div>
       {right && selectChainId !== '0' && <div className="shrink-0">{right}</div>}
