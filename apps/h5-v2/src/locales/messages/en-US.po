@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -78,6 +79,16 @@ msgstr ""
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
 msgstr ""
+
+#. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
+#: src/pages/Cook/provider/PoolProvider.tsx
+msgid "{0} | High Yield Trench | MYX"
+msgstr "{0} | High Yield Trench | MYX"
+
+#. placeholder {0}: lpDetail?.mQuoteBaseSymbol || ''
+#: src/pages/Earn/provider/PoolProvider.tsx
+msgid "{0} | Stable Earn | MYX"
+msgstr "{0} | Stable Earn | MYX"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -920,6 +931,10 @@ msgstr "Conversion amount mismatch, please try again"
 msgid "Cook"
 msgstr ""
 
+#: src/pages/Cook/index.tsx
+msgid "Cook - Build High-Yield Pools | MYX"
+msgstr "Cook - Build High-Yield Pools | MYX"
+
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
 msgstr "New"
@@ -993,6 +1008,10 @@ msgstr ""
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr ""
+
+#: src/pages/Market/index.tsx
+msgid "Create Market - Permissionless Listing for Any Asset | MYX"
+msgstr "Create Market - Permissionless Listing for Any Asset | MYX"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1140,6 +1159,10 @@ msgstr ""
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
 msgstr ""
+
+#: src/pages/Earn/List.tsx
+msgid "Earn - Stable Yields & Low Risk | MYX"
+msgstr "Earn - Stable Yields & Low Risk | MYX"
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
@@ -3938,6 +3961,10 @@ msgstr ""
 msgid "VIP"
 msgstr ""
 
+#: src/pages/VIP/index.tsx
+msgid "VIP - Exclusive Privileges & Fee Discounts | MYX"
+msgstr "VIP - Exclusive Privileges & Fee Discounts | MYX"
+
 #. placeholder {0}: configData?.maxVipLevel
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
@@ -4041,7 +4068,7 @@ msgid "Yes"
 msgstr ""
 
 #. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
-#. placeholder {1}: nextLevelInfo?.vipTier
+#. placeholder {1}: nextMyxLevel?.vipTier
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "You need to hold {0} MYX to upgrade to VIP{1}"
 msgstr ""
@@ -4649,4 +4676,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

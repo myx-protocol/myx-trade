@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGetLevelUpdateInfo } from '@/hooks/vip/useVipLevel.ts'
-import { Box, Button, LinearProgress } from '@mui/material'
+import { Box, LinearProgress } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PERCENT_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals'
