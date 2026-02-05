@@ -13,6 +13,7 @@ interface HideOuterSymbolsProps {
   checked: boolean
   onChange: (checked: boolean) => void
   right?: ReactNode
+  showHideOther?: boolean
 }
 
 const CHAIN_LIST: Array<
@@ -26,7 +27,12 @@ const CHAIN_LIST: Array<
   }
 })
 
-export const HideOuterSymbols = ({ checked, onChange, right }: HideOuterSymbolsProps) => {
+export const HideOuterSymbols = ({
+  checked,
+  onChange,
+  right,
+  showHideOther = true,
+}: HideOuterSymbolsProps) => {
   const { selectChainId, setSelectChainId } = usePositionStore()
   const onCheckedChange = useCallback(() => {
     onChange(!checked)
@@ -52,14 +58,16 @@ export const HideOuterSymbols = ({ checked, onChange, right }: HideOuterSymbolsP
             // { label: 'Arbitrum', value: ChainId, icon: ethIcon },
           ]}
         />
-        <FormControlLabel
-          control={<CheckBox checked={checked} onChange={onCheckedChange} />}
-          label={
-            <span className="text-[12px] text-[#CED1D9]">
-              <Trans>Hide other</Trans>
-            </span>
-          }
-        />
+        {showHideOther && (
+          <FormControlLabel
+            control={<CheckBox checked={checked} onChange={onCheckedChange} />}
+            label={
+              <span className="text-[12px] text-[#CED1D9]">
+                <Trans>Hide other</Trans>
+              </span>
+            }
+          />
+        )}
       </div>
       {right && selectChainId !== '0' && <div className="shrink-0">{right}</div>}
     </div>

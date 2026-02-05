@@ -92,13 +92,15 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
           }
         />
         <FlexRowLayout
-          left={<Trans>Fee({item.executionFeeToken?.toString() || '--'})</Trans>}
+          left={<Trans>Fee({symbolInfo?.quoteSymbol?.toString() || '--'})</Trans>}
           right={
             <div className="text-[13px] font-medium">
               <span className="text-white">
-                {formatNumber(item.executionFeeAmount, {
-                  showUnit: false,
-                })}
+                {item.tradingFee
+                  ? formatNumber(item.tradingFee, {
+                      showUnit: false,
+                    })
+                  : '--'}
               </span>
             </div>
           }
