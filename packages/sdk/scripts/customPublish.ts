@@ -178,7 +178,7 @@ loadingAdapter('检测发布分支', () => checkBranch())
         const isLoggedIn = await loadingAdapter('检测 npm 登录状态', () => checkNPMLogined());
         if (!isLoggedIn) {
             console.log('🚨 检测到未登录 npm，先登录 npm')
-            loadingAdapter('登录 npm', () => execSync(`pnpm login --registry=${npmRegistry}`, {
+            await loadingAdapter('登录 npm', () => execSync(`pnpm login --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
             console.log('✅ pnpm registry 登录成功！')
@@ -187,15 +187,15 @@ loadingAdapter('检测发布分支', () => checkBranch())
         }
 
         if (publishTag === 'beta') {
-            loadingAdapter('发布 beta 版本', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
+            await loadingAdapter('发布 beta 版本', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
                 stdio: 'inherit',
             }));
         } else {
-            loadingAdapter('发布 main 版本', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
+            await loadingAdapter('发布 main 版本', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
                 stdio: 'inherit',
             }));
         }
-        const isPushed = loadingAdapter('推送 commit', () => pushCommit());
+        const isPushed = await loadingAdapter('推送 commit', () => pushCommit());
         if (!isPushed) {
             console.log('🚨 推送 commit 失败, 请手动执行 git push')
         }
