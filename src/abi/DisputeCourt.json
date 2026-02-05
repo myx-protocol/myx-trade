@@ -870,6 +870,19 @@
   },
   {
     "type": "function",
+    "name": "checkRiskControlCloseCompleted",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "claimBond",
     "constant": false,
     "payable": false,
@@ -914,16 +927,12 @@
             "name": "oracleType"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
+            "type": "uint64",
+            "name": "publishTime"
           },
           {
             "type": "bytes",
             "name": "oracleUpdateData"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
           }
         ]
       },
@@ -934,6 +943,45 @@
       {
         "type": "address",
         "name": "poolToken"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "fileDisputeFromStaker",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "bytes",
+        "name": "response"
+      },
+      {
+        "type": "tuple[]",
+        "name": "guardianSignatures",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "r"
+          },
+          {
+            "type": "bytes32",
+            "name": "s"
+          },
+          {
+            "type": "uint8",
+            "name": "v"
+          },
+          {
+            "type": "uint8",
+            "name": "guardianIndex"
+          }
+        ]
       }
     ],
     "outputs": []

@@ -155,7 +155,7 @@ export class Seamless {
 
     try {
       const nonces = await erc20Contract.nonces(masterAddress)
-      
+
       const tradingRouterSignPermit = await signPermit(
         config.signer,
         erc20Contract,
@@ -225,7 +225,8 @@ export class Seamless {
 
     const forwardFeeToken = executeAddressByChainId(chainId)
 
-    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken}, chainId)
+    this.logger.info('forwarderTx-->', { from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId)
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken }, chainId)
 
     return txRs
   }
@@ -235,13 +236,15 @@ export class Seamless {
 
     const masterAddress = await config.signer?.getAddress() ?? ''
     const provider = await getSignerProvider(chainId)
+    const jsonProvider = getJSONProvider(chainId)
+
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
       const balance = balanceRes.data
       const marketManagerContract = new ethers.Contract(
         getContractAddressByChainId(chainId).MARKET_MANAGER,
         MarketManager_ABI,
-        provider
+        jsonProvider
       )
       const forwardFeeToken = executeAddressByChainId(chainId)
       const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
@@ -259,13 +262,12 @@ export class Seamless {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
         console.log('error-->', error);
-        console.warn('Failed to get USD permit params, proceeding without permit:', error) 
+        console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
-    const jsonProvider = getJSONProvider(chainId)
     const getNonceForwarderContract = new ethers.Contract(
       getContractAddressByChainId(chainId).FORWARDER,
       Forwarder_ABI,
@@ -296,9 +298,9 @@ export class Seamless {
 
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
-          const rs = await this.api.fetchForwarderGetApi({requestId: txRs.data.requestId})
+          const rs = await this.api.fetchForwarderGetApi({ requestId: txRs.data.requestId })
 
-          if(rs.data?.status === 9) {
+          if (rs.data?.status === 9) {
             return {
               code: 0,
               data: {
@@ -320,7 +322,7 @@ export class Seamless {
           }
         }
       }
-      
+
       // 轮询超时，返回失败
       return {
         code: -1,

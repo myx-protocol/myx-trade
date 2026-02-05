@@ -1304,15 +1304,9 @@ export class Order {
 
     // 自动获取 accessToken，如果没有或过期会自动刷新
     const accessToken = await this.configManager.getAccessToken();
-    if (!accessToken) {
-      return {
-        code: -1,
-        message: "Failed to obtain accessToken",
-      };
-    }
 
     try {
-      const res = await this.api.getOrders(accessToken, address);
+      const res = await this.api.getOrders(accessToken ?? '', address);
       return {
         code: 0,
         data: res.data,
