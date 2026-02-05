@@ -267,7 +267,7 @@ export const VaultSelect = ({
   const isInsufficient = useMemo(() => {
     // console.log(111111)
     if (!amount) return false
-    if (Number(amount) >= Number(balance)) return true
+    if (Number(amount) > Number(balance)) return true
     // if () return true
     return false
   }, [amount, balance])

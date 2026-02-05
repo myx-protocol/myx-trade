@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { Carousel } from '@/pages/Earn/components/Carousel.tsx'
 import { Vaults } from '@/pages/Earn/components/Vaults.tsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Interval } from '@/request/type.ts'
 import { SearchBar } from '@/components/SearchBar.tsx'
 import { TabBar } from '@/pages/Earn/components/TabBar.tsx'
@@ -14,12 +14,16 @@ import { Positions } from '@/pages/Earn/components/Positions.tsx'
 import { SearchTypeEnum } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { ConnectWallet } from '@/pages/Earn/components/ConnectWallet.tsx'
+import { t } from '@lingui/core/macro'
 
 const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
   const [interval, setInterval] = useState<Interval | undefined>(Interval['24h'])
   const [type, setType] = useState<VaultType>(VaultType.Vaults)
 
+  useEffect(() => {
+    document.title = t`Earn - Stable Yields & Low Risk | MYX`
+  }, [])
   return (
     <Box className={'h-[calc(100vh-var(--tabbar-height))] overflow-hidden'}>
       <Box
