@@ -17,7 +17,7 @@ import { ConnectWallet } from '@/pages/Earn/components/ConnectWallet.tsx'
 
 const EarnList = () => {
   const [chainId, setChainId] = useState<number>()
-  const [interval, setInterval] = useState<Interval | undefined>(Interval["24h"])
+  const [interval, setInterval] = useState<Interval | undefined>(Interval['24h'])
   const [type, setType] = useState<VaultType>(VaultType.Vaults)
 
   return (
