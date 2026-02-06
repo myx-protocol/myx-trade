@@ -42,9 +42,9 @@ const style = {
     overflow: 'hidden',
   },
 }
-
+const disabled = false
 const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
-  const disabled = useMemo(() => {
+  const active = useMemo(() => {
     return (
       state === MarketPoolState.Cook ||
       state === MarketPoolState.Trench ||
@@ -97,7 +97,7 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
 
                 <Tag type={disabled ? 'disabled' : 'primary'}>
                   {inactive && <Trans>Inactive</Trans>}
-                  {disabled && <Trans>Active</Trans>}
+                  {active && <Trans>Active</Trans>}
                   {uncreate && <Trans>Not Created</Trans>}
                 </Tag>
               </>
