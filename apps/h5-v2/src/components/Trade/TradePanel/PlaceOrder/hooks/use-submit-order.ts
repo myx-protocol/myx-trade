@@ -175,8 +175,14 @@ export const useSubmitOrder = () => {
         if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
           formatTpSize = formatSize
           if (tpType === TpSlTypeEnum.Change) {
-            // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
-            const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
+            // 涨跌幅计算需要根据方向调整
+            // 多头：price × (1 + rate%)
+            // 空头：price × (1 - rate%)
+            const rateRatio = parseBigNumber(tpValue).div(100)
+            const radio =
+              direction === Direction.LONG
+                ? parseBigNumber(1).plus(rateRatio)
+                : parseBigNumber(1).minus(rateRatio)
             const targetPrice = parseBigNumber(price).mul(radio)
             formatTpValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()
@@ -220,8 +226,14 @@ export const useSubmitOrder = () => {
         if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
           formatSlSize = formatSize
           if (slType === TpSlTypeEnum.Change) {
-            // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
-            const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+            // 涨跌幅计算需要根据方向调整
+            // 多头：price × (1 + rate%)
+            // 空头：price × (1 - rate%)
+            const rateRatio = parseBigNumber(slValue).div(100)
+            const radio =
+              direction === Direction.LONG
+                ? parseBigNumber(1).plus(rateRatio)
+                : parseBigNumber(1).minus(rateRatio)
             const targetPrice = parseBigNumber(price).mul(radio)
             formatSlValue = targetPrice.gt(0)
               ? ethers.parseUnits(targetPrice.toString(), 30).toString()

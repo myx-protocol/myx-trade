@@ -220,7 +220,13 @@ export const PlaceOrderConfirmDialog = () => {
         : parseBigNumber(formatTpSize).mul(parseBigNumber(price)).div(leverage).toString()
 
       if (tpType === TpSlTypeEnum.Change) {
-        const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
+        // const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
+        // formatTpPrice = parseBigNumber(price).mul(radio).toString()
+        const rateRatio = parseBigNumber(tpValue).div(100)
+        const radio =
+          direction === Direction.LONG
+            ? parseBigNumber(1).plus(rateRatio)
+            : parseBigNumber(1).minus(rateRatio)
         formatTpPrice = parseBigNumber(price).mul(radio).toString()
       } else if (tpType === TpSlTypeEnum.ROI) {
         const radio = parseBigNumber(tpValue).div(100)
@@ -281,7 +287,11 @@ export const PlaceOrderConfirmDialog = () => {
         : parseBigNumber(formatSlSize).mul(parseBigNumber(price)).div(leverage).toString()
       if (slType === TpSlTypeEnum.Change) {
         // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
-        const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+        const rateRatio = parseBigNumber(slValue).div(100)
+        const radio =
+          direction === Direction.LONG
+            ? parseBigNumber(1).plus(rateRatio)
+            : parseBigNumber(1).minus(rateRatio)
         formatSlPrice = parseBigNumber(price).mul(radio).toString()
       } else if (slType === TpSlTypeEnum.ROI) {
         const radio = parseBigNumber(slValue).div(100)
