@@ -215,13 +215,11 @@ export const TpslFormGroup = ({
               if (source === NumberInputSourceType.EVENT) {
                 const inputValue = floatValue?.toString() ?? ''
 
-                // Change 和 ROI 最小不能小于 -100%
                 const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
                 const effectiveValue =
                   isRateType && (floatValue ?? 0) < -100 ? -100 : (floatValue ?? 0)
                 const displayRate = isRateType && (floatValue ?? 0) < -100 ? '-100' : inputValue
 
-                // 标记这是用户输入，避免 useEffect 反向计算覆盖用户输入的值
                 isUserInputRef.current = true
                 setTargetRate(displayRate)
 
