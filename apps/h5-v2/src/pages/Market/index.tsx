@@ -60,7 +60,7 @@ const Market = () => {
 
   useEffect(() => {
     if (chainId && address && Markets?.length && !marketInfo) {
-      toast.error({ title: t`Invalid Market` })
+      showErrorToast(t`Invalid Market`)
     }
   }, [marketInfo, chainId, address, Markets?.length])
 
@@ -167,9 +167,8 @@ const Market = () => {
             return
           }
           if (_pool) {
-            toast.success({ title: t`market is created` })
-            navigate(`/cook/${_pool.chainId}/${_pool.poolId}`)
-            // todo error pool yi created
+            toast.error({ title: t`market is created` })
+            return
           }
         } else {
           const poolId = await pool.createPool({
