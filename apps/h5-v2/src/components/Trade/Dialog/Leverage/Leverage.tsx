@@ -46,6 +46,20 @@ function LeverageDialogContent() {
   }, [leverage])
 
   const marks = useMemo(() => {
+    const leverageRange = maxLeverage - minLeverage
+
+    // 如果杠杆范围较小（≤5），显示所有整数值
+    if (leverageRange <= 5) {
+      return Array.from({ length: leverageRange + 1 }).map((_, index) => {
+        const value = minLeverage + index
+        return {
+          value,
+          label: `${value}x`,
+        }
+      })
+    }
+
+    // 如果杠杆范围较大，显示6个标记
     const MARKS_LENGTH = 6
     return Array.from({ length: MARKS_LENGTH }).map((_, index) => {
       const value =
@@ -99,7 +113,7 @@ function LeverageDialogContent() {
   }, [])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-[8px]">
       {/* 杠杆输入区域 */}
       <div className="">
         <div className="mt-[24px] flex items-center gap-[10px] rounded-lg border border-[#31333D] bg-[#18191F] px-[16px] py-[12px]">
