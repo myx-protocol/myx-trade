@@ -1,6 +1,6 @@
 {
   "name": "@myx-trade/sdk",
-  "version": "0.1.267-beta.28",
+  "version": "0.1.267-beta.44",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs,esm --dts --minify",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
