@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-05 07:24\n"
+"PO-Revision-Date: 2026-02-06 07:21\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -85,17 +84,17 @@ msgstr "{0}"
 #: src/pages/Price/index.tsx
 #: src/pages/Trade/index.tsx
 msgid "{0} | {symbol} | {1} | MYX"
-msgstr ""
+msgstr "{0} | {symbol} | {1} | MYX"
 
 #. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
 #: src/pages/Cook/provider/PoolProvider.tsx
 msgid "{0} | High Yield Trench | MYX"
-msgstr ""
+msgstr "{0} | 高收益 | MYX"
 
 #. placeholder {0}: lpDetail?.mQuoteBaseSymbol || ''
 #: src/pages/Earn/provider/PoolProvider.tsx
 msgid "{0} | Stable Earn | MYX"
-msgstr ""
+msgstr "{0} | 稳定收益 | MYX"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -940,7 +939,7 @@ msgstr "Cook"
 
 #: src/pages/Cook/index.tsx
 msgid "Cook - Build High-Yield Pools | MYX"
-msgstr ""
+msgstr "Cook - 创建高收益池 | MYX"
 
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
@@ -1018,7 +1017,7 @@ msgstr "创建市场"
 
 #: src/pages/Market/index.tsx
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
-msgstr ""
+msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1169,7 +1168,7 @@ msgstr "赚取"
 
 #: src/pages/Earn/List.tsx
 msgid "Earn - Stable Yields & Low Risk | MYX"
-msgstr ""
+msgstr "赚取-稳定收益 & 低风险 | MYX"
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
@@ -1665,7 +1664,7 @@ msgstr "帮助中心"
 
 #: src/components/Record/HideOuterSymbols.tsx
 msgid "Hide other"
-msgstr ""
+msgstr "隐藏其他"
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
@@ -1693,7 +1692,7 @@ msgstr "首页"
 
 #: src/pages/Home/index.tsx
 msgid "Home - Permissionless Listing for Any Asset | MYX"
-msgstr ""
+msgstr "主页 - 创建任意资产的合约市场 | MYX"
 
 #: src/404.tsx
 msgid "Homepage"
@@ -2269,7 +2268,7 @@ msgstr "市场"
 
 #: src/pages/MarketList/index.tsx
 msgid "Markets -  Permissionless Listing for Any Asset | MYX"
-msgstr ""
+msgstr "市场 - 创建任意资产的合约市场 | MYX"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
@@ -2367,7 +2366,7 @@ msgstr "我的交易"
 
 #: src/pages/record/index.tsx
 msgid "My trades - Permissionless Listing for Any Asset | MYX"
-msgstr ""
+msgstr "我的交易 - 创建任意资产的合约市场 | MYX"
 
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Home/components/MarketList/index.tsx
@@ -2987,7 +2986,7 @@ msgstr "数量"
 
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
-msgstr ""
+msgstr "排行榜 - 创建任意资产的合约市场 | MYX"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -3081,7 +3080,7 @@ msgstr "被邀请人比例"
 #: src/pages/Referrals/index.tsx
 #: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
 msgid "Referral - Invite & Earn Lifetime Commissions | MYX"
-msgstr ""
+msgstr "邀请返佣 - 邀请和赚取终身佣金 | MYX"
 
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Referral History"
@@ -3995,7 +3994,7 @@ msgstr "VIP"
 
 #: src/pages/VIP/index.tsx
 msgid "VIP - Exclusive Privileges & Fee Discounts | MYX"
-msgstr ""
+msgstr "VIP - 专属特权和费用折扣 | MYX"
 
 #. placeholder {0}: configData?.maxVipLevel
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -4708,3 +4707,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+
