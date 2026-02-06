@@ -187,11 +187,11 @@ loadingAdapter('检测发布分支', () => checkBranch())
         }
 
         if (publishTag === 'beta') {
-            await loadingAdapter('发布 beta 版本', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH}`, {
+            await loadingAdapter('发布 beta 版本', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
         } else {
-            await loadingAdapter('发布 main 版本', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH}`, {
+            await loadingAdapter('发布 main 版本', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
         }
