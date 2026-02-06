@@ -225,7 +225,7 @@ export const Assets = () => {
 
   const PriceMap = useMemo(() => {
     return {
-      [poolId]: price || '',
+      [poolId]: price && Number(price) > 0 ? price : '',
       ...(priceMap || {}),
     }
   }, [poolId, price, priceMap])
