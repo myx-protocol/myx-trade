@@ -133,7 +133,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         }}
         onClick={() => setOpen(true)}
       >
-        <Trans>Edit</Trans>
+        <Trans>Edit TP/SL</Trans>
       </InfoButton>
       <DialogBase
         title={`Modify Order`}
