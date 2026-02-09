@@ -335,7 +335,7 @@ export const AssetsDialogButton = ({ symbol }: { symbol?: MarketDetailResponse }
             <div className="mt-[20px] flex gap-[10px]">
               <PrimaryButton
                 className="w-full"
-                style={{ height: '40px' }}
+                style={{ height: '44px' }}
                 onClick={onReceive}
                 loading={isSwitchNetwork}
               >
