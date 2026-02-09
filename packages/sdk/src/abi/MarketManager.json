@@ -216,6 +216,62 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "OracleFeeUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "newOracleFeeUsd",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolPrimeThresholdUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint128",
+        "name": "newPoolPrimeThreshold",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReserveRatioUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "newBaseReserveRatio",
+        "indexed": false
+      },
+      {
+        "type": "uint32",
+        "name": "newQuoteReserveRatio",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Upgraded",
     "inputs": [
       {
@@ -269,10 +325,6 @@
             "name": "oracleFeeUsd"
           },
           {
-            "type": "uint64",
-            "name": "oracleRefundFeeUsd"
-          },
-          {
             "type": "uint128",
             "name": "poolPrimeThreshold"
           },
@@ -305,10 +357,6 @@
           {
             "type": "bool",
             "name": "applyExchangeRate"
-          },
-          {
-            "type": "bool",
-            "name": "isUsdQuote"
           },
           {
             "type": "uint16",
@@ -468,10 +516,6 @@
             "name": "oracleFeeUsd"
           },
           {
-            "type": "uint64",
-            "name": "oracleRefundFeeUsd"
-          },
-          {
             "type": "uint128",
             "name": "poolPrimeThreshold"
           },
@@ -627,10 +671,6 @@
             "name": "applyExchangeRate"
           },
           {
-            "type": "bool",
-            "name": "isUsdQuote"
-          },
-          {
             "type": "uint16",
             "name": "minDeviationRatio"
           }
@@ -669,6 +709,61 @@
       {
         "type": "uint128",
         "name": "_maxForwardFee"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateOracleFee",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint64",
+        "name": "_oracleFeeUsd"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updatePoolPrimeThreshold",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint128",
+        "name": "_poolPrimeThreshold"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateReserveRatio",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      },
+      {
+        "type": "uint32",
+        "name": "_baseReserveRatio"
+      },
+      {
+        "type": "uint32",
+        "name": "_quoteReserveRatio"
       }
     ],
     "outputs": []
