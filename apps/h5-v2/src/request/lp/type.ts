@@ -392,3 +392,7 @@ export interface MarketPoolRiskLevelConfig {
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
   data: MarketPoolRiskLevelConfig
 }
+
+export interface MarketPoolPriceResponse extends BaseResponse {
+  data: string
+}

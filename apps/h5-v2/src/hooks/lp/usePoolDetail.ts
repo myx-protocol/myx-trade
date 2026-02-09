@@ -1,7 +1,6 @@
 import { PoolType } from '@/request/type'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Mode, type PoolInfo } from '@/pages/Cook/type.ts'
-import { useUpdateEffect } from 'ahooks'
 import { useQuery } from '@tanstack/react-query'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useParams } from 'react-router-dom'
@@ -14,10 +13,15 @@ import {
   parseUnits,
   pool as Pool,
 } from '@myx-trade/sdk'
-import { getBaseLPDetail, getPoolRiskLevelConfig, getQuoteLPDetail } from '@/request'
+import {
+  getBaseLPDetail,
+  getMarketPoolPrice,
+  getPoolRiskLevelConfig,
+  getQuoteLPDetail,
+} from '@/request'
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
-import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
 import Big from 'big.js'
+import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
 type BaseQuotePoolInfo = {
   poolToken: string
   poolTokenSupply: bigint
@@ -66,50 +70,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     },
     placeholderData: (prev) => prev,
   })
-
-  const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
-    queryKey: [
-      { key: poolType === PoolType.quote ? 'getQuoteContractPoolInfo' : 'getBaseContractPoolInfo' },
-      poolId,
-      chainId,
-      tickerData?.price,
-    ],
-    enabled: !!poolId && !!chainId,
-    queryFn: async () => {
-      // console.log(poolId, tickerData?.price)
-      if (!poolId || !chainId) {
-        console.error('poolId must be a positive integer')
-        return null
-      }
-
-      try {
-        const result = await Pool.getPoolInfo(
-          +chainId,
-          poolId,
-          parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
-        )
-
-        // console.log(result)
-        if (result) {
-          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
-          const info = {
-            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
-            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-            tvl: calculationTvl(result),
-            fundingInfo: result.fundingInfo,
-          } as PoolInfo
-
-          return info
-        }
-      } catch (error) {
-        console.error(error)
-        return null
-      }
-    },
-    placeholderData: (prev) => prev,
-    refetchInterval: 1000 * 10,
-  })
-
   const { data: pool } = useQuery({
     queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets?.length],
     enabled: Boolean(poolId && chainId && markets?.length),
@@ -119,6 +79,56 @@ export const usePoolDetail = (poolType: PoolType) => {
         return result
       }
     },
+  })
+
+  const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
+    queryKey: [
+      { key: poolType === PoolType.quote ? 'getQuoteContractPoolInfo' : 'getBaseContractPoolInfo' },
+      poolId,
+      chainId,
+      tickerData?.price,
+      pool,
+    ],
+    enabled: !!poolId && !!chainId && !!pool,
+    queryFn: async () => {
+      // console.log(poolId, tickerData?.price)
+      if (!poolId || !chainId || !pool) {
+        console.error('poolId must be a positive integer')
+        return {} as PoolInfo
+      }
+
+      let oraclePrice = tickerData?.price || '0'
+
+      if (!tickerData?.price && poolType === PoolType.base) {
+        const res = await getMarketPoolPrice(+chainId, poolId)
+        if (res?.data) {
+          oraclePrice = res.data
+        }
+      }
+
+      const result = await Pool.getPoolInfo(
+        +chainId,
+        poolId,
+        parseUnits(oraclePrice, COMMON_PRICE_DECIMALS),
+      )
+
+      // console.log(result)
+      if (result) {
+        const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+        const info = {
+          price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+          exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+          tvl: calculationTvl(result),
+          fundingInfo: result.fundingInfo,
+        } as PoolInfo
+
+        return info
+      }
+
+      return {} as PoolInfo
+    },
+    placeholderData: (prev) => prev,
+    refetchInterval: 1000 * 10,
   })
 
   const { data: levelConfig } = useQuery({
@@ -153,13 +163,10 @@ export const usePoolDetail = (poolType: PoolType) => {
 
     // if fundingFeeSeconds is 1, return hourly funding rate
     if (levelConfig?.fundingFeeSeconds === 1) {
-      // console.log('fundingRate:', Big(nextFundingRatePercent).mul(3600).toString())
       return {
         nextFundingRatePercent: Big(nextFundingRatePercent).mul(3600).toString(),
       }
     }
-    // console.log('fundingRate:', nextFundingRatePercent)
-
     return {
       nextFundingRatePercent,
     }
@@ -189,7 +196,7 @@ export const usePoolDetail = (poolType: PoolType) => {
   }, [poolId, lpDetail?.globalId, subscribeToTicker])
 
   return {
-    genesisFeeRate: levelConfig?.genesisFeeRate,
+    genesisFeeRate: levelConfig?.genesisFeeRate || '',
     fundingRate,
     pool,
     poolInfo,
