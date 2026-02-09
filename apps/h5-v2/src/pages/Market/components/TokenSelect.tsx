@@ -13,7 +13,7 @@ import { StyledMenu } from '@/components/Menu.tsx'
 
 export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
   const navigate = useNavigate()
-  const { token, quote, market, setMarketIndex, markets } = useContext(TokenContext)
+  const { token, market, setMarketIndex, markets } = useContext(TokenContext)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -110,7 +110,7 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             onClick={handleClick}
           >
             <span className={'text-[14px] leading-[1] font-[500] text-white'}>
-              {quote?.symbol || 'USDC'}
+              {market?.quoteSymbol || 'USDC'}
             </span>
             {!!token && !!markets && markets?.length > 1 && (
               <ArrowDown size={20} className={'text-regular'} />
