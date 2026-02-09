@@ -156,126 +156,131 @@ export const PriceContent = () => {
   }, [shortSize, amountUnit, symbolInfo])
 
   return (
-    <div className="mt-[8px]">
-      <Chart />
-      {/* <Trade /> */}
-      <div className="mt-[12px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
-        <div className="flex items-center gap-[8px]">
-          <p className="text-[#848E9C]">
-            <Trans>Market</Trans>
-          </p>
-          <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
-          <div
-            className="flex items-center justify-center gap-[2px]"
-            role="button"
-            onClick={openLeverageDialog}
-          >
-            <p>{leverage}x</p>
-            <SortDown size={7} />
+    <>
+      <div className="mt-[8px] w-full">
+        <Chart />
+        {/* <Trade /> */}
+        <div className="mt-[12px] flex items-center justify-between gap-[8px] px-[16px] text-[12px] text-white">
+          <div className="flex items-center gap-[8px]">
+            <p className="text-[#848E9C]">
+              <Trans>Market</Trans>
+            </p>
+            <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
+            <div
+              className="flex items-center justify-center gap-[2px]"
+              role="button"
+              onClick={openLeverageDialog}
+            >
+              <p>{leverage}x</p>
+              <SortDown size={7} />
+            </div>
+            <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
+            <Slippage
+              simple
+              defaultSlippage={defaultSlippage}
+              direction={PositionActionEnum.OPEN}
+              symbol={symbolInfo as MarketDetailResponse}
+              color="#fff"
+            />
           </div>
-          <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
-          <Slippage
-            simple
-            defaultSlippage={defaultSlippage}
-            direction={PositionActionEnum.OPEN}
-            symbol={symbolInfo as MarketDetailResponse}
-            color="#fff"
-          />
+          <div className="flex items-center gap-[8px]">
+            <WalletLine size={12} />
+            <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-white">
+              {formatNumberWithBaseToken(accountAssets?.availableMargin?.toString() ?? '0', {
+                showUnit: false,
+              })}
+            </p>
+            <AssetsDialogButton symbol={symbolInfo as MarketDetailResponse} />
+            <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
+            <div onClick={() => navigate(`/trade/${symbolInfo?.chainId}/${symbolInfo?.poolId}`)}>
+              <ToTrade size={12} />
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-[8px]">
-          <WalletLine size={12} />
-          <p className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-white">
-            {formatNumberWithBaseToken(accountAssets?.availableMargin?.toString() ?? '0', {
-              showUnit: false,
-            })}
-          </p>
-          <AssetsDialogButton symbol={symbolInfo as MarketDetailResponse} />
-          <div className="h-[12px] w-[1px] bg-[#4D515C]"></div>
-          <ToTrade
-            size={12}
-            color="#fff"
-            role="button"
-            onClick={() => navigate(`/trade/${symbolInfo?.chainId}/${symbolInfo?.poolId}`)}
-          />
-        </div>
-      </div>
-      <AmountInput
-        onchange={(value) => {
-          const longSize = parseBigNumber(value)
-            .div(100)
-            .mul(parseBigNumber(maxOpenLong.quoteAmount))
-            .toString()
-          const shortSize = parseBigNumber(value)
-            .div(100)
-            .mul(parseBigNumber(maxOpenShort.quoteAmount))
-            .toString()
-          setLongSize(longSize)
-          setShortSize(shortSize)
-          setAmountSliderValue(value)
-        }}
-      />
-      <div className="mt-[12px] flex items-center justify-between px-[16px]">
-        <div className="flex items-center text-[12px]">
-          <p className="text-tooltip text-[#848E9C]">
-            <Trans>Margin</Trans>
-          </p>
-          <p className="ml-[4px] font-medium text-white">{displayLongSize}</p>
-        </div>
-        <div className="flex items-center text-[12px]">
-          <p className="text-tooltip text-[#848E9C]">
-            <Trans>Margin</Trans>
-          </p>
-          <p className="ml-[4px] font-medium text-white">{displayShortSize}</p>
-        </div>
-      </div>
-      <div className="mt-[12px] px-[16px]">
-        <CanSwitchWalletNetwork
-          targetChainId={symbolInfo?.chainId}
-          style={{
-            marginTop: '8px',
+        <AmountInput
+          onchange={(value) => {
+            const longSize = parseBigNumber(value)
+              .div(100)
+              .mul(parseBigNumber(maxOpenLong.quoteAmount))
+              .toString()
+            const shortSize = parseBigNumber(value)
+              .div(100)
+              .mul(parseBigNumber(maxOpenShort.quoteAmount))
+              .toString()
+            setLongSize(longSize)
+            setShortSize(shortSize)
+            setAmountSliderValue(value)
           }}
-        >
-          <PlaceOrder showOrderSize={false} />
-        </CanSwitchWalletNetwork>
-      </div>
-      <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
-        <div className="flex-[1_1_0%]">
-          <TradeRecordTabs
-            value={activeTab}
-            onChange={(event, value) => setActiveTab(value as TabType)}
+        />
+        <div className="mt-[12px] flex items-center justify-between px-[16px]">
+          <div className="flex items-center text-[12px]">
+            <p className="text-tooltip text-[#848E9C]">
+              <Trans>Margin</Trans>
+            </p>
+            <p className="ml-[4px] font-medium text-white">{displayLongSize}</p>
+          </div>
+          <div className="flex items-center text-[12px]">
+            <p className="text-tooltip text-[#848E9C]">
+              <Trans>Margin</Trans>
+            </p>
+            <p className="ml-[4px] font-medium text-white">{displayShortSize}</p>
+          </div>
+        </div>
+        <div className="mt-[12px] px-[16px]">
+          <CanSwitchWalletNetwork
+            targetChainId={symbolInfo?.chainId}
+            style={{
+              marginTop: '8px',
+            }}
           >
-            <TradeRecordTab
-              value={TabType.POSITION}
-              label={
-                positionList.length > 0 ? (
-                  <Trans>Positions({positionList.length})</Trans>
-                ) : (
-                  <Trans>Positions </Trans>
-                )
-              }
-            />
-            <TradeRecordTab
-              value={TabType.ENTRUSTS}
-              label={
-                orderList.length > 0 ? (
-                  <Trans>Open Orders({orderList.length})</Trans>
-                ) : (
-                  <Trans>Open Orders</Trans>
-                )
-              }
-            />
-          </TradeRecordTabs>
+            <PlaceOrder showOrderSize={false} />
+          </CanSwitchWalletNetwork>
         </div>
-        {/* hide outer symbols */}
-        <div className="shrink-0 text-[#848E9C]" role="button" onClick={() => navigate('/record')}>
-          <Record size={16} />
+        <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">
+          <div className="flex-[1_1_0%]">
+            <TradeRecordTabs
+              value={activeTab}
+              onChange={(event, value) => setActiveTab(value as TabType)}
+            >
+              <TradeRecordTab
+                value={TabType.POSITION}
+                label={
+                  positionList.length > 0 ? (
+                    <Trans>Positions({positionList.length})</Trans>
+                  ) : (
+                    <Trans>Positions </Trans>
+                  )
+                }
+              />
+              <TradeRecordTab
+                value={TabType.ENTRUSTS}
+                label={
+                  orderList.length > 0 ? (
+                    <Trans>Open Orders({orderList.length})</Trans>
+                  ) : (
+                    <Trans>Open Orders</Trans>
+                  )
+                }
+              />
+            </TradeRecordTabs>
+          </div>
+          {/* hide outer symbols */}
+          <div
+            className="shrink-0 text-[#848E9C]"
+            role="button"
+            onClick={() =>
+              navigate(`/record?chainId=${symbolInfo?.chainId}&poolId=${symbolInfo?.poolId}`)
+            }
+          >
+            <Record size={16} />
+          </div>
         </div>
+        <HideOuterSymbols
+          checked={hideOthersSymbols}
+          onChange={setHideOthersSymbols}
+          right={renderCloseAllButton()}
+        />
       </div>
-      <HideOuterSymbols
-        checked={hideOthersSymbols}
-        onChange={setHideOthersSymbols}
-        right={renderCloseAllButton()}
-      />
       {activeTab === TabType.POSITION && <PositionList />}
       {activeTab === TabType.ENTRUSTS && <OpenOrderList />}
       <LeverageDialog />
@@ -283,6 +288,6 @@ export const PriceContent = () => {
       {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
       {closeOrderConfirmDialogOpen && <CloseConfirmDialog />}
       {placeOrderConfirmDialogOpen && <PlaceOrderConfirmDialog />}
-    </div>
+    </>
   )
 }
