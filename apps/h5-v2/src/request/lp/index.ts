@@ -18,6 +18,7 @@ import type {
   LpAssetsResponse,
   MarketPoolStateDataResponse,
   MarketPoolRiskLevelConfigResponse,
+  MarketPoolPriceResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -231,5 +232,18 @@ export const getPoolRiskLevelConfig = async (
 ): Promise<MarketPoolRiskLevelConfigResponse> => {
   return await http.get(
     `${baseUrl}/openapi/gateway/risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`,
+  )
+}
+
+export const getMarketPoolPrice = async (
+  chainId: number,
+  poolId: string,
+): Promise<MarketPoolPriceResponse> => {
+  const query = {
+    chainId,
+    poolId,
+  }
+  return await http.get(
+    `https://api.myx.finance/openapi/gateway/scan/mobula/base-price${addQueryParams(query)}`,
   )
 }
