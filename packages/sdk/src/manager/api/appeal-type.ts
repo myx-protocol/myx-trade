@@ -62,6 +62,7 @@ export interface AppealListItem {
   claimStatus: AppealClaimStatusEnum // 补偿金领取状态
   baseAmount?: string
   quoteAmount?: string
+  successVoteCount: number
 }
 
 export interface GetAppealDetailParams {
@@ -121,6 +122,7 @@ export interface AppealDetail {
   claimStatus: AppealClaimStatusEnum
   baseAmount?: string
   quoteAmount?: string
+  successVoteCount: number
 }
 
 export interface AppealUploadEvidenceParams {
@@ -155,7 +157,9 @@ export interface AppealReconsiderationListItem {
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
   appealCaseId?: number; // 反诉案件ID
-  aappealBondClaimTime?: number
+  appealBondClaimTime?: number
+  successVoteCount: number
+  appealSuccessVoteCoun?: number
 }
 
 export interface GetAppealReconsiderationDetailParams {
@@ -194,6 +198,8 @@ export interface AppealReconsiderationDetail {
   txHash: string
   appealStartTime: number
   appealEndTime: number
+  appealSuccessVoteCount?: number
+  successVoteCount: number
 }
 
 export interface AppealReimbursementParams {
