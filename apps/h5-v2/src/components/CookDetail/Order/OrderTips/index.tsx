@@ -1,19 +1,18 @@
 import IconHelp from '@/components/Icon/set/Help'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Trans } from '@lingui/react/macro'
-import { MarketPoolState, market } from '@myx-trade/sdk'
+import { MarketPoolState } from '@myx-trade/sdk'
 import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { useCountDown } from 'ahooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
-import { useQuery } from '@tanstack/react-query'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
 
 export const OrderTips = () => {
-  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl } = usePoolContext()
+  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl, markets } = usePoolContext()
   const [targetDate, setTargetDate] = useState<number>()
   const [countdown] = useCountDown({
     targetDate,
@@ -22,35 +21,18 @@ export const OrderTips = () => {
     }, []),
   })
 
-  const { data } = useQuery({
-    queryKey: [
-      { key: 'getMarket' },
-      baseLpDetail?.marketId,
-      baseLpDetail?.chainId,
-      baseLpDetail?.state,
-      baseLpDetail?.totalTvl,
-    ],
-    enabled:
-      !!baseLpDetail?.marketId &&
-      !!baseLpDetail?.chainId &&
-      baseLpDetail?.state === MarketPoolState.Cook,
-    queryFn: async () => {
-      if (!baseLpDetail?.marketId || !baseLpDetail?.chainId) return ''
-      try {
-        const result = await market.getMarket(Number(baseLpDetail?.chainId), baseLpDetail?.marketId)
-
-        return result?.poolPrimeThreshold ? Number(result?.poolPrimeThreshold).toString() : ''
-      } catch (error) {
-        return ''
-      }
-    },
-  })
+  const data = useMemo(() => {
+    return (markets || []).find((market) => market.marketId === baseLpDetail?.marketId)
+      ?.oracleFeeUsd
+  }, [markets, baseLpDetail])
 
   const genesis = useMemo(() => {
-    if (data) {
-      console.log(new Big(Number(data)).minus(new Big(tvl || '0')).toString())
-      const _genesis = new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+    if (data && tvl) {
+      console.log(new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString())
+      const _genesis = new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString()
       return Number(_genesis) < 0 ? 0 : _genesis
+    } else {
+      return -1
     }
   }, [data, tvl])
 
@@ -68,7 +50,7 @@ export const OrderTips = () => {
   if (!baseLpDetail) return <></>
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
-  if (baseLpDetail?.state === MarketPoolState.Cook && !data) return <></>
+  if (baseLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>
 
   return (
     <div className="bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">

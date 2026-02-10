@@ -53,7 +53,11 @@ export enum Mode {
 export interface PoolInfo {
   price?: string
   exchangeRate?: string
-  tvl?: string
+  tvl?: {
+    totalTvl: string
+    baseTvl: string
+    quoteTvl: string
+  }
   fundingInfo?: {
     nextFundingRate: bigint
     lastFundingFeeTracker: bigint
