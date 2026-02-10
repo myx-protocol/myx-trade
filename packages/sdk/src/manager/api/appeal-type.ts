@@ -159,7 +159,7 @@ export interface AppealReconsiderationListItem {
   appealCaseId?: number; // 反诉案件ID
   appealBondClaimTime?: number
   successVoteCount: number
-  appealSuccessVoteCoun?: number
+  appealSuccessVoteCount?: number
 }
 
 export interface GetAppealReconsiderationDetailParams {
