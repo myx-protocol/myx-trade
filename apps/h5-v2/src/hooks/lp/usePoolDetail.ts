@@ -32,13 +32,26 @@ function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: Base
   poolInfo: T,
 ) {
   const { basePool, quotePool } = poolInfo
-  const baseSize = basePool.poolTokenSupply * basePool.exchangeRate
-  const quoteSize = quotePool.poolTokenSupply * quotePool.exchangeRate
+  const baseSize = basePool.poolTokenSupply
+  const quoteSize = quotePool.poolTokenSupply
+
   const lpPrice = basePool.poolTokenPrice
   const quoteLpPrice = quotePool.poolTokenPrice
+
   const baseTvl = baseSize * lpPrice
   const quoteTvl = quoteSize * quoteLpPrice
-  return formatUnits(baseTvl + quoteTvl, COMMON_LP_AMOUNT_DECIMALS * 2 + COMMON_PRICE_DECIMALS)
+  const tvl = formatUnits(baseTvl + quoteTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS)
+  /*console.log('tvl:', tvl)
+  console.log('basePool.poolTokenSupply:', basePool.poolTokenSupply)
+  console.log('basePool.price:', basePool.poolTokenPrice)
+
+  console.log('quotePool.poolTokenSupply:', quotePool.poolTokenSupply)
+  console.log('quotePool.poolTokenPrice:', quotePool.poolTokenPrice)*/
+  return {
+    totalTvl: tvl,
+    baseTvl: formatUnits(baseTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS),
+    quoteTvl: formatUnits(quoteTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS),
+  }
 }
 
 export const usePoolDetail = (poolType: PoolType) => {
@@ -204,5 +217,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     lpDetail,
     refetch,
     poolInfoRefetch,
+    markets,
   }
 }
