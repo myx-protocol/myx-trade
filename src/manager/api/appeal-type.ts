@@ -160,6 +160,8 @@ export interface AppealReconsiderationListItem {
   appealBondClaimTime?: number
   successVoteCount: number
   appealSuccessVoteCount?: number
+  appealTotalVoteCount?: number
+  appealVotedCount?: number 
 }
 
 export interface GetAppealReconsiderationDetailParams {
