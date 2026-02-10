@@ -1,7 +1,7 @@
 import { ChartInterval } from './type.ts'
 import { createContext } from 'react'
 import type { QuoteLpDetail } from '@/request/lp/type.ts'
-import { type MarketPool } from '@myx-trade/sdk'
+import { type MarketInfo, type MarketPool } from '@myx-trade/sdk'
 import { Interval } from '@/request/type.ts'
 import { Mode } from '@/pages/Cook/type.ts'
 
@@ -22,9 +22,14 @@ export interface PoolContextValue {
   refetch: () => void
   genesisFeeRate?: string
   mode: Mode
-  tvl?: string
+  tvl?: {
+    totalTvl: string
+    baseTvl: string
+    quoteTvl: string
+  }
   poolInfoRefetch: () => void
   fundingRate?: string
+  markets?: MarketInfo[]
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
 

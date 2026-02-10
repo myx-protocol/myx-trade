@@ -8,8 +8,17 @@ import { t } from '@lingui/core/macro'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, mode, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, fundingRate } =
-    usePoolDetail(PoolType.base)
+  const {
+    pool,
+    poolInfo,
+    mode,
+    genesisFeeRate,
+    refetch,
+    lpDetail,
+    poolInfoRefetch,
+    fundingRate,
+    markets,
+  } = usePoolDetail(PoolType.base)
 
   const [refreshAssetKey, setRefreshAssetKey] = useState(Date.now())
 
@@ -38,6 +47,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         tvl: poolInfo?.tvl,
         poolInfoRefetch,
         fundingRate: fundingRate?.nextFundingRatePercent,
+        markets,
       }}
     >
       {children}
