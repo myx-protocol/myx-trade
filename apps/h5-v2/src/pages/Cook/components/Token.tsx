@@ -86,7 +86,9 @@ export const Token = (props: TokenPendingType | TokenType) => {
               </Box>
               {'progress' in props && (
                 <Box className={'w-[100px] min-w-[100px]'}>
-                  <LinearProgressWithLabel value={Number(progress)} />
+                  <LinearProgressWithLabel
+                    value={props?.state === MarketPoolState.Primed ? 100 : Number(progress)}
+                  />
                 </Box>
               )}
             </>
