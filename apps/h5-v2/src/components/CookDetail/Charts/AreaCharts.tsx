@@ -10,6 +10,7 @@ import { SuspenseLoading } from '@/components/Loading'
 import { ChartBar } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { getAreaChartOptions } from '@/utils/chart.ts'
+import { PoolType } from '@/request/type.ts'
 
 export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
   const { chainId, poolId, pool } = usePoolContext()
@@ -27,6 +28,7 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
         token: pool.basePoolToken,
         interval: ChartIntervalValue[interval].value,
         limit: ChartIntervalValue[interval].limit,
+        poolType: PoolType.base,
       })
       return result?.data || []
     },
@@ -59,7 +61,7 @@ export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
         </Box>
       )}
 
-      {data.length === 0 && isPending && (
+      {data.length === 0 && !isPending && (
         <Box
           className={
             'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center'
