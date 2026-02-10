@@ -3,8 +3,7 @@ import { NoticeFill } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
-import { market, MarketPoolState } from '@myx-trade/sdk'
-import { useQuery } from '@tanstack/react-query'
+import { MarketPoolState } from '@myx-trade/sdk'
 import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
@@ -14,17 +13,9 @@ import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
 
 export const BenchWarning = () => {
-  const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl } = useContext(PoolContext)
+  const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl, markets } = useContext(PoolContext)
   const [targetDate, setTargetDate] = useState<number>()
-  // const { data: fee } = useQuery({
-  //   queryKey: [{ key: 'market_fee_Info' }, chainId, pool?.state],
-  //   queryFn: async () => {
-  //     if (!chainId || pool?.state !== MarketPoolState.Bench) return null
-  //     const result = await _Market.getOracleFee(+chainId, Market[+chainId].marketId)
-  //
-  //     return result ? formatUnits(result, Market[+chainId].decimals) : undefined
-  //   },
-  // })
+
   const [countdown] = useCountDown({
     targetDate,
     onEnd: useCallback(async () => {
@@ -32,37 +23,19 @@ export const BenchWarning = () => {
     }, []),
   })
 
-  const { data } = useQuery({
-    queryKey: [
-      { key: 'getMarket' },
-      quoteLpDetail?.marketId,
-      quoteLpDetail?.chainId,
-      quoteLpDetail?.state,
-    ],
-    enabled:
-      !!quoteLpDetail?.marketId &&
-      !!quoteLpDetail?.chainId &&
-      quoteLpDetail?.state === MarketPoolState.Cook,
-    queryFn: async () => {
-      if (!quoteLpDetail?.marketId || !quoteLpDetail?.chainId) return ''
-      try {
-        const result = await market.getMarket(
-          Number(quoteLpDetail?.chainId),
-          quoteLpDetail?.marketId,
-        )
-
-        return result?.poolPrimeThreshold ? Number(result?.poolPrimeThreshold).toString() : ''
-      } catch (error) {
-        return ''
-      }
-    },
-  })
+  const data = useMemo(() => {
+    console.log(markets, quoteLpDetail)
+    return (markets || []).find((market) => market.marketId === quoteLpDetail?.marketId)
+      ?.oracleFeeUsd
+  }, [markets, quoteLpDetail])
 
   const genesis = useMemo(() => {
-    if (data) {
-      console.log(new Big(Number(data)).minus(new Big(tvl || '0')).toString())
-      const _genesis = new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+    if (data && tvl) {
+      console.log(new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString())
+      const _genesis = new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString()
       return Number(_genesis) < 0 ? 0 : _genesis
+    } else {
+      return -1
     }
   }, [data, tvl])
 
@@ -80,7 +53,7 @@ export const BenchWarning = () => {
   if (!quoteLpDetail) return <></>
   if (quoteLpDetail?.state === MarketPoolState.Trench) return <></>
   if (quoteLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <>1111</>
-  if (quoteLpDetail?.state === MarketPoolState.Cook && !data) return <></>
+  if (quoteLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>
 
   return (
     <Box
@@ -93,7 +66,7 @@ export const BenchWarning = () => {
       </Box>
 
       <p className={''}>
-        {quoteLpDetail?.state === MarketPoolState.Cook && Number(genesis) >= 0 && (
+        {pool && quoteLpDetail?.state === MarketPoolState.Cook && Number(genesis) >= 0 && (
           <Trans>
             Only <span className={'text-warning mr-[0.5em]'}>${formatNumber(genesis)}</span>{' '}
             {quoteLpDetail?.mQuoteBaseSymbol || '--'} Genesis Shares left to lock in lifetime

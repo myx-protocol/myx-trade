@@ -129,6 +129,7 @@ export interface Trench {
   marketId: string
   apr: string
   symbol: string
+  oiAmount?: string
 }
 
 export interface TrenchResponse extends BaseResponse {
@@ -264,6 +265,7 @@ export interface LpPriceHistoryRequest {
   token: string
   interval: PriceInterval
   limit: number
+  poolType: PoolType
 }
 
 export interface LpPriceHistory {
@@ -391,4 +393,8 @@ export interface MarketPoolRiskLevelConfig {
 
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
   data: MarketPoolRiskLevelConfig
+}
+
+export interface MarketPoolPriceResponse extends BaseResponse {
+  data: string
 }

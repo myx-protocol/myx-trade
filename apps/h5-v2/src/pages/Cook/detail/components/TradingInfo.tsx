@@ -10,7 +10,7 @@ import { isSafeNumber } from '@/utils'
 import Big from 'big.js'
 
 export const TradingInfo = () => {
-  const { baseLpDetail, poolId, fundingRate } = usePoolContext()
+  const { baseLpDetail, poolId, fundingRate, tvl } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   return (
@@ -67,8 +67,8 @@ export const TradingInfo = () => {
           }
         >
           $
-          {baseLpDetail?.tvl
-            ? formatNumber(baseLpDetail?.tvl, {
+          {tvl?.baseTvl
+            ? formatNumber(tvl.baseTvl, {
                 showUnit: false,
               })
             : '--'}
