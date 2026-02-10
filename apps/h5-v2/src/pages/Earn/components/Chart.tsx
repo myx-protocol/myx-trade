@@ -1,5 +1,5 @@
 import { Box, styled, ToggleButton, ToggleButtonGroup } from '@mui/material'
-import { ArrowDown, ChartBar } from '@/components/Icon'
+import { ChartBar } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { useCallback, useMemo, useState, useRef, useEffect, useContext } from 'react'
 import dayjs from 'dayjs'
@@ -8,18 +8,10 @@ import { getLpPriceHistory } from '@/request'
 import type { LpPriceHistory } from '@/request/lp/type.ts'
 import { ChartInterval, ChartIntervalValue } from '@/pages/Earn/type.ts'
 import { ChartContext, PoolContext } from '@/pages/Earn/context.ts'
-import { CHAIN_INFO } from '@/config/chainInfo.ts'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { SuspenseLoading } from '@/components/Loading'
 import { echarts, getAreaChartOptions } from '@/utils/chart.ts'
-import { CoinIcon } from '@/components/UI/CoinIcon'
-import { SearchTypeEnum } from '@myx-trade/sdk'
-import { Change } from '@/components/Change'
-import { Tooltips } from '@/components/UI/Tooltips'
-import { t } from '@lingui/core/macro'
 import { formatNumber } from '@/utils/number.ts'
+import { PoolType } from '@/request/type.ts'
 
 interface ChartProps {
   className?: string
@@ -147,6 +139,7 @@ export const Chart = ({ className = '' }: ChartProps) => {
         token: detail.quotePoolToken,
         interval: ChartIntervalValue[interval].value,
         limit: ChartIntervalValue[interval].limit,
+        poolType: PoolType.quote,
       })
       return result?.data || []
     },

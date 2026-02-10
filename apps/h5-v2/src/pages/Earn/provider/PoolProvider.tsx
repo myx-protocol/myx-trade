@@ -8,8 +8,17 @@ import { t } from '@lingui/core/macro'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, mode, fundingRate } =
-    usePoolDetail(PoolType.quote)
+  const {
+    pool,
+    poolInfo,
+    genesisFeeRate,
+    refetch,
+    lpDetail,
+    poolInfoRefetch,
+    mode,
+    fundingRate,
+    markets,
+  } = usePoolDetail(PoolType.quote)
 
   useEffect(() => {
     document.title = t`${lpDetail?.mQuoteBaseSymbol || ''} | Stable Earn | MYX`
@@ -29,6 +38,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         poolInfoRefetch,
         mode,
         fundingRate: fundingRate?.nextFundingRatePercent,
+        markets,
       }}
     >
       {children}

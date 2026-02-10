@@ -104,7 +104,7 @@ export const TrenchList = ({
           apr: item.apr,
           tvl: item.tvl,
           volume: item.volume,
-          open: item.oi,
+          open: item?.oiAmount,
           chainId: item.chainId,
           poolId: item.poolId,
         } as Data
