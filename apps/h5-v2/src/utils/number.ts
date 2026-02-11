@@ -233,21 +233,23 @@ export const formatPriceDisplay = (price: string) => {
   }
 
   if (numPrice >= 1000) {
-    return numPrice.toLocaleString('en-US', {
+    const formatted = numPrice.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+    return removeTrailingZeros(formatted)
   }
 
   if (numPrice >= 1) {
-    return numPrice.toLocaleString('en-US', {
+    const formatted = numPrice.toLocaleString('en-US', {
       minimumFractionDigits: 4,
       maximumFractionDigits: 4,
     })
+    return removeTrailingZeros(formatted)
   }
 
   if (numPrice >= 0.001) {
-    return numPrice.toFixed(6)
+    return removeTrailingZeros(numPrice.toFixed(6))
   }
 
   const priceStr = numPrice.toString()
@@ -329,6 +331,28 @@ export const displayAmount = (
 
   // 使用指定的 decimals 格式化
   return formatNumberWithSeparator(num, decimals, showThousandsSeparator)
+}
+
+/**
+ * 移除数字字符串末尾多余的0
+ * @param numStr 数字字符串
+ * @returns 去除末尾0后的字符串
+ */
+function removeTrailingZeros(numStr: string): string {
+  // 如果没有小数点，直接返回
+  if (!numStr.includes('.')) {
+    return numStr
+  }
+
+  // 移除末尾的0
+  const result = numStr.replace(/\.?0+$/, '')
+
+  // 如果结果为空或只有负号，返回0
+  if (result === '' || result === '-') {
+    return '0'
+  }
+
+  return result
 }
 
 /**
