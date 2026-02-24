@@ -96,6 +96,7 @@ export const NumericInputWithAdornment = memo(
         customInput={ForwardedTextField as unknown as ComponentType<TextFieldProps>}
         autoCapitalize={'off'}
         autoComplete={'off'}
+        allowNegative={false}
         className={`w-full ${size === 'small' ? 'pl-[12px]' : ''} ${className}`}
         isAllowed={(values) => {
           const { value } = values
