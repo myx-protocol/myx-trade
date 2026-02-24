@@ -93,7 +93,7 @@ export const NumericInput = memo(
         autoComplete={'off'}
         allowedDecimalSeparators={allowedDecimalSeparators}
         allowNegative={allowNegative}
-        decimalScale={decimalScale}
+        decimalScale={allowedDecimalSeparators?.includes('.') ? decimalScale : 0}
         className={`w-full ${size === 'small' ? 'pl-[12px]' : ''} ${className}`}
         isAllowed={(values) => {
           const { value } = values
