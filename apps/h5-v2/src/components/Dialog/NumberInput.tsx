@@ -80,6 +80,9 @@ export const NumericInput = memo(
     height = '22px',
     className = '',
     size = 'medium',
+    allowedDecimalSeparators = ['.'],
+    decimalScale,
+    allowNegative = false,
     ...rest
   }: Props) => {
     return (
@@ -88,6 +91,9 @@ export const NumericInput = memo(
         customInput={ForwardedTextField as unknown as ComponentType<TextFieldProps>}
         autoCapitalize={'off'}
         autoComplete={'off'}
+        allowedDecimalSeparators={allowedDecimalSeparators}
+        allowNegative={allowNegative}
+        decimalScale={decimalScale}
         className={`w-full ${size === 'small' ? 'pl-[12px]' : ''} ${className}`}
         isAllowed={(values) => {
           const { value } = values
