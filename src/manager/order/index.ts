@@ -1195,8 +1195,6 @@ export class Order {
         tpPrice: params.tpPrice,
         slSize: params.slSize,
         slPrice: params.slPrice,
-        useOrderCollateral: true,
-        paymentType: 0,
       },
     };
 
