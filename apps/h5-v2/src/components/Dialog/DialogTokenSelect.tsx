@@ -24,6 +24,7 @@ import type { MarketPoolStateData } from '@/request/lp/type.ts'
 import { MarketPoolState } from '@myx-trade/sdk'
 import Big from 'big.js'
 import ChainSelector from '@/components/ChainSelector.tsx'
+import { scientificToString } from '@/utils/math.ts'
 
 interface TokenItemProps {
   // disabled?: boolean
@@ -218,7 +219,7 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
                 logo: result.data.logo,
                 name: result.data.name,
                 symbol: result.data.symbol,
-                price: result.data.price,
+                price: scientificToString(result.data.price),
                 change: result.data.price_change_24h,
                 balance: '',
                 mca: result.data.market_cap,

@@ -8,6 +8,7 @@ import { t } from '@lingui/core/macro'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Drawer } from '@/components/Drawer.tsx'
 
+type DecimalSeparators = '.' | ','
 type FilterField = [string, string]
 interface FilterItemProps {
   // disabled?: boolean,
@@ -17,6 +18,8 @@ interface FilterItemProps {
   endAdornment?: React.ReactNode
   max?: number
   min?: number
+  allowNegative?: boolean
+  allowedDecimalSeparators?: DecimalSeparators[]
 }
 export interface FilterFields {
   age: FilterField
@@ -49,6 +52,8 @@ const FilterItem = ({
   onChange,
   max: maxValue,
   min: minValue,
+  allowNegative = false,
+  allowedDecimalSeparators = [],
 }: FilterItemProps) => {
   const [min = '', max = ''] = value
   return (
@@ -59,7 +64,9 @@ const FilterItem = ({
           placeholder={t`Min`}
           value={min}
           max={maxValue}
-          min={minValue || 0}
+          min={minValue}
+          allowNegative={allowNegative}
+          allowedDecimalSeparators={allowedDecimalSeparators}
           onValueChange={({ formattedValue }) => onChange([formattedValue, max])}
           endAdornment={endAdornment}
         />
@@ -69,7 +76,9 @@ const FilterItem = ({
           placeholder={t`Max`}
           value={max}
           max={maxValue}
-          min={minValue || 0}
+          min={minValue}
+          allowNegative={allowNegative}
+          allowedDecimalSeparators={allowedDecimalSeparators}
           onValueChange={({ formattedValue }) => onChange([min, formattedValue])}
           endAdornment={endAdornment}
         />
@@ -141,12 +150,14 @@ const FiltersDialogContent = ({
             value={progress}
             max={100}
             onChange={(value) => setProgress(value)}
+            endAdornment={'%'}
           />
         )}
 
         <FilterItem
           label={<Trans>Change</Trans>}
           value={change}
+          allowNegative={true}
           onChange={(value) => setChange(value)}
           endAdornment={'%'}
         />
