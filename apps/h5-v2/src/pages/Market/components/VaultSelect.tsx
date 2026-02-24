@@ -30,6 +30,7 @@ import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/c
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
+import { scientificToString } from '@/utils/math.ts'
 
 enum VaultType {
   Base,
@@ -207,7 +208,7 @@ export const VaultSelect = ({
       if (!token?.address || !chainId) return
       const result = await getMarketData({ asset: token.address, chainId: +chainId })
       if (result) {
-        return result?.data?.price
+        return scientificToString(result?.data?.price)
       }
       return
     },
