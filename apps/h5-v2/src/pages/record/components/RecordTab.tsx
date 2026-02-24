@@ -44,8 +44,8 @@ export const RecordTab = ({ tab, setTab }: { tab: TabType; setTab: (tab: TabType
           value={TabType.ENTRUSTS}
           label={<Trans>Entrusts({orderList.length})</Trans>}
         />
-        <TradeRecordTab value={TabType.HISTORY} label={<Trans>Order History</Trans>} />
         <TradeRecordTab value={TabType.POSITION_HISTORY} label={<Trans>Positions History</Trans>} />
+        <TradeRecordTab value={TabType.HISTORY} label={<Trans>Order History</Trans>} />
         <TradeRecordTab value={TabType.FINANCE} label={<Trans>Transaction History</Trans>} />
       </TradeRecordTabs>
     </div>
