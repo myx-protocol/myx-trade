@@ -194,7 +194,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
           myxSdkClientRef.current.forEach((_client, chainId) => {
             _client.auth({
               signer,
-              walletClient: walletClient,
+              walletClient: walletClient as any,
               getAccessToken: createGetAccessTokenMethod(address),
             })
 
