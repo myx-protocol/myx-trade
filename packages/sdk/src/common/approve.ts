@@ -1,7 +1,5 @@
 import { getERC20Contract } from "@/web3/providers";
-import { getAllowanceApproved } from "@/common/allowance";
 import { ChainId } from "@/config/chain";
-import { ErrorCode, Errors } from "@/config/error";
 
 export const approve = async (chainId: ChainId, account: string, tokenAddress: string,approveAddress: string, amount:bigint) => {
   try {
@@ -13,12 +11,7 @@ export const approve = async (chainId: ChainId, account: string, tokenAddress: s
     // console.log("approve amount", amount)
     
     // Wait for block confirmation
-    const receipt = await response?.wait()
-    
-    const isApproved = await getAllowanceApproved(chainId, account, tokenAddress, approveAddress, amount );
-    if (!isApproved) {
-      throw new Error(Errors[ErrorCode.Insufficient_Amount_Of_Approved])
-    }
+    await response?.wait()
     
   } catch (e) {
     throw e
