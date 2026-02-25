@@ -24,12 +24,12 @@ export class SubScription {
   constructor(configManager: ConfigManager, logger: Logger) {
     this.configManager = configManager;
     this.logger = logger;
-    const socketUrl = configManager.getConfig()?.isTestnet
-      ? WEBSOCKET_URL.TestNet
-      : configManager.getConfig()?.isBetaMode
-        ? WEBSOCKET_URL.BetaNet
-        : WEBSOCKET_URL.MainNet;
-
+    let socketUrl: string = WEBSOCKET_URL.MainNet;
+    if (configManager.getConfig().isBetaMode) {
+      socketUrl = WEBSOCKET_URL.BetaNet;
+    } else if (configManager.getConfig().isTestnet) {
+      socketUrl = WEBSOCKET_URL.TestNet;
+    }
     this.wsClient = new MyxWebSocketClient({
       logLevel: this.configManager.getConfig()?.logLevel,
       url: socketUrl,
@@ -138,8 +138,8 @@ export class SubScription {
   }
 
   private async getAccessToken() {
-    const accessToken = await this.configManager.getAccessToken() ?? ''
-
+    const accessToken = await this.configManager.refreshAccessToken() ?? ''
+    this.logger.debug(`getAccessToken->${accessToken}`);
     return accessToken;
   }
   private clientAuth = false;
