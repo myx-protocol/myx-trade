@@ -50,6 +50,7 @@ export enum OrderStatusEnum {
   Cancelled = 1,
   Expired = 2,
   Successful = 9,
+  PartialFilled = 8,
 }
 
 export enum ExecTypeEnum {

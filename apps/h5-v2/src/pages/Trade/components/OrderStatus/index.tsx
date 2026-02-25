@@ -40,6 +40,8 @@ export const OrderStatus = ({ orderStatus, cancelReason }: OrderStatusProps) => 
   switch (orderStatus) {
     case OrderStatusEnum.Successful:
       return <Trans>Successful</Trans>
+    case OrderStatusEnum.PartialFilled:
+      return <Trans>Partially filled</Trans>
     case OrderStatusEnum.Cancelled:
       return (
         <Tooltips title={(orderError as string) ?? t`Order canceled`}>
