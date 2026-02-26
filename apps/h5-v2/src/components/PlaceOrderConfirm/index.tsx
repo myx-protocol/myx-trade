@@ -524,23 +524,24 @@ export const PlaceOrderConfirmDialog = () => {
           <FlexRowLayout
             left={<Trans>滑点</Trans>}
             right={
-              <EditText
-                value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
-                unit="%"
-                onChange={(newSlippage, closeEdit) => {
-                  setSlippage({
-                    chainId: symbolInfo?.chainId ?? 0,
-                    poolId: symbolInfo?.poolId ?? '',
-                    type: SlippageTypeEnum.OPEN,
-                    slippage: parseBigNumber(newSlippage).div(100).toNumber(),
-                  })
-                  tradePubSub.emit('trade:slippage:change', {
-                    chainId: symbolInfo?.chainId ?? 0,
-                    poolId: symbolInfo?.poolId ?? '',
-                  })
-                  closeEdit?.()
-                }}
-              />
+              <span>{((openPositionSlippage ?? 0) * 100).toFixed(2)}%</span>
+              // <EditText
+              //   value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
+              //   unit="%"
+              //   onChange={(newSlippage, closeEdit) => {
+              //     setSlippage({
+              //       chainId: symbolInfo?.chainId ?? 0,
+              //       poolId: symbolInfo?.poolId ?? '',
+              //       type: SlippageTypeEnum.OPEN,
+              //       slippage: parseBigNumber(newSlippage).div(100).toNumber(),
+              //     })
+              //     tradePubSub.emit('trade:slippage:change', {
+              //       chainId: symbolInfo?.chainId ?? 0,
+              //       poolId: symbolInfo?.poolId ?? '',
+              //     })
+              //     closeEdit?.()
+              //   }}
+              // />
             }
           />
         </div>
