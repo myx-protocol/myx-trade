@@ -179,7 +179,6 @@ export class Seamless {
 
       return [tradingRouterPermitParams]
     } catch (error) {
-      console.log('error-->', error)
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
@@ -235,11 +234,12 @@ export class Seamless {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const masterAddress = await config.signer?.getAddress() ?? ''
-    const provider = await getSignerProvider(chainId)
     const jsonProvider = getJSONProvider(chainId)
 
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
+      
+      this.logger.info('balanceRes-->', balanceRes)
       const balance = balanceRes.data
       const marketManagerContract = new ethers.Contract(
         getContractAddressByChainId(chainId).MARKET_MANAGER,
@@ -247,9 +247,12 @@ export class Seamless {
         jsonProvider
       )
       const forwardFeeToken = executeAddressByChainId(chainId)
+      this.logger.info('forwardFeeToken-->', forwardFeeToken)
       const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
-
+      this.logger.info('pledgeFee-->', pledgeFee)
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
+      this.logger.info('auth params-->', { gasFee, balance }, chainId, forwardFeeToken)
+      this.logger.info('gasFee > 0 && gasFee > BigInt(balance)-->', gasFee > 0 && gasFee > BigInt(balance))
       if (gasFee > 0 && gasFee > BigInt(balance)) {
         throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient balance");
       }
