@@ -1181,7 +1181,7 @@ export class Order {
     }
   }
 
-  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string, marketId: string) {
+  async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string, marketId: string, isTpSlOrder?: boolean) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
     const networkFee = await this.utils.getNetworkFee(marketId, chainId)
@@ -1191,10 +1191,10 @@ export class Order {
       size: params.size,
       price: params.price,
       tpsl: {
-        tpSize: params.tpSize,
-        tpPrice: params.tpPrice,
-        slSize: params.slSize,
-        slPrice: params.slPrice,
+        tpSize: isTpSlOrder ? params.tpSize : '0',
+        tpPrice: isTpSlOrder ? params.tpPrice : '0',
+        slSize: isTpSlOrder ? params.slSize : '0',
+        slPrice: isTpSlOrder ? params.slPrice : '0',
       },
     };
 
