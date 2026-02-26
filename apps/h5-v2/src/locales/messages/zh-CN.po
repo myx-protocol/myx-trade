@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -1190,13 +1191,13 @@ msgstr "无效的签名 (bytes32)"
 msgid "Ecosystem"
 msgstr "系统"
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit"
-msgstr "编辑"
-
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
 msgstr "编辑备注"
+
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit TP/SL"
+msgstr ""
 
 #: src/components/Footer/index.tsx
 msgid "Email"
@@ -2753,6 +2754,10 @@ msgstr "从钱包中支付：{0} {1}"
 msgid "Pair/Vol"
 msgstr "交易对/Vol"
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Partially filled"
+msgstr ""
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
 msgstr "密码"
@@ -4224,6 +4229,7 @@ msgid "其他"
 msgstr "其他"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "最大滑点"
@@ -4603,10 +4609,6 @@ msgstr "立即创建我的合约交易市场"
 msgid "类型"
 msgstr "类型"
 
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "自动{defaultValue}%"
-msgstr "自动{defaultValue}%"
-
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4680,6 +4682,10 @@ msgstr "限价开仓"
 msgid "非仓位持有者"
 msgstr "非仓位持有者"
 
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "预估 <0>{defaultValue}%</0>"
+msgstr ""
+
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
 msgstr "预估强平价"
@@ -4707,4 +4713,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
