@@ -289,6 +289,7 @@ msgid "Adjusted Margin"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "ADL"
 msgstr ""
 
@@ -4209,7 +4210,6 @@ msgstr "Margin Account balance available to transfer to Wallet"
 msgid "修改"
 msgstr "Edit"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
@@ -4261,6 +4261,10 @@ msgstr "Transfer to Wallet"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
 msgstr "Delete"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "加仓"
+msgstr "加仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
@@ -4330,6 +4334,10 @@ msgstr "Order Price"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "委托数量"
 msgstr "Order Amount"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "完全平仓"
+msgstr "完全平仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
@@ -4542,6 +4550,14 @@ msgstr "Rankings"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "止损-最新"
 msgstr "SL - Last Price"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止损平仓"
+msgstr "止损平仓"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止盈平仓"
+msgstr "止盈平仓"
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
