@@ -381,7 +381,7 @@ const MarginMode = () => {
       }}
     >
       <p className="text-white">
-        {autoMarginMode ? <Trans>Auto Margin</Trans> : <Trans>Manual Margin</Trans>}
+        {autoMarginMode ? <Trans>Manual Margin</Trans> : <Trans>Auto Margin</Trans>}
       </p>
       <div className="ml-[4px] flex">
         <span

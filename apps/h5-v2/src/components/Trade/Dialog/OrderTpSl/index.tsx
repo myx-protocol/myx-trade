@@ -154,7 +154,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
           // },
         }}
       >
-        <div className="px-[20px]">
+        <div>
           {/* tabs */}
           {/* <div className="mt-[6px]">
             <Tabs
