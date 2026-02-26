@@ -118,6 +118,13 @@ function LeverageDialogContent() {
     setLeverageInputString(leverage.toString())
   }, [leverage])
 
+  useUpdateEffect(() => {
+    if (leverageInput > maxLeverage) {
+      setLeverageInput(maxLeverage)
+      setLeverageInputString(maxLeverage.toString())
+    }
+  }, [maxLeverage])
+
   // 生成滑块刻度
   const marks = useMemo(() => {
     return generateMarks(minLeverage, maxLeverage)

@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -1190,13 +1191,13 @@ msgstr "Invalid signature"
 msgid "Ecosystem"
 msgstr ""
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit"
-msgstr ""
-
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
 msgstr ""
+
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit TP/SL"
+msgstr "Edit TP/SL"
 
 #: src/components/Footer/index.tsx
 msgid "Email"
@@ -2753,6 +2754,10 @@ msgstr ""
 msgid "Pair/Vol"
 msgstr ""
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Partially filled"
+msgstr "Partially filled"
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
 msgstr ""
@@ -4224,6 +4229,7 @@ msgid "其他"
 msgstr "Other"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "Max Slippage"
@@ -4603,10 +4609,6 @@ msgstr "Create my contract trading market now"
 msgid "类型"
 msgstr "Type"
 
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "自动{defaultValue}%"
-msgstr "Auto {defaultValue}%"
-
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4680,6 +4682,10 @@ msgstr "Limit Open"
 msgid "非仓位持有者"
 msgstr "Not Position Owner"
 
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "预估 <0>{defaultValue}%</0>"
+msgstr "预估 <0>{defaultValue}%</0>"
+
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
 msgstr "Est. Liq. Price"
@@ -4707,4 +4713,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
