@@ -53,11 +53,20 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
             return
           }
 
-          if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.quoteAmount))) {
-            toast.error({
-              title: t`close amount must be less than ${displayAmount(maxCloseLong.quoteAmount)}`,
-            })
-            return
+          if (amountUnit === AmountUnitEnum.QUOTE) {
+            if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.quoteAmount))) {
+              toast.error({
+                title: t`close amount must be less than ${displayAmount(maxCloseLong.quoteAmount)} ${symbolInfo?.quoteSymbol as string}`,
+              })
+              return
+            }
+          } else {
+            if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.baseAmount))) {
+              toast.error({
+                title: t`close amount must be less than ${displayAmount(maxCloseLong.baseAmount)} ${symbolInfo?.baseSymbol as string}`,
+              })
+              return
+            }
           }
 
           if (showCloseOrderConfirmDialog) {
@@ -96,11 +105,20 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
             })
             return
           }
-          if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.quoteAmount))) {
-            toast.error({
-              title: t`close  amount must be less than ${displayAmount(maxCloseShort.quoteAmount)}`,
-            })
-            return
+          if (amountUnit === AmountUnitEnum.QUOTE) {
+            if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.quoteAmount))) {
+              toast.error({
+                title: t`close  amount must be less than ${displayAmount(maxCloseShort.quoteAmount)} ${symbolInfo?.quoteSymbol as string}`,
+              })
+              return
+            }
+          } else {
+            if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.baseAmount))) {
+              toast.error({
+                title: t`close  amount must be less than ${displayAmount(maxCloseShort.baseAmount)} ${symbolInfo?.baseSymbol as string}`,
+              })
+              return
+            }
           }
 
           if (showCloseOrderConfirmDialog) {

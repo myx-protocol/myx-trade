@@ -229,13 +229,13 @@ function SelectReferralItem({ info }: { info: InvitationCodeInfo }) {
 }
 
 function SelectReferralList() {
-  const { invitationCodes, fetchInvitationCodes, accessToken } = useReferralStore()
+  const { invitationCodes, fetchInvitationCodes, accessToken, account } = useReferralStore()
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || account) {
       fetchInvitationCodes()
     }
-  }, [accessToken, fetchInvitationCodes])
+  }, [accessToken, fetchInvitationCodes, account])
 
   return (
     <Stack direction="column">

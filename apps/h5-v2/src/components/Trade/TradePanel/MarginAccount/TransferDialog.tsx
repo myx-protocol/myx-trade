@@ -91,7 +91,7 @@ export const TransferDialogButton = () => {
       </PrimaryButton>
       {open && (
         <DialogBase
-          title={t`Transfer` + ' '}
+          title={t`Transfer`}
           open={open}
           onClose={() => setOpen(false)}
           sx={{
@@ -100,13 +100,9 @@ export const TransferDialogButton = () => {
               paddingRight: 0,
               width: '390px',
             },
-            '& .MuiDialogTitle-root': {
-              paddingLeft: '20px',
-              marginRight: '20px',
-            },
           }}
         >
-          <div className="p-[16px]">
+          <div className="pt-[16px]">
             <div className="flex items-center justify-between gap-[16px] rounded-[16px] bg-[#202129] p-[16px]">
               <div className="flex-1">
                 <div className="flex w-full items-center gap-[12px] py-[10px]">
@@ -452,7 +448,14 @@ export const TransferDialogButton = () => {
                       )
                       let maxAmount = '0'
                       if (tokenType === AmountUnitEnum.QUOTE) {
-                        maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                        if (isExpired) {
+                          maxAmount =
+                            parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                              .plus(parseBigNumber(accountAssets?.quoteProfit)?.toString() ?? '0')
+                              ?.toString() ?? '0'
+                        } else {
+                          maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                        }
                       } else {
                         maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
                       }

@@ -133,7 +133,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         }}
         onClick={() => setOpen(true)}
       >
-        <Trans>Edit</Trans>
+        <Trans>Edit TP/SL</Trans>
       </InfoButton>
       <DialogBase
         title={`Modify Order`}
@@ -154,7 +154,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
           // },
         }}
       >
-        <div className="px-[20px]">
+        <div>
           {/* tabs */}
           {/* <div className="mt-[6px]">
             <Tabs

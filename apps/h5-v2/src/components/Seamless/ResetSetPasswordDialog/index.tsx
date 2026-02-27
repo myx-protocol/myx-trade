@@ -11,11 +11,11 @@ import { PrimaryButton } from '@/components/UI/Button'
 import CompleteIcon from '@/components/UI/Icon/CompleteIcon'
 import InfoIcon from '@/components/UI/Icon/InfoIcon'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { toast } from 'react-hot-toast'
+
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { TradeMode } from '@/pages/Trade/types'
 import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
+import { toast } from '@/components/UI/Toast'
 
 export const ResetSetPasswordDialog = () => {
   const { resetSeamlessPasswordDialogOpen, setResetSeamlessPasswordDialogOpen } = useGlobalStore()
@@ -130,6 +130,12 @@ export const ResetSetPasswordDialog = () => {
             }}
             disabled={loading}
             onClick={async () => {
+              if (password.length < 8 || !/\d/.test(password) || !/[A-Z]/.test(password)) {
+                toast.error({
+                  title: t`Invalid password`,
+                })
+                return
+              }
               try {
                 setLoading(true)
                 const rs = await client?.seamless.createSeamless({
@@ -192,7 +198,9 @@ export const ResetSetPasswordDialog = () => {
                   changeSdkTradeMode(true)
                   setResetSeamlessPasswordDialogOpen(false)
                 } else {
-                  toast.error('Create seamless failed')
+                  toast.error({
+                    title: t`Reset password failed`,
+                  })
                 }
               } catch (error) {
                 console.error('error-->', error)

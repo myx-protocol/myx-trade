@@ -59,14 +59,16 @@ export const HideOuterSymbols = ({
           ]}
         />
         {showHideOther && (
-          <FormControlLabel
-            control={<CheckBox checked={checked} onChange={onCheckedChange} />}
-            label={
-              <span className="text-[12px] text-[#CED1D9]">
-                <Trans>Hide other</Trans>
-              </span>
-            }
-          />
+          <div className="ml-[6px]">
+            <FormControlLabel
+              control={<CheckBox checked={checked} onChange={onCheckedChange} />}
+              label={
+                <span className="text-[12px] text-[#CED1D9]">
+                  <Trans>Hide other</Trans>
+                </span>
+              }
+            />
+          </div>
         )}
       </div>
       {right && selectChainId !== '0' && <div className="shrink-0">{right}</div>}

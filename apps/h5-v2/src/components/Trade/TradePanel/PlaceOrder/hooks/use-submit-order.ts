@@ -172,105 +172,127 @@ export const useSubmitOrder = () => {
         formatTpSize = '0'
         formatSlSize = '0'
 
-        if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
-          formatTpSize = formatSize
-          if (tpType === TpSlTypeEnum.Change) {
-            // 按用户输入的百分比计算，根据方向调整
-            // 做多：盈利时价格上涨 price * (1 + change%)
-            // 做空：盈利时价格下跌 price * (1 - change%)
-            const changeRatio = parseBigNumber(tpValue).div(100)
-            const radio =
-              direction === Direction.LONG
-                ? parseBigNumber(1).plus(changeRatio)
-                : parseBigNumber(1).minus(changeRatio)
-            const targetPrice = parseBigNumber(price).mul(radio)
-            formatTpValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
-          } else if (tpType === TpSlTypeEnum.ROI) {
-            // 按用户输入的 ROI 计算，根据方向调整
-            // 做多：price + averagePnl
-            // 做空：price - averagePnl
-            const radio = parseBigNumber(tpValue).div(100)
-            const targetCollateral = parseBigNumber(
-              ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
-            )
-            const totalPnl = targetCollateral.mul(radio)
+        if (positionAction === PositionActionEnum.OPEN) {
+          formatTpValue = tpValue
+            ? ethers.parseUnits((tpValue ?? '0').toString(), 30).toString()
+            : '0'
+          formatSlValue = slValue
+            ? ethers.parseUnits((slValue ?? '0').toString(), 30).toString()
+            : '0'
+          formatTpSize = '0'
+          formatSlSize = '0'
 
-            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
-            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
-            const targetPrice =
-              direction === Direction.LONG
-                ? parseBigNumber(price).plus(averagePnl)
-                : parseBigNumber(price).minus(averagePnl)
-            formatTpValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
-          } else if (tpType === TpSlTypeEnum.Pnl) {
-            // 按用户输入的盈亏金额计算，根据方向调整
-            // 做多：price + averagePnl
-            // 做空：price - averagePnl
-            const totalPnl = parseBigNumber(tpValue)
-            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
-            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
-            const targetPrice =
-              direction === Direction.LONG
-                ? parseBigNumber(price).plus(averagePnl)
-                : parseBigNumber(price).minus(averagePnl)
-            formatTpValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
+          if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
+            formatTpSize = formatSize
+            if (tpType === TpSlTypeEnum.Change) {
+              // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
+              const radio =
+                direction === Direction.LONG
+                  ? parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+                  : parseBigNumber(1).minus(parseBigNumber(slValue).div(100))
+              const targetPrice = parseBigNumber(price).mul(radio)
+              formatTpValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            } else if (tpType === TpSlTypeEnum.ROI) {
+              // 按用户输入的 ROI 计算，根据方向调整
+              // 做多：price + averagePnl
+              // 做空：price - averagePnl
+              const radio = parseBigNumber(tpValue).div(100)
+              const targetCollateral = parseBigNumber(
+                ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
+              )
+              const totalPnl = targetCollateral.mul(radio)
+
+              const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+              const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+              const targetPrice =
+                direction === Direction.LONG
+                  ? parseBigNumber(price).plus(averagePnl)
+                  : parseBigNumber(price).minus(averagePnl)
+              formatTpValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            } else if (tpType === TpSlTypeEnum.Pnl) {
+              // 按用户输入的盈亏金额计算，根据方向调整
+              // 做多：price + averagePnl
+              // 做空：price - averagePnl
+              const totalPnl = parseBigNumber(tpValue)
+              const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+              const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+              const targetPrice =
+                direction === Direction.LONG
+                  ? parseBigNumber(price).plus(averagePnl)
+                  : parseBigNumber(price).minus(averagePnl)
+              formatTpValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            }
           }
-        }
 
-        if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
-          formatSlSize = formatSize
-          if (slType === TpSlTypeEnum.Change) {
-            // 按用户输入的百分比计算，根据方向调整
-            // 做多：止损时价格下跌 price * (1 - |change%|)
-            // 做空：止损时价格上涨 price * (1 + |change%|)
-            // 注意：用户可能输入正数或负数，都取绝对值处理
-            const changeRatio = parseBigNumber(slValue).abs().div(100)
-            const radio =
-              direction === Direction.LONG
-                ? parseBigNumber(1).minus(changeRatio)
-                : parseBigNumber(1).plus(changeRatio)
-            const targetPrice = parseBigNumber(price).mul(radio)
-            formatSlValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
-          } else if (slType === TpSlTypeEnum.ROI) {
-            // 按用户输入的 ROI 计算，根据方向调整
-            // 做多：price - |averagePnl|
-            // 做空：price + |averagePnl|
-            // 注意：用户可能输入正数或负数，都取绝对值处理
-            const radio = parseBigNumber(slValue).abs().div(100)
-            const totalPnl = parseBigNumber(
-              ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
-            ).mul(radio)
-            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
-            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
-            const targetPrice =
-              direction === Direction.LONG
-                ? parseBigNumber(price).minus(averagePnl)
-                : parseBigNumber(price).plus(averagePnl)
-            formatSlValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
-          } else if (slType === TpSlTypeEnum.Pnl) {
-            // 按用户输入的盈亏金额计算，根据方向调整
-            // 做多：price + averagePnl (averagePnl 为负)
-            // 做空：price - averagePnl (averagePnl 为负，所以实际是 price + |averagePnl|)
-            const totalPnl = parseBigNumber(slValue)
-            const formatAveragePnl = totalPnl.div(parseBigNumber(size))
-            const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
-            const targetPrice =
-              direction === Direction.LONG
-                ? parseBigNumber(price).plus(averagePnl)
-                : parseBigNumber(price).minus(averagePnl)
-            formatSlValue = targetPrice.gt(0)
-              ? ethers.parseUnits(targetPrice.toString(), 30).toString()
-              : '0'
+          if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
+            formatSlSize = formatSize
+            if (slType === TpSlTypeEnum.Change) {
+              // 用户输入正数=涨、负数=跌，直接按符号计算
+              const radio = parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+              const targetPrice = parseBigNumber(price).mul(radio)
+              formatSlValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            } else if (slType === TpSlTypeEnum.ROI) {
+              // 用户输入正数=盈利方向、负数=亏损方向，直接按符号计算
+              // 做多：price + averagePnl；做空：price - averagePnl
+              const radio = parseBigNumber(slValue).div(100)
+              const totalPnl = parseBigNumber(
+                ethers.formatUnits(formatCollateralAmount, symbolInfo?.quoteDecimals ?? 1),
+              ).mul(radio)
+              const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+              const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+              const targetPrice =
+                direction === Direction.LONG
+                  ? parseBigNumber(price).plus(averagePnl)
+                  : parseBigNumber(price).minus(averagePnl)
+              formatSlValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            } else if (slType === TpSlTypeEnum.Pnl) {
+              // 用户输入正数=盈利方向、负数=亏损方向，直接按符号计算
+              // 做多：price + averagePnl；做空：price - averagePnl
+              const totalPnl = parseBigNumber(slValue)
+              const formatAveragePnl = totalPnl.div(parseBigNumber(size))
+              const averagePnl = parseBigNumber(formatAveragePnl.toFixed(10))
+              const targetPrice =
+                direction === Direction.LONG
+                  ? parseBigNumber(price).plus(averagePnl)
+                  : parseBigNumber(price).minus(averagePnl)
+              formatSlValue = targetPrice.gt(0)
+                ? ethers.parseUnits(targetPrice.toString(), 30).toString()
+                : '0'
+            }
+          }
+
+          if (parseBigNumber(formatTpSize).gt(0)) {
+            const tpVerify = verifyTpSlPrice(
+              ethers.parseUnits(price, 30).toString(),
+              formatTpValue,
+              direction,
+              'tp',
+            )
+            if (!tpVerify) {
+              return
+            }
+          }
+
+          if (parseBigNumber(formatSlSize).gt(0)) {
+            const slVerify = verifyTpSlPrice(
+              ethers.parseUnits(price, 30).toString(),
+              formatSlValue,
+              direction,
+              'sl',
+            )
+            if (!slVerify) {
+              return
+            }
           }
         }
 

@@ -180,9 +180,15 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
           .mul(parseBigNumber(position.size)) ?? '0'
     }
 
-    const safeLeverage = parseBigNumber(position.userLeverage ?? '1').gt(0)
+    const positionLeverage = parseBigNumber(position.userLeverage ?? '1').gt(0)
       ? position.userLeverage
       : 1
+
+    const safeLeverage = parseBigNumber(positionLeverage).gt(
+      parseBigNumber(poolConfig?.levelConfig?.leverage ?? '1'),
+    )
+      ? parseBigNumber(poolConfig?.levelConfig?.leverage ?? '1')
+      : parseBigNumber(positionLeverage)
 
     //可减少金额 = 仓位保证金 - 持仓数量 * 入场价 / 杠杆 + 资金费 - 交易手续费 + 盈亏
     const originMargin = parseBigNumber(position.entryPrice)

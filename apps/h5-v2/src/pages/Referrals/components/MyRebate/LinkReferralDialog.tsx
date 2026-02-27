@@ -8,7 +8,7 @@ import { toast } from '@/components/UI/Toast'
 import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 
 export const LinkReferralDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-  const { bindRelationshipByCode, fetchRefReferrerInfo, accessToken } = useReferralStore()
+  const { bindRelationshipByCode, fetchRefReferrerInfo, accessToken, account } = useReferralStore()
   const [confirming, setConfirming] = useState(false)
   const [invitationCode, setInvitationCode] = useState('')
 
@@ -16,7 +16,7 @@ export const LinkReferralDialog = ({ open, onClose }: { open: boolean; onClose: 
     if (!invitationCode) return
     setConfirming(true)
     try {
-      if (accessToken) {
+      if (accessToken || account) {
         const res = await bindRelationshipByCode(invitationCode)
         if (res?.code !== 9200) {
           toast.error({ title: res?.msg || 'Error' })

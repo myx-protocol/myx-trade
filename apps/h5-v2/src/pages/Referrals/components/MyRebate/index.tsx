@@ -13,7 +13,6 @@ import { isUndefined } from 'lodash-es'
 import { getChainInfo } from '@/config/chainInfo'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
-import { useAccessParams } from '@/hooks/useAccessParams'
 import { Skeleton } from '@/components/UI/Skeleton'
 
 const COMMON_USD_ASSETS_SCALE = 2
@@ -31,17 +30,16 @@ export function MyRebate() {
     isLoadingChainBonus,
     isLoadingReferrer,
     accessToken,
+    account,
   } = useReferralStore()
 
-  const { address } = useWalletConnection()
-
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || account) {
       fetchRefBonus()
       fetchRefBonusInfoByChain()
       fetchRefReferrerInfo()
     }
-  }, [accessToken, fetchRefBonus, fetchRefBonusInfoByChain, fetchRefReferrerInfo, address])
+  }, [accessToken, fetchRefBonus, fetchRefBonusInfoByChain, fetchRefReferrerInfo, account])
 
   return (
     <>

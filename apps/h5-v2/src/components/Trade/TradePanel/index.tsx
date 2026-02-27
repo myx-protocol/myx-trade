@@ -310,6 +310,7 @@ export const TradePanel = () => {
           {positionAction === PositionActionEnum.OPEN && <BalanceAndMarginMode />}
           <OrderForm />
           {positionAction === PositionActionEnum.OPEN && <TPSL />}
+          <MaxTradeAmount />
           <CanSwitchWalletNetwork
             targetChainId={symbolInfo?.chainId}
             style={{
@@ -318,7 +319,6 @@ export const TradePanel = () => {
           >
             <PlaceOrder />
           </CanSwitchWalletNetwork>
-          <MaxTradeAmount />
         </div>
         <div className="mt-[12px]">
           <Tables />
