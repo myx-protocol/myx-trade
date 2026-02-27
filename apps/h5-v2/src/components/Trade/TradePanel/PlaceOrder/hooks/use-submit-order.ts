@@ -186,7 +186,10 @@ export const useSubmitOrder = () => {
             formatTpSize = formatSize
             if (tpType === TpSlTypeEnum.Change) {
               // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
-              const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
+              const radio =
+                direction === Direction.LONG
+                  ? parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+                  : parseBigNumber(1).minus(parseBigNumber(slValue).div(100))
               const targetPrice = parseBigNumber(price).mul(radio)
               formatTpValue = targetPrice.gt(0)
                 ? ethers.parseUnits(targetPrice.toString(), 30).toString()
