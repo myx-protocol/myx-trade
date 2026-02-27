@@ -448,7 +448,14 @@ export const TransferDialogButton = () => {
                       )
                       let maxAmount = '0'
                       if (tokenType === AmountUnitEnum.QUOTE) {
-                        maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                        if (isExpired) {
+                          maxAmount =
+                            parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                              .plus(parseBigNumber(accountAssets?.quoteProfit)?.toString() ?? '0')
+                              ?.toString() ?? '0'
+                        } else {
+                          maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                        }
                       } else {
                         maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
                       }
