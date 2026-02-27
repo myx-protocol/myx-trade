@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-06 07:21\n"
+"PO-Revision-Date: 2026-02-27 08:23\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -288,16 +289,13 @@ msgid "Adjusted Margin"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "ADL"
 msgstr ""
 
 #. placeholder {0}: info.invitationCode
 #: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
 msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
-msgstr ""
-
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Age(min)"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -782,10 +780,14 @@ msgstr ""
 msgid "close  amount must be greater than 0"
 msgstr ""
 
+#. placeholder {0}: displayAmount(maxCloseShort.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseShort.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close  amount must be less than {0}"
-msgstr ""
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be less than {0} {1}"
+msgstr "close  amount must be less than {0} {1}"
 
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
@@ -810,10 +812,14 @@ msgstr ""
 msgid "Close Amount"
 msgstr ""
 
+#. placeholder {0}: displayAmount(maxCloseLong.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close amount must be less than {0}"
-msgstr ""
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close amount must be less than {0} {1}"
+msgstr "close amount must be less than {0} {1}"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -1019,6 +1025,10 @@ msgstr ""
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Create seamless failed"
+msgstr "Create seamless failed"
+
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
 msgstr ""
@@ -1190,12 +1200,12 @@ msgstr "Invalid signature"
 msgid "Ecosystem"
 msgstr ""
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit"
-msgstr ""
-
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
+msgstr ""
+
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit TP/SL"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -1674,10 +1684,9 @@ msgstr ""
 msgid "Hold"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Holders"
 msgstr ""
@@ -1864,6 +1873,12 @@ msgstr ""
 #: src/pages/Market/index.tsx
 msgid "Invalid Market"
 msgstr ""
+
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Invalid password"
+msgstr "Invalid password"
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2083,7 +2098,6 @@ msgstr ""
 msgid "Link Referral Relationship"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "Liq"
 msgstr ""
@@ -2096,6 +2110,10 @@ msgstr ""
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "Liq. Price"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Liquidity($)"
+msgstr "Liquidity($)"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2228,6 +2246,10 @@ msgstr ""
 msgid "Market Cap"
 msgstr ""
 
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Market cap($)"
+msgstr "Market cap($)"
+
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr ""
@@ -2239,7 +2261,7 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "market is created"
-msgstr ""
+msgstr "Market already exist"
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -2289,7 +2311,6 @@ msgstr ""
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
 msgstr ""
@@ -2691,6 +2712,10 @@ msgstr ""
 msgid "Or Continue With "
 msgstr ""
 
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+msgid "Oracle Price"
+msgstr "Oracle Price"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
 msgstr ""
@@ -2751,6 +2776,10 @@ msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
+msgstr ""
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Partially filled"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
@@ -3170,6 +3199,10 @@ msgstr ""
 #: src/components/SettingDrawer.tsx
 msgid "Reset Password"
 msgstr ""
+
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+msgid "Reset password failed"
+msgstr "Reset password failed"
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
@@ -3685,6 +3718,10 @@ msgstr ""
 msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
 msgstr ""
 
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Token age(min)"
+msgstr "Token age(min)"
+
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 msgid "Token Info"
 msgstr ""
@@ -3726,7 +3763,7 @@ msgstr ""
 #: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Total Spot liq"
-msgstr ""
+msgstr "Total Spot Liquidity"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
@@ -3789,8 +3826,8 @@ msgid "Trade Now"
 msgstr ""
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Traders"
 msgstr ""
@@ -3875,7 +3912,6 @@ msgstr ""
 msgid "UnderflowOI()"
 msgstr "Open interest underflow()"
 
-#: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Underlying Price"
 msgstr ""
@@ -4204,7 +4240,6 @@ msgstr "Margin Account balance available to transfer to Wallet"
 msgid "修改"
 msgstr "Edit"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
@@ -4224,6 +4259,7 @@ msgid "其他"
 msgstr "Other"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "Max Slippage"
@@ -4255,6 +4291,10 @@ msgstr "Transfer to Wallet"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
 msgstr "Delete"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "加仓"
+msgstr "Increase Position"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
@@ -4324,6 +4364,10 @@ msgstr "Order Price"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "委托数量"
 msgstr "Order Amount"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "完全平仓"
+msgstr "Closed"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
@@ -4537,6 +4581,14 @@ msgstr "Rankings"
 msgid "止损-最新"
 msgstr "SL - Last Price"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止损平仓"
+msgstr "Closed by Stop Loss"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止盈平仓"
+msgstr "Closed by Take Profit"
+
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 #: src/pages/Trade/components/OrderType/index.tsx
@@ -4602,10 +4654,6 @@ msgstr "Create my contract trading market now"
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
 msgstr "Type"
-
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "自动{defaultValue}%"
-msgstr "Auto {defaultValue}%"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4680,6 +4728,10 @@ msgstr "Limit Open"
 msgid "非仓位持有者"
 msgstr "Not Position Owner"
 
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "预估 <0>{defaultValue}%</0>"
+msgstr "Estimated <0>{defaultValue}%</0>"
+
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
 msgstr "Est. Liq. Price"
@@ -4707,4 +4759,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

@@ -5,6 +5,8 @@ import { BrowserProvider, type Signer } from 'ethers'
 import { useUnmount, useUpdateEffect } from 'ahooks'
 import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import CryptoJS from 'crypto-js'
+import { getAccessToken } from '@/api'
 import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { WalletClient } from 'viem'
@@ -12,7 +14,7 @@ import { isBetaMode } from '@/utils/env'
 
 interface MyxSdkContextValue {
   client?: Record<number, MyxClient>
-  clientIsAuthenticated: Record<number, boolean>
+  clientIsAuthenticated: Record<number, string | null | undefined>
   setClient: (chainId: number, client: MyxClient) => void
   markets?: MarketInfo[]
 }
@@ -29,16 +31,15 @@ interface CreateMyxClientOptions {
 const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
   const validChainId = getAsSupportedChainIdFn(chainId)
 
-  const brokerAddress = brokerAddressMap[chainId]
-
-  // 根据打包模式区分环境
   const mode = import.meta.env.MODE // 'test' | 'beta' | 'development' | 'production'
 
   // 环境配置
   const isTestnet = mode === 'test' || mode === 'development' // test 和 development 使用测试网
   const isBetaMode = mode === 'beta' // beta 模式
   const logLevel = mode === 'development' ? 'debug' : 'info' // 开发环境显示 debug 日志
+  console.log('createMyxClient-->', chainId, mode, isTestnet, isBetaMode, logLevel)
 
+  const brokerAddress = brokerAddressMap[chainId]
   const options: MyxClientConfig = {
     chainId: validChainId,
     brokerAddress: brokerAddress,
@@ -47,9 +48,9 @@ const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
     logLevel: logLevel as 'debug' | 'info' | 'warn' | 'error',
   }
 
-  console.log(`MYX SDK 环境: ${mode}`, { isTestnet, isBetaMode, logLevel })
+  const client = new MyxClient(options)
 
-  return new MyxClient(options)
+  return client
 }
 
 /**
@@ -64,19 +65,9 @@ const getSigner = async (walletClient: WalletClient | undefined) => {
 }
 
 // 为 SDK 提供的 accessToken 获取方法
-const createGetAccessTokenMethod = () => {
+const createGetAccessTokenMethod = (address: string) => {
   return async (): Promise<{ accessToken: string; expireAt: number }> => {
-    // console.log('MYX SDK getAccessToken called')
-    // const appId = 'test1'
-    // const timestamp = Math.floor(Date.now() / 1000)
-    // const expireTime = 3600 * 24
-    // const allowAccount = address!
-    // const secret = '69v9kHey9b746PseJ0TP'
-
-    // const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`
-    // const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex)
-
-    // const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
+    console.log('address->', address)
 
     return new Promise((resolve) => {
       resolve({
@@ -84,14 +75,26 @@ const createGetAccessTokenMethod = () => {
         expireAt: Math.floor(Date.now() / 1000) + 3600 * 24, // 到期时间戳（秒）
       })
     })
-    // if (response.code === 0) {
-    //   return {
-    //     accessToken: response.data.accessToken,
-    //     expireAt: response.data.expireAt, // 到期时间戳（秒）
-    //   }
-    // } else {
-    //   throw new Error(response.msg || 'Failed to get access token')
-    // }
+    const appId = 'test1'
+    const timestamp = Math.floor(Date.now() / 1000)
+    const expireTime = 3600 * 24
+    const allowAccount = address!
+    const secret = '69v9kHey9b746PseJ0TP'
+
+    const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`
+
+    const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex)
+
+    const response = await getAccessToken(appId, timestamp, expireTime, allowAccount, signature)
+
+    if (response.code === 0) {
+      return {
+        accessToken: response.data.accessToken,
+        expireAt: response.data.expireAt, // 到期时间戳（秒）
+      }
+    } else {
+      throw new Error(response.msg || 'Failed to get access token')
+    }
   }
 }
 
@@ -111,7 +114,6 @@ export const useMyxSdkClient = (chainId?: number) => {
 
         if (!createPromise) {
           // 如果没有正在创建的 Promise，创建一个新的
-          console.log('create client chainId-->', _chainId, Date.now())
           createPromise = Promise.resolve().then(() => {
             const newClient = createMyxClient({ chainId: _chainId })
             setClient(_chainId, newClient)
@@ -123,6 +125,7 @@ export const useMyxSdkClient = (chainId?: number) => {
       }
     }
   }, [chainId, client, setClient])
+
   return useMemo(() => {
     const _chainId = chainId ?? getAsSupportedChainIdFn()
     const _client = client?.[_chainId]
@@ -130,13 +133,16 @@ export const useMyxSdkClient = (chainId?: number) => {
     if (isSupportedChainFn(_chainId) || !_client) {
       return {
         client: _client,
-        clientIsAuthenticated: clientIsAuthenticated?.[_chainId] ?? false,
+        clientIsAuthenticated: Boolean(clientIsAuthenticated?.[_chainId] ?? false),
+        clientIsAuthenticatedAddress: clientIsAuthenticated?.[_chainId] ?? null,
         markets: markets,
       }
     }
+
     return {
       client: _client ?? undefined,
-      clientIsAuthenticated: clientIsAuthenticated?.[_chainId] ?? false,
+      clientIsAuthenticated: Boolean(clientIsAuthenticated?.[_chainId] ?? false),
+      clientIsAuthenticatedAddress: clientIsAuthenticated?.[_chainId] ?? null,
       markets: markets,
     }
   }, [chainId, client, clientIsAuthenticated, markets])
@@ -153,18 +159,15 @@ const brokerAddressMap: Record<number, string> = {
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   const [client, setClient] = useState<Record<number, MyxClient>>({})
-  const [clientIsAuthenticated, setClientIsAuthenticated] = useState<Record<number, boolean>>({})
+  const [clientIsAuthenticated, setClientIsAuthenticated] = useState<
+    Record<number, string | null | undefined>
+  >({})
   const { isWalletConnected, address } = useWalletConnection()
   const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
   const myxSdkClientRef = useRef<Map<number, MyxClient>>(new Map())
 
   useUpdateEffect(() => {
     const isClientEmpty = myxSdkClientRef.current.size === 0
-    console.log('useUpdateEffect myxSdkClientRef', myxSdkClientRef.current, {
-      isWalletConnected,
-      address,
-      isClientEmpty,
-    })
     if (!isWalletConnected || !address || isClientEmpty) {
       setClientIsAuthenticated({})
       return
@@ -181,20 +184,30 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
+    setClientIsAuthenticated({})
+
     getSigner(walletClient)
       .then((signer) => {
         if (signer) {
-          console.log('signer-->', signer)
           // auth the all clients
+          const authChainIds: number[] = []
           myxSdkClientRef.current.forEach((_client, chainId) => {
             _client.auth({
               signer,
               walletClient: walletClient as any,
-              getAccessToken: createGetAccessTokenMethod(),
-            } as any)
-            setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
-            console.log('authed-emit-authenticated-->', Date.now(), chainId)
+              getAccessToken: createGetAccessTokenMethod(address),
+            })
+
+            // setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
+            authChainIds.push(chainId)
           })
+          setClientIsAuthenticated((prev) => ({
+            ...prev,
+            ...authChainIds.reduce(
+              (acc, chainId) => ({ ...acc, [chainId]: walletClient.account.address }),
+              {},
+            ),
+          }))
         }
       })
       .catch((error) => {
