@@ -21,7 +21,7 @@ export const TradingInfo = () => {
 
       <Describe>
         <DescribeItem title={<Trans>24h Volume</Trans>}>
-          {baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
+          ${baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Long Positions</Trans>}>
@@ -38,13 +38,14 @@ export const TradingInfo = () => {
                 showSign: false,
               })
             : '--'}
+          /h
         </DescribeItem>
 
         <DescribeItem
           title={
             <Tooltips title={t`Underlying Price`}>
               <span className={'border-secondary border-b-[1px] border-dashed select-none'}>
-                <Trans>Underlying Price</Trans>
+                <Trans>Oracle Price</Trans>
               </span>
             </Tooltips>
           }
@@ -72,6 +73,14 @@ export const TradingInfo = () => {
                 showUnit: false,
               })
             : '--'}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Holders</Trans>}>
+          {formatNumber(baseLpDetail?.holders)}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Traders</Trans>}>
+          {formatNumber(baseLpDetail?.traders)}
         </DescribeItem>
       </Describe>
     </Box>
