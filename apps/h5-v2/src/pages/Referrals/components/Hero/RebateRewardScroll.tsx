@@ -3,7 +3,6 @@ import { Skeleton } from '@/components/UI/Skeleton'
 import User from '@/components/Icon/set/User'
 import Marquee from 'react-fast-marquee'
 import { useReferralStore } from '@/store/referrals'
-import { useAccessParams } from '@/hooks/useAccessParams'
 import { formatNumberPrecision } from '@/utils/formatNumber'
 import { encryptionAddress } from '@/utils'
 import { useEffect } from 'react'
@@ -12,14 +11,14 @@ import type { RefClaimRecordInfo } from '@/store/referrals'
 const COMMON_TRANSLATE_USDC_ASSETS_SCALE = 2
 
 export function RebateRewardScroll() {
-  const { recentClaims, fetchRecentClaims, isLoadingClaims, accessToken } = useReferralStore()
-  const accessParams = useAccessParams()
+  const { recentClaims, fetchRecentClaims, isLoadingClaims, accessToken, account } =
+    useReferralStore()
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || account) {
       fetchRecentClaims()
     }
-  }, [accessToken, fetchRecentClaims])
+  }, [accessToken, fetchRecentClaims, account])
 
   const claimList = recentClaims
 

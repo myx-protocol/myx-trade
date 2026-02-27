@@ -42,6 +42,7 @@ export const PriceInput = () => {
             <NumberInputPrimitive
               disabled={true}
               value={price}
+              decimalScale={6}
               className="hidden w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
             />
           </>

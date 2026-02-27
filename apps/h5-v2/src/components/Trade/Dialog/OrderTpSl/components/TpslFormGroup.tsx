@@ -53,6 +53,8 @@ export const TpslFormGroup = ({
   const [targetRate, setTargetRate] = useState<string>('')
   const isInitializedRef = useRef(false)
 
+  console.log('order', order)
+
   // 初始化默认值：优先使用 order.tpSize/slSize，否则使用 order.size（100%）
   useEffect(() => {
     if (order?.size) {
@@ -74,10 +76,11 @@ export const TpslFormGroup = ({
     if (isInitializedRef.current) return
 
     const initialPrice = type === 'tp' ? order?.tpPrice : order?.slPrice
+    // 如果有保存的 tpPrice/slPrice 就用，否则使用 order.price
     const priceToUse =
       initialPrice && parseBigNumber(initialPrice).gt(0)
         ? initialPrice.toString()
-        : (currentPrice?.toString() ?? '')
+        : (order?.price?.toString() ?? '')
 
     if (priceToUse && parseBigNumber(priceToUse).gt(0)) {
       isInitializedRef.current = true
@@ -108,7 +111,8 @@ export const TpslFormGroup = ({
         const radio = diff.div(entryPrice).mul(100).toFixed(2)
         setTargetRate(radio)
       } else if (tpslType === TpSlTypeEnum.Pnl) {
-        const pnl = parseBigNumber(order.collateralAmount).plus(diff).gte(0) ? diff.toString() : '0'
+        const size = type === 'tp' ? (order.tpSize ?? order.size) : (order.slSize ?? order.size)
+        const pnl = diff.mul(parseBigNumber(size)).toString()
         setTargetRate(pnl)
       }
     }
@@ -116,7 +120,9 @@ export const TpslFormGroup = ({
     order?.tpPrice,
     order?.slPrice,
     order?.price,
-    currentPrice,
+    order?.size,
+    order?.tpSize,
+    order?.slSize,
     order?.direction,
     order?.collateralAmount,
     type,
@@ -190,7 +196,7 @@ export const TpslFormGroup = ({
         <div className="flex min-h-[46px] w-[202px] items-center rounded-[8px] bg-[#202129] p-[12px] text-[14px] leading-[1] font-medium text-white">
           <NumberInputPrimitive
             className="flex-1 text-left"
-            placeholder={t`触发价格`}
+            placeholder={currentPrice?.toString() ?? t`触发价格`}
             autoFocus={type === 'tp'}
             value={targetPrice}
             decimalScale={6}
@@ -253,12 +259,19 @@ export const TpslFormGroup = ({
             value={targetRate}
             allowLeadingZeros
             decimalScale={6}
+            inputMode="text"
             onValueChange={({ value, floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
+                // Change 和 ROI 最小不能小于 -100%
+                const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
+                const effectiveValue =
+                  isRateType && (floatValue ?? 0) < -100 ? -100 : (floatValue ?? 0)
+                const displayRate = isRateType && (floatValue ?? 0) < -100 ? '-100' : value
+
                 // 用 value 保留负号输入过程（如只输入 "-" 时 floatValue 为 undefined）
-                setTargetRate(value ?? floatValue?.toString() ?? '')
+                setTargetRate(displayRate ?? effectiveValue?.toString() ?? '')
                 if (tpslType === TpSlTypeEnum.ROI) {
-                  const radio = parseBigNumber(floatValue ?? 0).div(100)
+                  const radio = parseBigNumber(effectiveValue).div(100)
                   const totalPnl = parseBigNumber(order.collateralAmount).mul(radio)
                   const averagePnl = totalPnl
                     .div(parseBigNumber(order.size))
@@ -266,7 +279,7 @@ export const TpslFormGroup = ({
                   const targetPrice = parseBigNumber(order.price).plus(averagePnl).toFixed(6)
                   setTargetPrice(targetPrice)
                 } else if (tpslType === TpSlTypeEnum.Change) {
-                  const radio = parseBigNumber(1).plus(parseBigNumber(floatValue ?? 0).div(100))
+                  const radio = parseBigNumber(1).plus(parseBigNumber(effectiveValue).div(100))
                   const targetPrice = parseBigNumber(order.price).mul(radio).toFixed(6)
                   setTargetPrice(targetPrice)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {

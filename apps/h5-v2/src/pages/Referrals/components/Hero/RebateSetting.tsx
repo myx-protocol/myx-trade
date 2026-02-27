@@ -18,13 +18,13 @@ import { Copy } from '@/components/Copy'
 const FORMAT_VALUE_FALLBACK = '--'
 
 export function RebateSetting() {
-  const { ratioInfo, fetchRatioInfo, isLoadingRatio, accessToken } = useReferralStore()
+  const { ratioInfo, fetchRatioInfo, isLoadingRatio, accessToken, account } = useReferralStore()
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || account) {
       fetchRatioInfo()
     }
-  }, [accessToken, fetchRatioInfo])
+  }, [accessToken, fetchRatioInfo, account])
 
   const refRatio = ratioInfo
 

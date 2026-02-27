@@ -32,7 +32,7 @@ export const MarginAmountInput = () => {
     >
       <div className="flex justify-between gap-[12px] leading-[1]">
         <NumberInputPrimitive
-          value={collateralAmount === '0' ? '' : collateralAmount}
+          value={collateralAmount === '0' ? '0.0' : collateralAmount}
           onValueChange={(e) => {
             setCollateralAmount(e.value)
           }}

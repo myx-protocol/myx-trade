@@ -181,6 +181,7 @@ export const TpslFormGroup = ({
               if (source === NumberInputSourceType.EVENT) {
                 // 将中文小数点转换为英文小数点
                 const normalizedValue = value.replace(/。/g, '.')
+
                 setTargetPrice(normalizedValue)
 
                 // 如果输入为空或0，清空关联的计算值
@@ -211,17 +212,21 @@ export const TpslFormGroup = ({
             inputMode="text"
             value={targetRate}
             decimalScale={6}
+            isAllowed={(values) => {
+              const { floatValue } = values
+              const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
+
+              // 对于 Change 和 ROI 类型，不允许输入小于 -100 的值
+              if (isRateType && floatValue !== undefined && floatValue < -100) {
+                return false
+              }
+
+              return true
+            }}
             onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
                 const inputValue = floatValue?.toString() ?? ''
 
-                // Change 和 ROI 最小不能小于 -100%
-                const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
-                const effectiveValue =
-                  isRateType && (floatValue ?? 0) < -100 ? -100 : (floatValue ?? 0)
-                const displayRate = isRateType && (floatValue ?? 0) < -100 ? '-100' : inputValue
-
-                // 标记这是用户输入，避免 useEffect 反向计算覆盖用户输入的值
                 isUserInputRef.current = true
                 setTargetRate(displayRate)
 
@@ -234,6 +239,8 @@ export const TpslFormGroup = ({
                   }
                   return
                 }
+
+                const effectiveValue = floatValue ?? 0
 
                 let calculatedTargetPrice = ''
                 if (tpslType === TpSlTypeEnum.ROI) {
