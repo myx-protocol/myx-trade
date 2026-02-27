@@ -228,7 +228,7 @@ export const TpslFormGroup = ({
                 const inputValue = floatValue?.toString() ?? ''
 
                 isUserInputRef.current = true
-                setTargetRate(inputValue)
+                setTargetRate(displayRate)
 
                 if (inputValue === '' || floatValue === undefined || floatValue === null) {
                   setTargetPrice('')
