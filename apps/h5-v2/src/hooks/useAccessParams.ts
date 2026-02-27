@@ -3,9 +3,9 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { useWalletConnection } from './wallet/useWalletConnection'
 
 export const useAccessParams = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { client, clientIsAuthenticated, clientIsAuthenticatedAddress } = useMyxSdkClient()
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const { address, isWalletConnected } = useWalletConnection()
+  const { isWalletConnected } = useWalletConnection()
 
   useEffect(() => {
     if (client && clientIsAuthenticated) {
@@ -19,12 +19,12 @@ export const useAccessParams = () => {
   }, [client, clientIsAuthenticated])
 
   return useMemo(() => {
-    if (clientIsAuthenticated && isWalletConnected && accessToken && address) {
+    if (clientIsAuthenticated && isWalletConnected && clientIsAuthenticatedAddress) {
       return {
-        accessToken,
-        account: address,
+        accessToken: accessToken || '',
+        account: clientIsAuthenticatedAddress,
       }
     }
     return null
-  }, [clientIsAuthenticated, accessToken, isWalletConnected, address])
+  }, [clientIsAuthenticated, accessToken, isWalletConnected, clientIsAuthenticatedAddress])
 }

@@ -137,12 +137,16 @@ const FiltersDialogContent = ({
     <Box className={'px-[20px] pb-[24px]'}>
       <Box className={'flex w-full flex-col gap-[12px]'}>
         <FilterItem
-          label={<Trans>Age(min)</Trans>}
+          label={<Trans>Token age(min)</Trans>}
           value={age}
           onChange={(value) => setAge(value)}
         />
 
-        <FilterItem label={<Trans>MC</Trans>} value={mc} onChange={(value) => setMC(value)} />
+        <FilterItem
+          label={<Trans>Market cap($)</Trans>}
+          value={mc}
+          onChange={(value) => setMC(value)}
+        />
 
         {isShowProgress && (
           <FilterItem
@@ -162,12 +166,10 @@ const FiltersDialogContent = ({
           endAdornment={'%'}
         />
 
-        <FilterItem label={<Trans>Liq</Trans>} value={liq} onChange={(value) => setLiq(value)} />
-
         <FilterItem
-          label={<Trans>Holders</Trans>}
-          value={holders}
-          onChange={(value) => setHolders(value)}
+          label={<Trans>Liquidity($)</Trans>}
+          value={liq}
+          onChange={(value) => setLiq(value)}
         />
       </Box>
       <Box className={'mt-[16px] flex items-center gap-[12px]'}>

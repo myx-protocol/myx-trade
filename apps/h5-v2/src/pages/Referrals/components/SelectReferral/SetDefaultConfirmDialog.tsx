@@ -16,14 +16,14 @@ type SetDefaultConfirmDialogProps = {
 }
 
 export const SetDefaultConfirmDialog = ({ info, open, onClose }: SetDefaultConfirmDialogProps) => {
-  const { setDefaultInvitationCode, fetchInvitationCodes, fetchRatioInfo, accessToken } =
+  const { setDefaultInvitationCode, fetchInvitationCodes, fetchRatioInfo, accessToken, account } =
     useReferralStore()
   const [confirming, setConfirming] = useState(false)
 
   const handleConfirm = async () => {
     try {
       setConfirming(true)
-      if (accessToken) {
+      if (accessToken || account) {
         await setDefaultInvitationCode(info.invitationCode)
         await Promise.all([fetchInvitationCodes(), fetchRatioInfo()])
         onClose()

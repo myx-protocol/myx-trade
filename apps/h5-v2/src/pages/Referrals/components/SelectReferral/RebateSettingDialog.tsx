@@ -38,7 +38,7 @@ export const RebateSettingDialog = ({ open, onClose }: { open: boolean; onClose:
         message: t`Notes can only enter letters or numbers`,
       })
       noteSchema.parse(note)
-      if (accessParams?.accessToken && accessParams.account) {
+      if (accessParams?.accessToken || accessParams?.account) {
         await createInvitationCode({
           referrerRatio: Number(referrerRatio),
           refereeRatio: Number(refereeRatio),

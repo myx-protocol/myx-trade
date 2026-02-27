@@ -23,7 +23,6 @@ export const ReceiveInviteDialog = ({
     isReceiveInviteDialogOpen,
     setReceiveInviteDialogOpen,
     bindRelationshipByCode,
-    fetchRefReferrerInfo,
     accessToken,
     account,
   } = useReferralStore()
@@ -32,17 +31,19 @@ export const ReceiveInviteDialog = ({
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (code && isReceiveInviteDialogOpen && accessToken && account) {
-      api.getReferralByCode({ code }, { accessToken, account }).then((res: any) => {
-        setData(res.data)
-      })
+    if (code && isReceiveInviteDialogOpen && (accessToken || account)) {
+      api
+        .getReferralByCode({ code }, { accessToken: accessToken || '', account: account || '' })
+        .then((res: any) => {
+          setData(res.data)
+        })
     }
   }, [code, isReceiveInviteDialogOpen, accessToken, account])
 
   const handleBind = async () => {
     setLoading(true)
     try {
-      if (accessToken) {
+      if (accessToken || account) {
         const res = await bindRelationshipByCode(code)
         if (res?.code === 9200) {
           setReceiveInviteDialogOpen(false)
@@ -78,7 +79,7 @@ export const ReceiveInviteDialog = ({
         <div className="relative w-full max-w-[420px] border border-transparent sm:max-w-[358px]">
           <div className="absolute top-0 left-[49%] z-10 mx-0 h-[200px] w-[313px] -translate-x-1/2 rounded-t-2xl bg-[#FFEBCC] sm:top-[5px] sm:left-[calc(50%-42px)] sm:mx-10 sm:h-[150px] sm:w-[calc(100%-80px)]">
             <img src={icon} className="mx-auto w-[120px] sm:w-[100px]" alt="icon" />
-            {!accessToken || !isConnected ? (
+            {(!accessToken || !isConnected) && (!account || !isConnected) ? (
               <p className="z-20 mx-auto w-[80%] bg-gradient-to-r from-[#7A492F] via-[#36251A] to-[#C97D3B] bg-clip-text text-center text-2xl leading-7 font-bold text-transparent sm:text-[24px] sm:leading-6">
                 <Trans>Earn up to 20% rebates</Trans>
               </p>
@@ -107,7 +108,7 @@ export const ReceiveInviteDialog = ({
           <img src={accepBg} className="mt-[70px] sm:mt-[45px]" alt="bg" />
 
           <div className="absolute bottom-10 z-10 w-full overflow-hidden sm:bottom-[26px]">
-            {!accessToken || !isConnected ? (
+            {(!accessToken || !isConnected) && (!account || !isConnected) ? (
               <p className="text-center text-lg text-[#F5CF8A] sm:text-sm">
                 <Trans>Accept Invitation</Trans>
               </p>

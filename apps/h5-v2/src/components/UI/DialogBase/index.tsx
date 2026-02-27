@@ -34,7 +34,7 @@ export const DialogBase = ({
             backgroundColor: '#18191F',
             borderTopLeftRadius: '16px',
             borderTopRightRadius: '16px',
-            padding: '16px',
+            padding: '24px 16px 4px',
             border: '1px solid #31333D',
           },
         },

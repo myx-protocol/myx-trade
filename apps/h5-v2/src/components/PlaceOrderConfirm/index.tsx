@@ -220,19 +220,19 @@ export const PlaceOrderConfirmDialog = () => {
         : parseBigNumber(formatTpSize).mul(parseBigNumber(price)).div(leverage).toString()
 
       if (tpType === TpSlTypeEnum.Change) {
-        // const radio = parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
-        // formatTpPrice = parseBigNumber(price).mul(radio).toString()
-        const rateRatio = parseBigNumber(tpValue).div(100)
         const radio =
           direction === Direction.LONG
-            ? parseBigNumber(1).plus(rateRatio)
-            : parseBigNumber(1).minus(rateRatio)
+            ? parseBigNumber(1).plus(parseBigNumber(tpValue).div(100))
+            : parseBigNumber(1).minus(parseBigNumber(tpValue).div(100))
         formatTpPrice = parseBigNumber(price).mul(radio).toString()
       } else if (tpType === TpSlTypeEnum.ROI) {
         const radio = parseBigNumber(tpValue).div(100)
         const totalPnl = parseBigNumber(useCollateralAmount).mul(radio)
         const averagePnl = totalPnl.div(parseBigNumber(formatTpSize))
-        const targetPrice = parseBigNumber(price).plus(averagePnl)
+        const targetPrice =
+          direction === Direction.LONG
+            ? parseBigNumber(price).plus(averagePnl)
+            : parseBigNumber(price).minus(averagePnl)
         formatTpPrice = targetPrice.toString()
       } else if (tpType === TpSlTypeEnum.Pnl) {
         const totalPnl = parseBigNumber(tpValue)
@@ -286,18 +286,19 @@ export const PlaceOrderConfirmDialog = () => {
         ? collateralAmount
         : parseBigNumber(formatSlSize).mul(parseBigNumber(price)).div(leverage).toString()
       if (slType === TpSlTypeEnum.Change) {
-        // 正数=涨、负数=跌：填 1 为涨 1%，填 -1 为跌 1%
-        const rateRatio = parseBigNumber(slValue).div(100)
         const radio =
           direction === Direction.LONG
-            ? parseBigNumber(1).plus(rateRatio)
-            : parseBigNumber(1).minus(rateRatio)
+            ? parseBigNumber(1).plus(parseBigNumber(slValue).div(100))
+            : parseBigNumber(1).minus(parseBigNumber(slValue).div(100))
         formatSlPrice = parseBigNumber(price).mul(radio).toString()
       } else if (slType === TpSlTypeEnum.ROI) {
         const radio = parseBigNumber(slValue).div(100)
         const totalPnl = parseBigNumber(useCollateralAmount).mul(radio)
         const averagePnl = totalPnl.div(parseBigNumber(formatSlSize))
-        const targetPrice = parseBigNumber(price).plus(averagePnl)
+        const targetPrice =
+          direction === Direction.LONG
+            ? parseBigNumber(price).plus(averagePnl)
+            : parseBigNumber(price).minus(averagePnl)
         formatSlPrice = targetPrice.toString()
       } else if (slType === TpSlTypeEnum.Pnl) {
         const totalPnl = parseBigNumber(slValue)
@@ -524,23 +525,24 @@ export const PlaceOrderConfirmDialog = () => {
           <FlexRowLayout
             left={<Trans>滑点</Trans>}
             right={
-              <EditText
-                value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
-                unit="%"
-                onChange={(newSlippage, closeEdit) => {
-                  setSlippage({
-                    chainId: symbolInfo?.chainId ?? 0,
-                    poolId: symbolInfo?.poolId ?? '',
-                    type: SlippageTypeEnum.OPEN,
-                    slippage: parseBigNumber(newSlippage).div(100).toNumber(),
-                  })
-                  tradePubSub.emit('trade:slippage:change', {
-                    chainId: symbolInfo?.chainId ?? 0,
-                    poolId: symbolInfo?.poolId ?? '',
-                  })
-                  closeEdit?.()
-                }}
-              />
+              <span>{((openPositionSlippage ?? 0) * 100).toFixed(2)}%</span>
+              // <EditText
+              //   value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
+              //   unit="%"
+              //   onChange={(newSlippage, closeEdit) => {
+              //     setSlippage({
+              //       chainId: symbolInfo?.chainId ?? 0,
+              //       poolId: symbolInfo?.poolId ?? '',
+              //       type: SlippageTypeEnum.OPEN,
+              //       slippage: parseBigNumber(newSlippage).div(100).toNumber(),
+              //     })
+              //     tradePubSub.emit('trade:slippage:change', {
+              //       chainId: symbolInfo?.chainId ?? 0,
+              //       poolId: symbolInfo?.poolId ?? '',
+              //     })
+              //     closeEdit?.()
+              //   }}
+              // />
             }
           />
         </div>

@@ -27,9 +27,9 @@ export const StatisticsDialog = ({
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (open && referee && accessToken && account) {
+    if (open && referee && (accessToken || account)) {
       setLoading(true)
-      getStaticDetail(referee, { accessToken, account })
+      getStaticDetail(referee, { accessToken: accessToken || '', account: account || '' })
         .then((res: any) => {
           setData(res.data)
         })
