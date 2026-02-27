@@ -17,7 +17,7 @@ export const TradingInfo = ({ className = '' }: { className?: string }) => {
 
       <Describe>
         <DescribeItem title={<Trans>24h Volume</Trans>}>
-          {formatNumber(quoteLpDetail?.volume)}
+          ${formatNumber(quoteLpDetail?.volume)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Long Positions</Trans>}>
@@ -34,6 +34,14 @@ export const TradingInfo = ({ className = '' }: { className?: string }) => {
                 showSign: false,
               })
             : '--'}
+          /h
+        </DescribeItem>
+        <DescribeItem title={<Trans>Holders</Trans>}>
+          {formatNumber(quoteLpDetail?.holders)}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Traders</Trans>}>
+          {formatNumber(quoteLpDetail?.traders)}
         </DescribeItem>
       </Describe>
     </Box>

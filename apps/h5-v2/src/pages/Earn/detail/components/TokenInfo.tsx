@@ -37,13 +37,6 @@ export const TokenInfo = ({ className = '' }: { className?: string }) => {
           ${formatNumber(quoteLpDetail?.marketCap)}
         </DescribeItem>
         <DescribeItem title={<Trans>FDV</Trans>}>${formatNumber(quoteLpDetail?.fdv)}</DescribeItem>
-        <DescribeItem title={<Trans>Holders</Trans>}>
-          {formatNumber(quoteLpDetail?.holders)}
-        </DescribeItem>
-
-        <DescribeItem title={<Trans>Traders</Trans>}>
-          {formatNumber(quoteLpDetail?.traders)}
-        </DescribeItem>
 
         <DescribeItem title={<Trans>Total Spot liq</Trans>}>
           ${formatNumber(quoteLpDetail?.liquidity)}
