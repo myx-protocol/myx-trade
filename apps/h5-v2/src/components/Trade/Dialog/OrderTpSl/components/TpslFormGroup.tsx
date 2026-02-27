@@ -49,7 +49,7 @@ export const TpslFormGroup = ({
     type === 'tp' ? (order?.tpSize ?? order?.size ?? 0) : (order?.slSize ?? order?.size ?? 0),
   )
   const { tpSize, slSize, setTpSize, setSlSize, setTpPrice, setSlPrice } = useOrderTPSLStore()
-  const [targetPrice, setTargetPrice] = useState<string>('')
+  const [targetPrice, setTargetPrice] = useState<string>(currentPrice?.toString() ?? '')
   const [targetRate, setTargetRate] = useState<string>('')
   const isInitializedRef = useRef(false)
 
@@ -70,7 +70,7 @@ export const TpslFormGroup = ({
     }
   }, [order?.size, order?.tpSize, order?.slSize, type, setTpSize, setSlSize])
 
-  // 初始化触发价格和计算对应的 targetRate
+  // 初始化触发价格和计算对应的 targetRate（只初始化一次）
   useEffect(() => {
     // 如果已经初始化过，跳过
     if (isInitializedRef.current) return
