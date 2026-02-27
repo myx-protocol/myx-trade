@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-27 08:23\n"
+"PO-Revision-Date: 2026-02-27 08:57\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -787,7 +786,7 @@ msgstr ""
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close  amount must be less than {0} {1}"
-msgstr "close  amount must be less than {0} {1}"
+msgstr ""
 
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
@@ -819,7 +818,7 @@ msgstr ""
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close amount must be less than {0} {1}"
-msgstr "close amount must be less than {0} {1}"
+msgstr ""
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -1027,7 +1026,7 @@ msgstr ""
 
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Create seamless failed"
-msgstr "Create seamless failed"
+msgstr ""
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1878,7 +1877,7 @@ msgstr ""
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Invalid password"
-msgstr "Invalid password"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2113,7 +2112,7 @@ msgstr "Liq. Price"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
-msgstr "Liquidity($)"
+msgstr ""
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2248,7 +2247,7 @@ msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Market cap($)"
-msgstr "Market cap($)"
+msgstr ""
 
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
@@ -2714,7 +2713,7 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Oracle Price"
-msgstr "Oracle Price"
+msgstr ""
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
@@ -3202,7 +3201,7 @@ msgstr ""
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset password failed"
-msgstr "Reset password failed"
+msgstr ""
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
@@ -3720,7 +3719,7 @@ msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Token age(min)"
-msgstr "Token age(min)"
+msgstr ""
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 msgid "Token Info"
@@ -4759,3 +4758,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+

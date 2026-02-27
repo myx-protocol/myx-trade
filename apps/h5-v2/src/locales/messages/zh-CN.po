@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-27 08:23\n"
+"PO-Revision-Date: 2026-02-27 09:01\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -787,7 +786,7 @@ msgstr "平仓数量必须大于 0"
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close  amount must be less than {0} {1}"
-msgstr ""
+msgstr "平仓数量必须小于 {0}{1}"
 
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
@@ -819,7 +818,7 @@ msgstr "平仓数量"
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close amount must be less than {0} {1}"
-msgstr ""
+msgstr "平仓数量必须小于 {0}{1}"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -1027,7 +1026,7 @@ msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Create seamless failed"
-msgstr ""
+msgstr "创建无感失败"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1878,7 +1877,7 @@ msgstr "无效市场"
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Invalid password"
-msgstr ""
+msgstr "密码错误"
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2113,7 +2112,7 @@ msgstr "强平价格"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
-msgstr ""
+msgstr "流动性($)"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2248,7 +2247,7 @@ msgstr "市值"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Market cap($)"
-msgstr ""
+msgstr "市值($)"
 
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
@@ -2714,7 +2713,7 @@ msgstr "或通过以下方式继续："
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Oracle Price"
-msgstr ""
+msgstr "预言机价格"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
@@ -3202,7 +3201,7 @@ msgstr "重置密码"
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset password failed"
-msgstr ""
+msgstr "重置密码失败"
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
@@ -3720,7 +3719,7 @@ msgstr "要升级到 VIP{0}，您还需要额外的 ${1} USD"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Token age(min)"
-msgstr ""
+msgstr "创建时长(分钟)"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 msgid "Token Info"
@@ -4759,3 +4758,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+
