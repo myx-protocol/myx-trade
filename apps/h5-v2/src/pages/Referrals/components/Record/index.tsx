@@ -50,7 +50,7 @@ export const RecordCard = () => {
   const [hasAfter, setHasAfter] = useState(false)
 
   const fetchData = async () => {
-    if (!accessParams?.accessToken || !accessParams.account) return // Only check accessToken, 'account' is not used here
+    if (!accessParams?.account) return // Only check accessToken, 'account' is not used here
     if (!before && !after) {
       setLoading(true)
     }
@@ -125,7 +125,7 @@ export const RecordCard = () => {
   }
 
   const fetchInitialData = async () => {
-    if (accessParams?.accessToken && accessParams.account) {
+    if (accessParams?.accessToken || accessParams?.account) {
       await Promise.all([fetchRefBonus(), fetchRefBonusInfoByChain(), fetchRefConfig()])
     }
   }

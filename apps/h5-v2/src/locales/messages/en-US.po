@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -288,6 +289,7 @@ msgid "Adjusted Margin"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "ADL"
 msgstr ""
 
@@ -1190,13 +1192,13 @@ msgstr "Invalid signature"
 msgid "Ecosystem"
 msgstr ""
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit"
-msgstr ""
-
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
 msgstr ""
+
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit TP/SL"
+msgstr "Edit TP/SL"
 
 #: src/components/Footer/index.tsx
 msgid "Email"
@@ -2753,6 +2755,10 @@ msgstr ""
 msgid "Pair/Vol"
 msgstr ""
 
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Partially filled"
+msgstr "Partially filled"
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
 msgstr ""
@@ -4204,7 +4210,6 @@ msgstr "Margin Account balance available to transfer to Wallet"
 msgid "修改"
 msgstr "Edit"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
@@ -4224,6 +4229,7 @@ msgid "其他"
 msgstr "Other"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "Max Slippage"
@@ -4255,6 +4261,10 @@ msgstr "Transfer to Wallet"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
 msgstr "Delete"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "加仓"
+msgstr "加仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
@@ -4324,6 +4334,10 @@ msgstr "Order Price"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "委托数量"
 msgstr "Order Amount"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "完全平仓"
+msgstr "完全平仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
@@ -4537,6 +4551,14 @@ msgstr "Rankings"
 msgid "止损-最新"
 msgstr "SL - Last Price"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止损平仓"
+msgstr "止损平仓"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止盈平仓"
+msgstr "止盈平仓"
+
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 #: src/pages/Trade/components/OrderType/index.tsx
@@ -4602,10 +4624,6 @@ msgstr "Create my contract trading market now"
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
 msgstr "Type"
-
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "自动{defaultValue}%"
-msgstr "Auto {defaultValue}%"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4680,6 +4698,10 @@ msgstr "Limit Open"
 msgid "非仓位持有者"
 msgstr "Not Position Owner"
 
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "预估 <0>{defaultValue}%</0>"
+msgstr "预估 <0>{defaultValue}%</0>"
+
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
 msgstr "Est. Liq. Price"
@@ -4707,4 +4729,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

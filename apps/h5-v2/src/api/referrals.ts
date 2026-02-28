@@ -7,7 +7,7 @@ import type { Address } from 'viem'
  * 所有 referrral 接口的公共参数
  */
 export interface AccessParams {
-  accessToken: string
+  accessToken?: string | null
   account: string
 }
 

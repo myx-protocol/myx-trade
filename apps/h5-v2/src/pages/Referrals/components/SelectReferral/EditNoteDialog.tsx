@@ -12,14 +12,14 @@ import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 type EditNoteDialogProps = { info: InvitationCodeInfo; open: boolean; onClose: () => void }
 
 export const EditNoteDialog = ({ info, open, onClose }: EditNoteDialogProps) => {
-  const { updateInvitationNote, fetchInvitationCodes, accessToken } = useReferralStore()
+  const { updateInvitationNote, fetchInvitationCodes, accessToken, account } = useReferralStore()
   const [confirming, setConfirming] = useState(false)
   const [note, setNote] = useState('')
 
   const handleConfirm = async () => {
     try {
       setConfirming(true)
-      if (accessToken) {
+      if (accessToken || account) {
         await updateInvitationNote(info.invitationCode, note)
         await fetchInvitationCodes()
         onClose()
