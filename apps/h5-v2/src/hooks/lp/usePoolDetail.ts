@@ -133,6 +133,7 @@ export const usePoolDetail = (poolType: PoolType) => {
           exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
           tvl: calculationTvl(result),
           fundingInfo: result.fundingInfo,
+          oraclePrice: tickerData?.price ?? oraclePrice,
         } as PoolInfo
 
         return info

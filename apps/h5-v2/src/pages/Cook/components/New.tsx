@@ -1,7 +1,7 @@
 import { Card } from '@/pages/Cook/components/Card.tsx'
 import { Box } from '@mui/material'
 import { Token } from '@/pages/Cook/components/Token.tsx'
-import { useContext } from 'react'
+import { useContext, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getCookNews } from '@/request'
 import { useNavigate } from 'react-router-dom'
@@ -10,8 +10,12 @@ import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import dayjs from 'dayjs'
 import { Empty } from '@/components/Empty.tsx'
+import { useCardScrolled } from '@/hooks/useHasScrolled.ts'
 
+const INTERVAL_TIME = 10000
 export const New = ({ chainId }: { chainId?: number }) => {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const hasOverflow = useCardScrolled(cardRef, 'scrollView')
   const navigate = useNavigate()
   const { type, cookType } = useContext(CookContext)
   const { age, mc, progress, change, liq, holders } = useCookFilter()
@@ -47,11 +51,12 @@ export const New = ({ chainId }: { chainId?: number }) => {
       // console.log(result)
       return result?.data || []
     },
+    refetchInterval: hasOverflow ? false : INTERVAL_TIME,
   })
 
   return (
     <>
-      <Card className={'position flex flex-col'}>
+      <Card className={'position flex flex-col'} ref={cardRef}>
         <Box className={'flex-1 overflow-y-auto'}>
           {isLoading ? (
             Array.from({ length: 5 }).map((item, i) => <Token key={i} isLoading />)

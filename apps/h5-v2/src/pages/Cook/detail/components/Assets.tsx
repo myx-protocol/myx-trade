@@ -22,6 +22,7 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
 import { formatNumber } from '@/utils/number.ts'
+import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
 
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
@@ -320,7 +321,7 @@ export const Assets = () => {
               <AssetItem
                 key={index}
                 asset={item as LpAsset}
-                canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
+                canClaim={Number(rewardsMap?.[item?.poolId as string]) >= MIN_CLAIM_AMOUNT}
                 onClaim={(asset) => {
                   setLpAsset(asset)
                   onHandleClaim(asset)
@@ -351,7 +352,10 @@ export const Assets = () => {
                   className={'items-end justify-self-end'}
                   label={<Trans>Unclaimed Fees</Trans>}
                 >
-                  {formatNumber(rewardsMap?.[item?.poolId], { showUnit: false })}{' '}
+                  {formatNumber(rewardsMap?.[item?.poolId], {
+                    showUnit: false,
+                    decimals: COMMON_PRICE_DISPLAY_DECIMALS,
+                  })}{' '}
                   {item?.quoteSymbol}
                 </Value>
               </AssetItem>

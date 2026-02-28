@@ -10,7 +10,6 @@ import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { t } from '@lingui/core/macro'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
-import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { useQuery } from '@tanstack/react-query'
@@ -345,9 +344,6 @@ export const Redeem = () => {
         </DescribeItem>
 
         <EstRate />
-
-        <PriceImpact slippage={slippage} setSlippage={setSlippage} />
-
         <Fee />
       </Describe>
     </Box>
