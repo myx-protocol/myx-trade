@@ -13,9 +13,11 @@ export function detectInputType(input: string): InputType {
   const isSymbol = /^[A-Z0-9]{2,10}$/.test(value)
   if (isSymbol) return 'symbol'
 
-  // ③ 名称：字母开头，允许空格、小写
-  const isName = /^[a-zA-Z][a-zA-Z0-9\s.-]{1,30}$/.test(value)
-  if (isName) return 'name'
+  // ③ 名称：支持中文、英文、数字、空格、点、短横
+  // 使用 Unicode 属性
+  if (/^[\p{Script=Han}A-Za-z0-9][\p{Script=Han}A-Za-z0-9\s.-]{0,30}$/u.test(value)) {
+    return 'name'
+  }
 
   return 'unknown'
 }

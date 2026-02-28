@@ -11,3 +11,5 @@ export const FEE_RATE_PERCENT_DISPLAY_DECIMALS = 4
 export const VIP_PROFITS_PRECISION = 2
 
 export const WINDOW_CAPS_DECIMALS = 6
+
+export const MIN_CLAIM_AMOUNT = 0.01

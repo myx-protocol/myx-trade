@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-06 07:21\n"
+"PO-Revision-Date: 2026-02-27 09:01\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -297,10 +296,6 @@ msgstr "自动减仓"
 #: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
 msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
 msgstr "将 {0} 设置为默认邀请 ID 后，首页将显示相应的分佣比例和邀请链接。您确定要将其设置为默认邀请 ID 吗？"
-
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Age(min)"
-msgstr "时长(分钟)"
 
 #: src/components/Footer/index.tsx
 msgid "Airdrop"
@@ -784,10 +779,14 @@ msgstr "平仓"
 msgid "close  amount must be greater than 0"
 msgstr "平仓数量必须大于 0"
 
+#. placeholder {0}: displayAmount(maxCloseShort.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseShort.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close  amount must be less than {0}"
-msgstr "平仓数量必须小于 {0}"
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be less than {0} {1}"
+msgstr "平仓数量必须小于 {0}{1}"
 
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
@@ -812,10 +811,14 @@ msgstr "平掉所有仓位成功"
 msgid "Close Amount"
 msgstr "平仓数量"
 
+#. placeholder {0}: displayAmount(maxCloseLong.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close amount must be less than {0}"
-msgstr "平仓数量必须小于 {0}"
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close amount must be less than {0} {1}"
+msgstr "平仓数量必须小于 {0}{1}"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -1021,6 +1024,10 @@ msgstr "创建市场"
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
 msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Create seamless failed"
+msgstr "创建无感失败"
+
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
 msgstr "立即创建市场，成为创世 LP，享受永久 2% 的佣金分红！"
@@ -1198,7 +1205,7 @@ msgstr "编辑备注"
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Edit TP/SL"
-msgstr ""
+msgstr "编辑止盈/止损"
 
 #: src/components/Footer/index.tsx
 msgid "Email"
@@ -1676,10 +1683,9 @@ msgstr "隐藏其他交易对"
 msgid "Hold"
 msgstr "持有"
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Holders"
 msgstr "持有者"
@@ -1866,6 +1872,12 @@ msgstr "简介"
 #: src/pages/Market/index.tsx
 msgid "Invalid Market"
 msgstr "无效市场"
+
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Invalid password"
+msgstr "密码错误"
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2085,7 +2097,6 @@ msgstr "限价平仓成功"
 msgid "Link Referral Relationship"
 msgstr "绑定邀请关系"
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "Liq"
 msgstr "Liq"
@@ -2098,6 +2109,10 @@ msgstr "强平价格"
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "强平价格"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Liquidity($)"
+msgstr "流动性($)"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2230,6 +2245,10 @@ msgstr "市值"
 msgid "Market Cap"
 msgstr "市值"
 
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Market cap($)"
+msgstr "市值($)"
+
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr "市价平仓"
@@ -2291,7 +2310,6 @@ msgstr "最大"
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0} 锁定已实现盈亏汇总而成"
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
 msgstr "MC"
@@ -2693,6 +2711,10 @@ msgstr "或"
 msgid "Or Continue With "
 msgstr "或通过以下方式继续："
 
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+msgid "Oracle Price"
+msgstr "预言机价格"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
 msgstr "订单已取消"
@@ -2757,7 +2779,7 @@ msgstr "交易对/Vol"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Partially filled"
-msgstr ""
+msgstr "部分成交"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
@@ -3176,6 +3198,10 @@ msgstr "重置"
 #: src/components/SettingDrawer.tsx
 msgid "Reset Password"
 msgstr "重置密码"
+
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+msgid "Reset password failed"
+msgstr "重置密码失败"
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
@@ -3691,6 +3717,10 @@ msgstr "为保护您的 LP 资产免受价格操纵或恶意交易的影响，�
 msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
 msgstr "要升级到 VIP{0}，您还需要额外的 ${1} USD"
 
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Token age(min)"
+msgstr "创建时长(分钟)"
+
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 msgid "Token Info"
 msgstr "代币信息"
@@ -3795,8 +3825,8 @@ msgid "Trade Now"
 msgstr "立即交易"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Traders"
 msgstr "交易者"
@@ -3881,7 +3911,6 @@ msgstr "待领取费用"
 msgid "UnderflowOI()"
 msgstr "持仓量下溢()"
 
-#: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Underlying Price"
 msgstr "标的价格"
@@ -4264,7 +4293,7 @@ msgstr "删除"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "加仓"
-msgstr ""
+msgstr "加仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
@@ -4337,7 +4366,7 @@ msgstr "委托数量"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "完全平仓"
-msgstr ""
+msgstr "完全平仓"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
@@ -4553,11 +4582,11 @@ msgstr "止损-最新"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "止损平仓"
-msgstr ""
+msgstr "止损平仓"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "止盈平仓"
-msgstr ""
+msgstr "止盈平仓"
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
@@ -4700,7 +4729,7 @@ msgstr "非仓位持有者"
 
 #: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 msgid "预估 <0>{defaultValue}%</0>"
-msgstr ""
+msgstr "预估 <0>{defaultValue}%</0>"
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
@@ -4729,3 +4758,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+

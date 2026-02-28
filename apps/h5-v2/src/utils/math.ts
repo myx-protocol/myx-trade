@@ -64,3 +64,7 @@ export function scientificToString(num: number) {
     return sign + int + dec + '0'.repeat(e - dec.length)
   }
 }
+
+export function parseLocaleNumber(str: string) {
+  return Number(str.replace(/[^0-9.-]/g, ''))
+}

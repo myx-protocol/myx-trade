@@ -8,7 +8,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { base as Base } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { showErrorToast } from '@/config/error'
 
@@ -32,7 +32,7 @@ export const ClaimRewardsDialog = ({
   const onAction = useWalletActions()
 
   const onHandleClaim = useCallback(async () => {
-    if (!lpAsset?.poolId || !account || !reward) return
+    if (!lpAsset?.poolId || !account || !reward || Number(reward) < MIN_CLAIM_AMOUNT) return
     try {
       setLoading(true)
       const checked = onAction(lpAsset.chainId)
@@ -85,7 +85,7 @@ export const ClaimRewardsDialog = ({
       </div>*/}
       <PrimaryButton
         loading={loading}
-        disabled={!reward || Number(reward) <= 0}
+        disabled={!reward || Number(reward) < MIN_CLAIM_AMOUNT}
         className="mt-[20px]! h-[44px] w-full rounded-[999px]! text-[14px]! font-medium!"
         onClick={onHandleClaim}
       >

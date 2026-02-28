@@ -26,6 +26,12 @@ export const ImportDialog = () => {
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
 
   const handleImportSeamlessKey = useCallback(async () => {
+    if (password.length < 8 || !/\d/.test(password) || !/[A-Z]/.test(password)) {
+      toast.error({
+        title: t`Invalid password`,
+      })
+      return
+    }
     try {
       setLoading(true)
       const rs = await client?.seamless.importSeamlessPrivateKey({
