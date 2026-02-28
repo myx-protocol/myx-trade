@@ -48,6 +48,7 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         poolInfoRefetch,
         fundingRate: fundingRate?.nextFundingRatePercent,
         markets,
+        oraclePrice: poolInfo?.oraclePrice,
       }}
     >
       {children}

@@ -16,7 +16,6 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
-import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { isSafeNumber } from '@/utils'
 import { toast } from '@/components/UI/Toast'
@@ -230,9 +229,6 @@ export const Subscribe = () => {
       </Box>
       <Describe>
         <EstRate />
-
-        <PriceImpact slippage={slippage} setSlippage={setSlippage} />
-
         <Fee />
       </Describe>
     </Box>

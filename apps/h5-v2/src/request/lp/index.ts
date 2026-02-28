@@ -206,6 +206,8 @@ type SymbolParams = { symbol: string; chainId?: number }
 
 export type MarketDataSearchParams = AssetParams | SymbolParams
 
+export type MarketDataFastSearchParams = { input: string; chains: number[] }
+
 export const getMarketData = async (params: MarketDataSearchParams) => {
   const query = {
     asset: 'asset' in params ? params.asset : undefined,
@@ -243,7 +245,23 @@ export const getMarketPoolPrice = async (
     chainId,
     poolId,
   }
-  return await http.get(
-    `https://api.myx.finance/openapi/gateway/scan/mobula/base-price${addQueryParams(query)}`,
-  )
+  return await http.get(`${baseUrl}/openapi/gateway/scan/mobula/base-price${addQueryParams(query)}`)
+}
+
+export const getMarketDataSearch = async ({ input, chains = [] }: MarketDataFastSearchParams) => {
+  const query = {
+    input: input,
+    filters: chains.length
+      ? JSON.stringify({
+          blockchains: chains.join(','),
+        })
+      : undefined,
+    limit: 10,
+  }
+  return await http
+    .get(`${baseUrl}/openapi/gateway/scan/mobula/fastSearch${addQueryParams(query)}`)
+    .then((result) => {
+      console.log('result', JSON.parse(result.data))
+      return JSON.parse(result.data)
+    })
 }
