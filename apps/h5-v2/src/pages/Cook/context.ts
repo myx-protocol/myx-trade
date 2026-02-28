@@ -46,6 +46,7 @@ export interface PoolContextValue {
   poolInfoRefetch: () => void
   fundingRate?: string
   markets?: MarketInfo[]
+  oraclePrice?: string
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
