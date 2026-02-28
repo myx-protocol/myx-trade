@@ -63,4 +63,5 @@ export interface PoolInfo {
     lastFundingFeeTracker: bigint
     nextEpochTime: bigint
   }
+  oraclePrice?: string
 }

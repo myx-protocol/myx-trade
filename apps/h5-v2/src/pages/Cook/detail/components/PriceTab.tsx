@@ -12,7 +12,7 @@ import { AreaCharts } from '@/components/CookDetail/Charts/AreaCharts.tsx'
 import clsx from 'clsx'
 
 export const PriceTab = () => {
-  const { baseLpDetail, price, poolId, mode } = usePoolContext()
+  const { baseLpDetail, price, poolId, mode, oraclePrice } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   const resolutionOptions: {
@@ -39,11 +39,9 @@ export const PriceTab = () => {
           >
             <span className={'text-regular'}>
               $
-              {tickerData?.price
-                ? formatNumber(tickerData?.price, {
-                    showUnit: false,
-                  })
-                : '--'}
+              {formatNumber(tickerData?.price || oraclePrice, {
+                showUnit: false,
+              })}
             </span>
             <RiseFallTextPrecent value={Number(baseLpDetail?.lpPriceChange)} />
           </Box>
