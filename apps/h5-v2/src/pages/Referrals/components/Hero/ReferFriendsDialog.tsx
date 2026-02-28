@@ -9,14 +9,14 @@ import { encryptionAddress, openUrl } from '@/utils'
 import LogoFull from '@/assets/images/logo-full.svg'
 import ShareBanner from '@/assets/images/referrals/desktop/share_banner.png'
 import { isUndefined } from 'lodash-es'
-import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
+import { DialogTheme } from '@/components/DialogBase'
 import { InfoButton } from '@/components/UI/Button'
 import { CloseIcon } from '@/components/Icon'
 import { Copy } from '@/components/Copy'
 
 import { i18n } from '@lingui/core'
 
-import { LinkLockLine } from '@/components/Icon/set/LinkLockLine'
+import LinkLockLine from '@/components/Icon/set/LinkLockLine'
 import { useThrottleFn } from 'ahooks'
 
 import SVGXIcon from '@/assets/icon/commons/logo/x/36x36.svg'
@@ -30,7 +30,6 @@ const shareText = msg`Join MYX, Get fee discounts and up to 20% rebates.`
 export const ReferFriendsDialog = () => {
   const { isReferFriendsDialogOpen, setReferFriendsDialogOpen, ratioInfo } = useReferralStore()
   const [, copy] = useCopyToClipboard()
-  const [saving, setSaving] = useState(false)
   const downloadRef = useRef<HTMLDivElement>(null)
 
   const refRatio = ratioInfo
@@ -136,7 +135,7 @@ export const ReferFriendsDialog = () => {
 
         <div className="flex flex-1 flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-[16px]">
               <p>
                 <Trans>Refer Friends</Trans>
               </p>
@@ -146,7 +145,7 @@ export const ReferFriendsDialog = () => {
             </div>
             <div className="mt-[20px] flex justify-between gap-5 rounded-lg bg-[rgba(0,227,165,0.05)] p-3">
               <div>
-                <div className="text-xs text-[#CED1D9]">
+                <div className="text-[12px] text-[#CED1D9]">
                   <Trans>You Receive</Trans>
                 </div>
                 <div className="mt-1 text-xl leading-none font-bold text-white">
@@ -156,7 +155,7 @@ export const ReferFriendsDialog = () => {
                 </div>
               </div>
               <div>
-                <div className="text-xs text-[#CED1D9]">
+                <div className="text-[12px] text-[#CED1D9]">
                   <Trans>Friends Receive</Trans>
                 </div>
                 <div className="mt-1 text-right text-xl leading-none font-bold text-white">
@@ -170,7 +169,7 @@ export const ReferFriendsDialog = () => {
 
           <div>
             <div className="mt-[10px] flex flex-col gap-2">
-              <div className="pl-3 text-xs leading-[1.5] font-medium text-[#CED1D9]">
+              <div className="pl-3 text-[12px] leading-[1.5] font-medium text-[#CED1D9]">
                 <Trans>Referral ID</Trans>
               </div>
               <div className="flex items-center justify-between gap-2 rounded-lg bg-[#18191F] p-3">
@@ -182,7 +181,7 @@ export const ReferFriendsDialog = () => {
                 )}
               </div>
 
-              <div className="pl-3 text-xs leading-[1.5] font-medium text-[#CED1D9]">
+              <div className="pl-3 text-[12px] leading-[1.5] font-medium text-[#CED1D9]">
                 <Trans>Referral Link </Trans>
               </div>
               <div className="flex items-center justify-between gap-2 rounded-lg bg-[#18191F] p-3">
