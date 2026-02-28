@@ -39,7 +39,7 @@ export function useHasScrolled<T extends HTMLElement = HTMLElement>(
  * @param interval 轮询时间 ms
  */
 export function useCardScrolled<T extends HTMLElement>(
-  cardRef: RefObject<T | null>,
+  cardRef: React.RefObject<T | null>,
   scrollParent: ScrollParent,
   interval = 1000,
 ) {
