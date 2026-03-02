@@ -23,9 +23,9 @@ import { SortField, type Vault } from '../type'
 import { Token } from './Token'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { encodeSortValue } from '@/utils/sort.ts'
-import { decimalToPercent, formatNumber } from '@/utils/number.ts'
-import { isSafeInteger } from 'lodash-es'
+import { formatNumber } from '@/utils/number.ts'
 import { isSafeNumber } from '@/utils'
+import Big from 'big.js'
 const sortField = SortField.tvl
 const sortOrder = 'desc'
 const limit = 20
@@ -238,7 +238,17 @@ export const Positions = ({ className = '' }: { className?: string }) => {
                 {!item ? (
                   <Skeleton width={95} />
                 ) : (
-                  <>${formatNumber(depositMap?.[item?.poolId], { showUnit: false })}</>
+                  <>
+                    $
+                    {priceMap?.[item?.poolId] && depositMap?.[item?.poolId]
+                      ? formatNumber(
+                          new Big(depositMap?.[item?.poolId])
+                            .mul(new Big(priceMap?.[item?.poolId]))
+                            .toNumber(),
+                          { showUnit: false },
+                        )
+                      : '--'}
+                  </>
                 )}
               </Box>
 
