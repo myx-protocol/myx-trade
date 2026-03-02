@@ -84,12 +84,16 @@ export const getPoolInfo = async (
         exchangeRate: request.quotePool.exchangeRate,
         poolTokenPrice: request.quotePool.poolTokenPrice,
         poolTokenSupply: request.quotePool.poolTokenSupply,
+        totalDebt: request.quotePool.totalDebt,
+        baseCollateral: request.quotePool.baseCollateral,
       },
       basePool: {
         poolToken: request.basePool.poolToken,
         exchangeRate: request.basePool.exchangeRate,
         poolTokenPrice: request.basePool.poolTokenPrice,
         poolTokenSupply: request.basePool.poolTokenSupply,
+        totalDebt: request.basePool.totalDebt,
+        baseCollateral: request.basePool.baseCollateral,
       },
       reserveInfo: {
         baseTotalAmount: request.reserveInfo.baseTotalAmount,
@@ -109,6 +113,10 @@ export const getPoolInfo = async (
         shortSize: request.oi.shortSize,
         poolEntryPrice: request.oi.poolEntryPrice,
       },
+      liquidityInfo: {
+        windowCaps: request.liquidityInfo.windowCaps,
+        openInterest: request.liquidityInfo.openInterest,
+      }
     };
     // console.log(info);
     return info;
