@@ -84,7 +84,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
       <div className="mt-3 flex flex-col gap-5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-xs leading-none text-[#CED1D9]">
+            <div className="text-[12px] leading-none text-[#CED1D9]">
               <Trans>Unclaimed</Trans>
             </div>
             <Tooltip title={<UnclaimedList infos={chainInfo} />} placement="bottom" arrow>
@@ -104,7 +104,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
 
         <div className="flex justify-between">
           <div>
-            <div className="text-xs leading-none text-[#CED1D9]">
+            <div className="text-[12px] leading-none text-[#CED1D9]">
               <Trans>Claimed</Trans>
             </div>
             <div className="mt-1.5 flex gap-1 text-[28px] leading-none font-bold text-white">
@@ -116,7 +116,7 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
             </div>
           </div>
           <div>
-            <div className="text-xs leading-none text-[#CED1D9]">
+            <div className="text-[12px] leading-none text-[#CED1D9]">
               <Trans>Invited Friends</Trans>
             </div>
             <div className="mt-1.5 flex justify-end gap-1 text-[28px] leading-none font-bold text-white">
@@ -139,11 +139,11 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
               title={t`Inviting others to register and receiving rewards as the inviter after the invitees trade.`}
               arrow
             >
-              <span className="cursor-help border-b border-dashed border-[#CED1D9]">
+              <span className="cursor-help border-b border-dashed border-[#CED1D9] text-[12px]">
                 <Trans>Referrer Rebate</Trans>
               </span>
             </Tooltips>
-            <span className="text-xs font-bold text-white">
+            <span className="text-[12px] font-bold text-white">
               {loading ? (
                 <Skeleton className="h-4 w-16" />
               ) : (
@@ -158,11 +158,11 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
                 title={t`The cashback income for the invitee's contract transaction fees.`}
                 arrow
               >
-                <span className="cursor-help border-b border-dashed border-[#CED1D9]">
+                <span className="cursor-help border-b border-dashed border-[#CED1D9] text-[12px]">
                   <Trans>Invitee Rebate</Trans>
                 </span>
               </Tooltips>
-              <span className="text-xs font-bold text-white">
+              <span className="text-[12px] font-bold text-white">
                 {loading ? (
                   <Skeleton className="h-4 w-16" />
                 ) : (
@@ -180,11 +180,11 @@ function MyRebateMobile({ bonus, chainInfo, referrerInfo, loading }: any) {
                 title={t`The cashback ratio for the invitee's contract transaction fees.`}
                 arrow
               >
-                <span className="cursor-help border-b border-dashed border-[#CED1D9]">
+                <span className="cursor-help border-b border-dashed border-[#CED1D9] text-[12px]">
                   <Trans>Invitee Rebate Rate</Trans>
                 </span>
               </Tooltips>
-              <span className="text-xs font-bold text-white">
+              <span className="text-[12px] font-bold text-white">
                 {loading ? (
                   <Skeleton className="h-4 w-10" />
                 ) : !isUndefined(referrerInfo?.refereeRatio) ? (
