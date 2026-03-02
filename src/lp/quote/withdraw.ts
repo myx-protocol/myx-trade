@@ -1,4 +1,4 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
+import { getAccount, getBasePoolContract, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers";
 import type { BytesLike } from "ethers";
 import { parseUnits } from "ethers";
 import { OracleUpdatePrice, WithdrawParams } from "@/lp/type";
@@ -14,8 +14,39 @@ import { getPoolInfo } from "@/lp/getPoolInfo";
 import { MarketPoolState } from "@/api";
 import { getPriceData } from "@/common/price";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { getErrorTextFormError } from "@/config/error";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
+import { ChainId } from "@/config/chain";
 
+export const withdrawableLpAmount = async (
+  params: {
+    chainId: ChainId;
+    poolId: string;
+    price?: bigint;
+  }
+) => {
+  try {
+    const {chainId, poolId, price} = params;
+    let referencePrice = price
+    const quotePoolContract = await getQuotePoolContract(chainId);
+    if (price !== 0n && !price) {
+      const priceData = await  getPriceData(chainId, poolId)
+      if (!priceData) return
+      referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
+    }
+    const data = {
+      poolId,
+      price: (referencePrice || 0n),
+    }
+    const request = await quotePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
+    console.log(`base pool withdrawableLpAmount: ${withdrawableLpAmount}`)
+    
+    return request
+    
+  } catch (error) {
+    console.error (error);
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+  }
+}
 
 export const withdraw = async (params: WithdrawParams) => {
   try {
@@ -48,6 +79,9 @@ export const withdraw = async (params: WithdrawParams) => {
     
     let amountOut;
     
+    let _withdrawableLpAmount;
+    
+    
     if (isNeedPrice) {
       // todo  getprice
       const priceData = await getPriceData (chainId, poolId)
@@ -61,9 +95,17 @@ export const withdraw = async (params: WithdrawParams) => {
       })
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
+      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
+      
     } else {
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn })
+      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
     }
+    
+    if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
+      throw new Error(Errors[ErrorCode.Invalid_Chain_ID]);
+    }
+    
     
     const data = {
       poolId: poolId as unknown as BytesLike,
