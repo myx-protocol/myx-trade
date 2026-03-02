@@ -6,14 +6,15 @@ const errorDecoder = ErrorDecoder.create();
 export enum ErrorCode {
   Invalid_Chain_ID = 1,
   Invalid_TOKEN_ADDRESS,
-  Insufficient_Balance =3,
+  Insufficient_Balance = 3,
   Insufficient_Amount_Of_Approved,
   USER_REJECTED_REQUEST = 4001,
   Invalid_Base,
   Invalid_slippage,
   Invalid_Amount,
   Invalid_Pool_State,
-  Invalid_Params
+  Invalid_Params,
+  Invalid_Amount_Withdrawable_Lp_Amount
 }
 
 export const Errors = {
@@ -26,7 +27,8 @@ export const Errors = {
   [ErrorCode.Invalid_slippage]: `Invalid Slippage`,
   [ErrorCode.Invalid_Amount]: `Invalid Amount`,
   [ErrorCode.Invalid_Pool_State]: `Invalid Pool State`,
-  [ErrorCode.Invalid_Params]: `Invalid Params`
+  [ErrorCode.Invalid_Params]: `Invalid Params`,
+  [ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]: `Invalid Amount Withdrawable LP Amount`,
 }
 
 export function didUserReject(error: any): boolean {
