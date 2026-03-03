@@ -79,7 +79,7 @@ export const withdraw = async (
     const price : OracleUpdatePrice[] =[]
     let value = 0n;
     let amountOut;
-    let _withdrawableLpAmount;
+    // let _withdrawableLpAmount;
     if (isNeedPrice) {
       // todo  getprice
       const priceData = await  getPriceData(chainId, poolId)
@@ -93,15 +93,15 @@ export const withdraw = async (
       })
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
-      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
+      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
     } else {
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn})
-      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
+      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
     }
     
-    if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
-      throw new Error(Errors[ErrorCode.Invalid_Chain_ID]);
-    }
+    /*if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
+      throw new Error(Errors[ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]);
+    }*/
     
     const data = {
       poolId,
