@@ -27,16 +27,21 @@ export const withdrawableLpAmount = async (
     const {chainId, poolId, price} = params;
     let referencePrice = price
     const basePoolContract = await getBasePoolContract(chainId);
-    if (price !== 0n && !price) {
-      const priceData = await  getPriceData(chainId, poolId)
-      referencePrice = parseUnits(priceData?.price || '0', COMMON_PRICE_DECIMALS)
+    if (typeof price === 'undefined' || price === null) {
+      try {
+        const priceData = await  getPriceData(chainId, poolId)
+        referencePrice = parseUnits(priceData?.price || '0', COMMON_PRICE_DECIMALS)
+      } catch (error) {
+        referencePrice = parseUnits( '0', COMMON_PRICE_DECIMALS)
+      }
+     
     }
     const data = {
       poolId,
       price: (referencePrice || 0n),
     }
     const request = await basePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
-    console.log(`base pool withdrawableLpAmount: ${withdrawableLpAmount}`)
+    console.log(`base pool withdrawableLpAmount: ${request}`)
     
     return request
     
