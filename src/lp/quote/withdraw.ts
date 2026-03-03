@@ -30,8 +30,7 @@ export const withdrawableLpAmount = async (
     const quotePoolContract = await getQuotePoolContract(chainId);
     if (price !== 0n && !price) {
       const priceData = await  getPriceData(chainId, poolId)
-      if (!priceData) return
-      referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
+      referencePrice = parseUnits(priceData?.price || '0', COMMON_PRICE_DECIMALS)
     }
     const data = {
       poolId,
