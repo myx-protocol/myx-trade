@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-27 08:57\n"
+"PO-Revision-Date: 2026-03-03 08:12\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -2116,7 +2115,7 @@ msgstr "Liq. Price"
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Liquidity Yield"
-msgstr "Liquidity Yield"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
@@ -3514,7 +3513,7 @@ msgstr ""
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
-msgstr "Some funds are locked in active trades. Max available to sell: [{0}] LP."
+msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "Something went wrong"
@@ -4768,3 +4767,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
