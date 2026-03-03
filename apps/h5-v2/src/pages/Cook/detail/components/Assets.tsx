@@ -24,9 +24,10 @@ import { RiseFallText } from '@/components/RiseFallText'
 import { formatNumber } from '@/utils/number.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
 
+type Rewards = { rebates: string; genesisRebates: string }
 type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
-type RewardsMapType = { [poolId: string]: string }
+type RewardsMapType = { [poolId: string]: Rewards }
 
 const AssetHeader = ({
   checked,
@@ -129,7 +130,7 @@ const AssetItem = ({
         )}
       </Box>
 
-      <Box className={'grid grid-cols-2 justify-between gap-[20px]'}>{children}</Box>
+      <Box className={'grid grid-cols-3 justify-between gap-[20px]'}>{children}</Box>
     </Box>
   )
 }
@@ -160,6 +161,7 @@ export const Assets = () => {
     queryFn: async () => {
       // console.log('getMineBaseLpAssets:', poolId, pool?.basePoolToken, accessToken)
       if (!account) return [] as LpAsset[]
+
       if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
       const request = await getLpAssets(account, accessToken || '', {
         poolType: PoolType.base,
@@ -168,6 +170,7 @@ export const Assets = () => {
       })
       return request?.data || []
     },
+    refetchInterval: 5000,
   })
 
   const rewardsQueryParams = useMemo(() => {
@@ -237,25 +240,29 @@ export const Assets = () => {
       if (!rewardsQueryParams?.length) return {} as RewardsMapType
       const result = await Promise.all(
         rewardsQueryParams.map(async (item) => {
-          let rewards = ''
+          let rewards: Rewards = {
+            rebates: '',
+            genesisRebates: '',
+          }
           try {
             const rs = await Base.getRewards({
               poolId: item.poolId,
               chainId: item.chainId,
               account: account as `0x${string}`,
             })
-            // base.getRewards({
-            //   poolId,
-            //   chainId,
-            //   account
-            // })
+
             // console.log('Base.getRewards', item.poolId, item.chainId, account, rs)
-            if (rs === 0n) {
-              rewards = '0'
-            } else if (rs) {
+            if (rs) {
               const marketInfo = markets?.find((market) => market.marketId === item?.marketId)
               if (marketInfo?.quoteDecimals) {
-                rewards = formatUnits(rs, marketInfo?.quoteDecimals)
+                rewards = {
+                  rebates:
+                    rs?.rebates === 0n ? '0' : formatUnits(rs?.rebates, marketInfo?.quoteDecimals),
+                  genesisRebates:
+                    rs?.genesisRebates === 0n
+                      ? '0'
+                      : formatUnits(rs?.genesisRebates, marketInfo?.quoteDecimals),
+                }
               }
             }
           } catch (_e) {
@@ -276,6 +283,7 @@ export const Assets = () => {
         }
       }, {} as RewardsMapType)
     },
+    refetchInterval: 5000,
   })
 
   const getPnl = (lpAsset: LpAsset, price: string) => {
@@ -352,7 +360,7 @@ export const Assets = () => {
                   className={'items-end justify-self-end'}
                   label={<Trans>Unclaimed Fees</Trans>}
                 >
-                  {formatNumber(rewardsMap?.[item?.poolId], {
+                  {formatNumber(rewardsMap?.[item?.poolId]?.genesisRebates, {
                     showUnit: false,
                     decimals: COMMON_PRICE_DISPLAY_DECIMALS,
                   })}{' '}
@@ -366,7 +374,7 @@ export const Assets = () => {
       </Box>
       <ClaimRewardsDialog
         refetch={refetch}
-        reward={rewardsMap?.[lpAsset?.poolId as string] || ''}
+        reward={rewardsMap?.[lpAsset?.poolId as string]}
         lpAsset={lpAsset}
         open={openClaimRewardsDialog}
         onClose={() => {

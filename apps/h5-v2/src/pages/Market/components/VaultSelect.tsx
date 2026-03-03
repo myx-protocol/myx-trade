@@ -219,14 +219,19 @@ export const VaultSelect = ({
     if (type === VaultType.Quote) {
       return quoteAmount
     } else if (type === VaultType.Base) {
-      if (token && price && baseAmount && Number(baseAmount) > 0) {
-        return formatUnits(
-          parseUnits(price.toString(), COMMON_PRICE_DECIMALS) *
-            parseUnits(baseAmount, token?.decimals),
-          COMMON_PRICE_DECIMALS + token?.decimals,
-        )
+      try {
+        if (token && price && baseAmount && Number(baseAmount) > 0) {
+          return formatUnits(
+            parseUnits(price?.toString(), COMMON_PRICE_DECIMALS) *
+              parseUnits(baseAmount, token?.decimals),
+            COMMON_PRICE_DECIMALS + token?.decimals,
+          )
+        }
+        return ''
+      } catch (e) {
+        console.error(e)
+        return ''
       }
-      return ''
     }
   }, [price, type, quoteAmount, baseAmount])
 

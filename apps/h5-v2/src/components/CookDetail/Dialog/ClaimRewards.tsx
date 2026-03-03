@@ -11,12 +11,15 @@ import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { showErrorToast } from '@/config/error'
+import Big from 'big.js'
+import { FlexRowLayout } from '@/components/FlexRowLayout'
 
+type Rewards = { rebates: string; genesisRebates: string }
 interface ClaimRewardsDialogProps {
   open: boolean
   onClose: () => void
   lpAsset?: LpAsset
-  reward?: string
+  reward?: Rewards
   refetch?: () => void
 }
 
@@ -32,7 +35,14 @@ export const ClaimRewardsDialog = ({
   const onAction = useWalletActions()
 
   const onHandleClaim = useCallback(async () => {
-    if (!lpAsset?.poolId || !account || !reward || Number(reward) < MIN_CLAIM_AMOUNT) return
+    if (
+      !lpAsset?.poolId ||
+      !account ||
+      !reward ||
+      new Big(reward?.rebates || '0')?.plus(reward?.genesisRebates || '0')?.toNumber() <
+        MIN_CLAIM_AMOUNT
+    )
+      return
     try {
       setLoading(true)
       const checked = onAction(lpAsset.chainId)
@@ -55,37 +65,58 @@ export const ClaimRewardsDialog = ({
         </p>
         {/* value */}
         <p className="mt-[8px] text-[24px] font-bold text-white">
-          {formatNumberPrecision(reward, COMMON_PRICE_DISPLAY_DECIMALS)}
+          {formatNumberPrecision(
+            new Big(reward?.rebates || '0')?.plus(reward?.genesisRebates || 0)?.toNumber(),
+            COMMON_PRICE_DISPLAY_DECIMALS,
+          )}
           <span className="ml-[4px]">{lpAsset?.quoteSymbol}</span>
         </p>
         {/* rate */}
         <p className="mt-[8px] text-[14px] font-medium text-[#848E9C]">
-          ${formatNumberPrecision(reward, COMMON_PRICE_DISPLAY_DECIMALS)}
+          $
+          {formatNumberPrecision(
+            new Big(reward?.rebates || '0')?.plus(reward?.genesisRebates || 0)?.toNumber(),
+            COMMON_PRICE_DISPLAY_DECIMALS,
+          )}
         </p>
       </div>
       {/* profit detail */}
-      {/*<div className="mt-[32px] pb-[20px] text-[12px] leading-[1.2] font-medium text-white">
+      <div className="mt-[32px] pb-[20px] text-[12px] leading-[1.2] font-medium text-white">
         <FlexRowLayout
           left={
             <p className="text-[#848E9C]">
-              <Trans>创世收益</Trans>
+              <Trans>Genesis Rewards</Trans>
             </p>
           }
-          right={<p>70 mTRUMP($23.32)</p>}
+          right={
+            <p>
+              {formatNumberPrecision(reward?.genesisRebates, COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
+              {lpAsset?.quoteSymbol}
+            </p>
+          }
         />
         <FlexRowLayout
           className="mt-[12px]"
           left={
             <p className="text-[#848E9C]">
-              <Trans>普通收益</Trans>
+              <Trans>Liquidity Yield</Trans>
             </p>
           }
-          right={<p>70 mTRUMP($23.32)</p>}
+          right={
+            <p>
+              {formatNumberPrecision(reward?.rebates, COMMON_PRICE_DISPLAY_DECIMALS)}{' '}
+              {lpAsset?.quoteSymbol}
+            </p>
+          }
         />
-      </div>*/}
+      </div>
       <PrimaryButton
         loading={loading}
-        disabled={!reward || Number(reward) < MIN_CLAIM_AMOUNT}
+        disabled={
+          !reward ||
+          new Big(reward?.rebates || '0')?.plus(reward?.genesisRebates || 0)?.toNumber() <
+            MIN_CLAIM_AMOUNT
+        }
         className="mt-[20px]! h-[44px] w-full rounded-[999px]! text-[14px]! font-medium!"
         onClick={onHandleClaim}
       >
