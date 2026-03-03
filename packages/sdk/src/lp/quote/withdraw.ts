@@ -41,7 +41,7 @@ export const withdrawableLpAmount = async (
       price: (referencePrice || 0n),
     }
     const request = await quotePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
-    console.log(`base pool withdrawableLpAmount: ${request}`)
+    console.log(`quote pool withdrawableLpAmount: ${request}`)
     
     return request
     
@@ -82,8 +82,7 @@ export const withdraw = async (params: WithdrawParams) => {
     
     let amountOut;
     
-    let _withdrawableLpAmount;
-    
+    // let _withdrawableLpAmount;
     
     if (isNeedPrice) {
       // todo  getprice
@@ -98,16 +97,16 @@ export const withdraw = async (params: WithdrawParams) => {
       })
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
-      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
+      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
       
     } else {
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn })
-      _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
+      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
     }
     
-    if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
-      throw new Error(Errors[ErrorCode.Invalid_Chain_ID]);
-    }
+   /* if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
+      throw new Error(Errors[ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]);
+    }*/
     
     
     const data = {
