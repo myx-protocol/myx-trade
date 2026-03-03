@@ -95,12 +95,9 @@ export const withdraw = async (
       _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
     }
     
-  
     if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
       throw new Error(Errors[ErrorCode.Invalid_Chain_ID]);
     }
-    
-    
     
     const data = {
       poolId,
