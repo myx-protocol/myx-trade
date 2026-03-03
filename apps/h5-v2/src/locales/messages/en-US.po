@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -1635,6 +1636,8 @@ msgstr "Gas limit exceeded (address,uint256,uint256)"
 msgid "GasLimitNotSet(address)"
 msgstr "Gas not set (address)"
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr ""
@@ -2109,6 +2112,11 @@ msgstr ""
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "Liq. Price"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Liquidity Yield"
+msgstr "Liquidity Yield"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
@@ -3502,6 +3510,12 @@ msgstr "Price slippage exceeded (uint256,uint256)"
 msgid "Social Login"
 msgstr ""
 
+#. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
+msgstr "Some funds are locked in active trades. Max available to sell: [{0}] LP."
+
 #: src/ErrorPage.tsx
 msgid "Something went wrong"
 msgstr ""
@@ -3901,10 +3915,6 @@ msgstr ""
 #: src/pages/Referrals/components/MyRebate/index.tsx
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Unclaimed"
-msgstr ""
-
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Unclaimed Fees"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4758,4 +4768,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
