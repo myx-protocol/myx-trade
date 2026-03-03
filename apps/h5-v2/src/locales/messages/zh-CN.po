@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -1635,6 +1636,8 @@ msgstr "超过Gas 限制 (address,uint256,uint256)"
 msgid "GasLimitNotSet(address)"
 msgstr "未设置 Gas (address)"
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr "创世奖励"
@@ -2109,6 +2112,11 @@ msgstr "强平价格"
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "强平价格"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Liquidity Yield"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
@@ -3502,6 +3510,12 @@ msgstr "滑点过高 (uint256,uint256)"
 msgid "Social Login"
 msgstr "社媒登录"
 
+#. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
+msgstr ""
+
 #: src/ErrorPage.tsx
 msgid "Something went wrong"
 msgstr "出错了"
@@ -3902,10 +3916,6 @@ msgstr "类型"
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Unclaimed"
 msgstr "未领取"
-
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Unclaimed Fees"
-msgstr "待领取费用"
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnderflowOI()"
@@ -4758,4 +4768,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
