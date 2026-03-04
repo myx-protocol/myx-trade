@@ -36,9 +36,6 @@ export const TradingInfo = ({ className = '' }: { className?: string }) => {
             : '--'}
           /h
         </DescribeItem>
-        <DescribeItem title={<Trans>Holders</Trans>}>
-          {formatNumber(quoteLpDetail?.holders)}
-        </DescribeItem>
 
         <DescribeItem title={<Trans>Traders</Trans>}>
           {formatNumber(quoteLpDetail?.traders)}

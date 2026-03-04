@@ -26,7 +26,7 @@ export const BenchWarning = () => {
   const data = useMemo(() => {
     console.log(markets, quoteLpDetail)
     return (markets || []).find((market) => market.marketId === quoteLpDetail?.marketId)
-      ?.oracleFeeUsd
+      ?.poolPrimeThreshold
   }, [markets, quoteLpDetail])
 
   const genesis = useMemo(() => {
