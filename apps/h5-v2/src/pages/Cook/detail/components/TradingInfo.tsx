@@ -73,10 +73,6 @@ export const TradingInfo = () => {
             : '--'}
         </DescribeItem>
 
-        <DescribeItem title={<Trans>Holders</Trans>}>
-          {formatNumber(baseLpDetail?.holders)}
-        </DescribeItem>
-
         <DescribeItem title={<Trans>Traders</Trans>}>
           {formatNumber(baseLpDetail?.traders)}
         </DescribeItem>

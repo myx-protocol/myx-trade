@@ -112,7 +112,7 @@ export const usePoolDetail = (poolType: PoolType) => {
 
       let oraclePrice = tickerData?.price || '0'
 
-      if (!tickerData?.price && poolType === PoolType.base) {
+      if (!tickerData?.price) {
         const res = await getMarketPoolPrice(+chainId, poolId)
         if (res?.data) {
           oraclePrice = res.data
