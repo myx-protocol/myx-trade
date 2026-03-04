@@ -336,6 +336,14 @@
               {
                 "type": "uint256",
                 "name": "poolTokenSupply"
+              },
+              {
+                "type": "uint256",
+                "name": "totalDebt"
+              },
+              {
+                "type": "uint256",
+                "name": "baseCollateral"
               }
             ]
           },
@@ -358,6 +366,14 @@
               {
                 "type": "uint256",
                 "name": "poolTokenSupply"
+              },
+              {
+                "type": "uint256",
+                "name": "totalDebt"
+              },
+              {
+                "type": "uint256",
+                "name": "baseCollateral"
               }
             ]
           },
@@ -480,6 +496,14 @@
               {
                 "type": "uint256",
                 "name": "poolTokenSupply"
+              },
+              {
+                "type": "uint256",
+                "name": "totalDebt"
+              },
+              {
+                "type": "uint256",
+                "name": "baseCollateral"
               }
             ]
           },
@@ -502,6 +526,14 @@
               {
                 "type": "uint256",
                 "name": "poolTokenSupply"
+              },
+              {
+                "type": "uint256",
+                "name": "totalDebt"
+              },
+              {
+                "type": "uint256",
+                "name": "baseCollateral"
               }
             ]
           },
@@ -684,6 +716,24 @@
       {
         "type": "uint256",
         "name": "quoteAmount"
+      },
+      {
+        "type": "tuple[]",
+        "name": "infos",
+        "components": [
+          {
+            "type": "address",
+            "name": "account"
+          },
+          {
+            "type": "uint256",
+            "name": "baseAmount"
+          },
+          {
+            "type": "uint256",
+            "name": "quoteAmount"
+          }
+        ]
       }
     ]
   },

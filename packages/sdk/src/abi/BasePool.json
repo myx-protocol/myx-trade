@@ -134,6 +134,16 @@
   },
   {
     "type": "error",
+    "name": "SafeCastOverflowedUintToInt",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "value"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "SafeERC20FailedOperation",
     "inputs": [
       {
@@ -679,6 +689,10 @@
           {
             "type": "uint256",
             "name": "accrued"
+          },
+          {
+            "type": "uint256",
+            "name": "genesisAccrued"
           }
         ]
       }
@@ -719,7 +733,12 @@
     ],
     "outputs": [
       {
-        "type": "uint256"
+        "type": "uint256",
+        "name": "rebates"
+      },
+      {
+        "type": "uint256",
+        "name": "genesisRebates"
       }
     ]
   },
@@ -952,6 +971,28 @@
       {
         "type": "uint256",
         "name": "rebateOut"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "withdrawableLpAmount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint256",
+        "name": "price"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   }

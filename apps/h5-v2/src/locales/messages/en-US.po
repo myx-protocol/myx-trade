@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-27 08:57\n"
+"PO-Revision-Date: 2026-03-03 08:12\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1635,6 +1635,8 @@ msgstr "Gas limit exceeded (address,uint256,uint256)"
 msgid "GasLimitNotSet(address)"
 msgstr "Gas not set (address)"
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr ""
@@ -2109,6 +2111,11 @@ msgstr ""
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "Liq. Price"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Liquidity Yield"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Liquidity($)"
@@ -3502,6 +3509,12 @@ msgstr "Price slippage exceeded (uint256,uint256)"
 msgid "Social Login"
 msgstr ""
 
+#. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
+msgstr ""
+
 #: src/ErrorPage.tsx
 msgid "Something went wrong"
 msgstr ""
@@ -3901,10 +3914,6 @@ msgstr ""
 #: src/pages/Referrals/components/MyRebate/index.tsx
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Unclaimed"
-msgstr ""
-
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Unclaimed Fees"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
