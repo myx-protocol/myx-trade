@@ -158,12 +158,12 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
     activeLocale,
     setAccountDialogOpen,
     setImportSeamlessKeyDialogOpen,
-  } = useGlobalStore()
-  const {
     showPlaceOrderConfirmDialog,
     setShowPlaceOrderConfirmDialog,
     showCloseOrderConfirmDialog,
     setShowCloseOrderConfirmDialog,
+    shareCollateral,
+    setShareCollateral,
   } = useGlobalStore()
 
   const switchActiveLocale = useSwitchActiveLocale()
@@ -246,7 +246,17 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
             />
           </div>
         </div>
-
+        <div className="flex items-center justify-between py-[16px]">
+          <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+            <Trans>仓位保证金共享</Trans>
+          </p>
+          <Switch
+            checked={shareCollateral}
+            onChange={(_, checked) => {
+              setShareCollateral(checked)
+            }}
+          />
+        </div>
         {/* split line */}
         <>
           {(isTradePage || isPricePage) && (

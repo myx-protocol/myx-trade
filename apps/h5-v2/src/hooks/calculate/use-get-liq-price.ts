@@ -3,11 +3,14 @@ import { useGetTradingFee, useGetTradingFeeInfo } from './use-get-trading-fee'
 import { useGetFundingFee } from './use-get-fundingfee'
 import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
-import { displayAmount } from '@/utils/number'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import useSWR from 'swr'
 
 export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
   const { getFundingFee } = useGetFundingFee(poolId, chainId)
   const { getTradingFee } = useGetTradingFee(chainId)
+  const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })
 
   const getLiqPrice = useCallback(
     async ({
@@ -31,6 +34,8 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
       maintainMarginRate: string
       needFundingFee?: boolean
     }) => {
+      const networkFee = await getNetworkFee()
+      const totalNetworkFee = networkFee.mul(3)
       const tradingFee = await getTradingFee({ size, price, assetClass })
       const fundingFee = needFundingFee
         ? getFundingFee(fundingRateIndexEntry, size, direction)
@@ -38,6 +43,7 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
 
       const netCollateral = parseBigNumber(collateralAmount)
         .plus(parseBigNumber(fundingFee))
+        .minus(parseBigNumber(totalNetworkFee))
         .minus(parseBigNumber(tradingFee))
 
       const notional = parseBigNumber(size).mul(parseBigNumber(entryPrice))
@@ -69,6 +75,18 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
   }
 }
 
+export const useGetNetworkFee = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
+  const { client } = useMyxSdkClient(chainId)
+  const { poolList } = useGetPoolList()
+  const getNetworkFee = useCallback(async () => {
+    const pool = poolList.find((item: any) => item.poolId === poolId)
+    const networkFeeString = await client?.utils.getNetworkFee(pool.marketId, chainId)
+    return parseBigNumber(networkFeeString).div(10 ** (pool.quoteDecimals ?? 1))
+  }, [client, poolId, chainId])
+
+  return { getNetworkFee }
+}
+
 export const useCalculateLiqPrice = ({
   poolId,
   chainId,
@@ -95,10 +113,17 @@ export const useCalculateLiqPrice = ({
   const { getFundingFee } = useGetFundingFee(poolId, chainId)
   const tradingFee = useGetTradingFeeInfo({ size, price, assetClass, chainId })
   const fundingFee = getFundingFee(fundingRateIndexEntry, size, direction)
+  const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })
+
+  const { data: networkFee } = useSWR(
+    { key: 'getNetworkFee', poolId, chainId },
+    async () => await getNetworkFee(),
+  )
 
   const netCollateral = parseBigNumber(collateralAmount)
     .plus(parseBigNumber(fundingFee))
     .minus(parseBigNumber(tradingFee))
+    .minus(parseBigNumber(networkFee ?? 0).mul(3))
 
   const notional = parseBigNumber(size).mul(parseBigNumber(entryPrice))
   const ratio = netCollateral.div(notional)

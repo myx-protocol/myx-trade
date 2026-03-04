@@ -111,6 +111,9 @@ interface GlobalStore {
 
   resetSeamlessPasswordDialogOpen: boolean
   setResetSeamlessPasswordDialogOpen: (open: boolean) => void
+
+  shareCollateral: boolean
+  setShareCollateral: (shareCollateral: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -193,6 +196,8 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             poolConfig: null,
             setPoolConfig: (poolConfig: PoolConfig | null) => set({ poolConfig }),
 
+            shareCollateral: false,
+            setShareCollateral: (shareCollateral: boolean) => set({ shareCollateral }),
             showCharts: false,
             setShowCharts(showCharts) {
               set({ showCharts })
