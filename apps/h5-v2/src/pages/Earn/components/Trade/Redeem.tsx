@@ -19,6 +19,7 @@ import {
   quote as Quote,
   pool as Pool,
   COMMON_LP_AMOUNT_DECIMALS,
+  parseUnits,
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -144,6 +145,20 @@ export const Redeem = () => {
     }
   }, [trueBalance])
 
+  const { data: withdrawableLpAmount } = useQuery({
+    queryKey: [{ key: 'withdrawableLpAmount' }, amount, poolId, account, isInsufficient],
+    enabled: !!amount && !!account && !isInsufficient && !!poolId && Number(amount) > 0,
+    queryFn: async () => {
+      if (!account || !poolId || !amount || isInsufficient || Number(amount) <= 0) return
+      const res = await Quote.withdrawableLpAmount({
+        chainId,
+        poolId,
+      })
+      console.log(`withdrawableLpAmount: ${res}, ${formatUnits(res, COMMON_LP_AMOUNT_DECIMALS)}`)
+      return res
+    },
+  })
+
   const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
     setAmount(floatValue?.toString() || '')
   }, [])
@@ -154,6 +169,17 @@ export const Redeem = () => {
       if (!chainId || !poolId || !amount) return
       const checked = await onAction()
       if (!checked) return
+
+      if (
+        withdrawableLpAmount !== undefined &&
+        parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
+      ) {
+        toast.error({
+          title: t`Some funds are locked in active trades. Max available to sell: [${formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })}] LP.`,
+        })
+        return
+      }
+
       await Quote.withdraw({
         chainId: +chainId,
         poolId,
@@ -170,7 +196,7 @@ export const Redeem = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, withdrawableLpAmount])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''
