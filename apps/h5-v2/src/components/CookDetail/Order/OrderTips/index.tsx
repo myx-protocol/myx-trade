@@ -23,7 +23,7 @@ export const OrderTips = () => {
 
   const data = useMemo(() => {
     return (markets || []).find((market) => market.marketId === baseLpDetail?.marketId)
-      ?.oracleFeeUsd
+      ?.poolPrimeThreshold
   }, [markets, baseLpDetail])
 
   const genesis = useMemo(() => {
