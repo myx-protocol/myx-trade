@@ -22,6 +22,7 @@ import useGlobalStore from '@/store/globalStore'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { EditText } from '@/components/EditText'
 import { tradePubSub } from '@/utils/pubsub'
+import { showErrorToast } from '@/config/error'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -526,7 +527,10 @@ export const ClosePositionButton = ({
             onClick={async () => {
               try {
                 setLoading(true)
-                await checkUserVipInfo()
+                const vipResult = await checkUserVipInfo()
+                if (!vipResult) {
+                  return
+                }
                 const pool = poolList.find((poolItem: any) => poolItem.poolId === position.poolId)
                 let triggerType: TriggerType = TriggerType.NONE
                 if (orderType === OrderType.LIMIT) {
@@ -574,12 +578,10 @@ export const ClosePositionButton = ({
                   }
                   setCloseDialogOpen(false)
                 } else {
-                  console.log('market close failed')
-                  toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
+                  showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
-                // todo toast
               } catch (e) {
-                toast.error({ title: t`${client?.utils.formatErrorMessage(e)}` })
+                showErrorToast(e)
               } finally {
                 setLoading(false)
               }
