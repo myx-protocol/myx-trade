@@ -77,7 +77,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
-              title: t`open  amount must be greater than 0`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
             })
             return
           }
@@ -127,7 +127,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({
-              title: t`open amount must be greater than 0`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
             })
             return
           }

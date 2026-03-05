@@ -13,6 +13,7 @@ import { formatNumber } from '@/utils/number'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
+import { showErrorToast } from '@/config/error'
 
 export const MarketClosePositionButton = ({
   position,
@@ -149,10 +150,10 @@ export const MarketClosePositionButton = ({
                   toast.success({ title: t`Market close success` })
                   setMarketCloseDialogOpen(false)
                 } else {
-                  toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
+                  showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
               } catch (e) {
-                toast.error({ title: t`${client?.utils.formatErrorMessage(e)}` })
+                showErrorToast(e)
               } finally {
                 setLoading(false)
               }

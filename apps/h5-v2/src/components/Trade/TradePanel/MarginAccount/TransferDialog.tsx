@@ -24,6 +24,7 @@ import { MenuItem, Select, Tooltip } from '@mui/material'
 import useGlobalStore from '@/store/globalStore'
 import dayjs from 'dayjs'
 import { getQuoteTokenInfo } from '@/config/token'
+import { showErrorToast } from '@/config/error'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -437,7 +438,7 @@ export const TransferDialogButton = () => {
                         toast.success({ title: t`Transfer Success` })
                         setOpen(false)
                       } else {
-                        toast.error({ title: t`Transfer Failed` })
+                        showErrorToast(client?.utils.formatErrorMessage(rs))
                       }
                     } else {
                       const formatAmount = ethers.parseUnits(
@@ -475,12 +476,11 @@ export const TransferDialogButton = () => {
                         setOpen(false)
                       } else {
                         console.log('rs-->', rs)
-                        toast.error({ title: t`Transfer Failed` })
+                        showErrorToast(client?.utils.formatErrorMessage(rs))
                       }
                     }
                   } catch (e) {
-                    console.log(e)
-                    toast.error({ title: t`Transfer Failed` })
+                    showErrorToast(e)
                   } finally {
                     setLoading(false)
                   }

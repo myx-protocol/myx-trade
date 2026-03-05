@@ -23,6 +23,7 @@ import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { getAsSupportedChainIdFn } from '@/config/chain'
+import { showErrorToast } from '@/config/error'
 
 export const useSubmitOrder = () => {
   const [longLoading, setLongLoading] = useState(false)
@@ -359,7 +360,12 @@ export const useSubmitOrder = () => {
         } else {
           setShortLoading(true)
         }
-        await checkUserVipInfo()
+        const vipResult = await checkUserVipInfo()
+
+        if (!vipResult) {
+          return
+        }
+
         if (positionAction === PositionActionEnum.OPEN) {
           const rs = await client?.order.createIncreaseOrder(
             orderData,
@@ -376,9 +382,7 @@ export const useSubmitOrder = () => {
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
-            toast.error({
-              title: t`${client?.utils.formatErrorMessage(rs)}`,
-            })
+            showErrorToast(client?.utils.formatErrorMessage(rs))
           }
         } else {
           const rs = await client?.order.createDecreaseOrder({
@@ -394,15 +398,11 @@ export const useSubmitOrder = () => {
             await sleep(1500)
             tradePubSub.emit('place:order:success')
           } else {
-            toast.error({
-              title: t`${client?.utils.formatErrorMessage(rs)}`,
-            })
+            showErrorToast(client?.utils.formatErrorMessage(rs))
           }
         }
       } catch (error) {
-        toast.error({
-          title: t`${client?.utils.formatErrorMessage(error)}`,
-        })
+        showErrorToast(error)
       } finally {
         if (direction === Direction.LONG) {
           setLongLoading(false)

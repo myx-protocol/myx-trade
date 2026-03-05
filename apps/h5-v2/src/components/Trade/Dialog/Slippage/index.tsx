@@ -81,7 +81,7 @@ export const SlippageDialog = ({
             <p>
               <Trans>平仓滑点设置</Trans>
             </p>
-            <Tooltips title="平仓滑点设置">
+            <Tooltips title={t`平仓滑点设置`}>
               <span className="inline-flex">
                 <IconWarningOutline size={12} />
               </span>
@@ -100,7 +100,7 @@ export const SlippageDialog = ({
             <p>
               <Trans>止盈止损滑点</Trans>
             </p>
-            <Tooltips title="平仓滑点设置">
+            <Tooltips title={t`止盈止损滑点`}>
               <span className="inline-flex">
                 <IconWarningOutline size={12} />
               </span>

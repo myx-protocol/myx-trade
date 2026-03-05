@@ -130,8 +130,10 @@ export class Seamless {
   async onCheckRelayer(account: string, relayer: string, chainId: number) {
     const forwarderContract = await getForwarderContract(chainId)
 
+    // 1
     const checkRelayerResult = await forwarderContract.isUserRelayerEnabled(account, relayer)
-
+    // todo 判断 token的erc20 给 tradingRouter的授权额度 
+    
     return checkRelayerResult
   }
 
@@ -238,7 +240,7 @@ export class Seamless {
 
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
-      
+
       this.logger.info('balanceRes-->', balanceRes)
       const balance = balanceRes.data
       const marketManagerContract = new ethers.Contract(

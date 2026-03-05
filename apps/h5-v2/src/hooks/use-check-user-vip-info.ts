@@ -3,8 +3,7 @@ import { useWalletConnection } from './wallet/useWalletConnection'
 import { useParams } from 'react-router-dom'
 import { useCallback } from 'react'
 import { useGetAccountVipInfoByContract } from './use-get-account-vip-info-by-contract'
-import { toast } from '@/components/UI/Toast'
-import { t } from '@lingui/core/macro'
+import { showErrorToast } from '@/config/error'
 
 export const useCheckUserVipInfo = (positionChainId?: string) => {
   const { chainId: currentChainId } = useParams()
@@ -52,11 +51,12 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
       )
 
       if (rs?.code !== 0) {
-        toast.error({
-          title: t`${client.utils.formatErrorMessage(rs)}`,
-        })
+        showErrorToast(client?.utils.formatErrorMessage(rs))
+        return false
       }
     }
+
+    return true
   }, [client, clientIsAuthenticated, address, chainId, positionChainId])
 
   return {

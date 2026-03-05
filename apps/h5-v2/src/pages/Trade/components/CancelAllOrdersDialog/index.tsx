@@ -9,6 +9,7 @@ import useGlobalStore from '@/store/globalStore'
 import { usePositionStore } from '@/store/position/createStore'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
+import { showErrorToast } from '@/config/error'
 
 export const CancelAllOrdersDialog = () => {
   const { selectChainId } = usePositionStore()
@@ -45,15 +46,10 @@ export const CancelAllOrdersDialog = () => {
                   })
                   setCancelAllOrdersDialogOpen(false)
                 } else {
-                  toast.error({
-                    title: t`Cancel all orders failed`,
-                  })
+                  showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
               } catch (e) {
-                console.log(e)
-                toast.error({
-                  title: t`Cancel all orders failed`,
-                })
+                showErrorToast(e)
               } finally {
                 setLoading(false)
               }

@@ -24,6 +24,7 @@ import { useWalletStore } from '@/store/wallet/createStore'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import useGlobalStore from '@/store/globalStore'
 import { getQuoteTokenInfo } from '@/config/token'
+import { showErrorToast } from '@/config/error'
 
 function AdjustMarginSelect({
   adjustType,
@@ -523,10 +524,10 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     setAdjustType('increase')
                     setOpen(false)
                   } else {
-                    toast.error({ title: t`Adjust margin failed` })
+                    showErrorToast(client?.utils.formatErrorMessage(rs))
                   }
                 } catch (error) {
-                  console.log(error)
+                  showErrorToast(error)
                 } finally {
                   setLoading(false)
                 }

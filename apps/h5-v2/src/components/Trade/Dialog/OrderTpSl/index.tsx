@@ -16,6 +16,7 @@ import { Direction } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { t } from '@lingui/core/macro'
+import { showErrorToast } from '@/config/error'
 
 export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any }) => {
   const [open, setOpen] = useState(false)
@@ -108,14 +109,10 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         reset()
         setOpen(false)
       } else {
-        toast.error({
-          title: t`${client?.utils.formatErrorMessage(rs)}`,
-        })
+        showErrorToast(client?.utils.formatErrorMessage(rs))
       }
     } catch (error) {
-      toast.error({
-        title: t`${client?.utils.formatErrorMessage(error)}`,
-      })
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }
