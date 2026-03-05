@@ -81,7 +81,6 @@ export class Position {
     positionId,
     adjustAmount,
     quoteToken,
-    poolOracleType,
     chainId,
     address,
   }: {
@@ -89,7 +88,6 @@ export class Position {
     positionId: string;
     adjustAmount: string;
     quoteToken: string;
-    poolOracleType: OracleType;
     chainId: number;
     address: string;
   }) {
@@ -105,7 +103,7 @@ export class Position {
       }
       const updateParams = {
         poolId: poolId,
-        oracleType: poolOracleType,
+        oracleType: priceData.oracleType,
         oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
       };
