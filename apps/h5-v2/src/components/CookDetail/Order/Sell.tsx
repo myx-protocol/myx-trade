@@ -65,7 +65,7 @@ export const Sell = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.basePoolToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
-        return formatNumberPrecision(_balance, COMMON_BASE_DISPLAY_DECIMALS, false, false)
+        return _balance
       }
     },
   })
