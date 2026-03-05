@@ -26,7 +26,7 @@ import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/deci
 import Big from 'big.js'
 
 type Rewards = { rebates: string; genesisRebates: string }
-type SortOrder = 'asc' | 'desc' | false
+// type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
 type RewardsMapType = { [poolId: string]: Rewards }
 
@@ -185,7 +185,7 @@ export const Assets = () => {
         poolId: showAllAssets ? undefined : poolId,
         poolToken: showAllAssets ? undefined : pool?.basePoolToken,
       })
-      return request?.data || []
+      return (request?.data || []).filter((asset) => new Big(asset?.lastTotal || '0').gt(0))
     },
     refetchInterval: 5000,
   })
