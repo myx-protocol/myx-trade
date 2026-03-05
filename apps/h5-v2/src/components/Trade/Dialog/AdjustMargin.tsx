@@ -512,7 +512,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       .parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6)
                       .toString(),
                     quoteToken: pool?.quoteToken ?? '',
-                    poolOracleType: OracleType.Chainlink,
                     chainId: position.chainId,
                     address: activeAddress,
                   }
