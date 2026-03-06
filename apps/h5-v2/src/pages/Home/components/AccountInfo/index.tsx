@@ -97,7 +97,7 @@ export const AccountInfo = () => {
           chainId={homeStore.chainId}
           open={receiveDialogOpen}
           onClose={() => setReceiveDialogOpen(false)}
-          symbol="USDC"
+          symbol="USDT"
         />
       </div>
     </div>
