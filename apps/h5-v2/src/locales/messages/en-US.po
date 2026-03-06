@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -502,6 +503,10 @@ msgstr ""
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "Avg. Entry Price"
 msgstr ""
+
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Avg.Price/Order Price"
+msgstr "Avg.Price/Order Price"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
@@ -2971,6 +2976,11 @@ msgstr ""
 msgid "Order Rejected"
 msgstr ""
 
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Order size must be greater than the minimum required"
+msgstr "Order size must be greater than the minimum required"
+
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderExpired(OrderId)"
@@ -3236,10 +3246,6 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/PriceImpact.tsx
 msgid "Price Impact"
-msgstr ""
-
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "Price/Price"
 msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
@@ -5115,4 +5121,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -502,6 +503,10 @@ msgstr "平均平仓价格"
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "Avg. Entry Price"
 msgstr "平均开仓价格"
+
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Avg.Price/Order Price"
+msgstr ""
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
@@ -2971,6 +2976,11 @@ msgstr "历史委托"
 msgid "Order Rejected"
 msgstr "订单被拒绝"
 
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Order size must be greater than the minimum required"
+msgstr ""
+
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderExpired(OrderId)"
@@ -3237,10 +3247,6 @@ msgstr "价格"
 #: src/pages/Earn/components/Trade/PriceImpact.tsx
 msgid "Price Impact"
 msgstr "价格影响"
-
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "Price/Price"
-msgstr "价格/价格"
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "PriceDeviationBelowMinimum()"
@@ -5115,4 +5121,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
