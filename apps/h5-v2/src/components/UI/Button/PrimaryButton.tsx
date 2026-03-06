@@ -1,5 +1,6 @@
 import { Button, CircularProgress } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
+import loadingIcon from '@/assets/icon/loading.svg'
 
 interface PrimaryButtonProps {
   children?: React.ReactNode
@@ -40,7 +41,7 @@ const PrimaryButton = ({
     whiteSpace: 'nowrap',
     position: 'relative',
     lineHeight: 1,
-
+    opacity: loading ? 0.6 : 1,
     '&:hover': {
       backgroundImage: simple
         ? 'none'
@@ -56,20 +57,10 @@ const PrimaryButton = ({
       sx={defaultSx}
       disabled={disabled || loading}
     >
-      <span style={{ visibility: loading ? 'hidden' : 'visible' }}>{children}</span>
-      {loading && (
-        <CircularProgress
-          size={20}
-          sx={{
-            color: 'white',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-10px',
-            marginLeft: '-10px',
-          }}
-        />
-      )}
+      <div className="flex items-center justify-center gap-[10px]">
+        {loading && <img src={loadingIcon} className="animate-spin" />}
+        <div className="text-[white]">{children}</div>
+      </div>
     </Button>
   )
 }

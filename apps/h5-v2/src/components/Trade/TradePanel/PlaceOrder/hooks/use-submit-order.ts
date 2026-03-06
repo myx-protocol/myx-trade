@@ -27,6 +27,7 @@ import { showErrorToast } from '@/config/error'
 
 export const useSubmitOrder = () => {
   const [longLoading, setLongLoading] = useState(false)
+  const [syncVipLoading, setSyncVipLoading] = useState(false)
   const [shortLoading, setShortLoading] = useState(false)
 
   const { chainId: currChainId, address } = useWalletConnection()
@@ -360,8 +361,9 @@ export const useSubmitOrder = () => {
         } else {
           setShortLoading(true)
         }
+        setSyncVipLoading(true)
         const vipResult = await checkUserVipInfo()
-
+        setSyncVipLoading(false)
         if (!vipResult) {
           return
         }
@@ -441,5 +443,6 @@ export const useSubmitOrder = () => {
     submitLongLoading: longLoading,
     submitShortLoading: shortLoading,
     submitLoading: longLoading || shortLoading,
+    submitSyncVipLoading: syncVipLoading,
   }
 }

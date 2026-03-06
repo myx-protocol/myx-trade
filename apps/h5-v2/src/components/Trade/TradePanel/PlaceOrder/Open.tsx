@@ -20,7 +20,8 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   const { longSize, shortSize, amountUnit } = useTradePanelStore()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
   const { symbolInfo } = useGlobalStore()
-  const { submitOrder, submitLongLoading, submitShortLoading } = useSubmitOrder()
+  const { submitOrder, submitLongLoading, submitShortLoading, submitSyncVipLoading } =
+    useSubmitOrder()
   const { showPlaceOrderConfirmDialog, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
 
   const displayLongSize = useMemo(() => {
@@ -64,7 +65,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
       <PrimaryButton
-        loading={submitLongLoading}
+        loading={submitLongLoading || submitSyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -77,7 +78,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
-              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
             })
             return
           }
@@ -103,9 +104,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          <p>
-            <Trans>Open Long</Trans>
-          </p>
+          {submitLongLoading ? (
+            <Trans>Confirming</Trans>
+          ) : submitSyncVipLoading ? (
+            <Trans>Update VIP</Trans>
+          ) : (
+            <p>
+              <Trans>Open Long</Trans>
+            </p>
+          )}
           {showOrderSize && parseBigNumber(longSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayLongSize}
@@ -114,7 +121,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         </div>
       </PrimaryButton>
       <DangerButton
-        loading={submitShortLoading}
+        loading={submitShortLoading || submitSyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -127,7 +134,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({
-              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
             })
             return
           }
@@ -153,9 +160,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          <p>
-            <Trans>Open Short</Trans>
-          </p>
+          {submitShortLoading ? (
+            <Trans>Confirming</Trans>
+          ) : submitSyncVipLoading ? (
+            <Trans>Update VIP</Trans>
+          ) : (
+            <p>
+              <Trans>Open Short</Trans>
+            </p>
+          )}
           {showOrderSize && parseBigNumber(shortSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayShortSize}

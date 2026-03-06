@@ -47,7 +47,7 @@ export const PlaceOrderConfirmDialog = () => {
   } = useTradePanelStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
-  const { submitOrder, submitLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading, submitSyncVipLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
@@ -610,10 +610,19 @@ export const PlaceOrderConfirmDialog = () => {
         </div>
         <div className="mt-[20px]">
           <DialogConfirmFooter
-            loading={submitLoading}
+            loading={submitLoading || submitSyncVipLoading}
             onConfirm={() => {
               submitOrder(placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT)
             }}
+            confirmText={
+              submitLoading ? (
+                <Trans>Confirming</Trans>
+              ) : submitSyncVipLoading ? (
+                <Trans>Update VIP</Trans>
+              ) : (
+                <Trans>Confirm</Trans>
+              )
+            }
             showDontShowAgain={!showPlaceOrderConfirmDialog}
             setDontShowAgain={(show) => setShowPlaceOrderConfirmDialog(show)}
           />
