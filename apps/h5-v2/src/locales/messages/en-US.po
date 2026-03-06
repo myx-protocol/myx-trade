@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-05 07:04\n"
+"PO-Revision-Date: 2026-03-06 02:33\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -907,7 +906,7 @@ msgstr ""
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "Confirming"
-msgstr "Confirming"
+msgstr ""
 
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Congratulations!"
@@ -4268,7 +4267,7 @@ msgstr ""
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "Update VIP"
-msgstr "Update VIP"
+msgstr ""
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Updated successfully"
@@ -5116,3 +5115,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+

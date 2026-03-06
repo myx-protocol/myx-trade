@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-05 07:04\n"
+"PO-Revision-Date: 2026-03-06 02:33\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -907,7 +906,7 @@ msgstr "确认代币信息"
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "Confirming"
-msgstr ""
+msgstr "确认中"
 
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Congratulations!"
@@ -4268,7 +4267,7 @@ msgstr "不可信投票"
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "Update VIP"
-msgstr ""
+msgstr "更新 VIP"
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Updated successfully"
@@ -5116,3 +5115,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+
