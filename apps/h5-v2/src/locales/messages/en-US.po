@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -53,13 +54,11 @@ msgstr ""
 msgid " Trade "
 msgstr ""
 
-#. placeholder {0}: client?.utils.formatErrorMessage(e)
 #. placeholder {0}: client?.utils.formatErrorMessage(error)
-#. placeholder {0}: client?.utils.formatErrorMessage(rs)
+#. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
+#. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
 #: src/components/Header/Menu.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
@@ -874,6 +873,7 @@ msgstr ""
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/DialogBase/index.tsx
 #: src/components/Login/CodeConfirm.tsx
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -902,6 +902,12 @@ msgstr ""
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Confirm Token Info"
 msgstr ""
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Confirming"
+msgstr "Confirming"
 
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Congratulations!"
@@ -2868,7 +2874,7 @@ msgstr "Only relayer()"
 msgid "Open"
 msgstr "Open Orders"
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open amount must be greater than 0 {0}"
@@ -4258,6 +4264,12 @@ msgstr ""
 msgid "UntrustfulVoting()"
 msgstr ""
 
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Update VIP"
+msgstr "Update VIP"
+
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Updated successfully"
 msgstr ""
@@ -5104,4 +5116,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
