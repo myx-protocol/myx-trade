@@ -47,6 +47,7 @@ import MarketDelisted from './set/MarketDelisted.tsx'
 import CaretRight from './set/CaretRight.tsx'
 import Selected from './set/Selected.tsx'
 import Warning from './set/Warning'
+import BigWaningLine from '@/components/Icon/set/BigWaningLine.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -116,6 +117,7 @@ export {
   CaretRight,
   Selected,
   Warning,
+  BigWaningLine,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
