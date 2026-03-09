@@ -10,9 +10,28 @@ import dayjs from 'dayjs'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
+import { Warning } from '@/components/Icon'
+import { PoolSecurityState } from '@/request/lp/type.ts'
 
+export const RiskWarning = ({ className = '' }: { className?: string }) => {
+  return (
+    <div
+      className={`bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px] ${className}`}
+    >
+      <p className="inline-block text-[12px] leading-[1.5] font-[500]">
+        <Warning size={14} className="mt-[-2px] mr-[4px] inline-block" />
+
+        <Trans>
+          Security Warning: This token carries extreme risks. For asset safety, contract markets are
+          not supported. Provide liquidity at your own risk.
+        </Trans>
+      </p>
+    </div>
+  )
+}
 export const OrderTips = () => {
-  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl, markets } = usePoolContext()
+  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
+    usePoolContext()
   const [targetDate, setTargetDate] = useState<number>()
   const [countdown] = useCountDown({
     targetDate,
@@ -48,6 +67,12 @@ export const OrderTips = () => {
   }, [baseLpDetail?.state, baseLpDetail?.poolPreTime])
 
   if (!baseLpDetail) return <></>
+  if (
+    riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN ||
+    riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
+  ) {
+    return <RiskWarning className="mt-[20px]" />
+  }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
   if (baseLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>

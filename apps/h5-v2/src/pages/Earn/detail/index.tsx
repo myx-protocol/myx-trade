@@ -10,6 +10,7 @@ import { Introduction } from '@/pages/Earn/detail/components/Introduction.tsx'
 import { Chart } from '@/pages/Earn/components/Chart.tsx'
 import { TokenInfo } from '@/pages/Earn/detail/components/TokenInfo.tsx'
 import { TradingInfo } from '@/pages/Earn/detail/components/TradingInfo.tsx'
+import { BenchWarning } from '@/pages/Earn/components/BenchWarning.tsx'
 
 const Detail = () => {
   const { chainId, poolId } = useParams()
@@ -34,7 +35,15 @@ const Detail = () => {
               <TradingInfo className={'px-[16px] py-[20px]'} />
             </>
           )}
-          {type === DetailTabType.Trade && <TradingForm className={'mt-[14px] px-[16px]'} />}
+          {type === DetailTabType.Trade && (
+            <>
+              <TradingForm className={'mt-[14px] px-[16px]'} />{' '}
+              <div className="px-[16px]">
+                {' '}
+                <BenchWarning />
+              </div>
+            </>
+          )}
           {type === DetailTabType.Info && <Introduction className={'px-[16px]'} />}
         </div>
       </div>

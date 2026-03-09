@@ -145,7 +145,7 @@ export const usePoolDetail = (poolType: PoolType) => {
     refetchInterval: 1000 * 10,
   })
 
-  const { data: levelConfig } = useQuery({
+  const { data: riskLevelConfig } = useQuery({
     queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
     enabled: !!poolId && !!chainId,
     queryFn: async () => {
@@ -154,7 +154,7 @@ export const usePoolDetail = (poolType: PoolType) => {
       try {
         const result = await getPoolRiskLevelConfig(poolId, +chainId)
 
-        return result?.data?.levelConfig
+        return result?.data
       } catch (error) {
         return null
       }
@@ -176,7 +176,7 @@ export const usePoolDetail = (poolType: PoolType) => {
     ).toString()
 
     // if fundingFeeSeconds is 1, return hourly funding rate
-    if (levelConfig?.fundingFeeSeconds === 1) {
+    if (riskLevelConfig?.levelConfig?.fundingFeeSeconds === 1) {
       return {
         nextFundingRatePercent: Big(nextFundingRatePercent).mul(3600).toString(),
       }
@@ -184,7 +184,7 @@ export const usePoolDetail = (poolType: PoolType) => {
     return {
       nextFundingRatePercent,
     }
-  }, [poolInfo?.fundingInfo, levelConfig?.fundingFeeSeconds])
+  }, [poolInfo?.fundingInfo, riskLevelConfig?.levelConfig?.fundingFeeSeconds])
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
@@ -210,7 +210,7 @@ export const usePoolDetail = (poolType: PoolType) => {
   }, [poolId, lpDetail?.globalId, subscribeToTicker])
 
   return {
-    genesisFeeRate: levelConfig?.genesisFeeRate || '',
+    genesisFeeRate: riskLevelConfig?.levelConfig?.genesisFeeRate || '',
     fundingRate,
     pool,
     poolInfo,
@@ -219,5 +219,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     refetch,
     poolInfoRefetch,
     markets,
+    riskLevelConfig,
   }
 }
