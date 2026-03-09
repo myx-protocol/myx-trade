@@ -104,11 +104,11 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       //   value.min < 1 ? value.min : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
       // max: (value: AxisExtent) =>
       //   value.max < 1 ? value.max : (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
-      min: (value: AxisExtent) => new Big(value.min)?.mul(0.999)?.toNumber(),
-      max: (value: AxisExtent) => new Big(value.max)?.mul(1.001)?.toNumber(),
-      axisLabel: {
-        formatter: (v: number) => v.toFixed(6),
-      },
+      min: (value: AxisExtent) => new Big(value?.min || 0).toNumber(),
+      max: (value: AxisExtent) => new Big(value?.max || 0).toNumber(),
+      // axisLabel: {
+      //   formatter: (v: number) => v.toFixed(6),
+      // },
     },
     tooltip: {
       trigger: 'axis',
