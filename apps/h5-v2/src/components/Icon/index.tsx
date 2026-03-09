@@ -46,6 +46,7 @@ import MarketPreDelisted from './set/MarketPreDelisted.tsx'
 import MarketDelisted from './set/MarketDelisted.tsx'
 import CaretRight from './set/CaretRight.tsx'
 import Selected from './set/Selected.tsx'
+import Warning from './set/Warning'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -114,6 +115,7 @@ export {
   MarketDelisted,
   CaretRight,
   Selected,
+  Warning,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
