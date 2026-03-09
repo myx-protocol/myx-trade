@@ -367,6 +367,13 @@ export interface MarketPoolStateDataResponse extends BaseResponse {
   data: MarketPoolStateData[]
 }
 
+export enum PoolSecurityState {
+  UNKNOWN = 0,
+  SECURITY = 1,
+  NOT_SECURITY = 2,
+  ALLOW_PRIME = 9,
+}
+
 export interface LevelConfig {
   levelId: number
   name: Rating
@@ -389,6 +396,7 @@ export interface MarketPoolRiskLevelConfig {
   level: number
   levelConfig: LevelConfig
   levelName: Rating
+  securityState: PoolSecurityState
 }
 
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {

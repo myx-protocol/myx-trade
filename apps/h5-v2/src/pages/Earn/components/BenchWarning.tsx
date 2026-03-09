@@ -11,9 +11,12 @@ import { useCountDown } from 'ahooks'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
+import { PoolSecurityState } from '@/request/lp/type.ts'
+import { RiskWarning } from '@/components/CookDetail/Order/OrderTips'
 
 export const BenchWarning = () => {
-  const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl, markets } = useContext(PoolContext)
+  const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
+    useContext(PoolContext)
   const [targetDate, setTargetDate] = useState<number>()
 
   const [countdown] = useCountDown({
@@ -51,6 +54,14 @@ export const BenchWarning = () => {
   }, [quoteLpDetail?.state, quoteLpDetail?.poolPreTime])
 
   if (!quoteLpDetail) return <></>
+
+  if (
+    riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN ||
+    riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
+  ) {
+    return <RiskWarning />
+  }
+
   if (quoteLpDetail?.state === MarketPoolState.Trench) return <></>
   if (quoteLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <>1111</>
   if (quoteLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>

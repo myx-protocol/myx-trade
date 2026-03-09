@@ -29,6 +29,8 @@ import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import { Error } from './Error.tsx'
+import { HighRiskWarningDialog } from '@/components/Dialog/HighRiskWarningDialog.tsx'
+import { PoolSecurityState } from '@/request/lp/type.ts'
 
 const inputStyle = {
   htmlInput: {
@@ -40,11 +42,13 @@ const inputStyle = {
 }
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
-  const { pool, quoteLpDetail, poolInfoRefetch } = useContext(PoolContext)
+  const { pool, quoteLpDetail, poolInfoRefetch, riskLevelConfig } = useContext(PoolContext)
   const { address: account } = useWalletConnection()
   const { slippage, setSlippage } = useContext(TradeContext)
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
+  const [warning, setWarning] = useState<boolean>(false)
+  const [ignoreWarning, setIgnoreWarning] = useState<boolean>(false)
 
   const [loading, setLoading] = useState<boolean>(false)
   // const [balance, setBalance] = useState<string>('')
@@ -83,154 +87,177 @@ export const Subscribe = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
-  const onHandleSubscribe = useCallback(async () => {
-    try {
-      setLoading(true)
-      if (!chainId || !poolId || !amount) return
-      const checked = await onAction()
-      if (!checked) return
-      await Quote.deposit({
-        chainId: +chainId,
-        poolId,
-        amount: Number(amount),
-        slippage: Number(slippage),
-      })
-      toast.success({ title: t`Successfully subscribe` })
-      setAmount('')
-      await refetch()
-      poolInfoRefetch()
-    } catch (error) {
-      showErrorToast(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
+  const onHandleSubscribe = useCallback(
+    async (skipWarning?: boolean) => {
+      try {
+        setLoading(true)
+        if (!chainId || !poolId || !amount) return
+        const checked = await onAction()
+        if (!checked) return
+        if (
+          !skipWarning &&
+          (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY ||
+            riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN)
+        ) {
+          setWarning(true)
+          return
+        }
+
+        await Quote.deposit({
+          chainId: +chainId,
+          poolId,
+          amount: Number(amount),
+          slippage: Number(slippage),
+        })
+        toast.success({ title: t`Successfully subscribe` })
+        setAmount('')
+        await refetch()
+        poolInfoRefetch()
+      } catch (error) {
+        showErrorToast(error)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, riskLevelConfig],
+  )
   return (
-    <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
-      <Box className={'relative z-[1] flex flex-col gap-[6px]'}>
-        <Card
-          title={
-            <>
-              <Trans>Subscription Amount</Trans>
-              <Box className={'flex items-center gap-[4px] text-[12px]'}>
-                <WalletLine size={14} />
-                <span>
-                  {formatNumber(balance, { showUnit: false })} {pool?.quoteSymbol}
-                </span>
+    <>
+      <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
+        <Box className={'relative z-[1] flex flex-col gap-[6px]'}>
+          <Card
+            title={
+              <>
+                <Trans>Subscription Amount</Trans>
+                <Box className={'flex items-center gap-[4px] text-[12px]'}>
+                  <WalletLine size={14} />
+                  <span>
+                    {formatNumber(balance, { showUnit: false })} {pool?.quoteSymbol}
+                  </span>
+                </Box>
+              </>
+            }
+          >
+            <Box className={'flex items-center justify-between gap-[12px]'}>
+              <NumericInputWithAdornment
+                className={'flex-1'}
+                placeholder={t`Amount`}
+                autoFocus={true}
+                value={amount}
+                onValueChange={onAmountChange}
+                slotProps={inputStyle}
+                min={0}
+              />
+              <Box className={'flex items-center gap-[12px]'}>
+                <Button variant="text" className={'!min-w-[auto] !p-[0px]'} onClick={onHandleMax}>
+                  <Trans>Max</Trans>
+                </Button>
               </Box>
-            </>
-          }
-        >
-          <Box className={'flex items-center justify-between gap-[12px]'}>
-            <NumericInputWithAdornment
-              className={'flex-1'}
-              placeholder={t`Amount`}
-              autoFocus={true}
-              value={amount}
-              onValueChange={onAmountChange}
-              slotProps={inputStyle}
-              min={0}
-            />
-            <Box className={'flex items-center gap-[12px]'}>
-              <Button variant="text" className={'!min-w-[auto] !p-[0px]'} onClick={onHandleMax}>
-                <Trans>Max</Trans>
-              </Button>
-            </Box>
-            {pool?.quoteSymbol && (
-              <Box
-                className={
-                  'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
-                }
-              >
-                <img
-                  src={getAssetIcon(pool?.quoteSymbol)}
-                  alt={'USD'}
-                  className={'aspect-square h-[20px] w-[20px] rounded-full'}
-                />
-                <span className={'leading-[1] font-[500] text-white'}>{pool?.quoteSymbol}</span>
-              </Box>
-            )}
-          </Box>
-        </Card>
-
-        <Box
-          className={
-            'bg-base border-deep absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
-          }
-        >
-          <ArrowDownLong size={22} />
-        </Box>
-
-        <Card
-          className={'border-base border-1 bg-transparent'}
-          title={
-            <>
-              <Box className={'flex items-center gap-[4px]'}>
-                <Trans>24h Estimated Earnings</Trans>
-                <Tooltips
-                  title={t`Estimated 24h yield based on pool trading activity over the last 24 hours. For reference only; returns are not guaranteed.`}
+              {pool?.quoteSymbol && (
+                <Box
+                  className={
+                    'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
+                  }
                 >
-                  <TipsFill size={14} className={'cursor-pointer'} />
-                </Tooltips>
-              </Box>
-            </>
-          }
-        >
-          <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
-            <Change className={'text-[20px] text-white'} change={quoteLpDetail?.apr}>
-              {isSafeNumber(quoteLpDetail?.apr)
-                ? decimalToPercent(quoteLpDetail?.apr as string)
-                : '--%'}
-            </Change>
+                  <img
+                    src={getAssetIcon(pool?.quoteSymbol)}
+                    alt={'USD'}
+                    className={'aspect-square h-[20px] w-[20px] rounded-full'}
+                  />
+                  <span className={'leading-[1] font-[500] text-white'}>{pool?.quoteSymbol}</span>
+                </Box>
+              )}
+            </Box>
+          </Card>
 
-            <Change
-              className={'text-secondary text-[14px]'}
-              change={(Number(amount) * Number(quoteLpDetail?.apr)).toString()}
-            >
-              {isSafeNumber(amount) && isSafeNumber(quoteLpDetail?.apr)
-                ? formatNumber(Number(amount) * Number(quoteLpDetail?.apr), {
-                    showUnit: false,
-                  })
-                : '--'}{' '}
-              {pool?.quoteSymbol}
-            </Change>
+          <Box
+            className={
+              'bg-base border-deep absolute top-[50%] left-[176px] z-[2] flex h-[48px] w-[48px] translate-y-[-50%] items-center justify-center rounded-[12px] border-[4px] text-white'
+            }
+          >
+            <ArrowDownLong size={22} />
           </Box>
-        </Card>
+
+          <Card
+            className={'border-base border-1 bg-transparent'}
+            title={
+              <>
+                <Box className={'flex items-center gap-[4px]'}>
+                  <Trans>24h Estimated Earnings</Trans>
+                  <Tooltips
+                    title={t`Estimated 24h yield based on pool trading activity over the last 24 hours. For reference only; returns are not guaranteed.`}
+                  >
+                    <TipsFill size={14} className={'cursor-pointer'} />
+                  </Tooltips>
+                </Box>
+              </>
+            }
+          >
+            <Box className={'flex items-end gap-[8px] leading-[1] font-[700]'}>
+              <Change className={'text-[20px] text-white'} change={quoteLpDetail?.apr}>
+                {isSafeNumber(quoteLpDetail?.apr)
+                  ? decimalToPercent(quoteLpDetail?.apr as string)
+                  : '--%'}
+              </Change>
+
+              <Change
+                className={'text-secondary text-[14px]'}
+                change={(Number(amount) * Number(quoteLpDetail?.apr)).toString()}
+              >
+                {isSafeNumber(amount) && isSafeNumber(quoteLpDetail?.apr)
+                  ? formatNumber(Number(amount) * Number(quoteLpDetail?.apr), {
+                      showUnit: false,
+                    })
+                  : '--'}{' '}
+                {pool?.quoteSymbol}
+              </Change>
+            </Box>
+          </Card>
+        </Box>
+        {isInsufficient && <Error className={'mt-[4px]'} />}
+        <Box className="mt-[8px] mb-[4px] w-full">
+          {quoteLpDetail?.state === MarketPoolState.PreBench ||
+          quoteLpDetail?.state === MarketPoolState.Bench ? (
+            <>
+              <DefaultButton variant="contained" className={'w-full'} disabled>
+                <Trans>暂停中</Trans>
+              </DefaultButton>
+            </>
+          ) : (
+            <ConnectButton>
+              <TradeButton
+                variant="contained"
+                className={'w-full'}
+                disabled={
+                  !amount ||
+                  isInsufficient ||
+                  pool?.state === MarketPoolState.PreBench ||
+                  pool?.state === MarketPoolState.Bench ||
+                  Number(amount) <= 0
+                }
+                loading={loading}
+                onClick={() => onHandleSubscribe(false)}
+                loadingPosition="start" // 图标显示在文字前面
+              >
+                <Trans>Subscribe</Trans>
+              </TradeButton>
+            </ConnectButton>
+          )}
+        </Box>
+        <Describe>
+          <EstRate />
+          <Fee />
+        </Describe>
       </Box>
-      {isInsufficient && <Error className={'mt-[4px]'} />}
-      <Box className="mt-[8px] mb-[4px] w-full">
-        {quoteLpDetail?.state === MarketPoolState.PreBench ||
-        quoteLpDetail?.state === MarketPoolState.Bench ? (
-          <>
-            <DefaultButton variant="contained" className={'w-full'} disabled>
-              <Trans>暂停中</Trans>
-            </DefaultButton>
-          </>
-        ) : (
-          <ConnectButton>
-            <TradeButton
-              variant="contained"
-              className={'w-full'}
-              disabled={
-                !amount ||
-                isInsufficient ||
-                pool?.state === MarketPoolState.PreBench ||
-                pool?.state === MarketPoolState.Bench ||
-                Number(amount) <= 0
-              }
-              loading={loading}
-              onClick={onHandleSubscribe}
-              loadingPosition="start" // 图标显示在文字前面
-            >
-              <Trans>Subscribe</Trans>
-            </TradeButton>
-          </ConnectButton>
-        )}
-      </Box>
-      <Describe>
-        <EstRate />
-        <Fee />
-      </Describe>
-    </Box>
+      <HighRiskWarningDialog
+        open={warning}
+        onClose={() => setWarning(false)}
+        onConfirm={async () => {
+          setWarning(false)
+          setIgnoreWarning(true)
+          await onHandleSubscribe(true) // 跳过 warning
+        }}
+      />
+    </>
   )
 }
