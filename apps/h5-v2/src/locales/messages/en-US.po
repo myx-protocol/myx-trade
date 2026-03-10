@@ -3349,13 +3349,19 @@ msgstr ""
 msgid "Search name or paste address"
 msgstr ""
 
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Security Notice:"
+msgstr "Security Notice:"
+
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
 msgstr "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-msgid "Security Warning: This token carries extreme risks. For asset safety, contract markets are not supported. Provide liquidity at your own risk."
-msgstr "Security Warning: This token carries extreme risks. For asset safety, contract markets are not supported. Provide liquidity at your own risk."
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Security Warning:"
+msgstr "Security Warning:"
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
@@ -3713,9 +3719,19 @@ msgstr ""
 msgid "The refund rate you can earn after your friend trades."
 msgstr ""
 
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
+msgstr "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
 msgstr ""
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
+msgstr "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
 
 #. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
