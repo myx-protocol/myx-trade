@@ -4,29 +4,58 @@ import { Trans } from '@lingui/react/macro'
 import { MarketPoolState } from '@myx-trade/sdk'
 import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { useCountDown } from 'ahooks'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
-import { MYX_DELISTING_RULES_LINK } from '@/config'
-import { Warning } from '@/components/Icon'
+import { MYX_CONTACT_SUPPORT, MYX_DELISTING_RULES_LINK } from '@/config/link'
+// import { Warning } from '@/components/Icon'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+
+export const LPWarning = ({
+  className = '',
+  children,
+}: {
+  className?: string
+  children: ReactNode
+}) => {
+  return (
+    <div
+      className={`bg-warning-10 text-regular flex items-start rounded-[8px] border-[1px] border-[#202129] p-[12px] ${className}`}
+    >
+      <p className="inline-block text-[12px] leading-[1.5] font-[500]">
+        {/*<Warning size={14} className="mr-[4px] inline-block" />*/}
+        ⚠️ {children}
+      </p>
+    </div>
+  )
+}
 
 export const RiskWarning = ({ className = '' }: { className?: string }) => {
   return (
-    <div
-      className={`bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px] ${className}`}
-    >
-      <p className="inline-block text-[12px] leading-[1.5] font-[500]">
-        <Warning size={14} className="mt-[-2px] mr-[4px] inline-block" />
-
-        <Trans>
-          Security Warning: This token carries extreme risks. For asset safety, contract markets are
-          not supported. Provide liquidity at your own risk.
-        </Trans>
-      </p>
-    </div>
+    <LPWarning className={className}>
+      <Trans>Security Warning:</Trans>{' '}
+      <Trans>
+        This token carries extreme risks. For asset safety, contract trading and liquidity provision
+        are not supported.{' '}
+        <a href={MYX_CONTACT_SUPPORT} className={'text-green'} target="_blank">
+          Contact support
+        </a>{' '}
+        for assistance.
+      </Trans>
+    </LPWarning>
+  )
+}
+export const SecurityWarning = ({ className = '' }: { className?: string }) => {
+  return (
+    <LPWarning className={className}>
+      <Trans>Security Notice:</Trans>{' '}
+      <Trans>
+        The security assessment for this token is incomplete. Providing liquidity or trading may
+        carry unknown risks. Proceed with caution at your own risk.
+      </Trans>
+    </LPWarning>
   )
 }
 export const OrderTips = () => {
@@ -67,10 +96,10 @@ export const OrderTips = () => {
   }, [baseLpDetail?.state, baseLpDetail?.poolPreTime])
 
   if (!baseLpDetail) return <></>
-  if (
-    riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN ||
-    riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
-  ) {
+  if (riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN) {
+    return <SecurityWarning className="mt-[20px]" />
+  }
+  if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) {
     return <RiskWarning className="mt-[20px]" />
   }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
@@ -116,7 +145,7 @@ export const OrderTips = () => {
             {baseLpDetail?.mBaseQuoteSymbol} market will be delisted in{' '}
             {cutDownFormat(dayjs.duration(countdown))}. After delisting, buys will be suspended.
             Your ability to sell will not be affected.{' '}
-            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK}>
+            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK} target="_blank">
               {' '}
               View Delisting Rules
             </a>
