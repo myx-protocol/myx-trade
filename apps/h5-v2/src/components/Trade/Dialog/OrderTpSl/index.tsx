@@ -15,7 +15,6 @@ import { ethers } from 'ethers'
 import { Direction } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
-import { t } from '@lingui/core/macro'
 import { showErrorToast } from '@/config/error'
 
 export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any }) => {
