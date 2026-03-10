@@ -22,6 +22,7 @@ import {
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
 import Big from 'big.js'
 import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
+import type { ChainId } from '@/config/chain.ts'
 type BaseQuotePoolInfo = {
   poolToken: string
   poolTokenSupply: bigint
@@ -54,11 +55,38 @@ function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: Base
   }
 }
 
+export const usePoolRiskConfig = ({
+  chainId,
+  poolId,
+}: {
+  chainId?: ChainId | string
+  poolId?: string
+}) => {
+  const { data: riskLevelConfig } = useQuery({
+    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
+    enabled: !!poolId && !!chainId,
+    queryFn: async () => {
+      // console.log('getMarketPoolRiskRate')
+      if (!poolId || !chainId) return null
+      try {
+        const result = await getPoolRiskLevelConfig(poolId, +chainId)
+
+        return result?.data
+      } catch (error) {
+        return null
+      }
+    },
+    refetchInterval: 1000 * 60,
+  })
+  return { riskLevelConfig }
+}
+
 export const usePoolDetail = (poolType: PoolType) => {
   const { chainId, poolId } = useParams()
   const { client, markets } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
+  const { riskLevelConfig } = usePoolRiskConfig({ chainId, poolId })
 
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
@@ -145,22 +173,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     refetchInterval: 1000 * 10,
   })
 
-  const { data: levelConfig } = useQuery({
-    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
-    enabled: !!poolId && !!chainId,
-    queryFn: async () => {
-      // console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return null
-      try {
-        const result = await getPoolRiskLevelConfig(poolId, +chainId)
-
-        return result?.data?.levelConfig
-      } catch (error) {
-        return null
-      }
-    },
-  })
-
   useEffect(() => {
     if (poolInfo?.price !== prevPriceRef.current) {
       setMode(Number(poolInfo?.price) >= Number(prevPriceRef.current || '') ? Mode.Rise : Mode.Fall)
@@ -176,7 +188,7 @@ export const usePoolDetail = (poolType: PoolType) => {
     ).toString()
 
     // if fundingFeeSeconds is 1, return hourly funding rate
-    if (levelConfig?.fundingFeeSeconds === 1) {
+    if (riskLevelConfig?.levelConfig?.fundingFeeSeconds === 1) {
       return {
         nextFundingRatePercent: Big(nextFundingRatePercent).mul(3600).toString(),
       }
@@ -184,7 +196,7 @@ export const usePoolDetail = (poolType: PoolType) => {
     return {
       nextFundingRatePercent,
     }
-  }, [poolInfo?.fundingInfo, levelConfig?.fundingFeeSeconds])
+  }, [poolInfo?.fundingInfo, riskLevelConfig?.levelConfig?.fundingFeeSeconds])
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
@@ -210,7 +222,7 @@ export const usePoolDetail = (poolType: PoolType) => {
   }, [poolId, lpDetail?.globalId, subscribeToTicker])
 
   return {
-    genesisFeeRate: levelConfig?.genesisFeeRate || '',
+    genesisFeeRate: riskLevelConfig?.levelConfig?.genesisFeeRate || '',
     fundingRate,
     pool,
     poolInfo,
@@ -219,5 +231,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     refetch,
     poolInfoRefetch,
     markets,
+    riskLevelConfig,
   }
 }

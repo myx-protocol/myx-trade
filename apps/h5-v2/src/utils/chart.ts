@@ -15,6 +15,7 @@ import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { formatNumber } from '@/utils/number.ts'
+import Big from 'big.js'
 
 type AxisExtent = { min: number; max: number }
 echarts.use([
@@ -99,10 +100,15 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       // boundaryGap: [0, '100%'],
       show: false,
       splitLine: { show: false },
-      min: (value: AxisExtent) =>
-        value.min < 1 ? value.min * 0.9 : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
-      max: (value: AxisExtent) =>
-        value.max < 1 ? value.max * 1.1 : (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      // min: (value: AxisExtent) =>
+      //   value.min < 1 ? value.min : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
+      // max: (value: AxisExtent) =>
+      //   value.max < 1 ? value.max : (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      min: (value: AxisExtent) => new Big(value?.min || 0).toNumber(),
+      max: (value: AxisExtent) => new Big(value?.max || 0).toNumber(),
+      // axisLabel: {
+      //   formatter: (v: number) => v.toFixed(6),
+      // },
     },
     tooltip: {
       trigger: 'axis',

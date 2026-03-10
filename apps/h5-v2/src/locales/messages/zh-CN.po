@@ -860,6 +860,7 @@ msgid "Community"
 msgstr "社区"
 
 #: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Dialog/HighRiskWarningDialog.tsx
 #: src/components/DialogBase/index.tsx
 #: src/components/Login/CodeConfirm.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -1680,6 +1681,10 @@ msgstr "隐藏其他"
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
 msgstr "隐藏其他交易对"
+
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "High-Risk Asset Warning"
+msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Hold"
@@ -2857,6 +2862,10 @@ msgstr "请输入兑换码"
 msgid "Please enter the Referral ID"
 msgstr "请输入邀请码"
 
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "Please note: "
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -3340,6 +3349,14 @@ msgstr "搜索历史"
 msgid "Search name or paste address"
 msgstr "搜索名称或粘贴地址"
 
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
+msgstr ""
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+msgid "Security Warning: This token carries extreme risks. For asset safety, contract markets are not supported. Provide liquidity at your own risk."
+msgstr ""
+
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
 msgstr "选择一个代币"
@@ -3719,6 +3736,10 @@ msgstr "时间"
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
 msgstr "至"
+
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "To ensure a secure trading environment, the platform strictly prohibits and rejects the listing of such high-risk tokens on the contract market."
+msgstr ""
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
