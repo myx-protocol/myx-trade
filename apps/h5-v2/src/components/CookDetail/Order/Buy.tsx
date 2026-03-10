@@ -44,10 +44,7 @@ export const Buy = () => {
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
-
   const [loading, setLoading] = useState<boolean>(false)
-  const [warning, setWarning] = useState<boolean>(false)
-  const [ignoreWarning, setIgnoreWarning] = useState<boolean>(false)
   const rate = useExchangeRate()
 
   const { data: balance, refetch } = useQuery({
@@ -84,45 +81,35 @@ export const Buy = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
-  const onHandleBuy = useCallback(
-    async (skipWarning?: boolean) => {
-      try {
-        if (!chainId || !poolId || !amount) return
+  const onHandleBuy = useCallback(async () => {
+    try {
+      if (!chainId || !poolId || !amount) return
 
-        setLoading(true)
+      setLoading(true)
 
-        const checked = await onAction()
-        if (!checked) return
+      const checked = await onAction()
+      if (!checked) return
 
-        if (
-          !skipWarning &&
-          (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY ||
-            riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN)
-        ) {
-          setWarning(true)
-          return
-        }
+      if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
-        await Base.deposit({
-          chainId: +chainId,
-          poolId,
-          amount: Number(amount),
-          slippage: Number(slippage),
-        })
+      await Base.deposit({
+        chainId: +chainId,
+        poolId,
+        amount: Number(amount),
+        slippage: Number(slippage),
+      })
 
-        toast.success({ title: t`Successfully buy` })
+      toast.success({ title: t`Successfully buy` })
 
-        setAmount('')
-        await refetch()
-        poolInfoRefetch()
-      } catch (e) {
-        showErrorToast(e)
-      } finally {
-        setLoading(false)
-      }
-    },
-    [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch, riskLevelConfig],
-  )
+      setAmount('')
+      await refetch()
+      poolInfoRefetch()
+    } catch (e) {
+      showErrorToast(e)
+    } finally {
+      setLoading(false)
+    }
+  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch, riskLevelConfig])
   return (
     <>
       <Box className="mt-[12px]">
@@ -231,9 +218,14 @@ export const Buy = () => {
               <TradeButton
                 variant="contained"
                 className={'w-full'}
-                disabled={!amount || isInsufficient || Number(amount) <= 0}
+                disabled={
+                  !amount ||
+                  isInsufficient ||
+                  Number(amount) <= 0 ||
+                  riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
+                }
                 loading={loading}
-                onClick={() => onHandleBuy(false)}
+                onClick={onHandleBuy}
               >
                 <Trans>Buy</Trans>
               </TradeButton>
@@ -241,15 +233,6 @@ export const Buy = () => {
           )}
         </Box>
       </Box>
-      <HighRiskWarningDialog
-        open={warning}
-        onClose={() => setWarning(false)}
-        onConfirm={async () => {
-          setWarning(false)
-          setIgnoreWarning(true)
-          await onHandleBuy(true) // 跳过 warning
-        }}
-      />
     </>
   )
 }

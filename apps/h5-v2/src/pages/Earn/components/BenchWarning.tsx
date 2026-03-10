@@ -12,7 +12,7 @@ import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
 import { PoolSecurityState } from '@/request/lp/type.ts'
-import { RiskWarning } from '@/components/CookDetail/Order/OrderTips'
+import { RiskWarning, SecurityWarning } from '@/components/CookDetail/Order/OrderTips'
 
 export const BenchWarning = () => {
   const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
@@ -55,11 +55,11 @@ export const BenchWarning = () => {
 
   if (!quoteLpDetail) return <></>
 
-  if (
-    riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN ||
-    riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
-  ) {
-    return <RiskWarning />
+  if (riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN) {
+    return <SecurityWarning className={'mt-[20px]'} />
+  }
+  if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) {
+    return <RiskWarning className={'mt-[20px]'} />
   }
 
   if (quoteLpDetail?.state === MarketPoolState.Trench) return <></>
@@ -69,7 +69,7 @@ export const BenchWarning = () => {
   return (
     <Box
       className={
-        'bg-warning-10 text-regular flex gap-[6px] rounded-[8px] px-[16px] py-[12px] text-[12px] leading-[1.5] font-[500]'
+        'bg-warning-10 text-regular mt-[20px] flex gap-[6px] rounded-[8px] px-[16px] py-[12px] text-[12px] leading-[1.5] font-[500]'
       }
     >
       <Box className={'mt-[2px]'}>

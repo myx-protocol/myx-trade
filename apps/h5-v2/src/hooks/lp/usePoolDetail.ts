@@ -22,6 +22,7 @@ import {
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
 import Big from 'big.js'
 import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
+import type { ChainId } from '@/config/chain.ts'
 type BaseQuotePoolInfo = {
   poolToken: string
   poolTokenSupply: bigint
@@ -54,11 +55,38 @@ function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: Base
   }
 }
 
+export const usePoolRiskConfig = ({
+  chainId,
+  poolId,
+}: {
+  chainId?: ChainId | string
+  poolId?: string
+}) => {
+  const { data: riskLevelConfig } = useQuery({
+    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
+    enabled: !!poolId && !!chainId,
+    queryFn: async () => {
+      // console.log('getMarketPoolRiskRate')
+      if (!poolId || !chainId) return null
+      try {
+        const result = await getPoolRiskLevelConfig(poolId, +chainId)
+
+        return result?.data
+      } catch (error) {
+        return null
+      }
+    },
+    refetchInterval: 1000 * 60,
+  })
+  return { riskLevelConfig }
+}
+
 export const usePoolDetail = (poolType: PoolType) => {
   const { chainId, poolId } = useParams()
   const { client, markets } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
+  const { riskLevelConfig } = usePoolRiskConfig({ chainId, poolId })
 
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
@@ -143,22 +171,6 @@ export const usePoolDetail = (poolType: PoolType) => {
     },
     placeholderData: (prev) => prev,
     refetchInterval: 1000 * 10,
-  })
-
-  const { data: riskLevelConfig } = useQuery({
-    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
-    enabled: !!poolId && !!chainId,
-    queryFn: async () => {
-      // console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return null
-      try {
-        const result = await getPoolRiskLevelConfig(poolId, +chainId)
-
-        return result?.data
-      } catch (error) {
-        return null
-      }
-    },
   })
 
   useEffect(() => {

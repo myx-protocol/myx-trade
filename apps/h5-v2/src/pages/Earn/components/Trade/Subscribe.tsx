@@ -29,7 +29,6 @@ import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import { Error } from './Error.tsx'
-import { HighRiskWarningDialog } from '@/components/Dialog/HighRiskWarningDialog.tsx'
 import { PoolSecurityState } from '@/request/lp/type.ts'
 
 const inputStyle = {
@@ -47,8 +46,6 @@ export const Subscribe = () => {
   const { slippage, setSlippage } = useContext(TradeContext)
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
-  const [warning, setWarning] = useState<boolean>(false)
-  const [ignoreWarning, setIgnoreWarning] = useState<boolean>(false)
 
   const [loading, setLoading] = useState<boolean>(false)
   // const [balance, setBalance] = useState<string>('')
@@ -87,40 +84,31 @@ export const Subscribe = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
-  const onHandleSubscribe = useCallback(
-    async (skipWarning?: boolean) => {
-      try {
-        setLoading(true)
-        if (!chainId || !poolId || !amount) return
-        const checked = await onAction()
-        if (!checked) return
-        if (
-          !skipWarning &&
-          (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY ||
-            riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN)
-        ) {
-          setWarning(true)
-          return
-        }
+  const onHandleSubscribe = useCallback(async () => {
+    try {
+      setLoading(true)
+      if (!chainId || !poolId || !amount) return
+      const checked = await onAction()
+      if (!checked) return
 
-        await Quote.deposit({
-          chainId: +chainId,
-          poolId,
-          amount: Number(amount),
-          slippage: Number(slippage),
-        })
-        toast.success({ title: t`Successfully subscribe` })
-        setAmount('')
-        await refetch()
-        poolInfoRefetch()
-      } catch (error) {
-        showErrorToast(error)
-      } finally {
-        setLoading(false)
-      }
-    },
-    [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, riskLevelConfig],
-  )
+      if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
+
+      await Quote.deposit({
+        chainId: +chainId,
+        poolId,
+        amount: Number(amount),
+        slippage: Number(slippage),
+      })
+      toast.success({ title: t`Successfully subscribe` })
+      setAmount('')
+      await refetch()
+      poolInfoRefetch()
+    } catch (error) {
+      showErrorToast(error)
+    } finally {
+      setLoading(false)
+    }
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, riskLevelConfig])
   return (
     <>
       <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
@@ -233,10 +221,11 @@ export const Subscribe = () => {
                   isInsufficient ||
                   pool?.state === MarketPoolState.PreBench ||
                   pool?.state === MarketPoolState.Bench ||
-                  Number(amount) <= 0
+                  Number(amount) <= 0 ||
+                  riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
                 }
                 loading={loading}
-                onClick={() => onHandleSubscribe(false)}
+                onClick={onHandleSubscribe}
                 loadingPosition="start" // 图标显示在文字前面
               >
                 <Trans>Subscribe</Trans>
@@ -249,15 +238,6 @@ export const Subscribe = () => {
           <Fee />
         </Describe>
       </Box>
-      <HighRiskWarningDialog
-        open={warning}
-        onClose={() => setWarning(false)}
-        onConfirm={async () => {
-          setWarning(false)
-          setIgnoreWarning(true)
-          await onHandleSubscribe(true) // 跳过 warning
-        }}
-      />
     </>
   )
 }
