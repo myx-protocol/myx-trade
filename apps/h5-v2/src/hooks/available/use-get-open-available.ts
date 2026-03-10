@@ -10,10 +10,13 @@ import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 import useGlobalStore from '@/store/globalStore'
 import { useGetPositionList } from '../position/use-get-position-list'
-import { Direction } from '@myx-trade/sdk'
+import { Direction, OrderType } from '@myx-trade/sdk'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import useSWR from 'swr'
 import { useGetNetworkFee } from '../calculate/use-get-liq-price'
+import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { ethers } from 'ethers'
 
 export const useGetOpenAvailable = () => {
   const { symbolInfo, poolConfig, shareCollateral } = useGlobalStore()
@@ -21,7 +24,7 @@ export const useGetOpenAvailable = () => {
   const leverage = useLeverage(symbolInfo?.poolId)
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price.toString() ?? '0'
-  const { autoMarginMode, collateralAmount, price } = useTradePanelStore()
+  const { autoMarginMode, collateralAmount, price, orderType } = useTradePanelStore()
   const fundingFeeRate = useGetUserTradingFeeRate(
     symbolInfo?.chainId ?? 0,
     poolConfig?.levelConfig?.assetClass ?? 0,
@@ -143,13 +146,13 @@ export const useGetOpenAvailable = () => {
   // 合并所有计算逻辑到一个 useMemo 中，减少中间状态
   return useMemo(() => {
     const safePrice = !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
-    // const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
-    // const openSlippage =
-    //   getSlippage({
-    //     chainId: symbolInfo?.chainId ?? 0,
-    //     poolId: symbolInfo?.poolId ?? '',
-    //     type: SlippageTypeEnum.OPEN,
-    //   }) ?? 1
+    const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
+    const openSlippage =
+      getSlippage({
+        chainId: symbolInfo?.chainId ?? 0,
+        poolId: symbolInfo?.poolId ?? '',
+        type: SlippageTypeEnum.OPEN,
+      }) ?? 1
 
     // 2. 计算可用保证金总值（使用缓存的稳定值）
     const availableMargin = stableAccountAssets?.availableMargin?.toString() ?? '0'
@@ -159,22 +162,22 @@ export const useGetOpenAvailable = () => {
       : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
 
     // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
-    // const ratio = openSlippage / (slipValue ?? 1)
-    // const maxOpenByConfigRatio = ratio > 0 ? Math.log(ratio) : 0
-    // const configTotalRatio = parseBigNumber(1).plus(maxOpenByConfigRatio)
+    const ratio = openSlippage / (slipValue ?? 1)
+    const maxOpenByConfigRatio = ratio > 0 ? Math.log(ratio) : 0
+    const configTotalRatio = parseBigNumber(1).plus(maxOpenByConfigRatio)
 
-    // const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
-    // const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
+    const windowCapsStr = stableLiquidityInfo?.windowCaps ?? '0'
+    const openInterestStr = stableLiquidityInfo?.openInterest ?? '0'
 
-    // const windowCaps = parseBigNumber(
-    //   ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
-    // )
-    // const openInterest = parseBigNumber(
-    //   ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
-    // )
+    const windowCaps = parseBigNumber(
+      ethers.formatUnits(windowCapsStr, WINDOW_CAPS_DECIMALS).toString(),
+    )
+    const openInterest = parseBigNumber(
+      ethers.formatUnits(openInterestStr, symbolInfo?.baseDecimals ?? 18).toString(),
+    )
 
-    // const maxOpenLongByConfigRatio = windowCaps.mul(configTotalRatio).minus(openInterest).toString()
-    // const maxOpenShortByConfigRatio = windowCaps.mul(configTotalRatio).plus(openInterest).toString()
+    const maxOpenLongByConfigRatio = windowCaps.mul(configTotalRatio).minus(openInterest).toString()
+    const maxOpenShortByConfigRatio = windowCaps.mul(configTotalRatio).plus(openInterest).toString()
 
     // 4. 获取池子流动性限额（使用缓存的值）
     const maxOpenLongQuoteAmountByLiquidity =
@@ -190,14 +193,14 @@ export const useGetOpenAvailable = () => {
     const longLimit1 = collateralValue.plus(
       shareCollateral ? parseBigNumber(longPositionAvailableMargin) : 0,
     ) // 用户可用保证金
-    // const longLimit2 = parseBigNumber(maxOpenLongByConfigRatio) // 滑点配置限额
+    const longLimit2 = parseBigNumber(maxOpenLongByConfigRatio) // 滑点配置限额
     const longLimit3 = parseBigNumber(maxOpenLongQuoteAmountByLiquidity) // 池子流动性限额
 
     // 取最小值
     let longQuoteAmount = longLimit1.toString()
-    // if (longLimit2.lt(longLimit1)) {
-    //   longQuoteAmount = longLimit2.toString()
-    // }
+    if (longLimit2.lt(longLimit1) && orderType === OrderType.MARKET) {
+      longQuoteAmount = longLimit2.toString()
+    }
     if (longLimit3.lt(parseBigNumber(longQuoteAmount))) {
       longQuoteAmount = longLimit3.toString()
     }
@@ -220,14 +223,14 @@ export const useGetOpenAvailable = () => {
     const shortLimit1 = collateralValue.plus(
       shareCollateral ? parseBigNumber(shortPositionAvailableMargin) : 0,
     ) // 用户可用保证金
-    // const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
+    const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
     const shortLimit3 = parseBigNumber(maxOpenShortQuoteAmountByLiquidity) // 池子流动性限额
 
     // 取最小值
     let shortQuoteAmount = shortLimit1.toString()
-    // if (shortLimit2.lt(shortLimit1)) {
-    //   shortQuoteAmount = shortLimit2.toString()
-    // }
+    if (shortLimit2.lt(shortLimit1) && orderType === OrderType.MARKET) {
+      shortQuoteAmount = shortLimit2.toString()
+    }
     if (shortLimit3.lt(parseBigNumber(shortQuoteAmount))) {
       shortQuoteAmount = shortLimit3.toString()
     }
