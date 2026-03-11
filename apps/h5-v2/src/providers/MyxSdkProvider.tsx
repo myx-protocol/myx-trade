@@ -8,6 +8,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { WalletClient } from 'viem'
+import { isBetaMode } from '@/utils/env'
 
 interface MyxSdkContextValue {
   client?: Record<number, MyxClient>
@@ -142,9 +143,11 @@ export const useMyxSdkClient = (chainId?: number) => {
 }
 
 const brokerAddressMap: Record<number, string> = {
-  [ChainId.ARB_TESTNET]: '0x71930d2D1d59db4e79b4b02de0163D93f9204644',
-  [ChainId.LINEA_SEPOLIA]: '0xa81AE4136dA521b99148A3487316Afe17bc8e6aa',
-  [ChainId.BSC_TESTNET]: '0xcadA07b3D93e1D61C06A2c3e8323669c890C12A0',
+  [ChainId.ARB_TESTNET]: isBetaMode()
+    ? '0x4A3054177DBdC01BfcA007FB45d9A9803eBc2eA4'
+    : '0xfDd1cEAB1B3E7EC5B19fb46A30E1692a63Ee532E',
+  [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0xba783058A7F38d5865cCeFef8eb3400aA6B26418',
+  [ChainId.BSC_TESTNET]: isBetaMode() ? '0x144E5067E690635b2cbeE10D96f431D143739f48' : '',
   [ChainId.BSC_MAINNET]: '0x100121F45b81A41bB81712ad6e60e14c37bd9D93',
 }
 

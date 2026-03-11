@@ -50,6 +50,7 @@ export enum OrderStatusEnum {
   Cancelled = 1,
   Expired = 2,
   Successful = 9,
+  PartialFilled = 8,
 }
 
 export enum ExecTypeEnum {
@@ -69,7 +70,7 @@ export interface HistoryOrderItem {
   poolId: string; // poolId
   orderId: number; // orderId
   txTime: number; // txTime
-  txHash: number; // txHash
+  txHash: string; // txHash
   orderType: OrderTypeEnum; // orderType
   operation: OperationEnum; // operation
   triggerType: TriggerTypeEnum; // triggerType

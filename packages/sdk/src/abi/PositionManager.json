@@ -469,6 +469,10 @@
       {
         "type": "bool",
         "name": "isLiquidation"
+      },
+      {
+        "type": "address",
+        "name": "owner"
       }
     ],
     "outputs": [
@@ -494,11 +498,11 @@
         "components": [
           {
             "type": "bytes32",
-            "name": "positionId"
+            "name": "poolId"
           },
           {
-            "type": "uint8",
-            "name": "operation"
+            "type": "bytes32",
+            "name": "positionId"
           },
           {
             "type": "uint256",
@@ -519,6 +523,10 @@
           {
             "type": "address",
             "name": "keeper"
+          },
+          {
+            "type": "bool",
+            "name": "isMatchExecution"
           }
         ]
       }
@@ -954,10 +962,6 @@
           },
           {
             "type": "address",
-            "name": "settler"
-          },
-          {
-            "type": "address",
             "name": "tradingVault"
           }
         ]
@@ -1169,6 +1173,66 @@
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateUserPosition",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "bytes32",
+            "name": "positionId"
+          },
+          {
+            "type": "uint256",
+            "name": "executeSize"
+          },
+          {
+            "type": "uint256",
+            "name": "executePrice"
+          },
+          {
+            "type": "uint256",
+            "name": "orderId"
+          },
+          {
+            "type": "address",
+            "name": "broker"
+          },
+          {
+            "type": "address",
+            "name": "keeper"
+          },
+          {
+            "type": "bool",
+            "name": "isMatchExecution"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "tradingFee"
+      },
+      {
+        "type": "int256",
+        "name": "fundingFee"
+      },
+      {
+        "type": "int256",
+        "name": "realizedPnl"
+      }
+    ]
   },
   {
     "type": "function",

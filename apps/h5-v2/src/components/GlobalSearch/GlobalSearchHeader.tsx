@@ -241,48 +241,6 @@ export const GlobalSearchHeader = ({ onClose }: GlobalSearchHeaderProps) => {
       </div>
       {/* right */}
       <div className="flex flex-shrink-0 items-center">
-        {/* chain select */}
-        {/* <HoverCard
-          className="bg-transparent!"
-          trigger={
-            <div className="flex cursor-pointer items-center gap-[4px] select-none">
-              <CoinIcon
-                size={17}
-                icon={
-                  chainIdSelected ? (getChainInfo(chainIdSelected).logoUrl ?? '') : ChainSwitchIcon
-                }
-              />
-              <ArrowDown size={12} color="#fff" />
-            </div>
-          }
-          open={chainSelectOpen}
-          onOpenChange={setChainSelectOpen}
-        >
-          <div className="rounded-[8px] border-[1px] border-[#31333D] bg-[#202129] px-[8px] py-[4px]">
-            {CHAIN_LIST.map((chainInfo) => (
-              <div
-                key={chainInfo.chainId}
-                className={clsx(
-                  'flex cursor-pointer items-center gap-[12px] rounded-[6px] px-[12px] py-[9px] select-none hover:bg-[#18191F]',
-                  {
-                    'bg-[#18191F]': chainIdSelected === chainInfo.chainId,
-                  },
-                )}
-                onClick={() => {
-                  handleChainIdSelect(chainInfo.chainId)
-                }}
-              >
-                <div className="h-[24px] w-[24px] overflow-hidden rounded-[9999px]">
-                  <CoinIcon size={24} icon={chainInfo.logoUrl ?? ''} />
-                </div>
-                <div className="text-[14px] font-medium text-white">{chainInfo.label}</div>
-              </div>
-            ))}
-          </div>
-        </HoverCard> */}
-
-        {/* split */}
-        {/* <div className="mx-[20px] h-[17px] w-[1px] bg-[#31333D] select-none"></div> */}
         {/* close */}
         <div
           className="flex h-[16px] w-[16px] cursor-pointer items-center justify-center text-[#848E9C] select-none"

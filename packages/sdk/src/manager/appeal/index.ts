@@ -28,14 +28,20 @@ export class Appeal extends BaseMyxClient {
     super(client);
   }
 
-  private async getDisputeCourtContract() {
+  private async getDisputeCourtContract(auth: boolean = true) {
     const contract = await getDisputeCourtContract(this.config.chainId);
-    return this.connectContract(contract);
+    if (auth) {
+      return this.connectContract(contract);
+    }
+    return contract;
   }
 
-  private async getReimbursementContract() {
+  private async getReimbursementContract(auth: boolean = true) {
     const contract = await getReimbursementContract(this.config.chainId);
-    return this.connectContract(contract);
+    if (auth) {
+      return this.connectContract(contract);
+    }
+    return contract;
   }
 
   /**
@@ -188,8 +194,8 @@ export class Appeal extends BaseMyxClient {
    */
   async claimReimbursement(
     caseId: number,
-    baseAmount: number,
-    quoteAmount: number,
+    baseAmount: string,
+    quoteAmount: string,
     merkleProof: BytesLike[]
   ) {
     const contract = await this.getReimbursementContract();
@@ -219,7 +225,7 @@ export class Appeal extends BaseMyxClient {
    * get dispute configuration
    */
   async getDisputeConfiguration() {
-    const contract = await this.getDisputeCourtContract();
+    const contract = await this.getDisputeCourtContract(false);
     const configuration = await contract.getDisputeConfiguration();
     return configuration;
   }
@@ -373,5 +379,14 @@ export class Appeal extends BaseMyxClient {
 
   async getWarmholeSign(params: GetWarmholeSignParams) {
     return this.client.api.getWarmholeSign(params)
+  }
+  async getDisputeTotalCount() {
+    return this.client.api.getDisputeTotalCount();
+  }
+  async getAppealTotalCount() {
+    return this.client.api.getAppealTotalCount();
+  }
+  async getReimbursementTotalCount() {
+    return this.client.api.getReimbursementTotalCount();
   }
 }

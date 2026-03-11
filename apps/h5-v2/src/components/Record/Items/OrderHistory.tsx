@@ -15,6 +15,8 @@ import { getChainInfo } from '@/config/chainInfo'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { OrderStatus } from '@/pages/Trade/components/OrderStatus'
+import { truncateString } from '@/utils/string'
+import { Copy } from '@/components/Copy'
 
 export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
   const symbolInfo = usePoolSymbol({
@@ -81,7 +83,9 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
           left={<Trans>Price/Price</Trans>}
           right={
             <div className="text-[13px] font-medium">
-              <span className="text-white">{formatNumber(item.price, { showUnit: false })}</span>
+              <span className="text-white">
+                {formatNumber(item.lastPrice, { showUnit: false })}
+              </span>
               <span className="px-[2px]">/</span>
               <span>{formatNumber(item.price, { showUnit: false })}</span>
             </div>
@@ -97,6 +101,15 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
                 })}
               </span>
             </div>
+          }
+        />
+        <FlexRowLayout
+          left={<Trans>Hash</Trans>}
+          right={
+            <p className="flex items-center gap-[4px] font-medium text-white">
+              <span>{truncateString(item.txHash || '', 10, 4)}</span>
+              <Copy content={item.txHash || ''} />
+            </p>
           }
         />
       </div>

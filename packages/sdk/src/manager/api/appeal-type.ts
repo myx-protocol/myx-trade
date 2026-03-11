@@ -15,11 +15,13 @@ export enum AppealReconsiderationType {
   InitialVoting = 1,
   PublicNotice = 2,
   UnderReconsideration = 3,
-  Won = 4,
-  Failed = 5,
+  Won = 5,
+  Failed = 4,
   PlatformRuling = 6,
   PlatformRevoked = 7,
   ReconsiderationVoting = 8,
+  AppealRevert = 9,
+  NotAppealFailed = 10
 }
 
 export enum AppealStage {
@@ -55,6 +57,12 @@ export interface AppealListItem {
   appealDeadline: number; // 反诉截止时间
   compClaimDeadline: number; // 补偿领取时间
   updateTime: number; // update time
+  disputeBondState: AppealClaimStatusEnum
+  disputeBondClaimTime: number
+  claimStatus: AppealClaimStatusEnum // 补偿金领取状态
+  baseAmount?: string
+  quoteAmount?: string
+  successVoteCount: number
 }
 
 export interface GetAppealDetailParams {
@@ -110,6 +118,11 @@ export interface AppealDetail {
   disputeTime: number; // 申诉时间
   txHash: string; // 申诉交易hash
   disputeBondState: AppealClaimStatusEnum;
+  disputeBondClaimTime: number
+  claimStatus: AppealClaimStatusEnum
+  baseAmount?: string
+  quoteAmount?: string
+  successVoteCount: number
 }
 
 export interface AppealUploadEvidenceParams {
@@ -134,17 +147,21 @@ export interface AppealReconsiderationListItem {
   caseId: number;
   poolId: string;
   respondent: string;
-  type: AppealReconsiderationType;
-  stage: AppealStage;
-  voteCount: number;
-  totalVoteCount: number;
   appealToken: string; // margin token address
   appealBond: string; // margin amount
+  type: AppealReconsiderationType;
+  stage: AppealStage;
+  totalVoteCount: number;
+  votedCount: number
   appealDeadline: number; // appeal deadline
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
   appealCaseId?: number; // 反诉案件ID
-  votedCount: number
+  appealBondClaimTime?: number
+  successVoteCount: number
+  appealSuccessVoteCount?: number
+  appealTotalVoteCount?: number
+  appealVotedCount?: number 
 }
 
 export interface GetAppealReconsiderationDetailParams {
@@ -178,6 +195,13 @@ export interface AppealReconsiderationDetail {
   appealCaseId?: number; // 反诉案件ID
   appealType: AppealReconsiderationType; // 反诉类型-与当前用户绑定
   appealStage: AppealStage; // 反诉阶段-与当前用户绑定
+  appealBondState: AppealClaimStatusEnum; // 反诉保证金状态
+  appealBondClaimTime?: number
+  txHash: string
+  appealStartTime: number
+  appealEndTime: number
+  appealSuccessVoteCount?: number
+  successVoteCount: number
 }
 
 export interface AppealReimbursementParams {
@@ -198,10 +222,11 @@ export interface AppealReimbursementItem {
   poolId: string;
   baseAmount: string;
   quoteAmount: string;
+  claimStatus: AppealClaimStatusEnum
   claimTime: number;
   expireTime: number;
   createTime: number;
-  claimStatus: AppealClaimStatusEnum;
+  proof: string
 }
 
 export interface GetAppealNodeVoteListParams {
