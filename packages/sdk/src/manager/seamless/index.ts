@@ -1,19 +1,19 @@
-import { ConfigManager, MyxClientConfig } from "../config";
+import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
-import CryptoJS from 'crypto-js'
+import { AES, Utf8, CBC, Pkcs7 } from 'crypto-es'
 
-import { Utils } from "../utils";
+import { Utils } from "../utils/index.js";
 import { getSignerProvider, getJSONProvider } from "@/web3";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
 import { getForwarderContract, ProviderType } from "@/web3/providers";
-import { Account } from "../account";
+import { Account } from "../account/index.js";
 import dayjs from "dayjs";
-import { getContractAddressByChainId } from "@/config/address/index";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
 import { splitSignature } from "@ethersproject/bytes"
-import { Api } from "../api";
+import { Api } from "../api/index.js";
 import { executeAddressByChainId } from "@/config/address";
 import MarketManager_ABI from "@/abi/MarketManager.json";
 import Forwarder_ABI from "@/abi/Forwarder.json";
@@ -48,12 +48,12 @@ const generateEthWalletFromHashedSignature = (hashedSignature: string) => {
   const seedStringToKeccak256Array = getBytes(seedStringToKeccak256)
   const privateKey = hexlify(seedStringToKeccak256Array)
 
-  // 检查私钥合法性
+  // Validate private key
   if (!isHexString(privateKey, 32)) {
     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
   }
 
-  // 2. 通过私钥生成公钥和钱包对象
+  // Generate public key and wallet from private key
   const wallet = new ethers.Wallet(privateKey)
 
   return {
@@ -74,7 +74,7 @@ const charFill = (ping: string) => {
   return ping + paddedString
 }
 
-export const getIvMapString = () => CryptoJS.enc.Utf8.parse(seamlessNonceString)
+export const getIvMapString = () => Utf8.parse(seamlessNonceString)
 
 async function signPermit(
   provider: ethers.Signer,
@@ -264,7 +264,6 @@ export class Seamless {
       try {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
-        console.log('error-->', error);
         console.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
@@ -295,9 +294,9 @@ export class Seamless {
     }, chainId)
 
     if (txRs.data?.txHash) {
-      // 轮询链上查询交易状态
-      const maxAttempts = 5 // 最多尝试5次
-      const pollInterval = 1000 // 每1秒轮询一次
+      // Poll chain for transaction status
+      const maxAttempts = 5 // Max 5 attempts
+      const pollInterval = 1000 // Poll every 1 second
 
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
@@ -313,27 +312,26 @@ export class Seamless {
             }
           }
 
-          // 如果还没上链，等待后继续轮询
+          // If not on chain yet, wait and poll again
           if (attempt < maxAttempts - 1) {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         } catch (error) {
           console.error('Poll transaction from chain error:', error)
-          // 如果不是最后一次尝试，继续轮询
+          // If not the last attempt, continue polling
           if (attempt < maxAttempts - 1) {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         }
       }
 
-      // 轮询超时，返回失败
+      // Poll timeout, return failure
       return {
         code: -1,
         data: null,
         message: 'Transaction confirmation timeout, please check later',
       }
     } else {
-      console.log('txRs-->', txRs)
       return {
         code: -1,
         data: null,
@@ -343,14 +341,14 @@ export class Seamless {
   }
 
   async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
-    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+    const decrypted = AES.decrypt(apiKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
-    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const privateKey = decrypted.toString(Utf8)
     const wallet = new ethers.Wallet(privateKey)
     let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
@@ -374,15 +372,15 @@ export class Seamless {
   }
 
   async exportSeamlessPrivateKey({ password, apiKey }: { password: string, apiKey: string }) {
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
-    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+    const decrypted = AES.decrypt(apiKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
 
-    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const privateKey = decrypted.toString(Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
     if (wallet.address !== this.configManager.getConfig().seamlessAccount?.wallet?.address) {
@@ -413,13 +411,13 @@ export class Seamless {
 
     const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
 
-    const encrypted = CryptoJS.AES.encrypt(privateKey, key, {
+    const encrypted = AES.encrypt(privateKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
 
     const apiKey = encrypted.toString()
@@ -469,13 +467,13 @@ export class Seamless {
 
       const { privateKey, wallet } = generateEthWalletFromHashedSignature(hashedSignature)
 
-      const key = CryptoJS.enc.Utf8.parse(charFill(password))
+      const key = Utf8.parse(charFill(password))
       const iv = getIvMapString()
 
-      const encrypted = CryptoJS.AES.encrypt(privateKey, key, {
+      const encrypted = AES.encrypt(privateKey, key, {
         iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7,
+        mode: CBC,
+        padding: Pkcs7,
       })
 
       const apiKey = encrypted.toString()

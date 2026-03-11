@@ -4,7 +4,6 @@ import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS, } from "@/config/deci
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas";
 import type { TpSl, TpSLParams } from "@/lp/pool";
 import { getDecimalPlaces } from "@/utils/number";
-import { Market } from "@/config/market";
 
 export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = COMMON_LP_AMOUNT_DECIMALS, quoteDecimal: number) => {
   if (tpsl.length === 0) {

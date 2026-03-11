@@ -17,7 +17,7 @@ export const getAllowanceApproved = async(chainId: ChainId, account: string,toke
     }
     const result = await provider.call(callData)
     const allowance = BigInt(result)
-    // 输出授权额度（结果是一个大整数，通常是以 wei 为单位）
+    // Output allowance (a large integer, usually in wei)
     // console.log('Allowance:', allowance.toString())
     // console.log('ApproveAmount:', approveAmount.toString())
     // console.log(BN.from(ethers.BigNumber.from(result).toString()).gte(BN.from(approveAmount)))
