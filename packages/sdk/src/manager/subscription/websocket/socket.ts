@@ -11,13 +11,13 @@ import {
   WebSocketTopicEnum,
   NativeTickerData,
   WebSocketAckMessageResponse,
-} from "./types";
+} from "./types.js";
 import {
   generateListenerId,
   generateRequestId,
   isAckMessageResponse,
   messageTransform,
-} from "./utils";
+} from "./utils.js";
 import { Logger, LoggerOptions } from "@/logger";
 import { MyxErrorCode, MyxSDKError } from "@/manager/error/const";
 import ReconnectingWebSocket from "reconnecting-websocket";
@@ -157,7 +157,6 @@ export class MyxWebSocketClient {
 
     this.ws.onopen = async (event) => {
       this.eventBus.emit("open", event);
-      console.log("onOPen");
       this.lastMessageTime = Date.now();
       this.timeoutHeartbeat();
 

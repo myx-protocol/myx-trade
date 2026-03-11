@@ -86,7 +86,7 @@ export const deposit = async (params: Deposit) => {
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
+      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// TODO get minAmountOut from contract
       recipient: account,
       tpslParams
     }

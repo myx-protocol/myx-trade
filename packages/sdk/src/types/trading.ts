@@ -4,38 +4,38 @@
 
 // Order Types
 export const OrderType = {
-  MARKET: 0, // 市价单
-  LIMIT: 1, // 限价单
-  STOP: 2, // 止损单
-  CONDITIONAL: 3, // 条件单
+  MARKET: 0, // Market order
+  LIMIT: 1, // Limit order
+  STOP: 2, // Stop order
+  CONDITIONAL: 3, // Conditional order
 } as const;
 export type OrderType = (typeof OrderType)[keyof typeof OrderType];
 
 // Trigger Types
 export const TriggerType = {
-  NONE: 0, // 无触发
-  GTE: 1, // 大于等于
-  LTE: 2, // 小于等于
+  NONE: 0, // No trigger
+  GTE: 1, // Greater than or equal (>=)
+  LTE: 2, // Less than or equal (<=)
 } as const;
 export type TriggerType = (typeof TriggerType)[keyof typeof TriggerType];
 
 // Operation Types
 export const OperationType = {
-  INCREASE: 0, // 增加仓位
-  DECREASE: 1, // 减少仓位
+  INCREASE: 0, // Increase position
+  DECREASE: 1, // Decrease position
 } as const;
 export type OperationType = (typeof OperationType)[keyof typeof OperationType];
 
 // Direction
 export const Direction = {
-  LONG: 0, // 做多
-  SHORT: 1, // 做空
+  LONG: 0, // Long
+  SHORT: 1, // Short
 } as const;
 export type Direction = (typeof Direction)[keyof typeof Direction];
 
 // Time in Force
 export const TimeInForce = {
-  IOC: 0, // 立即执行或取消
+  IOC: 0, // Immediate or cancel
 } as const;
 export type TimeInForce = (typeof TimeInForce)[keyof typeof TimeInForce];
 
@@ -80,12 +80,12 @@ export interface Order {
 
 // Order Status
 export const OrderStatus = {
-  PENDING: 0, // 待处理
-  PARTIAL: 1, // 部分成交
-  FILLED: 2, // 完全成交
-  CANCELLED: 3, // 已取消
-  REJECTED: 4, // 已拒绝
-  EXPIRED: 5, // 已过期
+  PENDING: 0, // Pending
+  PARTIAL: 1, // Partially filled
+  FILLED: 2, // Fully filled
+  CANCELLED: 3, // Cancelled
+  REJECTED: 4, // Rejected
+  EXPIRED: 5, // Expired
 } as const;
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 

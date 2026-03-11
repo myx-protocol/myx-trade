@@ -1,5 +1,5 @@
 import { AddTpSLParams } from "@/lp/pool/type";
-import { getLiquidityRouterContract } from "../../web3/providers";
+import { getLiquidityRouterContract } from "../../web3/providers.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
