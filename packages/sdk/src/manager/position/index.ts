@@ -66,7 +66,7 @@ export class Position {
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
     const accessToken = await this.configManager.getAccessToken() ?? ''
-  
+
     const res = await this.api.getPositionHistory(
       { accessToken, ...params, address: address },
     );
@@ -81,7 +81,6 @@ export class Position {
     positionId,
     adjustAmount,
     quoteToken,
-    poolOracleType,
     chainId,
     address,
   }: {
@@ -89,7 +88,6 @@ export class Position {
     positionId: string;
     adjustAmount: string;
     quoteToken: string;
-    poolOracleType: OracleType;
     chainId: number;
     address: string;
   }) {
@@ -105,7 +103,7 @@ export class Position {
       }
       const updateParams = {
         poolId: poolId,
-        oracleType: poolOracleType,
+        oracleType: priceData.oracleType,
         oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
       };
@@ -237,6 +235,17 @@ export class Position {
           throw new Error(approvalResult.message);
         }
       }
+
+      this.logger.info('adjustCollateral transaction data--->', {
+        updateParams,
+        depositData,
+        positionId,
+        adjustAmount,
+        txParams: {
+          value: BigInt(priceData?.value ?? "1"),
+          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
+        }
+      });
 
       const transaction = await brokerContract.updatePriceAndAdjustCollateral(
         [updateParams],
