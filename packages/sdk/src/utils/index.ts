@@ -14,7 +14,7 @@ export const getEIP712Domain = async (contract: Contract) => {
     return {
       name: eip712Domain.name,
       version: eip712Domain.version,
-      chainId: BigInt(eip712Domain.chainId), // 确保 chainId 是ForwarderGetStatus bigint 类型
+      chainId: BigInt(eip712Domain.chainId), // Ensure chainId is ForwarderGetStatus bigint type
       verifyingContract: eip712Domain.verifyingContract,
     }
   } catch (error) {

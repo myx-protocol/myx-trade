@@ -8,8 +8,8 @@ class ConfigManager {
   private signer: Signer | null;
 
   constructor() {
-    this.config = defaultSDKConfig;
-    this.currentChainId = defaultSDKConfig.defaultChainId;
+    this.config = defaultSDKConfig as SDKConfig;
+    this.currentChainId = defaultSDKConfig.defaultChainId || 0;
     this.signer = null;
   }
 

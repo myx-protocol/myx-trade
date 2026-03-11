@@ -45,7 +45,7 @@ export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
       staticNetwork: true,
     });
   } else {
-    // 将RotationProvider转换为JsonRpcProvider类型
+    // Cast RotationProvider to JsonRpcProvider type
     return new RotationProvider(chainProviders, chainId) as unknown as JsonRpcProvider;
   }
 };
@@ -103,23 +103,23 @@ if (typeof window !== "undefined") {
 }
 
 export default sdk;
-// 测试用
+// For testing only
 export const getWalletProvider = async (chainId: ChainId) => {
   try {
-    // 检查是否有钱包连接
+    // Check if a wallet is connected
     // if (!window?.ethereum) {
     //   console.log("No wallet installed; using read-only defaults")
     //   return ethers.getDefaultProvider("mainnet") as BrowserProvider
     // }
 
-    // 创建 ethers provider
+    // Create ethers provider
     const walletClient  = sdk.getConfigManager()?.getConfig()?.walletClient
     const provider = new BrowserProvider(walletClient?.transport!);
     if (!provider) {
       throw new Error('missing provider');
     }
 
-    // 如果指定了 chainId，可以验证当前链是否匹配
+    // If chainId is specified, validate that the current chain matches
     // if (chainId) {
     //   const network = await provider.getNetwork()
     //   console.log(provider)
@@ -132,7 +132,7 @@ export const getWalletProvider = async (chainId: ChainId) => {
     return provider
   } catch (error) {
     console.error("Error getting wallet provider:", error)
-    // 如果获取失败，返回默认的只读 provider
+    // If fetching fails, return a default read-only provider
     return ethers.getDefaultProvider("mainnet") as BrowserProvider
   }
 };

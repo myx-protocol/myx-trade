@@ -17,7 +17,7 @@ export type FetchForwarderGetParams = {
 }
 
 export enum ForwarderGetStatus {
-  // 1:执行中，2:广播到链上时失败，3:超时取消，9:已执行
+  // 1: Executing, 2: Failed when broadcasting on-chain, 3: Canceled due to timeout, 9: Executed
   EXECUTING = 1,
   BROADCAST_FAILED = 2,
   TIMEOUT_CANCEL = 3,

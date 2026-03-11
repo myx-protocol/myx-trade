@@ -31,27 +31,27 @@ const checkBranch = () => {
         }).trim();
 
         if (currentBranch !== PUBLISH_BRANCH) {
-            console.error(`🚨 错误: 当前分支 "${currentBranch}" 与发布分支 "${PUBLISH_BRANCH}" 不一致！`);
-            console.error(`请切换到 ${PUBLISH_BRANCH} 分支后再执行发布操作。`);
+            console.error(`🚨 Error: current branch "${currentBranch}" is different from publish branch "${PUBLISH_BRANCH}"!`);
+            console.error(`Please switch to branch ${PUBLISH_BRANCH} before running the publish command.`);
             process.exit(1);
         }
-        console.log(`✅ 当前分支检查通过: ${currentBranch}`);
+        console.log(`✅ Current branch check passed: ${currentBranch}`);
 
     } catch (error) {
-        console.error('🚨 检测分支时出错:', error);
+        console.error('🚨 Error while checking branch:', error);
         process.exit(1);
     }
 }
 
 const checkGitRemote = () => {
     try {
-        // 拉取最新远程信息（静默执行，不输出到控制台）
+        // Fetch latest remote information (silent, no console output)
         execSync('git fetch', {
             stdio: 'pipe',
         });
 
-        // 比较本地分支与远程分支的提交数量
-        // 格式："<remote_ahead>\t<local_ahead>"
+        // Compare commit counts between local and remote branches
+        // Format: "<remote_ahead>\t<local_ahead>"
         const result = execSync(
             `git rev-list --left-right --count origin/${PUBLISH_BRANCH}...${PUBLISH_BRANCH}`,
             {
@@ -64,19 +64,19 @@ const checkGitRemote = () => {
         const remoteAhead = parseInt(remoteAheadStr, 10);
 
         if (Number.isNaN(remoteAhead)) {
-            console.error('🚨 无法解析远程分支提交差异结果:', result);
+            console.error('🚨 Failed to parse remote branch diff result:', result);
             process.exit(1);
         }
 
         if (remoteAhead > 0) {
-            console.error('🚨 检测到远程分支有未拉取的提交，请先执行 `git pull` 再发布。');
+            console.error('🚨 Detected unpulled commits on remote branch, please run `git pull` before publishing.');
             process.exit(1);
         }
-        console.log('✅ 远程分支已是最新，无未拉取提交。');
+        console.log('✅ Remote branch is up to date, no pending commits.');
 
         return true;
     } catch (error) {
-        console.error('🚨 检测远程仓库状态失败:', error);
+        console.error('🚨 Failed to check remote repository status:', error);
         process.exit(1);
     }
 }
@@ -90,7 +90,7 @@ const commitVersionUpdate = (publishTag = 'main', versionType = 'patch') => {
     execSync(`git commit -m "chore: bump version v${latestVersion}"`, {
         stdio: 'pipe',
     });
-    console.log('✅ 提交 commit 成功！')
+    console.log('✅ Commit created successfully!')
     return latestVersion;
 
 }
@@ -100,9 +100,9 @@ const pushCommit = () => {
         execSync('git push', {
             stdio: 'pipe',
         });
-        console.log('✅ 推送 commit 成功！')
+        console.log('✅ Commit pushed successfully!')
     } catch (error) {
-        console.error('🚨 推送 commit 失败, 请手动执行 git push', error);
+        console.error('🚨 Failed to push commit, please run git push manually', error);
         return false;
     }
     return true;
@@ -131,13 +131,13 @@ const checkNPMLogined = async () => {
     }
 }
 
-loadingAdapter('检测发布分支', () => checkBranch())
-    .then(() => loadingAdapter('检测远程仓库状态', () => checkGitRemote()))
+loadingAdapter('Checking publish branch', () => checkBranch())
+    .then(() => loadingAdapter('Checking remote repository status', () => checkGitRemote()))
     .then(() => inquirer.prompt([
         {
             type: 'select',
             name: 'publishTag',
-            message: '请选择发布标签(main: 正式, beta: 测试)',
+            message: 'Select publish tag (main: stable, beta: pre-release)',
             default: 'main',
             choices: [
                 {
@@ -152,20 +152,20 @@ loadingAdapter('检测发布分支', () => checkBranch())
         }, {
             type: 'select',
             name: 'versionType',
-            message: '请选择版本类型(patch: 补丁, minor: 小版本, major: 大版本)',
+            message: 'Select version type (patch, minor, major)',
             default: 'patch',
             when: answers => answers.publishTag === 'main',
             choices: [
                 {
-                    name: '补丁版本(patch)',
+                    name: 'Patch version (patch)',
                     value: 'patch',
                 },
                 {
-                    name: '次版本(minor)',
+                    name: 'Minor version (minor)',
                     value: 'minor',
                 },
                 {
-                    name: '主版本(major)',
+                    name: 'Major version (major)',
                     value: 'major',
                 },
             ],
@@ -175,33 +175,33 @@ loadingAdapter('检测发布分支', () => checkBranch())
         updateVersion(publishTag, versionType)
         const latestVersion = commitVersionUpdate(publishTag, versionType);
 
-        const isLoggedIn = await loadingAdapter('检测 npm 登录状态', () => checkNPMLogined());
+        const isLoggedIn = await loadingAdapter('Checking npm login status', () => checkNPMLogined());
         if (!isLoggedIn) {
-            console.log('🚨 检测到未登录 npm，先登录 npm')
-            await loadingAdapter('登录 npm', () => execSync(`pnpm login --registry=${npmRegistry}`, {
+            console.log('🚨 npm is not logged in, logging in first')
+            await loadingAdapter('Logging in to npm', () => execSync(`pnpm login --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
-            console.log('✅ pnpm registry 登录成功！')
+            console.log('✅ Successfully logged into pnpm registry!')
         } else {
-            console.log('🔄 pnpm registry 无需登录！')
+            console.log('🔄 No need to log in to pnpm registry')
         }
 
         if (publishTag === 'beta') {
-            await loadingAdapter('发布 beta 版本', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
+            await loadingAdapter('Publishing beta version', () => execSync(`pnpm publish --tag beta --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
         } else {
-            await loadingAdapter('发布 main 版本', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
+            await loadingAdapter('Publishing main version', () => execSync(`pnpm publish --publish-branch ${PUBLISH_BRANCH} --registry=${npmRegistry}`, {
                 stdio: 'inherit',
             }));
         }
-        const isPushed = await loadingAdapter('推送 commit', () => pushCommit());
+        const isPushed = await loadingAdapter('Pushing commit', () => pushCommit());
         if (!isPushed) {
-            console.log('🚨 推送 commit 失败, 请手动执行 git push')
+            console.log('🚨 Failed to push commit, please run git push manually')
         }
-        console.log('✅ 发布成功！')
-        console.log(`🚀 最新版本: v${latestVersion}`)
+        console.log('✅ Publish succeeded!')
+        console.log(`🚀 Latest version: v${latestVersion}`)
     }).catch(err => {
-        console.error('🚨 发布失败:', err);
+        console.error('🚨 Publish failed:', err);
         process.exit(1);
     })

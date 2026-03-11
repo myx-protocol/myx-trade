@@ -56,17 +56,17 @@ Core trading functionality types:
 
 ```typescript
 // Order types
-OrderType.MARKET    // 市价单
-OrderType.LIMIT     // 限价单
-OrderType.STOP      // 止损单
+OrderType.MARKET    // Market order
+OrderType.LIMIT     // Limit order
+OrderType.STOP      // Stop order
 
 // Direction
-Direction.LONG      // 做多
-Direction.SHORT     // 做空
+Direction.LONG      // Long
+Direction.SHORT     // Short
 
 // Operation
-OperationType.INCREASE  // 增加仓位
-OperationType.DECREASE  // 减少仓位
+OperationType.INCREASE  // Increase position
+OperationType.DECREASE  // Decrease position
 ```
 
 ### 📊 Pool Types

@@ -56,11 +56,11 @@ export interface AccessTokenResponse extends BaseResponse {
 }
 
 export enum MarketPoolState {
-  Cook = 0, // 市场建立
-  Primed = 1, // 扣款手续费，等待准备oracle
-  Trench = 2, // 上架交易
-  PreBench = 3, // 预下架
-  Bench = 4, // 下架
+  Cook = 0, // Market created
+  Primed = 1, // Fee deducted, waiting for oracle to be ready
+  Trench = 2, // Trading enabled
+  PreBench = 3, // Pre-delisting
+  Bench = 4, // Delisted
 }
 
 export type MarketPool = {
