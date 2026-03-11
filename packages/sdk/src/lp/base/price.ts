@@ -5,23 +5,22 @@ import { parseUnits } from "ethers";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
 import { getErrorTextFormError } from "@/config/error";
 
-export const getLpPrice = async (chainId:ChainId,poolId: string) => {
-  if (!poolId) return
+export const getLpPrice = async (chainId: ChainId, poolId: string) => {
+  if (!poolId) return;
   try {
     const contract = await getBasePoolContract(chainId);
-    let price = 0n
+    let price = 0n;
     // if (!(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)) {
-      const res = await getPriceData(chainId, poolId)
+    const res = await getPriceData(chainId, poolId);
       if (res?.price) {
-        price = parseUnits(res.price, COMMON_PRICE_DECIMALS)
+      price = parseUnits(res.price, COMMON_PRICE_DECIMALS);
       }
     // }
-    
-    const data = await contract.getPoolTokenPrice(poolId, price)
-    // console.log( `pool ${poolId} price: `, data)
-    return data
+    const data = await contract.getPoolTokenPrice(poolId, price);
+    // console.log(`pool ${poolId} price: `, data);
+    return data;
   } catch (error) {
-    console.error(error)
-    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+    // console.error(error);
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error));
   }
 }
