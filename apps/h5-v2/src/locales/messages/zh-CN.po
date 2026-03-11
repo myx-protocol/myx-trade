@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-06 02:33\n"
+"PO-Revision-Date: 2026-03-11 01:59\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -506,7 +505,7 @@ msgstr "平均开仓价格"
 
 #: src/components/Record/Items/OrderHistory.tsx
 msgid "Avg.Price/Order Price"
-msgstr ""
+msgstr "成交均价/委托价格"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
@@ -1781,7 +1780,7 @@ msgstr "隐藏其他交易对"
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "High-Risk Asset Warning"
-msgstr ""
+msgstr "高风险资产警告"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Hold"
@@ -2984,7 +2983,7 @@ msgstr "订单被拒绝"
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "Order size must be greater than the minimum required"
-msgstr ""
+msgstr "未达到最小下单数量"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3108,7 +3107,7 @@ msgstr "请输入邀请码"
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Please note: "
-msgstr ""
+msgstr "请注意："
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
@@ -3640,16 +3639,16 @@ msgstr "搜索名称或粘贴地址"
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Security Notice:"
-msgstr ""
+msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr ""
+msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Security Warning:"
-msgstr ""
+msgstr "安全警告："
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
@@ -4017,7 +4016,7 @@ msgstr "好友交易后您可以赚取的返利佣比例。"
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
-msgstr ""
+msgstr "该代币的安全评估尚未完成。提供流动性或参与交易可能存在未知风险，请谨慎操作并自行承担风险。"
 
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
@@ -4026,7 +4025,7 @@ msgstr "此项费用用于预言机服务。激活将在付款后 24 小时内�
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
-msgstr ""
+msgstr "该代币存在极高风险。为保障资产安全，平台不支持其上线合约市场及提供流动性。如您认为评估不合理，请<0>联系客服</0>处理。"
 
 #. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
@@ -4050,7 +4049,7 @@ msgstr "至"
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "To ensure a secure trading environment, the platform strictly prohibits and rejects the listing of such high-risk tokens on the contract market."
-msgstr ""
+msgstr "为了确保一个安全的交易环境，平台严格禁止和拒绝将这类高风险代币列入合约交易市场。"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
@@ -5158,3 +5157,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+
