@@ -1,5 +1,5 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
-import { getPoolManagerContract } from "../../web3/providers";
+import { getPoolManagerContract } from "../../web3/providers.js";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";

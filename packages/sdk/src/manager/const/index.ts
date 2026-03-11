@@ -2,5 +2,5 @@
  * reexport chain const
  */
 
-export * from "./chain";
-export * from "./socket";
+export * from "./chain.js";
+export * from "./socket.js";

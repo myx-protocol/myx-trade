@@ -1,6 +1,6 @@
 import { Address } from "viem";
-import { MyxClient } from "..";
-import { BaseMyxClient } from "../base/BaseMyxClient";
+import { MyxClient } from "../index.js";
+import { BaseMyxClient } from "../base/BaseMyxClient.js";
 
 export class Referrals extends BaseMyxClient {
   constructor(client: MyxClient) {

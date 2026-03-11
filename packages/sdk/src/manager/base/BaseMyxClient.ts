@@ -1,6 +1,6 @@
 import { Contract, Signer } from "ethers";
-import { MyxClient, MyxClientConfig } from "..";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxClient, MyxClientConfig } from "../index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { getBrokerContract } from "@/web3/providers";
 import { getContractAddressByChainId } from "@/config/address";
 import { isSupportedChainFn } from "@/config/chain";
