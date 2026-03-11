@@ -1,6 +1,6 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
-import CryptoJS from 'crypto-js'
+import { AES, Utf8, CBC, Pkcs7 } from 'crypto-es'
 
 import { Utils } from "../utils/index.js";
 import { getSignerProvider, getJSONProvider } from "@/web3";
@@ -74,7 +74,7 @@ const charFill = (ping: string) => {
   return ping + paddedString
 }
 
-export const getIvMapString = () => CryptoJS.enc.Utf8.parse(seamlessNonceString)
+export const getIvMapString = () => Utf8.parse(seamlessNonceString)
 
 async function signPermit(
   provider: ethers.Signer,
@@ -341,14 +341,14 @@ export class Seamless {
   }
 
   async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
-    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+    const decrypted = AES.decrypt(apiKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
-    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const privateKey = decrypted.toString(Utf8)
     const wallet = new ethers.Wallet(privateKey)
     let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
@@ -372,15 +372,15 @@ export class Seamless {
   }
 
   async exportSeamlessPrivateKey({ password, apiKey }: { password: string, apiKey: string }) {
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
-    const decrypted = CryptoJS.AES.decrypt(apiKey, key, {
+    const decrypted = AES.decrypt(apiKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
 
-    const privateKey = decrypted.toString(CryptoJS.enc.Utf8)
+    const privateKey = decrypted.toString(Utf8)
     const wallet = new ethers.Wallet(privateKey)
 
     if (wallet.address !== this.configManager.getConfig().seamlessAccount?.wallet?.address) {
@@ -411,13 +411,13 @@ export class Seamless {
 
     const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
 
-    const key = CryptoJS.enc.Utf8.parse(charFill(password))
+    const key = Utf8.parse(charFill(password))
     const iv = getIvMapString()
 
-    const encrypted = CryptoJS.AES.encrypt(privateKey, key, {
+    const encrypted = AES.encrypt(privateKey, key, {
       iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
+      mode: CBC,
+      padding: Pkcs7,
     })
 
     const apiKey = encrypted.toString()
@@ -467,13 +467,13 @@ export class Seamless {
 
       const { privateKey, wallet } = generateEthWalletFromHashedSignature(hashedSignature)
 
-      const key = CryptoJS.enc.Utf8.parse(charFill(password))
+      const key = Utf8.parse(charFill(password))
       const iv = getIvMapString()
 
-      const encrypted = CryptoJS.AES.encrypt(privateKey, key, {
+      const encrypted = AES.encrypt(privateKey, key, {
         iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7,
+        mode: CBC,
+        padding: Pkcs7,
       })
 
       const apiKey = encrypted.toString()
