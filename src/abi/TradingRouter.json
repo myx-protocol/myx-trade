@@ -135,6 +135,60 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "CollectExecutionFee",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "source",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "executionFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "CollectForwardFee",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "source",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "positionId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "forwardFee",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {
