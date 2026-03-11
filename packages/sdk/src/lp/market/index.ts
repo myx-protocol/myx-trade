@@ -1,4 +1,4 @@
 
-export {getMarket} from './getMarket'
-export {getOracleFee} from './getOracleFee'
+export {getMarket} from './getMarket.js'
+export {getOracleFee} from './getOracleFee.js'
 

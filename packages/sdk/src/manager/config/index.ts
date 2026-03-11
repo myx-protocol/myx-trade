@@ -3,8 +3,8 @@ import {
   BETA_ENV_CHAIN_IDS,
   MAINNET_CHAIN_IDS,
   TESTNET_CHAIN_IDS,
-} from "../const";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+} from "../const/index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
 import { WalletClient } from "viem";
@@ -23,7 +23,7 @@ interface GetAccessTokenQueueItem {
 
 export interface MyxClientConfig {
   /**
-   * @deprecated 为了更灵活的执行操作应该在具体方法中由外部传入chainId，这个字段将在未来版本中废弃
+   * @deprecated Pass chainId from outside in each method for flexibility; this field will be removed in a future version
    */
   chainId: number;
   signer?: Signer;
@@ -42,13 +42,13 @@ export interface MyxClientConfig {
   logLevel?: LogLevel;
   getAccessToken?:
     | (() => Promise<AccessTokenResponse | undefined>)
-    | (() => AccessTokenResponse | undefined); // 前端提供的获取 accessToken 的方法
+    | (() => AccessTokenResponse | undefined); // Client-provided method to get accessToken
 }
 
 export class ConfigManager {
   private config: MyxClientConfig;
   private accessToken?: string;
-  private accessTokenExpiry?: number; // accessToken 过期时间
+  private accessTokenExpiry?: number; // accessToken expiry timestamp
 
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
@@ -147,17 +147,17 @@ export class ConfigManager {
   }
 
   /**
-   * 获取当前存储的 accessToken（不会自动刷新）
-   * @returns Promise<string | null> 当前的 accessToken 或 null
+   * Get currently stored accessToken (does not auto-refresh)
+   * @returns Promise<string | null> Current accessToken or null
    */
   async getAccessToken(): Promise<string | null> {
     return this.accessToken ?? null;
   }
 
   /**
-   * 主动刷新 accessToken（需要前端明确调用）
-   * @param forceRefresh 是否强制刷新
-   * @returns Promise<string | null> 刷新后的 accessToken 或 null
+   * Manually refresh accessToken (must be called explicitly by the client)
+   * @param forceRefresh Whether to force refresh
+   * @returns Promise<string | null> Refreshed accessToken or null
    */
   private _getAccessTokenQueue: Array<GetAccessTokenQueueItem> = [];
   private _isGettingAccessToken = false;
@@ -196,35 +196,34 @@ export class ConfigManager {
   private async _refreshAccessToken(
     forceRefresh: boolean = false
   ): Promise<string | null> {
-    // 如果当前 token 有效且不需要强制刷新，直接返回
+    // If current token is valid and no force refresh, return it
     if (!forceRefresh && this.isAccessTokenValid()) {
       this._isGettingAccessToken = false;
       return this.accessToken!;
     }
 
-    // 如果没有提供获取 token 的方法，返回 null
+    // If no getAccessToken method provided, return null
     if (!this.config.getAccessToken) {
       console.warn("No getAccessToken method provided in config");
       return null;
     }
 
     try {
-      console.log("Manually refreshing accessToken...");
 
-      // 调用前端提供的方法获取新的 token
+      // Call client-provided method to get new token
       const response = (await this.config.getAccessToken()) ?? {
         accessToken: "",
         expireAt: 0,
       };
 
       if (response && response.accessToken) {
-        // expireAt 是到期时间戳，需要转换为有效期秒数
-        let expiryInSeconds = 3600; // 默认1小时
+        // expireAt is expiry timestamp; convert to validity in seconds
+        let expiryInSeconds = 3600; // Default 1 hour
         if (response.expireAt) {
-          const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
-          expiryInSeconds = response.expireAt - currentTime; // 计算剩余有效期
+          const currentTime = Math.floor(Date.now() / 1000); // Current timestamp (seconds)
+          expiryInSeconds = response.expireAt - currentTime; // Remaining validity
 
-          // 确保有效期为正数，如果已过期则使用默认值
+          // Ensure positive; use default if already expired
           if (expiryInSeconds <= 0) {
             console.warn("Received expired token, using default expiry");
             expiryInSeconds = 3600;
@@ -232,10 +231,6 @@ export class ConfigManager {
         }
 
         this.setAccessToken(response.accessToken, expiryInSeconds);
-        console.log("✅ AccessToken refreshed and stored successfully", {
-          expiryInSeconds,
-          expireAt: response.expireAt,
-        });
         return response.accessToken;
       } else {
         console.warn("❌ Received empty accessToken");
@@ -248,9 +243,9 @@ export class ConfigManager {
   }
 
   /**
-   * 设置 accessToken 和过期时间
+   * Set accessToken and expiry
    * @param token accessToken
-   * @param expiryInSeconds token 有效期（秒），默认1小时
+   * @param expiryInSeconds Token validity in seconds, default 1 hour
    */
   setAccessToken(token: string, expiryInSeconds: number = 3600): void {
     this.accessToken = token;
@@ -258,23 +253,23 @@ export class ConfigManager {
   }
 
   /**
-   * 获取当前存储的 accessToken（不会触发刷新）
-   * @returns string | undefined 当前的 accessToken
+   * Get currently stored accessToken (does not trigger refresh)
+   * @returns string | undefined Current accessToken
    */
   getCurrentAccessToken(): string | undefined {
     return this.accessToken;
   }
 
   // /**
-  //  * 检查当前 accessToken 是否有效
-  //  * @returns boolean token 是否有效
+  //  * Check if current accessToken is valid
+  //  * @returns boolean Whether token is valid
   //  */
   isAccessTokenValid(): boolean {
     return !!this.accessToken;
   }
 
   /**
-   * 清除 accessToken
+   * Clear accessToken
    */
   clearAccessToken(): void {
     this.accessToken = undefined;

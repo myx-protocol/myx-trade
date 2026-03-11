@@ -2,12 +2,12 @@ import {
   getDisputeCourtContract,
   getReimbursementContract,
 } from "@/web3/providers";
-import { MyxClient } from "..";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxClient } from "../index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { BytesLike, EventLog, Log, Signer } from "ethers";
 import { Address } from "viem";
-import { BaseMyxClient } from "../base/BaseMyxClient";
-import { AppealVoteParams } from "./type";
+import { BaseMyxClient } from "../base/BaseMyxClient.js";
+import { AppealVoteParams } from "./type.js";
 import {
   AppealReimbursementParams,
   AppealUploadEvidenceParams,
@@ -21,7 +21,7 @@ import {
   GetWarmholeSignParams,
   GuardianSignatureItem,
   PostVoteSignatureParams,
-} from "../api/appeal-type";
+} from "../api/appeal-type.js";
 
 export class Appeal extends BaseMyxClient {
   constructor(client: MyxClient) {
