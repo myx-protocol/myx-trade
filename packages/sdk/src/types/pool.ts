@@ -19,11 +19,11 @@ export interface Pool {
 
 // Pool state enum
 export const PoolState = {
-  INACTIVE: 0,     // 非活跃
-  ACTIVE: 1,       // 活跃
-  TRADEABLE: 2,    // 可交易
-  SUSPENDED: 3,    // 暂停
-  MAINTENANCE: 4   // 维护中
+  INACTIVE: 0,     // Inactive
+  ACTIVE: 1,       // Active
+  TRADEABLE: 2,    // Tradeable
+  SUSPENDED: 3,    // Suspended
+  MAINTENANCE: 4   // Under maintenance
 } as const;
 export type PoolState = typeof PoolState[keyof typeof PoolState];
 

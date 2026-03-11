@@ -4,7 +4,7 @@ import { MxSDK } from "@/web3";
 
 export const getOpenOrders = async (chainId: ChainId, address: string) => {
   try {
-    // 自动获取 accessToken，如果没有或过期会自动刷新
+    // Automatically obtain accessToken; it will be refreshed if missing or expired
     const accessToken = await MxSDK.getInstance().getConfigManager()?.getAccessToken();
     if (!accessToken) {
       throw new Error(
