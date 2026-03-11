@@ -56,11 +56,11 @@ export interface AccessTokenResponse extends BaseResponse {
 }
 
 export enum MarketPoolState {
-  Cook = 0, // Market created
-  Primed = 1, // Fee deducted, waiting for oracle to be ready
-  Trench = 2, // Trading enabled
-  PreBench = 3, // Pre-delisting
-  Bench = 4, // Delisted
+  Cook = 0,     // Market created
+  Primed = 1,   // Fee charged, waiting for oracle initialization
+  Trench = 2,   // Trading enabled
+  PreBench = 3, // Pending delisting
+  Bench = 4,    // Delisted
 }
 
 export type MarketPool = {
@@ -94,7 +94,6 @@ export enum OracleType {
   Chainlink = 1,
   Pyth,
 }
-
 export type PriceType = {
   oracleId: number;
   price: string;

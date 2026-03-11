@@ -35,8 +35,6 @@ export const deposit = async (params: Deposit) => {
     
     const tokenAddress = pool.quoteToken;
     const decimals = pool?.quoteDecimals;
-    
-    
    
     await checkParams ({
       tokenAddress,
@@ -86,7 +84,7 @@ export const deposit = async (params: Deposit) => {
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// TODO get minAmountOut from contract
+      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,
       tpslParams
     }
