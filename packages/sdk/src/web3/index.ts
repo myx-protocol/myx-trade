@@ -1,7 +1,6 @@
 import {
   BrowserProvider,
   Contract,
-  Eip1193Provider,
   ethers,
   JsonRpcProvider,
   JsonRpcSigner,
@@ -12,7 +11,6 @@ import { Address } from "@/address";
 import { ChainId } from "@/config/chain";
 import { getChainInfo } from "@/config/chains/index";
 import { RotationProvider } from "@/web3/rotationProvider";
-import pkg from '../../package.json'
 import { ConfigManager } from "@/manager/config";
 import { getMarketList, MarketInfo } from "@/api";
 
@@ -45,20 +43,19 @@ export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
       staticNetwork: true,
     });
   } else {
-    // Cast RotationProvider to JsonRpcProvider type
     return new RotationProvider(chainProviders, chainId) as unknown as JsonRpcProvider;
   }
 };
 
 export class MxSDK {
-  version = pkg.version;
+  version = __SDK_VERSION__;
   public provider: BrowserProvider | undefined;
   #configManager?: ConfigManager
   private static _instance: MxSDK
   public Markets: MarketInfo[] | undefined
   
   constructor() {
-    console.log(this.version);
+    console.log("MxSDK version:", this.version)
   }
   
   setConfigManager(cm: ConfigManager) {
@@ -103,42 +100,23 @@ if (typeof window !== "undefined") {
 }
 
 export default sdk;
-// For testing only
+
 export const getWalletProvider = async (chainId: ChainId) => {
   try {
-    // Check if a wallet is connected
-    // if (!window?.ethereum) {
-    //   console.log("No wallet installed; using read-only defaults")
-    //   return ethers.getDefaultProvider("mainnet") as BrowserProvider
-    // }
-
-    // Create ethers provider
     const walletClient  = sdk.getConfigManager()?.getConfig()?.walletClient
     const provider = new BrowserProvider(walletClient?.transport!);
     if (!provider) {
       throw new Error('missing provider');
     }
 
-    // If chainId is specified, validate that the current chain matches
-    // if (chainId) {
-    //   const network = await provider.getNetwork()
-    //   console.log(provider)
-    //   console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
-    //   if(Number(network.chainId) !== chainId) {
-    //     await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
-    //   }
-    // }
-
     return provider
   } catch (error) {
     console.error("Error getting wallet provider:", error)
-    // If fetching fails, return a default read-only provider
     return ethers.getDefaultProvider("mainnet") as BrowserProvider
   }
 };
 
 export const getSignerProvider = async (chainId: ChainId) => {
   const provider = await getWalletProvider (chainId);
-  // console.log(provider)
   return provider?.getSigner?.();
 };
