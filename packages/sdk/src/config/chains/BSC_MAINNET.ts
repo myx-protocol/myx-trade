@@ -1,5 +1,5 @@
 import { ChainId, ChainInfo } from "@/config/chain";
-import { GAS_FEE_RESERVED_RATIO } from './../fee'
+import { GAS_FEE_RESERVED_RATIO } from './../fee.js'
 
 export default {
   chainId: ChainId.BSC_MAINNET,

@@ -22,5 +22,4 @@ const tsContent = `export const customErrorMapping: Record<string, string> = ${J
 `;
 
 fs.writeFileSync("./../config/customErrorMap.ts", tsContent, "utf8");
-
 console.log(`✅ 成功解析 ${Object.keys(result).length} 条`);

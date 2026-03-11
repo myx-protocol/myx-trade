@@ -35,8 +35,8 @@ const checkBranch = () => {
             console.error(`请切换到 ${PUBLISH_BRANCH} 分支后再执行发布操作。`);
             process.exit(1);
         }
-
         console.log(`✅ 当前分支检查通过: ${currentBranch}`);
+
     } catch (error) {
         console.error('🚨 检测分支时出错:', error);
         process.exit(1);
@@ -72,8 +72,8 @@ const checkGitRemote = () => {
             console.error('🚨 检测到远程分支有未拉取的提交，请先执行 `git pull` 再发布。');
             process.exit(1);
         }
-
         console.log('✅ 远程分支已是最新，无未拉取提交。');
+
         return true;
     } catch (error) {
         console.error('🚨 检测远程仓库状态失败:', error);

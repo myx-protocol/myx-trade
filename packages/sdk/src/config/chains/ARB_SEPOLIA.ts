@@ -1,6 +1,6 @@
 import { ChainId, ChainInfo } from "@/config/chain";
 // import ArbitrumLogo from '@/assets/icons/chain/logo/arbitrum.png'
-import { GAS_FEE_RESERVED_RATIO } from './../fee'
+import { GAS_FEE_RESERVED_RATIO } from './../fee.js'
 
 export default {
   chainId: ChainId.ARB_TESTNET,
