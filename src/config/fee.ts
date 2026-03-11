@@ -1,4 +1,4 @@
-import { ChainId } from "./chain"
+import { ChainId } from "./chain.js"
 
 // 预留的 gas 费用系数(gas 的 10 倍)
 export const GAS_FEE_RESERVED_RATIO = 10

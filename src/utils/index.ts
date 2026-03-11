@@ -11,8 +11,6 @@ export const getEIP712Domain = async (contract: Contract) => {
   try {
     // @ts-ignore
     const eip712Domain = await contract.eip712Domain()
-    console.log('eip712Domain-->', eip712Domain.name);
-    console.log('eip712Domain.version-->', eip712Domain.version);
     return {
       name: eip712Domain.name,
       version: eip712Domain.version,

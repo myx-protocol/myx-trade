@@ -1,8 +1,8 @@
 import { WretchOptions } from "wretch/types";
-import { ConfigManager } from "../config";
+import { ConfigManager } from "../config/index.js";
 import { http } from "@/api/request";
 import { merge } from "lodash-es";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Signer } from "ethers";
 
 interface RequestOptions extends WretchOptions {

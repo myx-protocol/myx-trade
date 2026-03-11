@@ -1,23 +1,23 @@
 import { SubScription } from "@/manager/subscription";
-import { ConfigManager } from "./config/index";
-import { type MyxClientConfig } from "./config/index";
+import { ConfigManager } from "./config/index.js";
+import { type MyxClientConfig } from "./config/index.js";
 import { Logger } from "@/logger";
-import { Markets } from "./markets";
-import { Position } from "./position";
-import { Order } from "./order";
-import { Utils } from "./utils";
-import { Account } from "./account";
-import { Api } from "./api";
+import { Markets } from "./markets/index.js";
+import { Position } from "./position/index.js";
+import { Order } from "./order/index.js";
+import { Utils } from "./utils/index.js";
+import { Account } from "./account/index.js";
+import { Api } from "./api/index.js";
 
 import { MxSDK } from "@/web3";
-import { Seamless } from "./seamless";
-import { Appeal } from "./appeal";
-import { Referrals } from "./referrals";
+import { Seamless } from "./seamless/index.js";
+import { Appeal } from "./appeal/index.js";
+import { Referrals } from "./referrals/index.js";
 
 // types
-export type { MyxClientConfig } from "./config/index";
-export * from "./subscription/types";
-export * from "./api/type";
+export type { MyxClientConfig } from "./config/index.js";
+export * from "./subscription/types/index.js";
+export * from "./api/type.js";
 
 export class MyxClient {
   /**
@@ -40,7 +40,7 @@ export class MyxClient {
   public appeal: Appeal;
   public referrals: Referrals;
   /**
-   * 获取配置管理器（用于访问 accessToken 相关方法）
+   * Get config manager (for accessToken-related methods)
    */
   public getConfigManager(): ConfigManager {
     return this.configManager;
@@ -147,15 +147,15 @@ export class MyxClient {
   }
 
   /**
-   * 获取当前存储的 access token（不会自动刷新）
+   * Get currently stored access token (does not auto-refresh)
    */
   public async getAccessToken() {
     return await this.configManager.getAccessToken();
   }
 
   /**
-   * 主动刷新 access token（需要前端明确调用）
-   * @param forceRefresh 是否强制刷新
+   * Manually refresh access token (must be called explicitly by the client)
+   * @param forceRefresh Whether to force refresh
    */
   public async refreshAccessToken(forceRefresh: boolean = false) {
     return await this.configManager.refreshAccessToken(forceRefresh);

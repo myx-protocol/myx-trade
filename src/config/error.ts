@@ -1,5 +1,5 @@
 import {ErrorType, ErrorDecoder} from 'ethers-decode-error'
-import {customErrorMapping} from './customErrorMap'
+import {customErrorMapping} from './customErrorMap.js'
 const errorDecoder = ErrorDecoder.create();
 
 

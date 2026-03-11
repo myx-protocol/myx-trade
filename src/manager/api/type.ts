@@ -1,1 +1,1 @@
-export * from './appeal-type'
+export * from './appeal-type.js'

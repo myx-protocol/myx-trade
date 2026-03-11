@@ -1,5 +1,5 @@
-import { SDKConfig, ChainConfig, SDKContextType } from './types';
-import { defaultSDKConfig } from './default';
+import { SDKConfig, ChainConfig, SDKContextType } from './types.js';
+import { defaultSDKConfig } from './default.js';
 import { Signer } from 'ethers';
 
 class ConfigManager {

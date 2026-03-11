@@ -1,7 +1,7 @@
 import { ChainId } from "@/config/chain";
 import type { TpSl } from "@/lp/pool";
 import type { OracleType } from "@/api";
-import type { BigNumberish, BytesLike } from "ethers/lib.esm";
+import type { BigNumberish, BytesLike } from "ethers";
 export type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>
 
 export interface Deposit {
