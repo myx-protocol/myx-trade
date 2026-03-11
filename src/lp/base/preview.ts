@@ -98,7 +98,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     }
     
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
