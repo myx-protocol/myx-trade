@@ -1,5 +1,18 @@
 # MYX Trade SDK Integration Guide
 
+## Enum
+
+### MarketPoolState
+```typescript
+enum MarketPoolState {
+  Cook = 0,     // Market created
+  Primed = 1,   // Fee charged, waiting for oracle initialization
+  Trench = 2,   // Trading enabled
+  PreBench = 3, // Pending delisting
+  Bench = 4,    // Delisted
+}
+```
+
 ## Overview
 
 MYX Trade SDK is a TypeScript/JavaScript SDK for derivatives trading. It provides order placement, position management, market data, subscriptions, account management, seamless wallet, and LP operations.
