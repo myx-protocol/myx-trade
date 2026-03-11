@@ -1,11 +1,11 @@
 
-export { createPool } from "./create";
-export { getMarketPoolId, getMarketPools, getPoolInfo } from "./get";
+export { createPool } from "./create.js";
+export { getMarketPoolId, getMarketPools, getPoolInfo } from "./get.js";
 export { getUserGenesisShare } from "@/lp/pool/getUserGenesisShare";
-export {addTpSl} from "./addTpSl";
-export {cancelTpSl} from "./cancel";
-export {reprime} from "./reprime";
-import {getPoolInfo as getPoolDetail} from '../getPoolInfo'
+export {addTpSl} from "./addTpSl.js";
+export {cancelTpSl} from "./cancel.js";
+export {reprime} from "./reprime.js";
+import {getPoolInfo as getPoolDetail} from '../getPoolInfo.js'
 export {getPoolDetail}
-export {getOpenOrders} from './orders'
-export * from './type'
+export {getOpenOrders} from './orders.js'
+export * from './type.js'

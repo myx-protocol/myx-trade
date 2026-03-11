@@ -1,5 +1,5 @@
-import { SDKConfig, ChainConfig, SDKContextType } from './types';
-import { defaultSDKConfig } from './default';
+import { SDKConfig, ChainConfig, SDKContextType } from './types.js';
+import { defaultSDKConfig } from './default.js';
 import { Signer } from 'ethers';
 
 class ConfigManager {
@@ -8,8 +8,8 @@ class ConfigManager {
   private signer: Signer | null;
 
   constructor() {
-    this.config = defaultSDKConfig;
-    this.currentChainId = defaultSDKConfig.defaultChainId;
+    this.config = defaultSDKConfig as SDKConfig;
+    this.currentChainId = defaultSDKConfig.defaultChainId || 0;
     this.signer = null;
   }
 

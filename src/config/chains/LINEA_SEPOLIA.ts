@@ -1,6 +1,6 @@
 import { ChainId, ChainInfo } from "@/config/chain";
 // import LineaLogo from '@/assets/icons/chain/logo/linea.png'
-import { GAS_FEE_RESERVED_RATIO } from './../fee'
+import { GAS_FEE_RESERVED_RATIO } from './../fee.js'
 
 export default {
   chainId: ChainId.LINEA_SEPOLIA,

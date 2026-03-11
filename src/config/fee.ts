@@ -1,9 +1,9 @@
-import { ChainId } from "./chain"
+import { ChainId } from "./chain.js"
 
-// 预留的 gas 费用系数(gas 的 10 倍)
+// Reserved gas fee ratio (10x gas)
 export const GAS_FEE_RESERVED_RATIO = 10
 
-// 转发合约的 pledge fee 系数（2 倍）
+// Forwarder contract pledge fee ratio (2x)
 export const FORWARD_PLEDGE_FEE_RADIO = 2
 
 

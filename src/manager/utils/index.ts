@@ -1,15 +1,15 @@
-import { ConfigManager, MyxClientConfig } from "../config";
+import { ConfigManager, MyxClientConfig } from "../config/index.js";
 
 import { ethers } from "ethers";
 import Emiter_ABI from "@/abi/Emiter.json";
-import { getContractAddressByChainId } from "@/config/address/index";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 import MarketManager_ABI from "@/abi/MarketManager.json";
 import { Logger } from "@/logger";
 import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
 import { customErrorMapping } from "@/config/customErrorMap";
-import { KlineResolution } from "../subscription/types";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { KlineResolution } from "../subscription/types/index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
 import {
@@ -39,10 +39,10 @@ export class Utils {
       return null;
     }
 
-    // 创建 Emiter 合约的接口来解析事件
+    // Create Emiter contract interface to parse events
     const emiterInterface = new ethers.Interface(Emiter_ABI);
 
-    // 查找 OrderPlaced 事件定义
+    // Find OrderPlaced event definition
     const orderPlacedEvent = Emiter_ABI.find(
       (item: any) => item.type === "event" && item.name === "OrderPlaced"
     );
@@ -52,7 +52,7 @@ export class Utils {
       return null;
     }
 
-    // 计算 OrderPlaced 事件的 topic hash
+    // Compute OrderPlaced event topic hash
     const eventTopic = ethers.id(
       "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
     );
@@ -66,12 +66,12 @@ export class Utils {
         data: log.data,
       });
 
-      // 检查是否是 OrderPlaced 事件
+      // Check if this is OrderPlaced event
       if (log.topics && log.topics.length > 0 && log.topics[0] === eventTopic) {
         // this.logger.info(`Found OrderPlaced event in log ${i}`);
 
         try {
-          // 使用 ethers 解析事件数据
+          // Parse event data with ethers
           const parsedLog = emiterInterface.parseLog({
             topics: log.topics,
             data: log.data,
@@ -80,9 +80,9 @@ export class Utils {
           if (parsedLog && parsedLog.name === "OrderPlaced") {
             // this.logger.info("Parsed OrderPlaced event:", parsedLog.args);
 
-            // 根据 Emiter.json 的定义，orderId 是第5个参数（索引4）
-            // 事件字段顺序：broker, user, poolId, positionId, orderId, ...
-            const orderId = parsedLog.args[4]; // orderId 在索引 4
+            // Per Emiter.json, orderId is the 5th arg (index 4)
+            // Event field order: broker, user, poolId, positionId, orderId, ...
+            const orderId = parsedLog.args[4]; // orderId at index 4
 
             if (orderId !== undefined && orderId !== null) {
               const orderIdString = orderId.toString();
@@ -415,7 +415,7 @@ export class Utils {
       return error.message;
     }
 
-    // 处理用户拒绝交易的情况
+    // Handle user rejected transaction
     if (
       error?.code === "ACTION_REJECTED" ||
       error?.code === 4001 ||
@@ -427,13 +427,13 @@ export class Utils {
       return "User Rejected";
     }
 
-    // 尝试解析自定义错误 selector
-    // 首先尝试从 error.data 中获取
+    // Try to parse custom error selector
+    // First try to get from error.data
     let errorData = error?.data;
 
-    // 如果 error.data 不存在，尝试从 error.message 中提取 data 字段
+    // If error.data is missing, try to extract data from error.message
     if (!errorData && error?.message && typeof error.message === "string") {
-      // 匹配 data="0x..." 格式
+      // Match data="0x..." format
       const dataMatch = error.message.match(/data=["'](0x[0-9a-fA-F]+)["']/i);
       if (dataMatch && dataMatch[1]) {
         errorData = dataMatch[1];
@@ -441,14 +441,14 @@ export class Utils {
     }
 
     if (errorData) {
-      // 提取 selector (前10个字符: 0x + 8个十六进制字符)
+      // Extract selector (first 10 chars: 0x + 8 hex chars)
       const selector =
         typeof errorData === "string" && errorData.startsWith("0x")
           ? errorData.slice(0, 10).toLowerCase()
           : null;
 
       if (selector) {
-        // 在错误映射中查找
+        // Look up in error mapping
         const errorKey = Object.keys(customErrorMapping).find(
           (k) => k.toLowerCase() === selector
         );
@@ -458,7 +458,7 @@ export class Utils {
       }
     }
 
-    // 尝试从 error.reason 或 error.message 中提取信息
+    // Try to extract info from error.reason or error.message
     if (error?.reason) {
       return error.reason;
     }

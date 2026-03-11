@@ -1,4 +1,4 @@
-import { ConfigManager, MyxClientConfig } from "../config";
+import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 import { GetHistoryOrdersParams } from "@/api";
 import {
@@ -13,17 +13,17 @@ import {
   OrderType,
   PositionTpSlOrderParams,
 } from "@/types/trading";
-import { Utils } from "../utils";
+import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { ethers, Signer } from "ethers";
-import { Seamless } from "../seamless";
+import { Seamless } from "../seamless/index.js";
 import dayjs from "dayjs";
-import { Account } from "../account";
+import { Account } from "../account/index.js";
 import { ChainId } from "@/config/chain";
-import { Api } from "../api";
+import { Api } from "../api/index.js";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
-import { getContractAddressByChainId } from "@/config/address/index";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 
 export class Order {
   private configManager: ConfigManager;
@@ -186,7 +186,7 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      // 执行 placeOrder 交易
+      // Execute placeOrder transaction
       let transaction;
       if (!params.positionId) {
         const positionSalt = '1';
@@ -343,7 +343,6 @@ export class Order {
         this.logger.info("cancel all positions forward tx params --->", forwardTxParams)
 
         const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
@@ -716,7 +715,6 @@ export class Order {
             this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
             const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
-            console.log('rs-->', rs)
 
             return {
               code: 0,
@@ -886,7 +884,6 @@ export class Order {
           this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
           const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
-          console.log('rs-->', rs)
 
           return {
             code: 0,
@@ -1014,7 +1011,6 @@ export class Order {
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
         const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-        console.log('rs-->', rs)
 
         return {
           code: 0,
@@ -1300,7 +1296,7 @@ export class Order {
 
   async getOrders(address: string) {
 
-    // 自动获取 accessToken，如果没有或过期会自动刷新
+    // Auto-fetch accessToken; refresh if missing or expired
     const accessToken = await this.configManager.getAccessToken();
 
     try {
