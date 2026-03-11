@@ -1,5 +1,5 @@
 import { CreatePoolRequest } from "@/lp/pool/type";
-import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "../../web3/providers";
+import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "../../web3/providers.js";
 import { ChainId } from "@/config/chain";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
 import { CHAIN_INFO } from "@/config/chains/index";
@@ -60,7 +60,6 @@ export const getMarketPools = async (chainId: ChainId) => {
     // const data =  [ marketId ]
 
     const request = await contract.getPools();
-    console.log(request);
     return request || [];
   } catch (error) {
     console.error(error);
@@ -78,6 +77,7 @@ export const getPoolInfo = async (
   try {
     const contract = await getDataProviderContract(chainId);
     const request = await contract.getPoolInfo(poolId, marketPrice);
+    console.log(request);
     const info = {
       quotePool: {
         poolToken: request.quotePool.poolToken,

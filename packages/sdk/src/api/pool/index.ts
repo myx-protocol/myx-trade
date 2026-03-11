@@ -1,5 +1,5 @@
-import { ApiResponse } from "../type";
-import { http } from "../request";
+import { ApiResponse } from "../type.js";
+import { http } from "../request.js";
 import { getBaseUrlByEnv } from "@/api";
 
 export const getPoolList = async () => {

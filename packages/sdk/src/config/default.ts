@@ -1,5 +1,5 @@
-import { SDKConfig } from './types';
-import { defaultChains, arbitrumSepolia } from './chains';
+import { SDKConfig } from './types.js';
+import { defaultChains, arbitrumSepolia } from './chains.js';
 
 export const defaultSDKConfig: SDKConfig = {
   chains: defaultChains,

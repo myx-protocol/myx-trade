@@ -94,6 +94,7 @@ export enum OracleType {
   Chainlink = 1,
   Pyth,
 }
+
 export type PriceType = {
   oracleId: number;
   price: string;

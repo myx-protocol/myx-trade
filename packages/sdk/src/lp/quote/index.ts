@@ -1,6 +1,6 @@
-export { deposit } from "./deposit";
-export {withdraw, withdrawableLpAmount} from "./withdraw";
-export {transfer} from "./transfer";
-export {getRewards} from "./rewards";
-export {claimQuotePoolRebate, claimQuotePoolRebates} from "./claim";
-export {getLpPrice} from "./price";
+export { deposit } from "./deposit.js";
+export {withdraw, withdrawableLpAmount} from "./withdraw.js";
+export {transfer} from "./transfer.js";
+export {getRewards} from "./rewards.js";
+export {claimQuotePoolRebate, claimQuotePoolRebates} from "./claim.js";
+export {getLpPrice} from "./price.js";

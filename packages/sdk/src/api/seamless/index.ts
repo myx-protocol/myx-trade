@@ -1,4 +1,4 @@
-import { BaseResponse } from "../type";
+import { BaseResponse } from "../type.js";
 
 export type ForwarderTxParams = {
   from: string;

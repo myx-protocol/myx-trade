@@ -1,1 +1,1 @@
-export * from './SubScription'
+export * from './SubScription.js'
