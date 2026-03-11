@@ -27,10 +27,10 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     
     const _gasLimit = await contract.deployPool.estimateGas(data)
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     
     const request = await contract.deployPool(data, {
       gasLimit,
@@ -43,7 +43,7 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     }
     // console.log(request)
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

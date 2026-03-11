@@ -15,7 +15,7 @@ export const getTokenInfo = async (chainId: number, tokenAddress: string, accoun
   try {
     const token = await getTokenContract(chainId, tokenAddress);
     const _name = await token.name();
-    console.log(_name);
+    // console.log(_name);
     // Fetch metadata in parallel
     const [name, symbol, decimals, totalSupply] = await Promise.all([
       token.name(),

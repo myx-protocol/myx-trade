@@ -1,4 +1,4 @@
-import { getAccount, getBasePoolContract, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers";
+import { getAccount, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers";
 import type { BytesLike } from "ethers";
 import { parseUnits } from "ethers";
 import { OracleUpdatePrice, WithdrawParams } from "@/lp/type";
@@ -14,7 +14,7 @@ import { getPoolInfo } from "@/lp/getPoolInfo";
 import { MarketPoolState } from "@/api";
 import { getPriceData } from "@/common/price";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
+import { getErrorTextFormError } from "@/config/error";
 import { ChainId } from "@/config/chain";
 
 export const withdrawableLpAmount = async (
@@ -41,7 +41,7 @@ export const withdrawableLpAmount = async (
       price: (referencePrice || 0n),
     }
     const request = await quotePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
-    console.log(`quote pool withdrawableLpAmount: ${request}`)
+    // console.log(`quote pool withdrawableLpAmount: ${request}`)
     
     return request
     

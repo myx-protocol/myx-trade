@@ -28,7 +28,7 @@ export const getRewards = async (params: RewardsParams) => {
       gasLimit,
       gasPrice
     })
-    console.log("pendingUserRebates quote result:", request);
+    // console.log("pendingUserRebates quote result:", request);
     
     return request
   
