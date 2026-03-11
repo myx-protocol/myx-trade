@@ -1,5 +1,18 @@
 # MYX Trade SDK 集成指南
 
+## Enum
+
+### MarketPoolState
+```typescript
+enum MarketPoolState {
+  Cook = 0, // 市场建立
+  Primed = 1, // 扣款手续费，等待准备oracle
+  Trench = 2, // 上架交易
+  PreBench = 3, // 预下架
+  Bench = 4, // 下架
+}
+```
+
 ## 概述
 
 MYX Trade SDK 是一个用于衍生品交易的 TypeScript/JavaScript SDK。它提供订单下单、持仓管理、市场数据、订阅、账户管理、无 Gas 钱包和 LP 操作等功能。
