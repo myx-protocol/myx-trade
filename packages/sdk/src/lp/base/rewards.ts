@@ -29,10 +29,10 @@ export const getRewards = async (params: RewardsParams) => {
       gasLimit,
       gasPrice
     })
-    console.log("pendingUserRebates base result:", {
+   /* console.log("pendingUserRebates base result:", {
       rebates: request?.rebates,
       genesisRebates: request?.genesisRebates,
-    });
+    });*/
     
     return {
       rebates: request?.rebates,

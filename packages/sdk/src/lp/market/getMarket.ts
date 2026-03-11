@@ -11,7 +11,7 @@ export const getMarket = async (chainId: ChainId, marketId: string)  => {
     const contract = await getMarketManageContract(chainId)
     
     const request = await contract.getMarket(marketId)
-    console.log("MarketManage.getMarket request", request);
+    // console.log("MarketManage.getMarket request", request);
     
     return request;
   } catch (error) {
