@@ -41,12 +41,12 @@ export const withdrawableLpAmount = async (
       price: (referencePrice || 0n),
     }
     const request = await basePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
-    console.log(`base pool withdrawableLpAmount: ${request}`)
+    // console.log(`base pool withdrawableLpAmount: ${request}`)
     
     return request
     
   } catch (error) {
-    console.error (error);
+    // console.error (error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

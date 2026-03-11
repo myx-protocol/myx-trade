@@ -85,7 +85,6 @@ export const getAccount = async (chainId: ChainId) => {
 export const getLiquidityRouterContract = async (chainId: ChainId) => {
   const addresses = getContractAddressByChainId(chainId);
   const address = addresses.LIQUIDITY_ROUTER;
-  // console.log("LiquidityRouter address", address);
   const provider = await getSignerProvider(chainId as number);
 
   return getContract(
@@ -223,7 +222,6 @@ export const getMarketManageContract = async (
 ) => {
   const addresses = getContractAddressByChainId(chainId);
   const address = addresses.MARKET_MANAGER;
-  console.log(addresses.MARKET_MANAGER);
   const provider =
     type === ProviderType.JSON
       ? getJSONProvider(chainId as number)

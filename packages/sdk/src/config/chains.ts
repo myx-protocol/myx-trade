@@ -1,4 +1,4 @@
-import { ChainConfig } from './types';
+import { ChainConfig } from './types.js';
 
 export const arbitrumSepolia: ChainConfig = {
   id: 421614,

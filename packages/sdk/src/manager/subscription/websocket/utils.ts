@@ -9,7 +9,7 @@ import {
   WebSocketRequest,
   WebSocketSubscriptionItem,
   WebSocketTopicEnum,
-} from "./types";
+} from "./types.js";
 
 /**
  *

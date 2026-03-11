@@ -4,7 +4,7 @@ import {
   PositionHistoryItem,
   TradeFlowItem,
 } from "@/api/account";
-import { ConfigManager } from "../config";
+import { ConfigManager } from "../config/index.js";
 import { http } from "@/api/request";
 import {
   AppealDetail,
@@ -28,7 +28,7 @@ import {
   IsVoteNodeEnum,
   PostVoteResponse,
   PostVoteSignatureParams,
-} from "./appeal-type";
+} from "./appeal-type.js";
 import { Logger } from "@/logger";
 import {
   AccessTokenRequest,
@@ -62,7 +62,7 @@ import {
 } from "@/api";
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
-import { Request } from "./request";
+import { Request } from "./request.js";
 
 export class Api extends Request {
   private logger: Logger;

@@ -1,5 +1,5 @@
-import { ChainId } from "./chain";
-export { getContractAddressByChainId } from "./address/index";
+import { ChainId } from "./chain.js";
+export { getContractAddressByChainId } from "./address/index.js";
 
 export const executeAddressByChainId = (chainId: ChainId) => {
   if (chainId === ChainId.ARB_TESTNET) {
