@@ -1,20 +1,20 @@
-import { MyxWebSocketClient } from "./websocket/socket";
+import { MyxWebSocketClient } from "./websocket/socket.js";
 import {
   KlineResolution,
   WebSocketMethodEnum,
   WebSocketTopicEnum,
   WebSocketEvents,
-} from "./websocket/types";
+} from "./websocket/types.js";
 import {
   OnKlineCallback,
   OnOrderCallback,
   OnPositionCallback,
   OnTickersCallback,
-} from "./types";
+} from "./types/index.js";
 import { Logger } from "@/logger";
 import { ConfigManager } from "@/manager/config";
 import { WEBSOCKET_URL } from "@/manager/const";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 
 export class SubScription {
   private wsClient: MyxWebSocketClient;

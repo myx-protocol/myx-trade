@@ -2,7 +2,7 @@
  * Chain and network related types
  */
 
-import { ChainId, Address } from './common';
+import { ChainId, Address } from './common.js';
 
 // Supported chain IDs
 export const SupportedChainId = {

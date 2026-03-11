@@ -53,13 +53,13 @@ export interface AppealListItem {
   stage: AppealStage;
   totalVoteCount: number; // total vote count
   votedCount: number; // voted count
-  appealCount: number; // 反诉总数
-  appealDeadline: number; // 反诉截止时间
-  compClaimDeadline: number; // 补偿领取时间
-  updateTime: number; // update time
+  appealCount: number; // Total appeal count
+  appealDeadline: number; // Appeal deadline
+  compClaimDeadline: number; // Compensation claim deadline
+  updateTime: number; // Update time
   disputeBondState: AppealClaimStatusEnum
   disputeBondClaimTime: number
-  claimStatus: AppealClaimStatusEnum // 补偿金领取状态
+  claimStatus: AppealClaimStatusEnum // Compensation claim status
   baseAmount?: string
   quoteAmount?: string
   successVoteCount: number
@@ -87,7 +87,7 @@ export interface AppealVoteItem {
 }
 
 export interface AppealReconsiderationItem {
-  respondent: string; // 上诉地址
+  respondent: string; // Respondent address
   type: AppealReconsiderationType;
   stage: AppealStage;
   voteCount: number;
@@ -115,8 +115,8 @@ export interface AppealDetail {
   compClaimDeadline: number;
   votes: AppealVoteItem[];
   appeals: AppealReconsiderationItem[];
-  disputeTime: number; // 申诉时间
-  txHash: string; // 申诉交易hash
+  disputeTime: number; // Dispute time
+  txHash: string; // Dispute tx hash
   disputeBondState: AppealClaimStatusEnum;
   disputeBondClaimTime: number
   claimStatus: AppealClaimStatusEnum
@@ -156,7 +156,7 @@ export interface AppealReconsiderationListItem {
   appealDeadline: number; // appeal deadline
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
-  appealCaseId?: number; // 反诉案件ID
+  appealCaseId?: number; // Appeal case ID
   appealBondClaimTime?: number
   successVoteCount: number
   appealSuccessVoteCount?: number
@@ -182,20 +182,20 @@ export interface AppealReconsiderationDetail {
   disputeTxHash: string;
   disputeVoteDeadline: number;
   disputeStartTime: number;
-  disputeVotes: AppealVoteItem[]; // 初审投票
+  disputeVotes: AppealVoteItem[]; // First-instance votes
   publicNoticeStartTime: number;
   publicNoticeEndTime: number;
-  appealDeadline: number; // 反诉结束时间
-  respondents: string[]; // 操作者列表
-  appealToken: string; // margin token address
-  appealBond: string; // margin amount
-  appealVotes: AppealVoteItem[]; // 反诉投票
-  appealTotalVoteCount: number; //可投票总数
-  appealVotedCount: number; // 已投票数
-  appealCaseId?: number; // 反诉案件ID
-  appealType: AppealReconsiderationType; // 反诉类型-与当前用户绑定
-  appealStage: AppealStage; // 反诉阶段-与当前用户绑定
-  appealBondState: AppealClaimStatusEnum; // 反诉保证金状态
+  appealDeadline: number; // Appeal end time
+  respondents: string[]; // Respondent list
+  appealToken: string; // Margin token address
+  appealBond: string; // Margin amount
+  appealVotes: AppealVoteItem[]; // Appeal votes
+  appealTotalVoteCount: number; // Total votable count
+  appealVotedCount: number; // Voted count
+  appealCaseId?: number; // Appeal case ID
+  appealType: AppealReconsiderationType; // Appeal type (bound to current user)
+  appealStage: AppealStage; // Appeal stage (bound to current user)
+  appealBondState: AppealClaimStatusEnum; // Appeal bond state
   appealBondClaimTime?: number
   txHash: string
   appealStartTime: number
@@ -318,7 +318,7 @@ export interface GuardianSignatureItem {
   guardianIndex: number
 }
 export interface GetWarmholeSignResponse {
-  epoch: number // 质押期数
+  epoch: number // Staking epoch
   response: string // data
   guardianSignatures: GuardianSignatureItem[]
 

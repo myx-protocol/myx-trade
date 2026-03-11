@@ -2,7 +2,7 @@
  * Order related types and interfaces
  */
 
-import { OrderType, Direction, OrderStatus } from './trading';
+import { OrderType, Direction, OrderStatus } from './trading.js';
 
 // Order cancellation parameters
 export interface CancelOrderParams {

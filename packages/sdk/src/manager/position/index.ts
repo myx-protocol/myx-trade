@@ -1,4 +1,4 @@
-import { ConfigManager, MyxClientConfig } from "../config";
+import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 
 import { ethers, Signer } from "ethers";
@@ -6,21 +6,21 @@ import {
   GetHistoryOrdersParams,
   OracleType,
 } from "@/api";
-import { Utils } from "../utils";
+import { Utils } from "../utils/index.js";
 import brokerAbi from "@/abi/Broker.json";
 import { getContract } from "@/web3";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { Seamless } from "../seamless";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
+import { Seamless } from "../seamless/index.js";
 import {
   getForwarderContract,
   getSeamlessBrokerContract,
 } from "@/web3/providers";
 import dayjs from "dayjs";
-import { Account } from "../account";
-import { Api } from "../api";
+import { Account } from "../account/index.js";
+import { Api } from "../api/index.js";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
 import { ChainId } from "@/config/chain";
-import { getContractAddressByChainId } from "@/config/address/index";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 
 export class Position {
   private configManager: ConfigManager;
@@ -46,7 +46,7 @@ export class Position {
   }
 
   async listPositions(address: string) {
-    // 自动获取 accessToken，如果没有或过期会自动刷新
+    // Auto-fetch accessToken; refresh if missing or expired
     const accessToken = await this.configManager.getAccessToken();
 
     try {
@@ -266,7 +266,6 @@ export class Position {
         message: "Adjust collateral transaction submitted",
       };
     } catch (error) {
-      console.log(error, "error");
       const errorMessage = await this.utils.getErrorMessage(error);
       this.logger.error("adjustCollateral error-->", errorMessage);
       return {
