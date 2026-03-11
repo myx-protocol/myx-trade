@@ -55,7 +55,6 @@ export const deposit = async (params: Deposit) => {
     let value = 0n;
     let amountOut;
     if (isNeedPrice) {
-      // todo  getprice
       const priceData = await  getPriceData(chainId, poolId)
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
@@ -83,15 +82,12 @@ export const deposit = async (params: Deposit) => {
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// TODO get minAmountOut from contract
+      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,
       tpslParams
     }
     
-    // console.log("deposit base", price, data, value);
     const  contract = await getLiquidityRouterContract(chainId)
-    
-    
     
     //estimateGas
     const _gasLimit = await contract["depositBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, {value})
@@ -104,7 +100,6 @@ export const deposit = async (params: Deposit) => {
       value
     })
     
-    // console.log("deposit", result)
     return result
     
   } catch (error) {

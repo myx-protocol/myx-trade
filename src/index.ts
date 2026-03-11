@@ -9,3 +9,4 @@ export { MyxClient } from "./manager/index.js";
 export * from "./manager/index.js";
 export * from "./types/trading.js";
 export { ChainId } from "./config/chain.js";
+export const SDK_VERSION = __SDK_VERSION__;

@@ -85,7 +85,6 @@ export const withdraw = async (params: WithdrawParams) => {
     // let _withdrawableLpAmount;
     
     if (isNeedPrice) {
-      // todo  getprice
       const priceData = await getPriceData (chainId, poolId)
       if (!priceData) return
       const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
@@ -112,7 +111,7 @@ export const withdraw = async (params: WithdrawParams) => {
     const data = {
       poolId: poolId as unknown as BytesLike,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),// TODO get minAmountOut from contract
+      minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),
       recipient: account,
     }
     
