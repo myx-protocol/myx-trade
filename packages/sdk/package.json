@@ -20,15 +20,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --minify",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsx scripts/build.ts",
+    "dev": "tsx scripts/build.ts --watch",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
+    "prebuild": "pnpm run clean",
     "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "prepare": "pnpm gen:abi",
     "custom-publish": "tsx scripts/customPublish.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
     "trading",
