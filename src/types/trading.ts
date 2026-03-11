@@ -126,6 +126,7 @@ export interface PositionTpSlOrderParams {
   tpPrice?: string;
   slSize?: string;
   slPrice?: string;
+  slippagePct: string;
 }
 // Trading result
 export interface TradingResult {
