@@ -1,5 +1,5 @@
 import type { AddressLike } from "ethers";
-import { ChainId } from "@/config/chain";
+import { ChainId } from "@/config/chain.js";
 
 export interface CreatePoolRequest {
   chainId: ChainId;

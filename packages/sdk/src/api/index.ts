@@ -1,4 +1,4 @@
-import { http } from "@/api/request";
+import { http } from "@/api/request.js";
 import {
   ApiResponse,
   PriceResponse,
@@ -17,9 +17,9 @@ import {
   BaseDetailResponse,
   MarketDetailResponse,
   MarketInfo,
-} from "@/api/type";
-import { ChainId } from "@/config/chain";
-import sdk from "@/web3";
+} from "@/api/type.js";
+import { ChainId } from "@/config/chain.js";
+import sdk from "@/web3/index.js";
 
 
 export const getBaseUrlByEnv = () => {

@@ -1,4 +1,4 @@
-import { ChainId, ChainInfo } from "@/config/chain";
+import { ChainId, ChainInfo } from "@/config/chain.js";
 // import LineaLogo from '@/assets/icons/chain/logo/linea.png'
 import { GAS_FEE_RESERVED_RATIO } from './../fee.js'
 

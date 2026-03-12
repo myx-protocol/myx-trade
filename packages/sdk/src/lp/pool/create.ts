@@ -1,9 +1,9 @@
-import { CreatePoolRequest } from "@/lp/pool/type";
+import { CreatePoolRequest } from "@/lp/pool/type.js";
 import { getPoolManagerContract } from "../../web3/providers.js";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import {  getMarketPoolId } from "@/lp/pool/get";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import {  getMarketPoolId } from "@/lp/pool/get.js";
 
 export const createPool = async ({chainId, baseToken, marketId}:CreatePoolRequest) => {
   try {

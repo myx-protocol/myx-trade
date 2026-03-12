@@ -1,4 +1,4 @@
-import { ContractAddress } from "@/config/chain";
+import { ContractAddress } from "@/config/chain.js";
 
 export const BSC_BETA_NET: ContractAddress = {
   USDC: '0xe944d7c0f7005a76E898Ee3B9Ec10479EbA9Cc02',

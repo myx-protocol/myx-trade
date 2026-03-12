@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import {  getTokenContract } from "@/web3/providers";
+import {  getTokenContract } from "@/web3/providers.js";
 /**
  * Check if an image URL is accessible
  */

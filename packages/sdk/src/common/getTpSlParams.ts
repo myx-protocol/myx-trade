@@ -1,9 +1,9 @@
-import { ErrorCode, Errors } from "@/config/error";
+import { ErrorCode, Errors } from "@/config/error.js";
 import { parseUnits } from "ethers";
-import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS, } from "@/config/decimals";
-import { bigintAmountSlipperCalculator } from "@/common/tradingGas";
-import type { TpSl, TpSLParams } from "@/lp/pool";
-import { getDecimalPlaces } from "@/utils/number";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS, } from "@/config/decimals.js";
+import { bigintAmountSlipperCalculator } from "@/common/tradingGas.js";
+import type { TpSl, TpSLParams } from "@/lp/pool/index.js";
+import { getDecimalPlaces } from "@/utils/number.js";
 
 export const getTpSlParams = (slippage: number = 0.01, tpsl: TpSl[] = [], decimals = COMMON_LP_AMOUNT_DECIMALS, quoteDecimal: number) => {
   if (tpsl.length === 0) {

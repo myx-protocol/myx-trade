@@ -1,9 +1,9 @@
-import { ChainId, isSupportedChainFn } from "@/config/chain";
-import { ErrorCode, Errors } from "@/config/error";
-import { getBalanceOf } from "@/common/balanceOf";
+import { ChainId, isSupportedChainFn } from "@/config/chain.js";
+import { ErrorCode, Errors } from "@/config/error.js";
+import { getBalanceOf } from "@/common/balanceOf.js";
 import { MaxUint256, parseUnits } from "ethers";
-import { getAllowanceApproved } from "@/common/allowance";
-import { approve } from "@/common/approve";
+import { getAllowanceApproved } from "@/common/allowance.js";
+import { approve } from "@/common/approve.js";
 
 export interface  Optional {
   chainId?: number | ChainId;

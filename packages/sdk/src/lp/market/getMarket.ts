@@ -1,7 +1,7 @@
-import { getErrorTextFormError } from "@/config/error";
-import { getMarketManageContract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
-import { checkParams } from "@/common/checkParams";
+import { getErrorTextFormError } from "@/config/error.js";
+import { getMarketManageContract } from "@/web3/providers.js";
+import { ChainId } from "@/config/chain.js";
+import { checkParams } from "@/common/checkParams.js";
 
 export const getMarket = async (chainId: ChainId, marketId: string)  => {
   try {

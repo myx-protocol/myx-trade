@@ -1,4 +1,4 @@
-import { ContractAddress } from "@/config/chain";
+import { ContractAddress } from "@/config/chain.js";
 
 export const ARB_TEST_SEPOLIA: ContractAddress = {
   USDC: '0x7E248Ec1721639413A280d9E82e2862Cae2E6E28',

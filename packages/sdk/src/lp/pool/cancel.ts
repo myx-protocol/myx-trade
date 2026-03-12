@@ -1,12 +1,12 @@
-import { CancelTpSLParams } from "@/lp/pool/type";
+import { CancelTpSLParams } from "@/lp/pool/type.js";
 import { getLiquidityRouterContract } from "../../web3/providers.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
+} from "@/common/tradingGas.js";
+import { getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
 
 
 export const cancelTpSl = async (params:CancelTpSLParams) => {

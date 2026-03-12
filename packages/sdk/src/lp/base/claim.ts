@@ -1,5 +1,5 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ClaimParams, ClaimRebatesParams } from "@/lp/type";
+import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import {

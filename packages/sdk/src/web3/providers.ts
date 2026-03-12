@@ -1,11 +1,10 @@
 import LiquidityRouter_ABI from "@/abi/LiquidityRouter.json";
-import { ChainId } from "@/config/chain";
+import { ChainId } from "@/config/chain.js";
 import {
   getContract,
   getJSONProvider,
   getSignerProvider,
-  getWalletProvider,
-} from "@/web3/index";
+} from "@/web3/index.js";
 import type {
   LiquidityRouter,
   PoolManager,
@@ -22,7 +21,7 @@ import type {
   Forwarder,
   Reimbursement,
   DisputeCourt,
-} from "@/abi/types";
+} from "@/abi/types/index.js";
 import PoolConfigurator_ABI from "@/abi/PoolConfigurator.json";
 import PoolManager_ABI from "@/abi/PoolManager.json";
 import IERC20Metadata_ABI from "@/abi/IERC20Metadata.json";
