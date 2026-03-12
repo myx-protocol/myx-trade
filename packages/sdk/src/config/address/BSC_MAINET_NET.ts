@@ -1,4 +1,4 @@
-import { ContractAddress } from "@/config/chain";
+import { ContractAddress } from "@/config/chain.js";
 
 export const BSC_MAINNET: ContractAddress = {
   USDC: '0x55d398326f99059fF775485246999027B3197955',

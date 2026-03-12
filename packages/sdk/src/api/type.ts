@@ -1,6 +1,6 @@
-import { Direction } from "@/types/trading";
-import { PoolType, TriggerType } from "@/lp/pool";
-import { ChainId } from "@/config/chain";
+import { Direction } from "@/types/trading.js";
+import { PoolType, TriggerType } from "@/lp/pool/index.js";
+import { ChainId } from "@/config/chain.js";
 export interface ObjectType<T> {
   [key: string]: T;
 }
