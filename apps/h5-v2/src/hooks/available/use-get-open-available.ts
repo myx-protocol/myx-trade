@@ -14,10 +14,9 @@ import useGlobalStore from '@/store/globalStore'
 import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
 import useSWR from 'swr'
 import { useGetNetworkFee } from '../calculate/use-get-liq-price'
-import { useGetFundingFee } from '../calculate/use-get-fundingfee'
-import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { Direction, OrderType } from '@myx-trade/sdk'
 import { useGetPositionList } from '../position/use-get-position-list'
+import { useGetPositionAvailableMargin } from './use-get-position-available-margin'
 
 export const useGetOpenAvailable = () => {
   const { symbolInfo, poolConfig } = useGlobalStore()
@@ -27,10 +26,7 @@ export const useGetOpenAvailable = () => {
     poolId: symbolInfo?.poolId as string,
     chainId: symbolInfo?.chainId ?? 0,
   })
-  const { getFundingFee } = useGetFundingFee(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
 
-  const { tickerData } = useMarketStore()
-  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price.toString() ?? '0'
   const leverage = useLeverage(symbolInfo?.poolId)
   const { autoMarginMode, collateralAmount, price, orderType } = useTradePanelStore()
   const tradingFeeRate = useGetUserTradingFeeRate(
@@ -61,84 +57,8 @@ export const useGetOpenAvailable = () => {
       position.direction === Direction.SHORT && position.poolId === symbolInfo?.poolId,
   )
 
-  let longPositionAvailableMargin = '0'
-  let shortPositionAvailableMargin = '0'
-
-  if (longPosition) {
-    const pnl =
-      parseBigNumber(marketPrice)
-        .minus(parseBigNumber(longPosition.entryPrice))
-        .mul(parseBigNumber(longPosition.size)) ?? '0'
-
-    const poolMaxLeverage = poolConfig?.levelConfig?.leverage ?? 1
-    const positionLeverage = parseBigNumber(longPosition.userLeverage ?? '1').gt(0)
-      ? longPosition.userLeverage
-      : 1
-
-    const safeLeverage = parseBigNumber(positionLeverage).gt(poolMaxLeverage)
-      ? poolMaxLeverage
-      : positionLeverage
-
-    //可减少金额 = 仓位保证金 - 持仓数量 * 入场价 / 杠杆 + 资金费 - 交易手续费 + 盈亏
-    const originMargin = parseBigNumber(longPosition.entryPrice)
-      .mul(parseBigNumber(longPosition.size))
-      .div(safeLeverage)
-
-    const tradingFee = parseBigNumber(longPosition.size)
-      .mul(parseBigNumber(marketPrice))
-      .mul(parseBigNumber(tradingFeeRate))
-      .toString()
-
-    const fundingFee = getFundingFee(
-      longPosition.fundingRateIndex,
-      longPosition.size,
-      longPosition.direction,
-    )
-    longPositionAvailableMargin = parseBigNumber(longPosition.freeAmount)
-      .minus(originMargin)
-      .plus(parseBigNumber(fundingFee ?? '0'))
-      .minus(parseBigNumber(tradingFee ?? '0'))
-      .plus(pnl)
-      .toString()
-  }
-
-  if (shortPosition) {
-    const pnl =
-      parseBigNumber(shortPosition.entryPrice)
-        .minus(parseBigNumber(marketPrice))
-        .mul(parseBigNumber(shortPosition.size)) ?? '0'
-
-    const poolMaxLeverage = poolConfig?.levelConfig?.leverage ?? 1
-    const positionLeverage = parseBigNumber(shortPosition.userLeverage ?? '1').gt(0)
-      ? shortPosition.userLeverage
-      : 1
-    const safeLeverage = parseBigNumber(positionLeverage).gt(poolMaxLeverage)
-      ? poolMaxLeverage
-      : positionLeverage
-
-    //可减少金额 = 仓位保证金 - 持仓数量 * 入场价 / 杠杆 + 资金费 - 交易手续费 + 盈亏
-    const originMargin = parseBigNumber(shortPosition.entryPrice)
-      .mul(parseBigNumber(shortPosition.size))
-      .div(safeLeverage)
-
-    const tradingFee = parseBigNumber(shortPosition.size)
-      .mul(parseBigNumber(marketPrice))
-      .mul(parseBigNumber(tradingFeeRate))
-      .toString()
-
-    const fundingFee = getFundingFee(
-      shortPosition.fundingRateIndex,
-      shortPosition.size,
-      shortPosition.direction,
-    )
-
-    shortPositionAvailableMargin = parseBigNumber(shortPosition.freeAmount)
-      .minus(originMargin)
-      .plus(parseBigNumber(fundingFee ?? '0'))
-      .minus(parseBigNumber(tradingFee ?? '0'))
-      .plus(pnl)
-      .toString()
-  }
+  const { longPositionAvailableMargin, shortPositionAvailableMargin } =
+    useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
 
   // 缓存所有异步数据源，避免 refetch 期间的闪烁
   // 只有当新数据有效且非零时才更新缓存
@@ -218,7 +138,9 @@ export const useGetOpenAvailable = () => {
 
     // 计算三者最小值
     const longLimit1 = collateralValue.plus(
-      shareCollateral ? parseBigNumber(longPositionAvailableMargin) : 0,
+      shareCollateral
+        ? parseBigNumber(longPositionAvailableMargin).mul(parseBigNumber(leverage))
+        : 0,
     ) // 用户可用保证金
     const longLimit2 = parseBigNumber(maxOpenLongByConfigRatio) // 滑点配置限额
     const longLimit3 = parseBigNumber(maxOpenLongQuoteAmountByLiquidity) // 池子流动性限额
@@ -248,7 +170,9 @@ export const useGetOpenAvailable = () => {
     // 6. 计算 Short 的最大可开仓量
     // 需要取三个值的最小值：用户保证金、滑点配置限额、池子流动性限额
     const shortLimit1 = collateralValue.plus(
-      shareCollateral ? parseBigNumber(shortPositionAvailableMargin) : 0,
+      shareCollateral
+        ? parseBigNumber(shortPositionAvailableMargin).mul(parseBigNumber(leverage))
+        : 0,
     ) // 用户可用保证金
     const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
     const shortLimit3 = parseBigNumber(maxOpenShortQuoteAmountByLiquidity) // 池子流动性限额
