@@ -1,4 +1,4 @@
-import { ContractAddress } from "@/config/chain";
+import { ContractAddress } from "@/config/chain.js";
 
 export const LINEA_BETA_SEPOLIA: ContractAddress = {
   POOL_MANAGER: '0xcf51a6895864c6D8E507fC31EF16b9011287c5f4',

@@ -1,6 +1,6 @@
-import { getPoolOpenOrders } from "@/api";
-import { ChainId } from "@/config/chain";
-import { MxSDK } from "@/web3";
+import { getPoolOpenOrders } from "@/api/index.js";
+import { ChainId } from "@/config/chain.js";
+import { MxSDK } from "@/web3/index.js";
 
 export const getOpenOrders = async (chainId: ChainId, address: string) => {
   try {

@@ -1,13 +1,13 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
 import { parseUnits } from "ethers";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
-import { ChainId } from "@/config/chain";
-import { MarketPoolState } from "@/api/type";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
+import { ChainId } from "@/config/chain.js";
+import { MarketPoolState } from "@/api/type.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
 
 
 export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {

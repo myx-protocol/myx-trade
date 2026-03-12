@@ -1,14 +1,14 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ClaimParams, ClaimRebatesParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
+import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
-import { getPricesData } from "@/common/price";
-import { getErrorTextFormError } from "@/config/error";
+} from "@/common/tradingGas.js";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
+import { getPricesData } from "@/common/price.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 export const claimQuotePoolRebate = async (
   params: ClaimParams

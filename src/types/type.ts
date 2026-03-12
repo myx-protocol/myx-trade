@@ -1,6 +1,6 @@
-import { ChainId } from "@/config/chain";
+import { ChainId } from "@/config/chain.js";
 import { AddressLike, Signer } from "ethers";
-import { OrderType, TriggerType, OperationType, Direction, TimeInForce } from "@/config/con";
+import { OrderType, TriggerType, OperationType, Direction, TimeInForce } from "@/config/con.js";
 
 
 
