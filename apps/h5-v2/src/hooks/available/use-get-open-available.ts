@@ -5,37 +5,40 @@ import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import { parseBigNumber } from '@/utils/bn'
 import { useGetAccountAssets } from '../balance/use-get-account-assets'
 import { useGetLiquidityInfo } from './use-get-liquidity-info'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { ethers } from 'ethers'
 import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 import useGlobalStore from '@/store/globalStore'
-import { useGetPositionList } from '../position/use-get-position-list'
-import { Direction, OrderType } from '@myx-trade/sdk'
-import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
 import useSWR from 'swr'
 import { useGetNetworkFee } from '../calculate/use-get-liq-price'
-import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
-import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
-import { ethers } from 'ethers'
+import { useGetFundingFee } from '../calculate/use-get-fundingfee'
+import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { Direction, OrderType } from '@myx-trade/sdk'
+import { useGetPositionList } from '../position/use-get-position-list'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig, shareCollateral } = useGlobalStore()
+  const { symbolInfo, poolConfig } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
-  const leverage = useLeverage(symbolInfo?.poolId)
-  const { tickerData } = useMarketStore()
-  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price.toString() ?? '0'
-  const { autoMarginMode, collateralAmount, price, orderType } = useTradePanelStore()
-  const fundingFeeRate = useGetUserTradingFeeRate(
-    symbolInfo?.chainId ?? 0,
-    poolConfig?.levelConfig?.assetClass ?? 0,
-    poolConfig as PoolConfig,
-  )
-  const { liquidityInfo } = useGetLiquidityInfo()
-  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+  const { shareCollateral } = useGlobalStore()
   const { getNetworkFee } = useGetNetworkFee({
     poolId: symbolInfo?.poolId as string,
     chainId: symbolInfo?.chainId ?? 0,
   })
+  const { getFundingFee } = useGetFundingFee(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
+
+  const { tickerData } = useMarketStore()
+  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price.toString() ?? '0'
+  const leverage = useLeverage(symbolInfo?.poolId)
+  const { autoMarginMode, collateralAmount, price, orderType } = useTradePanelStore()
+  const tradingFeeRate = useGetUserTradingFeeRate(
+    symbolInfo?.chainId ?? 0,
+    poolConfig?.levelConfig?.assetClass ?? 0,
+    poolConfig as PoolConfig,
+  )
+
   const { data: networkFee } = useSWR(
     {
       key: 'getNetworkFee',
@@ -45,35 +48,8 @@ export const useGetOpenAvailable = () => {
     async () => await getNetworkFee(),
   )
 
-  // 缓存所有异步数据源，避免 refetch 期间的闪烁
-  // 只有当新数据有效且非零时才更新缓存
-  const poolLiquidityInfoRef = useRef(poolLiquidityInfo)
-  if (
-    poolLiquidityInfo?.buySizeValueFormatedQuote &&
-    poolLiquidityInfo?.sellSizeValueFormatedQuote &&
-    poolLiquidityInfo?.buySizeValueFormatedQuote !== '0' &&
-    poolLiquidityInfo?.sellSizeValueFormatedQuote !== '0'
-  ) {
-    poolLiquidityInfoRef.current = poolLiquidityInfo
-  }
-  const stablePoolLiquidityInfo = poolLiquidityInfoRef.current
-
-  const liquidityInfoRef = useRef(liquidityInfo)
-  if (
-    liquidityInfo?.windowCaps &&
-    liquidityInfo?.openInterest &&
-    liquidityInfo?.windowCaps !== '0'
-  ) {
-    liquidityInfoRef.current = liquidityInfo
-  }
-  const stableLiquidityInfo = liquidityInfoRef.current
-
-  const accountAssetsRef = useRef(accountAssets)
-  if (accountAssets?.availableMargin !== undefined && accountAssets?.availableMargin !== null) {
-    accountAssetsRef.current = accountAssets
-  }
-  const stableAccountAssets = accountAssetsRef.current
-
+  const { liquidityInfo } = useGetLiquidityInfo()
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const positionList = useGetPositionList(true)
 
   const longPosition = positionList?.find(
@@ -108,10 +84,20 @@ export const useGetOpenAvailable = () => {
       .mul(parseBigNumber(longPosition.size))
       .div(safeLeverage)
 
+    const tradingFee = parseBigNumber(longPosition.size)
+      .mul(parseBigNumber(marketPrice))
+      .mul(parseBigNumber(tradingFeeRate))
+      .toString()
+
+    const fundingFee = getFundingFee(
+      longPosition.fundingRateIndex,
+      longPosition.size,
+      longPosition.direction,
+    )
     longPositionAvailableMargin = parseBigNumber(longPosition.freeAmount)
       .minus(originMargin)
-      .plus(parseBigNumber(longPosition ?? '0'))
-      .minus(parseBigNumber(longPosition ?? '0'))
+      .plus(parseBigNumber(fundingFee ?? '0'))
+      .minus(parseBigNumber(tradingFee ?? '0'))
       .plus(pnl)
       .toString()
   }
@@ -135,16 +121,57 @@ export const useGetOpenAvailable = () => {
       .mul(parseBigNumber(shortPosition.size))
       .div(safeLeverage)
 
+    const tradingFee = parseBigNumber(shortPosition.size)
+      .mul(parseBigNumber(marketPrice))
+      .mul(parseBigNumber(tradingFeeRate))
+      .toString()
+
+    const fundingFee = getFundingFee(
+      shortPosition.fundingRateIndex,
+      shortPosition.size,
+      shortPosition.direction,
+    )
+
     shortPositionAvailableMargin = parseBigNumber(shortPosition.freeAmount)
       .minus(originMargin)
-      .plus(parseBigNumber(shortPosition ?? '0'))
-      .minus(parseBigNumber(shortPosition ?? '0'))
+      .plus(parseBigNumber(fundingFee ?? '0'))
+      .minus(parseBigNumber(tradingFee ?? '0'))
       .plus(pnl)
       .toString()
   }
 
+  // 缓存所有异步数据源，避免 refetch 期间的闪烁
+  // 只有当新数据有效且非零时才更新缓存
+  const poolLiquidityInfoRef = useRef(poolLiquidityInfo)
+  if (
+    poolLiquidityInfo?.buySizeValueFormatedQuote &&
+    poolLiquidityInfo?.sellSizeValueFormatedQuote &&
+    poolLiquidityInfo?.buySizeValueFormatedQuote !== '0' &&
+    poolLiquidityInfo?.sellSizeValueFormatedQuote !== '0'
+  ) {
+    poolLiquidityInfoRef.current = poolLiquidityInfo
+  }
+  const stablePoolLiquidityInfo = poolLiquidityInfoRef.current
+
+  const liquidityInfoRef = useRef(liquidityInfo)
+  if (
+    liquidityInfo?.windowCaps &&
+    liquidityInfo?.openInterest &&
+    liquidityInfo?.windowCaps !== '0'
+  ) {
+    liquidityInfoRef.current = liquidityInfo
+  }
+  const stableLiquidityInfo = liquidityInfoRef.current
+
+  const accountAssetsRef = useRef(accountAssets)
+  if (accountAssets?.availableMargin !== undefined && accountAssets?.availableMargin !== null) {
+    accountAssetsRef.current = accountAssets
+  }
+  const stableAccountAssets = accountAssetsRef.current
+
   // 合并所有计算逻辑到一个 useMemo 中，减少中间状态
   return useMemo(() => {
+    // 1. 计算基础参数
     const safePrice = !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
     const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
     const openSlippage =
@@ -211,7 +238,7 @@ export const useGetOpenAvailable = () => {
         .toString()
     }
 
-    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(fundingFeeRate))
+    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(tradingFeeRate))
     const adjustedRatio = parseBigNumber(1).minus(feeRatio)
 
     longQuoteAmount = parseBigNumber(longQuoteAmount).mul(adjustedRatio).toString()
@@ -236,7 +263,6 @@ export const useGetOpenAvailable = () => {
     }
 
     shortQuoteAmount = parseBigNumber(shortQuoteAmount).mul(adjustedRatio).toString()
-
     if (shortPosition) {
       shortQuoteAmount = parseBigNumber(shortQuoteAmount)
         .minus(parseBigNumber(networkFee ?? 0).mul(3))
@@ -269,7 +295,7 @@ export const useGetOpenAvailable = () => {
     symbolInfo?.poolId,
     symbolInfo?.quoteDecimals,
     symbolInfo?.baseDecimals,
-    poolConfig?.levelConfig?.slip,
+    // poolConfig?.levelConfig?.slip,
     // 流动性数据（使用缓存的稳定值）
     stableLiquidityInfo?.windowCaps,
     stableLiquidityInfo?.openInterest,
@@ -279,7 +305,7 @@ export const useGetOpenAvailable = () => {
     autoMarginMode,
     collateralAmount,
     leverage,
-    fundingFeeRate,
+    tradingFeeRate,
     stableAccountAssets?.availableMargin,
     longPositionAvailableMargin,
     shortPositionAvailableMargin,
