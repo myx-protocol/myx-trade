@@ -91,13 +91,7 @@ export class MxSDK {
   }
 }
 
-const sdk = MxSDK.getInstance()
-
-if (typeof window !== "undefined") {
-  (window as any).MxSDK = sdk;
-} else if (typeof globalThis !== "undefined") {
-  (globalThis as any).MxSDK = sdk;
-}
+const sdk = MxSDK.getInstance();
 
 export default sdk;
 
