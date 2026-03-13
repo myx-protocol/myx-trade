@@ -1,8 +1,8 @@
-import { ChainId } from "@/config/chain";
-import { getJSONProvider } from "@/web3";
-import { CHAIN_INFO } from "@/config/chains/index";
+import { ChainId } from "@/config/chain.js";
+import { getJSONProvider } from "@/web3/index.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
 import { parseUnits } from "ethers";
-import { COMMON_CONFIG_DECIMALS } from "@/config/decimals";
+import { COMMON_CONFIG_DECIMALS } from "@/config/decimals.js";
 
 export const bigintTradingGasToRatioCalculator = (gas: bigint, ratio: Number) => {
   

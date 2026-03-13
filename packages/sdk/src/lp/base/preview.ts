@@ -1,12 +1,12 @@
-import { getBasePoolContract } from "@/web3/providers";
-import { previewAmountOutParams, PreviewWithdrawDataParams } from "@/lp/type";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getOraclePrice } from "@/api";
+import { getBasePoolContract } from "@/web3/providers.js";
+import { previewAmountOutParams, PreviewWithdrawDataParams } from "@/lp/type.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getOraclePrice } from "@/api/index.js";
 import { parseUnits } from "ethers";
-import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { checkParams } from "@/common/checkParams";
-import { getErrorTextFormError } from "@/config/error";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { checkParams } from "@/common/checkParams.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {

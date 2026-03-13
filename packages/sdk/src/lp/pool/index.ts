@@ -1,7 +1,7 @@
 
 export { createPool } from "./create.js";
 export { getMarketPoolId, getMarketPools, getPoolInfo } from "./get.js";
-export { getUserGenesisShare } from "@/lp/pool/getUserGenesisShare";
+export { getUserGenesisShare } from "./getUserGenesisShare.js";
 export {addTpSl} from "./addTpSl.js";
 export {cancelTpSl} from "./cancel.js";
 export {reprime} from "./reprime.js";

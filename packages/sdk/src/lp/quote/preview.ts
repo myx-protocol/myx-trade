@@ -1,8 +1,8 @@
-import { getQuotePoolContract } from "@/web3/providers";
-import { previewAmountOutParams } from "@/lp/type";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getErrorTextFormError } from "@/config/error";
+import { getQuotePoolContract } from "@/web3/providers.js";
+import { previewAmountOutParams } from "@/lp/type.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {

@@ -7,12 +7,12 @@ import {
   Signer,
   ZeroAddress
 } from "ethers";
-import { Address } from "@/address";
-import { ChainId } from "@/config/chain";
-import { getChainInfo } from "@/config/chains/index";
-import { RotationProvider } from "@/web3/rotationProvider";
-import { ConfigManager } from "@/manager/config";
-import { getMarketList, MarketInfo } from "@/api";
+import { Address } from "@/address.js";
+import { ChainId } from "@/config/chain.js";
+import { getChainInfo } from "@/config/chains/index.js";
+import { RotationProvider } from "@/web3/rotationProvider.js";
+import { ConfigManager } from "@/manager/config/index.js";
+import { getMarketList, MarketInfo } from "@/api/index.js";
 
 export function getContract(
   address: string,
