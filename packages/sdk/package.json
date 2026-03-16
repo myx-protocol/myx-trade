@@ -1,6 +1,6 @@
 {
   "name": "@myx-trade/sdk",
-  "version": "0.1.272-beta.2",
+  "version": "1.0.0",
   "private": false,
   "publishConfig": {
     "access": "public"
