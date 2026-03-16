@@ -9,7 +9,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
 import { getForwarderContract } from "@/web3/providers";
-import { MyxClient } from "../index.js";
+import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
 import Broker_ABI from "@/abi/Broker.json";
@@ -52,7 +52,6 @@ export class Account {
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
-
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -60,12 +59,13 @@ export class Account {
           "Failed to get account info"
         );
       }
+      const poolAppealStatusRes = await this.client.api.getPoolAppealStatus({ poolId, chainId, address, accessToken: await this.configManager.getAccessToken() ?? '' });
 
       const marginAccountBalance = marginAccountBalanceRes.data;
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
-      const accountMargin = freeAmount + quoteProfit
+      const accountMargin = freeAmount + (poolAppealStatusRes.data === AppealStatus.None ? quoteProfit : BigInt(0))
 
       return accountMargin
     } catch (error) {
