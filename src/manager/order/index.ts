@@ -41,7 +41,7 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
+  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string, positionAvailableMargin?: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
@@ -51,6 +51,7 @@ export class Order {
       );
 
       let totalNetWorkFee = BigInt(networkFee)
+
       if (params.tpSize && BigInt(params.tpSize) > 0) {
         totalNetWorkFee += BigInt(networkFee)
       }
@@ -58,15 +59,12 @@ export class Order {
         totalNetWorkFee += BigInt(networkFee)
       }
 
-
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
-
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-
       const needAmount = totalCollateralAmount + totalNetWorkFee
       let depositAmount = BigInt(0)
+      const diff = needAmount - (availableAccountMarginBalance - BigInt(positionAvailableMargin ?? 0))
 
-      const diff = needAmount - availableAccountMarginBalance
       if (diff > BigInt(0)) {
         depositAmount = diff
       }
@@ -108,13 +106,12 @@ export class Order {
         }
 
         const forwarderContract = await getForwarderContract(params.chainId)
-
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
           seamlessWallet as Signer
         );
-
         let functionHash = ''
+
         if (!params.positionId) {
           this.logger.info("createIncreaseOrder placeOrderWithSalt data --->", [
             '1',
