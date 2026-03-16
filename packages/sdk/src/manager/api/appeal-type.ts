@@ -321,5 +321,9 @@ export interface GetWarmholeSignResponse {
   epoch: number // Staking epoch
   response: string // data
   guardianSignatures: GuardianSignatureItem[]
+}
 
+export enum AppealStatus {
+  None = 0,
+  isAppealing = 1,
 }
