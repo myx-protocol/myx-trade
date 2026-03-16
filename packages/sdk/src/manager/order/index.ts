@@ -41,7 +41,7 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string, positionAvailableMargin?: string) {
+  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
 
@@ -61,11 +61,9 @@ export class Order {
 
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-      const needAmount = totalCollateralAmount + totalNetWorkFee - BigInt(positionAvailableMargin ?? 0)
+      const needAmount = totalCollateralAmount + totalNetWorkFee 
       let depositAmount = BigInt(0)
       const diff = needAmount - availableAccountMarginBalance
-
-      this.logger.info("createIncreaseOrder diff --->", { diff, needAmount, availableAccountMarginBalance, positionAvailableMargin })
 
       if (diff > BigInt(0)) {
         depositAmount = diff
