@@ -7,17 +7,15 @@ import type { PriceMapType, Trench } from '@/request/lp/type.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { useNavigate } from 'react-router-dom'
 import { CookContext } from '@/pages/Cook/context.ts'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
-import { Interval, PageDirection, type SortOrder, type TrenchSortField } from '@/request/type.ts'
+import { Interval, PageDirection, type TrenchSortField } from '@/request/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
 import { base as Base, COMMON_PRICE_DECIMALS, formatUnits } from '@myx-trade/sdk'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { Empty } from '@/components/Empty.tsx'
 import { Trans } from '@lingui/react/macro'
 import { Change } from '@/components/Change.tsx'
-import { decimalToPercent } from '@/utils/number.ts'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { isSafeNumber } from '@/utils'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView'
 import { encodeSortValue } from '@/utils/sort.ts'
@@ -258,7 +256,9 @@ export const TrenchList = ({
                   ) : (
                     <>
                       $
-                      {formatNumberPrecision(priceMap?.[row.poolId], COMMON_PRICE_DISPLAY_DECIMALS)}
+                      {formatNumber(priceMap?.[row.poolId], {
+                        showUnit: false,
+                      })}
                     </>
                   )}
                 </Box>
@@ -267,7 +267,7 @@ export const TrenchList = ({
                     <Trans>Chg</Trans>
                   </span>
                   <Change className={'font-[500]'} change={row?.change}>
-                    {isSafeNumber(row?.change) ? decimalToPercent(row?.change) : '--'}
+                    {isSafeNumber(row?.change) ? decimalToPercent(row?.change) : '--%'}
                   </Change>
                 </Box>
               </Box>
