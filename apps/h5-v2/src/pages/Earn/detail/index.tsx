@@ -3,7 +3,7 @@ import { NavBar } from '@/pages/Earn/detail/components/NavBar.tsx'
 import { TabBar } from '@/pages/Earn/detail/components/TabBar.tsx'
 import { useState } from 'react'
 import { DetailTabType } from '@/pages/Cook/type.ts'
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { isSupportedChainFn } from '@/config/chain.ts'
 import { TradingForm } from '@/pages/Earn/components/Trade'
 import { Introduction } from '@/pages/Earn/detail/components/Introduction.tsx'
@@ -14,6 +14,8 @@ import { BenchWarning } from '@/pages/Earn/components/BenchWarning.tsx'
 
 const Detail = () => {
   const { chainId, poolId } = useParams()
+  const navigate = useNavigate()
+
   const [type, setType] = useState<DetailTabType>(DetailTabType.Trade)
 
   //   params validation
@@ -24,7 +26,7 @@ const Detail = () => {
     <PoolProvider>
       <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pt-[4px] pb-[50px]">
         <div className={'bg-deep sticky top-[0] z-[1]'}>
-          <NavBar />
+          <NavBar onBack={() => navigate('/earn', { replace: true })} />
           <TabBar value={type} onChange={(value) => setType(value)} />
         </div>
         <div>

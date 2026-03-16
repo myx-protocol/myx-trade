@@ -12,11 +12,27 @@ import { Mode } from '@/pages/Cook/type.ts'
 import { formatNumber } from '@/utils/number.ts'
 import { SearchTypeEnum } from '@myx-trade/sdk'
 
-export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
+export const NavBar = ({
+  className,
+  children,
+  onBack,
+}: {
+  className?: string
+  children?: ReactNode
+  onBack?: () => void
+}) => {
   const navigate = useNavigate()
   const { baseLpDetail, price, mode } = usePoolContext()
   const { open: openGlobalSearch } = useGlobalSearchStore()
   const onSymbolClick = () => {}
+
+  const onBackHandle = () => {
+    if (onBack) {
+      onBack()
+    } else {
+      navigate(-1)
+    }
+  }
   return (
     <Box
       display={'flex'}
@@ -26,7 +42,7 @@ export const NavBar = ({ className, children }: { className?: string; children?:
     >
       <Box className="flex w-full items-center justify-between">
         <Box className={'flex items-center gap-[8px]'}>
-          <Box width={'24px'} height={'24px'} onClick={() => navigate(-1)}>
+          <Box width={'24px'} height={'24px'} onClick={onBackHandle}>
             <BackIcon size={24} />
           </Box>
           <Box className={'relative aspect-square'}>
