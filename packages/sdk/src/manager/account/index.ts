@@ -59,7 +59,7 @@ export class Account {
           "Failed to get account info"
         );
       }
-      const poolAppealStatusRes = await this.client.api.getPoolAppealStatus({ poolId, chainId, address, accessToken: await this.configManager.getAccessToken() ?? '' });
+      const poolAppealStatusRes = await this.client.appeal.getAppealStatus(poolId, chainId, address);
 
       const marginAccountBalance = marginAccountBalanceRes.data;
       const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
