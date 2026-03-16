@@ -558,4 +558,17 @@ export class Api extends Request {
       }
     );
   }
+
+  async getPoolAppealStatus({ poolId, chainId, address, accessToken }: { poolId: string, chainId: number, address: string, accessToken: string }) {
+    return http.get<ApiResponse<number>>(
+      `${this.getHost()}/openapi/gateway/scan/pool-id-dispute-state?poolId=${poolId}&chainId=${chainId}`,
+      {},
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
 }

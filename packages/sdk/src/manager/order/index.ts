@@ -65,6 +65,8 @@ export class Order {
       let depositAmount = BigInt(0)
       const diff = needAmount - (availableAccountMarginBalance - BigInt(positionAvailableMargin ?? 0))
 
+      this.logger.info("createIncreaseOrder diff --->", { diff, needAmount, availableAccountMarginBalance, positionAvailableMargin })
+
       if (diff > BigInt(0)) {
         depositAmount = diff
       }
