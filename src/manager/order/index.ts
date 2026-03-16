@@ -61,9 +61,9 @@ export class Order {
 
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
       const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
-      const needAmount = totalCollateralAmount + totalNetWorkFee
+      const needAmount = totalCollateralAmount + totalNetWorkFee - BigInt(positionAvailableMargin ?? 0)
       let depositAmount = BigInt(0)
-      const diff = needAmount - (availableAccountMarginBalance - BigInt(positionAvailableMargin ?? 0))
+      const diff = needAmount - availableAccountMarginBalance
 
       this.logger.info("createIncreaseOrder diff --->", { diff, needAmount, availableAccountMarginBalance, positionAvailableMargin })
 
