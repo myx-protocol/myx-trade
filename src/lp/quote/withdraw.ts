@@ -1,6 +1,6 @@
 import { getAccount, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers.js";
-import type { BytesLike } from "ethers";
-import { parseUnits } from "ethers";
+import type { Hex } from "viem";
+import { parseUnits } from "viem";
 import { OracleUpdatePrice, WithdrawParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import {
@@ -89,9 +89,9 @@ export const withdraw = async (params: WithdrawParams) => {
       if (!priceData) return
       const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
       price.push ({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as `0x${string}`,
+        oracleUpdateData: priceData.vaa as `0x${string}`,
+        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
       })
       amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
@@ -109,7 +109,7 @@ export const withdraw = async (params: WithdrawParams) => {
     
     
     const data = {
-      poolId: poolId as unknown as BytesLike,
+      poolId: poolId as unknown as import("viem").Hex,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),
       recipient: account,

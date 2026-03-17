@@ -1,5 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import {  type BytesLike, parseUnits } from "ethers";
+import type { Hex } from "viem";
+import { parseUnits } from "viem";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -60,11 +61,11 @@ export const deposit = async (params: Deposit) => {
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as `0x${string}`,
+        oracleUpdateData: priceData.vaa as `0x${string}`,
+        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
-      } as OracleUpdatePrice);
+      });
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
     } else {
@@ -82,7 +83,7 @@ export const deposit = async (params: Deposit) => {
     const tpslParams = getTpSlParams(slippage, _tpsl, decimals, decimals);
    
     const data = {
-      poolId: poolId as unknown as BytesLike,
+      poolId: poolId as unknown as import("viem").Hex,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,

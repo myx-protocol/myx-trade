@@ -6,6 +6,7 @@ import {
   getForwarderContract,
   getSeamlessBrokerContract,
 } from "@/web3/providers";
+import { getPublicClient } from "@/web3/viemClients.js";
 import { TIME_IN_FORCE } from "@/config/con";
 import {
   PlaceOrderParams,
@@ -16,8 +17,9 @@ import {
 import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { ethers, Signer } from "ethers";
+import { encodeFunctionData, maxUint256 } from "viem";
 import { Seamless } from "../seamless/index.js";
+import Broker_ABI from "@/abi/Broker.json";
 import dayjs from "dayjs";
 import { Account } from "../account/index.js";
 import { ChainId } from "@/config/chain";
@@ -60,7 +62,8 @@ export class Order {
       }
 
       const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
-      const availableAccountMarginBalance = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+      const availableRes = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+      const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
       const needAmount = totalCollateralAmount + totalNetWorkFee 
       let depositAmount = BigInt(0)
       const diff = needAmount - availableAccountMarginBalance
@@ -108,7 +111,7 @@ export class Order {
         const forwarderContract = await getForwarderContract(params.chainId)
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
         let functionHash = ''
 
@@ -118,19 +121,11 @@ export class Order {
             { ...depositData },
             data
           ])
-          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
-            '1',
-            { ...depositData },
-            data
-          ])
+          functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithSalt', args: ['1', { ...depositData }, data] })
         } else {
-          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithPosition', [
-            params.positionId.toString(),
-            { ...depositData },
-            data
-          ])
+          functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), { ...depositData }, data] })
         }
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -144,7 +139,7 @@ export class Order {
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -161,7 +156,7 @@ export class Order {
         getContractAddressByChainId(params.chainId).TRADING_ROUTER,
       );
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
@@ -169,7 +164,7 @@ export class Order {
         const approvalResult = await this.utils.approveAuthorization({
           chainId: params.chainId,
           quoteAddress: params.executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
+          amount: maxUint256.toString(),
           spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
         });
 
@@ -184,14 +179,14 @@ export class Order {
       );
 
       // Execute placeOrder transaction
-      let transaction;
+      let hash: `0x${string}`;
       if (!params.positionId) {
         const positionSalt = '1';
         this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionSalt, { ...depositData }, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionSalt, { ...depositData }, data);
 
-        transaction = await brokerContract.placeOrderWithSalt(
+        hash = await brokerContract.write!.placeOrderWithSalt(
           positionSalt,
           { ...depositData },
           data,
@@ -202,13 +197,13 @@ export class Order {
       } else {
         this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
 
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(
           params.positionId.toString(),
           { ...depositData },
           data
         );
 
-        transaction = await brokerContract.placeOrderWithPosition(
+        hash = await brokerContract.write!.placeOrderWithPosition(
           params.positionId.toString(),
           { ...depositData },
           data,
@@ -218,22 +213,14 @@ export class Order {
         );
       }
 
-      // this.logger.info("Transaction sent:", transaction.hash);
-      // this.logger.info("Waiting for confirmation...");
-
-      const receipt = await transaction.wait();
-      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
-
-      // this.logger.info("createIncreaseOrder receipt--->", receipt);
-      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      const receipt = await getPublicClient(params.chainId).waitForTransactionReceipt({ hash });
 
       const result = {
         success: true,
-        // orderId,
-        transactionHash: transaction.hash,
+        transactionHash: hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
-        status: receipt?.status === 1 ? "success" : "failed",
+        status: receipt?.status === "success" ? "success" : "failed",
         confirmations: 1,
         timestamp: Date.now(),
         receipt,
@@ -303,7 +290,7 @@ export class Order {
         //     chainId: chainId,
         //     quoteAddress: params[0].executionFeeToken,
         //     amount: ethers.MaxUint256.toString(),
-        //     signer: seamlessWallet as Signer,
+        //     signer: seamlessWallet as any,
         //   });
 
         //   if (approvalResult.code !== 0) {
@@ -321,11 +308,11 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
-        const functionHash = brokerContract.interface.encodeFunctionData('placeOrdersWithPosition', [depositData, positionIds, dataMap])
+        const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrdersWithPosition', args: [depositData, positionIds, dataMap] })
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -339,7 +326,7 @@ export class Order {
 
         this.logger.info("cancel all positions forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -348,7 +335,7 @@ export class Order {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
@@ -371,28 +358,20 @@ export class Order {
       // }
 
 
-      const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, positionIds, dataMap);
-      const transaction = await brokerContract.placeOrdersWithPosition(depositData, positionIds, dataMap, {
+      const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition(depositData, positionIds, dataMap);
+      const hash = await brokerContract.write!.placeOrdersWithPosition(depositData, positionIds, dataMap, {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
-      // this.logger.info("Transaction sent:", transaction.hash);
-      // this.logger.info("Waiting for confirmation...");
-
-      const receipt = await transaction.wait();
-      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
-
-      // this.logger.info("closeAllPositions receipt--->", receipt);
-      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
         code: 0,
         message: "close all positions success",
-        // data: orderId,
-        transactionHash: transaction.hash,
+        transactionHash: hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
-        status: receipt?.status === 1 ? "success" : "failed",
+        status: receipt?.status === "success" ? "success" : "failed",
         confirmations: 1,
         timestamp: Date.now(),
         receipt,
@@ -456,25 +435,17 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
         let functionHash = ''
 
         if (!params.positionId) {
-          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
-            '1',
-            { ...depositData },
-            data
-          ])
+          functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithSalt', args: ['1', { ...depositData }, data] })
         } else {
-          functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithPosition', [
-            params.positionId.toString(),
-            { ...depositData },
-            data
-          ])
+          functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), { ...depositData }, data] })
         }
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -488,7 +459,7 @@ export class Order {
 
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -497,7 +468,7 @@ export class Order {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
@@ -520,13 +491,13 @@ export class Order {
       // }
 
 
-      let transaction;
+      let hash: `0x${string}`;
       if (!params.positionId) {
         const positionId = 1
         this.logger.info("createDecreaseOrder salt position params--->", [positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionId.toString(), depositData, data);
 
-        transaction = await brokerContract.placeOrderWithSalt(positionId.toString(),
+        hash = await brokerContract.write!.placeOrderWithSalt(positionId.toString(),
           depositData,
           data,
           {
@@ -535,9 +506,9 @@ export class Order {
         );
       } else {
         this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(params.positionId.toString(), depositData, data);
 
-        transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(),
+        hash = await brokerContract.write!.placeOrderWithPosition(params.positionId.toString(),
           depositData,
           data,
           {
@@ -546,22 +517,14 @@ export class Order {
         );
       }
 
-      // this.logger.info("Transaction sent:", transaction.hash);
-      // this.logger.info("Waiting for confirmation...");
-
-      const receipt = await transaction.wait();
-      // this.logger.info("Transaction confirmed in block:", receipt?.blockNumber);
-
-      // this.logger.info("createDecreaseOrder receipt--->", receipt);
-      // const orderId = this.utils.getOrderIdFromTransaction(receipt);
+      const receipt = await getPublicClient(params.chainId).waitForTransactionReceipt({ hash });
 
       const result = {
         success: true,
-        // orderId,
-        transactionHash: transaction.hash,
+        transactionHash: hash,
         blockNumber: receipt?.blockNumber,
         gasUsed: receipt?.gasUsed?.toString(),
-        status: receipt?.status === 1 ? "success" : "failed",
+        status: receipt?.status === "success" ? "success" : "failed",
         confirmations: 1,
         timestamp: Date.now(),
         receipt,
@@ -589,7 +552,7 @@ export class Order {
   async createPositionTpSlOrder(params: PositionTpSlOrderParams) {
     try {
       const config: MyxClientConfig = this.configManager.getConfig();
-      if (!config.signer && !config.seamlessMode) {
+      if (!this.configManager.hasSigner() && !config.seamlessMode) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
@@ -665,7 +628,7 @@ export class Order {
             //     chainId: params.chainId,
             //     quoteAddress: params.executionFeeToken,
             //     amount: ethers.MaxUint256.toString(),
-            //     signer: seamlessWallet as Signer,
+            //     signer: seamlessWallet as any,
             //   });
 
             //   if (approvalResult.code !== 0) {
@@ -683,21 +646,17 @@ export class Order {
 
             const brokerContract = await getSeamlessBrokerContract(
               this.configManager.getConfig().brokerAddress,
-              seamlessWallet as Signer
+              seamlessWallet as any
             );
             let functionHash = ''
 
             if (!params.positionId) {
-              functionHash = brokerContract.interface.encodeFunctionData('placeOrdersWithSalt', [
-                depositData, ['1', '1'], data
-              ])
+              functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrdersWithSalt', args: [depositData, ['1', '1'], data] })
             } else {
-              functionHash = brokerContract.interface.encodeFunctionData('placeOrdersWithPosition', [
-                depositData, [params.positionId.toString(), params.positionId.toString()], data
-              ])
+              functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrdersWithPosition', args: [depositData, [params.positionId.toString(), params.positionId.toString()], data] })
             }
 
-            const nonce = await forwarderContract.nonces(seamlessWallet.address)
+            const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
             const forwardTxParams = {
               from: seamlessWallet.address ?? '',
@@ -711,7 +670,7 @@ export class Order {
 
             this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
-            const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
+            const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as any);
 
             return {
               code: 0,
@@ -733,43 +692,32 @@ export class Order {
           //   }
           // }
 
-          let transaction
+          let hash: `0x${string}`;
           if (!params.positionId) {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
             const positionId = 1
-            const gasLimit = await brokerContract.placeOrdersWithSalt.estimateGas(depositData, [positionId.toString(), positionId.toString()], data);
+            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data, {
+            hash = await brokerContract.write!.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data, {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           } else {
-            const gasLimit = await brokerContract.placeOrdersWithPosition.estimateGas(depositData, [params.positionId.toString(), params.positionId.toString()], data);
+            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data);
 
-            transaction = await brokerContract.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data, {
+            hash = await brokerContract.write!.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data, {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           }
 
-          // this.logger.info("Transaction sent:", transaction.hash);
-          // this.logger.info("Waiting for confirmation...");
-
-          const receipt = await transaction.wait();
-          // this.logger.info(
-          //   "Transaction confirmed in block:",
-          //   receipt?.blockNumber
-          // );
-
-          // this.logger.info("createDecreaseOrder receipt--->", receipt);
-          // const orderId = this.utils.getOrderIdFromTransaction(receipt);
+          const receipt = await getPublicClient(params.chainId).waitForTransactionReceipt({ hash });
 
           const result = {
             success: true,
-            // orderId,
-            transactionHash: transaction.hash,
+            transactionHash: hash,
             blockNumber: receipt?.blockNumber,
             gasUsed: receipt?.gasUsed?.toString(),
-            status: receipt?.status === 1 ? "success" : "failed",
+            status: receipt?.status === "success" ? "success" : "failed",
             confirmations: 1,
             timestamp: Date.now(),
             receipt,
@@ -834,7 +782,7 @@ export class Order {
           //     chainId: params.chainId,
           //     quoteAddress: params.executionFeeToken,
           //     amount: ethers.MaxUint256.toString(),
-          //     signer: seamlessWallet as Signer,
+          //     signer: seamlessWallet as any,
           //   });
 
           //   if (approvalResult.code !== 0) {
@@ -852,21 +800,17 @@ export class Order {
 
           const brokerContract = await getSeamlessBrokerContract(
             this.configManager.getConfig().brokerAddress,
-            seamlessWallet as Signer
+            seamlessWallet as any
           );
           let functionHash = ''
 
           if (!params.positionId) {
-            functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithSalt', [
-              '1', depositData, data
-            ])
+            functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithSalt', args: ['1', depositData, data] })
           } else {
-            functionHash = brokerContract.interface.encodeFunctionData('placeOrderWithPosition', [
-              params.positionId.toString(), depositData, data
-            ])
+            functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), depositData, data] })
           }
 
-          const nonce = await forwarderContract.nonces(seamlessWallet.address)
+          const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
           const forwardTxParams = {
             from: seamlessWallet.address ?? '',
@@ -880,7 +824,7 @@ export class Order {
 
           this.logger.info("createPositionTpSlOrder forward tx params --->", forwardTxParams)
 
-          const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as Signer);
+          const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as any);
 
           return {
             code: 0,
@@ -902,42 +846,31 @@ export class Order {
         //   }
         // }
 
-        let transaction;
+        let hash: `0x${string}`;
         if (!params.positionId) {
           this.logger.info("createPositionTpOrSlOrder salt position data--->", data);
-          const positionId = 1//await this.createPositionId(params.poolId, params.address as `0x${string}`, params.direction, BigInt(1));
-          const gasLimit = await brokerContract.placeOrderWithSalt.estimateGas(positionId.toString(), depositData, data);
+          const positionId = 1;
+          const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionId.toString(), depositData, data);
 
-          transaction = await brokerContract.placeOrderWithSalt(positionId.toString(), depositData, data, {
+          hash = await brokerContract.write!.placeOrderWithSalt(positionId.toString(), depositData, data, {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         } else {
           this.logger.info("createPositionTpOrSlOrder nft position data--->", data);
-          const gasLimit = await brokerContract.placeOrderWithPosition.estimateGas(params.positionId.toString(), depositData, data);
-          transaction = await brokerContract.placeOrderWithPosition(params.positionId.toString(), depositData, data, {
+          const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(params.positionId.toString(), depositData, data);
+          hash = await brokerContract.write!.placeOrderWithPosition(params.positionId.toString(), depositData, data, {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         }
 
-        // this.logger.info("Transaction sent:", transaction.hash);
-        // this.logger.info("Waiting for confirmation...");
-
-        const receipt = await transaction.wait();
-        // this.logger.info(
-        //   "Transaction confirmed in block:",
-        //   receipt?.blockNumber
-        // );
-
-        // this.logger.info("createDecreaseOrder receipt--->", receipt);
-        // const orderId = this.utils.getOrderIdFromTransaction(receipt);
+        const receipt = await getPublicClient(params.chainId).waitForTransactionReceipt({ hash });
 
         const result = {
           success: true,
-          // orderId,
-          transactionHash: transaction.hash,
+          transactionHash: hash,
           blockNumber: receipt?.blockNumber,
           gasUsed: receipt?.gasUsed?.toString(),
-          status: receipt?.status === 1 ? "success" : "failed",
+          status: receipt?.status === "success" ? "success" : "failed",
           confirmations: 1,
           timestamp: Date.now(),
           receipt,
@@ -989,11 +922,11 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
-        let functionHash = brokerContract.interface.encodeFunctionData('cancelOrders', [orderIds])
+        let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrders', args: [orderIds] })
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -1007,7 +940,7 @@ export class Order {
 
         this.logger.info("create decrease order forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -1016,7 +949,7 @@ export class Order {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
@@ -1024,8 +957,8 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      const tx = await brokerContract.cancelOrders(orderIds);
-      await tx.wait();
+      const hash = await brokerContract.write!.cancelOrders(orderIds);
+      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
         message: "cancel all orders success",
@@ -1054,12 +987,12 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
         const forwarderContract = await getForwarderContract(chainId)
-        let functionHash = brokerContract.interface.encodeFunctionData('cancelOrder', [BigInt(orderId)])
+        let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrder', args: [BigInt(orderId)] })
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -1073,7 +1006,7 @@ export class Order {
 
         this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -1082,7 +1015,7 @@ export class Order {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
@@ -1090,8 +1023,8 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      const tx = await brokerContract.cancelOrder(orderId);
-      await tx.wait();
+      const hash = await brokerContract.write!.cancelOrder(orderId);
+      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
         message: "cancel order success",
@@ -1123,11 +1056,11 @@ export class Order {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
-        let functionHash = brokerContract.interface.encodeFunctionData('cancelOrders', [orderIds])
+        let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrders', args: [orderIds] })
   
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
   
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -1141,7 +1074,7 @@ export class Order {
 
         this.logger.info("cancel orders forward tx params --->", forwardTxParams)
 
-        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+        const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as any);
 
         return {
           code: 0,
@@ -1151,15 +1084,15 @@ export class Order {
       }
 
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       const brokerContract = await getBrokerSingerContract(
         chainId,
         this.configManager.getConfig().brokerAddress
       );
-      const tx = await brokerContract.cancelOrders(orderIds);
-      await tx.wait();
+      const hash = await brokerContract.write!.cancelOrders(orderIds);
+      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
         message: "Orders canceled success",
@@ -1207,12 +1140,12 @@ export class Order {
 
       const brokerContract = await getSeamlessBrokerContract(
         this.configManager.getConfig().brokerAddress,
-        seamlessWallet as Signer
+        seamlessWallet as any
       );
       const forwarderContract = await getForwarderContract(chainId)
-      let functionHash = brokerContract.interface.encodeFunctionData('updateOrder', [depositData, data])
+      let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'updateOrder', args: [depositData, data] })
 
-      const nonce = await forwarderContract.nonces(seamlessWallet.address)
+      const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
 
       const forwardTxParams = {
         from: seamlessWallet.address ?? '',
@@ -1226,7 +1159,7 @@ export class Order {
 
       this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
 
-      const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
+      const rs = await this.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as any);
 
       return {
         code: 0,
@@ -1236,7 +1169,7 @@ export class Order {
     }
 
 
-    if (!config.signer) {
+    if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
 
@@ -1260,7 +1193,7 @@ export class Order {
         const approvalResult = await this.utils.approveAuthorization({
           chainId: chainId,
           quoteAddress: params.executionFeeToken,
-          amount: ethers.MaxUint256.toString(),
+          amount: maxUint256.toString(),
           spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
 
@@ -1269,13 +1202,13 @@ export class Order {
         }
       }
 
-      const gasLimit = await brokerContract.updateOrder.estimateGas(depositData, data);
+      const gasLimit = await brokerContract.estimateGas!.updateOrder(depositData, data);
 
-      const request = await brokerContract.updateOrder(depositData, data, {
+      const hash = await brokerContract.write!.updateOrder(depositData, data, {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
-      const receipt = await request?.wait();
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       this.logger.info("updateOrderTpSl receipt", receipt);
       return {
         code: 0,

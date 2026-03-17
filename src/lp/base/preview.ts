@@ -3,7 +3,7 @@ import { previewAmountOutParams, PreviewWithdrawDataParams } from "@/lp/type.js"
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getOraclePrice } from "@/api/index.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { checkParams } from "@/common/checkParams.js";
 import { getErrorTextFormError } from "@/config/error.js";
