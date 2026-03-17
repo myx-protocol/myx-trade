@@ -26,6 +26,20 @@ export class Account {
     this.client = client;
   }
 
+  /** Retry an async call a few times to tolerate intermittent RPC/decoding failures (e.g. BAD_DATA / 0x). */
+  private async withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 300): Promise<T> {
+    let lastErr: unknown;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (e) {
+        lastErr = e;
+        if (i < retries - 1) await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+    throw lastErr;
+  }
+
   async getWalletQuoteTokenBalance(chainId: number, address?: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
     if (!config.signer) {
@@ -298,7 +312,13 @@ export class Account {
         );
       }
       const accountVipInfo = await brokerContract.userFeeData(currentEpoch?.data ?? 0, address);
-      const nonce = await brokerContract.userNonces(address);
+      let nonce: bigint;
+      try {
+        nonce = await this.withRetry(() => brokerContract.userNonces(address));
+      } catch {
+        // Intermittent RPC/BAD_DATA or broker without userNonces; use 0 so caller can still use VIP info
+        nonce = 0n;
+      }
       return {
         code: 0,
         data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
@@ -397,7 +417,15 @@ export class Account {
           config.signer
         );
 
-        const nonce = await brokerContract.userNonces(address);
+        let nonce: bigint;
+        try {
+          nonce = await this.withRetry(() => brokerContract.userNonces(address));
+        } catch {
+          throw new MyxSDKError(
+            MyxErrorCode.RequestFailed,
+            "userNonces call failed after retries (RPC may be unstable or broker version mismatch). Please try again."
+          );
+        }
 
         if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
           throw new MyxSDKError(
