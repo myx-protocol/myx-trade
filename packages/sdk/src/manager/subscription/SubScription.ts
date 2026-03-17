@@ -15,6 +15,7 @@ import { Logger } from "@/logger";
 import { ConfigManager } from "@/manager/config";
 import { WEBSOCKET_URL } from "@/manager/const";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
+import { Signer } from "ethers";
 
 export class SubScription {
   private wsClient: MyxWebSocketClient;
@@ -137,33 +138,49 @@ export class SubScription {
     );
   }
 
-  private async getAccessToken() {
-    const accessToken = await this.configManager.refreshAccessToken() ?? ''
-    this.logger.debug(`getAccessToken->${accessToken}`);
-    return accessToken;
+  private _preSigner: Signer | null = null;
+  private _preUserAddress: string | null = null;
+  private async getSdkAuthParams() {
+    const config = this.configManager.getConfig();
+    if (!config.signer) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
+    let userAddress = this._preUserAddress;
+    if (config.signer !== this._preSigner) {
+      userAddress = await config.signer.getAddress();
+      this._preUserAddress = userAddress;
+      this._preSigner = config.signer;
+    }
+
+    if (!userAddress) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner);
+    }
+    return {
+      userAddress
+    }
   }
   private clientAuth = false;
-  private prevAccessToken = "";
+  private prevUserAddress: string | null = null;
   /**
    * with auth methods
    */
   public async auth(isReconnect = false) {
-    const token = await this.getAccessToken();
-    if (token === this.prevAccessToken && this.clientAuth && !isReconnect) {
+    const { userAddress } = await this.getSdkAuthParams();
+
+    if (userAddress === this.prevUserAddress && this.clientAuth && !isReconnect) {
       // client auth success
       return Promise.resolve();
     }
-    this.logger.debug(`auth ${token}`);
+
+    this.logger.debug(`sdkaccount: ${userAddress}`);
     await this.wsClient
       .request({
         request: WebSocketMethodEnum.SignIn,
-        args: `sdk.${token}`,
+        args: `sdkaccount.${userAddress}`,
       })
       .then(() => {
         // client auth success
-        this.logger.debug(`auth success ${token}`);
-        this.prevAccessToken = token;
+        this.logger.debug(`auth success ${userAddress}`);
         this.clientAuth = true;
+        this.prevUserAddress = userAddress;
       });
   }
 

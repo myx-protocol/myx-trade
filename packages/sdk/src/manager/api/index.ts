@@ -38,6 +38,7 @@ import {
   KlineDataItemType,
   MarketDetailResponse,
   MarketInfo,
+  OrderResponse,
   PoolOpenOrdersResponse,
   PoolResponse,
   PositionResponse,
@@ -162,7 +163,7 @@ export class Api extends Request {
   }
 
   async getOrders(accessToken: string, address: string) {
-    return await http.get<PositionResponse>(
+    return await http.get<OrderResponse>(
       `${this.getHost()}/openapi/gateway/scan/order/open`,
       undefined,
       {
@@ -550,6 +551,19 @@ export class Api extends Request {
     return http.get<ApiResponse<number>>(
       `${this.getHost()}/openapi/gateway/scan/get-current-epoch`,
       { broker },
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
+
+  async getPoolAppealStatus({ poolId, chainId, address, accessToken }: { poolId: string, chainId: number, address: string, accessToken: string }) {
+    return http.get<ApiResponse<number>>(
+      `${this.getHost()}/openapi/gateway/scan/pool-id-dispute-state?poolId=${poolId}&chainId=${chainId}`,
+      {},
       {
         headers: {
           myx_openapi_account: address,
