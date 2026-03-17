@@ -1,10 +1,10 @@
-import { CreatePoolRequest } from "@/lp/pool/type";
+import { CreatePoolRequest } from "@/lp/pool/type.js";
 import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "../../web3/providers.js";
-import { ChainId } from "@/config/chain";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getContractAddressByChainId } from "@/config/address";
-import sdk from "@/web3";
+import { ChainId } from "@/config/chain.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getContractAddressByChainId } from "@/config/address.js";
+import sdk from "@/web3/index.js";
 
 export const getMarketInfo = (chainId: ChainId, quoteToken: string) => {
   const marketId = sdk?.Markets?.find((m) => m.chainId === chainId && m.quoteToken === quoteToken);

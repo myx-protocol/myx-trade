@@ -1,4 +1,4 @@
-import { ChainId, ChainInfo } from "@/config/chain";
+import { ChainId, ChainInfo } from "@/config/chain.js";
 import { GAS_FEE_RESERVED_RATIO } from './../fee.js'
 
 export default {

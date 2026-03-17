@@ -1,22 +1,22 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
 import {  type BytesLike, parseUnits } from "ethers";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { Deposit, type OracleUpdatePrice } from "@/lp/type";
-import { checkParams } from "@/common/checkParams";
-import { previewLpAmountOut } from "@/lp/quote/preview";
-import { MarketPoolState, OracleType } from "@/api";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { getPriceData } from "@/common/price";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import type { TpSl } from "@/lp/pool";
-import { getTpSlParams } from "@/common/getTpSlParams";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { getContractAddressByChainId } from "@/config/address";
+} from "@/common/tradingGas.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { Deposit, type OracleUpdatePrice } from "@/lp/type.js";
+import { checkParams } from "@/common/checkParams.js";
+import { previewLpAmountOut } from "@/lp/quote/preview.js";
+import { MarketPoolState, OracleType } from "@/api/index.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { getPriceData } from "@/common/price.js";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import type { TpSl } from "@/lp/pool/index.js";
+import { getTpSlParams } from "@/common/getTpSlParams.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getContractAddressByChainId } from "@/config/address.js";
 
 
 export const deposit = async (params: Deposit) => {

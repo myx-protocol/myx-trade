@@ -1,10 +1,10 @@
-import LINEA_SEPOLIA from "@/config/chains/LINEA_SEPOLIA";
-import ARB_SEPOLIA from "@/config/chains/ARB_SEPOLIA";
-import BSC_TESTNET from "@/config/chains/BSC_TESTNET";
-import LINEA_MAINNET from "@/config/chains/LINEA_MAINNET";
-import ARB_MAINNET from "@/config/chains/ARB_MAINNET";
-import BSC_MAINNET from "@/config/chains/BSC_MAINNET";
-import { BaseChainInfo, ChainId } from "@/config/chain";
+import LINEA_SEPOLIA from "@/config/chains/LINEA_SEPOLIA.js";
+import ARB_SEPOLIA from "@/config/chains/ARB_SEPOLIA.js";
+import BSC_TESTNET from "@/config/chains/BSC_TESTNET.js";
+import LINEA_MAINNET from "@/config/chains/LINEA_MAINNET.js";
+import ARB_MAINNET from "@/config/chains/ARB_MAINNET.js";
+import BSC_MAINNET from "@/config/chains/BSC_MAINNET.js";
+import { BaseChainInfo, ChainId } from "@/config/chain.js";
 
 
 export type ChainInfoMap = { readonly [chainId: number]: BaseChainInfo }

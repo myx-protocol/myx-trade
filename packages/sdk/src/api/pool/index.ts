@@ -1,6 +1,6 @@
 import { ApiResponse } from "../type.js";
 import { http } from "../request.js";
-import { getBaseUrlByEnv } from "@/api";
+import { getBaseUrlByEnv } from "@/api/index.js";
 
 export const getPoolList = async () => {
   return http.get<ApiResponse<any[]>>(
@@ -17,5 +17,7 @@ export interface PoolSymbolAllResponse {
   baseTokenIcon: string;
   baseToken: string
   quoteToken: string
+  baseDecimals: number
+  quoteDecimals: number
 }
 

@@ -1,5 +1,5 @@
-import { getERC20Contract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
+import { getERC20Contract } from "@/web3/providers.js";
+import { ChainId } from "@/config/chain.js";
 
 export const approve = async (chainId: ChainId, account: string, tokenAddress: string,approveAddress: string, amount:bigint) => {
   try {

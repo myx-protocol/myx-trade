@@ -4,16 +4,16 @@ import { Utils } from "../utils/index.js";
 import { ethers, Signer } from "ethers";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index.js";
-import { GetHistoryOrdersParams } from "@/api";
+import { ApiResponse, GetHistoryOrdersParams } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
 import { getForwarderContract } from "@/web3/providers";
-import { MyxClient } from "../index.js";
+import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
 import Broker_ABI from "@/abi/Broker.json";
-
+import { AccountInfo } from "@/types/common.js";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -24,6 +24,20 @@ export class Account {
     this.logger = logger;
     this.utils = utils;
     this.client = client;
+  }
+
+  /** Retry an async call a few times to tolerate intermittent RPC/decoding failures (e.g. BAD_DATA / 0x). */
+  private async withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 300): Promise<T> {
+    let lastErr: unknown;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (e) {
+        lastErr = e;
+        if (i < retries - 1) await new Promise((r) => setTimeout(r, delayMs));
+      }
+    }
+    throw lastErr;
   }
 
   async getWalletQuoteTokenBalance(chainId: number, address?: string) {
@@ -52,7 +66,6 @@ export class Account {
 
   async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
     try {
-
       const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
       if (marginAccountBalanceRes.code !== 0) {
         throw new MyxSDKError(
@@ -60,12 +73,13 @@ export class Account {
           "Failed to get account info"
         );
       }
+      const poolAppealStatusRes = await this.client.appeal.getAppealStatus(poolId, chainId, address);
 
       const marginAccountBalance = marginAccountBalanceRes.data;
-      const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
+      const quoteProfit = BigInt(marginAccountBalance?.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
-      const accountMargin = freeAmount + quoteProfit
+      const accountMargin = freeAmount + (poolAppealStatusRes.data === AppealStatus.None ? quoteProfit : BigInt(0))
 
       return accountMargin
     } catch (error) {
@@ -251,9 +265,13 @@ export class Account {
     }
   }
 
-  async getAccountInfo(chainId: number, address: string, poolId: string) {
+  async getAccountInfo(
+    chainId: number,
+    address: string,
+    poolId: string
+  ): Promise<{ code: 0; data: AccountInfo } | { code: -1; message: string }> {
     const contractAddress = getContractAddressByChainId(chainId);
-    const provider = await getJSONProvider(chainId)
+    const provider = await getJSONProvider(chainId);
     const dataProviderContract = new ethers.Contract(
       contractAddress.DATA_PROVIDER,
       DataProvider_ABI,
@@ -263,7 +281,7 @@ export class Account {
       const accountInfo = await dataProviderContract.getAccountInfo(poolId, address);
       return {
         code: 0,
-        data: accountInfo,
+        data: accountInfo as AccountInfo,
       };
     } catch (error) {
       return {
@@ -298,7 +316,13 @@ export class Account {
         );
       }
       const accountVipInfo = await brokerContract.userFeeData(currentEpoch?.data ?? 0, address);
-      const nonce = await brokerContract.userNonces(address);
+      let nonce: bigint;
+      try {
+        nonce = await this.withRetry(() => brokerContract.userNonces(address));
+      } catch {
+        // Intermittent RPC/BAD_DATA or broker without userNonces; use 0 so caller can still use VIP info
+        nonce = 0n;
+      }
       return {
         code: 0,
         data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
@@ -397,7 +421,15 @@ export class Account {
           config.signer
         );
 
-        const nonce = await brokerContract.userNonces(address);
+        let nonce: bigint;
+        try {
+          nonce = await this.withRetry(() => brokerContract.userNonces(address));
+        } catch {
+          throw new MyxSDKError(
+            MyxErrorCode.RequestFailed,
+            "userNonces call failed after retries (RPC may be unstable or broker version mismatch). Please try again."
+          );
+        }
 
         if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
           throw new MyxSDKError(

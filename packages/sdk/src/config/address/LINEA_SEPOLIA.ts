@@ -1,4 +1,4 @@
-import { ContractAddress } from "@/config/chain";
+import { ContractAddress } from "@/config/chain.js";
 
 export const LINEA_SEPOLIA: ContractAddress = {
   USDC: '0xD984fd34f91F92DA0586e1bE82E262fF27DC431b',
