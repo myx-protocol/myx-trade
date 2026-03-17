@@ -176,3 +176,13 @@ export type Brand<T, B> = T & { __brand: B };
 export type PositionId = Brand<string, 'PositionId'>;
 export type OrderId = Brand<string, 'OrderId'>;
 export type PoolId = Brand<string, 'PoolId'>;
+
+export type AccountInfo = {
+  freeMargin: string;
+  walletBalance: string;
+  freeBaseAmount: string;
+  baseProfit: string;
+  quoteProfit: string;
+  reservedAmount: string;
+  releaseTime: Timestamp;
+}

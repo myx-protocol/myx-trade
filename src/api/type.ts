@@ -1,4 +1,4 @@
-import { Direction } from "@/types/trading.js";
+import { Direction, OperationType, OrderType, TimeInForce } from "@/types/trading.js";
 import { PoolType, TriggerType } from "@/lp/pool/index.js";
 import { ChainId } from "@/config/chain.js";
 export interface ObjectType<T> {
@@ -113,19 +113,64 @@ export interface ApiResponse<T = Record<string, any>> extends BaseResponse {
 }
 
 export interface PositionType {
+  chainId: number;
   poolId: string;
   positionId: string;
   direction: Direction;
   entryPrice: string;
-  fundingRateIndex: string;
   size: string;
-  riskTier: number;
   collateralAmount: string;
+  fundingRateIndex: string;
+  riskTier: number;
   txTime: number;
+  broker: string;
+  userLeverage: number;
+  baseSymbol: string;
+  quoteSymbol: string;
+  earlyClosePrice: string;
+  tradingFee: string;
+  tokenId: string | null;
+  freeAmount: string;
+  lockedAmount: string;
 }
 
 export interface PositionResponse extends BaseResponse {
   data: PositionType[];
+}
+
+export interface OrderItem {
+  baseSymbol: string;
+  chainId: number;
+  collateralAmount: string;
+  direction: Direction;
+  executionFeeAmount: string;
+  executionFeeToken: string | null;
+  filledAmount: string;
+  filledSize: string;
+  operation: OperationType;
+  orderId: number;
+  orderType: OrderType;
+  poolId: string;
+  positionId: string;
+  postOnly: 0 | 1;
+  price: string;
+  quoteSymbol: string;
+  size: string;
+  slPrice: string | null;
+  slSize: string | null;
+  slippagePct: number;
+  tif: TimeInForce;
+  tpPrice: string | null;
+  tpSize: string | null;
+  triggerType: TriggerType;
+  txHash: string;
+  txTime: number;
+  user: string;
+  useLeverage: number;
+}
+
+export interface OrderResponse extends BaseResponse {
+  data: OrderItem[];
 }
 
 export interface PoolOpenOrder {
