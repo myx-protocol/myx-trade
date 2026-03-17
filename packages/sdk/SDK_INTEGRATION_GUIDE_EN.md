@@ -88,8 +88,10 @@ The callback should request an access token from the following API.
 **Signature Generation:**
 
 ```typescript
+import { SHA256, Hex } from 'crypto-es';
+
 const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+const signature = SHA256(payload).toString(Hex);
 ```
 
 **Expected Return Value of getAccessToken:**
@@ -110,7 +112,7 @@ The `getAccessToken` callback must return an object in the following format:
 **Example Usage:**
 
 ```typescript
-import CryptoJS from 'crypto-js';
+import { SHA256, Hex } from 'crypto-es';
 
 const getAccessToken = async () => {
   const appId = 'YOUR_APP_ID';
@@ -121,7 +123,7 @@ const getAccessToken = async () => {
 
   // Generate signature
   const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-  const signature = CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
+  const signature = SHA256(payload).toString(Hex);
 
   // Request access token
   const response = await fetch(
@@ -131,8 +133,8 @@ const getAccessToken = async () => {
   return await response.json();
 };
 
-// Authenticate the SDK
-await myxClient.auth(signer, walletClient, getAccessToken);
+// Authenticate the SDK (pass an object with signer, walletClient, getAccessToken)
+await myxClient.auth({ signer, walletClient, getAccessToken });
 ```
 
 ### Update Client Chain
@@ -149,28 +151,33 @@ myxClient.updateClientChainId(newChainId, NEW_BROKER_ADDRESS);
 Create an increase position order (open or add to position).
 
 ```typescript
-import { OrderType, TriggerType, Direction } from '@myx-trade/sdk';
+import { OrderType, TriggerType, Direction, TimeInForce } from '@myx-trade/sdk';
 
-const result = await myxClient.order.createIncreaseOrder({
-  chainId: 421614,
-  address: userAddress as `0x${string}`,
-  poolId: poolId, // Pool ID from market list
-  positionId: "0", // 0 for new position, or existing positionId
-  orderType: OrderType.LIMIT,
-  triggerType: TriggerType.NONE,
-  direction: Direction.LONG,
-  collateralAmount: "1000000000", // in quote token decimals
-  size: "1000000000000000000", // position size
-  price: "3000000000000000000000000000000000", // 30 decimals
-  postOnly: false,
-  slippagePct: "100", // in bps
-  executionFeeToken: quoteTokenAddress, // Quote token address (e.g., USDC)
-  leverage: 10,
-  tpSize: "0", // optional take profit size
-  tpPrice: "0", // optional take profit price
-  slSize: "0", // optional stop loss size
-  slPrice: "0", // optional stop loss price
-}, tradingFee);
+const result = await myxClient.order.createIncreaseOrder(
+  {
+    chainId: 421614,
+    address: userAddress as `0x${string}`,
+    poolId: poolId, // Pool ID from market list
+    positionId: "0", // 0 for new position, or existing positionId
+    orderType: OrderType.LIMIT,
+    triggerType: TriggerType.NONE,
+    direction: Direction.LONG,
+    collateralAmount: "1000000000", // in quote token decimals
+    size: "1000000000000000000", // position size
+    price: "3000000000000000000000000000000000", // 30 decimals
+    timeInForce: TimeInForce.IOC,
+    postOnly: false,
+    slippagePct: "100", // in bps
+    executionFeeToken: quoteTokenAddress, // Quote token address (e.g., USDC)
+    leverage: 10,
+    tpSize: "0", // optional take profit size
+    tpPrice: "0", // optional take profit price
+    slSize: "0", // optional stop loss size
+    slPrice: "0", // optional stop loss price
+  },
+  tradingFee,   // Trading fee (string)
+  marketId      // Market ID, used for network fee etc.
+);
 ```
 
 ### createDecreaseOrder
@@ -189,6 +196,7 @@ const result = await myxClient.order.createDecreaseOrder({
   collateralAmount: "0",
   size: "500000000000000000",
   price: "3000000000000000000000000000000000",
+  timeInForce: TimeInForce.IOC,
   postOnly: false,
   slippagePct: "100",
   executionFeeToken: quoteTokenAddress,
@@ -231,6 +239,7 @@ await myxClient.order.createPositionTpSlOrder({
   slPrice: "2800000000000000000000000000000000",
   slTriggerType: TriggerType.LTE,
   executionFeeToken: quoteTokenAddress,
+  slippagePct: "100", // in bps
 });
 ```
 
@@ -239,17 +248,24 @@ await myxClient.order.createPositionTpSlOrder({
 Update take profit and stop loss for an existing order.
 
 ```typescript
-await myxClient.order.updateOrderTpSl({
-  orderId: orderId,
-  size: "1000000000000000000",
-  price: "3000000000000000000000000000000000",
-  tpSize: "500000000000000000",
-  tpPrice: "3500000000000000000000000000000000",
-  slSize: "500000000000000000",
-  slPrice: "2800000000000000000000000000000000",
-  useOrderCollateral: true,
-  executionFeeToken: quoteTokenAddress,
-}, quoteTokenAddress, chainId, userAddress);
+await myxClient.order.updateOrderTpSl(
+  {
+    orderId: orderId,
+    size: "1000000000000000000",
+    price: "3000000000000000000000000000000000",
+    tpSize: "500000000000000000",
+    tpPrice: "3500000000000000000000000000000000",
+    slSize: "500000000000000000",
+    slPrice: "2800000000000000000000000000000000",
+    useOrderCollateral: true,
+    executionFeeToken: quoteTokenAddress,
+  },
+  quoteTokenAddress,
+  chainId,
+  userAddress,
+  marketId,   // Market ID
+  true        // Optional: whether this is a TpSl order, default undefined
+);
 ```
 
 ### cancelOrder
@@ -292,12 +308,14 @@ if (result.code === 0) {
 Get historical orders.
 
 ```typescript
-const result = await myxClient.order.getOrderHistory({
-  chainId: 421614,
-  poolId: poolId, // optional filter by pool
-  page: 1,
-  limit: 20,
-}, userAddress);
+const result = await myxClient.order.getOrderHistory(
+  {
+    chainId: 421614,
+    poolId: poolId, // optional filter by pool
+    limit: 20,
+  },
+  userAddress
+);
 ```
 
 ## Module: Position
@@ -319,12 +337,14 @@ if (result.code === 0) {
 Get historical closed positions.
 
 ```typescript
-const result = await myxClient.position.getPositionHistory({
-  chainId: 421614,
-  poolId: poolId, // optional filter by pool
-  page: 1,
-  limit: 20,
-}, userAddress);
+const result = await myxClient.position.getPositionHistory(
+  {
+    chainId: 421614,
+    poolId: poolId, // optional filter by pool
+    limit: 20,
+  },
+  userAddress
+);
 ```
 
 ### adjustCollateral
@@ -390,10 +410,7 @@ const result = await myxClient.utils.getUserTradingFeeRate(
 Get the network execution fee for orders.
 
 ```typescript
-const networkFee = await myxClient.utils.getNetworkFee(
-  quoteTokenAddress,
-  chainId
-);
+const networkFee = await myxClient.utils.getNetworkFee(marketId, chainId);
 ```
 
 ### getOraclePrice
@@ -435,18 +452,18 @@ const errorMsg = myxClient.utils.formatErrorMessage(error);
 
 ### getGasPriceByRatio
 
-Get gas price with configured ratio.
+Get gas price with configured ratio (uses current client chainId).
 
 ```typescript
-const gasPrice = await myxClient.utils.getGasPriceByRatio(chainId);
+const gasPrice = await myxClient.utils.getGasPriceByRatio();
 ```
 
 ### getGasLimitByRatio
 
-Get gas limit with configured ratio.
+Get gas limit by configured ratio from estimated gas.
 
 ```typescript
-const gasLimit = await myxClient.utils.getGasLimitByRatio(chainId, BigInt(100000));
+const gasLimit = await myxClient.utils.getGasLimitByRatio(BigInt(100000));
 ```
 
 ## Module: Markets
@@ -612,11 +629,14 @@ const availableBalance = await myxClient.account.getAvailableMarginBalance({
 Get account trade flow history.
 
 ```typescript
-const result = await myxClient.account.getTradeFlow({
-  chainId: chainId,
-  page: 1,
-  limit: 20,
-}, userAddress);
+const result = await myxClient.account.getTradeFlow(
+  {
+    chainId: chainId,
+    limit: 20,
+    poolId: poolId, // optional
+  },
+  userAddress
+);
 ```
 
 ### deposit
@@ -1773,7 +1793,7 @@ await myxClient.seamless.startSeamlessMode({ open: true });
   "dependencies": {
     "@myx-trade/sdk": "latest",
     "ethers": "^6.x.x",
-    "crypto-js": "^4.x.x"
+    "crypto-es": "^3.x.x"
   }
 }
 ```

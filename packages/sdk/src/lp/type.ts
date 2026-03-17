@@ -1,6 +1,6 @@
-import { ChainId } from "@/config/chain";
-import type { TpSl } from "@/lp/pool";
-import type { OracleType } from "@/api";
+import { ChainId } from "@/config/chain.js";
+import type { TpSl } from "@/lp/pool/index.js";
+import type { OracleType } from "@/api/index.js";
 import type { BigNumberish, BytesLike } from "ethers";
 export type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>
 

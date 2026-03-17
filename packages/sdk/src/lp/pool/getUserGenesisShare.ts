@@ -1,6 +1,6 @@
-import { ChainId } from "@/config/chain";
-import { getPoolTokenContract } from "@/web3/providers";
-import { getErrorTextFormError } from "@/config/error";
+import { ChainId } from "@/config/chain.js";
+import { getPoolTokenContract } from "@/web3/providers.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 export const getUserGenesisShare = async (chainId: ChainId, tokenAddress: string, account: string) => {
   try {
