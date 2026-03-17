@@ -39,7 +39,7 @@ export  const checkParams = async (params: OptionalParams) => {
   
   // console.log('checkbalance')
   const {tokenAddress,contractAddress, chainId, amount, decimals, account} = params
-  if(amount && chainId && decimals && account) {
+  if(amount && chainId && Number(decimals) >= 0 && account) {
     
     
     const amountIn = parseUnits (amount.toString (), decimals)
