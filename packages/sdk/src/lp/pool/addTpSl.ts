@@ -1,15 +1,15 @@
-import { AddTpSLParams } from "@/lp/pool/type";
+import { AddTpSLParams } from "@/lp/pool/type.js";
 import { getLiquidityRouterContract } from "../../web3/providers.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
-import { getTpSlParams } from "@/common/getTpSlParams";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
+} from "@/common/tradingGas.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
+import { getTpSlParams } from "@/common/getTpSlParams.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
 
 
 export const addTpSl = async (params:AddTpSLParams) => {

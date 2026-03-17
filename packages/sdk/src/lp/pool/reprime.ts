@@ -1,12 +1,12 @@
-import { ChainId } from "@/config/chain";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getAccount, getPoolManagerContract } from "@/web3/providers";
+import { ChainId } from "@/config/chain.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getAccount, getPoolManagerContract } from "@/web3/providers.js";
 import { checkParams } from "@/common/checkParams";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common";
-import { getPoolInfo } from "@/lp/getPoolInfo";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/index.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { formatUnits, parseUnits } from "ethers";
-import { getContractAddressByChainId } from "@/config/address";
+import { getContractAddressByChainId } from "@/config/address.js";
 import sdk from "@/web3";
 
 export const reprime = async (chainId: ChainId, poolId: string, marketId:string) => {

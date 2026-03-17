@@ -118,7 +118,7 @@ export class MyxClient {
     /**
      * initialize appeal
      */
-    this.appeal = new Appeal(this);
+    this.appeal = new Appeal(this, this.configManager);
     /*
      * initialize referrals
      */

@@ -1,4 +1,4 @@
-import { getOraclePrice, OracleType, type PriceType } from "@/api";
+import { getOraclePrice, OracleType, type PriceType } from "@/api/index.js";
 import { ChainId } from "@/config/chain";
 import { isNil } from "lodash-es";
 // import {  getPythContract } from "@/web3/providers";

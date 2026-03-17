@@ -22,10 +22,13 @@ import {
   GuardianSignatureItem,
   PostVoteSignatureParams,
 } from "../api/appeal-type.js";
+import { ConfigManager } from "../config/index.js";
 
 export class Appeal extends BaseMyxClient {
-  constructor(client: MyxClient) {
+  private configManager: ConfigManager;
+  constructor(client: MyxClient, configManager: ConfigManager) {
     super(client);
+    this.configManager = configManager;
   }
 
   private async getDisputeCourtContract(auth: boolean = true) {
@@ -388,5 +391,8 @@ export class Appeal extends BaseMyxClient {
   }
   async getReimbursementTotalCount() {
     return this.client.api.getReimbursementTotalCount();
+  }
+  async getAppealStatus(poolId: string, chainId: number, address: string) {
+    return this.client.api.getPoolAppealStatus({ poolId, chainId, address, accessToken: await this.configManager.getAccessToken() ?? '' });
   }
 }

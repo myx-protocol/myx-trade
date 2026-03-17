@@ -1,11 +1,11 @@
-import { RewardsParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getQuotePoolContract } from "@/web3/providers";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { getOraclePrice } from "@/api";
+import { RewardsParams } from "@/lp/type.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getQuotePoolContract } from "@/web3/providers.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { getOraclePrice } from "@/api/index.js";
 import { parseUnits } from "ethers";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { getErrorTextFormError } from "@/config/error";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 export const getRewards = async (params: RewardsParams) => {
   try {
