@@ -1,4 +1,4 @@
-import { getAddress } from "ethers";
+import { getAddress } from "viem";
 import { isUndefined } from "lodash-es";
 import { AddressType } from "typechain";
 
@@ -12,7 +12,7 @@ export class Address {
     if (isUndefined(addr) || Number(addr) === 0) {
       addr = ZERO_ADDRESS.toString();
     }
-    this._addr = getAddress(addr) as unknown as AddressString;
+    this._addr = getAddress(addr as `0x${string}`) as unknown as AddressString;
   }
   
   toString() {

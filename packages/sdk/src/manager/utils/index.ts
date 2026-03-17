@@ -1,6 +1,6 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
-
-import { ethers } from "ethers";
+import { decodeEventLog } from "viem";
+import { maxUint256 } from "viem";
 import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import MarketManager_ABI from "@/abi/MarketManager.json";
@@ -14,8 +14,13 @@ import { getPriceData } from "@/lp";
 import Broker_ABI from "@/abi/Broker.json";
 import {
   getDataProviderContract,
+  getBrokerContract,
+  getMarketManageContract,
+  getTokenContract,
+  getERC20Contract,
+  ProviderType,
 } from "@/web3/providers";
-import { getJSONProvider } from "@/web3";
+import { getPublicClient } from "@/web3/viemClients.js";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import {
   bigintTradingGasPriceWithRatio,
@@ -39,61 +44,21 @@ export class Utils {
       return null;
     }
 
-    // Create Emiter contract interface to parse events
-    const emiterInterface = new ethers.Interface(Emiter_ABI);
-
-    // Find OrderPlaced event definition
-    const orderPlacedEvent = Emiter_ABI.find(
-      (item: any) => item.type === "event" && item.name === "OrderPlaced"
-    );
-
-    if (!orderPlacedEvent) {
-      this.logger.error("OrderPlaced event not found in Emiter ABI");
-      return null;
-    }
-
-    // Compute OrderPlaced event topic hash
-    const eventTopic = ethers.id(
-      "OrderPlaced(address,address,bytes32,uint256,uint256,uint8,uint8,uint8,uint8,uint256,uint256,uint256,uint8,bool,uint16,address,uint256,uint16)"
-    );
-
     for (let i = 0; i < receipt.logs.length; i++) {
       const log = receipt.logs[i];
-
-      this.logger.info(`Log ${i}:`, {
-        address: log.address,
-        topics: log.topics,
-        data: log.data,
-      });
-
-      // Check if this is OrderPlaced event
-      if (log.topics && log.topics.length > 0 && log.topics[0] === eventTopic) {
-        // this.logger.info(`Found OrderPlaced event in log ${i}`);
-
-        try {
-          // Parse event data with ethers
-          const parsedLog = emiterInterface.parseLog({
-            topics: log.topics,
-            data: log.data,
-          });
-
-          if (parsedLog && parsedLog.name === "OrderPlaced") {
-            // this.logger.info("Parsed OrderPlaced event:", parsedLog.args);
-
-            // Per Emiter.json, orderId is the 5th arg (index 4)
-            // Event field order: broker, user, poolId, positionId, orderId, ...
-            const orderId = parsedLog.args[4]; // orderId at index 4
-
-            if (orderId !== undefined && orderId !== null) {
-              const orderIdString = orderId.toString();
-              // this.logger.info(`Found orderId: ${orderIdString}`);
-              return orderIdString;
-            }
-          }
-        } catch (error) {
-          this.logger.error(`Error parsing log ${i}:`, error);
-          continue;
+      this.logger.info(`Log ${i}:`, { address: log.address, topics: log.topics, data: log.data });
+      try {
+        const decoded = decodeEventLog({
+          abi: Emiter_ABI as never,
+          data: (log.data ?? "0x") as `0x${string}`,
+          topics: (log.topics ?? []) as [`0x${string}`, ...`0x${string}`[]],
+        });
+        const args = (decoded as { eventName?: string; args?: { orderId?: unknown } }).args;
+        if (decoded.eventName === "OrderPlaced" && args?.orderId != null) {
+          return String(args.orderId);
         }
+      } catch {
+        continue;
       }
     }
     // this.logger.warn("OrderPlaced event not found in transaction logs");
@@ -107,31 +72,13 @@ export class Utils {
     spenderAddress?: string
   ) {
     try {
-      const erc20Abi = [
-        "function allowance(address owner, address spender) external view returns (uint256)",
-      ];
-
-      const spender =
-        spenderAddress ?? getContractAddressByChainId(chainId).Account;
-
-      const provider = await getJSONProvider(chainId);
-      const tokenContract = new ethers.Contract(
-        tokenAddress,
-        erc20Abi,
-        provider
-      );
-
-      const allowance = await tokenContract.allowance(account, spender);
-
-      return {
-        code: 0,
-        data: allowance.toString(),
-      };
+      const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
+      const tokenContract = getTokenContract(chainId, tokenAddress);
+      const allowance = await tokenContract.read.allowance(account as `0x${string}`, spender as `0x${string}`);
+      return { code: 0, data: String(allowance) };
     } catch (error) {
       this.logger.error("Error getting allowance:", error);
-      throw typeof error === "string"
-        ? error
-        : await getErrorTextFormError(error);
+      throw typeof error === "string" ? error : await getErrorTextFormError(error);
     }
   }
 
@@ -150,8 +97,8 @@ export class Utils {
         spenderAddress
       );
       const currentAllowance = currentAllowanceRes.data;
-      const allowanceBigInt = ethers.getBigInt(currentAllowance);
-      const requiredBigInt = ethers.getBigInt(requiredAmount);
+      const allowanceBigInt = BigInt(currentAllowance);
+      const requiredBigInt = BigInt(requiredAmount);
 
       const needsApproval = allowanceBigInt < requiredBigInt;
 
@@ -167,49 +114,25 @@ export class Utils {
     quoteAddress,
     amount,
     spenderAddress,
-    signer,
   }: {
     chainId: number;
     quoteAddress: string;
     amount?: string;
     spenderAddress?: string;
-    signer?: ethers.Signer;
+    signer?: unknown;
   }) {
     try {
-      const erc20Abi = [
-        "function approve(address spender, uint256 amount) external returns (bool)",
-      ];
-
-      const config: MyxClientConfig = this.configManager.getConfig();
-      const usdcContract = new ethers.Contract(
-        quoteAddress,
-        erc20Abi,
-        signer ?? config.signer
-      );
-
-      const approveAmount = amount ?? ethers.MaxUint256;
-      const spender =
-        spenderAddress ?? getContractAddressByChainId(chainId).Account;
+      const contract = await getERC20Contract(chainId, quoteAddress);
+      const approveAmount = amount ?? maxUint256;
+      const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const gasPrice = await this.getGasPriceByRatio();
-      const gasLimit = await this.getGasLimitByRatio(
-        await usdcContract.approve.estimateGas(spender, approveAmount)
-      );
-      const tx = await usdcContract.approve(spender, approveAmount, {
-        gasLimit,
-        gasPrice,
-      });
-      await tx.wait();
-      return {
-        code: 0,
-        message: "Approval success",
-      };
+      const hash = await contract.write!.approve([spender as `0x${string}`, approveAmount], { gasPrice });
+      const client = getPublicClient(chainId);
+      await client.waitForTransactionReceipt({ hash });
+      return { code: 0, message: "Approval success" };
     } catch (error) {
       this.logger.error("Approval error:", error);
-      return {
-        code: -1,
-        // @ts-ignore
-        message: error?.message,
-      };
+      return { code: -1, message: (error as Error)?.message };
     }
   }
 
@@ -225,18 +148,13 @@ export class Utils {
     const brokerAddress = config.brokerAddress;
 
     try {
-      const provider = await getJSONProvider(chainId);
-      const brokerContract = new ethers.Contract(
-        brokerAddress,
-        Broker_ABI,
-        provider
-      );
+      const brokerContract = getBrokerContract(chainId, brokerAddress);
       const targetAddress = config.seamlessMode
         ? config.seamlessAccount?.masterAddress
-        : config.signer?.getAddress();
+        : await this.configManager.getSignerAddress(chainId);
 
-      const userFeeRate = await brokerContract.getUserFeeRate(
-        targetAddress,
+      const userFeeRate = await brokerContract.read.getUserFeeRate(
+        targetAddress as `0x${string}`,
         assetClass,
         riskTier
       );
@@ -260,18 +178,9 @@ export class Utils {
   }
 
   async getNetworkFee(marketId: string, chainId: number) {
-    const marketManagerAddress =
-      getContractAddressByChainId(chainId).MARKET_MANAGER;
-    const provider = await getJSONProvider(chainId);
-    const marketManagerContract = new ethers.Contract(
-      marketManagerAddress,
-      MarketManager_ABI,
-      provider
-    );
-
     try {
-      const networkFee = await marketManagerContract.getExecutionFee(marketId);
-
+      const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
+      const networkFee = await marketManagerContract.read.getExecutionFee(marketId as `0x${string}`);
       return networkFee.toString();
     } catch (error) {
       this.logger.error("Error getting network fee:", error);
@@ -354,28 +263,13 @@ export class Utils {
   }
 
   async checkSeamlessGas(userAddress: string, chainId: number) {
-    const provider = await getJSONProvider(chainId);
-    const marketManagerContract = new ethers.Contract(
-      getContractAddressByChainId(chainId).MARKET_MANAGER,
-      MarketManager_ABI,
-      provider
-    )
-    const forwardFeeToken = executeAddressByChainId(chainId)
-    const relayFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken);
-    // const { gasPrice } = await provider.getFeeData()
+    const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
+    const forwardFeeToken = executeAddressByChainId(chainId);
+    const relayFee = await marketManagerContract.read.getForwardFeeByToken(forwardFeeToken as `0x${string}`);
     const contractAddress = getContractAddressByChainId(chainId);
-
-    const erc20Contract = new ethers.Contract(
-      contractAddress.ERC20,
-      ERC20Token_ABI,
-      provider
-    );
-    const balance = await erc20Contract.balanceOf(userAddress);
-
-    if (BigInt(relayFee) > BigInt(0) && BigInt(balance) < BigInt(relayFee)) {
-      return false;
-    }
-
+    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
+    const balance = await tokenContract.read.balanceOf(userAddress as `0x${string}`);
+    if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee)) return false;
     return true;
   }
 
@@ -389,23 +283,12 @@ export class Utils {
     marketPrice: string;
   }) {
     try {
-      const dataProviderContract = await getDataProviderContract(chainId);
-      const poolInfo = await dataProviderContract.getPoolInfo(
-        poolId,
-        marketPrice
-      );
-
-      return {
-        code: 0,
-        data: poolInfo,
-      };
+      const dataProviderContract = await getDataProviderContract(chainId, ProviderType.JSON);
+      const poolInfo = await dataProviderContract.read.getPoolInfo(poolId as `0x${string}`, marketPrice);
+      return { code: 0, data: poolInfo };
     } catch (error) {
       this.logger.error("Error getting pool info:", error);
-      return {
-        code: -1,
-        // @ts-ignore
-        message: error?.message,
-      };
+      return { code: -1, message: (error as Error)?.message };
     }
   }
 

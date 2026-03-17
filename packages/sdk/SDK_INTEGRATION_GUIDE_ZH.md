@@ -38,21 +38,22 @@ pnpm add @myx-trade/sdk
 
 ### 初始化 SDK 客户端
 
+推荐使用 viem 的 `WalletClient`，无需安装 ethers：
+
 ```typescript
 import { MyxClient } from '@myx-trade/sdk';
-import { BrowserProvider } from 'ethers';
 
-const provider = new BrowserProvider(walletClient.transport);
-const signer = await provider.getSigner();
-
+// 例如从 wagmi 的 useWalletClient() 获取 walletClient
 const myxClient = new MyxClient({
   chainId: 421614, // 测试网链 ID
-  signer,
+  walletClient, // viem WalletClient，或使用 signer（符合 SignerLike 的对象）
   brokerAddress: BROKER_ADDRESS, // 从 MYX 团队获取
   isTestnet: true, // true 为测试网，false 为 Beta
   isBetaMode: false, // true 为 Beta 环境
 });
 ```
+
+若使用 ethers v5/v6 的 Signer，可传入 `signer` 替代 `walletClient`，SDK 会自动适配。
 
 ### SDK 认证和访问令牌
 

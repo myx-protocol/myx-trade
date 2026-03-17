@@ -8,5 +8,5 @@ export * from '../common/price.js'
 export { base, quote, pool, market };
 export { COMMON_PRICE_DECIMALS, COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
 
-export {formatUnits, parseUnits} from 'ethers'
+export { formatUnits, parseUnits } from "viem";
 

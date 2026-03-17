@@ -1,9 +1,8 @@
-import type { AddressLike } from "ethers";
 import { ChainId } from "@/config/chain.js";
 
 export interface CreatePoolRequest {
   chainId: ChainId;
-  baseToken: AddressLike;
+  baseToken: `0x${string}`;
   marketId: string;
 }
 export enum PoolType {

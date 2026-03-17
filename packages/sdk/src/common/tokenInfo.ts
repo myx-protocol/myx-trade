@@ -1,8 +1,7 @@
-import { ethers } from "ethers";
-import {  getTokenContract } from "@/web3/providers.js";
-/**
- * Check if an image URL is accessible
- */
+import { getAddress, formatUnits } from "viem";
+import { getPublicClient } from "@/web3/viemClients.js";
+import TOKEN_ABI from "@/abi/IERC20Metadata.json";
+
 async function checkImageExists(url: string): Promise<boolean> {
   try {
     const res = await fetch(url, { method: "HEAD" });
@@ -11,43 +10,37 @@ async function checkImageExists(url: string): Promise<boolean> {
     return false;
   }
 }
-export const getTokenInfo = async (chainId: number, tokenAddress: string, account?:string) => {
+
+export const getTokenInfo = async (chainId: number, tokenAddress: string, account?: string) => {
   try {
-    const token = await getTokenContract(chainId, tokenAddress);
-    const _name = await token.name();
-    // console.log(_name);
-    // Fetch metadata in parallel
+    const client = getPublicClient(chainId);
+    const addr = tokenAddress as `0x${string}`;
     const [name, symbol, decimals, totalSupply] = await Promise.all([
-      token.name(),
-      token.symbol(),
-      token.decimals(),
-      token.totalSupply()
+      client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "name" }),
+      client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "symbol" }),
+      client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "decimals" }),
+      client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "totalSupply" }),
     ]);
-    // TrustWallet icon URL
-    const normalized = ethers.getAddress(tokenAddress); // Normalize checksum casing
+    const normalized = getAddress(addr);
     const iconUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${chainId}/assets/${normalized}/logo.png`;
-    // Default fallback icon (local or CDN)
-    const fallbackIcon =
-      "";
-    // Check whether the icon exists
-    const icon = await checkImageExists(iconUrl) ? iconUrl : fallbackIcon;
-    // Optionally fetch balance for a specific address
-    let balance;
+    const fallbackIcon = "";
+    const icon = (await checkImageExists(iconUrl)) ? iconUrl : fallbackIcon;
+    let balance: number | undefined;
     if (account) {
-      const rawBalance = await token.balanceOf(account);
-      balance = Number(ethers.formatUnits(rawBalance, decimals));
+      const rawBalance = await client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "balanceOf", args: [account as `0x${string}`] });
+      balance = Number(formatUnits(rawBalance as bigint, Number(decimals)));
     }
     return {
       address: tokenAddress,
-      name,
-      symbol,
-      decimals,
+      name: name as string,
+      symbol: symbol as string,
+      decimals: Number(decimals),
       icon,
-      totalSupply: Number(ethers.formatUnits(totalSupply, decimals)),
-      ...(account ? { balance } : {})
+      totalSupply: Number(formatUnits(totalSupply as bigint, Number(decimals))),
+      ...(account ? { balance } : {}),
     };
   } catch (e) {
-    console.error(e)
-    throw e
+    console.error(e);
+    throw e;
   }
-}
+};

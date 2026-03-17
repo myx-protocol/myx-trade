@@ -5,7 +5,7 @@ import { getAccount, getPoolManagerContract } from "@/web3/providers.js";
 import { checkParams } from "@/common/checkParams";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
-import { formatUnits, parseUnits } from "ethers";
+import { formatUnits, parseUnits } from "viem";
 import { getContractAddressByChainId } from "@/config/address.js";
 import sdk from "@/web3";
 
