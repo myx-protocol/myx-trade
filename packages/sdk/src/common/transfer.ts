@@ -1,20 +1,15 @@
 import { ChainId } from "@/config/chain.js";
 import { getERC20Contract } from "@/web3/providers.js";
+import { getPublicClient } from "@/web3/viemClients.js";
 
-export const transfer = async (chainId: ChainId, tokenAddress: string,approveAddress: string, amount:bigint) => {
+export const transfer = async (chainId: ChainId, tokenAddress: string, approveAddress: string, amount: bigint) => {
   try {
-    const TokenContract = await getERC20Contract(chainId, tokenAddress);
-    // Avoid the user's multiple authorization amount, and the maximum amount will be authorized by default
-    const response = await TokenContract.transfer(approveAddress, amount)
-    // console.log("transfer amount", amount)
-    
-    // Wait for block confirmation
-    const receipt = await response?.wait()
-    
-    // console.log(receipt)
-    
+    const tokenContract = await getERC20Contract(chainId, tokenAddress);
+    if (!tokenContract.write) throw new Error("Wallet client required for write");
+    const hash = await tokenContract.write.transfer([approveAddress as `0x${string}`, amount]) as `0x${string}`;
+    const client = getPublicClient(chainId);
+    await client.waitForTransactionReceipt({ hash });
   } catch (e) {
-    // console.error(e)
-    throw e
+    throw e;
   }
-}
+};

@@ -3,7 +3,7 @@ import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getQuotePoolContract } from "@/web3/providers.js";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
 import { getOraclePrice } from "@/api/index.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 

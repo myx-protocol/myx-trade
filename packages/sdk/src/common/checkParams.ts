@@ -1,7 +1,7 @@
 import { ChainId, isSupportedChainFn } from "@/config/chain.js";
 import { ErrorCode, Errors } from "@/config/error.js";
 import { getBalanceOf } from "@/common/balanceOf.js";
-import { MaxUint256, parseUnits } from "ethers";
+import { maxUint256, parseUnits } from "viem";
 import { getAllowanceApproved } from "@/common/allowance.js";
 import { approve } from "@/common/approve.js";
 
@@ -55,7 +55,7 @@ export  const checkParams = async (params: OptionalParams) => {
       const isApproved = await getAllowanceApproved (chainId, account, tokenAddress, contractAddress, amountIn)
       
       if (!isApproved) {
-        await approve (chainId, account, tokenAddress, contractAddress, MaxUint256);
+        await approve (chainId, account, tokenAddress, contractAddress, maxUint256);
       }
     }
   }

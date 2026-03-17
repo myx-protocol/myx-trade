@@ -1,26 +1,26 @@
-import { Contract } from "ethers";
-
 export type ChainDomainType = {
   name: string
   version: string
-  chainId: string
-  verifyingContract: string
+  chainId: bigint
+  verifyingContract: `0x${string}`
 }
 
-export const getEIP712Domain = async (contract: Contract) => {
+/** Contract-like with read.eip712Domain() (viem getContractReturnType). */
+export type ContractWithEip712Domain = { read: { eip712Domain(): Promise<ChainDomainType & { chainId: bigint }> } };
+
+export const getEIP712Domain = async (contract: ContractWithEip712Domain): Promise<ChainDomainType> => {
   try {
-    // @ts-ignore
-    const eip712Domain = await contract.eip712Domain()
+    const eip712Domain = await contract.read.eip712Domain();
     return {
       name: eip712Domain.name,
       version: eip712Domain.version,
-      chainId: BigInt(eip712Domain.chainId), // Ensure chainId is ForwarderGetStatus bigint type
-      verifyingContract: eip712Domain.verifyingContract,
-    }
+      chainId: BigInt(eip712Domain.chainId),
+      verifyingContract: eip712Domain.verifyingContract as `0x${string}`,
+    };
   } catch (error) {
-    throw new Error(`Error fetching EIP712 domain: ${error}`)
+    throw new Error(`Error fetching EIP712 domain: ${error}`);
   }
-}
+};
 
 export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))

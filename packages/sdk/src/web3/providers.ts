@@ -1,33 +1,28 @@
+import { getContract as getViemContract, type Abi } from "viem";
 import LiquidityRouter_ABI from "@/abi/LiquidityRouter.json";
 import { ChainId } from "@/config/chain.js";
-import {
-  getContract,
-  getJSONProvider,
-  getSignerProvider,
-} from "@/web3/index.js";
-import type {
-  LiquidityRouter,
-  PoolManager,
-  PoolConfigurator,
-  IERC20Metadata,
-  QuotePool,
-  BasePool,
-  Broker,
-  OrderManager,
-  IPyth,
-  PoolToken,
-  MarketManager,
-  DataProvider,
-  Forwarder,
-  Reimbursement,
-  DisputeCourt,
-} from "@/abi/types/index.js";
+import { getPublicClient, getWalletClient } from "@/web3/viemClients.js";
+import type { WalletClient } from "viem";
+
+/** Cast viem getContract result so .read/.write and legacy contract.methodName() accept any ABI function name. */
+export type ContractLike = {
+  address: `0x${string}`;
+  abi: Abi;
+  read: Record<string, (...args: any[]) => Promise<any>>;
+  write?: Record<string, (...args: any[]) => Promise<any>>;
+  estimateGas?: Record<string, (...args: any[]) => Promise<any>>;
+  simulate?: Record<string, (...args: any[]) => Promise<any>>;
+  /** Allow legacy ethers-style contract.methodName() (e.g. in lp/) until migrated to .read/.write */
+  [key: string]: any;
+};
+function asContract<T>(c: T): ContractLike {
+  return c as unknown as ContractLike;
+}
 import PoolConfigurator_ABI from "@/abi/PoolConfigurator.json";
 import PoolManager_ABI from "@/abi/PoolManager.json";
 import IERC20Metadata_ABI from "@/abi/IERC20Metadata.json";
 import QuotePool_ABI from "@/abi/QuotePool.json";
 import BasePool_ABI from "@/abi/BasePool.json";
-import { Signer } from "ethers";
 import Broker_ABI from "@/abi/Broker.json";
 import OrderManager_ABI from "@/abi/OrderManager.json";
 import Pyth_ABI from "@/abi/IPyth.json";
@@ -37,266 +32,205 @@ import DataProvider_ABI from "@/abi/DataProvider.json";
 import Forwarder_ABI from "@/abi/Forwarder.json";
 import Reimbursement_ABI from "@/abi/Reimbursement.json";
 import DisputeCourt_ABI from "@/abi/DisputeCourt.json";
+import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address";
+
 export enum ProviderType {
   JSON,
   Signer,
 }
 
-export const getTokenContract = async (
-  chainId: ChainId,
-  tokenAddress: string
-) => {
-  const provider = getJSONProvider(chainId);
-  return getContract(
-    tokenAddress,
-    IERC20Metadata_ABI,
-    provider
-  ) as unknown as IERC20Metadata;
+export const getTokenContract = (chainId: ChainId, tokenAddress: string) => {
+  const client = getPublicClient(chainId);
+  return asContract(getViemContract({
+    address: tokenAddress as `0x${string}`,
+    abi: IERC20Metadata_ABI as Abi,
+    client,
+  }));
 };
 
-export const getERC20Contract = async (
-  chainId: ChainId,
-  tokenAddress: string
-) => {
-  const provider = await getSignerProvider(chainId);
-  return getContract(
-    tokenAddress,
-    IERC20Metadata_ABI,
-    provider
-  ) as unknown as IERC20Metadata;
+export const getERC20Contract = async (chainId: ChainId, tokenAddress: string) => {
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: tokenAddress as `0x${string}`,
+    abi: IERC20Metadata_ABI as Abi,
+    client,
+  }));
 };
-
-/*export const getFeeCollectorContract = async (chainId: ChainId = useAppStore.getState?.()?.activeChainId) => {
-  const addresses = Address[chainId as keyof typeof Address];
-  const address = addresses.FEE_COLLECTOR_ADDRESS;
-  const provider = await getSignerProvider (chainId as number);
-  
-  return getContract (address, FeeCollector_ABI, provider) as unknown as FeeCollector;
-}*/
 
 export const getAccount = async (chainId: ChainId) => {
-  const provider = await getSignerProvider(chainId);
-  const account = await provider?.getAddress();
+  const client = await getWalletClient(chainId);
+  const [account] = await client.getAddresses();
   return account ?? undefined;
 };
 
 export const getLiquidityRouterContract = async (chainId: ChainId) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.LIQUIDITY_ROUTER;
-  const provider = await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    LiquidityRouter_ABI,
-    provider
-  ) as unknown as LiquidityRouter;
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.LIQUIDITY_ROUTER as `0x${string}`,
+    abi: LiquidityRouter_ABI as Abi,
+    client,
+  }));
 };
 
-export const getPoolManagerContract = async (
-  chainId: ChainId,
-  type = ProviderType.Signer
-) => {
+export const getPoolManagerContract = (chainId: ChainId, type = ProviderType.Signer) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.POOL_MANAGER;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    PoolManager_ABI,
-    provider
-  ) as unknown as PoolManager;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.POOL_MANAGER as `0x${string}`, abi: PoolManager_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.POOL_MANAGER as `0x${string}`, abi: PoolManager_ABI as Abi, client: walletClient }))
+  );
 };
 
 export const getPoolConfiguratorContract = async (chainId: ChainId) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.POOL_MANAGER;
-  const provider = await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    PoolConfigurator_ABI,
-    provider
-  ) as unknown as PoolConfigurator;
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.POOL_MANAGER as `0x${string}`,
+    abi: PoolConfigurator_ABI as Abi,
+    client,
+  }));
 };
 
-export const getQuotePoolContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getQuotePoolContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.QUOTE_POOL;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(address, QuotePool_ABI, provider) as unknown as QuotePool;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.QUOTE_POOL as `0x${string}`, abi: QuotePool_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.QUOTE_POOL as `0x${string}`, abi: QuotePool_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getBasePoolContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getBasePoolContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.BASE_POOL;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(address, BasePool_ABI, provider) as unknown as BasePool;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.BASE_POOL as `0x${string}`, abi: BasePool_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.BASE_POOL as `0x${string}`, abi: BasePool_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getBrokerSingerContract = async (
-  chainId: ChainId,
-  brokerAddress: string
-) => {
-  const address = brokerAddress;
-  const provider = await getSignerProvider(chainId as number);
-
-  return getContract(address, Broker_ABI, provider) as unknown as Broker;
+export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: string) => {
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: brokerAddress as `0x${string}`,
+    abi: Broker_ABI as Abi,
+    client,
+  }));
 };
 
-export const getSeamlessBrokerContract = async (
-  brokerAddress: string,
-  singer: Signer
-) => {
-  return getContract(brokerAddress, Broker_ABI, singer) as unknown as Broker;
-}
+export const getSeamlessBrokerContract = (brokerAddress: string, walletClient: WalletClient) => {
+  return asContract(getViemContract({
+    address: brokerAddress as `0x${string}`,
+    abi: Broker_ABI as Abi,
+    client: walletClient,
+  }));
+};
 
-export const getBrokerContract = async (chainId: ChainId, brokerAddress: string) => {
-  const address = brokerAddress;
-  const provider = getJSONProvider(chainId as number)
-  return getContract(address, Broker_ABI, provider) as unknown as Broker;
-}
-
+export const getBrokerContract = (chainId: ChainId, brokerAddress: string) => {
+  const client = getPublicClient(chainId);
+  return asContract(getViemContract({
+    address: brokerAddress as `0x${string}`,
+    abi: Broker_ABI as Abi,
+    client,
+  }));
+};
 
 export const getOrderManagerSingerContract = async (chainId: ChainId) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.ORDER_MANAGER;
-  const provider = await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    OrderManager_ABI,
-    provider
-  ) as unknown as OrderManager;
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.ORDER_MANAGER as `0x${string}`,
+    abi: OrderManager_ABI as Abi,
+    client,
+  }));
 };
 
-export const getPythContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getPythContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.PYTH;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(address, Pyth_ABI, provider) as unknown as IPyth;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.PYTH as `0x${string}`, abi: Pyth_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.PYTH as `0x${string}`, abi: Pyth_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getPoolTokenContract = async (
-  chainId: ChainId,
-  lpTokenAddress: string,
-  type: ProviderType = ProviderType.JSON
-) => {
-  const address = lpTokenAddress;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(address, PoolToken_ABI, provider) as unknown as PoolToken;
+export const getPoolTokenContract = (chainId: ChainId, lpTokenAddress: string, type: ProviderType = ProviderType.JSON) => {
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: lpTokenAddress as `0x${string}`, abi: PoolToken_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: lpTokenAddress as `0x${string}`, abi: PoolToken_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getMarketManageContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getMarketManageContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.MARKET_MANAGER;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    MarketManager_ABI,
-    provider
-  ) as unknown as MarketManager;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.MARKET_MANAGER as `0x${string}`, abi: MarketManager_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.MARKET_MANAGER as `0x${string}`, abi: MarketManager_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getDataProviderContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getDataProviderContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.DATA_PROVIDER;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    DataProvider_ABI,
-    provider
-  ) as unknown as DataProvider;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.DATA_PROVIDER as `0x${string}`, abi: DataProvider_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.DATA_PROVIDER as `0x${string}`, abi: DataProvider_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getForwarderContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getAccountContract = async (chainId: ChainId) => {
   const addresses = getContractAddressByChainId(chainId);
-
-  const address = addresses.FORWARDER;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(address, Forwarder_ABI, provider) as unknown as Forwarder;
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({ address: addresses.Account as `0x${string}`, abi: Account_ABI as Abi, client }));
 };
 
-export const getReimbursementContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getForwarderContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.REIMBURSEMENT;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-
-  return getContract(
-    address,
-    Reimbursement_ABI,
-    provider
-  ) as unknown as Reimbursement;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.FORWARDER as `0x${string}`, abi: Forwarder_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.FORWARDER as `0x${string}`, abi: Forwarder_ABI as Abi, client: walletClient }))
+  );
 };
 
-export const getDisputeCourtContract = async (
-  chainId: ChainId,
-  type: ProviderType = ProviderType.JSON
-) => {
+export const getReimbursementContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
-  const address = addresses.DISPUTE_COURT;
-  const provider =
-    type === ProviderType.JSON
-      ? getJSONProvider(chainId as number)
-      : await getSignerProvider(chainId as number);
-  return getContract(
-    address,
-    DisputeCourt_ABI,
-    provider
-  ) as unknown as DisputeCourt;
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.REIMBURSEMENT as `0x${string}`, abi: Reimbursement_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.REIMBURSEMENT as `0x${string}`, abi: Reimbursement_ABI as Abi, client: walletClient }))
+  );
+};
+
+export const getDisputeCourtContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
+  const addresses = getContractAddressByChainId(chainId);
+  const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;
+  if (client) {
+    return Promise.resolve(asContract(getViemContract({ address: addresses.DISPUTE_COURT as `0x${string}`, abi: DisputeCourt_ABI as Abi, client })));
+  }
+  return getWalletClient(chainId).then((walletClient) =>
+    asContract(getViemContract({ address: addresses.DISPUTE_COURT as `0x${string}`, abi: DisputeCourt_ABI as Abi, client: walletClient }))
+  );
 };

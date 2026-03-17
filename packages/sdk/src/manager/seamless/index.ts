@@ -3,20 +3,20 @@ import { Logger } from "@/logger";
 import { AES, Utf8, CBC, Pkcs7 } from 'crypto-es'
 
 import { Utils } from "../utils/index.js";
-import { getSignerProvider, getJSONProvider } from "@/web3";
+import { getWalletClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { toUtf8Bytes, keccak256, hexlify, ethers, isHexString, getBytes, ZeroAddress } from 'ethers'
-import { getForwarderContract, ProviderType } from "@/web3/providers";
-import { Account } from "../account/index.js";
+import { keccak256, hexToBytes, toHex, isHex, bytesToHex, encodeFunctionData, zeroAddress, type Account } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
+import { Account as AccountManager } from "../account/index.js";
+import type { ContractWithEip712Domain } from "@/utils/index.js";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index.js";
-import ERC20_ABI from "@/abi/ERC20Token.json";
 import { getEIP712Domain } from "@/utils";
-import { splitSignature } from "@ethersproject/bytes"
 import { Api } from "../api/index.js";
 import { executeAddressByChainId } from "@/config/address";
-import MarketManager_ABI from "@/abi/MarketManager.json";
 import Forwarder_ABI from "@/abi/Forwarder.json";
+import { maxUint256 } from "viem";
 
 const contractTypes = {
   ForwardRequest: [
@@ -42,25 +42,29 @@ const calculateSignature = async (message: string) => {
 const seamlessNonceString = 'jAkBlC4~5!6@#$%^'
 
 
-const generateEthWalletFromHashedSignature = (hashedSignature: string) => {
-  const seedStringToUtf8Bytes = toUtf8Bytes(hashedSignature)
-  const seedStringToKeccak256 = keccak256(seedStringToUtf8Bytes)
-  const seedStringToKeccak256Array = getBytes(seedStringToKeccak256)
-  const privateKey = hexlify(seedStringToKeccak256Array)
+function splitSignatureToVrs(signatureHex: `0x${string}`): { v: number; r: `0x${string}`; s: `0x${string}` } {
+  const bytes = hexToBytes(signatureHex);
+  if (bytes.length < 65) throw new Error("Invalid signature length");
+  const r = toHex(bytes.slice(0, 32)) as `0x${string}`;
+  const s = toHex(bytes.slice(32, 64)) as `0x${string}`;
+  const v = bytes[64]!;
+  return { v, r, s };
+}
 
-  // Validate private key
-  if (!isHexString(privateKey, 32)) {
+const generateEthWalletFromHashedSignature = (hashedSignature: string): { privateKey: `0x${string}`; wallet: Account } => {
+  const seedBytes = new Uint8Array(new TextEncoder().encode(hashedSignature));
+  const seedHex = bytesToHex(seedBytes);
+  const hashHex = keccak256(seedHex as `0x${string}`);
+  const privateKeyBytes = hexToBytes(hashHex).slice(0, 32);
+  const privateKey = toHex(privateKeyBytes) as `0x${string}`;
+
+  if (!isHex(privateKey) || privateKey.length !== 66) {
     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
   }
 
-  // Generate public key and wallet from private key
-  const wallet = new ethers.Wallet(privateKey)
-
-  return {
-    privateKey,
-    wallet,
-  }
-}
+  const wallet = privateKeyToAccount(privateKey);
+  return { privateKey, wallet };
+};
 
 const charFill = (ping: string) => {
   const targetLength = 16
@@ -77,38 +81,38 @@ const charFill = (ping: string) => {
 export const getIvMapString = () => Utf8.parse(seamlessNonceString)
 
 async function signPermit(
-  provider: ethers.Signer,
-  contract: ethers.Contract,
+  walletClient: Awaited<ReturnType<typeof getWalletClient>>,
+  chainId: number,
+  tokenAddress: string,
   owner: string,
   spender: string,
-  value: string,
-  nonce: string,
-  deadline: string,
-) {
-
-  const domain = await getEIP712Domain(contract)
+  value: bigint,
+  nonce: bigint,
+  deadline: number,
+): Promise<{ v: number; r: `0x${string}`; s: `0x${string}` }> {
+  const tokenContract = getTokenContract(chainId, tokenAddress) as unknown as ContractWithEip712Domain;
+  const domain = await getEIP712Domain(tokenContract);
+  const [account] = await walletClient.getAddresses();
+  if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account for signPermit");
 
   const types = {
     Permit: [
-      { name: 'owner', type: 'address' },
-      { name: 'spender', type: 'address' },
-      { name: 'value', type: 'uint256' },
-      { name: 'nonce', type: 'uint256' },
-      { name: 'deadline', type: 'uint256' },
+      { name: "owner", type: "address" },
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "nonce", type: "uint256" },
+      { name: "deadline", type: "uint256" },
     ],
-  }
-
-  const message = {
-    owner,
-    spender,
-    value,
-    nonce,
-    deadline,
-  }
-
-  const signature = await provider.signTypedData(domain, types, message)
-  const { v, r, s } = splitSignature(signature)
-  return { v, r, s }
+  };
+  const message = { owner: owner as `0x${string}`, spender: spender as `0x${string}`, value, nonce, deadline };
+  const signature = await walletClient.signTypedData({
+    account,
+    domain: { ...domain, chainId: domain.chainId },
+    types,
+    primaryType: "Permit",
+    message,
+  });
+  return splitSignatureToVrs(signature);
 }
 
 
@@ -116,10 +120,10 @@ export class Seamless {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private account: Account;
+  private account: AccountManager;
   private api: Api;
 
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, api: Api) {
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: AccountManager, api: Api) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
@@ -128,127 +132,120 @@ export class Seamless {
   }
 
   async onCheckRelayer(account: string, relayer: string, chainId: number) {
-    const forwarderContract = await getForwarderContract(chainId)
-
-    const checkRelayerResult = await forwarderContract.isUserRelayerEnabled(account, relayer)
-
-    return checkRelayerResult
+    const forwarderContract = await getForwarderContract(chainId);
+    const checkRelayerResult = await forwarderContract.read.isUserRelayerEnabled(account as `0x${string}`, relayer as `0x${string}`);
+    return checkRelayerResult;
   }
 
   async getUSDPermitParams(deadline: number, chainId: number) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
-    if (!config.signer) {
+    if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
     }
 
+    const walletClient = await getWalletClient(chainId);
     const contractAddress = getContractAddressByChainId(chainId);
-    const masterAddress = await config.signer.getAddress()
-    // const forwarderContract = await getForwarderContract(chainId)
-    // const forwarderAddress = forwarderContract.target
+    const [masterAddress] = await walletClient.getAddresses();
+    if (!masterAddress) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
 
-    const erc20Contract = new ethers.Contract(
-      contractAddress.ERC20,
-      ERC20_ABI,
-      config.signer
-    );
-
+    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
     try {
-      const nonces = await erc20Contract.nonces(masterAddress)
-
+      const nonces = await tokenContract.read.nonces(masterAddress);
       const tradingRouterSignPermit = await signPermit(
-        config.signer,
-        erc20Contract,
+        walletClient,
+        chainId,
+        contractAddress.ERC20,
         masterAddress,
         contractAddress.TRADING_ROUTER,
-        ethers.MaxUint256.toString(),
-        nonces.toString(),
-        deadline.toString(),
-      )
-
+        maxUint256,
+        nonces,
+        deadline,
+      );
       const tradingRouterPermitParams = {
         token: contractAddress.ERC20,
         owner: masterAddress,
         spender: contractAddress.TRADING_ROUTER,
-        value: ethers.MaxUint256.toString(),
+        value: maxUint256.toString(),
         deadline: deadline.toString(),
         v: tradingRouterSignPermit.v,
         r: tradingRouterSignPermit.r,
         s: tradingRouterSignPermit.s,
-      }
-
-      return [tradingRouterPermitParams]
+      };
+      return [tradingRouterPermitParams];
     } catch (error) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
     }
   }
 
-  async forwarderTx({
-    from,
-    to,
-    value,
-    gas,
-    deadline,
-    data,
-    nonce,
-  }: {
-    from: string;
-    to: string;
-    value: string;
-    gas: string;
-    deadline: number;
-    data: string;
-    nonce: string;
-  }, chainId: number, provider?: ethers.Signer) {
-    const forwarderContract = await getForwarderContract(chainId)
-    const forwarderJsonRpcContractDomain = await forwarderContract.eip712Domain()
+  async forwarderTx(
+    {
+      from,
+      to,
+      value,
+      gas,
+      deadline,
+      data,
+      nonce,
+    }: {
+      from: string;
+      to: string;
+      value: string;
+      gas: string;
+      deadline: number;
+      data: string;
+      nonce: string;
+    },
+    chainId: number,
+    walletClient?: Awaited<ReturnType<typeof getWalletClient>>,
+  ) {
+    const forwarderContract = await getForwarderContract(chainId);
+    const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
 
     const domain = {
       name: forwarderJsonRpcContractDomain.name,
       version: forwarderJsonRpcContractDomain.version,
       chainId: forwarderJsonRpcContractDomain.chainId,
       verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
-    }
+    };
 
-    const walletProvider = provider ?? await getSignerProvider(chainId)
+    const wc = walletClient ?? (await getWalletClient(chainId));
+    const [account] = await wc.getAddresses();
+    if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
-    const signature = await walletProvider.signTypedData(domain, contractTypes, {
-      from,
-      to,
-      value,
-      gas,
-      nonce,
-      deadline,
-      data
-    })
+    const signature = await wc.signTypedData({
+      account,
+      domain,
+      types: contractTypes,
+      primaryType: "ForwardRequest",
+      message: {
+        from: from as `0x${string}`,
+        to: to as `0x${string}`,
+        value: BigInt(value),
+        gas: BigInt(gas),
+        nonce: BigInt(nonce),
+        deadline: BigInt(deadline),
+        data: data as `0x${string}`,
+      },
+    });
 
-    const forwardFeeToken = executeAddressByChainId(chainId)
-
-    this.logger.info('forwarderTx-->', { from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId)
-    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken: forwardFeeToken }, chainId)
-
-    return txRs
+    const forwardFeeToken = executeAddressByChainId(chainId);
+    this.logger.info("forwarderTx-->", { from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
+    const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
+    return txRs;
   }
 
   async authorizeSeamlessAccount({ approve, seamlessAddress, chainId }: { approve: boolean, seamlessAddress: string, chainId: number }) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const masterAddress = await config.signer?.getAddress() ?? ''
-    const jsonProvider = getJSONProvider(chainId)
+    const masterAddress = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress)
-      
-      this.logger.info('balanceRes-->', balanceRes)
-      const balance = balanceRes.data
-      const marketManagerContract = new ethers.Contract(
-        getContractAddressByChainId(chainId).MARKET_MANAGER,
-        MarketManager_ABI,
-        jsonProvider
-      )
-      const forwardFeeToken = executeAddressByChainId(chainId)
-      this.logger.info('forwardFeeToken-->', forwardFeeToken)
-      const pledgeFee = await marketManagerContract.getForwardFeeByToken(forwardFeeToken)
+      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress);
+      this.logger.info("balanceRes-->", balanceRes);
+      const balance = balanceRes.data;
+      const marketManagerContract = await getMarketManageContract(chainId);
+      const forwardFeeToken = executeAddressByChainId(chainId);
+      this.logger.info("forwardFeeToken-->", forwardFeeToken);
+      const pledgeFee = await marketManagerContract.read.getForwardFeeByToken(forwardFeeToken as `0x${string}`);
       this.logger.info('pledgeFee-->', pledgeFee)
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
       this.logger.info('auth params-->', { gasFee, balance }, chainId, forwardFeeToken)
@@ -269,23 +266,17 @@ export class Seamless {
       }
     }
 
-    const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer)
-    const getNonceForwarderContract = new ethers.Contract(
-      getContractAddressByChainId(chainId).FORWARDER,
-      Forwarder_ABI,
-      jsonProvider
-    )
-
-    const nonce = await getNonceForwarderContract.nonces(masterAddress)
-    const functionHash = forwarderContract.interface.encodeFunctionData('permitAndApproveForwarder', [
-      seamlessAddress,
-      approve,
-      permitParams,
-    ])
+    const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer);
+    const nonce = await (await getForwarderContract(chainId)).read.nonces(masterAddress as `0x${string}`);
+    const functionHash = encodeFunctionData({
+      abi: Forwarder_ABI as any,
+      functionName: "permitAndApproveForwarder",
+      args: [seamlessAddress, approve, permitParams],
+    });
 
     const txRs = await this.forwarderTx({
       from: masterAddress,
-      to: forwarderContract?.target as string,
+      to: forwarderContract.address,
       value: '0',
       gas: '800000',//gas.toString(),
       nonce: nonce.toString(),
@@ -341,47 +332,38 @@ export class Seamless {
   }
 
   async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
-    const key = Utf8.parse(charFill(password))
-    const iv = getIvMapString()
-    const decrypted = AES.decrypt(apiKey, key, {
-      iv,
-      mode: CBC,
-      padding: Pkcs7,
-    })
-    const privateKey = decrypted.toString(Utf8)
-    const wallet = new ethers.Wallet(privateKey)
-    let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
+    const key = Utf8.parse(charFill(password));
+    const iv = getIvMapString();
+    const decrypted = AES.decrypt(apiKey, key, { iv, mode: CBC, padding: Pkcs7 });
+    const privateKey = decrypted.toString(Utf8) as `0x${string}`;
+    const wallet = privateKeyToAccount(privateKey);
+    let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId);
 
     if (!isAuthorized) {
-      await this.authorizeSeamlessAccount({ approve: true, seamlessAddress: wallet.address, chainId })
-      isAuthorized = true
+      await this.authorizeSeamlessAccount({ approve: true, seamlessAddress: wallet.address, chainId });
+      isAuthorized = true;
     }
     this.configManager.updateSeamlessWallet({
-      masterAddress: masterAddress,
-      wallet: wallet,
+      masterAddress,
+      wallet,
       authorized: isAuthorized,
-    })
+    });
     return {
       code: 0,
       data: {
-        masterAddress: masterAddress,
+        masterAddress,
         seamlessAccount: wallet.address,
         authorized: isAuthorized,
       },
-    }
+    };
   }
 
   async exportSeamlessPrivateKey({ password, apiKey }: { password: string, apiKey: string }) {
-    const key = Utf8.parse(charFill(password))
-    const iv = getIvMapString()
-    const decrypted = AES.decrypt(apiKey, key, {
-      iv,
-      mode: CBC,
-      padding: Pkcs7,
-    })
-
-    const privateKey = decrypted.toString(Utf8)
-    const wallet = new ethers.Wallet(privateKey)
+    const key = Utf8.parse(charFill(password));
+    const iv = getIvMapString();
+    const decrypted = AES.decrypt(apiKey, key, { iv, mode: CBC, padding: Pkcs7 });
+    const privateKey = decrypted.toString(Utf8);
+    const wallet = privateKeyToAccount(privateKey as `0x${string}`);
 
     if (wallet.address !== this.configManager.getConfig().seamlessAccount?.wallet?.address) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
@@ -389,54 +371,44 @@ export class Seamless {
 
     return {
       code: 0,
-      data: {
-        privateKey,
-      },
-    }
+      data: { privateKey },
+    };
   }
 
   async importSeamlessPrivateKey({ privateKey, password, chainId }: { privateKey: string, password: string, chainId: number }) {
-    if (!ethers.isHexString(privateKey, 32)) {
+    if (!isHex(privateKey as `0x${string}`) || (privateKey as string).length !== 66) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
     }
 
-    const wallet = new ethers.Wallet(privateKey)
-    const forwarderContract = await getForwarderContract(chainId)
+    const wallet = privateKeyToAccount(privateKey as `0x${string}`);
+    const forwarderContract = await getForwarderContract(chainId);
+    const masterAddress = await forwarderContract.read.originAccount(wallet.address);
 
-    const masterAddress = await forwarderContract.originAccount(wallet.address)
-
-    if (masterAddress === ZeroAddress) {
+    if (masterAddress === zeroAddress) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "The private key is not a senseless account");
     }
 
-    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId)
-
-    const key = Utf8.parse(charFill(password))
-    const iv = getIvMapString()
-
-    const encrypted = AES.encrypt(privateKey, key, {
-      iv,
-      mode: CBC,
-      padding: Pkcs7,
-    })
-
-    const apiKey = encrypted.toString()
+    const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId);
+    const key = Utf8.parse(charFill(password));
+    const iv = getIvMapString();
+    const encrypted = AES.encrypt(privateKey, key, { iv, mode: CBC, padding: Pkcs7 });
+    const apiKey = encrypted.toString();
 
     this.configManager.updateSeamlessWallet({
-      masterAddress: masterAddress,
-      wallet: wallet,
+      masterAddress,
+      wallet,
       authorized: isAuthorized,
-    })
+    });
 
     return {
       code: 0,
       data: {
-        masterAddress: masterAddress,
+        masterAddress,
         seamlessAccount: wallet.address,
         authorized: isAuthorized,
-        apiKey
+        apiKey,
       },
-    }
+    };
   }
 
   async startSeamlessMode({ open }: { open: boolean }) {
@@ -452,49 +424,32 @@ export class Seamless {
   }
 
   async createSeamless({ password, chainId }: { password: string, chainId: number }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-    const signer = config.signer;
-    const account = await signer?.getAddress() ?? ''
-
-    if (!signer) {
+    if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
+    const walletClient = await getWalletClient(chainId);
+    const [account] = await walletClient.getAddresses();
+    if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
 
     try {
-      const createAccountSignature = await signer.signMessage(`${account}_${password}`);
+      const createAccountSignature = await walletClient.signMessage({
+        account,
+        message: `${account}_${password}`,
+      });
+      const hashedSignature = await calculateSignature(createAccountSignature);
+      const { privateKey, wallet } = generateEthWalletFromHashedSignature(hashedSignature);
 
-      const hashedSignature = await calculateSignature(createAccountSignature)
+      const key = Utf8.parse(charFill(password));
+      const iv = getIvMapString();
+      const encrypted = AES.encrypt(privateKey, key, { iv, mode: CBC, padding: Pkcs7 });
+      const apiKey = encrypted.toString();
 
-      const { privateKey, wallet } = generateEthWalletFromHashedSignature(hashedSignature)
-
-      const key = Utf8.parse(charFill(password))
-      const iv = getIvMapString()
-
-      const encrypted = AES.encrypt(privateKey, key, {
-        iv,
-        mode: CBC,
-        padding: Pkcs7,
-      })
-
-      const apiKey = encrypted.toString()
-
-      let isAuthorized = await this.onCheckRelayer(account, wallet.address, chainId)
-
+      let isAuthorized = await this.onCheckRelayer(account, wallet.address, chainId);
       this.configManager.updateSeamlessWallet({
         masterAddress: account,
-        wallet: wallet,
+        wallet,
         authorized: isAuthorized,
-      })
-
-      // const forwarderContract = await getForwarderContract(chainId)
-      // const erc20Address = getContractAddressByChainId(chainId).ERC20
-
-      // await this.utils.approveAuthorization({
-      //   chainId,
-      //   quoteAddress: erc20Address,
-      //   amount: ethers.MaxUint256.toString(),
-      //   spenderAddress: forwarderContract.target as string,
-      // });
+      });
 
       return {
         code: 0,
@@ -502,14 +457,14 @@ export class Seamless {
           masterAddress: account,
           seamlessAccount: wallet.address,
           authorized: isAuthorized,
-          apiKey
+          apiKey,
         },
-      }
+      };
     } catch (error) {
       return {
         code: -1,
         message: (error as Error).message,
-      }
+      };
     }
   }
 
