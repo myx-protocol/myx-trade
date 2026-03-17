@@ -38,6 +38,7 @@ import {
   KlineDataItemType,
   MarketDetailResponse,
   MarketInfo,
+  OrderResponse,
   PoolOpenOrdersResponse,
   PoolResponse,
   PositionResponse,
@@ -162,7 +163,7 @@ export class Api extends Request {
   }
 
   async getOrders(accessToken: string, address: string) {
-    return await http.get<PositionResponse>(
+    return await http.get<OrderResponse>(
       `${this.getHost()}/openapi/gateway/scan/order/open`,
       undefined,
       {
