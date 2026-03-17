@@ -1,25 +1,22 @@
 import { ChainId } from "@/config/chain.js";
-import { getJSONProvider } from "@/web3/index.js";
+import { getPublicClient } from "@/web3/viemClients.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_CONFIG_DECIMALS } from "@/config/decimals.js";
 
 export const bigintTradingGasToRatioCalculator = (gas: bigint, ratio: Number) => {
-  
-  return BigInt(gas) *  parseUnits(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** (COMMON_CONFIG_DECIMALS) )
-}
+  return BigInt(gas) * parseUnits(ratio.toString(), COMMON_CONFIG_DECIMALS) / BigInt(10 ** COMMON_CONFIG_DECIMALS);
+};
 
-export const bigintTradingGasPriceWithRatio = async (chainId:ChainId) => {
+export const bigintTradingGasPriceWithRatio = async (chainId: ChainId) => {
   try {
-    const chainInfo = CHAIN_INFO[chainId]
-    const provider = getJSONProvider(chainId)
-    const { gasPrice } = await provider.getFeeData()
-  
-    if (!gasPrice) {
-      throw new Error('Network Error')
+    const chainInfo = CHAIN_INFO[chainId];
+    const client = getPublicClient(chainId);
+    const gasPrice = await client.getGasPrice();
+    if (gasPrice == null) {
+      throw new Error("Network Error");
     }
-    // console.log("gasPrice", gasPrice)
-    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(BigInt(gasPrice), chainInfo.gasPriceRatio)
+    const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio);
     // console.log('gasPriceWithRatio--->', gasPriceWithRatio)
     return {
       gasPrice: gasPriceWithRatio,

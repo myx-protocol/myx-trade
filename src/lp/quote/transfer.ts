@@ -1,6 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
 import { ChainId } from "@/config/chain.js";

@@ -1,5 +1,5 @@
 import { getAccount, getBasePoolContract, getLiquidityRouterContract } from "@/web3/providers.js";
-import {parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { OracleUpdatePrice, WithdrawParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
@@ -86,9 +86,9 @@ export const withdraw = async (
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as `0x${string}`,
+        oracleUpdateData: priceData.vaa as `0x${string}`,
+        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
       })
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })

@@ -1,7 +1,7 @@
 import { ChainId } from "@/config/chain.js";
 import type { TpSl } from "@/lp/pool/index.js";
 import type { OracleType } from "@/api/index.js";
-import type { BigNumberish, BytesLike } from "ethers";
+import type { Hex } from "viem";
 export type DepositTpSl = Pick<TpSl, 'triggerType' | 'triggerPrice'>
 
 export interface Deposit {
@@ -57,4 +57,4 @@ export interface PreviewWithdrawDataParams {
   amount: string | number;
 }
 
-export type OracleUpdatePrice =  { poolId: BytesLike;  oracleUpdateData: BytesLike; publishTime: BigNumberish; oracleType: OracleType }
+export type OracleUpdatePrice = { poolId: Hex; oracleUpdateData: Hex; publishTime: bigint; oracleType: OracleType };
