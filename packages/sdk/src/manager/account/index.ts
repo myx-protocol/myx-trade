@@ -4,7 +4,7 @@ import { Utils } from "../utils/index.js";
 import { ethers, Signer } from "ethers";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address/index.js";
-import { GetHistoryOrdersParams } from "@/api";
+import { ApiResponse, GetHistoryOrdersParams } from "@/api";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import { getJSONProvider } from "@/web3";
@@ -13,7 +13,7 @@ import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
 import DataProvider_ABI from "@/abi/DataProvider.json";
 import Broker_ABI from "@/abi/Broker.json";
-
+import { AccountInfo } from "@/types/common.js";
 export class Account {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -76,7 +76,7 @@ export class Account {
       const poolAppealStatusRes = await this.client.appeal.getAppealStatus(poolId, chainId, address);
 
       const marginAccountBalance = marginAccountBalanceRes.data;
-      const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
+      const quoteProfit = BigInt(marginAccountBalance?.quoteProfit ?? 0)
       const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
 
       const accountMargin = freeAmount + (poolAppealStatusRes.data === AppealStatus.None ? quoteProfit : BigInt(0))
@@ -265,9 +265,13 @@ export class Account {
     }
   }
 
-  async getAccountInfo(chainId: number, address: string, poolId: string) {
+  async getAccountInfo(
+    chainId: number,
+    address: string,
+    poolId: string
+  ): Promise<{ code: 0; data: AccountInfo } | { code: -1; message: string }> {
     const contractAddress = getContractAddressByChainId(chainId);
-    const provider = await getJSONProvider(chainId)
+    const provider = await getJSONProvider(chainId);
     const dataProviderContract = new ethers.Contract(
       contractAddress.DATA_PROVIDER,
       DataProvider_ABI,
@@ -277,7 +281,7 @@ export class Account {
       const accountInfo = await dataProviderContract.getAccountInfo(poolId, address);
       return {
         code: 0,
-        data: accountInfo,
+        data: accountInfo as AccountInfo,
       };
     } catch (error) {
       return {

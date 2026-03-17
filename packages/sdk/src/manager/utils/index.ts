@@ -217,7 +217,10 @@ export class Utils {
     assetClass: number,
     riskTier: number,
     chainId: number
-  ) {
+  ): Promise<
+    | { code: 0; data: { takerFeeRate: string; makerFeeRate: string; baseTakerFeeRate: string; baseMakerFeeRate: string } }
+    | { code: -1; message: string }
+  > {
     const config: MyxClientConfig = this.configManager.getConfig();
     const brokerAddress = config.brokerAddress;
 
@@ -251,8 +254,7 @@ export class Utils {
       this.logger.error("Error getting user trading fee rate:", error);
       return {
         code: -1,
-        // @ts-ignore
-        message: error?.message,
+        message: (error as Error)?.message ?? "Unknown error",
       };
     }
   }
