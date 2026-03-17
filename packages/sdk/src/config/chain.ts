@@ -1,5 +1,5 @@
-import { ZeroAddress } from "ethers";
-export type Address = `0x${string}` | typeof ZeroAddress
+import { zeroAddress } from "viem";
+export type Address = `0x${string}` | typeof zeroAddress
 
 export enum ChainId {
   LINEA_SEPOLIA = 59141,
