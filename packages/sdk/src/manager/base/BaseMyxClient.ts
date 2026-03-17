@@ -1,4 +1,3 @@
-import { Contract, Signer } from "ethers";
 import { MyxClient, MyxClientConfig } from "../index.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { getBrokerContract } from "@/web3/providers";
@@ -15,14 +14,6 @@ export class BaseMyxClient {
     return this.client.getConfigManager()?.getConfig();
   }
 
-  protected async getSigner() {
-    const config = this.getConfig();
-    if (!config?.signer) {
-      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-    }
-    return config.signer as Signer;
-  }
-
   protected getAddressConfig() {
     const config = this.getConfig();
     const chainId = config?.chainId;
@@ -32,13 +23,7 @@ export class BaseMyxClient {
     return getContractAddressByChainId(chainId);
   }
 
-  protected async connectContract<T extends Record<string, any>>(
-    contract: T
-  ): Promise<T> {
-    return contract.connect(await this.getSigner()) as T;
-  }
-
-  protected async getBrokerContract() {
+  protected getBrokerContract() {
     const config = this.getConfig();
     if (!config?.brokerAddress) {
       throw new MyxSDKError(

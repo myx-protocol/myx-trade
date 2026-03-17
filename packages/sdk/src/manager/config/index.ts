@@ -1,4 +1,3 @@
-import { Signer } from "ethers";
 import {
   BETA_ENV_CHAIN_IDS,
   MAINNET_CHAIN_IDS,
@@ -7,8 +6,11 @@ import {
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { LogLevel } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
+import type { Account } from "viem";
 import { WalletClient } from "viem";
-import { ethers } from "ethers";
+import type { SignerLike, ISigner } from "../../signer/types.js";
+import { normalizeSigner } from "../../signer/adapters.js";
+import { createWalletClientFromSigner } from "../../signer/viemWalletFromSigner.js";
 
 interface AccessTokenResponse {
   accessToken: string;
@@ -26,10 +28,11 @@ export interface MyxClientConfig {
    * @deprecated Pass chainId from outside in each method for flexibility; this field will be removed in a future version
    */
   chainId: number;
-  signer?: Signer;
+  /** ethers v5/v6 Signer, viem WalletClient, or ISigner. Use walletClient when app uses viem to avoid ethers in bundle. */
+  signer?: SignerLike;
   seamlessAccount?: {
     masterAddress: string;
-    wallet: ethers.Wallet | null;
+    wallet: Account | null;
     authorized: boolean;
   };
   walletClient?: WalletClient;
@@ -49,6 +52,8 @@ export class ConfigManager {
   private config: MyxClientConfig;
   private accessToken?: string;
   private accessTokenExpiry?: number; // accessToken expiry timestamp
+  /** Normalized ISigner when auth({ signer }) is used (ethers or ISigner). Not set when only walletClient is used. */
+  private _normalizedSigner: ISigner | null = null;
 
   constructor(config: MyxClientConfig) {
     const mergedConfig: MyxClientConfig = {
@@ -63,11 +68,35 @@ export class ConfigManager {
   public clear() {
     this.accessToken = undefined;
     this.accessTokenExpiry = undefined;
+    this._normalizedSigner = null;
     this.config = {
       ...this.config,
       signer: undefined,
+      walletClient: undefined,
       getAccessToken: undefined,
     };
+  }
+
+  /** True if auth was done with signer or walletClient. */
+  hasSigner(): boolean {
+    return !!(this.config.walletClient || this.config.signer != null || this._normalizedSigner != null);
+  }
+
+  /** Returns the signer address for the given chainId. Use when only address is needed. */
+  async getSignerAddress(chainId: number): Promise<string> {
+    if (this.config.walletClient) {
+      const [addr] = await this.config.walletClient.getAddresses();
+      if (addr) return addr;
+    }
+    if (this._normalizedSigner) return this._normalizedSigner.getAddress();
+    throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+  }
+
+  /** Returns viem WalletClient for the chain (for readContract/writeContract). Use when SDK uses viem. */
+  async getViemWalletClient(chainId: number): Promise<WalletClient> {
+    if (this.config.walletClient) return this.config.walletClient as WalletClient;
+    if (this._normalizedSigner) return await createWalletClientFromSigner(this._normalizedSigner, chainId);
+    throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer: call auth({ signer }) or auth({ walletClient })");
   }
 
   public async startSeamlessMode(open: boolean) {
@@ -84,7 +113,7 @@ export class ConfigManager {
     authorized,
     masterAddress,
   }: {
-    wallet?: ethers.Wallet;
+    wallet?: Account | null;
     authorized?: boolean;
     masterAddress?: string;
   }) {
@@ -106,15 +135,16 @@ export class ConfigManager {
     };
   }
 
-  public auth(params: Pick<MyxClientConfig, "signer" | "getAccessToken">) {
-    // before auth, clear the accessToken and accessTokenExpiry
+  public auth(params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">) {
+    // before auth, clear the accessToken and signer state
     this.clear();
-    // then set the new config
     this.config = {
       ...this.config,
       ...params,
     };
-    // then validate the config
+    if (params.signer != null) {
+      this._normalizedSigner = normalizeSigner(params.signer);
+    }
     this.validateConfig(this.config);
   }
 

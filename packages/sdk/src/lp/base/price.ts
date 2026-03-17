@@ -1,7 +1,7 @@
 import { ChainId } from "@/config/chain.js";
 import { getBasePoolContract } from "@/web3/providers.js";
 import { getPriceData } from "@/common/price.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 

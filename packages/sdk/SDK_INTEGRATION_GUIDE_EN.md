@@ -39,21 +39,22 @@ pnpm add @myx-trade/sdk
 
 ### Initialize SDK Client
 
+Use viem's `WalletClient` (no ethers required):
+
 ```typescript
 import { MyxClient } from '@myx-trade/sdk';
-import { BrowserProvider } from 'ethers';
 
-const provider = new BrowserProvider(walletClient.transport);
-const signer = await provider.getSigner();
-
+// e.g. walletClient from wagmi's useWalletClient()
 const myxClient = new MyxClient({
   chainId: 421614, // Testnet chain ID
-  signer,
+  walletClient, // viem WalletClient, or pass signer (any SignerLike-compatible object)
   brokerAddress: BROKER_ADDRESS, // Get from MYX team
   isTestnet: true, // true for testnet, false for beta
   isBetaMode: false, // true for beta environment
 });
 ```
+
+You can also pass a `signer` (ethers v5/v6 Signer or compatible) instead of `walletClient`; the SDK will adapt it.
 
 ### SDK Authentication and Access Token
 

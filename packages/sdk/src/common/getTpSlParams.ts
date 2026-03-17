@@ -1,5 +1,5 @@
 import { ErrorCode, Errors } from "@/config/error.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS, } from "@/config/decimals.js";
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas.js";
 import type { TpSl, TpSLParams } from "@/lp/pool/index.js";

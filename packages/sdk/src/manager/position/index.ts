@@ -1,19 +1,20 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 
-import { ethers, Signer } from "ethers";
 import {
   GetHistoryOrdersParams,
   OracleType,
 } from "@/api";
 import { Utils } from "../utils/index.js";
 import brokerAbi from "@/abi/Broker.json";
-import { getContract } from "@/web3";
+import { encodeFunctionData, maxUint256 } from "viem";
+import { getPublicClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Seamless } from "../seamless/index.js";
 import {
   getForwarderContract,
   getSeamlessBrokerContract,
+  getBrokerSingerContract,
 } from "@/web3/providers";
 import dayjs from "dayjs";
 import { Account } from "../account/index.js";
@@ -128,12 +129,12 @@ export class Position {
       let depositAmount = BigInt(0);
 
       const used = BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n;
-      const availableAccountMarginBalance =
-        await this.account.getAvailableMarginBalance({
-          poolId,
-          chainId,
-          address,
-        });
+      const availableRes = await this.account.getAvailableMarginBalance({
+        poolId,
+        chainId,
+        address,
+      });
+      const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
       let diff = BigInt(0);
       if (availableAccountMarginBalance < used) {
         diff = used - availableAccountMarginBalance;
@@ -175,14 +176,15 @@ export class Position {
 
         const brokerContract = await getSeamlessBrokerContract(
           this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
-        const functionHash = brokerContract.interface.encodeFunctionData(
-          "updatePriceAndAdjustCollateral",
-          [[updateParams], depositData, positionId, adjustAmount]
-        );
+        const functionHash = encodeFunctionData({
+          abi: brokerAbi as any,
+          functionName: "updatePriceAndAdjustCollateral",
+          args: [[updateParams], depositData, positionId, adjustAmount],
+        });
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address);
+        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`);
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
@@ -202,7 +204,7 @@ export class Position {
         const rs = await this.seamless.forwarderTx(
           forwardTxParams,
           chainId,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
 
         return {
@@ -212,23 +214,19 @@ export class Position {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       /**
        * call broker contract
        */
-      const brokerContract = getContract(
-        config.brokerAddress,
-        brokerAbi,
-        config.signer
-      );
+      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
           chainId,
           quoteAddress: quoteToken,
-          amount: ethers.MaxUint256.toString(),
+          amount: maxUint256.toString(),
           spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
         if (approvalResult.code !== 0) {
@@ -247,7 +245,7 @@ export class Position {
         }
       });
 
-      const transaction = await brokerContract.updatePriceAndAdjustCollateral(
+      const hash = await brokerContract.write!.updatePriceAndAdjustCollateral(
         [updateParams],
         depositData,
         positionId,
@@ -258,7 +256,7 @@ export class Position {
         }
       );
 
-      const hash = await transaction.wait();
+      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
         code: 0,

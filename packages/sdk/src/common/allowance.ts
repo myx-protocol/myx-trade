@@ -1,33 +1,19 @@
+import { getPublicClient } from "@/web3/viemClients.js";
 import { ChainId } from "@/config/chain.js";
-import { getJSONProvider } from "@/web3/index.js";
-import { ethers } from "ethers";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json";
 
-export const getAllowanceApproved = async(chainId: ChainId, account: string,tokenAddress: string, approveAddress: string, approveAmount: bigint) => {
+export const getAllowanceApproved = async (chainId: ChainId, account: string, tokenAddress: string, approveAddress: string, approveAmount: bigint) => {
   try {
-    const provider = getJSONProvider(chainId);
-    const contractInterface = new ethers.Interface(TOKEN_ABI)
-    const data = contractInterface.encodeFunctionData('allowance', [account, approveAddress])
-    // console.log("approve token ", tokenAddress)
-    // console.log("approve address ", approveAddress)
-    
-    const callData = {
-      to: tokenAddress,
-      data,
-    }
-    const result = await provider.call(callData)
-    const allowance = BigInt(result)
-    // Output allowance (a large integer, usually in wei)
-    // console.log('Allowance:', allowance.toString())
-    // console.log('ApproveAmount:', approveAmount.toString())
-    // console.log(BN.from(ethers.BigNumber.from(result).toString()).gte(BN.from(approveAmount)))
-    // console.log(ethers.BigNumber.from(result).gte(ethers.BigNumber.from(approveAmount)))
-    if (allowance >= approveAmount) {
-      // console.log('Allowance approved.')
-      return true
-    }
-    return false
+    const client = getPublicClient(chainId);
+    const allowance = await client.readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: TOKEN_ABI as never,
+      functionName: "allowance",
+      args: [account as `0x${string}`, approveAddress as `0x${string}`],
+    });
+    if ((allowance as bigint) >= approveAmount) return true;
+    return false;
   } catch (e) {
-    throw e
+    throw e;
   }
 }
