@@ -41,7 +41,7 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.migrateLiquidity(data, {
+    const result = await contract.write!.migrateLiquidity([data], {
       gasLimit,
       gasPrice
     })

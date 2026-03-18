@@ -32,7 +32,7 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.deployPool(data, {
+    const request = await contract.write!.deployPool([data], {
       gasLimit,
       gasPrice
     })

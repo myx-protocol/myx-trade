@@ -1,7 +1,6 @@
 import { RewardsParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getQuotePoolContract } from "@/web3/providers.js";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
 import { getOraclePrice } from "@/api/index.js";
 import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
@@ -21,17 +20,9 @@ export const getRewards = async (params: RewardsParams) => {
     
     // console.log("pendingUserRebates quote data", [poolId,account, price]);
     const contract = await getQuotePoolContract(chainId);
-    const _gasLimit = await contract.estimateGas!.pendingUserRebates(
-      [poolId, account, price],
-    )
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
+  
     const request = await contract.read.pendingUserRebates(
       [poolId, account, price],
-      {
-        gasLimit,
-        gasPrice,
-      },
     )
     // console.log("pendingUserRebates quote result:", request);
     
