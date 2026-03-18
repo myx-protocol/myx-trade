@@ -19,6 +19,7 @@ import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { getContractAddressByChainId } from "@/config/address.js";
 import { getPublicClient } from "@/web3";
+import { sdkError } from "@/logger";
 
 
 export const deposit = async (params: Deposit) => {
@@ -114,7 +115,7 @@ export const deposit = async (params: Deposit) => {
     
     return receipt
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

@@ -16,6 +16,7 @@ import { getPriceData } from "@/common/price.js";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 import { ChainId } from "@/config/chain.js";
+import { sdkError } from "@/logger";
 import { getPublicClient } from "@/web3";
 
 export const withdrawableLpAmount = async (
@@ -44,7 +45,7 @@ export const withdrawableLpAmount = async (
     return request
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -137,7 +138,7 @@ export const withdraw = async (params: WithdrawParams) => {
     return receipt
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

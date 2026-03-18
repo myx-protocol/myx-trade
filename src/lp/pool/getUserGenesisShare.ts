@@ -1,6 +1,7 @@
 import { ChainId } from "@/config/chain.js";
 import { getPoolTokenContract } from "@/web3/providers.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 
 export const getUserGenesisShare = async (chainId: ChainId, tokenAddress: string, account: string) => {
   try {
@@ -10,7 +11,7 @@ export const getUserGenesisShare = async (chainId: ChainId, tokenAddress: string
     // console.log (`UserGenesisShare : `,  request)
     return request
   } catch (error) {
-    console.error (error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

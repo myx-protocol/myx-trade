@@ -1,5 +1,6 @@
 import { ChainId } from "@/config/chain.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getAccount, getPoolManagerContract } from "@/web3/providers.js";
 import { checkParams } from "@/common/checkParams";
@@ -49,7 +50,7 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId: string
     
     return receipt
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError(error))
   }
 }

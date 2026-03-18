@@ -4,7 +4,7 @@ import {
   TESTNET_CHAIN_IDS,
 } from "../const/index.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { LogLevel } from "@/logger";
+import { LogLevel, sdkWarn, sdkError } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
 import type { Account } from "viem";
 import { WalletClient } from "viem";
@@ -234,7 +234,7 @@ export class ConfigManager {
 
     // If no getAccessToken method provided, return null
     if (!this.config.getAccessToken) {
-      console.warn("No getAccessToken method provided in config");
+      sdkWarn("No getAccessToken method provided in config");
       return null;
     }
 
@@ -255,7 +255,7 @@ export class ConfigManager {
 
           // Ensure positive; use default if already expired
           if (expiryInSeconds <= 0) {
-            console.warn("Received expired token, using default expiry");
+            sdkWarn("Received expired token, using default expiry");
             expiryInSeconds = 3600;
           }
         }
@@ -263,11 +263,11 @@ export class ConfigManager {
         this.setAccessToken(response.accessToken, expiryInSeconds);
         return response.accessToken;
       } else {
-        console.warn("❌ Received empty accessToken");
+        sdkWarn("❌ Received empty accessToken");
         return null;
       }
     } catch (error) {
-      console.error("❌ Failed to refresh accessToken:", error);
+      sdkError("❌ Failed to refresh accessToken:", error);
       return null;
     }
   }
