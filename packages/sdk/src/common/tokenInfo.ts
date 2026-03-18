@@ -1,6 +1,7 @@
 import { getAddress, formatUnits } from "viem";
 import { getPublicClient } from "@/web3/viemClients.js";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json";
+import { type Address } from "@/api";
 
 async function checkImageExists(url: string): Promise<boolean> {
   try {
@@ -14,7 +15,7 @@ async function checkImageExists(url: string): Promise<boolean> {
 export const getTokenInfo = async (chainId: number, tokenAddress: string, account?: string) => {
   try {
     const client = getPublicClient(chainId);
-    const addr = tokenAddress as `0x${string}`;
+    const addr = tokenAddress as Address;
     const [name, symbol, decimals, totalSupply] = await Promise.all([
       client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "name" }),
       client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "symbol" }),
@@ -27,7 +28,7 @@ export const getTokenInfo = async (chainId: number, tokenAddress: string, accoun
     const icon = (await checkImageExists(iconUrl)) ? iconUrl : fallbackIcon;
     let balance: number | undefined;
     if (account) {
-      const rawBalance = await client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "balanceOf", args: [account as `0x${string}`] });
+      const rawBalance = await client.readContract({ address: addr, abi: TOKEN_ABI as never, functionName: "balanceOf", args: [account as Address] });
       balance = Number(formatUnits(rawBalance as bigint, Number(decimals)));
     }
     return {
