@@ -18,6 +18,7 @@ import { getPriceData } from "@/common/price.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import type { TpSl } from "@/lp/pool/type.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getPublicClient } from "@/web3";
 
 
 export const deposit = async (params: Deposit) => {
@@ -97,7 +98,7 @@ export const deposit = async (params: Deposit) => {
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.write!.depositBase(
+    const hash = await contract.write!.depositBase(
       [price, data],
       {
         gasLimit,
@@ -106,7 +107,9 @@ export const deposit = async (params: Deposit) => {
       },
     )
     
-    return result
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
     console.error(error)

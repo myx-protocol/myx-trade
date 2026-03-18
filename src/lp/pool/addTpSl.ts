@@ -10,6 +10,7 @@ import { checkParams } from "@/common/checkParams.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
+import { getPublicClient } from "@/web3";
 
 
 export const addTpSl = async (params:AddTpSLParams) => {
@@ -44,14 +45,14 @@ export const addTpSl = async (params:AddTpSLParams) => {
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.write!.addTpsl([data], {
+    const hash = await contract.write!.addTpsl([data], {
       gasLimit,
       gasPrice
     })
-    // console.log("addTpsl request", request);
-    const receipt = await request?.wait()
-    // console.log(request)
-    return receipt;
+    
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
   } catch (error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))

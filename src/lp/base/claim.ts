@@ -8,6 +8,7 @@ import {
 } from "@/common/tradingGas";
 import {  getPricesData } from "@/common/price";
 import { getErrorTextFormError } from "@/config/error";
+import { getPublicClient } from "@/web3";
 
 export const claimBasePoolRebate = async (
   params: ClaimParams
@@ -119,7 +120,7 @@ export const claimBasePoolRebates = async (
     )
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
-    const response = await contract.write!.claimBasePoolRebates(
+    const hash = await contract.write!.claimBasePoolRebates(
       [prices, poolIds, account],
       {
         gasLimit,
@@ -128,8 +129,9 @@ export const claimBasePoolRebates = async (
       },
     )
     
-    // console.log ('base claim rebates', response)
-    return response
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
     console.error (error);

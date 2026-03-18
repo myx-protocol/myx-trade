@@ -18,6 +18,7 @@ import type { TpSl } from "@/lp/pool/index.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { getContractAddressByChainId } from "@/config/address.js";
+import { getPublicClient } from "@/web3";
 
 
 export const deposit = async (params: Deposit) => {
@@ -101,7 +102,7 @@ export const deposit = async (params: Deposit) => {
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.write!.depositQuote(
+    const hash = await contract.write!.depositQuote(
       [price, data],
       {
         gasLimit,
@@ -109,9 +110,9 @@ export const deposit = async (params: Deposit) => {
         value,
       },
     )
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
     
-    // console.log("deposit", result)
-    return result
+    return receipt
   } catch (error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))

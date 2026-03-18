@@ -9,6 +9,7 @@ import {
 import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
 import { getPricesData } from "@/common/price.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { getPublicClient } from "@/web3";
 
 export const claimQuotePoolRebate = async (
   params: ClaimParams
@@ -126,7 +127,7 @@ export const claimQuotePoolRebates = async (
     )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract.write!.claimQuotePoolRebates(
+    const hash = await contract.write!.claimQuotePoolRebates(
       [prices, poolIds, account],
       {
         gasLimit,
@@ -135,8 +136,9 @@ export const claimQuotePoolRebates = async (
       },
     )
     
-    // console.log('quote claim rebates',response)
-    return response
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
     console.error(error);
