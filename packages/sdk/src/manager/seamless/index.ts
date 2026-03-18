@@ -132,7 +132,7 @@ export class Seamless {
 
   async onCheckRelayer(account: string, relayer: string, chainId: number) {
     const forwarderContract = await getForwarderContract(chainId);
-    const checkRelayerResult = await forwarderContract.read.isUserRelayerEnabled(account as `0x${string}`, relayer as `0x${string}`);
+    const checkRelayerResult = await forwarderContract.read.isUserRelayerEnabled([account as `0x${string}`, relayer as `0x${string}`]);
     return checkRelayerResult;
   }
 

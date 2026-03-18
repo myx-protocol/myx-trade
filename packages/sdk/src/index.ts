@@ -1,4 +1,5 @@
 export * from "./lp/index.js";
+export { base, quote, pool, market } from "./lp/index.js";
 export * from "./api/index.js";
 
 export * from "./common/index.js";

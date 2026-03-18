@@ -223,7 +223,7 @@ export class Account {
   ): Promise<{ code: 0; data: AccountInfo } | { code: -1; message: string }> {
     const dataProviderContract = await getDataProviderContract(chainId);
     try {
-      const accountInfo = await dataProviderContract.read.getAccountInfo(poolId as `0x${string}`, address as `0x${string}`);
+      const accountInfo = await dataProviderContract.read.getAccountInfo([poolId as `0x${string}`, address as `0x${string}`]);
       return {
         code: 0,
         data: accountInfo as AccountInfo,
@@ -253,7 +253,7 @@ export class Account {
           currentEpoch.msg ?? "Failed to get current epoch"
         );
       }
-      const accountVipInfo = await brokerContract.read.userFeeData(currentEpoch?.data ?? 0, address as `0x${string}`);
+      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch?.data ?? 0, address as `0x${string}`]);
       let nonce: bigint;
       try {
         nonce = await this.withRetry(() => brokerContract.read.userNonces(address as `0x${string}`));
