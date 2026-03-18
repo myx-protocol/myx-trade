@@ -1,5 +1,5 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import { type BytesLike, parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -18,6 +18,7 @@ import { getPriceData } from "@/common/price.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import type { TpSl } from "@/lp/pool/type.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getPublicClient } from "@/web3";
 
 
 export const deposit = async (params: Deposit) => {
@@ -59,9 +60,9 @@ export const deposit = async (params: Deposit) => {
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as `0x${string}`,
+        oracleUpdateData: priceData.vaa as `0x${string}`,
+        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
       })
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
@@ -80,7 +81,7 @@ export const deposit = async (params: Deposit) => {
     const tpslParams = getTpSlParams(slippage, _tpsl, decimals, quoteDecimals);
     
     const data = {
-      poolId: poolId as unknown as BytesLike,
+      poolId: poolId as unknown as import("viem").Hex,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,
@@ -88,19 +89,27 @@ export const deposit = async (params: Deposit) => {
     }
     
     const  contract = await getLiquidityRouterContract(chainId)
-    
-    //estimateGas
-    const _gasLimit = await contract["depositBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, {value})
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.depositBase(
+      [price, data],
+      { value },
+    )
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract["depositBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price, data, {
-      gasLimit,
-      gasPrice,
-      value
-    })
+    const hash = await contract.write!.depositBase(
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
-    return result
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
     console.error(error)

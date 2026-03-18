@@ -39,21 +39,22 @@ pnpm add @myx-trade/sdk
 
 ### Initialize SDK Client
 
+Use viem's `WalletClient` (no ethers required):
+
 ```typescript
 import { MyxClient } from '@myx-trade/sdk';
-import { BrowserProvider } from 'ethers';
 
-const provider = new BrowserProvider(walletClient.transport);
-const signer = await provider.getSigner();
-
+// e.g. walletClient from wagmi's useWalletClient()
 const myxClient = new MyxClient({
   chainId: 421614, // Testnet chain ID
-  signer,
+  walletClient, // viem WalletClient, or pass signer (any SignerLike-compatible object)
   brokerAddress: BROKER_ADDRESS, // Get from MYX team
   isTestnet: true, // true for testnet, false for beta
   isBetaMode: false, // true for beta environment
 });
 ```
+
+You can also pass a `signer` (ethers v5/v6 Signer or compatible) instead of `walletClient`; the SDK will adapt it.
 
 ### SDK Authentication and Access Token
 
@@ -137,6 +138,37 @@ const getAccessToken = async () => {
 await myxClient.auth({ signer, walletClient, getAccessToken });
 ```
 
+## Types
+
+The SDK also exports some TypeScript types to help you constrain parameters in your business code.
+
+### Signer types (used by `auth`)
+
+- `ISigner`: The SDK's generic signer interface. It must at least provide `getAddress`, `signMessage`, and `sendTransaction`. `signTypedData` is optional (needed for EIP-712 permit/forwarder flows).
+- `SignerLike`: The union type accepted by `auth({ signer })` (`ISigner` or compatible shapes).
+
+### Address & order-parameter types
+
+- `address`: EOA address input in the form of ``0x${string}``.
+- `PlaceOrderParams`: Parameter interface for `myxClient.order.createIncreaseOrder` / `createDecreaseOrder`.
+- `PositionTpSlOrderParams`: Parameter interface for `myxClient.order.createPositionTpSlOrder` (TP/SL).
+
+### Example
+
+```ts
+import type { PlaceOrderParams, ISigner, SignerLike } from '@myx-trade/sdk';
+
+const userAddress = '0x1234...abcd' as `0x${string}`;
+
+const incParams: PlaceOrderParams = {
+  chainId: 421614,
+  address: userAddress,
+  poolId: '0xpool...',
+  positionId: '',
+  // Fill the rest fields according to your concrete order type
+} as PlaceOrderParams;
+```
+
 ### Update Client Chain
 
 ```typescript
@@ -158,7 +190,7 @@ const result = await myxClient.order.createIncreaseOrder(
     chainId: 421614,
     address: userAddress as `0x${string}`,
     poolId: poolId, // Pool ID from market list
-    positionId: "0", // 0 for new position, or existing positionId
+    positionId: "", // '' for new position, or existing positionId
     orderType: OrderType.LIMIT,
     triggerType: TriggerType.NONE,
     direction: Direction.LONG,
@@ -1568,7 +1600,7 @@ export interface PositionTpSlOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: string;
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;

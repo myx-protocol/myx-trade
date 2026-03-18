@@ -1,11 +1,10 @@
-import { SDKConfig, ChainConfig, SDKContextType } from './types.js';
+import { SDKConfig, ChainConfig, SDKContextType, type MinimalSigner } from './types.js';
 import { defaultSDKConfig } from './default.js';
-import { Signer } from 'ethers';
 
 class ConfigManager {
   private config: SDKConfig;
   private currentChainId: number;
-  private signer: Signer | null;
+  private signer: MinimalSigner | null;
 
   constructor() {
     this.config = defaultSDKConfig as SDKConfig;

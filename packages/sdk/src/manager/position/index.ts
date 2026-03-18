@@ -1,19 +1,16 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 
-import { ethers, Signer } from "ethers";
-import {
-  GetHistoryOrdersParams,
-  OracleType,
-} from "@/api";
+import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
 import brokerAbi from "@/abi/Broker.json";
-import { getContract } from "@/web3";
+import { encodeFunctionData, maxUint256 } from "viem";
+import { getPublicClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Seamless } from "../seamless/index.js";
 import {
   getForwarderContract,
-  getSeamlessBrokerContract,
+  getBrokerSingerContract,
 } from "@/web3/providers";
 import dayjs from "dayjs";
 import { Account } from "../account/index.js";
@@ -128,12 +125,12 @@ export class Position {
       let depositAmount = BigInt(0);
 
       const used = BigInt(adjustAmount) > 0 ? BigInt(adjustAmount) : 0n;
-      const availableAccountMarginBalance =
-        await this.account.getAvailableMarginBalance({
-          poolId,
-          chainId,
-          address,
-        });
+      const availableRes = await this.account.getAvailableMarginBalance({
+        poolId,
+        chainId,
+        address,
+      });
+      const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
       let diff = BigInt(0);
       if (availableAccountMarginBalance < used) {
         diff = used - availableAccountMarginBalance;
@@ -146,19 +143,6 @@ export class Position {
       };
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        // if (needsApproval) {
-        //   const approvalResult = await this.utils.approveAuthorization({
-        //     chainId: chainId,
-        //     quoteAddress: quoteToken,
-        //     amount: ethers.MaxUint256.toString(),
-        //     signer: seamlessWallet as Signer,
-        //   });
-
-        //   if (approvalResult.code !== 0) {
-        //     throw new Error(approvalResult.message);
-        //   }
-        // }
-
         const isEnoughGas = await this.utils.checkSeamlessGas(
           config.seamlessAccount?.masterAddress as string,
           chainId
@@ -173,16 +157,13 @@ export class Position {
 
         const forwarderContract = await getForwarderContract(chainId);
 
-        const brokerContract = await getSeamlessBrokerContract(
-          this.configManager.getConfig().brokerAddress,
-          seamlessWallet as Signer
-        );
-        const functionHash = brokerContract.interface.encodeFunctionData(
-          "updatePriceAndAdjustCollateral",
-          [[updateParams], depositData, positionId, adjustAmount]
-        );
+        const functionHash = encodeFunctionData({
+          abi: brokerAbi as any,
+          functionName: "updatePriceAndAdjustCollateral",
+          args: [[updateParams], depositData, positionId, adjustAmount],
+        });
 
-        const nonce = await forwarderContract.nonces(seamlessWallet.address);
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
@@ -193,16 +174,10 @@ export class Position {
           data: functionHash,
           nonce: nonce.toString(),
         };
-
-        this.logger.info(
-          "adjust collateral forward tx params --->",
-          forwardTxParams
-        );
-
         const rs = await this.seamless.forwarderTx(
           forwardTxParams,
           chainId,
-          seamlessWallet as Signer
+          seamlessWallet as any
         );
 
         return {
@@ -212,23 +187,19 @@ export class Position {
         };
       }
 
-      if (!config.signer) {
+      if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
       /**
        * call broker contract
        */
-      const brokerContract = getContract(
-        config.brokerAddress,
-        brokerAbi,
-        config.signer
-      );
+      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
           chainId,
           quoteAddress: quoteToken,
-          amount: ethers.MaxUint256.toString(),
+          amount: maxUint256.toString(),
           spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
         });
         if (approvalResult.code !== 0) {
@@ -236,29 +207,15 @@ export class Position {
         }
       }
 
-      this.logger.info('adjustCollateral transaction data--->', {
-        updateParams,
-        depositData,
-        positionId,
-        adjustAmount,
-        txParams: {
-          value: BigInt(priceData?.value ?? "1"),
-          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
-        }
-      });
-
-      const transaction = await brokerContract.updatePriceAndAdjustCollateral(
-        [updateParams],
-        depositData,
-        positionId,
-        adjustAmount,
+      const hash = await brokerContract.write!.updatePriceAndAdjustCollateral(
+        [[updateParams], depositData, positionId, adjustAmount],
         {
           value: BigInt(priceData?.value ?? "1"),
           gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
         }
       );
 
-      const hash = await transaction.wait();
+      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
         code: 0,
@@ -266,11 +223,9 @@ export class Position {
         message: "Adjust collateral transaction submitted",
       };
     } catch (error) {
-      const errorMessage = await this.utils.getErrorMessage(error);
-      this.logger.error("adjustCollateral error-->", errorMessage);
       return {
         code: -1,
-        message: errorMessage,
+        message: (error as Error).message,
       };
     }
   }
