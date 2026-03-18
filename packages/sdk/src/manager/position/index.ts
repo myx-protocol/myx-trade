@@ -181,7 +181,7 @@ export class Position {
           args: [[updateParams], depositData, positionId, adjustAmount],
         });
 
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`);
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
@@ -243,10 +243,7 @@ export class Position {
       });
 
       const hash = await brokerContract.write!.updatePriceAndAdjustCollateral(
-        [updateParams],
-        depositData,
-        positionId,
-        adjustAmount,
+        [[updateParams], depositData, positionId, adjustAmount],
         {
           value: BigInt(priceData?.value ?? "1"),
           gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,

@@ -148,7 +148,7 @@ export class Seamless {
 
     const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
     try {
-      const nonces = await tokenContract.read.nonces(masterAddress);
+      const nonces = await tokenContract.read.nonces([masterAddress]);
       const tradingRouterSignPermit = await signPermit(
         walletClient,
         chainId,
@@ -244,7 +244,7 @@ export class Seamless {
       const marketManagerContract = await getMarketManageContract(chainId);
       const forwardFeeToken = executeAddressByChainId(chainId);
       this.logger.info("forwardFeeToken-->", forwardFeeToken);
-      const pledgeFee = await marketManagerContract.read.getForwardFeeByToken(forwardFeeToken as `0x${string}`);
+      const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
       this.logger.info('pledgeFee-->', pledgeFee)
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
       this.logger.info('auth params-->', { gasFee, balance }, chainId, forwardFeeToken)
@@ -266,7 +266,7 @@ export class Seamless {
     }
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer);
-    const nonce = await (await getForwarderContract(chainId)).read.nonces(masterAddress as `0x${string}`);
+    const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);
     const functionHash = encodeFunctionData({
       abi: Forwarder_ABI as any,
       functionName: "permitAndApproveForwarder",
@@ -381,7 +381,7 @@ export class Seamless {
 
     const wallet = privateKeyToAccount(privateKey as `0x${string}`);
     const forwarderContract = await getForwarderContract(chainId);
-    const masterAddress = await forwarderContract.read.originAccount(wallet.address);
+    const masterAddress = await forwarderContract.read.originAccount([wallet.address]);
 
     if (masterAddress === zeroAddress) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "The private key is not a senseless account");

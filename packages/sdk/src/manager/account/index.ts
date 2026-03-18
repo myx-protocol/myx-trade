@@ -49,7 +49,7 @@ export class Account {
     const contractAddress = getContractAddressByChainId(chainId);
     const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
     const signerAddress = await this.configManager.getSignerAddress(chainId);
-    const balance = await tokenContract.read.balanceOf(address || signerAddress as `0x${string}`);
+    const balance = await tokenContract.read.balanceOf([address || signerAddress as `0x${string}`]);
     return {
       code: 0,
       data: balance,
@@ -72,7 +72,7 @@ export class Account {
         const forwarderContract = await getForwarderContract(chainId);
 
         const functionHash = encodeFunctionData({ abi: Account_ABI as any, functionName: "updateAndWithdraw", args: [receiver, poolId, true, amount] });
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`);
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
           to: contractAddress.Account,
@@ -92,7 +92,7 @@ export class Account {
         };
       }
       const accountContract = await getAccountContract(chainId);
-      const hash = await accountContract.write!.updateAndWithdraw(receiver, poolId, isQuoteToken, amount);
+      const hash = await accountContract.write!.updateAndWithdraw([receiver, poolId, isQuoteToken, amount]);
       const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
@@ -133,7 +133,7 @@ export class Account {
         const forwarderContract = await getForwarderContract(chainId);
 
         const functionHash = encodeFunctionData({ abi: Account_ABI as any, functionName: "deposit", args: [account, tokenAddress, amount] });
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`);
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
@@ -168,7 +168,7 @@ export class Account {
       }
 
       const accountContract = await getAccountContract(chainId);
-      const hash = await accountContract.write!.deposit(account, tokenAddress, amount);
+      const hash = await accountContract.write!.deposit([account, tokenAddress, amount]);
       const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
@@ -335,7 +335,7 @@ export class Account {
         const forwarderContract = await getForwarderContract(chainId);
 
         const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: "setUserFeeData", args: [feeData] });
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`);
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? "",
@@ -364,7 +364,7 @@ export class Account {
         );
       }
 
-      const hash = await brokerContract.write!.setUserFeeData(feeData);
+      const hash = await brokerContract.write!.setUserFeeData([feeData]);
       const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {

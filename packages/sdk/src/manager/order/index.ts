@@ -109,10 +109,6 @@ export class Order {
         }
 
         const forwarderContract = await getForwarderContract(params.chainId)
-        const brokerContract = await getSeamlessBrokerContract(
-          this.configManager.getConfig().brokerAddress,
-          seamlessWallet as any
-        );
         let functionHash = ''
 
         if (!params.positionId) {
@@ -125,7 +121,7 @@ export class Order {
         } else {
           functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), { ...depositData }, data] })
         }
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -178,18 +174,16 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      // Execute placeOrder transaction
       let hash: `0x${string}`;
+
       if (!params.positionId) {
         const positionSalt = '1';
         this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionSalt, { ...depositData }, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
 
         hash = await brokerContract.write!.placeOrderWithSalt(
-          positionSalt,
-          { ...depositData },
-          data,
+          [positionSalt, { ...depositData }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
@@ -197,16 +191,14 @@ export class Order {
       } else {
         this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
 
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(
-          params.positionId.toString(),
-          { ...depositData },
-          data
-        );
-
-        hash = await brokerContract.write!.placeOrderWithPosition(
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([
           params.positionId.toString(),
           { ...depositData },
           data,
+        ]);
+
+        hash = await brokerContract.write!.placeOrderWithPosition(
+          [params.positionId.toString(), { ...depositData }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
@@ -225,11 +217,6 @@ export class Order {
         timestamp: Date.now(),
         receipt,
       };
-
-      // if (!orderId) {
-      //   this.logger.warn("Warning: OrderId not found in transaction logs");
-      //   result.success = false;
-      // }
 
       return {
         code: 0,
@@ -285,19 +272,6 @@ export class Order {
       const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
       if (config.seamlessMode && authorized && seamlessWallet) {
 
-        // if (needsApproval) {
-        //   const approvalResult = await this.utils.approveAuthorization({
-        //     chainId: chainId,
-        //     quoteAddress: params[0].executionFeeToken,
-        //     amount: ethers.MaxUint256.toString(),
-        //     signer: seamlessWallet as any,
-        //   });
-
-        //   if (approvalResult.code !== 0) {
-        //     throw new Error(approvalResult.message);
-        //   }
-        // }
-
         const isEnoughGas = await this.utils.checkSeamlessGas(params[0].address, chainId)
 
         if (!isEnoughGas) {
@@ -312,7 +286,7 @@ export class Order {
         );
         const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrdersWithPosition', args: [depositData, positionIds, dataMap] })
 
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -344,22 +318,8 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      // if (needsApproval) {
-      //   const approvalResult = await this.utils.approveAuthorization({
-      //     chainId: chainId,
-      //     quoteAddress: params[0].executionFeeToken,
-      //     amount: ethers.MaxUint256.toString(),
-      //     spenderAddress: getContractAddressByChainId(chainId).TRADING_ROUTER,
-      //   });
-
-      //   if (approvalResult.code !== 0) {
-      //     throw new Error(approvalResult.message);
-      //   }
-      // }
-
-
-      const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition(depositData, positionIds, dataMap);
-      const hash = await brokerContract.write!.placeOrdersWithPosition(depositData, positionIds, dataMap, {
+      const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition([depositData, positionIds, dataMap]);
+      const hash = await brokerContract.write!.placeOrdersWithPosition([depositData, positionIds, dataMap], {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
@@ -445,7 +405,7 @@ export class Order {
           functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), { ...depositData }, data] })
         }
 
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -495,22 +455,20 @@ export class Order {
       if (!params.positionId) {
         const positionId = 1
         this.logger.info("createDecreaseOrder salt position params--->", [positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionId.toString(), depositData, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
 
-        hash = await brokerContract.write!.placeOrderWithSalt(positionId.toString(),
-          depositData,
-          data,
+        hash = await brokerContract.write!.placeOrderWithSalt(
+          [positionId.toString(), depositData, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       } else {
         this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(params.positionId.toString(), depositData, data);
+        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
 
-        hash = await brokerContract.write!.placeOrderWithPosition(params.positionId.toString(),
-          depositData,
-          data,
+        hash = await brokerContract.write!.placeOrderWithPosition(
+          [params.positionId.toString(), depositData, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
@@ -656,7 +614,7 @@ export class Order {
               functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrdersWithPosition', args: [depositData, [params.positionId.toString(), params.positionId.toString()], data] })
             }
 
-            const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+            const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
             const forwardTxParams = {
               from: seamlessWallet.address ?? '',
@@ -697,15 +655,15 @@ export class Order {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
             const positionId = 1
-            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data);
+            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data]);
 
-            hash = await brokerContract.write!.placeOrdersWithSalt(depositData, [positionId.toString(), positionId.toString()], data, {
+            hash = await brokerContract.write!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data], {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           } else {
-            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data);
+            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data]);
 
-            hash = await brokerContract.write!.placeOrdersWithPosition(depositData, [params.positionId.toString(), params.positionId.toString()], data, {
+            hash = await brokerContract.write!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data], {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           }
@@ -810,7 +768,7 @@ export class Order {
             functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), depositData, data] })
           }
 
-          const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+          const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
           const forwardTxParams = {
             from: seamlessWallet.address ?? '',
@@ -833,32 +791,19 @@ export class Order {
           };
         }
 
-        // if (needsApproval) {
-        //   const approvalResult = await this.utils.approveAuthorization({
-        //     chainId: params.chainId,
-        //     quoteAddress: params.executionFeeToken,
-        //     amount: ethers.MaxUint256.toString(),
-        //     spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
-        //   });
-
-        //   if (approvalResult.code !== 0) {
-        //     throw new Error(approvalResult.message);
-        //   }
-        // }
-
         let hash: `0x${string}`;
         if (!params.positionId) {
           this.logger.info("createPositionTpOrSlOrder salt position data--->", data);
           const positionId = 1;
-          const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt(positionId.toString(), depositData, data);
+          const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
 
-          hash = await brokerContract.write!.placeOrderWithSalt(positionId.toString(), depositData, data, {
+          hash = await brokerContract.write!.placeOrderWithSalt([positionId.toString(), depositData, data], {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         } else {
           this.logger.info("createPositionTpOrSlOrder nft position data--->", data);
-          const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition(params.positionId.toString(), depositData, data);
-          hash = await brokerContract.write!.placeOrderWithPosition(params.positionId.toString(), depositData, data, {
+          const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
+          hash = await brokerContract.write!.placeOrderWithPosition([params.positionId.toString(), depositData, data], {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         }
@@ -926,7 +871,7 @@ export class Order {
         );
         let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrders', args: [orderIds] })
 
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -957,7 +902,7 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      const hash = await brokerContract.write!.cancelOrders(orderIds);
+      const hash = await brokerContract.write!.cancelOrders([orderIds]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -992,7 +937,7 @@ export class Order {
         const forwarderContract = await getForwarderContract(chainId)
         let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrder', args: [BigInt(orderId)] })
 
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -1023,7 +968,7 @@ export class Order {
         this.configManager.getConfig().brokerAddress
       );
 
-      const hash = await brokerContract.write!.cancelOrder(orderId);
+      const hash = await brokerContract.write!.cancelOrder([orderId]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -1060,7 +1005,7 @@ export class Order {
         );
         let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'cancelOrders', args: [orderIds] })
   
-        const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+        const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
   
         const forwardTxParams = {
           from: seamlessWallet.address ?? '',
@@ -1091,7 +1036,7 @@ export class Order {
         chainId,
         this.configManager.getConfig().brokerAddress
       );
-      const hash = await brokerContract.write!.cancelOrders(orderIds);
+      const hash = await brokerContract.write!.cancelOrders([orderIds]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -1145,7 +1090,7 @@ export class Order {
       const forwarderContract = await getForwarderContract(chainId)
       let functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'updateOrder', args: [depositData, data] })
 
-      const nonce = await forwarderContract.read.nonces(seamlessWallet.address as `0x${string}`)
+      const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
 
       const forwardTxParams = {
         from: seamlessWallet.address ?? '',
@@ -1202,9 +1147,9 @@ export class Order {
         }
       }
 
-      const gasLimit = await brokerContract.estimateGas!.updateOrder(depositData, data);
+      const gasLimit = await brokerContract.estimateGas!.updateOrder([depositData, data]);
 
-      const hash = await brokerContract.write!.updateOrder(depositData, data, {
+      const hash = await brokerContract.write!.updateOrder([depositData, data], {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
