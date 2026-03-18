@@ -9,6 +9,7 @@ import {
 import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
 import { getPricesData } from "@/common/price.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 import { getPublicClient } from "@/web3";
 
 export const claimQuotePoolRebate = async (
@@ -73,7 +74,7 @@ export const claimQuotePoolRebate = async (
     return response
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -141,7 +142,7 @@ export const claimQuotePoolRebates = async (
     return receipt
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
         throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

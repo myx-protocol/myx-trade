@@ -1181,7 +1181,7 @@ export class Order {
         data: res.data,
       };
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      this.logger.error("Error fetching orders:", error);
       return {
         code: -1,
         message: "Failed to fetch orders",

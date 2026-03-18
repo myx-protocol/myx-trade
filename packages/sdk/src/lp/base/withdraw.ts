@@ -14,6 +14,7 @@ import { MarketPoolState } from "@/api/index.js";
 import { getPriceData } from "@/common/price.js";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 import { ChainId } from "@/config/chain.js";
 import { getPublicClient } from "@/web3";
 
@@ -44,7 +45,7 @@ export const withdrawableLpAmount = async (
     return request
     
   } catch (error) {
-    // console.error (error);
+    // sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -132,7 +133,7 @@ export const withdraw = async (
     
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
