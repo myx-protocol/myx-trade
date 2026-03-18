@@ -7,7 +7,7 @@ import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } fro
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { formatUnits, parseUnits } from "viem";
 import { getContractAddressByChainId } from "@/config/address.js";
-import sdk from "@/web3";
+import sdk, { getPublicClient } from "@/web3";
 
 export const reprime = async (chainId: ChainId, poolId: string, marketId: string) => {
   try {
@@ -43,9 +43,11 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId: string
     const _gasLimit = await contract.estimateGas!.reprimePool([{ poolId }])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio(chainId);
-    const request = await contract.write!.reprimePool([{ poolId }], {gasLimit, gasPrice })
-    const receipt = await request?.wait()
-    return receipt;
+    
+    const hash = await contract.write!.reprimePool([{ poolId }], {gasLimit, gasPrice })
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
   } catch (error) {
     console.error(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError(error))

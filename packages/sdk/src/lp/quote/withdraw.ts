@@ -16,6 +16,7 @@ import { getPriceData } from "@/common/price.js";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 import { ChainId } from "@/config/chain.js";
+import { getPublicClient } from "@/web3";
 
 export const withdrawableLpAmount = async (
   params: {
@@ -122,7 +123,7 @@ export const withdraw = async (params: WithdrawParams) => {
     )
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract.write!.withdrawQuote(
+    const hash = await contract.write!.withdrawQuote(
       [price, data],
       {
         gasLimit,
@@ -131,10 +132,8 @@ export const withdraw = async (params: WithdrawParams) => {
       },
     )
     
-    // console.log ("withdraw quote with price", request)
-    const receipt = await request?.wait()
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
     
-    // console.log ("withdraw quote receipt", receipt)
     return receipt
     
   } catch (error) {
