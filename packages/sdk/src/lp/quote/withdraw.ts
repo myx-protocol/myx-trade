@@ -118,15 +118,21 @@ export const withdraw = async (params: WithdrawParams) => {
     // console.log ("withdraw", data);
     
     const contract = await getLiquidityRouterContract (chainId)
-    
-    const _gasLimit = await contract["withdrawQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"].estimateGas (price, data, { value })
+
+    const _gasLimit = await contract.estimateGas!.withdrawQuote(
+      [price, data],
+      { value },
+    )
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract["withdrawQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"](price, data, {
-      gasLimit,
-      gasPrice,
-      value,
-    })
+    const request = await contract.write!.withdrawQuote(
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
     // console.log ("withdraw quote with price", request)
     const receipt = await request?.wait()

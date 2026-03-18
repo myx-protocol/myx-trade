@@ -4,7 +4,7 @@ import * as market from './market/index.js';
 
 export * from '../common/price.js';
 
-// 显式从 pool 子模块导入并组装，避免前端打包时把 pool.getPoolInfo 等 tree-shake 掉
+// Explicitly import and assemble from pool submodule to avoid pool.getPoolInfo and others being tree-shaken by frontend bundlers
 import {
   createPool,
   getMarketPoolId,

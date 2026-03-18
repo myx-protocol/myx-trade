@@ -174,12 +174,6 @@ export class Position {
           data: functionHash,
           nonce: nonce.toString(),
         };
-
-        this.logger.info(
-          "adjust collateral forward tx params --->",
-          forwardTxParams
-        );
-
         const rs = await this.seamless.forwarderTx(
           forwardTxParams,
           chainId,
