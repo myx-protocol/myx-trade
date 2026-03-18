@@ -256,7 +256,7 @@ export class Account {
       const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch?.data ?? 0, address as `0x${string}`]);
       let nonce: bigint;
       try {
-        nonce = await this.withRetry(() => brokerContract.read.userNonces(address as `0x${string}`));
+        nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
       } catch {
         nonce = 0n;
       }
@@ -355,15 +355,7 @@ export class Account {
       }
       const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-      let nonce: bigint;
-      try {
-        nonce = await this.withRetry(() => brokerContract.read.userNonces(address as `0x${string}`));
-      } catch {
-        throw new MyxSDKError(
-          MyxErrorCode.RequestFailed,
-          "userNonces call failed after retries (RPC may be unstable or broker version mismatch). Please try again."
-        );
-      }
+      const nonce: bigint = await brokerContract.read.userNonces([address as `0x${string}`]);
 
       if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
         throw new MyxSDKError(
