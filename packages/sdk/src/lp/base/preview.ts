@@ -6,6 +6,7 @@ import { parseUnits } from "viem";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { checkParams } from "@/common/checkParams.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
@@ -20,7 +21,7 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
     // console.log(request)
     return request
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -39,7 +40,7 @@ export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0
     // console.log('previewBaseAmountOut response', request)
     return request
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -87,7 +88,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     }
     
   } catch (error) {
-    // console.error(error)
+    // sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

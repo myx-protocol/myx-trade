@@ -1,67 +1,57 @@
+import { getSdkLogSink } from "./sink.js";
+
 /**
  * MyxLogger
- * @description MyxLogger is a logger for Myx SDK
- * @author Myx
- * @version 1.0.0
- * @since 2025-09-19
- * @license MIT
- * @copyright Myx
- * @description MyxLogger is a logger for Myx SDK
+ * Uses optional sink (no global console by default) so LavaMoat allowlist can omit "console".
+ * Host can setSdkLogSink(console) to get logs.
  */
-
 export type LogLevel = "debug" | "info" | "error" | "warn" | "none";
 
 export interface LoggerOptions {
   logLevel?: LogLevel;
+  /** Optional sink; if not set, uses getSdkLogSink() (no-op by default). */
+  sink?: { log?: (...a: unknown[]) => void; info?: (...a: unknown[]) => void; warn?: (...a: unknown[]) => void; error?: (...a: unknown[]) => void };
 }
+
 export class Logger {
   private options: LoggerOptions;
   constructor(options?: LoggerOptions) {
     this.options = {
       ...options,
-      logLevel: options?.logLevel || "info",
+      logLevel: options?.logLevel ?? "info",
     };
   }
-  /**
-   * debug
-   */
-  debug(message: string, ...args: any[]) {
+
+  private get out() {
+    return this.options.sink ?? getSdkLogSink();
+  }
+
+  debug(message: string, ...args: unknown[]) {
     if (this.options.logLevel === "none") return;
     if (this.options.logLevel === "debug") {
-      console.log(`[MYX-SDK-DEBUG] ${message}`, ...args);
+      (this.out.log ?? this.out.info)?.(`[MYX-SDK-DEBUG] ${message}`, ...args);
     }
   }
 
-  /**
-   * info
-   */
-  info(message: string, ...args: any[]) {
+  info(message: string, ...args: unknown[]) {
     if (this.options.logLevel === "none") return;
     if (this.options.logLevel === "debug" || this.options.logLevel === "info") {
-      console.log(`[MYX-SDK-INFO] ${message}`, ...args);
+      (this.out.log ?? this.out.info)?.(`[MYX-SDK-INFO] ${message}`, ...args);
     }
   }
 
-  /**
-   * error
-   */
-  error(message: string, ...args: any[]) {
+  error(message: string, ...args: unknown[]) {
     if (this.options.logLevel === "none") return;
-    if (
-      this.options.logLevel === "debug" ||
-      this.options.logLevel === "info" ||
-      this.options.logLevel === "error"
-    ) {
-      console.error(`[MYX-SDK-ERROR] ${message}`, ...args);
+    if (this.options.logLevel === "debug" || this.options.logLevel === "info" || this.options.logLevel === "error") {
+      this.out.error?.(`[MYX-SDK-ERROR] ${message}`, ...args);
     }
   }
 
-  /**
-   * warn
-   */
-  warn(message: string, ...args: any[]) {
+  warn(message: string, ...args: unknown[]) {
     if (this.options.logLevel !== "none") {
-      console.warn(`[MYX-SDK-WARN] ${message}`, ...args);
+      this.out.warn?.(`[MYX-SDK-WARN] ${message}`, ...args);
     }
   }
 }
+
+export { setSdkLogSink, getSdkLogSink, sdkLog, sdkWarn, sdkError } from "./sink.js";

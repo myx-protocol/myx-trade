@@ -1,4 +1,5 @@
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 import { getMarketManageContract } from "@/web3/providers.js";
 import { ChainId } from "@/config/chain.js";
 import { checkParams } from "@/common/checkParams.js";
@@ -15,7 +16,7 @@ export const getMarket = async (chainId: ChainId, marketId: string)  => {
     
     return request;
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
