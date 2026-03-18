@@ -12,10 +12,10 @@ export class Referrals extends BaseMyxClient {
   async claimRebate(tokenAddress: Address) {
     const config = this.getConfig();
     const brokerContract = await getBrokerSingerContract(this.config.chainId, config!.brokerAddress);
-    const _gasLimit = await brokerContract.estimateGas!.claimRebate(tokenAddress);
+    const _gasLimit = await brokerContract.estimateGas!.claimRebate([tokenAddress]);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await brokerContract.write!.claimRebate(tokenAddress, { gasPrice, gasLimit });
+    const hash = await brokerContract.write!.claimRebate([tokenAddress], { gasPrice, gasLimit });
     return getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
   }
 }
