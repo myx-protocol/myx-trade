@@ -76,7 +76,7 @@ export const getPoolInfo = async (
 ) => {
   try {
     const contract = await getDataProviderContract(chainId);
-    const request = await contract.getPoolInfo(poolId, marketPrice);
+    const request = await contract.read.getPoolInfo([poolId, marketPrice]);
     // console.log(request);
     const info = {
       quotePool: {
