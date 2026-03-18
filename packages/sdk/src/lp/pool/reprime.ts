@@ -3,7 +3,7 @@ import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getAccount, getPoolManagerContract } from "@/web3/providers.js";
 import { checkParams } from "@/common/checkParams";
-import { bigintTradingGasPriceWithRatio } from "@/common/index.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { formatUnits, parseUnits } from "viem";
 import { getContractAddressByChainId } from "@/config/address.js";
@@ -41,8 +41,9 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId: string
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getPoolManagerContract(chainId)
     const _gasLimit = await contract.estimateGas!.reprimePool([{ poolId }])
+    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio(chainId);
-    const request = await contract.reprimePool([{ poolId }], { gasPrice })
+    const request = await contract.write!.reprimePool([{ poolId }], {gasLimit, gasPrice })
     const receipt = await request?.wait()
     return receipt;
   } catch (error) {

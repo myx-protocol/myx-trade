@@ -1,5 +1,4 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import type { Hex } from "viem";
 import { parseUnits } from "viem";
 import {
   bigintAmountSlipperCalculator,

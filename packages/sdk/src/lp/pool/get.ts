@@ -23,17 +23,12 @@ export const getMarketPoolId = async ({
     if (!baseToken) {
       throw new Error(Errors[ErrorCode.Invalid_TOKEN_ADDRESS]);
     }
-    const chainInfo = CHAIN_INFO[chainId];
     const addresses = getContractAddressByChainId(chainId);
-    const address = addresses.POOL_MANAGER;
     const contract = await getPoolManagerContract(chainId, ProviderType.JSON);
 
     const data = [marketId, baseToken];
-
-    // console.log( data, address );
-    // const request = await contract.getPool('0xd7a6e43cc289cb0a53795ca67b10d12abccded3abaada411d9d4dbe78e5fc739')
-    // console.log(request)
-    const request = await contract.getMarketPool(marketId, baseToken);
+    
+    const request = await contract.read!.getMarketPool(data);
 
     return request.poolId === '0x0000000000000000000000000000000000000000000000000000000000000000' || !request.poolId
       ? undefined
@@ -59,7 +54,7 @@ export const getMarketPools = async (chainId: ChainId) => {
 
     // const data =  [ marketId ]
 
-    const request = await contract.getPools();
+    const request = await contract.read.getPools();
     return request || [];
   } catch (error) {
     console.error(error);
