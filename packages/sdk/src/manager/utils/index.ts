@@ -279,7 +279,8 @@ export class Utils {
   }) {
     try {
       const dataProviderContract = await getDataProviderContract(chainId, ProviderType.JSON);
-      const poolInfo = await dataProviderContract.read.getPoolInfo(poolId as `0x${string}`, marketPrice);
+      // viem 的 read 方法要求参数必须用数组传入，否则会报 AbiEncodingLengthMismatchError (Given length: 0)
+      const poolInfo = await dataProviderContract.read.getPoolInfo([poolId as `0x${string}`, marketPrice]);
       return { code: 0, data: poolInfo };
     } catch (error) {
       this.logger.error("Error getting pool info:", error);
