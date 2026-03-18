@@ -1,15 +1,12 @@
 import { getAccount, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers.js";
-import type { Hex } from "viem";
 import { parseUnits } from "viem";
-import { OracleUpdatePrice, WithdrawParams } from "@/lp/type.js";
+import { WithdrawParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import {
-  bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas.js";
 import { checkParams } from "@/common/checkParams.js";
-import { previewQuoteAmountOut } from "@/lp/quote/preview.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { MarketPoolState } from "@/api/index.js";
 import { getPriceData } from "@/common/price.js";
@@ -17,6 +14,8 @@ import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decim
 import { getErrorTextFormError } from "@/config/error.js";
 import { ChainId } from "@/config/chain.js";
 import { getPublicClient } from "@/web3";
+import { getWithdrawData } from "@/common/withdrawData.ts";
+import { PoolType } from "@/lp/pool";
 
 export const withdrawableLpAmount = async (
   params: {
@@ -72,51 +71,8 @@ export const withdraw = async (params: WithdrawParams) => {
     
     const amountIn = parseUnits (amount.toString (), decimals)
     
-    const isNeedPrice = !(Number (pool?.state) === MarketPoolState.Cook || Number (pool?.state) === MarketPoolState.Primed)
+    const {price, data, value} = await getWithdrawData({poolId,chainId,account,amountIn, slippage, poolType: PoolType.Quote, state: pool?.state as MarketPoolState})
     
-    const price: OracleUpdatePrice[] = []
-    
-    let value = 0n;
-    
-    let amountOut;
-    
-    // let _withdrawableLpAmount;
-    
-    if (isNeedPrice) {
-      const priceData = await getPriceData (chainId, poolId)
-      if (!priceData) {
-        amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn })
-      } else {
-        const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
-        price.push ({
-          poolId: poolId as `0x${ string }`,
-          oracleUpdateData: priceData.vaa as `0x${ string }`,
-          publishTime: BigInt (priceData.publishTime),
-          oracleType: priceData.oracleType,
-        })
-        amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-        value = priceData.value
-      }
-      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
-      
-    } else {
-      amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn })
-      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
-    }
-    
-   /* if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
-      throw new Error(Errors[ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]);
-    }*/
-    
-    
-    const data = {
-      poolId: poolId as unknown as import("viem").Hex,
-      amountIn,
-      minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),
-      recipient: account,
-    }
-    
-    // console.log ("withdraw", data);
     
     const contract = await getLiquidityRouterContract (chainId)
 
