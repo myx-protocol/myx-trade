@@ -24,7 +24,7 @@ export const cancelTpSl = async (params:CancelTpSLParams) => {
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.cancelTpsl(orderId, {
+    const request = await contract.write!.cancelTpsl([orderId], {
       gasLimit,
       gasPrice
     })

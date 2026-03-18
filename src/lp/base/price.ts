@@ -16,7 +16,7 @@ export const getLpPrice = async (chainId: ChainId, poolId: string) => {
       price = parseUnits(res.price, COMMON_PRICE_DECIMALS);
       }
     // }
-    const data = await contract.getPoolTokenPrice(poolId, price);
+    const data = await contract.read.getPoolTokenPrice([poolId, price]);
     // console.log(`pool ${poolId} price: `, data);
     return data;
   } catch (error) {

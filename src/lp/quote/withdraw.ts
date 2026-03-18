@@ -36,11 +36,8 @@ export const withdrawableLpAmount = async (
         referencePrice = parseUnits( '0', COMMON_PRICE_DECIMALS)
       }
     }
-    const data = {
-      poolId,
-      price: (referencePrice || 0n),
-    }
-    const request = await quotePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
+   
+    const request = await quotePoolContract.read.withdrawableLpAmount([poolId, referencePrice || 0n])
     // console.log(`quote pool withdrawableLpAmount: ${request}`)
     
     return request

@@ -36,11 +36,8 @@ export const withdrawableLpAmount = async (
       }
      
     }
-    const data = {
-      poolId,
-      price: (referencePrice || 0n),
-    }
-    const request = await basePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
+   
+    const request = await basePoolContract.read.withdrawableLpAmount([poolId, referencePrice || 0n])
     // console.log(`base pool withdrawableLpAmount: ${request}`)
     
     return request

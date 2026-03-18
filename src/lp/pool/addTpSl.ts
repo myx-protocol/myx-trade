@@ -44,7 +44,7 @@ export const addTpSl = async (params:AddTpSLParams) => {
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.addTpsl(data, {
+    const request = await contract.write!.addTpsl([data], {
       gasLimit,
       gasPrice
     })

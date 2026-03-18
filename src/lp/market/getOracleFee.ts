@@ -9,15 +9,8 @@ export const getOracleFee = async (chainId: ChainId, marketId: string)  => {
     if (!marketId) return
     
     const contract = await getMarketManageContract(chainId)
-    // const chainInfo = CHAIN_INFO[chainId];
-    // const _gasLimit = await contract.getOracleFee.estimateGas(marketId)
-    // const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    // console.log("gasLimit", _gasLimit, gasLimit);
     
-    // const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    // console.log("gasPrice", gasPrice)
-    
-    const request = await contract.getOracleFee(marketId)
+    const request = await contract.read.getOracleFee([marketId])
     // console.log("MarketManage.getOracleFee request", request);
     
     // console.log(request)
