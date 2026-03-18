@@ -37,7 +37,7 @@ export const addTpSl = async (params:AddTpSLParams) => {
     
     // console.log('add tpSl params:', data)
     
-    const _gasLimit = await contract.addTpsl.estimateGas(data)
+    const _gasLimit = await contract.estimateGas!.addTpsl([data])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     // console.log("gasLimit", _gasLimit, gasLimit);
     

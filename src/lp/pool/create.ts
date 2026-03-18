@@ -22,10 +22,10 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getPoolManagerContract(chainId)
-    
+
     const data =  { marketId, baseToken }
-    
-    const _gasLimit = await contract.deployPool.estimateGas(data)
+
+    const _gasLimit = await contract.estimateGas!.deployPool([data])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     // console.log("gasLimit", _gasLimit, gasLimit);
     
