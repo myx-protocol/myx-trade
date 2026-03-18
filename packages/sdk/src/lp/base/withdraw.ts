@@ -1,20 +1,18 @@
 import { getAccount, getBasePoolContract, getLiquidityRouterContract } from "@/web3/providers.js";
-import {parseUnits } from "ethers";
-import { OracleUpdatePrice, WithdrawParams } from "@/lp/type.js";
+import { parseUnits } from "viem";
+import { WithdrawParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
-import { previewBaseAmountOut } from "@/lp/base/preview.js";
-import {
-  bigintAmountSlipperCalculator,
-  bigintTradingGasPriceWithRatio,
-  bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas.js";
-import { MarketPoolState } from "@/api/index.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
 import { getPriceData } from "@/common/price.js";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 import { ChainId } from "@/config/chain.js";
+import { getPublicClient } from "@/web3";
+import { getWithdrawData } from "@/common/withdrawData.ts";
+import { PoolType } from "@/lp/pool";
+import { MarketPoolState } from "@/api";
 
 export const withdrawableLpAmount = async (
   params: {
@@ -36,11 +34,8 @@ export const withdrawableLpAmount = async (
       }
      
     }
-    const data = {
-      poolId,
-      price: (referencePrice || 0n),
-    }
-    const request = await basePoolContract.withdrawableLpAmount(poolId, referencePrice || 0n)
+   
+    const request = await basePoolContract.read.withdrawableLpAmount([poolId, referencePrice || 0n])
     // console.log(`base pool withdrawableLpAmount: ${request}`)
     
     return request
@@ -55,11 +50,11 @@ export const withdraw = async (
   params: WithdrawParams
 ) => {
   try {
-    const { chainId, poolId, amount, slippage = 0.01} = params;
-    const pool = await getPoolInfo(chainId,poolId)
+    const { chainId, poolId, amount, slippage = 0.01 } = params;
+    const pool = await getPoolInfo (chainId, poolId)
     const lpAddress = pool?.basePoolToken
     
-    const chainInfo =  CHAIN_INFO[chainId];
+    const chainInfo = CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
     const decimals = COMMON_LP_AMOUNT_DECIMALS;
@@ -72,58 +67,30 @@ export const withdraw = async (
       amount,
     })
     
-    const amountIn = parseUnits(amount.toString(), decimals);
+    const amountIn = parseUnits (amount.toString (), decimals);
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const {price, data, value} = await getWithdrawData({poolId,chainId,account,amountIn, slippage, poolType: PoolType.Base, state: pool?.state  as MarketPoolState})
     
-    const price : OracleUpdatePrice[] =[]
-    let value = 0n;
-    let amountOut;
-    // let _withdrawableLpAmount;
-    if (isNeedPrice) {
-      // todo  getprice
-      const priceData = await  getPriceData(chainId, poolId)
-      if (!priceData) return
-      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
-      price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
-        oracleType: priceData.oracleType,
-      })
-      amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-      value = priceData.value
-      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
-    } else {
-      amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn})
-      // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
-    }
+    const contract = await getLiquidityRouterContract (chainId)
     
-    /*if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
-      throw new Error(Errors[ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]);
-    }*/
-    
-    const data = {
-      poolId,
-      amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage) ,
-      recipient: account
-    }
-    
-    const contract = await getLiquidityRouterContract(chainId)
-    
-      // estimateGas
-      const _gasLimit = await contract["withdrawBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"].estimateGas(price, data, { value })
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-      const response = await contract["withdrawBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"] (price, data, {
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.withdrawBase (
+      [price, data],
+      { value },
+    )
+    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
+    const hash = await contract.write!.withdrawBase (
+      [price, data],
+      {
         gasLimit,
         gasPrice,
         value,
-      })
+      },
+    )
     
-    const receipt = await response?.wait()
-    // console.log('base withdraw',response)
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
     return receipt
     
     
