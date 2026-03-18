@@ -163,7 +163,7 @@ const incParams: PlaceOrderParams = {
   chainId: 421614,
   address: userAddress,
   poolId: '0xpool...',
-  positionId: '0',
+  positionId: '',
   // 其余字段按你具体的订单类型补齐
 } as PlaceOrderParams;
 ```
@@ -189,7 +189,7 @@ const result = await myxClient.order.createIncreaseOrder(
     chainId: 421614,
     address: userAddress as `0x${string}`,
     poolId: poolId, // 从市场列表获取的 Pool ID
-    positionId: "0", // 新仓位使用 0，已有仓位使用现有的 positionId
+    positionId: "", // 新仓位使用''，已有仓位使用现有的 positionId
     orderType: OrderType.LIMIT,
     triggerType: TriggerType.NONE,
     direction: Direction.LONG,
@@ -1599,7 +1599,7 @@ export interface PositionTpSlOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: '';
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;
