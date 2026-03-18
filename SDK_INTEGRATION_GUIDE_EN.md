@@ -138,6 +138,37 @@ const getAccessToken = async () => {
 await myxClient.auth({ signer, walletClient, getAccessToken });
 ```
 
+## Types
+
+The SDK also exports some TypeScript types to help you constrain parameters in your business code.
+
+### Signer types (used by `auth`)
+
+- `ISigner`: The SDK's generic signer interface. It must at least provide `getAddress`, `signMessage`, and `sendTransaction`. `signTypedData` is optional (needed for EIP-712 permit/forwarder flows).
+- `SignerLike`: The union type accepted by `auth({ signer })` (`ISigner` or compatible shapes).
+
+### Address & order-parameter types
+
+- `address`: EOA address input in the form of ``0x${string}``.
+- `PlaceOrderParams`: Parameter interface for `myxClient.order.createIncreaseOrder` / `createDecreaseOrder`.
+- `PositionTpSlOrderParams`: Parameter interface for `myxClient.order.createPositionTpSlOrder` (TP/SL).
+
+### Example
+
+```ts
+import type { PlaceOrderParams, ISigner, SignerLike } from '@myx-trade/sdk';
+
+const userAddress = '0x1234...abcd' as `0x${string}`;
+
+const incParams: PlaceOrderParams = {
+  chainId: 421614,
+  address: userAddress,
+  poolId: '0xpool...',
+  positionId: '0',
+  // Fill the rest fields according to your concrete order type
+} as PlaceOrderParams;
+```
+
 ### Update Client Chain
 
 ```typescript

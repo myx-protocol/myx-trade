@@ -137,6 +137,37 @@ const getAccessToken = async () => {
 await myxClient.auth({ signer, walletClient, getAccessToken });
 ```
 
+## Types
+
+SDK 会在入口导出一些 TypeScript 类型，便于你在业务侧进行类型约束/提示。
+
+### 签名器类型（用于 `auth`）
+
+- `ISigner`：通用签名器接口，至少包含 `getAddress`、`signMessage`、`sendTransaction`；`signTypedData` 为可选（用于 EIP-712 permit/forwarder 等流程）。
+- `SignerLike`：`auth({ signer })` 可接受的联合类型（`ISigner` 或兼容形状）。
+
+### 地址与下单参数类型
+
+- `address`：EOA 地址入参，格式为 ``0x${string}``。
+- `PlaceOrderParams`：用于 `myxClient.order.createIncreaseOrder` / `createDecreaseOrder` 等方法的参数接口。
+- `PositionTpSlOrderParams`：用于 `myxClient.order.createPositionTpSlOrder` 止盈止损参数接口。
+
+### 示例
+
+```ts
+import type { PlaceOrderParams, ISigner, SignerLike } from '@myx-trade/sdk';
+
+const userAddress = '0x1234...abcd' as `0x${string}`;
+
+const incParams: PlaceOrderParams = {
+  chainId: 421614,
+  address: userAddress,
+  poolId: '0xpool...',
+  positionId: '0',
+  // 其余字段按你具体的订单类型补齐
+} as PlaceOrderParams;
+```
+
 ### 更新客户端链
 
 ```typescript
