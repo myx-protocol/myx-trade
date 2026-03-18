@@ -15,6 +15,7 @@ import { getPriceData } from "@/common/price.js";
 import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
 import { ChainId } from "@/config/chain.js";
+import { getPublicClient } from "@/web3";
 
 export const withdrawableLpAmount = async (
   params: {
@@ -52,11 +53,11 @@ export const withdraw = async (
   params: WithdrawParams
 ) => {
   try {
-    const { chainId, poolId, amount, slippage = 0.01} = params;
-    const pool = await getPoolInfo(chainId,poolId)
+    const { chainId, poolId, amount, slippage = 0.01 } = params;
+    const pool = await getPoolInfo (chainId, poolId)
     const lpAddress = pool?.basePoolToken
     
-    const chainInfo =  CHAIN_INFO[chainId];
+    const chainInfo = CHAIN_INFO[chainId];
     const account = await getAccount (chainId);
     
     const decimals = COMMON_LP_AMOUNT_DECIMALS;
@@ -69,30 +70,30 @@ export const withdraw = async (
       amount,
     })
     
-    const amountIn = parseUnits(amount.toString(), decimals);
+    const amountIn = parseUnits (amount.toString (), decimals);
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const isNeedPrice = !(Number (pool?.state) === MarketPoolState.Cook || Number (pool?.state) === MarketPoolState.Primed)
     
-    const price : OracleUpdatePrice[] =[]
+    const price: OracleUpdatePrice[] = []
     let value = 0n;
     let amountOut;
     // let _withdrawableLpAmount;
     if (isNeedPrice) {
       // todo  getprice
-      const priceData = await  getPriceData(chainId, poolId)
+      const priceData = await getPriceData (chainId, poolId)
       if (!priceData) return
-      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
-      price.push({
-        poolId: poolId as `0x${string}`,
-        oracleUpdateData: priceData.vaa as `0x${string}`,
-        publishTime: BigInt(priceData.publishTime),
+      const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
+      price.push ({
+        poolId: poolId as `0x${ string }`,
+        oracleUpdateData: priceData.vaa as `0x${ string }`,
+        publishTime: BigInt (priceData.publishTime),
         oracleType: priceData.oracleType,
       })
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
       // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
     } else {
-      amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn})
+      amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn })
       // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
     }
     
@@ -103,30 +104,30 @@ export const withdraw = async (
     const data = {
       poolId,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage) ,
+      minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),
       recipient: account
     }
     
-    const contract = await getLiquidityRouterContract(chainId)
-
-      // estimate gas (viem style, args array)
-      const _gasLimit = await contract.estimateGas!.withdrawBase(
-        [price, data],
-        { value },
-      )
-      const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-      const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-      const response = await contract.write!.withdrawBase(
-        [price, data],
-        {
-          gasLimit,
-          gasPrice,
-          value,
-        },
-      )
+    const contract = await getLiquidityRouterContract (chainId)
     
-    const receipt = await response?.wait()
-    // console.log('base withdraw',response)
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.withdrawBase (
+      [price, data],
+      { value },
+    )
+    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
+    const hash = await contract.write!.withdrawBase (
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
+    
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
     return receipt
     
     

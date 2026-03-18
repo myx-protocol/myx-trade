@@ -4,6 +4,7 @@ import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } fro
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import {  getMarketPoolId } from "@/lp/pool/get.js";
+import { getPublicClient } from "@/web3";
 
 export const createPool = async ({chainId, baseToken, marketId}:CreatePoolRequest) => {
   try {
@@ -32,12 +33,14 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.write!.deployPool([data], {
+    const hash = await contract.write!.deployPool([data], {
       gasLimit,
       gasPrice
     })
-    const receipt = await request?.wait()
-    if (receipt?.hash) {
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+   
+    if (receipt) {
       const poolId = await getMarketPoolId({chainId, baseToken, marketId})
       return poolId
     }

@@ -7,6 +7,7 @@ import {
 import { getErrorTextFormError } from "@/config/error.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
+import { getPublicClient } from "@/web3";
 
 
 export const cancelTpSl = async (params:CancelTpSLParams) => {
@@ -24,14 +25,14 @@ export const cancelTpSl = async (params:CancelTpSLParams) => {
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
     // console.log("gasPrice", gasPrice)
     
-    const request = await contract.write!.cancelTpsl([orderId], {
+    const hash = await contract.write!.cancelTpsl([orderId], {
       gasLimit,
       gasPrice
     })
-    // console.log("cancelTpSl request", request);
-    const receipt = await request?.wait()
-    // console.log(request)
-    return receipt;
+    
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
   } catch (error) {
     console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))

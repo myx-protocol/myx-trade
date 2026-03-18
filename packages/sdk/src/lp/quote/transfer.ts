@@ -8,6 +8,7 @@ import { MarketPoolState } from "@/api/type.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
+import { getPublicClient } from "@/web3";
 
 
 export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {
@@ -41,12 +42,14 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.write!.migrateLiquidity([data], {
+    const hash = await contract.write!.migrateLiquidity([data], {
       gasLimit,
       gasPrice
     })
-    // console.log("migrateLiquidity",result)
-    return result
+    
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
   } catch (error) {
     // console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
