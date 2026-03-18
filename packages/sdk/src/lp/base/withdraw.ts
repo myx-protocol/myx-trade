@@ -81,16 +81,19 @@ export const withdraw = async (
     if (isNeedPrice) {
       // todo  getprice
       const priceData = await getPriceData (chainId, poolId)
-      if (!priceData) return
-      const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
-      price.push ({
-        poolId: poolId as `0x${ string }`,
-        oracleUpdateData: priceData.vaa as `0x${ string }`,
-        publishTime: BigInt (priceData.publishTime),
-        oracleType: priceData.oracleType,
-      })
-      amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-      value = priceData.value
+      if (!priceData) {
+        amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn })
+      } else {
+        const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
+        price.push ({
+          poolId: poolId as `0x${ string }`,
+          oracleUpdateData: priceData.vaa as `0x${ string }`,
+          publishTime: BigInt (priceData.publishTime),
+          oracleType: priceData.oracleType,
+        })
+        amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
+        value = priceData.value
+      }
       // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
     } else {
       amountOut = await previewBaseAmountOut ({ chainId, poolId, amountIn })
