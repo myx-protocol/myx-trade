@@ -1,5 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
 import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
+import { sdkError } from "@/logger";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import {
@@ -68,7 +69,7 @@ export const claimBasePoolRebate = async (
     return response
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -134,7 +135,7 @@ export const claimBasePoolRebates = async (
     return receipt
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

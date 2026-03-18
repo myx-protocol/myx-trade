@@ -53,7 +53,7 @@ export class Position {
         data: res.data,
       };
     } catch (error) {
-      console.error("Error fetching positions:", error);
+      this.logger.error("Error fetching positions:", error);
       return {
         code: -1,
         message: "Failed to fetch positions",

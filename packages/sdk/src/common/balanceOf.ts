@@ -1,4 +1,5 @@
 import { getPublicClient } from "@/web3/viemClients.js";
+import { sdkError } from "@/logger";
 import { ChainId } from "@/config/chain.js";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json";
 import { type Address } from "@/api";
@@ -14,7 +15,7 @@ export const getBalanceOf = async (chainId: ChainId, account: string, tokenAddre
     });
     return balance as bigint;
   } catch (e) {
-    console.error(e);
+    sdkError(e);
     throw e;
   }
 }

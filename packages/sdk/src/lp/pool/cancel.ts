@@ -5,6 +5,7 @@ import {
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
 import { getPublicClient } from "@/web3";
@@ -34,7 +35,7 @@ export const cancelTpSl = async (params:CancelTpSLParams) => {
     
     return receipt
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

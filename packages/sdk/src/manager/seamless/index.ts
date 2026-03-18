@@ -33,7 +33,8 @@ const FORWARD_PLEDGE_FEE_RADIO = 2
 const calculateSignature = async (message: string) => {
   const encoder = new TextEncoder()
   const data = encoder.encode(message)
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
+  if (typeof crypto === "undefined" || !crypto.subtle) throw new Error("Crypto.subtle not available");
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   return hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
@@ -260,7 +261,7 @@ export class Seamless {
       try {
         permitParams = await this.getUSDPermitParams(deadline, chainId)
       } catch (error) {
-        console.warn('Failed to get USD permit params, proceeding without permit:', error)
+        this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
@@ -307,7 +308,7 @@ export class Seamless {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         } catch (error) {
-          console.error('Poll transaction from chain error:', error)
+          this.logger.error('Poll transaction from chain error:', error)
           // If not the last attempt, continue polling
           if (attempt < maxAttempts - 1) {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
