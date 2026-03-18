@@ -10,7 +10,6 @@ import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Seamless } from "../seamless/index.js";
 import {
   getForwarderContract,
-  getSeamlessBrokerContract,
   getBrokerSingerContract,
 } from "@/web3/providers";
 import dayjs from "dayjs";
@@ -144,19 +143,6 @@ export class Position {
       };
 
       if (config.seamlessMode && authorized && seamlessWallet) {
-        // if (needsApproval) {
-        //   const approvalResult = await this.utils.approveAuthorization({
-        //     chainId: chainId,
-        //     quoteAddress: quoteToken,
-        //     amount: ethers.MaxUint256.toString(),
-        //     signer: seamlessWallet as Signer,
-        //   });
-
-        //   if (approvalResult.code !== 0) {
-        //     throw new Error(approvalResult.message);
-        //   }
-        // }
-
         const isEnoughGas = await this.utils.checkSeamlessGas(
           config.seamlessAccount?.masterAddress as string,
           chainId
@@ -171,10 +157,6 @@ export class Position {
 
         const forwarderContract = await getForwarderContract(chainId);
 
-        const brokerContract = await getSeamlessBrokerContract(
-          this.configManager.getConfig().brokerAddress,
-          seamlessWallet as any
-        );
         const functionHash = encodeFunctionData({
           abi: brokerAbi as any,
           functionName: "updatePriceAndAdjustCollateral",
@@ -231,17 +213,6 @@ export class Position {
         }
       }
 
-      this.logger.info('adjustCollateral transaction data--->', {
-        updateParams,
-        depositData,
-        positionId,
-        adjustAmount,
-        txParams: {
-          value: BigInt(priceData?.value ?? "1"),
-          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
-        }
-      });
-
       const hash = await brokerContract.write!.updatePriceAndAdjustCollateral(
         [[updateParams], depositData, positionId, adjustAmount],
         {
@@ -258,11 +229,9 @@ export class Position {
         message: "Adjust collateral transaction submitted",
       };
     } catch (error) {
-      const errorMessage = await this.utils.getErrorMessage(error);
-      this.logger.error("adjustCollateral error-->", errorMessage);
       return {
         code: -1,
-        message: errorMessage,
+        message: (error as Error).message,
       };
     }
   }
