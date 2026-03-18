@@ -164,7 +164,7 @@ const incParams: PlaceOrderParams = {
   chainId: 421614,
   address: userAddress,
   poolId: '0xpool...',
-  positionId: '0',
+  positionId: '',
   // Fill the rest fields according to your concrete order type
 } as PlaceOrderParams;
 ```
@@ -190,7 +190,7 @@ const result = await myxClient.order.createIncreaseOrder(
     chainId: 421614,
     address: userAddress as `0x${string}`,
     poolId: poolId, // Pool ID from market list
-    positionId: "0", // 0 for new position, or existing positionId
+    positionId: "", // '' for new position, or existing positionId
     orderType: OrderType.LIMIT,
     triggerType: TriggerType.NONE,
     direction: Direction.LONG,
@@ -1600,7 +1600,7 @@ export interface PositionTpSlOrderParams {
   chainId: number;
   address: string;
   poolId: string;
-  positionId: number;
+  positionId: string;
   executionFeeToken: string;
   tpTriggerType: TriggerType;
   slTriggerType: TriggerType;
