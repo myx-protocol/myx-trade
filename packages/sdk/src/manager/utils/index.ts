@@ -67,6 +67,9 @@ export class Utils {
     spenderAddress?: string
   ) {
     try {
+      if (!tokenAddress || (typeof tokenAddress === "string" && !tokenAddress.trim())) {
+        throw new Error("getApproveQuoteAmount: tokenAddress is required (ERC20 contract address)");
+      }
       const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const tokenContract = getTokenContract(chainId, tokenAddress);
       const allowance = await tokenContract.read.allowance([account as `0x${string}`, spender as `0x${string}`]);
@@ -279,7 +282,7 @@ export class Utils {
   }) {
     try {
       const dataProviderContract = await getDataProviderContract(chainId, ProviderType.JSON);
-      // viem 的 read 方法要求参数必须用数组传入，否则会报 AbiEncodingLengthMismatchError (Given length: 0)
+      // viem read methods require args to be passed as an array, otherwise AbiEncodingLengthMismatchError (Given length: 0) will be thrown
       const poolInfo = await dataProviderContract.read.getPoolInfo([poolId as `0x${string}`, marketPrice]);
       return { code: 0, data: poolInfo };
     } catch (error) {

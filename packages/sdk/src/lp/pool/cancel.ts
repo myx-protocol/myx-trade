@@ -16,8 +16,8 @@ export const cancelTpSl = async (params:CancelTpSLParams) => {
     
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getLiquidityRouterContract(chainId)
-    
-    const _gasLimit = await contract.cancelTpsl.estimateGas(orderId)
+
+    const _gasLimit = await contract.estimateGas!.cancelTpsl([orderId])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     // console.log("gasLimit", _gasLimit, gasLimit);
     

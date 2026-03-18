@@ -11,16 +11,21 @@ import { getErrorTextFormError } from "@/config/error.js";
 export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
     const chainInfo =  CHAIN_INFO[chainId];
-    
+
     // console.log("previewLpAmountOut data", [poolId, amountIn, price]);
     const basePoolContract = await getBasePoolContract(chainId);
-    const _gasLimit = await basePoolContract.previewLpAmountOut.estimateGas(poolId, amountIn, price)
+    const _gasLimit = await basePoolContract.estimateGas!.previewLpAmountOut(
+      [poolId, amountIn, price],
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const request = await basePoolContract.previewLpAmountOut(poolId, amountIn, price, {
-      gasLimit,
-      gasPrice
-    })
+    const request = await basePoolContract.read.previewLpAmountOut(
+      [poolId, amountIn, price],
+      {
+        gasLimit,
+        gasPrice,
+      },
+    )
     // console.log(request)
     return request
   } catch (error) {
@@ -33,16 +38,21 @@ export const previewLpAmountOut = async ({chainId, amountIn, poolId, price = 0n}
 export const previewBaseAmountOut = async ({chainId, amountIn, poolId, price = 0n}: previewAmountOutParams) => {
   try {
     const chainInfo =  CHAIN_INFO[chainId];
-    
+
     // console.log("previewQuoteAmountOut data", [poolId, amountIn, price]);
     const basePoolContract = await getBasePoolContract(chainId);
-    const _gasLimit = await basePoolContract.previewBaseAmountOut.estimateGas(poolId, amountIn, price)
+    const _gasLimit = await basePoolContract.estimateGas!.previewBaseAmountOut(
+      [poolId, amountIn, price],
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const request = await basePoolContract.previewBaseAmountOut(poolId, amountIn, price, {
-      gasLimit,
-      gasPrice
-    })
+    const request = await basePoolContract.read.previewBaseAmountOut(
+      [poolId, amountIn, price],
+      {
+        gasLimit,
+        gasPrice,
+      },
+    )
     // console.log('previewBaseAmountOut response', request)
     return request
   } catch (error) {
@@ -82,13 +92,18 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     
     // console.log("previewUserWithdrawData data", [poolId, amountIn,account, price]);
     const basePoolContract = await getBasePoolContract(chainId);
-    const _gasLimit = await basePoolContract.previewUserWithdrawData.estimateGas(poolId, amountIn,account, price)
+    const _gasLimit = await basePoolContract.estimateGas!.previewUserWithdrawData(
+      [poolId, amountIn, account, price],
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const request = await basePoolContract.previewUserWithdrawData(poolId, amountIn,account, price, {
-      gasLimit,
-      gasPrice
-    })
+    const request = await basePoolContract.read.previewUserWithdrawData(
+      [poolId, amountIn, account, price],
+      {
+        gasLimit,
+        gasPrice,
+      },
+    )
     
     const {baseAmountOut, rebateAmount} = request
     // console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});

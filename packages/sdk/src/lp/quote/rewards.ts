@@ -21,13 +21,18 @@ export const getRewards = async (params: RewardsParams) => {
     
     // console.log("pendingUserRebates quote data", [poolId,account, price]);
     const contract = await getQuotePoolContract(chainId);
-    const _gasLimit = await contract.pendingUserRebates.estimateGas(poolId,account, price)
+    const _gasLimit = await contract.estimateGas!.pendingUserRebates(
+      [poolId, account, price],
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const request = await contract.pendingUserRebates(poolId,account, price, {
-      gasLimit,
-      gasPrice
-    })
+    const request = await contract.read.pendingUserRebates(
+      [poolId, account, price],
+      {
+        gasLimit,
+        gasPrice,
+      },
+    )
     // console.log("pendingUserRebates quote result:", request);
     
     return request
