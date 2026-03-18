@@ -1,5 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
 import { parseUnits } from "viem";
+import { sdkError } from "@/logger";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -112,7 +113,7 @@ export const deposit = async (params: Deposit) => {
     return receipt
     
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
