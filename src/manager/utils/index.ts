@@ -69,7 +69,7 @@ export class Utils {
     try {
       const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const tokenContract = getTokenContract(chainId, tokenAddress);
-      const allowance = await tokenContract.read.allowance(account as `0x${string}`, spender as `0x${string}`);
+      const allowance = await tokenContract.read.allowance([account as `0x${string}`, spender as `0x${string}`]);
       return { code: 0, data: String(allowance) };
     } catch (error) {
       this.logger.error("Error getting allowance:", error);
@@ -148,10 +148,10 @@ export class Utils {
         ? config.seamlessAccount?.masterAddress
         : await this.configManager.getSignerAddress(chainId);
 
-      const userFeeRate = await brokerContract.read.getUserFeeRate(
+      const userFeeRate = await brokerContract.read.getUserFeeRate([
         targetAddress as `0x${string}`,
         assetClass,
-        riskTier
+        riskTier]
       );
 
       return {
@@ -175,7 +175,7 @@ export class Utils {
   async getNetworkFee(marketId: string, chainId: number) {
     try {
       const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
-      const networkFee = await marketManagerContract.read.getExecutionFee(marketId as `0x${string}`);
+      const networkFee = await marketManagerContract.read.getExecutionFee([marketId as `0x${string}`]);
       return networkFee.toString();
     } catch (error) {
       this.logger.error("Error getting network fee:", error);
