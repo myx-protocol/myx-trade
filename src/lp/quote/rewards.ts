@@ -5,6 +5,7 @@ import { getOraclePrice } from "@/api/index.js";
 import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 
 export const getRewards = async (params: RewardsParams) => {
   try {
@@ -29,7 +30,7 @@ export const getRewards = async (params: RewardsParams) => {
     return request
   
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

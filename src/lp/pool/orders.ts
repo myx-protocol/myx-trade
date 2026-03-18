@@ -1,5 +1,6 @@
 import { getPoolOpenOrders } from "@/api/index.js";
 import { ChainId } from "@/config/chain.js";
+import { sdkError } from "@/logger";
 import { MxSDK } from "@/web3/index.js";
 
 export const getOpenOrders = async (chainId: ChainId, address: string) => {
@@ -15,7 +16,7 @@ export const getOpenOrders = async (chainId: ChainId, address: string) => {
     return response.data || [];
 
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw error;
   }
 }
