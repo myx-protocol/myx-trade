@@ -1,9 +1,7 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
-import { decodeEventLog } from "viem";
-import { maxUint256 } from "viem";
+import { decodeEventLog, maxUint256 } from "viem";
 import Emiter_ABI from "@/abi/Emiter.json";
 import { getContractAddressByChainId } from "@/config/address/index.js";
-import MarketManager_ABI from "@/abi/MarketManager.json";
 import { Logger } from "@/logger";
 import { HttpKlineIntervalEnum } from "@/api";
 import { getErrorTextFormError } from "@/config/error";
@@ -11,7 +9,7 @@ import { customErrorMapping } from "@/config/customErrorMap";
 import { KlineResolution } from "../subscription/types/index.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { getPriceData } from "@/lp";
-import Broker_ABI from "@/abi/Broker.json";
+
 import {
   getDataProviderContract,
   getBrokerContract,
@@ -21,14 +19,11 @@ import {
   ProviderType,
 } from "@/web3/providers";
 import { getPublicClient } from "@/web3/viemClients.js";
-import ERC20Token_ABI from "@/abi/ERC20Token.json";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator,
 } from "@/common";
-import { Address } from "viem";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { getChainInfo } from "@/config/chains";
 import { executeAddressByChainId } from "@/config/address";
 
 export class Utils {

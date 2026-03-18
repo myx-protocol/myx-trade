@@ -42,7 +42,7 @@ export  const checkParams = async (params: OptionalParams) => {
   if(amount && chainId && Number(decimals) >= 0 && account) {
     
     
-    const amountIn = parseUnits (amount.toString (), decimals)
+    const amountIn = parseUnits(amount.toString(), Number(decimals))
     if (tokenAddress ) {
       const balance = await getBalanceOf (chainId, account, tokenAddress)
       // console.log ("balance", balance, tokenAddress);

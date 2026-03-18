@@ -1,10 +1,7 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 
-import {
-  GetHistoryOrdersParams,
-  OracleType,
-} from "@/api";
+import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
 import brokerAbi from "@/abi/Broker.json";
 import { encodeFunctionData, maxUint256 } from "viem";

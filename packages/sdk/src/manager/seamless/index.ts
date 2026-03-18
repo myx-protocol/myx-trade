@@ -5,7 +5,7 @@ import { AES, Utf8, CBC, Pkcs7 } from 'crypto-es'
 import { Utils } from "../utils/index.js";
 import { getWalletClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { keccak256, hexToBytes, toHex, isHex, bytesToHex, encodeFunctionData, zeroAddress, type Account } from "viem";
+import { keccak256, hexToBytes, toHex, isHex, bytesToHex, encodeFunctionData, zeroAddress, maxUint256, type Account } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
 import { Account as AccountManager } from "../account/index.js";
@@ -16,7 +16,6 @@ import { getEIP712Domain } from "@/utils";
 import { Api } from "../api/index.js";
 import { executeAddressByChainId } from "@/config/address";
 import Forwarder_ABI from "@/abi/Forwarder.json";
-import { maxUint256 } from "viem";
 
 const contractTypes = {
   ForwardRequest: [
