@@ -11,6 +11,7 @@ import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
 import Broker_ABI from "@/abi/Broker.json";
 import { AccountInfo } from "@/types/common.js";
+import { GetHistoryOrdersParams } from "@/api/index.js";
 
 export class Account {
   private configManager: ConfigManager;
@@ -36,6 +37,16 @@ export class Account {
       }
     }
     throw lastErr;
+  }
+
+  async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
+    const accessToken = await this.configManager.getAccessToken() ?? ''
+
+    const res = await this.client.api.getTradeFlow({ accessToken, ...params, address });
+    return {
+      code: 0,
+      data: res.data,
+    };
   }
 
   async getWalletQuoteTokenBalance(chainId: number, address?: string) {
