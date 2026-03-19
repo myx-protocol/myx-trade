@@ -35,5 +35,4 @@ const pool = {
 export { base, quote, pool, market };
 export { COMMON_PRICE_DECIMALS, COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
 
-export { formatUnits, parseUnits } from "viem";
 
