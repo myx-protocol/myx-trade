@@ -129,13 +129,22 @@ export class Seamless {
     this.api = api;
   }
 
-  async onCheckRelayer(account: string, relayer: string, chainId: number) {
+  async onCheckRelayer(account: string, relayer: string, chainId: number, tokenAddress: string) {
     const forwarderContract = await getForwarderContract(chainId);
     const checkRelayerResult = await forwarderContract.read.isUserRelayerEnabled([account as `0x${string}`, relayer as `0x${string}`]);
-    return checkRelayerResult;
+
+    const isNeedApprove = await this.utils.needsApproval(
+      account,
+      chainId,
+      tokenAddress,
+      maxUint256.toString(),
+      getContractAddressByChainId(chainId).TRADING_ROUTER,
+    );
+ 
+    return checkRelayerResult && !isNeedApprove;
   }
 
-  async getUSDPermitParams(deadline: number, chainId: number) {
+  async getUSDPermitParams(deadline: number, chainId: number, tokenAddress: string) {
     if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
     }
@@ -145,13 +154,13 @@ export class Seamless {
     const [masterAddress] = await walletClient.getAddresses();
     if (!masterAddress) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
 
-    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
+    const tokenContract = getTokenContract(chainId, tokenAddress);
     try {
       const nonces = await tokenContract.read.nonces([masterAddress]);
       const tradingRouterSignPermit = await signPermit(
         walletClient,
         chainId,
-        contractAddress.ERC20,
+        tokenAddress,
         masterAddress,
         contractAddress.TRADING_ROUTER,
         maxUint256,
@@ -159,7 +168,7 @@ export class Seamless {
         deadline,
       );
       const tradingRouterPermitParams = {
-        token: contractAddress.ERC20,
+        token: tokenAddress,
         owner: masterAddress,
         spender: contractAddress.TRADING_ROUTER,
         value: maxUint256.toString(),
@@ -249,7 +258,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        permitParams = await this.getUSDPermitParams(deadline, chainId)
+        permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
       } catch (error) {
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
