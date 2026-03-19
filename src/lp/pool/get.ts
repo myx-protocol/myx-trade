@@ -3,7 +3,6 @@ import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "
 import { ChainId } from "@/config/chain.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { sdkError } from "@/logger";
-import { CHAIN_INFO } from "@/config/chains/index.js";
 import { getContractAddressByChainId } from "@/config/address.js";
 import sdk from "@/web3/index.js";
 
@@ -38,7 +37,7 @@ export const getMarketPoolId = async ({
     sdkError(error);
     throw typeof error === "string"
       ? error
-      : await getErrorTextFormError(error);
+      : (await getErrorTextFormError(error));
   }
 };
 
@@ -61,7 +60,7 @@ export const getMarketPools = async (chainId: ChainId) => {
     sdkError(error);
     throw typeof error === "string"
       ? error
-      : await getErrorTextFormError(error);
+      : (await getErrorTextFormError(error));
   }
 };
 
@@ -120,6 +119,6 @@ export const getPoolInfo = async (
     sdkError(error);
     throw typeof error === "string"
       ? error
-      : await getErrorTextFormError(error);
+      : (await getErrorTextFormError(error));
   }
 };
