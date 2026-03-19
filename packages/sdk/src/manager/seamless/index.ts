@@ -322,6 +322,16 @@ export class Seamless {
     }
   }
 
+  async getOriginSeamlessAccount(address: string, chainId: number) {
+    const forwarderContract = await getForwarderContract(chainId);
+    const masterAddress = await forwarderContract.read.originAccount([address as `0x${string}`]);
+
+    return {
+      code: 0,
+      data: { masterAddress },
+    };
+  }
+
   // async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
   //   const key = Utf8.parse(charFill(password));
   //   const iv = getIvMapString();
