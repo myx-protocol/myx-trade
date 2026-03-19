@@ -30,6 +30,16 @@ export const Errors = {
   [ErrorCode.Invalid_Params]: `Invalid Params`,
   [ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]: `Invalid Amount Withdrawable LP Amount`,
 }
+function isUserRejected(error: any): boolean {
+  let err = error
+  
+  while (err) {
+    if (err.name === "UserRejectedRequestError") return true
+    err = err.cause
+  }
+  
+  return false
+}
 
 export function didUserReject(error: any): boolean {
   return (
@@ -40,43 +50,49 @@ export function didUserReject(error: any): boolean {
 }
 
 export async function getErrorTextFormError(error: any) {
-  if (didUserReject(error)) {
-    return {
-      error: Errors[ErrorCode.USER_REJECTED_REQUEST],
-    }
+  const message = error?.shortMessage ||
+    error?.details ||
+    error?.message
+  
+  if (typeof error === "string") {
+    return {error}
   }
   
-  const decodeErrorResult = await errorDecoder.decode(error)
-  // decodeErrorResult available for debugging if host sets log sink
-  if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
-    return {
-      error: Errors[ErrorCode.USER_REJECTED_REQUEST],
-    }
-  }
-  if (decodeErrorResult.type === ErrorType.CustomError) {
-    const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
-    if (errorKey) {
-      return {
-        error:{
-          code:  errorKey,
-          message:  customErrorMapping[errorKey]
-        },
-      }
-    }
-    return {
-      error: {
-        code: error?.code,
-        message: error?.reason || decodeErrorResult.reason || error.message
-      },
-    }
+  if(isUserRejected(error)) {
+    return {error: Errors[ErrorCode.USER_REJECTED_REQUEST]}
   }
   
-  // console.error(error)
+  // const decodeErrorResult = await errorDecoder.decode(error)
+  // // decodeErrorResult available for debugging if host sets log sink
+  // if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
+  //   return {
+  //     error: Errors[ErrorCode.USER_REJECTED_REQUEST],
+  //   }
+  // }
+  // if (decodeErrorResult.type === ErrorType.CustomError) {
+  //   const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
+  //   if (errorKey) {
+  //     return {
+  //       error:{
+  //         code:  errorKey,
+  //         message:  customErrorMapping[errorKey]
+  //       },
+  //     }
+  //   }
+  //   return {
+  //     error: {
+  //       code: error?.code,
+  //       message: error?.reason || decodeErrorResult.reason || error.message
+  //     },
+  //   }
+  // }
+  //
+  // // console.error(error)
   
   return {
     error: {
-      code: decodeErrorResult.type,
-      message: decodeErrorResult.reason
+      code: error?.code || error?.name || 'Unknow Error',
+      message
     },
   }
 }

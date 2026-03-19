@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -97,6 +92,11 @@
         "name": "target"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "PoolDebtNotCleared",
+    "inputs": []
   },
   {
     "type": "error",
@@ -338,24 +338,16 @@
             "name": "state"
           },
           {
+            "type": "bool",
+            "name": "compoundEnabled"
+          },
+          {
             "type": "address",
             "name": "basePoolToken"
           },
           {
             "type": "address",
             "name": "quotePoolToken"
-          },
-          {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          },
-          {
-            "type": "bool",
-            "name": "compoundEnabled"
-          },
-          {
-            "type": "uint64",
-            "name": "windowCapUsd"
           },
           {
             "type": "address",
@@ -433,24 +425,16 @@
             "name": "state"
           },
           {
+            "type": "bool",
+            "name": "compoundEnabled"
+          },
+          {
             "type": "address",
             "name": "basePoolToken"
           },
           {
             "type": "address",
             "name": "quotePoolToken"
-          },
-          {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          },
-          {
-            "type": "bool",
-            "name": "compoundEnabled"
-          },
-          {
-            "type": "uint64",
-            "name": "windowCapUsd"
           },
           {
             "type": "address",
@@ -499,10 +483,6 @@
           {
             "type": "uint64",
             "name": "oracleFeeUsd"
-          },
-          {
-            "type": "uint64",
-            "name": "oracleRefundFeeUsd"
           },
           {
             "type": "uint128",
@@ -793,16 +773,8 @@
             "name": "oracleType"
           },
           {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          },
-          {
             "type": "uint8",
             "name": "riskTier"
-          },
-          {
-            "type": "uint64",
-            "name": "windowCapUsd"
           }
         ]
       }
@@ -834,29 +806,6 @@
   },
   {
     "type": "function",
-    "name": "updatePoolPriceDeviations",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint16",
-            "name": "maxPriceDeviation"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "updatePoolRiskTiers",
     "constant": false,
     "payable": false,
@@ -872,29 +821,6 @@
           {
             "type": "uint8",
             "name": "riskTier"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "updatePoolWindowCaps",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint64",
-            "name": "windowCapUsd"
           }
         ]
       }
