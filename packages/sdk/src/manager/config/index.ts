@@ -6,7 +6,6 @@ import {
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { LogLevel, sdkWarn, sdkError } from "@/logger";
 import { WebSocketConfig } from "@/manager/subscription/websocket/types";
-import type { Account } from "viem";
 import { WalletClient } from "viem";
 import type { SignerLike, ISigner } from "../../signer/types.js";
 import { normalizeSigner } from "../../signer/adapters.js";
@@ -30,17 +29,17 @@ export interface MyxClientConfig {
   chainId: number;
   /** ethers v5/v6 Signer, viem WalletClient, or ISigner. Use walletClient when app uses viem to avoid ethers in bundle. */
   signer?: SignerLike;
-  seamlessAccount?: {
-    masterAddress: string;
-    wallet: Account | null;
-    authorized: boolean;
-  };
+  // seamlessAccount?: {
+  //   masterAddress: string;
+  //   wallet: Account | null;
+  //   authorized: boolean;
+  // };
   walletClient?: WalletClient;
   brokerAddress: string;
   isTestnet?: boolean;
   isBetaMode?: boolean;
   poolingInterval?: number;
-  seamlessMode?: boolean;
+  // seamlessMode?: boolean;
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
@@ -99,33 +98,33 @@ export class ConfigManager {
     throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer: call auth({ signer }) or auth({ walletClient })");
   }
 
-  public async startSeamlessMode(open: boolean) {
-    this.config = {
-      ...this.config,
-      seamlessMode: open,
-    };
+  // public async startSeamlessMode(open: boolean) {
+  //   this.config = {
+  //     ...this.config,
+  //     seamlessMode: open,
+  //   };
 
-    return this.config;
-  }
+  //   return this.config;
+  // }
 
-  public updateSeamlessWallet({
-    wallet,
-    authorized,
-    masterAddress,
-  }: {
-    wallet?: Account | null;
-    authorized?: boolean;
-    masterAddress?: string;
-  }) {
-    this.config = {
-      ...this.config,
-      seamlessAccount: {
-        masterAddress: masterAddress ?? "",
-        wallet: wallet ?? null,
-        authorized: authorized ?? false,
-      },
-    };
-  }
+  // public updateSeamlessWallet({
+  //   wallet,
+  //   authorized,
+  //   masterAddress,
+  // }: {
+  //   wallet?: Account | null;
+  //   authorized?: boolean;
+  //   masterAddress?: string;
+  // }) {
+  //   this.config = {
+  //     ...this.config,
+  //     seamlessAccount: {
+  //       masterAddress: masterAddress ?? "",
+  //       wallet: wallet ?? null,
+  //       authorized: authorized ?? false,
+  //     },
+  //   };
+  // }
 
   public updateClientChainId(chainId: number, brokerAddress: string) {
     this.config = {

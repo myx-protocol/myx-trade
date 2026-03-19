@@ -3,7 +3,7 @@ import { getDataProviderContract, getPoolManagerContract, ProviderType, } from "
 import { ChainId } from "@/config/chain.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { sdkError } from "@/logger";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 import sdk from "@/web3/index.js";
 
 export const getMarketInfo = (chainId: ChainId, quoteToken: string) => {

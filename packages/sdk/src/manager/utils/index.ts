@@ -24,7 +24,7 @@ import {
   bigintTradingGasToRatioCalculator,
 } from "@/common";
 import { CHAIN_INFO } from "@/config/chains/index";
-import { executeAddressByChainId } from "@/config/address";
+// import { executeAddressByChainId } from "@/config/address/index.js";
 
 export class Utils {
   private configManager: ConfigManager;
@@ -137,7 +137,8 @@ export class Utils {
   async getUserTradingFeeRate(
     assetClass: number,
     riskTier: number,
-    chainId: number
+    chainId: number,
+    userAddress?: string
   ): Promise<
     | { code: 0; data: { takerFeeRate: string; makerFeeRate: string; baseTakerFeeRate: string; baseMakerFeeRate: string } }
     | { code: -1; message: string }
@@ -147,9 +148,7 @@ export class Utils {
 
     try {
       const brokerContract = getBrokerContract(chainId, brokerAddress);
-      const targetAddress = config.seamlessMode
-        ? config.seamlessAccount?.masterAddress
-        : await this.configManager.getSignerAddress(chainId);
+      const targetAddress = userAddress ?? await this.configManager.getSignerAddress(chainId);
 
       const userFeeRate = await brokerContract.read.getUserFeeRate([
         targetAddress as `0x${string}`,
@@ -260,16 +259,16 @@ export class Utils {
     }
   }
 
-  async checkSeamlessGas(userAddress: string, chainId: number) {
-    const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
-    const forwardFeeToken = executeAddressByChainId(chainId);
-    const relayFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
-    const contractAddress = getContractAddressByChainId(chainId);
-    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
-    const balance = await tokenContract.read.balanceOf([userAddress as `0x${string}`]);
-    if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee)) return false;
-    return true;
-  }
+  // async checkSeamlessGas(userAddress: string, chainId: number) {
+  //   const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
+  //   const forwardFeeToken = executeAddressByChainId(chainId);
+  //   const relayFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
+  //   const contractAddress = getContractAddressByChainId(chainId);
+  //   const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
+  //   const balance = await tokenContract.read.balanceOf([userAddress as `0x${string}`]);
+  //   if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee)) return false;
+  //   return true;
+  // }
 
   async getLiquidityInfo({
     chainId,

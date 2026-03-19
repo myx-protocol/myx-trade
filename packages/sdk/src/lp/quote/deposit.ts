@@ -17,7 +17,7 @@ import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import type { TpSl } from "@/lp/pool/index.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 import { getPublicClient } from "@/web3";
 import { sdkError } from "@/logger";
 

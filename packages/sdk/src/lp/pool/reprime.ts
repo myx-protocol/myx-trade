@@ -7,7 +7,7 @@ import { checkParams } from "@/common/checkParams";
 import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { formatUnits, parseUnits } from "viem";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 import sdk, { getPublicClient } from "@/web3";
 
 export const reprime = async (chainId: ChainId, poolId: string, marketId: string) => {
