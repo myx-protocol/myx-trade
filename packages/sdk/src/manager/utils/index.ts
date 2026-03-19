@@ -76,7 +76,7 @@ export class Utils {
       return { code: 0, data: String(allowance) };
     } catch (error) {
       this.logger.error("Error getting allowance:", error);
-      throw typeof error === "string" ? error : await getErrorTextFormError(error);
+      throw typeof error === "string" ? error : (await getErrorTextFormError(error));
     }
   }
 

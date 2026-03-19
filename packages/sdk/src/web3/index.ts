@@ -11,7 +11,7 @@ export class MxSDK {
   public Markets: MarketInfo[] | undefined;
 
   constructor() {
-    console.log("MxSDK version:", this.version);
+    // Version log: host can setSdkLogSink(console) to see this
   }
 
   setConfigManager(cm: ConfigManager) {

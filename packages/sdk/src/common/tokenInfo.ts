@@ -1,4 +1,5 @@
 import { getAddress, formatUnits } from "viem";
+import { sdkError } from "@/logger";
 import { getPublicClient } from "@/web3/viemClients.js";
 import TOKEN_ABI from "@/abi/IERC20Metadata.json";
 import { type Address } from "@/api";
@@ -41,7 +42,7 @@ export const getTokenInfo = async (chainId: number, tokenAddress: string, accoun
       ...(account ? { balance } : {}),
     };
   } catch (e) {
-    console.error(e);
+    sdkError(e);
     throw e;
   }
 };

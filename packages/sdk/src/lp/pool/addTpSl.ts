@@ -1,5 +1,6 @@
 import { AddTpSLParams } from "@/lp/pool/type.js";
 import { getLiquidityRouterContract } from "../../web3/providers.js";
+import { sdkError } from "@/logger";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
@@ -54,7 +55,7 @@ export const addTpSl = async (params:AddTpSLParams) => {
     
     return receipt
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
