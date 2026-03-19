@@ -7,7 +7,7 @@ import {
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 
 import { Deposit,type OracleUpdatePrice } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";

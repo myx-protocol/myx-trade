@@ -365,30 +365,30 @@ export class Api extends Request {
     );
   }
 
-  async getAccountVipInfo({
-    address,
-    accessToken,
-    chainId,
-    deadline,
-    nonce,
-  }: {
-    address: string;
-    accessToken: string;
-    chainId: number;
-    deadline: number;
-    nonce: string;
-  }) {
-    return http.get<ApiResponse<any>>(
-      `${this.getHost()}/openapi/gateway/vip/trade_config`,
-      { chainId, deadline, nonce },
-      {
-        headers: {
-          myx_openapi_account: address,
-          myx_openapi_access_token: accessToken,
-        },
-      }
-    );
-  }
+  // async getAccountVipInfo({
+  //   address,
+  //   accessToken,
+  //   chainId,
+  //   deadline,
+  //   nonce,
+  // }: {
+  //   address: string;
+  //   accessToken: string;
+  //   chainId: number;
+  //   deadline: number;
+  //   nonce: string;
+  // }) {
+  //   return http.get<ApiResponse<any>>(
+  //     `${this.getHost()}/openapi/gateway/vip/trade_config`,
+  //     { chainId, deadline, nonce },
+  //     {
+  //       headers: {
+  //         myx_openapi_account: address,
+  //         myx_openapi_access_token: accessToken,
+  //       },
+  //     }
+  //   );
+  // }
 
   /**
    * appeal module start ------>
