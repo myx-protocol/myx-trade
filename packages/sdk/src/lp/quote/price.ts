@@ -4,6 +4,7 @@ import { getPriceData } from "@/common/price.js";
 import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 
 export const getLpPrice = async (chainId:ChainId,poolId: string) => {
   if (!poolId) return
@@ -21,7 +22,7 @@ export const getLpPrice = async (chainId:ChainId,poolId: string) => {
     // console.log( `pool ${poolId} price: `, data)
     return data
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
