@@ -49,7 +49,7 @@ export class Account {
     };
   }
 
-  async getWalletQuoteTokenBalance(chainId: number, address?: string) {
+  async getWalletQuoteTokenBalance({chainId, address, tokenAddress }:{chainId: number, address?: string, tokenAddress: string}) {
     if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(
         MyxErrorCode.InvalidSigner,
@@ -57,8 +57,7 @@ export class Account {
       );
     }
 
-    const contractAddress = getContractAddressByChainId(chainId);
-    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
+    const tokenContract = getTokenContract(chainId, tokenAddress);
     const signerAddress = await this.configManager.getSignerAddress(chainId);
     const balance = await tokenContract.read.balanceOf([address || signerAddress as `0x${string}`]);
     return {

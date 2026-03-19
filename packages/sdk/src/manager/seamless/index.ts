@@ -244,7 +244,7 @@ export class Seamless {
     const masterAddress = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance(chainId, masterAddress);
+      const balanceRes = await this.account.getWalletQuoteTokenBalance({chainId, address: masterAddress, tokenAddress: forwardFeeToken });
       const balance = balanceRes.data;
       const marketManagerContract = await getMarketManageContract(chainId);
       const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
