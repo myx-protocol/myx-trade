@@ -80,11 +80,10 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
       [poolId, amountIn, account, price],
     )
     
-    const [baseAmountOut, rebateAmount] = request
     // console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
     return {
-      baseAmountOut,
-      rebateAmount,
+      baseAmountOut: request.baseAmountOut,
+      rebateAmount: request.rebateAmount,
     }
     
   } catch (error) {
