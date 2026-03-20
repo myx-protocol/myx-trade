@@ -153,8 +153,10 @@ export class Seamless {
     const contractAddress = getContractAddressByChainId(chainId);
     const [masterAddress] = await walletClient.getAddresses();
     if (!masterAddress) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
-
+    this.logger.info('masterAddress-->', masterAddress)
+    this.logger.info('tokenAddress-->', tokenAddress)
     const tokenContract = getTokenContract(chainId, tokenAddress);
+    this.logger.info('tokenContract-->', tokenContract)
     try {
       const nonces = await tokenContract.read.nonces([masterAddress]);
       const tradingRouterSignPermit = await signPermit(
@@ -167,6 +169,7 @@ export class Seamless {
         nonces,
         deadline,
       );
+      this.logger.info('tradingRouterSignPermit-->', tradingRouterSignPermit)
       const tradingRouterPermitParams = {
         token: tokenAddress,
         owner: masterAddress,
@@ -177,6 +180,7 @@ export class Seamless {
         r: tradingRouterSignPermit.r,
         s: tradingRouterSignPermit.s,
       };
+      this.logger.info('tradingRouterPermitParams-->', tradingRouterPermitParams)
       return [tradingRouterPermitParams];
     } catch (error) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
@@ -264,6 +268,8 @@ export class Seamless {
         permitParams = []
       }
     }
+
+    this.logger.info('permitParams-->', permitParams)
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer);
     const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);
