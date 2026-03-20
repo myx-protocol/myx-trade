@@ -215,10 +215,10 @@ export class Seamless {
 
     this.logger.debug('forwarderJsonRpcContractDomain-->', forwarderJsonRpcContractDomain)
     const domain = {
-      name: forwarderJsonRpcContractDomain.name,
-      version: forwarderJsonRpcContractDomain.version,
-      chainId: forwarderJsonRpcContractDomain.chainId,
-      verifyingContract: forwarderJsonRpcContractDomain.verifyingContract,
+      name: forwarderJsonRpcContractDomain[1],
+      version: forwarderJsonRpcContractDomain[2],
+      chainId: forwarderJsonRpcContractDomain[3],
+      verifyingContract: forwarderJsonRpcContractDomain[4],
     };
 
     const wc = walletClient ?? (await getWalletClient(chainId));
