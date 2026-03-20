@@ -152,10 +152,7 @@ export class Seamless {
     const contractAddress = getContractAddressByChainId(chainId);
     const [masterAddress] = await walletClient.getAddresses();
     if (!masterAddress) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
-    this.logger.info('masterAddress-->', masterAddress)
-    this.logger.info('tokenAddress-->', tokenAddress)
     const tokenContract = getTokenContract(chainId, tokenAddress);
-    this.logger.info('tokenContract-->', tokenContract)
     try {
       const nonces = await tokenContract.read.nonces([masterAddress]);
       const tradingRouterSignPermit = await signPermit(
@@ -168,7 +165,6 @@ export class Seamless {
         nonces,
         deadline,
       );
-      this.logger.info('tradingRouterSignPermit-->', tradingRouterSignPermit)
       const tradingRouterPermitParams = {
         token: tokenAddress,
         owner: masterAddress,
@@ -179,7 +175,6 @@ export class Seamless {
         r: tradingRouterSignPermit.r,
         s: tradingRouterSignPermit.s,
       };
-      this.logger.info('tradingRouterPermitParams-->', tradingRouterPermitParams)
       return [tradingRouterPermitParams];
     } catch (error) {
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
@@ -212,7 +207,6 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId);
     const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
 
-    this.logger.debug('forwarderJsonRpcContractDomain-->', forwarderJsonRpcContractDomain)
     
     const domain = {
       name: forwarderJsonRpcContractDomain[1],
@@ -225,19 +219,6 @@ export class Seamless {
     const [account] = await wc.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
-    this.logger.debug('account-->', account)
-    this.logger.debug('domain-->', domain)
-    this.logger.debug('types-->', contractTypes)
-    this.logger.debug('primaryType-->', "ForwardRequest")
-    this.logger.debug('message-->', {
-      from: from as `0x${string}`,
-      to: to as `0x${string}`,
-      value: BigInt(value),
-      gas: BigInt(gas),
-      nonce: BigInt(nonce),
-      deadline: BigInt(deadline),
-      data: data as `0x${string}`,
-    })
     const signature = await wc.signTypedData({
       account,
       domain,
@@ -278,14 +259,12 @@ export class Seamless {
     if (approve) {
       try {
         permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
-        this.logger.debug('permitParams-->', permitParams)
       } catch (error) {
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
     }
 
-    this.logger.debug('permitParams-->', permitParams)
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer);
     const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);

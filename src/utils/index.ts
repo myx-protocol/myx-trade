@@ -2,7 +2,7 @@
 export const getEIP712Domain = async (contract: any) => {
   try {
     const eip712Domain = await (contract as any).read.eip712Domain();
-    console.log('eip712Domain-->', eip712Domain)
+
     return {
       name: eip712Domain[1],
       version: eip712Domain[2],
