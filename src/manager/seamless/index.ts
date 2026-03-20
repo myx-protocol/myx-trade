@@ -213,6 +213,7 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId);
     const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
 
+    this.logger.debug('forwarderJsonRpcContractDomain-->', forwarderJsonRpcContractDomain)
     const domain = {
       name: forwarderJsonRpcContractDomain.name,
       version: forwarderJsonRpcContractDomain.version,
@@ -224,19 +225,6 @@ export class Seamless {
     const [account] = await wc.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
-    this.logger.debug('account-->', account)
-    this.logger.debug('domain-->', domain)
-    this.logger.debug('types-->', contractTypes)
-    this.logger.debug('primaryType-->', "ForwardRequest")
-    this.logger.debug('message-->', {
-      from: from as `0x${string}`,
-      to: to as `0x${string}`,
-      value: BigInt(value),
-      gas: BigInt(gas),
-      nonce: BigInt(nonce),
-      deadline: BigInt(deadline),
-      data: data as `0x${string}`,
-    })
     const signature = await wc.signTypedData({
       account,
       domain,
@@ -260,19 +248,12 @@ export class Seamless {
   async authorizeSeamlessAccount({ approve, seamlessAddress, chainId, forwardFeeToken }: { approve: boolean, seamlessAddress: string, chainId: number, forwardFeeToken: string }) {
     const masterAddress = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
 
-    this.logger.debug('masterAddress-->', masterAddress)
-    this.logger.debug('approve-->', approve)
     if (approve) {
       const balanceRes = await this.account.getWalletQuoteTokenBalance({chainId, address: masterAddress, tokenAddress: forwardFeeToken });
-      this.logger.debug('balanceRes-->', balanceRes)
       const balance = balanceRes.data;
-      this.logger.debug('balance-->', balance)
       const marketManagerContract = await getMarketManageContract(chainId);
-      this.logger.debug('marketManagerContract-->', marketManagerContract)
       const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
-      this.logger.debug('pledgeFee-->', pledgeFee)
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
-      this.logger.debug('gasFee-->', gasFee)
       if (gasFee > 0 && gasFee > BigInt(balance)) {
         this.logger.debug('Insufficient balance')
         throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient balance");
