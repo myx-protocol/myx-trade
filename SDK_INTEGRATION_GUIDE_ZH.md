@@ -45,7 +45,7 @@ import { MyxClient } from '@myx-trade/sdk';
 
 // 例如从 wagmi 的 useWalletClient() 获取 walletClient
 const myxClient = new MyxClient({
-  chainId: 421614, // 测试网链 ID
+  chainId: 421614, // 当前版本仍需要；后续版本计划移除（方法参数里会单独传 chainId）
   walletClient, // viem WalletClient，或使用 signer（符合 SignerLike 的对象）
   brokerAddress: BROKER_ADDRESS, // 从 MYX 团队获取
   isTestnet: true, // true 为测试网，false 为 Beta
@@ -55,86 +55,68 @@ const myxClient = new MyxClient({
 
 若使用 ethers v5/v6 的 Signer，可传入 `signer` 替代 `walletClient`，SDK 会自动适配。
 
+### 日志输出（可选）
+
+SDK 默认不直接访问全局 `console`（日志 sink 默认为 no-op）。如果你希望在前端控制台看到 SDK 日志，请在应用入口设置日志 sink：
+
+```typescript
+import { setSdkLogSink } from '@myx-trade/sdk';
+
+setSdkLogSink(console);
+```
+
 ### SDK 认证和访问令牌
 
 创建 SDK 实例后，必须调用 `auth` 方法完成认证。
 
-`auth` 方法需要三个必需参数：
+`auth` 方法支持以下参数（按需传入）：
 
-1. **signer** - 用于签署交易。
-2. **walletClient** - 当前钱包客户端实例。
-3. **getAccessToken** - 用于获取 accessToken 的回调函数。
+1. **signer** - 用于签署交易（ethers v5/v6 或兼容 SignerLike）。
+2. **walletClient** - viem 钱包客户端实例。
+3. **getAccessToken** - 用于获取 accessToken 的回调函数（可选）。
 
-创建 SDK 对象后，调用 `auth` 方法并提供上述参数。
+说明：
+- `signer` 与 `walletClient` 二选一即可（也可同时传，通常优先用 `walletClient`）。
+- 如果你的业务会调用需要 accessToken 的接口，请提供 `getAccessToken`。
 
 #### getAccessToken 回调
 
 `getAccessToken` 参数是一个回调函数。每当需要访问令牌时，SDK 会调用此函数。
 
-该回调应从以下 API 请求访问令牌。
+accessToken 的生成与签发策略属于项目接入信息，请联系项目方获取。
 
-**请求 API：** `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token`
-
-**请求方法：** `GET`
-
-**请求参数：**
-
-1. `appId` (string) - 应用程序 ID。
-2. `timestamp` (number) - 当前时间戳（秒）。
-3. `expireTime` (number) - 令牌过期时间（秒）。
-4. `allowAccount` (string) - 允许的 EOA 地址。
-5. `signature` (string) - 请求签名。
-
-**签名生成：**
-
-```typescript
-import { SHA256, Hex } from 'crypto-es';
-
-const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-const signature = SHA256(payload).toString(Hex);
-```
-
-**getAccessToken 的预期返回值：**
-
-`getAccessToken` 回调必须返回以下格式的对象：
+`getAccessToken` 回调需返回如下结构：
 
 ```typescript
 {
-  code: number,        // 0 表示成功，非零表示失败
-  msg: string,
-  data: {
-    accessToken: string, // 访问令牌
-    expireAt: number     // 过期时间（秒）
-  }
+  accessToken: string, // 访问令牌
+  expireAt: number     // 过期时间（秒级时间戳）
 }
 ```
 
-**使用示例：**
+**认证示例：**
 
 ```typescript
-import { SHA256, Hex } from 'crypto-es';
-
 const getAccessToken = async () => {
-  const appId = 'YOUR_APP_ID';
-  const secret = 'YOUR_SECRET';
-  const timestamp = Math.floor(Date.now() / 1000);
-  const expireTime = timestamp + 3600; // 令牌在 1 小时后过期
-  const allowAccount = userAddress;
+  // 访问令牌获取逻辑由业务侧实现（具体接入方式请联系项目方）
+  return fetchTokenFromYourBackend();
+}
 
-  // 生成签名
-  const payload = `${appId}&${timestamp}&${expireTime}&${allowAccount}&${secret}`;
-  const signature = SHA256(payload).toString(Hex);
+// 只用 viem walletClient
+myxClient.auth({ walletClient, getAccessToken });
 
-  // 请求访问令牌
-  const response = await fetch(
-    `https://api-beta.myx.finance/openapi/gateway/auth/api_key/create_token?appId=${appId}&timestamp=${timestamp}&expireTime=${expireTime}&allowAccount=${allowAccount}&signature=${signature}`
-  );
+// 或者只用 signer
+// myxClient.auth({ signer, getAccessToken });
+```
 
-  return await response.json();
-};
+### AccessToken 手动读取与刷新
 
-// 认证 SDK（传入对象，包含 signer、walletClient、getAccessToken）
-await myxClient.auth({ signer, walletClient, getAccessToken });
+```typescript
+// 读取当前缓存 token（不触发刷新）
+const token = await myxClient.getAccessToken();
+
+// 手动刷新 token（forceRefresh=true 会强制调用 getAccessToken）
+await myxClient.refreshAccessToken(true);
 ```
 
 ## Types
@@ -639,7 +621,11 @@ const pools = await myxClient.markets.getPoolSymbolAll();
 获取钱包的报价代币余额。
 
 ```typescript
-const result = await myxClient.account.getWalletQuoteTokenBalance(chainId, userAddress);
+const result = await myxClient.account.getWalletQuoteTokenBalance({
+  chainId,
+  address: userAddress,      // 可选，不传则读取当前 signer 地址
+  tokenAddress: quoteTokenAddress,
+});
 console.log(result.data); // 余额（wei）
 ```
 
@@ -682,18 +668,18 @@ const result = await myxClient.account.deposit({
 });
 ```
 
-### withdraw
+### updateAndWithdraw
 
 从交易账户提取资金。
 
 ```typescript
-const result = await myxClient.account.withdraw({
-  chainId: chainId,
-  receiver: userAddress,
-  amount: amount,
-  poolId: poolId,
-  isQuoteToken: true,
-});
+const result = await myxClient.account.updateAndWithdraw(
+  userAddress, // receiver
+  poolId,
+  true,        // isQuoteToken
+  amount,
+  chainId
+);
 ```
 
 ### getAccountInfo
@@ -749,78 +735,77 @@ const result = await myxClient.account.setUserFeeData(
 
 ## 模块：无 Gas 交易（Seamless）
 
-无 Gas 模式允许用户使用中继账户进行交易而无需支付 gas 费用。
+无 Gas 交易相关能力。
 
-### createSeamless
+### onCheckRelayer
 
-创建新的无 Gas 钱包。
+检查某个 seamless 地址是否已被 master 账户授权，同时检查是否仍需要做代币授权。
 
 ```typescript
-const result = await myxClient.seamless.createSeamless({
-  password: userPassword,
-  chainId: chainId,
-});
-// 返回：{ masterAddress, seamlessAccount, authorized, apiKey }
+const ok = await myxClient.seamless.onCheckRelayer(
+  userAddress,            // master account
+  seamlessWalletAddress,  // relayer/seamless address
+  chainId,
+  quoteTokenAddress
+);
 ```
 
-### unLockSeamlessWallet
+### getUSDPermitParams
 
-解锁现有的无 Gas 钱包。
+生成用于 forwarder 授权的 permit 参数（高级用法）。
 
 ```typescript
-const result = await myxClient.seamless.unLockSeamlessWallet({
-  masterAddress: userAddress,
-  password: userPassword,
-  apiKey: encryptedApiKey,
-  chainId: chainId,
-});
+const deadline = Math.floor(Date.now() / 1000) + 60 * 60;
+const permitParams = await myxClient.seamless.getUSDPermitParams(
+  deadline,
+  chainId,
+  quoteTokenAddress
+);
 ```
 
 ### authorizeSeamlessAccount
 
-授权或撤销无 Gas 账户。
+授权或撤销 seamless 账户（主流程方法）。
 
 ```typescript
 const result = await myxClient.seamless.authorizeSeamlessAccount({
   approve: true, // false 为撤销
   seamlessAddress: seamlessWalletAddress,
-  chainId: chainId,
+  chainId,
+  forwardFeeToken: quoteTokenAddress,
 });
 ```
 
-### startSeamlessMode
+### forwarderTx
 
-启用或禁用无 Gas 模式。
+发送 forwarder 交易（高级用法，通常由 SDK 内部流程调用）。
 
 ```typescript
-const result = await myxClient.seamless.startSeamlessMode({
-  open: true, // false 为禁用
-});
+const result = await myxClient.seamless.forwarderTx(
+  {
+    from: userAddress,
+    to: targetContract,
+    value: "0",
+    gas: "800000",
+    deadline,
+    data: encodedCallData,
+    nonce: "0",
+    forwardFeeToken: quoteTokenAddress,
+  },
+  chainId
+);
 ```
 
-### exportSeamlessPrivateKey
+### getOriginSeamlessAccount
 
-导出无 Gas 钱包私钥。
-
-```typescript
-const result = await myxClient.seamless.exportSeamlessPrivateKey({
-  password: userPassword,
-  apiKey: encryptedApiKey,
-});
-// 返回：{ privateKey }
-```
-
-### importSeamlessPrivateKey
-
-从私钥导入无 Gas 钱包。
+通过 seamless 地址查询其主账户地址。
 
 ```typescript
-const result = await myxClient.seamless.importSeamlessPrivateKey({
-  privateKey: privateKey,
-  password: userPassword,
-  chainId: chainId,
-});
-// 返回：{ masterAddress, seamlessAccount, authorized, apiKey }
+const result = await myxClient.seamless.getOriginSeamlessAccount(
+  seamlessWalletAddress,
+  chainId
+);
+// 返回：{ masterAddress }
 ```
 
 ## 模块：推荐返佣（Referrals）
@@ -1684,7 +1669,7 @@ export interface MyxClientConfig {
   isTestnet?: boolean;                // true 为测试网，false 为 Beta（默认：false）
   isBetaMode?: boolean;               // true 为 Beta 环境（默认：false）
   seamlessMode?: boolean;             // 启用无 Gas 模式（默认：false）
-  logLevel?: 'debug' | 'info' | 'warn' | 'error'; // 日志级别（默认：'info'）
+  logLevel?: 'debug' | 'info' | 'warn' | 'error' | 'none'; // 日志级别（默认：'info'）
   socketConfig?: {
     reconnectInterval?: number;       // WebSocket 重连间隔（毫秒）（默认：5000）
     maxReconnectAttempts?: number;    // 最大重连次数（默认：5）
@@ -1807,16 +1792,21 @@ myxClient.subscription.on('error', (error) => {
 无 Gas 模式允许无 gas 费交易，提供更好的用户体验：
 
 ```typescript
-// 创建无 Gas 钱包
-const result = await myxClient.seamless.createSeamless({
-  password: userPassword,
+// 授权 seamless 账户（当前可用流程）
+await myxClient.seamless.authorizeSeamlessAccount({
+  approve: true,
+  seamlessAddress: seamlessWalletAddress,
   chainId,
+  forwardFeeToken: quoteTokenAddress,
 });
 
-// 启用无 Gas 模式
-await myxClient.seamless.startSeamlessMode({ open: true });
-
-// 现在所有交易都将无需 gas 费
+// 可选：检查授权与代币授权状态
+const ready = await myxClient.seamless.onCheckRelayer(
+  userAddress,
+  seamlessWalletAddress,
+  chainId,
+  quoteTokenAddress
+);
 ```
 
 ## 依赖项

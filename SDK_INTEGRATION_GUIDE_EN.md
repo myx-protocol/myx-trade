@@ -56,6 +56,16 @@ const myxClient = new MyxClient({
 
 You can also pass a `signer` (ethers v5/v6 Signer or compatible) instead of `walletClient`; the SDK will adapt it.
 
+### Logging Output (Optional)
+
+By default, the SDK does not directly use the global `console` (the log sink is a no-op). If you want SDK logs in the browser console, set a sink in your app entry:
+
+```typescript
+import { setSdkLogSink } from '@myx-trade/sdk';
+
+setSdkLogSink(console);
+```
+
 ### SDK Authentication and Access Token
 
 After creating the SDK instance, you must call the `auth` method to complete authentication.
@@ -1685,7 +1695,7 @@ export interface MyxClientConfig {
   isTestnet?: boolean;                // true for testnet, false for beta (default: false)
   isBetaMode?: boolean;               // true for beta environment (default: false)
   seamlessMode?: boolean;             // Enable seamless (gasless) mode (default: false)
-  logLevel?: 'debug' | 'info' | 'warn' | 'error'; // Log level (default: 'info')
+  logLevel?: 'debug' | 'info' | 'warn' | 'error' | 'none'; // Log level (default: 'info')
   socketConfig?: {
     reconnectInterval?: number;       // WebSocket reconnect interval in ms (default: 5000)
     maxReconnectAttempts?: number;    // Max reconnection attempts (default: 5)
