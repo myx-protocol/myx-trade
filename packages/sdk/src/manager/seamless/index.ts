@@ -90,6 +90,7 @@ async function signPermit(
 ): Promise<{ v: number; r: `0x${string}`; s: `0x${string}` }> {
   const tokenContract = getTokenContract(chainId, tokenAddress) as unknown as ContractWithEip712Domain;
   const domain = await getEIP712Domain(tokenContract);
+
   const [account] = await walletClient.getAddresses();
   if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account for signPermit");
 
@@ -214,6 +215,7 @@ export class Seamless {
     const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
 
     this.logger.debug('forwarderJsonRpcContractDomain-->', forwarderJsonRpcContractDomain)
+    
     const domain = {
       name: forwarderJsonRpcContractDomain[1],
       version: forwarderJsonRpcContractDomain[2],
