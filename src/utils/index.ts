@@ -11,6 +11,7 @@ export type ContractWithEip712Domain = { read: { eip712Domain(): Promise<ChainDo
 export const getEIP712Domain = async (contract: ContractWithEip712Domain): Promise<ChainDomainType> => {
   try {
     const eip712Domain = await contract.read.eip712Domain();
+    console.log('eip712Domain-->', eip712Domain)
     return {
       name: eip712Domain.name,
       version: eip712Domain.version,
