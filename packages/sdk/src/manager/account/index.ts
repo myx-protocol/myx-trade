@@ -281,28 +281,28 @@ export class Account {
     }
   }
 
-  // async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
-  //   const accessToken = (await this.configManager.getAccessToken()) ?? "";
+  async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
+    const accessToken = (await this.configManager.getAccessToken()) ?? "";
 
-  //   try {
-  //     const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
-  //     if (res.code !== 9200) {
-  //       throw new MyxSDKError(
-  //         MyxErrorCode.RequestFailed,
-  //         res.msg ?? "Failed to get account vip info"
-  //       );
-  //     }
-  //     return {
-  //       code: 0,
-  //       data: res.data,
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       code: -1,
-  //       message: (error as Error).message,
-  //     };
-  //   }
-  // }
+    try {
+      const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
+      if (res.code !== 9200) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          res.msg ?? "Failed to get account vip info"
+        );
+      }
+      return {
+        code: 0,
+        data: res.data,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
 
   async setUserFeeData(
     address: string,
