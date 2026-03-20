@@ -225,6 +225,19 @@ export class Seamless {
     const [account] = await wc.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
+    this.logger.debug('account-->', account)
+    this.logger.debug('domain-->', domain)
+    this.logger.debug('types-->', contractTypes)
+    this.logger.debug('primaryType-->', "ForwardRequest")
+    this.logger.debug('message-->', {
+      from: from as `0x${string}`,
+      to: to as `0x${string}`,
+      value: BigInt(value),
+      gas: BigInt(gas),
+      nonce: BigInt(nonce),
+      deadline: BigInt(deadline),
+      data: data as `0x${string}`,
+    })
     const signature = await wc.signTypedData({
       account,
       domain,
