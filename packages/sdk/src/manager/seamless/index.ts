@@ -1,6 +1,5 @@
 import { ConfigManager } from "../config/index.js";
 import { Logger } from "@/logger";
-import { Utf8 } from 'crypto-es'
 
 import { Utils } from "../utils/index.js";
 import { getWalletClient } from "@/web3/viemClients.js";
@@ -8,7 +7,6 @@ import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { hexToBytes, toHex, encodeFunctionData, maxUint256 } from "viem";
 import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
 import { Account as AccountManager } from "../account/index.js";
-import type { ContractWithEip712Domain } from "@/utils/index.js";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import { getEIP712Domain } from "@/utils";
@@ -88,7 +86,7 @@ async function signPermit(
   nonce: bigint,
   deadline: number,
 ): Promise<{ v: number; r: `0x${string}`; s: `0x${string}` }> {
-  const tokenContract = getTokenContract(chainId, tokenAddress) as unknown as ContractWithEip712Domain;
+  const tokenContract = getTokenContract(chainId, tokenAddress)
   const domain = await getEIP712Domain(tokenContract);
 
   const [account] = await walletClient.getAddresses();

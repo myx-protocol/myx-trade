@@ -1,22 +1,13 @@
-export type ChainDomainType = {
-  name: string
-  version: string
-  chainId: bigint
-  verifyingContract: `0x${string}`
-}
 
-/** Contract-like with read.eip712Domain() (viem getContractReturnType). */
-export type ContractWithEip712Domain = { read: { eip712Domain(): Promise<ChainDomainType & { chainId: bigint }> } };
-
-export const getEIP712Domain = async (contract: ContractWithEip712Domain): Promise<ChainDomainType> => {
+export const getEIP712Domain = async (contract: any) => {
   try {
-    const eip712Domain = await contract.read.eip712Domain();
+    const eip712Domain = await (contract as any).read.eip712Domain();
     console.log('eip712Domain-->', eip712Domain)
     return {
-      name: eip712Domain.name,
-      version: eip712Domain.version,
-      chainId: BigInt(eip712Domain.chainId),
-      verifyingContract: eip712Domain.verifyingContract as `0x${string}`,
+      name: eip712Domain[1],
+      version: eip712Domain[2],
+      chainId: BigInt(eip712Domain[3]),
+      verifyingContract: eip712Domain[4] as `0x${string}`,
     };
   } catch (error) {
     throw new Error(`Error fetching EIP712 domain: ${error}`);
