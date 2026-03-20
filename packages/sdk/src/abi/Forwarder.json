@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -639,7 +634,6 @@
     "inputs": [
       {
         "type": "tuple",
-        "name": "request",
         "components": [
           {
             "type": "address",
@@ -672,8 +666,7 @@
         ]
       },
       {
-        "type": "address",
-        "name": "masterAccount"
+        "type": "address"
       }
     ],
     "outputs": []
@@ -687,7 +680,6 @@
     "inputs": [
       {
         "type": "tuple[]",
-        "name": "requests",
         "components": [
           {
             "type": "address",
@@ -720,12 +712,10 @@
         ]
       },
       {
-        "type": "address",
-        "name": "masterAccount"
+        "type": "address"
       },
       {
-        "type": "address",
-        "name": "refundReceiver"
+        "type": "address"
       }
     ],
     "outputs": []
