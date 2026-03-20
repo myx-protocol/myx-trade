@@ -148,7 +148,7 @@ const brokerAddressMap: Record<number, string> = {
     : '0x895C4ae2A22bB26851011d733A9355f663a1F939',
   [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0x634EfDC9dC76D7AbF6E49279875a31B02E9891e2',
   [ChainId.BSC_TESTNET]: isBetaMode() ? '0x144E5067E690635b2cbeE10D96f431D143739f48' : '',
-  [ChainId.BSC_MAINNET]: '0xEb8C74fF05e76F85791dD2E4B972E7E78F6287C3',
+  [ChainId.BSC_MAINNET]: '0xB4d04AB1F870F3865F6cE1336cEdff56d0f937a3',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
