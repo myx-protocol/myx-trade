@@ -42,12 +42,16 @@ export class Position {
     this.api = api;
   }
 
-  async listPositions(address: string) {
+  async listPositions(address: string, positionId?: string) {
     // Auto-fetch accessToken; refresh if missing or expired
     const accessToken = await this.configManager.getAccessToken();
 
     try {
-      const res = await this.api.getPositions(accessToken ?? '', address);
+      const res = await this.api.getPositions({
+        accessToken: accessToken ?? '',
+        address: address,
+        positionId: positionId,
+      });
       return {
         code: 0,
         data: res.data,
