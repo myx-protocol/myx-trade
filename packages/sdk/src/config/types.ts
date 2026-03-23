@@ -1,4 +1,7 @@
-import { Signer } from "ethers";
+/** Minimal signer shape (ethers Signer / viem WalletClient / ISigner compatible). */
+export interface MinimalSigner {
+  getAddress(): Promise<string>;
+}
 
 export interface ChainConfig {
   id: number;
@@ -15,7 +18,7 @@ export interface ChainConfig {
 export interface SDKConfig {
   chains: ChainConfig[];
   defaultChainId: number;
-  signer: Signer | null;
+  signer: MinimalSigner | null;
   language: 'en' | 'zh' | 'ja' | 'ko';
   debug?: boolean;
 }

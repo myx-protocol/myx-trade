@@ -3,3 +3,6 @@ export * from './allowance.js'
 export * from './balanceOf.js'
 export * from './tradingGas.js'
 export * from './tokenInfo.js'
+
+export { formatUnits, parseUnits } from "viem";
+

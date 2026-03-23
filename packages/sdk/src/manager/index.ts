@@ -9,7 +9,7 @@ import { Utils } from "./utils/index.js";
 import { Account } from "./account/index.js";
 import { Api } from "./api/index.js";
 
-import { MxSDK } from "@/web3";
+import { MxSDK, setConfigManagerForViem } from "@/web3";
 import { Seamless } from "./seamless/index.js";
 import { Appeal } from "./appeal/index.js";
 import { Referrals } from "./referrals/index.js";
@@ -57,6 +57,7 @@ export class MyxClient {
      */
     const lp = MxSDK.getInstance();
     lp.setConfigManager(this.configManager);
+    setConfigManagerForViem(this.configManager);
     lp.getMarkets().then();
 
     /**
@@ -128,10 +129,9 @@ export class MyxClient {
   /**
    * auth the client
    */
+  /** Auth with signer (ethers v5/v6 or ISigner) and/or walletClient (viem). Use walletClient when app uses viem to avoid ethers in bundle. */
   public auth(
-    params: Required<
-      Pick<MyxClientConfig, "signer" | "getAccessToken" | "walletClient">
-    >
+    params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">
   ) {
     this.configManager.auth(params);
   }

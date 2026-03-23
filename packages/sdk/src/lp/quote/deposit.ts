@@ -1,5 +1,5 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import {  type BytesLike, parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
@@ -9,14 +9,16 @@ import { CHAIN_INFO } from "@/config/chains/index.js";
 import { Deposit, type OracleUpdatePrice } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";
 import { previewLpAmountOut } from "@/lp/quote/preview.js";
-import { MarketPoolState, OracleType } from "@/api/index.js";
+import { type Address, MarketPoolState } from "@/api/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { getPriceData } from "@/common/price.js";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import type { TpSl } from "@/lp/pool/index.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
+import { getPublicClient } from "@/web3";
+import { sdkError } from "@/logger";
 
 
 export const deposit = async (params: Deposit) => {
@@ -60,11 +62,11 @@ export const deposit = async (params: Deposit) => {
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as Address,
         oracleType: priceData.oracleType,
-      } as OracleUpdatePrice);
+        publishTime: BigInt(priceData.publishTime),
+        oracleUpdateData: priceData.vaa as Address,
+      });
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
     } else {
@@ -82,7 +84,7 @@ export const deposit = async (params: Deposit) => {
     const tpslParams = getTpSlParams(slippage, _tpsl, decimals, decimals);
    
     const data = {
-      poolId: poolId as unknown as BytesLike,
+      poolId: poolId as unknown as import("viem").Hex,
       amountIn,
       minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,
@@ -92,21 +94,28 @@ export const deposit = async (params: Deposit) => {
     // console.log("deposit params: price, data, value :",price, data, value);
     
     const contract = await getLiquidityRouterContract(chainId)
-    //estimateGas
-    const _gasLimit =  await contract["depositQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, { value })
+   
+    // estimate gas (viem style, args array)
+    const _gasLimit =  await contract.estimateGas!.depositQuote(
+      [price, data],
+      { value },
+    )
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract["depositQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price,data, {
-      gasLimit,
-      gasPrice,
-      value
-    })
+    const hash = await contract.write!.depositQuote(
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
     
-    // console.log("deposit", result)
-    return result
+    return receipt
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

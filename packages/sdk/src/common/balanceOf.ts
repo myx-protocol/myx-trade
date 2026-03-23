@@ -1,26 +1,22 @@
-import { getJSONProvider } from "@/web3/index.js";
-import { ethers, parseUnits } from "ethers";
+import { getPublicClient } from "@/web3/viemClients.js";
+import { sdkError } from "@/logger";
 import { ChainId } from "@/config/chain.js";
-import TOKEN_ABI from "@/abi/IERC20Metadata.json"
-// import PoolToken_ABI from "@/abi/PoolToken.json"
-
+import TOKEN_ABI from "@/abi/IERC20Metadata.json";
+import { type Address } from "@/api";
 
 export const getBalanceOf = async (chainId: ChainId, account: string, tokenAddress: string) => {
   try {
-    const provider = getJSONProvider(chainId);
-    const contractInterface = new ethers.Interface( TOKEN_ABI)
-    const data = contractInterface.encodeFunctionData('balanceOf', [account])
-    
-    const callData = {
-      to: tokenAddress,
-      data,
-    }
-    const result = await provider.call(callData)
-    const balance = BigInt(result)
-    return balance
+    const client = getPublicClient(chainId);
+    const balance = await client.readContract({
+      address: tokenAddress as Address,
+      abi: TOKEN_ABI as never,
+      functionName: "balanceOf",
+      args: [account as Address],
+    });
+    return balance as bigint;
   } catch (e) {
-    console.error(e)
-    throw e
+    sdkError(e);
+    throw e;
   }
 }
 

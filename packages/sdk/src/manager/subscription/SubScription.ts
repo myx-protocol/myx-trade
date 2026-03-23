@@ -15,7 +15,6 @@ import { Logger } from "@/logger";
 import { ConfigManager } from "@/manager/config";
 import { WEBSOCKET_URL } from "@/manager/const";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { Signer } from "ethers";
 
 export class SubScription {
   private wsClient: MyxWebSocketClient;
@@ -138,18 +137,10 @@ export class SubScription {
     );
   }
 
-  private _preSigner: Signer | null = null;
-  private _preUserAddress: string | null = null;
   private async getSdkAuthParams() {
     const config = this.configManager.getConfig();
-    if (!config.signer) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
-    let userAddress = this._preUserAddress;
-    if (config.signer !== this._preSigner) {
-      userAddress = await config.signer.getAddress();
-      this._preUserAddress = userAddress;
-      this._preSigner = config.signer;
-    }
-
+    if (!this.configManager.hasSigner()) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
+    const userAddress = await this.configManager.getSignerAddress(config.chainId);
     if (!userAddress) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner);
     }

@@ -3,7 +3,6 @@ import { ConfigManager } from "../config/index.js";
 import { http } from "@/api/request";
 import { merge } from "lodash-es";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { Signer } from "ethers";
 
 interface RequestOptions extends WretchOptions {
   auth?: boolean;
@@ -26,20 +25,11 @@ export class Request {
     }
   }
 
-  private _preSigner: Signer | null = null;
-  private _preUserAddress: string | null = null;
-
   private async buildAuthParams(): Promise<WretchOptions> {
     const config = this.configManager.getConfig();
-    if (!config.signer) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
-    let userAddress = this._preUserAddress;
+    if (!this.configManager.hasSigner()) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
     const accessToken = (await this.configManager.getAccessToken()) ?? "";
-    if (config.signer !== this._preSigner) {
-      userAddress = await config.signer.getAddress();
-      this._preUserAddress = userAddress;
-      this._preSigner = config.signer;
-    }
-
+    const userAddress = await this.configManager.getSignerAddress(config.chainId);
     if (!userAddress) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner);
     }

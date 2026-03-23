@@ -1,9 +1,10 @@
 import { ChainId } from "@/config/chain.js";
 import { getQuotePoolContract } from "@/web3/providers.js";
 import { getPriceData } from "@/common/price.js";
-import { parseUnits } from "ethers";
+import { parseUnits } from "viem";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
 
 export const getLpPrice = async (chainId:ChainId,poolId: string) => {
   if (!poolId) return
@@ -17,11 +18,11 @@ export const getLpPrice = async (chainId:ChainId,poolId: string) => {
       }
     // }
     
-    const data = await contract.getPoolTokenPrice(poolId, price)
+    const data = await contract.read.getPoolTokenPrice([poolId, price])
     // console.log( `pool ${poolId} price: `, data)
     return data
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
