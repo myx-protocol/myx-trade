@@ -84,17 +84,18 @@ export const Sell = () => {
   })
 
   const { data: receive } = useQuery({
-    queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account],
-    enabled: !!amount && !!account && !!poolId,
+    queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account, pool],
+    enabled: !!amount && !!account && !!poolId && !!pool,
     queryFn: async () => {
-      if (!account || !poolId || !account) return
+      if (!account || !poolId || !account || !pool) return
       const res = await Base.previewUserWithdrawData({
         chainId,
         amount,
         account,
         poolId,
       })
-      if (res) {
+      console.log(res)
+      if (res && pool) {
         return {
           coin: formatUnits(res?.baseAmountOut, pool?.baseDecimals),
           profit: formatUnits(res?.rebateAmount, pool?.quoteDecimals),
