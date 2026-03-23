@@ -8,7 +8,7 @@ import type {
   ChartingLibraryWidgetOptions,
   ResolutionString,
 } from '@public/charting_library/charting_library'
-import type { KlineTypeEnum } from './type'
+import { type KlineTypeEnum } from './type'
 import { ToolBar } from './Toolbar/index'
 export const Charts = () => {
   const chartsRoot = useRef<HTMLDivElement>(null)

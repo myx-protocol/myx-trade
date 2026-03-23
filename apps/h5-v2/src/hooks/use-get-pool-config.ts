@@ -29,7 +29,7 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
   const { chainId: currChainId } = useWalletConnection()
   const chainId = getAsSupportedChainIdFn(currChainId)
 
-  const { data: poolConfig } = useSWR(
+  const { data: poolConfig, isLoading } = useSWR(
     (targetPoolId || symbolInfo?.poolId) && (targetChainId || symbolInfo?.chainId)
       ? [
           'getPoolLevelConfig',
@@ -70,5 +70,6 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
 
   return {
     poolConfig: poolConfig as PoolConfig | null,
+    isLoading: isLoading,
   }
 }
