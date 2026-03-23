@@ -76,7 +76,7 @@ export function transformOrderBookToChartData(
   if (asks?.length > 0) {
     let cumulativeTotal = 0
     const sellList = asks
-      .filter((item) => Number(item[1]) > 0)
+      .filter((item) => Number(item[1]) >= 0)
       .map((item) => {
         const price = String(item[0])
         const amount = String(item[1])
@@ -90,7 +90,7 @@ export function transformOrderBookToChartData(
   if (bids?.length > 0) {
     let cumulativeTotal = 0
     data.buy = bids
-      .filter((item) => Number(item[1]) > 0)
+      .filter((item) => Number(item[1]) >= 0)
       .map((item) => {
         const price = String(item[0])
         const amount = String(item[1])

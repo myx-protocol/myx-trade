@@ -68,24 +68,34 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
   )
   const chartDataRef = useRef(data)
   const lastMoveOffsetX = useRef('')
+  const drawnDataRef = useRef<{ buy: TempChartDataItem[]; sell: TempChartDataItem[] }>({
+    buy: [],
+    sell: [],
+  })
   const [hoverData, setHoverData] = useState<{
     buyItem: TempChartDataItem | null
     sellItem: TempChartDataItem | null
   } | null>(null)
 
+  const zoomLevelRef = useRef(1)
+  const isDrawingRef = useRef(false)
+
   const drawWidth = width - Y_AXIS_WIDTH
   const drawHeight = height - X_AXIS_HEIGHT
 
   const generateFormatValue = useCallback(
-    (value: string) => formatNumber(value, { decimals: pricePrecision, showUnit: false }),
+    (value: string | number) =>
+      formatNumber(String(value), { decimals: pricePrecision, showUnit: false }),
     [pricePrecision],
   )
 
   const getPriceRangeData = useCallback(
     (price: number): string => {
       if (!lastPrice || !Number(lastPrice)) return '--'
-      const calcPrice = ((Number(lastPrice) - price) / Number(lastPrice)) * 100
-      return !isFinite(calcPrice) ? '--' : `${calcPrice.toFixed(pricePrecision)}%`
+      const calcPrice = ((price - Number(lastPrice)) / Number(lastPrice)) * 100
+      if (!isFinite(calcPrice)) return '--'
+      const sign = calcPrice > 0 ? '+' : ''
+      return `${sign}${calcPrice.toFixed(pricePrecision)}%`
     },
     [lastPrice, pricePrecision],
   )
@@ -94,10 +104,17 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     (
       context: CanvasRenderingContext2D,
       chartData: { buy: DepthChartDataItem[]; sell: DepthChartDataItem[] },
-      publicData: { maxAmount: number; scaleW: number; w: number; h: number },
+      publicData: {
+        maxAmount: number
+        buyPriceDiff: number
+        sellPriceDiff: number
+        centerPrice: number
+        w: number
+        h: number
+      },
     ) => {
       const tempList: TempChartDataItem[] = []
-      const { maxAmount, scaleW, w, h } = publicData
+      const { maxAmount, buyPriceDiff, sellPriceDiff, centerPrice, w, h } = publicData
       const buyColor = colors.buyColor ?? DEFAULT_DEPTH_CHART_COLORS.buyColor
       const sellColor = colors.sellColor ?? DEFAULT_DEPTH_CHART_COLORS.sellColor
       const buyOpacity = colors.buyOpacityColor ?? DEFAULT_DEPTH_CHART_COLORS.buyOpacityColor
@@ -105,21 +122,34 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
 
       context.beginPath()
       if (chartData.buy?.length) {
-        context.moveTo(w / 2 - GAP, h)
+        context.beginPath()
+        let prevY = 0
         for (const i in chartData.buy) {
           const item = chartData.buy[i]
           const total = parseFloat(item.total)
           let y = h - (total / maxAmount) * h + PADDING_TOP
           if (y > h - PADDING_TOP) y = h - PADDING_TOP
-          const x = w / 2 - Number(i) * scaleW - GAP
+          const itemPrice = parseFloat(item.price)
+          const x = w / 2 - ((centerPrice - itemPrice) / buyPriceDiff) * (w / 2 - GAP) - GAP
           tempList.push({ x, y, value: item, side: 'buy' })
-          context.lineTo(x, y)
+          if (Number(i) === 0) {
+            context.moveTo(x, y)
+          } else {
+            context.lineTo(x, prevY)
+            context.lineTo(x, y)
+          }
+          prevY = y
         }
-        context.lineTo(0, tempList[tempList.length - 1]?.y ?? h)
+        const lastBuy = tempList[tempList.length - 1]
+        const lastX = lastBuy?.x ?? 0
+        const lastY = lastBuy?.y ?? h
+        if (lastX > 0) {
+          context.lineTo(0, lastY)
+        }
         context.strokeStyle = buyColor
         context.lineWidth = 1
         context.stroke()
-        context.lineTo(0, h)
+        context.lineTo(Math.min(0, lastX), h)
         context.lineTo(w / 2 - GAP, h)
         context.fillStyle = buyOpacity
         context.fill()
@@ -128,25 +158,38 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
 
       if (chartData.sell?.length) {
         context.beginPath()
-        context.moveTo(w / 2 + GAP, h)
+        let isFirst = true
+        let prevY = 0
         for (const i in chartData.sell) {
           const index = chartData.sell.length - Number(i) - 1
           const item = chartData.sell[index]
-          const total = parseFloat(item?.total ?? '0')
-          if (total) {
-            let y = h - (total / maxAmount) * h + PADDING_TOP
-            if (y > h - PADDING_TOP) y = h - PADDING_TOP
-            const x = w / 2 + Number(i) * scaleW + GAP
-            tempList.push({ x, y, value: item, side: 'sell' })
+          if (!item) continue
+          const total = parseFloat(item.total ?? '0')
+
+          let y = h - (total / maxAmount) * h + PADDING_TOP
+          if (y > h - PADDING_TOP) y = h - PADDING_TOP
+          const itemPrice = parseFloat(item.price)
+          const x = w / 2 + ((itemPrice - centerPrice) / sellPriceDiff) * (w / 2 - GAP) + GAP
+          tempList.push({ x, y, value: item, side: 'sell' })
+          if (isFirst) {
+            context.moveTo(x, y)
+            isFirst = false
+          } else {
+            context.lineTo(x, prevY)
             context.lineTo(x, y)
           }
+          prevY = y
         }
         const lastSell = tempList.filter((t) => t.side === 'sell').pop()
-        context.lineTo(w + GAP, lastSell?.y ?? h)
+        const lastX = lastSell?.x ?? w
+        const lastY = lastSell?.y ?? h
+        if (lastX < w + GAP) {
+          context.lineTo(w + GAP, lastY)
+        }
         context.strokeStyle = sellColor
         context.lineWidth = 1
         context.stroke()
-        context.lineTo(w + GAP, h)
+        context.lineTo(Math.max(w + GAP, lastX), h)
         context.lineTo(w / 2 + GAP, h)
         context.fillStyle = sellOpacity
         context.fill()
@@ -171,15 +214,10 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
       context.stroke()
       context.setLineDash([])
 
-      const sortedList = tempList.sort((a, b) => a.x - b.x)
-      sortedList.forEach((item, index) => {
-        const key = `${item.x},${item.y},${item.side}`
-        const opposite =
-          item.side !== sortedList[sortedList.length - index - 1]?.side
-            ? sortedList[sortedList.length - index - 1]
-            : ({} as TempChartDataItem)
-        valueMap.current.set(key, { currentValue: item.value, oppositeValue: opposite })
-      })
+      drawnDataRef.current = {
+        buy: tempList.filter((t) => t.side === 'buy'),
+        sell: tempList.filter((t) => t.side === 'sell'),
+      }
     },
     [colors],
   )
@@ -209,14 +247,50 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     resolveDevicePixelRatioScale(chartXRef.current, xContext)
     resolveDevicePixelRatioScale(chartYRef.current, yContext)
 
-    const maxAmount = Math.max(
+    const globalMaxAmount = Math.max(
       parseFloat(chartData.sell?.[0]?.total ?? '0'),
       parseFloat(chartData.buy?.[chartData.buy.length - 1]?.total ?? '0'),
     )
-    const scaleW = drawWidth / 2 / Math.max(chartData.sell?.length ?? 1, chartData.buy?.length ?? 1)
-    const publicData = { maxAmount, scaleW, w: drawWidth, h: drawHeight }
+    const centerPrice = Number(lastPrice || '0')
+    const minBuyPrice = parseFloat(
+      chartData.buy?.[chartData.buy.length - 1]?.price ?? String(centerPrice),
+    )
+    const maxSellPrice = parseFloat(chartData.sell?.[0]?.price ?? String(centerPrice))
 
-    valueMap.current.clear()
+    let baseBuyPriceDiff = Math.abs(centerPrice - minBuyPrice)
+    if (baseBuyPriceDiff === 0) baseBuyPriceDiff = 1
+
+    let baseSellPriceDiff = Math.abs(maxSellPrice - centerPrice)
+    if (baseSellPriceDiff === 0) baseSellPriceDiff = 1
+
+    const zoomLevel = zoomLevelRef.current
+    const buyPriceDiff = baseBuyPriceDiff / zoomLevel
+    const sellPriceDiff = baseSellPriceDiff / zoomLevel
+
+    let maxAmount = 0
+    const visibleBuyData = chartData.buy?.filter(
+      (item) => parseFloat(item.price) >= centerPrice - buyPriceDiff,
+    )
+    if (visibleBuyData?.length) {
+      maxAmount = Math.max(maxAmount, parseFloat(visibleBuyData[visibleBuyData.length - 1].total))
+    }
+    const visibleSellData = chartData.sell?.filter(
+      (item) => parseFloat(item.price) <= centerPrice + sellPriceDiff,
+    )
+    if (visibleSellData?.length) {
+      maxAmount = Math.max(maxAmount, parseFloat(visibleSellData[0].total))
+    }
+    if (maxAmount === 0) maxAmount = globalMaxAmount
+
+    const publicData = {
+      maxAmount,
+      buyPriceDiff,
+      sellPriceDiff,
+      centerPrice,
+      w: drawWidth,
+      h: drawHeight,
+    }
+
     drawDepthChart(context, chartData, publicData)
 
     xContext.fillStyle = '#70798C'
@@ -227,37 +301,56 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
       : '--'
     xContext.fillText(displayPrice, drawWidth / 2, yHeight)
 
+    const centerX = drawWidth / 2
+    const getBuyX = (p: number) =>
+      drawWidth / 2 - ((centerPrice - p) / buyPriceDiff) * (drawWidth / 2 - GAP) - GAP
+    const getSellX = (p: number) =>
+      drawWidth / 2 + ((p - centerPrice) / sellPriceDiff) * (drawWidth / 2 - GAP) + GAP
+
     if (chartData.buy?.length) {
-      const buyData = chartData.buy
-      const buyMiddleData = buyData.length > 2 ? buyData[Math.floor(buyData.length / 2)] : null
-      const buyLeftData = buyData[0]
-      xContext.textAlign = 'left'
-      if (buyMiddleData?.price)
-        xContext.fillText(
-          generateFormatValue(buyMiddleData.price),
-          drawWidth / 2 - (buyData.length / 2) * scaleW,
-          yHeight,
-        )
-      if (buyLeftData?.price) xContext.fillText(generateFormatValue(buyLeftData.price), 0, yHeight)
+      const b1 = centerPrice - buyPriceDiff * 0.333
+      const b2 = centerPrice - buyPriceDiff * 0.666
+      const b3 = centerPrice - buyPriceDiff
+
+      const x1 = getBuyX(b1)
+      const x2 = getBuyX(b2)
+      const x3 = getBuyX(b3)
+
+      if (centerX - x1 > 40) {
+        xContext.textAlign = 'center'
+        xContext.fillText(generateFormatValue(b1), x1, yHeight)
+      }
+      if (x1 - x2 > 40) {
+        xContext.textAlign = 'center'
+        xContext.fillText(generateFormatValue(b2), x2, yHeight)
+      }
+      if (x2 - x3 > 40) {
+        xContext.textAlign = 'left'
+        xContext.fillText(generateFormatValue(b3), Math.max(0, x3), yHeight)
+      }
     }
 
     if (chartData.sell?.length) {
-      const sellData = chartData.sell
-      const sellMiddleData = sellData.length > 2 ? sellData[Math.floor(sellData.length / 2)] : null
-      const sellRightData = sellData[sellData.length - 1]
-      xContext.textAlign = 'right'
-      if (sellMiddleData?.price)
-        xContext.fillText(
-          generateFormatValue(sellMiddleData.price),
-          drawWidth / 2 + (sellData.length / 2) * scaleW,
-          yHeight,
-        )
-      if (sellRightData?.price)
-        xContext.fillText(
-          generateFormatValue(sellRightData.price),
-          drawWidth / 2 + sellData.length * scaleW,
-          yHeight,
-        )
+      const s1 = centerPrice + sellPriceDiff * 0.333
+      const s2 = centerPrice + sellPriceDiff * 0.666
+      const s3 = centerPrice + sellPriceDiff
+
+      const x1 = getSellX(s1)
+      const x2 = getSellX(s2)
+      const x3 = getSellX(s3)
+
+      if (x1 - centerX > 40) {
+        xContext.textAlign = 'center'
+        xContext.fillText(generateFormatValue(s1), x1, yHeight)
+      }
+      if (x2 - x1 > 40) {
+        xContext.textAlign = 'center'
+        xContext.fillText(generateFormatValue(s2), x2, yHeight)
+      }
+      if (x3 - x2 > 40) {
+        xContext.textAlign = 'right'
+        xContext.fillText(generateFormatValue(s3), Math.min(drawWidth, x3), yHeight)
+      }
     }
 
     yContext.fillStyle = '#70798C'
@@ -276,6 +369,30 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     generateFormatValue,
   ])
 
+  useEffect(() => {
+    const canvas = chartMaskRef.current
+    if (!canvas) return
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      let newZoom = zoomLevelRef.current - e.deltaY * 0.002
+      newZoom = Math.max(0.001, Math.min(50, newZoom))
+      zoomLevelRef.current = newZoom
+
+      if (!isDrawingRef.current) {
+        isDrawingRef.current = true
+        requestAnimationFrame(() => {
+          initChart()
+          if (lastMoveOffsetX.current) {
+            onMouseMove(Number(lastMoveOffsetX.current))
+          }
+          isDrawingRef.current = false
+        })
+      }
+    }
+    canvas.addEventListener('wheel', onWheel, { passive: false })
+    return () => canvas.removeEventListener('wheel', onWheel)
+  }, [initChart])
+
   const TOOLTIP_WIDTH = 110
   const TOOLTIP_HEIGHT = 52
 
@@ -289,29 +406,47 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
       const buyColor = colors.buyColor ?? DEFAULT_DEPTH_CHART_COLORS.buyColor
       const sellColor = colors.sellColor ?? DEFAULT_DEPTH_CHART_COLORS.sellColor
 
-      const keys = Array.from(valueMap.current.keys())
+      const { buy, sell } = drawnDataRef.current
+      if (!buy.length && !sell.length) return
+
       let buyItem: TempChartDataItem | null = null
       let sellItem: TempChartDataItem | null = null
+      const centerX = drawWidth / 2
 
-      for (const key of keys) {
-        const parts = key.split(',')
-        const xStr = parts[0]
-        const yStr = parts[1]
-        const side = parts[2]
-        const x = Number(xStr)
-        const mapData = valueMap.current.get(key)
-        if (!mapData || offsetX >= x) continue
-
-        const item = { x, y: Number(yStr ?? 0), value: mapData.currentValue, side }
-        if (side === 'buy') buyItem = item
-        else sellItem = item
-        const opp = mapData.oppositeValue
-        if (opp?.x != null && opp?.value) {
-          const oppItem = { x: opp.x, y: opp.y, value: opp.value, side: opp.side }
-          if (opp.side === 'buy') buyItem = oppItem
-          else sellItem = oppItem
+      if (offsetX <= centerX) {
+        let matchIdx = -1
+        for (let i = 0; i < buy.length; i++) {
+          if (buy[i].x < offsetX) {
+            matchIdx = i === 0 ? 0 : i - 1
+            break
+          }
         }
-        break
+        if (matchIdx === -1 && buy.length > 0) matchIdx = buy.length - 1
+
+        if (matchIdx !== -1) {
+          buyItem = { ...buy[matchIdx], x: offsetX }
+          if (sell.length > 0) {
+            const sIdx = Math.min(matchIdx, sell.length - 1)
+            sellItem = { ...sell[sIdx], x: centerX + (centerX - offsetX) }
+          }
+        }
+      } else {
+        let matchIdx = -1
+        for (let i = 0; i < sell.length; i++) {
+          if (sell[i].x > offsetX) {
+            matchIdx = i === 0 ? 0 : i - 1
+            break
+          }
+        }
+        if (matchIdx === -1 && sell.length > 0) matchIdx = sell.length - 1
+
+        if (matchIdx !== -1) {
+          sellItem = { ...sell[matchIdx], x: offsetX }
+          if (buy.length > 0) {
+            const bIdx = Math.min(matchIdx, buy.length - 1)
+            buyItem = { ...buy[bIdx], x: centerX - (offsetX - centerX) }
+          }
+        }
       }
 
       const blockColor = 'rgba(132, 142, 156, 0.05)'

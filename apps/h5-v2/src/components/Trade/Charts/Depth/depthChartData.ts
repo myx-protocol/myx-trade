@@ -1,51 +1,5 @@
-/**
- * 深度图数据生成包 - 纯数据输出，不依赖任何图表库
- *
- * 公式说明:
- * - 无滑点窗口: OI ∈ [-A, A] 时零滑点
- * - 指数模型: f(E) = s · e^(E/A - 1)
- * - 幂律模型: f(E) = s_pow · (E/A + 1)^n
- *
- * @example
- * const { calculateExecution, generateDepthChartData } = require('./depth-chart');
- * const { bids, asks } = generateDepthChartData({ OI: 0, A: 50, s: 0.005, basePrice: 1000 });
- */
-
-export interface CalculateExecutionResult {
-  noSlippageVolume: number
-  slippageVolume: number
-  R: number
-  s_actual: number
-  priceWithSlippage: number
-  avgExecutionPrice: number
-  realizedSlippagePercentage: number
-}
-
-export interface ModelParams {
-  model?: 'exponential' | 'powerlaw'
-  n?: number
-  s_pow?: number
-}
-
-/**
- * 计算单笔订单的执行结果
- *
- * @param OI - 当前未平仓量
- * @param Y - 订单量 (正=多, 负=空)
- * @param A - 无滑点容量
- * @param s - 滑点系数 (小数, 如 0.005 表示 0.5%)
- * @param basePrice - 基准价格
- * @param modelParams - 可选，幂律模型参数。不传则用指数模型
- */
-export function calculateExecution(
-  OI: number,
-  Y: number,
-  A: number,
-  s: number,
-  basePrice: number,
-  modelParams: ModelParams | null = null,
-): CalculateExecutionResult {
-  if (Y === 0) {
+function calculateExecution(OI: number, Y: number, A: number, s: number, basePrice: number) {
+  if (Y === 0)
     return {
       noSlippageVolume: 0,
       slippageVolume: 0,
@@ -55,7 +9,6 @@ export function calculateExecution(
       avgExecutionPrice: basePrice,
       realizedSlippagePercentage: 0,
     }
-  }
 
   let noSlippageVolume = 0
   let slippageVolume = 0
@@ -83,6 +36,7 @@ export function calculateExecution(
       E_end = E_start + absY
     }
   } else {
+    // Short (Y < 0)
     if (OI > -A) {
       if (OI + Y >= -A) {
         noSlippageVolume = absY
@@ -96,7 +50,7 @@ export function calculateExecution(
     } else {
       noSlippageVolume = 0
       slippageVolume = absY
-      E_start = Math.abs(OI + A)
+      E_start = Math.abs(OI + A) // distance already below -A
       E_end = E_start + absY
     }
   }
@@ -105,150 +59,84 @@ export function calculateExecution(
   slippageVolume = Math.max(0, slippageVolume)
 
   let s_actual = 0
+  const R_display = 0
 
   if (slippageVolume > 0) {
     const V = slippageVolume
-    const usePowerlaw =
-      modelParams?.model === 'powerlaw' && modelParams.n != null && modelParams.s_pow != null
 
-    if (usePowerlaw && modelParams.n != null && modelParams.s_pow != null) {
-      const { n, s_pow } = modelParams
-      if (V / A < 0.0001) {
-        const midE = (E_start + E_end) / 2
-        s_actual = s_pow * Math.pow(midE / A + 1, n)
-      } else {
-        const u_end = E_end / A + 1
-        const u_start = E_start / A + 1
-        const integral =
-          ((s_pow * A) / (n + 1)) * (Math.pow(u_end, n + 1) - Math.pow(u_start, n + 1))
-        s_actual = integral / V
-      }
+    let expEnd = E_end / A - 1
+    let expStart = E_start / A - 1
+
+    if (expEnd > 700) expEnd = 700
+    if (expStart > 700) expStart = 700
+
+    if (V / A < 0.0001) {
+      const mid = (E_start + E_end) / 2
+      let m = mid / A - 1
+      if (m > 700) m = 700
+      s_actual = Math.exp(m) * s
     } else {
-      let expEnd = E_end / A - 1
-      let expStart = E_start / A - 1
-      if (expEnd > 50) expEnd = 50
-      if (expStart > 50) expStart = 50
-
-      if (V / A < 0.0001) {
-        const mid = (E_start + E_end) / 2
-        s_actual = Math.exp(mid / A - 1) * s
+      if (expStart >= 700) {
+        s_actual = 10
       } else {
         const integral = A * s * (Math.exp(expEnd) - Math.exp(expStart))
         s_actual = integral / V
       }
     }
+
+    const maxS = isLong ? 10 : 0.999
+    if (s_actual > maxS) s_actual = maxS
   }
 
-  const R_displayFinal = slippageVolume > 0 ? E_end / A : 0
   const priceModifier = 1 + (isLong ? s_actual : -s_actual)
   const priceWithSlippage = basePrice * priceModifier
   const avgExecutionPrice =
-    (slippageVolume * priceWithSlippage + noSlippageVolume * basePrice) / absY
-  const realizedSlippagePercentage = (avgExecutionPrice - basePrice) / basePrice
+    slippageVolume === 0
+      ? basePrice
+      : (slippageVolume * priceWithSlippage + noSlippageVolume * basePrice) / absY
 
   return {
-    noSlippageVolume,
-    slippageVolume,
-    R: R_displayFinal,
-    s_actual,
-    priceWithSlippage,
     avgExecutionPrice,
-    realizedSlippagePercentage,
   }
 }
 
-export interface DepthLevelRaw {
-  price: number
-  size: number
-}
+export function generateDepthData(oi: number, A: number, s: number, basePrice: number) {
+  const shortData = [] // 代表做空 (Y < 0)，滑点后执行价格小于 basePrice
+  const longData = [] // 代表做多 (Y > 0)，滑点后执行价格大于 basePrice
+  const numPoints = 50
 
-export interface GenerateDepthChartDataParams {
-  OI?: number
-  A: number
-  s: number
-  basePrice: number
-  modelParams?: ModelParams | null
-  numPoints?: number
-  depthMultiplier?: number
-  minPrice?: number | null
-  maxPrice?: number | null
-}
+  console.log({ oi, A, s, basePrice })
 
-export interface GenerateDepthChartDataResult {
-  bids: DepthLevelRaw[]
-  asks: DepthLevelRaw[]
-  basePrice: number
-}
+  const deltaVolume = (A * 10) / numPoints
 
-/**
- * 生成深度图数据
- *
- * @param params - 参数
- * @param params.OI - 当前未平仓量
- * @param params.A - 无滑点容量
- * @param params.s - 滑点系数 (小数)
- * @param params.basePrice - 基准价格
- * @param params.modelParams - 幂律模型参数，不传则用指数模型
- * @param params.numPoints - 每侧采样点数
- * @param params.depthMultiplier - 扫描深度倍数，实际扫描到 depthMultiplier * A
- * @param params.minPrice - 可选，过滤 bid 侧最低价格
- * @param params.maxPrice - 可选，过滤 ask 侧最高价格
- * @returns { bids, asks, basePrice }
- *   - bids: [{ price, size }] 卖单/做空侧，按 price 升序
- *   - asks: [{ price, size }] 买单/做多侧，按 price 升序
- */
-export function generateDepthChartData(
-  params: GenerateDepthChartDataParams,
-): GenerateDepthChartDataResult {
-  const {
-    OI = 0,
-    A,
-    s,
-    basePrice,
-    modelParams = null,
-    numPoints = 120,
-    depthMultiplier = 10,
-    minPrice: minPriceParam = null,
-    maxPrice: maxPriceParam = null,
-  } = params
-
-  if (A == null || s == null || basePrice == null) {
-    throw new Error('generateDepthChartData 需要 A, s, basePrice')
+  for (let i = 1; i <= numPoints; i++) {
+    const orderSize = (i * A * 10) / numPoints
+    const calc = calculateExecution(oi, -orderSize, A, s, basePrice)
+    shortData.push({ x: calc.avgExecutionPrice, y: deltaVolume })
   }
 
-  const defaultRange = basePrice * 0.1
-  const _minPrice = minPriceParam ?? basePrice - defaultRange
-  const _maxPrice = maxPriceParam ?? basePrice + defaultRange
-
-  const bids: DepthLevelRaw[] = []
-  const asks: DepthLevelRaw[] = []
-
-  const maxOrderSize = A * depthMultiplier
-
-  for (let i = 0; i < numPoints; i++) {
-    const orderSize = (i * maxOrderSize) / numPoints
-
-    const shortCalc = calculateExecution(OI, -orderSize, A, s, basePrice, modelParams)
-    if (shortCalc.avgExecutionPrice >= _minPrice) {
-      bids.push({ price: shortCalc.avgExecutionPrice, size: orderSize })
-    }
-
-    const longCalc = calculateExecution(OI, orderSize, A, s, basePrice, modelParams)
-    if (longCalc.avgExecutionPrice <= _maxPrice) {
-      asks.push({ price: longCalc.avgExecutionPrice, size: orderSize })
-    }
+  for (let i = 1; i <= numPoints; i++) {
+    const orderSize = (i * A * 10) / numPoints
+    const calc = calculateExecution(oi, orderSize, A, s, basePrice)
+    longData.push({ x: calc.avgExecutionPrice, y: deltaVolume })
   }
 
-  const zeroCalc = calculateExecution(OI, 0, A, s, basePrice, modelParams)
-  bids.push({ price: zeroCalc.avgExecutionPrice, size: 0 })
-  asks.push({ price: zeroCalc.avgExecutionPrice, size: 0 })
+  const zeroCalc = calculateExecution(oi, 0, A, s, basePrice)
+  shortData.push({ x: zeroCalc.avgExecutionPrice, y: 0 })
+  longData.push({ x: zeroCalc.avgExecutionPrice, y: 0 })
 
-  bids.sort((a, b) => a.price - b.price)
-  asks.sort((a, b) => a.price - b.price)
-
+  shortData.sort((a, b) => {
+    if (a.x === b.x) return b.y - a.y
+    return a.x - b.x
+  })
+  longData.sort((a, b) => {
+    if (a.x === b.x) return a.y - b.y
+    return a.x - b.x
+  })
+  console.log({ shortData, longData })
   return {
-    bids,
-    asks,
+    shortData,
+    longData,
     basePrice,
   }
 }
