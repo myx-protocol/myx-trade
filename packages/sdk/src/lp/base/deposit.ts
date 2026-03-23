@@ -62,10 +62,11 @@ export const deposit = async (params: Deposit) => {
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
         poolId: poolId as Address,
-        oracleUpdateData: priceData.vaa as Address,
-        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
+        publishTime: BigInt(priceData.publishTime),
+        oracleUpdateData: priceData.vaa as Address,
       })
+      
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
     } else {

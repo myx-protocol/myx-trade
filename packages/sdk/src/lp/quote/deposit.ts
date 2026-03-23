@@ -1,5 +1,4 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import type { Hex } from "viem";
 import { parseUnits } from "viem";
 import {
   bigintAmountSlipperCalculator,
@@ -10,7 +9,7 @@ import { CHAIN_INFO } from "@/config/chains/index.js";
 import { Deposit, type OracleUpdatePrice } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";
 import { previewLpAmountOut } from "@/lp/quote/preview.js";
-import { MarketPoolState, OracleType } from "@/api/index.js";
+import { type Address, MarketPoolState } from "@/api/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { getPriceData } from "@/common/price.js";
 import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
@@ -63,10 +62,10 @@ export const deposit = async (params: Deposit) => {
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId: poolId as `0x${string}`,
-        oracleUpdateData: priceData.vaa as `0x${string}`,
-        publishTime: BigInt(priceData.publishTime),
+        poolId: poolId as Address,
         oracleType: priceData.oracleType,
+        publishTime: BigInt(priceData.publishTime),
+        oracleUpdateData: priceData.vaa as Address,
       });
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
@@ -95,6 +94,7 @@ export const deposit = async (params: Deposit) => {
     // console.log("deposit params: price, data, value :",price, data, value);
     
     const contract = await getLiquidityRouterContract(chainId)
+   
     // estimate gas (viem style, args array)
     const _gasLimit =  await contract.estimateGas!.depositQuote(
       [price, data],
