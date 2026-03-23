@@ -7,7 +7,7 @@ import {
   bigintTradingGasToRatioCalculator
 } from "@/common/tradingGas.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
-import { getContractAddressByChainId } from "@/config/address.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 
 import { Deposit,type OracleUpdatePrice } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";
@@ -62,10 +62,11 @@ export const deposit = async (params: Deposit) => {
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
         poolId: poolId as Address,
-        oracleUpdateData: priceData.vaa as Address,
-        publishTime: BigInt(priceData.publishTime),
         oracleType: priceData.oracleType,
+        publishTime: BigInt(priceData.publishTime),
+        oracleUpdateData: priceData.vaa as Address,
       })
+      
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
     } else {

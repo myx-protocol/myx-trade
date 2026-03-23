@@ -54,4 +54,11 @@ export class Logger {
   }
 }
 
-export { setSdkLogSink, getSdkLogSink, sdkLog, sdkWarn, sdkError } from "./sink.js";
+export {
+  setSdkLogSink,
+  getSdkLogSink,
+  sdkLog,
+  sdkWarn,
+  sdkError,
+} from "./sink.js";
+export type { LogSink } from "./sink.js";
