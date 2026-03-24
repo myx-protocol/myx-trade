@@ -14,9 +14,8 @@ import { Api } from "../api/index.js";
 import Forwarder_ABI from "@/abi/Forwarder.json";
 import Broker_ABI from "@/abi/Broker.json";
 import type { SignerLike } from "@/signer/types.js";
-import { normalizeSigner } from "@/signer/adapters.js";
-import { createWalletClientFromSigner } from "@/signer/viemWalletFromSigner.js";
-import { getEip712Domain } from "viem/actions";
+import Account_ABI from '@/abi/Account.json'
+import { ChainId } from "@/config/chain.js";
 
 const contractTypes = {
   ForwardRequest: [
@@ -31,18 +30,6 @@ const contractTypes = {
 }
 const FORWARD_PLEDGE_FEE_RADIO = 2
 
-// const calculateSignature = async (message: string) => {
-//   const encoder = new TextEncoder()
-//   const data = encoder.encode(message)
-//   if (typeof crypto === "undefined" || !crypto.subtle) throw new Error("Crypto.subtle not available");
-//   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-//   const hashArray = Array.from(new Uint8Array(hashBuffer))
-//   return hashArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
-// }
-
-// const seamlessNonceString = 'jAkBlC4~5!6@#$%^'
-
-
 function splitSignatureToVrs(signatureHex: `0x${string}`): { v: number; r: `0x${string}`; s: `0x${string}` } {
   const bytes = hexToBytes(signatureHex);
   if (bytes.length < 65) throw new Error("Invalid signature length");
@@ -51,35 +38,6 @@ function splitSignatureToVrs(signatureHex: `0x${string}`): { v: number; r: `0x${
   const v = bytes[64]!;
   return { v, r, s };
 }
-
-// const generateEthWalletFromHashedSignature = (hashedSignature: string): { privateKey: `0x${string}`; wallet: Account } => {
-//   const seedBytes = new Uint8Array(new TextEncoder().encode(hashedSignature));
-//   const seedHex = bytesToHex(seedBytes);
-//   const hashHex = keccak256(seedHex as `0x${string}`);
-//   const privateKeyBytes = hexToBytes(hashHex).slice(0, 32);
-//   const privateKey = toHex(privateKeyBytes) as `0x${string}`;
-
-//   if (!isHex(privateKey) || privateKey.length !== 66) {
-//     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
-//   }
-
-//   const wallet = privateKeyToAccount(privateKey);
-//   return { privateKey, wallet };
-// };
-
-// const charFill = (ping: string) => {
-//   const targetLength = 16
-//   if (ping.length >= targetLength) {
-//     return ping
-//   }
-
-//   const remainingLength = targetLength - ping.length
-//   const repeatTimes = Math.ceil(remainingLength / ping.length)
-//   const paddedString = ping.repeat(repeatTimes).slice(0, remainingLength)
-//   return ping + paddedString
-// }
-
-// export const getIvMapString = () => Utf8.parse(seamlessNonceString)
 
 async function signPermit(
   walletClient: Awaited<ReturnType<typeof getWalletClient>>,
@@ -117,7 +75,6 @@ async function signPermit(
   return splitSignatureToVrs(signature);
 }
 
-
 export class Seamless {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -146,6 +103,41 @@ export class Seamless {
     );
 
     return checkRelayerResult && !isNeedApprove;
+  }
+
+  async getContractAbiAndAddressByFunctionName(functionName: string, chainId: ChainId) {
+    const brokerFunctions: string[] = [
+      'placeOrderWithSalt',
+      'placeOrderWithPosition',
+      'cancelOrders',
+      'cancelOrder',
+      'updateOrder',
+      'updatePriceAndAdjustCollateral',
+      'setUserFeeData'
+    ]
+    const accountFunctions: string[] = [
+      'updateAndWithdraw',
+      'deposit',
+    ]
+
+    if (brokerFunctions.includes(functionName)) {
+      return {
+        abi: Broker_ABI as any,
+        address: this.configManager.getConfig().brokerAddress,
+      }
+    }
+
+    if (accountFunctions.includes(functionName)) {
+      return {
+        abi: Account_ABI as any,
+        address: getContractAddressByChainId(chainId).Account,
+      }
+    }
+
+    return {
+      abi: Broker_ABI as any,
+      address: this.configManager.getConfig().brokerAddress,
+    }
   }
 
   async getUSDPermitParams(deadline: number, chainId: number, tokenAddress: string) {
@@ -206,7 +198,8 @@ export class Seamless {
     signFunction,
     forwardFeeToken,
     functionName,
-    orderParams
+    orderParams,
+    value
   }: {
     chainId: number,
     masterAddress: string,
@@ -221,51 +214,30 @@ export class Seamless {
     functionName: string
     forwardFeeToken: string
     orderParams: any
+    value?: string
   }) {
     const nonce = await (await getForwarderContract(chainId)).read.nonces([seamlessAddress as `0x${string}`]);
     const deadline = dayjs().add(60, 'minute').unix()
-
     const domain = await this.getForwardEip712Domain(chainId)
+    const { abi, address: to } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
     const functionHash = encodeFunctionData({
-      abi: Broker_ABI as any,
+      abi: abi as any,
       functionName: functionName,
       args: orderParams,
     });
-
     const signature = await signFunction({
       domain,
       functionHash,
-      // todo pick contract
-      to: this.configManager.getConfig().brokerAddress,
+      to,
       nonce: nonce.toString(),
       deadline,
     })
 
-
-    // const signature = await walletClient.signTypedData({
-    //   account,
-    //   domain,
-    //   types: contractTypes,
-    //   primaryType: "ForwardRequest",
-    //   message: {
-    //     from: from as `0x${string}`,
-    //     to: to as `0x${string}`,
-    //     value: BigInt(value),
-    //     gas: BigInt(gas),
-    //     nonce: BigInt(nonce),
-    //     deadline: BigInt(deadline),
-    //     data: data as `0x${string}`,
-    //   },
-    // });
-
-    console.log('signature-->', signature)
-
     const txRs = await this.api.forwarderTxApi(
       {
         from: seamlessAddress,
-        // todo pick contract
-        to: this.configManager.getConfig().brokerAddress,
-        value: '0',
+        to,
+        value: value ?? '0',
         gas: '800000',
         nonce: nonce.toString(),
         data: functionHash,
@@ -277,9 +249,8 @@ export class Seamless {
     );
 
     if (txRs.data?.txHash) {
-      // Poll chain for transaction status
-      const maxAttempts = 5 // Max 5 attempts
-      const pollInterval = 1000 // Poll every 1 second
+      const maxAttempts = 5
+      const pollInterval = 1000
 
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
@@ -291,20 +262,17 @@ export class Seamless {
             }
           }
 
-          // If not on chain yet, wait and poll again
           if (attempt < maxAttempts - 1) {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         } catch (error) {
           this.logger.error('Poll transaction from chain error:', error)
-          // If not the last attempt, continue polling
           if (attempt < maxAttempts - 1) {
             await new Promise(resolve => setTimeout(resolve, pollInterval))
           }
         }
       }
 
-      // Poll timeout, return failure
       return {
         code: -1,
         data: null,
@@ -343,9 +311,7 @@ export class Seamless {
     chainId: number,
   ) {
     const domain = await this.getForwardEip712Domain(chainId);
-
     const walletClient = await getWalletClient(chainId);
-
     const [account] = await walletClient.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
@@ -559,141 +525,4 @@ export class Seamless {
       forwardFeeToken,
     };
   }
-
-  // async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
-  //   const key = Utf8.parse(charFill(password));
-  //   const iv = getIvMapString();
-  //   const decrypted = AES.decrypt(apiKey, key, { iv, mode: CBC, padding: Pkcs7 });
-  //   const privateKey = decrypted.toString(Utf8) as `0x${string}`;
-  //   const wallet = privateKeyToAccount(privateKey);
-  //   let isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId);
-
-  //   if (!isAuthorized) {
-  //     await this.authorizeSeamlessAccount({ approve: true, seamlessAddress: wallet.address, chainId });
-  //     isAuthorized = true;
-  //   }
-  //   this.configManager.updateSeamlessWallet({
-  //     masterAddress,
-  //     wallet,
-  //     authorized: isAuthorized,
-  //   });
-  //   return {
-  //     code: 0,
-  //     data: {
-  //       masterAddress,
-  //       seamlessAccount: wallet.address,
-  //       authorized: isAuthorized,
-  //     },
-  //   };
-  // }
-
-  // async exportSeamlessPrivateKey({ password, apiKey }: { password: string, apiKey: string }) {
-  //   const key = Utf8.parse(charFill(password));
-  //   const iv = getIvMapString();
-  //   const decrypted = AES.decrypt(apiKey, key, { iv, mode: CBC, padding: Pkcs7 });
-  //   const privateKey = decrypted.toString(Utf8);
-  //   const wallet = privateKeyToAccount(privateKey as `0x${string}`);
-
-  //   if (wallet.address !== this.configManager.getConfig().seamlessAccount?.wallet?.address) {
-  //     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
-  //   }
-
-  //   return {
-  //     code: 0,
-  //     data: { privateKey },
-  //   };
-  // }
-
-  // async importSeamlessPrivateKey({ privateKey, password, chainId }: { privateKey: string, password: string, chainId: number }) {
-  //   if (!isHex(privateKey as `0x${string}`) || (privateKey as string).length !== 66) {
-  //     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key");
-  //   }
-
-  //   const wallet = privateKeyToAccount(privateKey as `0x${string}`);
-  //   const forwarderContract = await getForwarderContract(chainId);
-  //   const masterAddress = await forwarderContract.read.originAccount([wallet.address]);
-
-  //   if (masterAddress === zeroAddress) {
-  //     throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "The private key is not a senseless account");
-  //   }
-
-  //   const isAuthorized = await this.onCheckRelayer(masterAddress, wallet.address, chainId);
-  //   const key = Utf8.parse(charFill(password));
-  //   const iv = getIvMapString();
-  //   const encrypted = AES.encrypt(privateKey, key, { iv, mode: CBC, padding: Pkcs7 });
-  //   const apiKey = encrypted.toString();
-
-  //   this.configManager.updateSeamlessWallet({
-  //     masterAddress,
-  //     wallet,
-  //     authorized: isAuthorized,
-  //   });
-
-  //   return {
-  //     code: 0,
-  //     data: {
-  //       masterAddress,
-  //       seamlessAccount: wallet.address,
-  //       authorized: isAuthorized,
-  //       apiKey,
-  //     },
-  //   };
-  // }
-
-  // async startSeamlessMode({ open }: { open: boolean }) {
-
-  //   await this.configManager.startSeamlessMode(open)
-
-  //   return {
-  //     code: 0,
-  //     data: {
-  //       open,
-  //     },
-  //   }
-  // }
-
-  // async createSeamless({ password, chainId }: { password: string, chainId: number }) {
-  //   if (!this.configManager.hasSigner()) {
-  //     throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-  //   }
-  //   const walletClient = await getWalletClient(chainId);
-  //   const [account] = await walletClient.getAddresses();
-  //   if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "No account");
-
-  //   try {
-  //     const createAccountSignature = await walletClient.signMessage({
-  //       account,
-  //       message: `${account}_${password}`,
-  //     });
-  //     const hashedSignature = await calculateSignature(createAccountSignature);
-  //     const { privateKey, wallet } = generateEthWalletFromHashedSignature(hashedSignature);
-
-  //     const key = Utf8.parse(charFill(password));
-  //     const iv = getIvMapString();
-  //     const encrypted = AES.encrypt(privateKey, key, { iv, mode: CBC, padding: Pkcs7 });
-  //     const apiKey = encrypted.toString();
-
-  //     let isAuthorized = await this.onCheckRelayer(account, wallet.address, chainId);
-  //     this.configManager.updateSeamlessWallet({
-  //       masterAddress: account,
-  //       wallet,
-  //       authorized: isAuthorized,
-  //     });
-
-  //     return {
-  //       code: 0,
-  //       data: {
-  //         masterAddress: account,
-  //         seamlessAccount: wallet.address,
-  //         authorized: isAuthorized,
-  //         apiKey,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       code: -1,
-  //       message: (error as Error).message,
-  //     };
-  //   }
-  // }
 }

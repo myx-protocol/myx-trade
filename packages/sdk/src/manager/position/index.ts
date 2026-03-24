@@ -3,16 +3,13 @@ import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
-import brokerAbi from "@/abi/Broker.json";
-import { encodeFunctionData, maxUint256 } from "viem";
+import {  maxUint256 } from "viem";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Seamless } from "../seamless/index.js";
 import {
-  getForwarderContract,
   getBrokerSingerContract,
 } from "@/web3/providers";
-import dayjs from "dayjs";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
@@ -23,21 +20,18 @@ export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private seamless: Seamless;
   private account: Account;
   private api: Api;
   constructor(
     configManager: ConfigManager,
     logger: Logger,
     utils: Utils,
-    seamless: Seamless,
     account: Account,
     api: Api
   ) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
-    this.seamless = seamless;
     this.account = account;
     this.api = api;
   }

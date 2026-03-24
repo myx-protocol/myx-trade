@@ -31,22 +31,18 @@ export class Order {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private seamless: Seamless;
   private account: Account
   private api: Api;
-  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, seamless: Seamless, account: Account, api: Api) {
+  constructor(configManager: ConfigManager, logger: Logger, utils: Utils, account: Account, api: Api) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
-    this.seamless = seamless;
     this.account = account
     this.api = api;
   }
 
   async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
     try {
-      const config: MyxClientConfig = this.configManager.getConfig();
-
       const networkFee = await this.utils.getNetworkFee(
         marketId,
         params.chainId
@@ -96,53 +92,6 @@ export class Order {
         slSize: params.slSize ?? "0",
         slPrice: params.slPrice ?? "0",
       }
-
-      // const authorized = this.configManager.getConfig().seamlessAccount?.authorized
-      // const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
-
-      // if (config.seamlessMode && authorized && seamlessWallet) {
-
-      //   const isEnoughGas = await this.utils.checkSeamlessGas(params.address, params.chainId)
-
-      //   if (!isEnoughGas) {
-      //     throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
-      //   }
-
-      //   const forwarderContract = await getForwarderContract(params.chainId)
-      //   let functionHash = ''
-
-      //   if (!params.positionId) {
-      //     this.logger.info("createIncreaseOrder placeOrderWithSalt data --->", [
-      //       '1',
-      //       { ...depositData },
-      //       data
-      //     ])
-      //     functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithSalt', args: ['1', { ...depositData }, data] })
-      //   } else {
-      //     functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: 'placeOrderWithPosition', args: [params.positionId.toString(), { ...depositData }, data] })
-      //   }
-      //   const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`])
-
-      //   const forwardTxParams = {
-      //     from: seamlessWallet.address ?? '',
-      //     to: this.configManager.getConfig().brokerAddress,
-      //     value: '0',
-      //     gas: '800000',
-      //     deadline: dayjs().add(60, 'minute').unix(),
-      //     data: functionHash,
-      //     nonce: nonce.toString(),
-      //   }
-
-      //   this.logger.info("createIncreaseOrder forward tx params --->", forwardTxParams)
-
-      //   const rs = await this.seamless.forwarderTx(forwardTxParams, params.chainId, seamlessWallet as any);
-
-      //   return {
-      //     code: 0,
-      //     message: "create increase order success",
-      //     data: rs,
-      //   };
-      // }
 
       const needsApproval = await this.utils.needsApproval(
         params.address,
@@ -347,8 +296,6 @@ export class Order {
 
   async createDecreaseOrder(params: PlaceOrderParams) {
     try {
-      const config: MyxClientConfig = this.configManager.getConfig();
-
       const data = {
         user: params.address,
         poolId: params.poolId,
