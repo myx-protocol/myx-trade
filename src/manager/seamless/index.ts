@@ -228,7 +228,7 @@ export class Seamless {
 
     const domain = await this.getForwardEip712Domain(chainId)
     const functionHash = encodeFunctionData({
-      abi: Forwarder_ABI as any,
+      abi: Broker_ABI as any,
       functionName: functionName,
       args: orderParams,
     });
