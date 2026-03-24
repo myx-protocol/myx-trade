@@ -212,7 +212,13 @@ export class Seamless {
     chainId: number,
     masterAddress: string,
     seamlessAddress: string,
-    signFunction: (abi: any, domain: any, functionHash: string) => string,
+    signFunction: (signParams: {
+      domain: any,
+      functionHash: string,
+      to: string,
+      nonce: string,
+      deadline: number,
+    }) => Promise<string>,
     functionName: string
     forwardFeeToken: string
     orderParams: any
@@ -227,7 +233,14 @@ export class Seamless {
       args: orderParams,
     });
 
-    const signature = await signFunction(Broker_ABI, domain, functionHash)
+    const signature = await signFunction({
+      domain,
+      functionHash,
+      // todo pick contract
+      to: this.configManager.getConfig().brokerAddress,
+      nonce: nonce.toString(),
+      deadline,
+    })
 
 
     // const signature = await walletClient.signTypedData({
