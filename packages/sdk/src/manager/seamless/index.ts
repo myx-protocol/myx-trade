@@ -4,7 +4,7 @@ import { Logger } from "@/logger";
 import { Utils } from "../utils/index.js";
 import { getWalletClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { hexToBytes, toHex, encodeFunctionData, maxUint256 } from "viem";
+import { hexToBytes, toHex, encodeFunctionData, maxUint256, isAddress } from "viem";
 import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
 import { Account as AccountManager } from "../account/index.js";
 import dayjs from "dayjs";
@@ -343,30 +343,82 @@ export class Seamless {
     };
   }
 
-  async formatForwarderTxParams({ address, chainId, forwardFeeToken, functionName, data, seamlessAddress }: { address: string, chainId: number, forwardFeeToken: string, functionName: string, data: any, seamlessAddress: string }) {
-    const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId, forwardFeeToken)
+  /**
+   * Build ForwardRequest fields for a Broker contract call executed via the Forwarder.
+   * `data` must be the ABI args array for `functionName` (same order as the contract), with no undefined addresses.
+   */
+  async formatForwarderTxParams({
+    address,
+    chainId,
+    forwardFeeToken,
+    functionName,
+    data,
+    seamlessAddress,
+  }: {
+    address: string;
+    chainId: number;
+    forwardFeeToken: string;
+    functionName: string;
+    /** ABI args tuple for `functionName`, e.g. `[user, poolId, ...]` */
+    data: readonly unknown[] | unknown[];
+    seamlessAddress: string;
+  }) {
+    const brokerAddress = this.configManager.getConfig().brokerAddress;
+    if (!brokerAddress || !isAddress(brokerAddress)) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidBrokerAddress,
+        "brokerAddress is missing or invalid; pass brokerAddress in MyxClient constructor / updateClientChainId"
+      );
+    }
+    if (!address || !isAddress(address)) {
+      throw new MyxSDKError(MyxErrorCode.ParamError, "address (master) is missing or invalid");
+    }
+    if (!seamlessAddress || !isAddress(seamlessAddress)) {
+      throw new MyxSDKError(MyxErrorCode.ParamError, "seamlessAddress is missing or invalid");
+    }
+    if (!forwardFeeToken || !isAddress(forwardFeeToken)) {
+      throw new MyxSDKError(MyxErrorCode.ParamError, "forwardFeeToken is missing or invalid");
+    }
+    if (!Array.isArray(data)) {
+      throw new MyxSDKError(
+        MyxErrorCode.ParamError,
+        "data must be an array of ABI arguments for encodeFunctionData (e.g. [arg1, arg2])"
+      );
+    }
+
+    const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId, forwardFeeToken);
 
     if (!isEnoughGas) {
       throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
     }
 
-    const forwarderContract = await getForwarderContract(chainId)
-    console.log('data-->', data)
-    const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: functionName, args: data })
-    console.log('seamlessAddress-->', seamlessAddress)
-    const nonce = await forwarderContract.read.nonces([seamlessAddress as `0x${string}`])
-
-    const forwardTxParams = {
-      from: seamlessAddress,
-      to: this.configManager.getConfig().brokerAddress,
-      value: '0',
-      gas: '800000',
-      deadline: dayjs().add(60, 'minute').unix(),
-      data: functionHash,
-      nonce: nonce.toString(),
+    const forwarderContract = await getForwarderContract(chainId);
+    let functionHash: `0x${string}`;
+    try {
+      functionHash = encodeFunctionData({
+        abi: Broker_ABI as any,
+        functionName,
+        args: data as any,
+      });
+    } catch (e) {
+      throw new MyxSDKError(
+        MyxErrorCode.ParamError,
+        `encodeFunctionData failed for Broker.${String(functionName)}: ${(e as Error).message}. Check args shape and that no address field is undefined.`
+      );
     }
 
-    return forwardTxParams
+    const nonce = await forwarderContract.read.nonces([seamlessAddress as `0x${string}`]);
+
+    return {
+      from: seamlessAddress,
+      to: brokerAddress,
+      value: "0",
+      gas: "800000",
+      deadline: dayjs().add(60, "minute").unix(),
+      data: functionHash,
+      nonce: nonce.toString(),
+      forwardFeeToken,
+    };
   }
 
   // async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
