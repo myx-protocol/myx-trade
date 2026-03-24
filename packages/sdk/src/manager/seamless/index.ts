@@ -185,6 +185,19 @@ export class Seamless {
     }
   }
 
+  async getForwardEip712Domain(chainId: number) {
+    const forwarderContract = await getForwarderContract(chainId);
+    const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
+
+    const domain = {
+      name: forwarderJsonRpcContractDomain[1],
+      version: forwarderJsonRpcContractDomain[2],
+      chainId: forwarderJsonRpcContractDomain[3],
+      verifyingContract: forwarderJsonRpcContractDomain[4],
+    };
+    return domain;
+  }
+
   async forwarderTx(
     {
       from,
@@ -206,34 +219,15 @@ export class Seamless {
       forwardFeeToken: string;
     },
     chainId: number,
-    walletClientOrSigner?: Awaited<ReturnType<typeof getWalletClient>> | SignerLike,
   ) {
-    const forwarderContract = await getForwarderContract(chainId);
-    const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
+    const domain = await this.getForwardEip712Domain(chainId);
 
-
-    const domain = {
-      name: forwarderJsonRpcContractDomain[1],
-      version: forwarderJsonRpcContractDomain[2],
-      chainId: forwarderJsonRpcContractDomain[3],
-      verifyingContract: forwarderJsonRpcContractDomain[4],
-    };
-
-    const signerInput = walletClientOrSigner ?? (await getWalletClient(chainId));
-    const maybeWalletClient = signerInput as {
-      getAddresses?: () => Promise<readonly `0x${string}`[]>;
-      signTypedData?: (args: unknown) => Promise<`0x${string}`>;
-    };
-    const wc =
-      typeof maybeWalletClient.getAddresses === "function" &&
-      typeof maybeWalletClient.signTypedData === "function"
-        ? (signerInput as Awaited<ReturnType<typeof getWalletClient>>)
-        : await createWalletClientFromSigner(normalizeSigner(signerInput as SignerLike), chainId);
-
-    const [account] = await wc.getAddresses();
+    const walletClient = await getWalletClient(chainId);
+  
+    const [account] = await walletClient.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
-    const signature = await wc.signTypedData({
+    const signature = await walletClient.signTypedData({
       account,
       domain,
       types: contractTypes,
@@ -258,7 +252,6 @@ export class Seamless {
     seamlessAddress,
     chainId,
     forwardFeeToken,
-    walletClientOrSigner,
   }: {
     approve: boolean;
     seamlessAddress: string;
@@ -309,7 +302,7 @@ export class Seamless {
       data: functionHash,
       deadline,
       forwardFeeToken,
-    }, chainId, walletClientOrSigner)
+    }, chainId)
 
     if (txRs.data?.txHash) {
       // Poll chain for transaction status
