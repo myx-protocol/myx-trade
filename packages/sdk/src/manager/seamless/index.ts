@@ -220,6 +220,23 @@ export class Seamless {
     const [account] = await wc.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
+    console.log('wc-->', wc, wc.getAddresses)
+    console.log('signTypeData-->', {
+      account,
+      domain,
+      types: contractTypes,
+      primaryType: "ForwardRequest",
+      message: {
+        from: from as `0x${string}`,
+        to: to as `0x${string}`,
+        value: BigInt(value),
+        gas: BigInt(gas),
+        nonce: BigInt(nonce),
+        deadline: BigInt(deadline),
+        data: data as `0x${string}`,
+      },
+    })
+
     const signature = await wc.signTypedData({
       account,
       domain,
@@ -235,6 +252,8 @@ export class Seamless {
         data: data as `0x${string}`,
       },
     });
+
+    console.log('signature->', signature)
 
     const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
     return txRs;
