@@ -79,11 +79,10 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
     const request = await basePoolContract.read.previewUserWithdrawData(
       [poolId, amountIn, account, price],
     )
-    
-    // console.log("previewUserWithdrawData result:", {baseAmountOut, rebateAmount});
+    const [baseAmountOut, rebateAmount] = request
     return {
-      baseAmountOut: request.baseAmountOut,
-      rebateAmount: request.rebateAmount,
+      baseAmountOut,
+      rebateAmount,
     }
     
   } catch (error) {
