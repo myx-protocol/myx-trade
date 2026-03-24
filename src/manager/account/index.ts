@@ -1,15 +1,14 @@
 import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
 import { Utils } from "../utils/index.js";
-import { encodeFunctionData, maxUint256, zeroAddress } from "viem";
-import Account_ABI from "@/abi/Account.json";
+import { maxUint256, zeroAddress } from "viem";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { getTokenContract, getDataProviderContract, getBrokerContract, getForwarderContract, getAccountContract, getBrokerSingerContract } from "@/web3/providers";
+import { getTokenContract, getDataProviderContract, getBrokerContract, getAccountContract, getBrokerSingerContract } from "@/web3/providers";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
-import Broker_ABI from "@/abi/Broker.json";
+
 import { AccountInfo } from "@/types/common.js";
 import { GetHistoryOrdersParams } from "@/api/index.js";
 
@@ -49,7 +48,7 @@ export class Account {
     };
   }
 
-  async getWalletQuoteTokenBalance({chainId, address, tokenAddress }:{chainId: number, address?: string, tokenAddress: string}) {
+  async getWalletQuoteTokenBalance({ chainId, address, tokenAddress }: { chainId: number, address?: string, tokenAddress: string }) {
     if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(
         MyxErrorCode.InvalidSigner,
