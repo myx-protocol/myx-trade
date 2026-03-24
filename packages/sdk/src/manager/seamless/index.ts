@@ -353,6 +353,7 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId)
     console.log('data-->', data)
     const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: functionName, args: data })
+    console.log('seamlessAddress-->', seamlessAddress)
     const nonce = await forwarderContract.read.nonces([seamlessAddress as `0x${string}`])
 
     const forwardTxParams = {
