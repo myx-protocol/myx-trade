@@ -13,6 +13,9 @@ import { getEIP712Domain } from "@/utils";
 import { Api } from "../api/index.js";
 import Forwarder_ABI from "@/abi/Forwarder.json";
 import Broker_ABI from "@/abi/Broker.json";
+import type { SignerLike } from "@/signer/types.js";
+import { normalizeSigner } from "@/signer/adapters.js";
+import { createWalletClientFromSigner } from "@/signer/viemWalletFromSigner.js";
 
 const contractTypes = {
   ForwardRequest: [
@@ -203,7 +206,7 @@ export class Seamless {
       forwardFeeToken: string;
     },
     chainId: number,
-    walletClient?: Awaited<ReturnType<typeof getWalletClient>>,
+    walletClientOrSigner?: Awaited<ReturnType<typeof getWalletClient>> | SignerLike,
   ) {
     const forwarderContract = await getForwarderContract(chainId);
     const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
@@ -216,26 +219,19 @@ export class Seamless {
       verifyingContract: forwarderJsonRpcContractDomain[4],
     };
 
-    const wc = walletClient ?? (await getWalletClient(chainId));
+    const signerInput = walletClientOrSigner ?? (await getWalletClient(chainId));
+    const maybeWalletClient = signerInput as {
+      getAddresses?: () => Promise<readonly `0x${string}`[]>;
+      signTypedData?: (args: unknown) => Promise<`0x${string}`>;
+    };
+    const wc =
+      typeof maybeWalletClient.getAddresses === "function" &&
+      typeof maybeWalletClient.signTypedData === "function"
+        ? (signerInput as Awaited<ReturnType<typeof getWalletClient>>)
+        : await createWalletClientFromSigner(normalizeSigner(signerInput as SignerLike), chainId);
+
     const [account] = await wc.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
-
-    console.log('wc-->', wc, wc.getAddresses)
-    console.log('signTypeData-->', {
-      account,
-      domain,
-      types: contractTypes,
-      primaryType: "ForwardRequest",
-      message: {
-        from: from as `0x${string}`,
-        to: to as `0x${string}`,
-        value: BigInt(value),
-        gas: BigInt(gas),
-        nonce: BigInt(nonce),
-        deadline: BigInt(deadline),
-        data: data as `0x${string}`,
-      },
-    })
 
     const signature = await wc.signTypedData({
       account,
@@ -253,13 +249,23 @@ export class Seamless {
       },
     });
 
-    console.log('signature->', signature)
-
     const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
     return txRs;
   }
 
-  async authorizeSeamlessAccount({ approve, seamlessAddress, chainId, forwardFeeToken }: { approve: boolean, seamlessAddress: string, chainId: number, forwardFeeToken: string }) {
+  async authorizeSeamlessAccount({
+    approve,
+    seamlessAddress,
+    chainId,
+    forwardFeeToken,
+    walletClientOrSigner,
+  }: {
+    approve: boolean;
+    seamlessAddress: string;
+    chainId: number;
+    forwardFeeToken: string;
+    walletClientOrSigner?: Awaited<ReturnType<typeof getWalletClient>> | SignerLike;
+  }) {
     const masterAddress = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
 
     if (approve) {
@@ -303,7 +309,7 @@ export class Seamless {
       data: functionHash,
       deadline,
       forwardFeeToken,
-    }, chainId)
+    }, chainId, walletClientOrSigner)
 
     if (txRs.data?.txHash) {
       // Poll chain for transaction status
