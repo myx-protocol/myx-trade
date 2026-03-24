@@ -12,6 +12,7 @@ import { getContractAddressByChainId } from "@/config/address/index.js";
 import { getEIP712Domain } from "@/utils";
 import { Api } from "../api/index.js";
 import Forwarder_ABI from "@/abi/Forwarder.json";
+import Broker_ABI from "@/abi/Broker.json";
 
 const contractTypes = {
   ForwardRequest: [
@@ -139,7 +140,7 @@ export class Seamless {
       maxUint256.toString(),
       getContractAddressByChainId(chainId).TRADING_ROUTER,
     );
- 
+
     return checkRelayerResult && !isNeedApprove;
   }
 
@@ -207,7 +208,7 @@ export class Seamless {
     const forwarderContract = await getForwarderContract(chainId);
     const forwarderJsonRpcContractDomain = await forwarderContract.read.eip712Domain();
 
-    
+
     const domain = {
       name: forwarderJsonRpcContractDomain[1],
       version: forwarderJsonRpcContractDomain[2],
@@ -243,7 +244,7 @@ export class Seamless {
     const masterAddress = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
 
     if (approve) {
-      const balanceRes = await this.account.getWalletQuoteTokenBalance({chainId, address: masterAddress, tokenAddress: forwardFeeToken });
+      const balanceRes = await this.account.getWalletQuoteTokenBalance({ chainId, address: masterAddress, tokenAddress: forwardFeeToken });
       const balance = balanceRes.data;
       const marketManagerContract = await getMarketManageContract(chainId);
       const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
@@ -340,6 +341,31 @@ export class Seamless {
       code: 0,
       data: { masterAddress },
     };
+  }
+
+  async formatForwarderTxParams({ address, chainId, forwardFeeToken, functionName, data, seamlessAddress }: { address: string, chainId: number, forwardFeeToken: string, functionName: string, data: any, seamlessAddress: string }) {
+    const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId, forwardFeeToken)
+
+    if (!isEnoughGas) {
+      throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
+    }
+
+    const forwarderContract = await getForwarderContract(chainId)
+    console.log('data-->', data)
+    const functionHash = encodeFunctionData({ abi: Broker_ABI as any, functionName: functionName, args: data })
+    const nonce = await forwarderContract.read.nonces([seamlessAddress as `0x${string}`])
+
+    const forwardTxParams = {
+      from: seamlessAddress,
+      to: this.configManager.getConfig().brokerAddress,
+      value: '0',
+      gas: '800000',
+      deadline: dayjs().add(60, 'minute').unix(),
+      data: functionHash,
+      nonce: nonce.toString(),
+    }
+
+    return forwardTxParams
   }
 
   // async unLockSeamlessWallet({ masterAddress, password, apiKey, chainId }: { masterAddress: string, password: string, apiKey: string, chainId: number }) {
