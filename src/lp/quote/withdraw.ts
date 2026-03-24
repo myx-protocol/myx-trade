@@ -39,8 +39,6 @@ export const withdrawableLpAmount = async (
     }
    
     const request = await quotePoolContract.read.withdrawableLpAmount([poolId, referencePrice || 0n])
-    // console.log(`quote pool withdrawableLpAmount: ${request}`)
-    
     return request
     
   } catch (error) {
@@ -51,7 +49,6 @@ export const withdrawableLpAmount = async (
 
 export const withdraw = async (params: WithdrawParams) => {
   try {
-    
     const { chainId, poolId, amount, slippage = 0.01 } = params;
     const pool = await getPoolInfo (chainId, poolId)
     const lpAddress = pool?.quotePoolToken
@@ -72,8 +69,15 @@ export const withdraw = async (params: WithdrawParams) => {
     
     const amountIn = parseUnits (amount.toString (), decimals)
     
-    const {price, data, value} = await getWithdrawData({poolId,chainId,account,amountIn, slippage, poolType: PoolType.Quote, state: pool?.state as MarketPoolState})
-    
+    const {price, data, value} = await getWithdrawData({
+      poolId,
+      chainId,
+      account,
+      amountIn,
+      slippage,
+      poolType: PoolType.Quote,
+      state: pool?.state as MarketPoolState
+    })
     
     const contract = await getLiquidityRouterContract (chainId)
 

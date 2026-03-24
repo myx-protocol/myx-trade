@@ -105,8 +105,8 @@ export class Position {
       const updateParams = {
         poolId: poolId,
         oracleType: priceData.oracleType,
-        oracleUpdateData: priceData?.vaa ?? "0",
         publishTime: priceData.publishTime,
+        oracleUpdateData: priceData?.vaa ?? "0",
       };
 
       let needsApproval = false;
