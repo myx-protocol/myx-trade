@@ -202,7 +202,6 @@ export class Seamless {
 
   async forwardTxInFront({
     chainId,
-    masterAddress,
     seamlessAddress,
     signFunction,
     forwardFeeToken,
@@ -223,7 +222,7 @@ export class Seamless {
     forwardFeeToken: string
     orderParams: any
   }) {
-    const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);
+    const nonce = await (await getForwarderContract(chainId)).read.nonces([seamlessAddress as `0x${string}`]);
     const deadline = dayjs().add(60, 'minute').unix()
 
     const domain = await this.getForwardEip712Domain(chainId)
