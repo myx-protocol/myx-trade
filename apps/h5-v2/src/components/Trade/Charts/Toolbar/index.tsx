@@ -2,13 +2,16 @@ import { dropDownMenuOptions, resolutionDefaultList } from '@/components/Trade/C
 import { formatResolutionToDisplayText } from '@/components/Trade/Charts/lib/datafeed'
 import clsx from 'clsx'
 import type { ResolutionString } from '@public/charting_library/charting_library'
-import { ChartStudy, SortDown } from '@/components/Icon'
+import { ArrowDown, ChartStudy, SortDown } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { Popover } from '@/components/UI/Popover'
 import { useState } from 'react'
 import { klinePubSub } from '@/utils/pubsub'
 import { StudyListDrawer } from '@/components/Trade/Charts/StudyList/StudyListDrawer'
 import { useChartsStore } from '../store'
+import { HoverCard } from '@/components/UI/HoverCard'
+import IconDropdown from '@/components/Icon/set/Dropdown'
+import { ChartTypeEnum } from '../type'
 
 const resolutionOptions: Array<{ label: string; value: string | number }> = dropDownMenuOptions.map(
   (item) => ({
@@ -24,10 +27,18 @@ const fixedResolutionList: Array<{ label: string; value: string | number }> =
   }))
 
 interface ToolBarProps {
+  showResolution?: boolean
   showStudyPanel?: boolean
+  chartType?: ChartTypeEnum
+  onChartTypeChange?: (type: ChartTypeEnum) => void
 }
 
-export const ToolBar = ({ showStudyPanel = false }: ToolBarProps) => {
+export const ToolBar = ({
+  showResolution = true,
+  showStudyPanel = false,
+  chartType = ChartTypeEnum.TradingView,
+  onChartTypeChange,
+}: ToolBarProps) => {
   const { activeResolution, setActiveResolution } = useChartsStore()
 
   const handleResolutionChange = (value: string | number) => {
@@ -37,68 +48,117 @@ export const ToolBar = ({ showStudyPanel = false }: ToolBarProps) => {
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [studyListDrawerOpen, setStudyListDrawerOpen] = useState(false)
+  const [chartTypeDropdownOpen, setChartTypeDropdownOpen] = useState(false)
+  const handleChartTypeChange = (type: ChartTypeEnum) => {
+    onChartTypeChange?.(type)
+    setChartTypeDropdownOpen(false)
+  }
   return (
     <div className="flex items-center justify-between px-[8px] pb-[4px]">
-      <div className="flex items-center gap-[10px]">
-        {fixedResolutionList.map((item) => (
-          <div
-            key={item.value}
-            role="button"
-            onClick={() => handleResolutionChange(item.value as ResolutionString)}
-            className={clsx(
-              'rounded-[50px] px-[8px] py-[5px] text-[12px] font-normal text-[#848E9C]',
-              {
-                'bg-[#202129] font-medium text-white': activeResolution === item.value,
-              },
-            )}
-          >
-            {item.label}
-          </div>
-        ))}
-        {/*  */}
-        <Popover
-          open={dropdownOpen}
-          onOpenChange={setDropdownOpen}
-          trigger={
-            <div
-              role="button"
-              onClick={() => setDropdownOpen(true)}
-              className={clsx(
-                'flex items-center justify-center gap-[2px] rounded-[50px] px-[8px] py-[5px] text-[12px] font-normal text-[#848E9C]',
-              )}
-            >
-              <span>
-                <Trans>more</Trans>
-              </span>
-              <SortDown size={6} color="#9A9B9F" />
-            </div>
-          }
-        >
-          <div className="flex flex-col rounded-[4px] bg-[#202129] py-[4px] text-[12px] font-medium text-[#848E9C]">
-            {resolutionOptions.map((item) => (
+      <div>
+        {showResolution && (
+          <div className="flex items-center gap-[10px]">
+            {fixedResolutionList.map((item) => (
               <div
                 key={item.value}
-                className={clsx('px-[12px] py-[12px] text-center', {
-                  'bg-[#18191F] text-white': activeResolution === item.value,
-                })}
                 role="button"
-                onClick={() => {
-                  handleResolutionChange(item.value)
-                  setDropdownOpen(false)
-                }}
+                onClick={() => handleResolutionChange(item.value as ResolutionString)}
+                className={clsx(
+                  'rounded-[50px] px-[8px] py-[5px] text-[12px] font-normal text-[#848E9C]',
+                  {
+                    'bg-[#202129] font-medium text-white': activeResolution === item.value,
+                  },
+                )}
               >
                 {item.label}
               </div>
             ))}
+            {/*  */}
+            <Popover
+              open={dropdownOpen}
+              onOpenChange={setDropdownOpen}
+              trigger={
+                <div
+                  role="button"
+                  onClick={() => setDropdownOpen(true)}
+                  className={clsx(
+                    'flex items-center justify-center gap-[2px] rounded-[50px] px-[8px] py-[5px] text-[12px] font-normal text-[#848E9C]',
+                  )}
+                >
+                  <span>
+                    <Trans>more</Trans>
+                  </span>
+                  <SortDown size={6} color="#9A9B9F" />
+                </div>
+              }
+            >
+              <div className="flex flex-col rounded-[4px] bg-[#202129] py-[4px] text-[12px] font-medium text-[#848E9C]">
+                {resolutionOptions.map((item) => (
+                  <div
+                    key={item.value}
+                    className={clsx('px-[12px] py-[12px] text-center', {
+                      'bg-[#18191F] text-white': activeResolution === item.value,
+                    })}
+                    role="button"
+                    onClick={() => {
+                      handleResolutionChange(item.value)
+                      setDropdownOpen(false)
+                    }}
+                  >
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+            </Popover>
           </div>
-        </Popover>
+        )}
       </div>
 
-      {showStudyPanel && (
-        <div className="shrink-0" role="button" onClick={() => setStudyListDrawerOpen(true)}>
-          <ChartStudy size={16} color="#fff" />
-        </div>
-      )}
+      <div className="flex items-center justify-end gap-[12px]">
+        {/* chart type dropdown */}
+        <Popover
+          open={chartTypeDropdownOpen}
+          onOpenChange={setChartTypeDropdownOpen}
+          offset={8}
+          trigger={
+            <div className="flex items-center gap-[2px] rounded-[999px] bg-[#202129] px-[8px] py-[5px]">
+              <span className="text-[12px] leading-none">
+                {chartType === ChartTypeEnum.TradingView ? (
+                  <Trans>Trading View</Trans>
+                ) : (
+                  <Trans>深度图</Trans>
+                )}
+              </span>
+              <IconDropdown size={10} color="#848E9C" />
+            </div>
+          }
+        >
+          <div className="rounded-[8px] bg-[#202129] text-[12px] leading-none font-medium text-white">
+            <div
+              className={clsx('rounded-[inherit] px-[12px] py-[16px]', {
+                'bg-[#292B33]': chartType === ChartTypeEnum.TradingView,
+              })}
+              onClick={() => handleChartTypeChange(ChartTypeEnum.TradingView)}
+            >
+              <Trans>Trading View</Trans>
+            </div>
+            <div
+              className={clsx('rounded-[inherit] px-[12px] py-[16px]', {
+                'bg-[#292B33]': chartType === ChartTypeEnum.DepthChart,
+              })}
+              onClick={() => handleChartTypeChange(ChartTypeEnum.DepthChart)}
+            >
+              <Trans>深度图</Trans>
+            </div>
+          </div>
+        </Popover>
+
+        {showStudyPanel && (
+          <div className="shrink-0" role="button" onClick={() => setStudyListDrawerOpen(true)}>
+            <ChartStudy size={16} color="#fff" />
+          </div>
+        )}
+      </div>
       <StudyListDrawer open={studyListDrawerOpen} onClose={() => setStudyListDrawerOpen(false)} />
     </div>
   )
