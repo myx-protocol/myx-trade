@@ -17,6 +17,7 @@ import { TrenchList } from './components/TrenchList'
 import { useSearchParams } from 'react-router-dom'
 import { SearchBar } from '@/components/SearchBar.tsx'
 import { SearchTypeEnum } from '@myx-trade/sdk'
+import { Dashboard } from './components/Dashboard'
 
 const Cook = () => {
   const [type, setType] = useState<CookType>(CookType.Cook)
@@ -56,6 +57,7 @@ const Cook = () => {
       >
         <SearchBar defaultTab={SearchTypeEnum.Cook} />
         <Banner />
+        <Dashboard />
         <CookContext.Provider
           value={{
             type,
