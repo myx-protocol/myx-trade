@@ -16,6 +16,7 @@ import Broker_ABI from "@/abi/Broker.json";
 import type { SignerLike } from "@/signer/types.js";
 import { normalizeSigner } from "@/signer/adapters.js";
 import { createWalletClientFromSigner } from "@/signer/viemWalletFromSigner.js";
+import { getEip712Domain } from "viem/actions";
 
 const contractTypes = {
   ForwardRequest: [
@@ -195,7 +196,116 @@ export class Seamless {
       chainId: forwarderJsonRpcContractDomain[3],
       verifyingContract: forwarderJsonRpcContractDomain[4],
     };
+
     return domain;
+  }
+
+  async forwardTxInFront({
+    chainId,
+    masterAddress,
+    seamlessAddress,
+    signFunction,
+    forwardFeeToken,
+    functionName,
+    orderParams
+  }: {
+    chainId: number,
+    masterAddress: string,
+    seamlessAddress: string,
+    signFunction: (abi: any, domain: any, functionHash: string) => string,
+    functionName: string
+    forwardFeeToken: string
+    orderParams: any
+  }) {
+    const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);
+    const deadline = dayjs().add(60, 'minute').unix()
+
+    const domain = await this.getForwardEip712Domain(chainId)
+    const functionHash = encodeFunctionData({
+      abi: Forwarder_ABI as any,
+      functionName: functionName,
+      args: orderParams,
+    });
+
+    const signature = await signFunction(Broker_ABI, domain, functionHash)
+
+
+    // const signature = await walletClient.signTypedData({
+    //   account,
+    //   domain,
+    //   types: contractTypes,
+    //   primaryType: "ForwardRequest",
+    //   message: {
+    //     from: from as `0x${string}`,
+    //     to: to as `0x${string}`,
+    //     value: BigInt(value),
+    //     gas: BigInt(gas),
+    //     nonce: BigInt(nonce),
+    //     deadline: BigInt(deadline),
+    //     data: data as `0x${string}`,
+    //   },
+    // });
+
+    console.log('signature-->', signature)
+
+    const txRs = await this.api.forwarderTxApi(
+      {
+        from: seamlessAddress,
+        // todo pick contract
+        to: this.configManager.getConfig().brokerAddress,
+        value: '0',
+        gas: '800000',
+        nonce: nonce.toString(),
+        data: functionHash,
+        deadline,
+        signature,
+        forwardFeeToken
+      },
+      chainId
+    );
+
+    if (txRs.data?.txHash) {
+      // Poll chain for transaction status
+      const maxAttempts = 5 // Max 5 attempts
+      const pollInterval = 1000 // Poll every 1 second
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const rs = await this.api.fetchForwarderGetApi({ requestId: txRs.data.requestId })
+
+          if (rs.data?.status === 9) {
+            return {
+              code: 0,
+            }
+          }
+
+          // If not on chain yet, wait and poll again
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        } catch (error) {
+          this.logger.error('Poll transaction from chain error:', error)
+          // If not the last attempt, continue polling
+          if (attempt < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval))
+          }
+        }
+      }
+
+      // Poll timeout, return failure
+      return {
+        code: -1,
+        data: null,
+        message: 'Transaction confirmation timeout, please check later',
+      }
+    } else {
+      return {
+        code: -1,
+        data: null,
+        message: 'Your request timed out, please try again',
+      }
+    }
+
   }
 
   async forwarderTx(
@@ -223,7 +333,7 @@ export class Seamless {
     const domain = await this.getForwardEip712Domain(chainId);
 
     const walletClient = await getWalletClient(chainId);
-  
+
     const [account] = await walletClient.getAddresses();
     if (!account) throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Missing signer for forwarderTx");
 
@@ -283,7 +393,6 @@ export class Seamless {
         permitParams = []
       }
     }
-
 
     const forwarderContract = await getForwarderContract(chainId, ProviderType.Signer);
     const nonce = await (await getForwarderContract(chainId)).read.nonces([masterAddress as `0x${string}`]);
