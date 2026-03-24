@@ -18,7 +18,6 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     
     if (!toPool || !fromPool) return null;
     
-    
     if([MarketPoolState.PreBench, MarketPoolState.Bench].includes(toPool.state)) {
       throw new Error(Errors[ErrorCode.Invalid_Pool_State]) // todo
     }

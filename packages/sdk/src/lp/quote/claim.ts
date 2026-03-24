@@ -11,6 +11,7 @@ import { getPricesData } from "@/common/price.js";
 import { getErrorTextFormError } from "@/config/error.js";
 import { sdkError } from "@/logger";
 import { getPublicClient } from "@/web3";
+import type { Address } from "@/api";
 
 export const claimQuotePoolRebate = async (
   params: ClaimParams
@@ -102,9 +103,9 @@ export const claimQuotePoolRebates = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: item.poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     const values = priceResponse.map((item) => item.value)
