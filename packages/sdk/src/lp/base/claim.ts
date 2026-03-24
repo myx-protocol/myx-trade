@@ -34,9 +34,9 @@ export const claimBasePoolRebate = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     
@@ -95,9 +95,9 @@ export const claimBasePoolRebates = async (
     const prices = priceData.map ((item) => {
       return {
         poolId: item.poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     

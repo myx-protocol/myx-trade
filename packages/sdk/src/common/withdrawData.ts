@@ -1,4 +1,4 @@
-import { MarketPoolState } from "@/api";
+import { type Address, MarketPoolState } from "@/api";
 import { OracleUpdatePrice } from "@/lp/type.ts";
 import { getPriceData } from "@/common/price.ts";
 import { parseUnits } from "viem";
@@ -41,10 +41,10 @@ export const getWithdrawData = async (
       if (priceData) {
         const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
         price.push ({
-          poolId: poolId as `0x${ string }`,
-          oracleUpdateData: priceData.vaa as `0x${ string }`,
-          publishTime: BigInt (priceData.publishTime),
+          poolId: poolId as Address,
           oracleType: priceData.oracleType,
+          publishTime: BigInt(priceData.publishTime),
+          oracleUpdateData: priceData.vaa as Address,
         })
         amountOut = await previewAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
         value = priceData.value
