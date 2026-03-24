@@ -76,7 +76,6 @@ export const Sell = () => {
     queryFn: async () => {
       if (!poolId || !pool) return null
       const result = await Pool.getUserGenesisShare(chainId, pool?.basePoolToken, account as string)
-      console.log(`Pool.getUserGenesisShare: ${result}`)
 
       if (result) {
         return formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
@@ -86,17 +85,18 @@ export const Sell = () => {
   })
 
   const { data: receive } = useQuery({
-    queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account],
-    enabled: !!amount && !!account && !!poolId,
+    queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account, pool],
+    enabled: !!amount && !!account && !!poolId && !!pool,
     queryFn: async () => {
-      if (!account || !poolId || !amount) return
+      if (!account || !poolId || !account || !pool) return
       const res = await Base.previewUserWithdrawData({
         chainId,
         amount,
         account,
         poolId,
       })
-      if (res) {
+      console.log(res)
+      if (res && pool) {
         return {
           coin: formatUnits(res?.baseAmountOut, pool?.baseDecimals),
           profit: formatUnits(res?.rebateAmount, pool?.quoteDecimals),

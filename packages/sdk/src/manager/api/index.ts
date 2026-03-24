@@ -149,10 +149,10 @@ export class Api extends Request {
     );
   }
 
-  async getPositions(accessToken: string, address: string) {
+  async getPositions({ accessToken, address, positionId }: { accessToken: string, address: string, positionId?: string }) {
     return await http.get<PositionResponse>(
       `${this.getHost()}/openapi/gateway/scan/position/open`,
-      undefined,
+      { positionId },
       {
         headers: {
           myx_openapi_access_token: accessToken,
