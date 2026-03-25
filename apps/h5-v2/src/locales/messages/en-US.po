@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-11 01:59\n"
+"PO-Revision-Date: 2026-03-25 07:18\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -1104,7 +1103,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Dashboard/index.tsx
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr ""
 
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
@@ -3247,7 +3246,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Dashboard/TradeVolume.tsx
 msgid "Prep Volume"
-msgstr "Prep Volume"
+msgstr ""
 
 #: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -3307,7 +3306,7 @@ msgstr ""
 
 #: src/components/DepthChart/DepthChartCanvas.tsx
 msgid "Range"
-msgstr "Range"
+msgstr ""
 
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
@@ -4208,7 +4207,7 @@ msgstr ""
 #: src/components/Trade/Charts/Toolbar/index.tsx
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "Trading View"
-msgstr "Trading View"
+msgstr ""
 
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Trading Volume"
@@ -4249,7 +4248,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Dashboard/TVL.tsx
 msgid "Tvl"
-msgstr "Tvl"
+msgstr ""
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
@@ -5033,7 +5032,7 @@ msgstr "Inflow/Outflow"
 #: src/components/Trade/Charts/Toolbar/index.tsx
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "深度图"
-msgstr "深度图"
+msgstr "Depth"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "添加保证金"
@@ -5188,3 +5187,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
