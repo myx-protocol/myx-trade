@@ -115,6 +115,7 @@ export class Seamless {
       'updatePriceAndAdjustCollateral',
       'setUserFeeData'
     ]
+    
     const accountFunctions: string[] = [
       'updateAndWithdraw',
       'deposit',
@@ -296,7 +297,6 @@ export class Seamless {
         message: 'Your request timed out, please try again',
       }
     }
-
   }
 
   async forwarderTx(
