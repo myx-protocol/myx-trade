@@ -1,6 +1,6 @@
 {
   "name": "@myx-trade/sdk",
-  "version": "1.0.8",
+  "version": "1.0.8-beta.11",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -31,6 +31,7 @@
     "prebuild": "pnpm run clean",
     "prepublishOnly": "pnpm run build",
     "prepare": "pnpm gen:abi",
+    "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'",
     "custom-publish": "tsx scripts/customPublish.ts",
     "type-check": "tsc -p tsconfig.json --noEmit"
   },
