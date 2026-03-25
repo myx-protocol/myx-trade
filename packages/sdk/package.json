@@ -24,7 +24,6 @@
     "dev": "tsx scripts/build.ts --watch",
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean",
-    "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'",
     "prepublishOnly": "pnpm run build",
     "prepare": "pnpm gen:abi",
     "custom-publish": "tsx scripts/customPublish.ts",
