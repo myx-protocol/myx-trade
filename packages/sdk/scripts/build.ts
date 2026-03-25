@@ -23,7 +23,10 @@ async function run() {
   ];
 
   await build({
-    entry: ["src/index.ts"],
+    entry: {
+      index: "src/index.ts",
+      lp: "src/lp/index.ts",
+    },
     format: ["cjs", "esm"],
     dts: true,
     minify: true,
@@ -31,6 +34,8 @@ async function run() {
     clean: !watch,
     watch,
     external,
+    splitting: true,
+    treeshake: true,
     define: {
       __SDK_VERSION__: JSON.stringify(packageJson.version),
     },
