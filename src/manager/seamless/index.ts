@@ -217,14 +217,7 @@ export class Seamless {
     orderParams: any
     value?: string
   }) {
-    console.log('forwardTxInFront-->', {
-      chainId,
-      seamlessAddress,
-      forwardFeeToken,
-      functionName,
-      orderParams,
-      value
-    })
+  
     const nonce = await (await getForwarderContract(chainId)).read.nonces([seamlessAddress as `0x${string}`]);
     const deadline = dayjs().add(60, 'minute').unix()
     const domain = await this.getForwardEip712Domain(chainId)
@@ -334,7 +327,7 @@ export class Seamless {
       message: {
         from: from as `0x${string}`,
         to: to as `0x${string}`,
-        value: BigInt(value),
+        value: BigInt(value ?? '0'),
         gas: BigInt(gas),
         nonce: BigInt(nonce),
         deadline: BigInt(deadline),
@@ -367,8 +360,8 @@ export class Seamless {
       const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
       const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
       if (gasFee > 0 && gasFee > BigInt(balance)) {
-        this.logger.debug('Insufficient balance')
-        throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient balance");
+        this.logger.debug('Insufficient wallet balance')
+        throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient wallet balance");
       }
     }
 
