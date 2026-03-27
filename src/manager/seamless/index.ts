@@ -200,7 +200,7 @@ export class Seamless {
     forwardFeeToken,
     functionName,
     orderParams,
-    value
+    value = '0'
   }: {
     chainId: number,
     masterAddress: string,
@@ -223,6 +223,7 @@ export class Seamless {
     const domain = await this.getForwardEip712Domain(chainId)
     const { abi, address: to } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
     console.log('contractAddress:', to)
+    console.log('orderParams-->', orderParams)
     const functionHash = encodeFunctionData({
       abi: abi as any,
       functionName: functionName,
