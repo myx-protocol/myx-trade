@@ -43,8 +43,8 @@ export interface MyxClientConfig {
   socketConfig?: Partial<Omit<WebSocketConfig, "url">>;
   logLevel?: LogLevel;
   getAccessToken?:
-    | (() => Promise<AccessTokenResponse | undefined>)
-    | (() => AccessTokenResponse | undefined); // Client-provided method to get accessToken
+  | (() => Promise<AccessTokenResponse | undefined>)
+  | (() => AccessTokenResponse | undefined); // Client-provided method to get accessToken
 }
 
 export class ConfigManager {
@@ -62,6 +62,14 @@ export class ConfigManager {
     };
     this.validateConfig(mergedConfig);
     this.config = mergedConfig;
+    // auth the client if walletClient or signer is provided
+    if (this.config.walletClient || this.config.signer) {
+      this.auth({
+        walletClient: this.config.walletClient,
+        signer: this.config.signer,
+        getAccessToken: this.config.getAccessToken,
+      })
+    }
   }
 
   public clear() {
