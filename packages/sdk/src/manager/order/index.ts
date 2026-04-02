@@ -41,28 +41,31 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams, tradingFee: string, marketId: string) {
+  async createIncreaseOrder(params: PlaceOrderParams) {
     try {
-      const networkFee = await this.utils.getNetworkFee(
-        marketId,
-        params.chainId
-      );
+      // const networkFee = await this.utils.getNetworkFee(
+      //   marketId,
+      //   params.chainId
+      // );
 
-      let totalNetWorkFee = BigInt(networkFee)
+      // let totalNetWorkFee = BigInt(networkFee)
 
-      if (params.tpSize && BigInt(params.tpSize) > 0) {
-        totalNetWorkFee += BigInt(networkFee)
-      }
-      if (params.slSize && BigInt(params.slSize) > 0) {
-        totalNetWorkFee += BigInt(networkFee)
-      }
+      // if (params.tpSize && BigInt(params.tpSize) > 0) {
+      //   totalNetWorkFee += BigInt(networkFee)
+      // }
+      // if (params.slSize && BigInt(params.slSize) > 0) {
+      //   totalNetWorkFee += BigInt(networkFee)
+      // }
 
-      const totalCollateralAmount = BigInt(params.collateralAmount) + BigInt(tradingFee)
+      // 1 no position + networkFee * 4 (open tp sl liquidate) 
+      // 2 have position + networkFee * 3 (increase tp sl)
+      // 3 partly decrease position (last margin is enough (2 * networkFee)? add 0 : add networkFee)
+
+      const collateralAmount = BigInt(params.collateralAmount) //+ BigInt(tradingFee) + totalNetWorkFee
       const availableRes = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
       const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
-      const needAmount = totalCollateralAmount + totalNetWorkFee
       let depositAmount = BigInt(0)
-      const diff = needAmount - availableAccountMarginBalance
+      const diff = collateralAmount - availableAccountMarginBalance
 
       if (diff > BigInt(0)) {
         depositAmount = diff
@@ -80,7 +83,7 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
         direction: params.direction,
-        collateralAmount: totalCollateralAmount.toString(),
+        collateralAmount: collateralAmount.toString(),
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
@@ -184,8 +187,6 @@ export class Order {
 
   async closeAllPositions(chainId: number, params: PlaceOrderParams[]) {
     try {
-      const config: MyxClientConfig = this.configManager.getConfig();
-
       const depositData = {
         token: '0x0000000000000000000000000000000000000000',
         amount: '0'
@@ -521,7 +522,6 @@ export class Order {
     }
   }
 
-
   async cancelAllOrders(orderIds: string[], chainId: ChainId) {
     try {
       if (!this.configManager.hasSigner()) {
@@ -618,7 +618,7 @@ export class Order {
       token: quoteAddress,
       amount: networkFee.toString()
     }
-    
+
     if (!this.configManager.hasSigner()) {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
