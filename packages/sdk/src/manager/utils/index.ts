@@ -262,8 +262,7 @@ export class Utils {
   async checkSeamlessGas(userAddress: string, chainId: number, forwardFeeToken: string) {
     const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
     const relayFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
-    const contractAddress = getContractAddressByChainId(chainId);
-    const tokenContract = getTokenContract(chainId, contractAddress.ERC20);
+    const tokenContract = getTokenContract(chainId, forwardFeeToken);
     const balance = await tokenContract.read.balanceOf([userAddress as `0x${string}`]);
     if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee)) return false;
     return true;
