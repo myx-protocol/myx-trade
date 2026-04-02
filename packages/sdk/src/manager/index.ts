@@ -94,7 +94,6 @@ export class MyxClient {
       this.configManager,
       this.logger,
       this.utils,
-      this.seamless,
       this.account,
       this.api
     );
@@ -106,7 +105,6 @@ export class MyxClient {
       this.configManager,
       this.logger,
       this.utils,
-      this.seamless,
       this.account,
       this.api
     );
