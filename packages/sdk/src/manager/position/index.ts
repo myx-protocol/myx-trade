@@ -3,16 +3,13 @@ import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
-import brokerAbi from "@/abi/Broker.json";
-import { encodeFunctionData, maxUint256 } from "viem";
+import {  maxUint256 } from "viem";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Seamless } from "../seamless/index.js";
 import {
-  getForwarderContract,
   getBrokerSingerContract,
 } from "@/web3/providers";
-import dayjs from "dayjs";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
 import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
@@ -23,21 +20,18 @@ export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
   private utils: Utils;
-  private seamless: Seamless;
   private account: Account;
   private api: Api;
   constructor(
     configManager: ConfigManager,
     logger: Logger,
     utils: Utils,
-    seamless: Seamless,
     account: Account,
     api: Api
   ) {
     this.configManager = configManager;
     this.logger = logger;
     this.utils = utils;
-    this.seamless = seamless;
     this.account = account;
     this.api = api;
   }
@@ -145,52 +139,7 @@ export class Position {
         token: quoteToken,
         amount: depositAmount.toString(),
       };
-
-      // if (config.seamlessMode && authorized && seamlessWallet) {
-      //   const isEnoughGas = await this.utils.checkSeamlessGas(
-      //     config.seamlessAccount?.masterAddress as string,
-      //     chainId
-      //   );
-
-      //   if (!isEnoughGas) {
-      //     throw new MyxSDKError(
-      //       MyxErrorCode.InsufficientBalance,
-      //       "Insufficient relay fee"
-      //     );
-      //   }
-
-      //   const forwarderContract = await getForwarderContract(chainId);
-
-      //   const functionHash = encodeFunctionData({
-      //     abi: brokerAbi as any,
-      //     functionName: "updatePriceAndAdjustCollateral",
-      //     args: [[updateParams], depositData, positionId, adjustAmount],
-      //   });
-
-      //   const nonce = await forwarderContract.read.nonces([seamlessWallet.address as `0x${string}`]);
-
-      //   const forwardTxParams = {
-      //     from: seamlessWallet.address ?? "",
-      //     to: this.configManager.getConfig().brokerAddress,
-      //     value: (priceData?.value ?? "1").toString(),
-      //     gas: "10000000",
-      //     deadline: dayjs().add(60, "minute").unix(),
-      //     data: functionHash,
-      //     nonce: nonce.toString(),
-      //   };
-      //   const rs = await this.seamless.forwarderTx(
-      //     forwardTxParams,
-      //     chainId,
-      //     seamlessWallet as any
-      //   );
-
-      //   return {
-      //     code: 0,
-      //     message: "adjust collateral success",
-      //     data: rs,
-      //   };
-      // }
-
+      
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
