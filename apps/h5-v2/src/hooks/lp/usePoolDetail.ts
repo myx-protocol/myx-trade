@@ -147,24 +147,26 @@ export const usePoolDetail = (poolType: PoolType) => {
         }
       }
 
-      const result = await Pool.getPoolInfo(
-        +chainId,
-        poolId,
-        parseUnits(oraclePrice, COMMON_PRICE_DECIMALS),
-      )
+      if (Big(oraclePrice).gt(0)) {
+        const result = await Pool.getPoolInfo(
+          +chainId,
+          poolId,
+          parseUnits(oraclePrice, COMMON_PRICE_DECIMALS),
+        )
 
-      // console.log(result)
-      if (result) {
-        const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
-        const info = {
-          price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
-          exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-          tvl: calculationTvl(result),
-          fundingInfo: result.fundingInfo,
-          oraclePrice: tickerData?.price ?? oraclePrice,
-        } as PoolInfo
+        // console.log(result)
+        if (result) {
+          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+          const info = {
+            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+            tvl: calculationTvl(result),
+            fundingInfo: result.fundingInfo,
+            oraclePrice: tickerData?.price ?? oraclePrice,
+          } as PoolInfo
 
-        return info
+          return info
+        }
       }
 
       return {} as PoolInfo

@@ -72,6 +72,28 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
         });
         return hash as `0x${string}`;
       }
+      // Wallet-only methods must be signed locally, not forwarded to public RPC.
+      if (args.method === "eth_signTypedData_v4" || args.method === "eth_signTypedData") {
+        if (!signer.signTypedData) {
+          throw new Error("ISigner.signTypedData required for eth_signTypedData_v4");
+        }
+        const typedDataJson = args.params?.[1];
+        if (typeof typedDataJson !== "string") {
+          throw new Error("Invalid eth_signTypedData_v4 params");
+        }
+        const typedData = JSON.parse(typedDataJson) as {
+          domain: Record<string, unknown>;
+          types: Record<string, unknown>;
+          primaryType: string;
+          message: Record<string, unknown>;
+        };
+        return (await signer.signTypedData({
+          domain: typedData.domain,
+          types: typedData.types,
+          primaryType: typedData.primaryType,
+          message: typedData.message,
+        })) as `0x${string}`;
+      }
       const res = await fetch(rpcUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
