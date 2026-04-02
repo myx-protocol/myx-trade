@@ -149,3 +149,4 @@ packages/*/.npmrc
 .turbo/
 
 **/*/.turbo/
+/apps/h5-v2/cert/
