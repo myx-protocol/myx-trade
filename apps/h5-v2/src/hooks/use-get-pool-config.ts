@@ -20,6 +20,11 @@ interface PoolConfig {
     minOrderSizeInUsd: number
     name: string
     slip: number
+    maxPriceDeviation: number
+    profitWindowSize: number
+    fundingGrowthG1: number
+    fundingGrowthG2: number
+    genesisFeeRate: number
   }
   levelName: string
 }

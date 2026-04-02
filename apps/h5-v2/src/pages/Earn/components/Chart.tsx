@@ -4,14 +4,15 @@ import { Trans } from '@lingui/react/macro'
 import { useCallback, useMemo, useState, useRef, useEffect, useContext } from 'react'
 import dayjs from 'dayjs'
 import { useQuery } from '@tanstack/react-query'
-import { getLpPriceHistory } from '@/request'
+import { getExchangeRateLineCharts, getLpPriceHistory, getTvlLineCharts } from '@/request'
 import type { LpPriceHistory } from '@/request/lp/type.ts'
-import { ChartInterval, ChartIntervalValue } from '@/pages/Earn/type.ts'
-import { ChartContext, PoolContext } from '@/pages/Earn/context.ts'
+import { ChartInterval, ChartIntervalValue, ChartType } from '@/pages/Earn/type.ts'
+import { PoolContext } from '@/pages/Earn/context.ts'
 import { SuspenseLoading } from '@/components/Loading'
 import { echarts, getAreaChartOptions } from '@/utils/chart.ts'
 import { formatNumber } from '@/utils/number.ts'
 import { PoolType } from '@/request/type.ts'
+import { t } from '@lingui/core/macro'
 
 interface ChartProps {
   className?: string
@@ -20,13 +21,17 @@ interface ChartProps {
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
   &.MuiToggleButtonGroup-root {
     border-radius: 0;
+    border: 1px solid #292b33;
+    gap: 0px;
+    padding: 4px;
+    border-radius: 9999px;
     .MuiToggleButtonGroup-grouped {
       color: var(--regular-text);
+      border-radius: 9999px;
       font-weight: 500;
       font-size: 12px;
       line-height: 1;
-      padding: 6px 12px;
-      border-radius: 4px;
+      padding: 4px 8px;
       &.Mui-selected {
         color: var(--brand-green);
         background-color: var(--brand-10);
@@ -34,8 +39,12 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
     }
   }
 `
-const IntervalSelector = () => {
-  const { period: interval, setPeriod: setInterval } = useContext(ChartContext)
+
+interface IntervalSelectorProps {
+  interval: ChartInterval
+  setInterval: (interval: ChartInterval) => void
+}
+const IntervalSelector = ({ interval, setInterval }: IntervalSelectorProps) => {
   const handleChange = useCallback(
     (_event: React.MouseEvent<HTMLElement>, newInterval: ChartInterval | null) => {
       setInterval(newInterval as ChartInterval)
@@ -76,6 +85,60 @@ const IntervalSelector = () => {
     </StyledToggleButtonGroup>
   )
 }
+
+const StyledChartTypeToggleButton = styled(StyledToggleButtonGroup)`
+  &.MuiToggleButtonGroup-root {
+    .MuiToggleButtonGroup-grouped {
+      color: var(--secondary-text);
+    }
+  }
+`
+
+interface ChartTypeSelectorProps {
+  chartType: ChartType
+  setChartType: (chartType: ChartType) => void
+}
+const ChartTypeSelector = ({ chartType, setChartType }: ChartTypeSelectorProps) => {
+  const handleChange = useCallback(
+    (_event: React.MouseEvent<HTMLElement>, chartType: ChartType | null) => {
+      setChartType(chartType as ChartType)
+    },
+    [setChartType],
+  )
+
+  const options = useMemo(() => {
+    return [
+      {
+        label: <Trans>Price</Trans>,
+        value: ChartType.Price,
+      },
+      {
+        label: <Trans>Exchange Rate</Trans>,
+        value: ChartType.ExchangeRate,
+      },
+      {
+        label: <Trans>TVL</Trans>,
+        value: ChartType.TVL,
+      },
+    ]
+  }, [])
+  return (
+    <StyledChartTypeToggleButton
+      value={chartType}
+      exclusive
+      onChange={handleChange}
+      aria-label="chart type"
+    >
+      {options.map((option, index) => {
+        return (
+          <ToggleButton key={index} value={option.value}>
+            {option.label}
+          </ToggleButton>
+        )
+      })}
+    </StyledChartTypeToggleButton>
+  )
+}
 const ChartHeader = () => {
   const { price } = useContext(PoolContext)
   const [time] = useState<number>(new Date().valueOf())
@@ -101,7 +164,7 @@ const ChartHeader = () => {
         <span className={'text-secondary text-[12px] leading-[1] font-[500]'}>
           <Trans>Price</Trans>
         </span>
-        <IntervalSelector />
+        {/* <IntervalSelector /> */}
       </Box>
       <Box className={'flex flex-col gap-[4px]'}>
         <Box className={'text-[24px] leading-[1] font-[700] text-white'}>
@@ -124,21 +187,62 @@ export const Chart = ({ className = '' }: ChartProps) => {
   const { chainId, poolId, pool: detail } = useContext(PoolContext)
   const lineRef = useRef<any>(null)
   const echartsRef = useRef<echarts.ECharts | null>(null)
-  const [interval, setInterval] = useState<ChartInterval>(ChartInterval.day)
+  const [resolution, setResolution] = useState<ChartInterval>(ChartInterval.day)
+  const [chartType, setChartType] = useState<ChartType>(ChartType.Price)
 
   const { data = [], isLoading } = useQuery({
-    queryKey: [{ key: 'QuotePriceHistory' }, chainId, poolId, detail?.quotePoolToken, interval],
+    queryKey: [
+      { key: 'QuotePriceHistory' },
+      chainId,
+      poolId,
+      detail?.quotePoolToken,
+      resolution,
+      chartType,
+    ],
     // enabled: !!detail?.quoteToken && chainId && poolId,
     queryFn: async () => {
       if (!chainId || !poolId || !detail?.quotePoolToken) {
         return [] as LpPriceHistory[]
       }
+
+      if (chartType === ChartType.TVL) {
+        const result = await getTvlLineCharts({
+          chainId: Number(chainId as unknown as number),
+          poolId,
+          token: detail.quotePoolToken,
+          interval: ChartIntervalValue[resolution].value,
+          limit: ChartIntervalValue[resolution].limit,
+        })
+        return (result?.data || []).map((item) => {
+          return {
+            time: item.time,
+            value: item.tvl,
+          }
+        })
+      }
+
+      if (chartType === ChartType.ExchangeRate) {
+        const result = await getExchangeRateLineCharts({
+          chainId: Number(chainId as unknown as number),
+          poolId,
+          token: detail.quotePoolToken,
+          interval: ChartIntervalValue[resolution].value,
+          limit: ChartIntervalValue[resolution].limit,
+        })
+        return (result?.data || []).map((item) => {
+          return {
+            time: item.time,
+            value: item.exchangeRate,
+          }
+        })
+      }
+
       const result = await getLpPriceHistory({
         chainId: Number(chainId as unknown as number),
         poolId,
         token: detail.quotePoolToken,
-        interval: ChartIntervalValue[interval].value,
-        limit: ChartIntervalValue[interval].limit,
+        interval: ChartIntervalValue[resolution].value,
+        limit: ChartIntervalValue[resolution].limit,
         poolType: PoolType.quote,
       })
       return result?.data || []
@@ -149,7 +253,22 @@ export const Chart = ({ className = '' }: ChartProps) => {
     (list: LpPriceHistory[]) => {
       // const startTime = +new Date('2025-11-1 00:00:00') // 起始时间
 
-      const options = getAreaChartOptions(interval, list)
+      const options = getAreaChartOptions(resolution, list, undefined, {
+        label:
+          chartType === ChartType.Price
+            ? t`Price`
+            : chartType === ChartType.TVL
+              ? t`TVL`
+              : chartType === ChartType.ExchangeRate
+                ? t`Exchange Rate`
+                : undefined,
+        value: (data) => {
+          if (chartType === ChartType.Price || chartType === ChartType.ExchangeRate) {
+            return formatNumber(data, { showUnit: false })
+          }
+          return formatNumber(data)
+        },
+      })
 
       if (lineRef.current) {
         if (!echartsRef.current) {
@@ -158,7 +277,7 @@ export const Chart = ({ className = '' }: ChartProps) => {
         echartsRef.current.setOption(options)
       }
     },
-    [interval],
+    [resolution, chartType],
   )
 
   useEffect(() => {
@@ -167,39 +286,41 @@ export const Chart = ({ className = '' }: ChartProps) => {
       setData(data)
     }
   }, [data, setData])
+
   return (
-    <ChartContext.Provider value={{ period: interval as ChartInterval, setPeriod: setInterval }}>
-      <Box className={`flex w-full flex-col ${className}`}>
-        <ChartHeader />
-        <Box className={'relative flex-1'}>
-          <Box className={'!h-[130px] w-full'} ref={lineRef}></Box>
-
-          {!isLoading && data.length === 0 && (
-            <Box
-              className={
-                'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center py-[58px]'
-              }
-            >
-              <Box className={'text-dark-border'}>
-                <ChartBar size={56} />
-              </Box>
-              <p className={'text-secondary mt-[16px] text-[12px] leading-[1] font-[500]'}>
-                <Trans>No records found</Trans>
-              </p>
+    <Box className={`flex w-full flex-col ${className}`}>
+      <ChartHeader />
+      <Box className={'relative flex-1'}>
+        <Box className={'!h-[125px] w-full'} ref={lineRef}></Box>
+        <div className="flex items-center justify-between p-[16px]">
+          <IntervalSelector interval={resolution} setInterval={setResolution} />
+          <ChartTypeSelector chartType={chartType} setChartType={setChartType} />
+        </div>
+        {!isLoading && data.length === 0 && (
+          <Box
+            className={
+              'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center py-[58px]'
+            }
+          >
+            <Box className={'text-dark-border'}>
+              <ChartBar size={56} />
             </Box>
-          )}
+            <p className={'text-secondary mt-[16px] text-[12px] leading-[1] font-[500]'}>
+              <Trans>No records found</Trans>
+            </p>
+          </Box>
+        )}
 
-          {isLoading && (
-            <Box
-              className={
-                'bg-deep absolute top-[0] left-[0] z-[20] flex h-full w-full items-center justify-center'
-              }
-            >
-              <SuspenseLoading />
-            </Box>
-          )}
-        </Box>
+        {isLoading && (
+          <Box
+            className={
+              'bg-deep absolute top-[0] left-[0] z-[20] flex h-full w-full items-center justify-center'
+            }
+          >
+            <SuspenseLoading />
+          </Box>
+        )}
       </Box>
-    </ChartContext.Provider>
+    </Box>
   )
 }
