@@ -26,14 +26,16 @@ export const getRewards = async (params: RewardsParams) => {
     const request = await basePoolContract.read.pendingUserRebates(
       [poolId, account, price],
     )
+    
+    const [rebates, genesisRebates] = request
    /* console.log("pendingUserRebates base result:", {
       rebates: request?.rebates,
       genesisRebates: request?.genesisRebates,
     });*/
     
     return {
-      rebates: request?.rebates,
-      genesisRebates: request?.genesisRebates,
+      rebates,
+      genesisRebates,
     }
   
   } catch (error) {
