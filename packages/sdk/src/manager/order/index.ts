@@ -276,11 +276,21 @@ export class Order {
         slPrice: 0,
       }
 
-      const depositData = {
-        token: '0x0000000000000000000000000000000000000000',
-        amount: '0'
+      const collateralAmount = BigInt(params.collateralAmount) //+ BigInt(tradingFee) + totalNetWorkFee
+      const availableRes = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
+      const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
+      let depositAmount = BigInt(0)
+      const diff = collateralAmount - availableAccountMarginBalance
+
+      if (diff > BigInt(0)) {
+        depositAmount = diff
       }
 
+      const depositData = {
+        token: params.executionFeeToken,
+        amount: depositAmount.toString()
+      }
+      
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
