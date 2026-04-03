@@ -28,8 +28,13 @@ export const AccountInfo = () => {
       ? ['home-getAccountBalance', homeStore.chainId, address, poolList]
       : null,
     async () => {
-      const res = await client?.account.getWalletQuoteTokenBalance(homeStore.chainId, address)
       const pool = poolList.find((item: any) => item.chainId === homeStore.chainId)
+
+      const res = await client?.account.getWalletQuoteTokenBalance({
+        chainId: homeStore.chainId,
+        address: address as string,
+        tokenAddress: pool?.quoteToken as string,
+      })
 
       return parseBigNumber(res?.data?.toString() || '0')
         .div(parseBigNumber(10).pow(pool?.quoteDecimals ?? 6))
