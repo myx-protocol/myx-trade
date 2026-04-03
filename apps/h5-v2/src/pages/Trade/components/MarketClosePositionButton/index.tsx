@@ -4,16 +4,25 @@ import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useState, useMemo } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { Direction, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
+import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { ethers } from 'ethers'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
-import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { showErrorToast } from '@/config/error'
+import { TradeMode } from '../../types'
+import type { SeamlessAccount } from '@/store/seamless/initialState'
+import { EditText } from '@/components/EditText'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import useGlobalStore from '@/store/globalStore'
+import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
+import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import { tradePubSub } from '@/utils/pubsub'
 
 export const MarketClosePositionButton = ({
   position,
@@ -24,20 +33,22 @@ export const MarketClosePositionButton = ({
   marketPrice: string
   symbolInfo: any
 }) => {
-  const { client } = useMyxSdkClient()
+  const { client } = useMyxSdkClient(position?.chainId)
   const [loading, setLoading] = useState(false)
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
-  const { checkUserVipInfo } = useCheckUserVipInfo(position.chainId)
+  const { isVipInfoSyncing, asyncVipLevelInfo } = useCheckUserVipInfo(position?.chainId)
+  const { checkWalletChainId } = useWalletChainCheck()
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',
     type: SlippageTypeEnum.CLOSE,
   })
+  const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
+  const { tradeMode } = useGlobalStore()
+  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
+  const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { address } = useWalletConnection()
-  const closeAmount =
-    formatNumber(parseBigNumber(position.size).mul(parseBigNumber(marketPrice)).toString() ?? '0', {
-      showUnit: false,
-    }) ?? '0'
+  const closeAmount = formatNumber(position.size ?? '0', { showUnit: false }) ?? '0'
   const pnl = useMemo(() => {
     if (position.direction === Direction.LONG) {
       return (
@@ -59,7 +70,6 @@ export const MarketClosePositionButton = ({
       <InfoButton
         onClick={() => {
           setMarketCloseDialogOpen(true)
-          console.log('position-->', position)
         }}
       >
         <Trans>Market Close</Trans>
@@ -70,66 +80,162 @@ export const MarketClosePositionButton = ({
         open={marketCloseDialogOpen}
         onClose={() => setMarketCloseDialogOpen(false)}
       >
-        <div className="mt-[10px] flex items-center gap-[4px] text-[16px] leading-[16px] text-[#EC605A]">
+        <div
+          className="flex h-[22px] items-center gap-[4px] text-[16px] leading-[16px]"
+          style={{ color: position.direction === Direction.LONG ? '#00E3A5' : '#EC605A' }}
+        >
           <p>
             {position?.baseSymbol}/{position?.quoteSymbol}
           </p>
           <p>{position.userLeverage}x</p>
         </div>
-        <div className="mt-[20px] flex items-center justify-between">
-          <p className="text-[16px] leading-[16px] text-[#848E9C]">
+        <div className="mt-[24px] flex h-[22px] items-center justify-between">
+          <p className="text-[14px] text-[#848E9C]">
             <Trans>Closeable Amount</Trans>
           </p>
-          <p className="text-[16px] leading-[16px] text-[white]">{closeAmount}</p>
+          <p className="text-[14px] font-[500] text-[white]">{closeAmount}</p>
         </div>
-        <div className="mt-[12px] flex items-center justify-between">
-          <p className="text-[16px] leading-[16px] text-[#848E9C]">
+        <div className="mt-[12px] flex h-[22px] items-center justify-between">
+          <p className="text-[14px] text-[#848E9C]">
             <Trans>Current Price</Trans>
           </p>
-          <p className="text-[16px] leading-[16px] text-[white]">
+          <p className="text-[14px] font-[500] text-[white]">
             ${formatNumber(marketPrice, { showUnit: false })}
           </p>
         </div>
-        <div className="mt-[12px] flex items-center justify-between">
-          <p className="text-[16px] leading-[16px] text-[#848E9C]">
+        <div className="mt-[12px] flex h-[22px] items-center justify-between">
+          <p className="text-[14px] text-[#848E9C]">
             <Trans>Price</Trans>
           </p>
-          <p className="text-[16px] leading-[16px] text-[white]">
+          <p className="text-[14px] font-[500] text-[white]">
             <Trans>Market</Trans>
           </p>
         </div>
-        <div className="mt-[12px] flex items-center justify-between">
-          <p className="text-[16px] leading-[16px] text-[#848E9C]">
-            <Trans>Est. Slippage</Trans>
+        <div className="mt-[12px] flex h-[22px] items-center justify-between">
+          <p className="text-[14px] text-[#848E9C]">
+            <Trans>Max Slippage</Trans>
           </p>
-          <p className="text-[16px] leading-[16px] text-[white]">
-            {closePositionSlippage ? closePositionSlippage * 100 : '--'}%
-          </p>
+          <EditText
+            value={`${((closePositionSlippage ?? 0) * 100).toFixed(2)}`}
+            unit="%"
+            onChange={(newSlippage, closeEdit) => {
+              setSlippage({
+                chainId: symbolInfo?.chainId ?? 0,
+                poolId: symbolInfo?.poolId ?? '',
+                type: SlippageTypeEnum.CLOSE,
+                slippage: parseBigNumber(newSlippage).div(100).toNumber(),
+              })
+              tradePubSub.emit('trade:slippage:change', {
+                chainId: symbolInfo?.chainId ?? 0,
+                poolId: symbolInfo?.poolId ?? '',
+              })
+              closeEdit?.()
+            }}
+          />
         </div>
-        <div className="mt-[12px] flex items-center justify-between">
-          <p className="text-[16px] leading-[16px] text-[#848E9C]">
+        <div className="mt-[12px] flex h-[22px] items-center justify-between">
+          <p className="text-[14px] text-[#848E9C]">
             <Trans>Est. Pnl</Trans>
           </p>
           <p
-            className="text-[16px] leading-[16px]"
-            style={{ color: pnl.toNumber() > 0 ? '#00E3A5' : '#EC605A' }}
+            className="text-[14px] font-[500]"
+            style={{ color: parseBigNumber(pnl).gt(0) ? '#00E3A5' : '#EC605A' }}
           >
             {formatNumber(pnl.toString(), { showUnit: false })} {symbolInfo?.quoteSymbol}
           </p>
         </div>
 
-        <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
+        <div className="left-0 mt-[24px] flex w-full justify-center">
           <PrimaryButton
             onClick={async () => {
+              await checkWalletChainId(position?.chainId as number)
+
               try {
                 setLoading(true)
 
-                await checkUserVipInfo()
+                if (tradeMode === TradeMode.Seamless) {
+                  const seamlessAccount = seamlessAccountList.find(
+                    (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
+                  )
+                  if (!seamlessAccount) {
+                    return
+                  }
+                  const isAuthorizedRes = await getSeamlessAuthStatus({
+                    masterAddress: activeSeamlessAddress,
+                    seamlessAddress: seamlessAccount.seamlessAddress,
+                    chainId: symbolInfo.chainId as number,
+                    tokenAddress: symbolInfo?.quoteToken as string,
+                  })
+
+                  const isAuthorized = isAuthorizedRes?.data?.auth
+
+                  if (!isAuthorized) {
+                    toast.error({ title: t`Seamless account not authorized` })
+                    return
+                  }
+
+                  const placeOrderSaltAsOne = ethers.zeroPadValue(ethers.toBeHex(1n), 32)
+
+                  const rs = await forwardSeamlessTransaction({
+                    chainId: symbolInfo.chainId as number,
+                    masterAddress: activeSeamlessAddress,
+                    seamlessAddress: seamlessAccount.seamlessAddress,
+                    forwardFeeToken: symbolInfo?.quoteToken as string,
+                    functionName: position.tokenId
+                      ? 'placeOrderWithPosition'
+                      : 'placeOrderWithSalt',
+                    orderParams: [
+                      position.tokenId ? position.positionId : placeOrderSaltAsOne.toString(),
+                      {
+                        token: symbolInfo?.quoteToken as string,
+                        amount: '0',
+                      },
+                      {
+                        user: address as `0x${string}`,
+                        poolId: position.poolId,
+                        orderType: OrderType.MARKET,
+                        triggerType: TriggerType.NONE,
+                        direction: position.direction,
+                        collateralAmount: '0',
+                        size: ethers
+                          .parseUnits(position.size.toString(), symbolInfo?.baseDecimals)
+                          .toString(),
+                        price: ethers.parseUnits(marketPrice.toString(), 30).toString(),
+                        timeInForce: TimeInForce.IOC,
+                        postOnly: false,
+                        slippagePct: ethers
+                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .toString(), // 转换为精度4位
+                        operation: OperationType.DECREASE,
+                        leverage: position.userLeverage,
+                        tpSize: '0',
+                        tpPrice: '0',
+                        slSize: '0',
+                        slPrice: '0',
+                      },
+                    ],
+                  })
+
+                  if (rs?.code === 0) {
+                    toast.success({ title: t`Market close success` })
+                    setMarketCloseDialogOpen(false)
+                  } else {
+                    showErrorToast(client?.utils.formatErrorMessage(rs))
+                  }
+
+                  return
+                }
+
+                const vipResult = await asyncVipLevelInfo(symbolInfo?.quoteToken as string)
+                if (!vipResult) {
+                  return
+                }
+
                 const rs = await client?.order.createDecreaseOrder({
                   chainId: position.chainId,
                   address: address as `0x${string}`,
                   poolId: position.poolId,
-                  positionId: position.positionId,
+                  positionId: position.tokenId ? position.positionId : 0,
                   orderType: OrderType.MARKET,
                   triggerType: TriggerType.NONE,
                   direction: position.direction,
@@ -141,7 +247,7 @@ export const MarketClosePositionButton = ({
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
                   slippagePct: ethers
-                    .parseUnits(closePositionSlippage?.toString() ?? '0', 4)
+                    .parseUnits((closePositionSlippage ?? 0).toString(), 4)
                     .toString(), // 转换为精度4位
                   executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
@@ -158,7 +264,7 @@ export const MarketClosePositionButton = ({
                 setLoading(false)
               }
             }}
-            loading={loading}
+            loading={loading || isVipInfoSyncing}
             className="w-full"
             style={{
               borderRadius: '44px',

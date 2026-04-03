@@ -55,6 +55,8 @@ interface GlobalStore {
   setShowSeamlessPasswordDialog: (show: boolean) => void
   unlockAccountDialogOpen: boolean
   setUnlockAccountDialogOpen: (open: boolean) => void
+  resetPasswordDialogOpen: boolean
+  setResetPasswordDialogOpen: (open: boolean) => void
 
   placeOrderConfirmDialogOpen: 'LONG' | 'SHORT' | false
   setPlaceOrderConfirmDialogOpen: (open: 'LONG' | 'SHORT' | false) => void
@@ -114,6 +116,11 @@ interface GlobalStore {
 
   shareCollateral: boolean
   setShareCollateral: (shareCollateral: boolean) => void
+
+  shareMarginDialogOpen: boolean
+  setShareMarginDialogOpen: (open: boolean) => void
+  manageAuthorizedTokensDialogOpen: boolean
+  setManageAuthorizedTokensDialogOpen: (open: boolean) => void
 }
 
 const useGlobalStore = createWithEqualityFn<GlobalStore>()(
@@ -128,9 +135,11 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             changeModeDialogOpen: false,
             setChangeModeDialogOpen: (open: boolean) => set({ changeModeDialogOpen: open }),
             tradeMode: TradeMode.Classic,
-            setTradeMode: (tradeMode: TradeMode) => set({ tradeMode }),
+
             unlockAccountDialogOpen: false,
             setUnlockAccountDialogOpen: (open: boolean) => set({ unlockAccountDialogOpen: open }),
+            resetPasswordDialogOpen: false,
+            setResetPasswordDialogOpen: (open: boolean) => set({ resetPasswordDialogOpen: open }),
             seamlessPasswordDialogOpen: false,
             setSeamlessPasswordDialogOpen: (open: boolean) =>
               set({ seamlessPasswordDialogOpen: open }),
@@ -140,9 +149,6 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             exportSeamlessKeyDialogOpen: false,
             setExportSeamlessKeyDialogOpen: (open: string | false) =>
               set({ exportSeamlessKeyDialogOpen: open }),
-            resetSeamlessPasswordDialogOpen: false,
-            setResetSeamlessPasswordDialogOpen: (open: boolean) =>
-              set({ resetSeamlessPasswordDialogOpen: open }),
             exportSeamlessInfoDialogOpen: false,
             setExportSeamlessInfoDialogOpen: (open: boolean) =>
               set({ exportSeamlessInfoDialogOpen: open }),
@@ -202,6 +208,11 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             setShowCharts(showCharts) {
               set({ showCharts })
             },
+            shareMarginDialogOpen: false,
+            setShareMarginDialogOpen: (open: boolean) => set({ shareMarginDialogOpen: open }),
+            manageAuthorizedTokensDialogOpen: false,
+            setManageAuthorizedTokensDialogOpen: (open: boolean) =>
+              set({ manageAuthorizedTokensDialogOpen: open }),
           }) as GlobalStore,
       ),
       {
@@ -210,6 +221,8 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
           tradeMode: state.tradeMode,
           showPlaceOrderConfirmDialog: state.showPlaceOrderConfirmDialog,
           showCloseOrderConfirmDialog: state.showCloseOrderConfirmDialog,
+          shareCollateral: state.shareCollateral,
+          activeLocale: state.activeLocale,
         }),
       },
     ),

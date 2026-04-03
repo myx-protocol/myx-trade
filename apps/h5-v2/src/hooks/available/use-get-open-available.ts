@@ -46,7 +46,7 @@ export const useGetOpenAvailable = () => {
 
   const { liquidityInfo } = useGetLiquidityInfo()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
-  const positionList = useGetPositionList(true)
+  const positionList = useGetPositionList()
 
   const longPosition = positionList?.find(
     (position: any) =>
@@ -92,7 +92,7 @@ export const useGetOpenAvailable = () => {
   // 合并所有计算逻辑到一个 useMemo 中，减少中间状态
   return useMemo(() => {
     // 1. 计算基础参数
-    const safePrice = !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
+    const safePrice = !price || parseBigNumber(price).eq(0) ? '1' : price
     const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
     const openSlippage =
       getSlippage({
@@ -101,13 +101,16 @@ export const useGetOpenAvailable = () => {
         type: SlippageTypeEnum.OPEN,
       }) ?? 1
 
+    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(tradingFeeRate))
+    const adjustedRatio = parseBigNumber(1).minus(feeRatio)
+
     // 2. 计算可用保证金总值（使用缓存的稳定值）
     const availableMargin = stableAccountAssets?.availableMargin?.toString() ?? '0'
 
-    const collateralAmountValue = autoMarginMode
-      ? parseBigNumber(availableMargin).mul(parseBigNumber(leverage)).toString()
-      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
-
+    const originCollateralAmountValue = autoMarginMode
+      ? parseBigNumber(availableMargin).mul(parseBigNumber(leverage))
+      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
+    const collateralAmountValue = originCollateralAmountValue.mul(adjustedRatio).toString()
     // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
     const ratio = openSlippage / (slipValue ?? 1)
     const maxOpenByConfigRatio = ratio > 0 ? Math.log(ratio) : 0
@@ -159,9 +162,6 @@ export const useGetOpenAvailable = () => {
         .minus(parseBigNumber(networkFee ?? 0).mul(3))
         .toString()
     }
-
-    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(tradingFeeRate))
-    const adjustedRatio = parseBigNumber(1).minus(feeRatio)
 
     longQuoteAmount = parseBigNumber(longQuoteAmount).mul(adjustedRatio).toString()
 

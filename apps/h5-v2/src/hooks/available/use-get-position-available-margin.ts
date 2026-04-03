@@ -12,7 +12,7 @@ export const useGetPositionAvailableMargin = (poolId: string, chainId: number) =
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[poolId as string]?.price.toString() ?? '0'
-  const { getFundingFee } = useGetFundingFee(poolId as string, chainId ?? 0)
+  const { getFundingFee } = useGetFundingFee(poolId as string)
 
   const tradingFeeRate = useGetUserTradingFeeRate(
     chainId,
@@ -61,12 +61,16 @@ export const useGetPositionAvailableMargin = (poolId: string, chainId: number) =
       longPosition.size,
       longPosition.direction,
     )
-    longPositionAvailableMargin = parseBigNumber(longPosition.freeAmount)
+
+    const parsedLongPositionAvailableMargin = parseBigNumber(longPosition.freeAmount)
       .minus(originMargin)
       .plus(parseBigNumber(fundingFee ?? '0'))
       .minus(parseBigNumber(tradingFee ?? '0'))
       .plus(pnl)
-      .toString()
+
+    longPositionAvailableMargin = parsedLongPositionAvailableMargin.gt(0)
+      ? parsedLongPositionAvailableMargin.toString()
+      : '0'
   }
 
   if (shortPosition) {
@@ -99,12 +103,15 @@ export const useGetPositionAvailableMargin = (poolId: string, chainId: number) =
       shortPosition.direction,
     )
 
-    shortPositionAvailableMargin = parseBigNumber(shortPosition.freeAmount)
+    const parsedShortPositionAvailableMargin = parseBigNumber(shortPosition.freeAmount)
       .minus(originMargin)
       .plus(parseBigNumber(fundingFee ?? '0'))
       .minus(parseBigNumber(tradingFee ?? '0'))
       .plus(pnl)
-      .toString()
+
+    shortPositionAvailableMargin = parsedShortPositionAvailableMargin.gt(0)
+      ? parsedShortPositionAvailableMargin.toString()
+      : '0'
   }
 
   return {

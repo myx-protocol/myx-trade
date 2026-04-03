@@ -27,18 +27,19 @@ export const useGetLiquidityInfo = () => {
       : null,
     async () => {
       if (!symbolInfo?.chainId || !symbolInfo?.poolId || !marketPrice) return DEFAULT_LIQUIDITY_INFO
+
       const rs = await client?.utils.getLiquidityInfo({
         chainId: symbolInfo?.chainId,
         poolId: symbolInfo?.poolId as string,
         marketPrice: ethers.parseUnits(marketPrice, 30).toString(),
       })
 
-      const data = rs?.data ?? []
-      const info = data[5] ?? []
+      const data = rs?.data ?? {}
+      const info = data.liquidityInfo ?? {}
 
       const liquidityInfo: LiquidityInfo = {
-        windowCaps: info[0]?.toString() ?? '0',
-        openInterest: info[1]?.toString() ?? '0',
+        windowCaps: info.windowCaps.toString() ?? '0',
+        openInterest: info.openInterest.toString() ?? '0',
       }
 
       return liquidityInfo

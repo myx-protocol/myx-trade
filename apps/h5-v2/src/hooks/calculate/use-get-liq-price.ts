@@ -8,10 +8,9 @@ import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import useSWR from 'swr'
 
 export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
-  const { getFundingFee } = useGetFundingFee(poolId, chainId)
+  const { getFundingFee } = useGetFundingFee(poolId)
   const { getTradingFee } = useGetTradingFee(chainId)
   const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })
-
   const getLiqPrice = useCallback(
     async ({
       entryPrice,
@@ -34,22 +33,22 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
       maintainMarginRate: string
       needFundingFee?: boolean
     }) => {
-      const networkFee = await getNetworkFee()
-      const totalNetworkFee = networkFee.mul(3)
       const tradingFee = await getTradingFee({ size, price, assetClass })
       const fundingFee = needFundingFee
         ? getFundingFee(fundingRateIndexEntry, size, direction)
         : '0'
+      const networkFee = await getNetworkFee()
 
       const netCollateral = parseBigNumber(collateralAmount)
         .plus(parseBigNumber(fundingFee))
-        .minus(parseBigNumber(totalNetworkFee))
+        .minus(parseBigNumber(networkFee))
         .minus(parseBigNumber(tradingFee))
 
       const notional = parseBigNumber(size).mul(parseBigNumber(entryPrice))
-      const ratio = netCollateral.div(notional)
+      const safeNotionalPrice = notional.eq(0) ? parseBigNumber(1) : notional
+      const ratio = netCollateral.div(safeNotionalPrice)
 
-      //  多仓强平价=平均入场价× (维护保证金率-(保证金+资金费-平仓手续费)/仓位名义价值 + 1)
+      //  多仓强平价=平均入场价× (维护保证金率-(保证金+资金费-平仓手续费-网络费)/仓位名义价值 + 1)
       if (direction === Direction.LONG) {
         const result = parseBigNumber(maintainMarginRate)
           .plus(1)
@@ -59,7 +58,7 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
         return result.lt(0) ? 0 : result.toString()
       }
 
-      // 空仓强平价=平均入场价×(1-维护保证金率+(保证金+资金费-平仓手续费)/仓位名义价值)
+      // 空仓强平价=平均入场价×(1-维护保证金率+(保证金+资金费-平仓手续费-网络费)/仓位名义价值)
       const result = ratio
         .plus(1)
         .minus(parseBigNumber(maintainMarginRate))
@@ -110,7 +109,7 @@ export const useCalculateLiqPrice = ({
   direction: Direction
   maintainMarginRate: string
 }) => {
-  const { getFundingFee } = useGetFundingFee(poolId, chainId)
+  const { getFundingFee } = useGetFundingFee(poolId)
   const tradingFee = useGetTradingFeeInfo({ size, price, assetClass, chainId })
   const fundingFee = getFundingFee(fundingRateIndexEntry, size, direction)
   const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })
@@ -123,12 +122,14 @@ export const useCalculateLiqPrice = ({
   const netCollateral = parseBigNumber(collateralAmount)
     .plus(parseBigNumber(fundingFee))
     .minus(parseBigNumber(tradingFee))
-    .minus(parseBigNumber(networkFee ?? 0).mul(3))
+    .minus(parseBigNumber(networkFee ?? 0))
 
   const notional = parseBigNumber(size).mul(parseBigNumber(entryPrice))
-  const ratio = netCollateral.div(notional)
+  const safeNotionalPrice = notional.eq(0) ? parseBigNumber(1) : notional
+  const ratio = netCollateral.div(safeNotionalPrice)
 
   //  多仓强平价=平均入场价× (维护保证金率-(保证金+资金费-平仓手续费)/仓位名义价值 + 1)
+  // todo 保证金+资金费-平仓手续费-执行费
 
   if (direction === Direction.LONG) {
     const result = parseBigNumber(maintainMarginRate)
@@ -141,6 +142,7 @@ export const useCalculateLiqPrice = ({
   }
 
   // 空仓强平价=平均入场价×(1-维护保证金率+(保证金+资金费-平仓手续费)/仓位名义价值)
+  // todo 保证金+资金费-平仓手续费-执行费
   const result = ratio
     .plus(1)
     .minus(parseBigNumber(maintainMarginRate))
