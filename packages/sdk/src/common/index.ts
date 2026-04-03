@@ -1,5 +1,8 @@
-export * from './approve'
-export * from './allowance'
-export * from './balanceOf'
-export * from './tradingGas'
-export * from './tokenInfo'
+export * from './approve.js'
+export * from './allowance.js'
+export * from './balanceOf.js'
+export * from './tradingGas.js'
+export * from './tokenInfo.js'
+
+export { formatUnits, parseUnits } from "viem";
+

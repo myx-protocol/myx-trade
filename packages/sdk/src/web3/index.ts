@@ -1,144 +1,60 @@
-import {
-  BrowserProvider,
-  Contract,
-  Eip1193Provider,
-  ethers,
-  JsonRpcProvider,
-  JsonRpcSigner,
-  Signer,
-  ZeroAddress
-} from "ethers";
-import { Address } from "@/address";
-import { ChainId } from "@/config/chain";
-import { getChainInfo } from "@/config/chains/index";
-import { RotationProvider } from "@/web3/rotationProvider";
-import pkg from '../../package.json'
-import { ConfigManager } from "@/manager/config";
-import { getMarketList, MarketInfo } from "@/api";
-
-export function getContract(
-  address: string,
-  ABI: any,
-  provider: JsonRpcProvider | JsonRpcSigner | Signer,
-): Contract {
-  if (Address.from(address).isEqualTo(ZeroAddress)) {
-    throw new Error(`Invalid 'address' parameter '${address}'.`);
-  }
-  
-  return new Contract(address, ABI, provider as any);
-}
-
-export const getJSONProvider = (chainId: ChainId): JsonRpcProvider => {
-  const chainConfig = getChainInfo(chainId);
-  const chainProviders: string[] = [];
-  if (chainConfig.privateJsonRPCUrl) {
-    chainProviders.push(chainConfig.privateJsonRPCUrl);
-  }
-  if (chainConfig.publicJsonRPCUrl.length > 0) {
-    chainConfig.publicJsonRPCUrl.map((rpc) => chainProviders.push(rpc));
-  }
-  if (chainProviders.length === 0) {
-    throw new Error(`${chainId} has no jsonRPCUrl configured`);
-  }
-  if (chainProviders.length === 1) {
-    return new JsonRpcProvider(chainProviders[0], chainId, {
-      staticNetwork: true,
-    });
-  } else {
-    // 将RotationProvider转换为JsonRpcProvider类型
-    return new RotationProvider(chainProviders, chainId) as unknown as JsonRpcProvider;
-  }
-};
+import { ConfigManager } from "@/manager/config/index.js";
+import { getMarketList, MarketInfo } from "@/api/index.js";
+import type { WalletClient } from "viem";
 
 export class MxSDK {
-  version = pkg.version;
-  public provider: BrowserProvider | undefined;
-  #configManager?: ConfigManager
-  private static _instance: MxSDK
-  public Markets: MarketInfo[] | undefined
-  
+  version = __SDK_VERSION__;
+  /** @deprecated Prefer getWalletClient(chainId) for viem-based flows. */
+  public provider: unknown;
+  #configManager?: ConfigManager;
+  private static _instance: MxSDK;
+  public Markets: MarketInfo[] | undefined;
+
   constructor() {
-    console.log(this.version);
+    // Version log: host can setSdkLogSink(console) to see this
   }
-  
+
   setConfigManager(cm: ConfigManager) {
-    this.#configManager = cm
+    this.#configManager = cm;
   }
   getConfigManager(): ConfigManager | undefined {
     return this.#configManager;
   }
-  
-  public setProvider(provider: BrowserProvider) {
+
+  /** @deprecated Use getWalletClient(chainId) instead. */
+  public setProvider(provider: unknown) {
     this.provider = provider;
   }
   public getProvider() {
-    return  this.provider
+    return this.provider;
   }
   static getInstance() {
     if (!this._instance) {
-      // this._instance?.close()
-      this._instance = new MxSDK()
-      // this.chainId = chainId
+      this._instance = new MxSDK();
     }
-    return this._instance
+    return this._instance;
   }
-  public async getMarkets () {
+  public async getMarkets() {
     try {
-      const result = await getMarketList()
-      const data  = result?.data || []
-      this.Markets = data
-      return data
+      const result = await getMarketList();
+      const data = result?.data || [];
+      this.Markets = data;
+      return data;
     } catch (error) {
       throw error;
     }
   }
 }
 
-const sdk = MxSDK.getInstance()
-
-if (typeof window !== "undefined") {
-  (window as any).MxSDK = sdk;
-} else if (typeof globalThis !== "undefined") {
-  (globalThis as any).MxSDK = sdk;
-}
+const sdk = MxSDK.getInstance();
 
 export default sdk;
-// 测试用
-export const getWalletProvider = async (chainId: ChainId) => {
-  try {
-    // 检查是否有钱包连接
-    // if (!window?.ethereum) {
-    //   console.log("No wallet installed; using read-only defaults")
-    //   return ethers.getDefaultProvider("mainnet") as BrowserProvider
-    // }
 
-    // 创建 ethers provider
-    const walletClient  = sdk.getConfigManager()?.getConfig()?.walletClient
-    const provider = new BrowserProvider(walletClient?.transport!);
-    if (!provider) {
-      throw new Error('missing provider');
-    }
-
-    // 如果指定了 chainId，可以验证当前链是否匹配
-    // if (chainId) {
-    //   const network = await provider.getNetwork()
-    //   console.log(provider)
-    //   console.log(`Connected to chain: ${network.chainId}, requested: ${chainId}`)
-    //   if(Number(network.chainId) !== chainId) {
-    //     await provider.send("wallet_switchEthereumChain", [{ chainId: BigInt(chainId) }]);
-    //   }
-    // }
-
-    return provider
-  } catch (error) {
-    console.error("Error getting wallet provider:", error)
-    // 如果获取失败，返回默认的只读 provider
-    return ethers.getDefaultProvider("mainnet") as BrowserProvider
-  }
+/** Returns viem WalletClient for the chain. Prefer this over ethers BrowserProvider. */
+export const getWalletProvider = async (chainId: number): Promise<WalletClient> => {
+  const cm = sdk.getConfigManager();
+  if (!cm?.hasSigner()) throw new Error("No signer: call auth({ signer }) or auth({ walletClient })");
+  return cm.getViemWalletClient(chainId);
 };
 
-export const getSignerProvider = async (chainId: ChainId) => {
-  const provider = await getWalletProvider (chainId);
-  // console.log(provider)
-  return provider?.getSigner?.();
-};
+export { getPublicClient, getWalletClient, setConfigManagerForViem } from "./viemClients.js";

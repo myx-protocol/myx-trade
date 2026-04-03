@@ -27,6 +27,9 @@ import { showErrorToast } from '@/config/error'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import Big from 'big.js'
 import { Error } from '@/pages/Earn/components/Trade/Error'
+import { HighRiskWarningDialog } from '@/components/Dialog/HighRiskWarningDialog.tsx'
+import { PoolSecurityState } from '@/request/lp/type.ts'
+
 const inputStyle = {
   htmlInput: {
     style: {
@@ -37,11 +40,10 @@ const inputStyle = {
 }
 export const Buy = () => {
   const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId, poolInfoRefetch } = usePoolContext()
+  const { chainId, baseLpDetail, pool, poolId, poolInfoRefetch, riskLevelConfig } = usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
-
   const [loading, setLoading] = useState<boolean>(false)
   const rate = useExchangeRate()
 
@@ -81,17 +83,24 @@ export const Buy = () => {
 
   const onHandleBuy = useCallback(async () => {
     try {
-      setLoading(true)
       if (!chainId || !poolId || !amount) return
+
+      setLoading(true)
+
       const checked = await onAction()
       if (!checked) return
+
+      if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
+
       await Base.deposit({
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
       })
+
       toast.success({ title: t`Successfully buy` })
+
       setAmount('')
       await refetch()
       poolInfoRefetch()
@@ -100,8 +109,7 @@ export const Buy = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch])
-
+  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch, riskLevelConfig])
   return (
     <>
       <Box className="mt-[12px]">
@@ -210,7 +218,12 @@ export const Buy = () => {
               <TradeButton
                 variant="contained"
                 className={'w-full'}
-                disabled={!amount || isInsufficient || Number(amount) <= 0}
+                disabled={
+                  !amount ||
+                  isInsufficient ||
+                  Number(amount) <= 0 ||
+                  riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
+                }
                 loading={loading}
                 onClick={onHandleBuy}
               >

@@ -69,14 +69,14 @@ function ReferralFriendsListMobileDialogContent(props: ReferralFriendsListMobile
   const [after, setAfter] = useState<inviteType['id'] | undefined>(undefined)
 
   const { data: pageData, isLoading } = useQuery({
-    queryKey: ['listInvites', accessToken, account, props.info.invitationCode, before, after],
+    queryKey: ['listInvites', accessToken || '', account, props.info.invitationCode, before, after],
     queryFn: async () => {
-      if (!accessToken || !account) return { data: [], hasNextPage: false, hasPrevPage: false }
+      if (!account) return { data: [], hasNextPage: false, hasPrevPage: false }
       // Fetch one more item to check if there is a next page
       const limit = pageSize + 1
       const res = await listInvites(
         { code: props.info.invitationCode, after, before, limit },
-        { accessToken, account },
+        { accessToken: accessToken || '', account },
       )
 
       // Assuming res is the array of items based on api/referrals.ts definition

@@ -1,15 +1,15 @@
-import { SDKConfig, ChainConfig, SDKContextType } from './types';
-import { defaultSDKConfig } from './default';
-import { Signer } from 'ethers';
+import { SDKConfig, ChainConfig, SDKContextType, type MinimalSigner } from './types.js';
+import { defaultSDKConfig } from './default.js';
+import { sdkWarn } from '../logger/index.js';
 
 class ConfigManager {
   private config: SDKConfig;
   private currentChainId: number;
-  private signer: Signer | null;
+  private signer: MinimalSigner | null;
 
   constructor() {
-    this.config = defaultSDKConfig;
-    this.currentChainId = defaultSDKConfig.defaultChainId;
+    this.config = defaultSDKConfig as SDKConfig;
+    this.currentChainId = defaultSDKConfig.defaultChainId || 0;
     this.signer = null;
   }
 
@@ -31,7 +31,7 @@ class ConfigManager {
     if (this.config.chains.some(chain => chain.id === chainId)) {
       this.currentChainId = chainId;
     } else {
-      console.warn(`Chain ID ${chainId} is not configured.`);
+      sdkWarn(`Chain ID ${chainId} is not configured.`);
     }
   }
 

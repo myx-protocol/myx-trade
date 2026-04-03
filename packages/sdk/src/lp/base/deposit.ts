@@ -1,23 +1,25 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { type BytesLike, parseUnits } from "ethers";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
+import { parseUnits } from "viem";
+import { sdkError } from "@/logger";
 import {
   bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { getContractAddressByChainId } from "@/config/address";
+} from "@/common/tradingGas.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
 
-import { Deposit,type OracleUpdatePrice } from "@/lp/type";
-import { checkParams } from "@/common/checkParams";
-import { previewLpAmountOut } from "@/lp/base/preview";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { MarketPoolState } from "@/api";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { getPriceData } from "@/common/price";
-import { getTpSlParams } from "@/common/getTpSlParams";
-import type { TpSl } from "@/lp/pool";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
+import { Deposit,type OracleUpdatePrice } from "@/lp/type.js";
+import { checkParams } from "@/common/checkParams.js";
+import { previewLpAmountOut } from "@/lp/base/preview.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { type Address, MarketPoolState } from "@/api/index.js";
+import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { getPriceData } from "@/common/price.js";
+import { getTpSlParams } from "@/common/getTpSlParams.js";
+import type { TpSl } from "@/lp/pool/type.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getPublicClient } from "@/web3";
 
 
 export const deposit = async (params: Deposit) => {
@@ -55,16 +57,16 @@ export const deposit = async (params: Deposit) => {
     let value = 0n;
     let amountOut;
     if (isNeedPrice) {
-      // todo  getprice
       const priceData = await  getPriceData(chainId, poolId)
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
       price.push({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
+        poolId: poolId as Address,
         oracleType: priceData.oracleType,
+        publishTime: BigInt(priceData.publishTime),
+        oracleUpdateData: priceData.vaa as Address,
       })
+      
       amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
       value = priceData.value
     } else {
@@ -81,34 +83,38 @@ export const deposit = async (params: Deposit) => {
     const tpslParams = getTpSlParams(slippage, _tpsl, decimals, quoteDecimals);
     
     const data = {
-      poolId: poolId as unknown as BytesLike,
+      poolId: poolId as unknown as import("viem").Hex,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),// todo  调合约获取
+      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
       recipient: account,
       tpslParams
     }
     
-    // console.log("deposit base", price, data, value);
     const  contract = await getLiquidityRouterContract(chainId)
-    
-    
-    
-    //estimateGas
-    const _gasLimit = await contract["depositBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"].estimateGas(price,data, {value})
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.depositBase(
+      [price, data],
+      { value },
+    )
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract["depositBase((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address,(uint256,uint256,uint8,uint256)[]))"](price, data, {
-      gasLimit,
-      gasPrice,
-      value
-    })
+    const hash = await contract.write!.depositBase(
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
-    // console.log("deposit", result)
-    return result
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
-    console.error(error)
+    sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

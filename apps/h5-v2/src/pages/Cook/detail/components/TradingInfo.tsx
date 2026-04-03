@@ -10,7 +10,7 @@ import { isSafeNumber } from '@/utils'
 import Big from 'big.js'
 
 export const TradingInfo = () => {
-  const { baseLpDetail, poolId, fundingRate } = usePoolContext()
+  const { baseLpDetail, poolId, fundingRate, tvl, oraclePrice } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   return (
@@ -21,7 +21,7 @@ export const TradingInfo = () => {
 
       <Describe>
         <DescribeItem title={<Trans>24h Volume</Trans>}>
-          {baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
+          ${baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Long Positions</Trans>}>
@@ -38,23 +38,22 @@ export const TradingInfo = () => {
                 showSign: false,
               })
             : '--'}
+          /h
         </DescribeItem>
 
         <DescribeItem
           title={
             <Tooltips title={t`Underlying Price`}>
               <span className={'border-secondary border-b-[1px] border-dashed select-none'}>
-                <Trans>Underlying Price</Trans>
+                <Trans>Oracle Price</Trans>
               </span>
             </Tooltips>
           }
         >
           $
-          {tickerData?.price
-            ? formatNumber(tickerData?.price, {
-                showUnit: false,
-              })
-            : '--'}
+          {formatNumber(tickerData?.price || oraclePrice, {
+            showUnit: false,
+          })}
         </DescribeItem>
 
         <DescribeItem
@@ -67,11 +66,15 @@ export const TradingInfo = () => {
           }
         >
           $
-          {baseLpDetail?.tvl
-            ? formatNumber(baseLpDetail?.tvl, {
+          {tvl?.baseTvl
+            ? formatNumber(tvl.baseTvl, {
                 showUnit: false,
               })
             : '--'}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Traders</Trans>}>
+          {formatNumber(baseLpDetail?.traders)}
         </DescribeItem>
       </Describe>
     </Box>

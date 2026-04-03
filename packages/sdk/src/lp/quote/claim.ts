@@ -1,14 +1,17 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ClaimParams, ClaimRebatesParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
+import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
-import { getPricesData } from "@/common/price";
-import { getErrorTextFormError } from "@/config/error";
+} from "@/common/tradingGas.js";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
+import { getPricesData } from "@/common/price.js";
+import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
+import { getPublicClient } from "@/web3";
+import type { Address } from "@/api";
 
 export const claimQuotePoolRebate = async (
   params: ClaimParams
@@ -51,25 +54,28 @@ export const claimQuotePoolRebate = async (
     
     const contract = await getLiquidityRouterContract(chainId)
     // console.log("quote claim params", data)
-    
-    // estimateGas
-    const _gasLimit = await contract["claimQuotePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"]
-      .estimateGas(prices,poolId, account, {
-        value: values[0]
-      })
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.claimQuotePoolRebate(
+      [prices, poolId, account],
+      { value: values[0] },
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract["claimQuotePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"] ( prices,poolId, account, {
-      gasLimit,
-      gasPrice,
-      value: values[0]
-    })
+    const response = await contract.write!.claimQuotePoolRebate(
+      [prices, poolId, account],
+      {
+        gasLimit,
+        gasPrice,
+        value: values[0],
+      },
+    )
     
     // console.log('quote claim',response)
     return response
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -97,9 +103,9 @@ export const claimQuotePoolRebates = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: item.poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     const values = priceResponse.map((item) => item.value)
@@ -115,24 +121,29 @@ export const claimQuotePoolRebates = async (
     // console.log("quote claim Rebates params", data)
     
     const contract = await getLiquidityRouterContract(chainId)
-    
-    // estimateGas
-    const _gasLimit = await contract["claimQuotePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"].estimateGas(prices, poolIds, account, {
-      value
-    })
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.claimQuotePoolRebates(
+      [prices, poolIds, account],
+      { value },
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract["claimQuotePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"] (prices, poolIds, account, {
-      gasLimit,
-      gasPrice,
-      value
-    })
+    const hash = await contract.write!.claimQuotePoolRebates(
+      [prices, poolIds, account],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
-    // console.log('quote claim rebates',response)
-    return response
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
         throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

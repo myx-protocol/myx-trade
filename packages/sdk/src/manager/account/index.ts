@@ -1,18 +1,16 @@
-import { ConfigManager, MyxClientConfig } from "../config";
+import { ConfigManager, MyxClientConfig } from "../config/index.js";
 import { Logger } from "@/logger";
-import { Utils } from "../utils";
-import { ethers, Signer } from "ethers";
-import Account_ABI from "@/abi/Account.json";
-import { getContractAddressByChainId } from "@/config/address/index";
-import { GetHistoryOrdersParams } from "@/api";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
-import ERC20Token_ABI from "@/abi/ERC20Token.json";
-import { getJSONProvider } from "@/web3";
-import { getForwarderContract } from "@/web3/providers";
-import { MyxClient } from "..";
+import { Utils } from "../utils/index.js";
+import { maxUint256, zeroAddress } from "viem";
+import { getContractAddressByChainId } from "@/config/address/index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
+import { getTokenContract, getDataProviderContract, getBrokerContract, getAccountContract, getBrokerSingerContract } from "@/web3/providers";
+import { getPublicClient } from "@/web3/viemClients.js";
+import { AppealStatus, MyxClient } from "../index.js";
 import dayjs from "dayjs";
-import DataProvider_ABI from "@/abi/DataProvider.json";
-import Broker_ABI from "@/abi/Broker.json";
+
+import { AccountInfo } from "@/types/common.js";
+import { GetHistoryOrdersParams } from "@/api/index.js";
 
 export class Account {
   private configManager: ConfigManager;
@@ -26,54 +24,18 @@ export class Account {
     this.client = client;
   }
 
-  async getWalletQuoteTokenBalance(chainId: number, address?: string) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-    if (!config.signer) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidSigner,
-        "Invalid signer"
-      );
-    }
-
-    const contractAddress = getContractAddressByChainId(chainId);
-    const provider = await getJSONProvider(chainId)
-    const erc20Contract = new ethers.Contract(
-      contractAddress.ERC20,
-      ERC20Token_ABI,
-      provider
-    );
-    const balance = await erc20Contract.balanceOf(address || config.signer.getAddress());
-    return {
-      code: 0,
-      data: balance,
-    };
-  }
-
-
-  async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string, chainId: number, address: string }) {
-    try {
-
-      const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
-      if (marginAccountBalanceRes.code !== 0) {
-        throw new MyxSDKError(
-          MyxErrorCode.RequestFailed,
-          "Failed to get account info"
-        );
+  /** Retry an async call a few times to tolerate intermittent RPC/decoding failures (e.g. BAD_DATA / 0x). */
+  private async withRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 300): Promise<T> {
+    let lastErr: unknown;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (e) {
+        lastErr = e;
+        if (i < retries - 1) await new Promise((r) => setTimeout(r, delayMs));
       }
-
-      const marginAccountBalance = marginAccountBalanceRes.data;
-      const quoteProfit = BigInt(marginAccountBalance.quoteProfit ?? 0)
-      const freeAmount = BigInt((marginAccountBalance?.freeMargin ?? 0))
-
-      const accountMargin = freeAmount + quoteProfit
-
-      return accountMargin
-    } catch (error) {
-      throw new MyxSDKError(
-        MyxErrorCode.RequestFailed,
-        "Failed to get getAvailableMarginBalance"
-      );
     }
+    throw lastErr;
   }
 
   async getTradeFlow(params: GetHistoryOrdersParams, address: string) {
@@ -86,57 +48,28 @@ export class Account {
     };
   }
 
-  async withdraw({ chainId, receiver, amount, poolId, isQuoteToken }: { chainId: number, receiver: string, amount: string, poolId: string, isQuoteToken: boolean }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
-    const contractAddress = getContractAddressByChainId(chainId);
-
-    try {
-      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
-      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
-
-      if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(receiver, chainId)
-
-        if (!isEnoughGas) {
-          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
-        }
-        const forwarderContract = await getForwarderContract(chainId)
-
-        const accountContract = new ethers.Contract(
-          contractAddress.Account,
-          Account_ABI,
-          seamlessWallet as Signer
-        );
-        const functionHash = accountContract.interface.encodeFunctionData('updateAndWithdraw', [receiver, poolId, true, amount])
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
-        const forwardTxParams = {
-          from: seamlessWallet.address ?? '',
-          to: contractAddress.Account,
-          value: '0',
-          gas: '350000',
-          deadline: dayjs().add(60, 'minute').unix(),
-          data: functionHash,
-          nonce: nonce.toString(),
-        }
-
-        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-
-        return {
-          code: 0,
-          message: "withdraw success",
-          data: rs,
-        };
-
-      }
-      const accountContract = new ethers.Contract(
-        contractAddress.Account,
-        Account_ABI,
-        config.signer
+  async getWalletQuoteTokenBalance({ chainId, address, tokenAddress }: { chainId: number, address?: string, tokenAddress: string }) {
+    if (!this.configManager.hasSigner()) {
+      throw new MyxSDKError(
+        MyxErrorCode.InvalidSigner,
+        "Invalid signer"
       );
+    }
 
-      const rs = await accountContract.updateAndWithdraw(receiver, poolId, isQuoteToken, amount);
-      const receipt = await rs?.wait(1);
+    const tokenContract = getTokenContract(chainId, tokenAddress);
+    const signerAddress = await this.configManager.getSignerAddress(chainId);
+    const balance = await tokenContract.read.balanceOf([address || signerAddress as `0x${string}`]);
+    return {
+      code: 0,
+      data: balance,
+    };
+  }
+
+  async updateAndWithdraw(receiver: string, poolId: string, isQuoteToken: boolean, amount: string, chainId: number) {
+    try {
+      const accountContract = await getAccountContract(chainId);
+      const hash = await accountContract.write!.updateAndWithdraw([receiver, poolId, isQuoteToken, amount]);
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
         code: 0,
@@ -150,9 +83,8 @@ export class Account {
     }
   }
 
-  async deposit({ amount, tokenAddress, chainId }: { amount: string, tokenAddress: string, chainId: number }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-    const account = await config.signer?.getAddress() ?? ''
+  async deposit({ amount, tokenAddress, chainId }: { amount: string; tokenAddress: string; chainId: number }) {
+    const account = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(chainId) : "";
     const contractAddress = getContractAddressByChainId(chainId);
 
     try {
@@ -163,64 +95,11 @@ export class Account {
         amount,
         contractAddress.Account,
       );
-
-      const authorized = this.configManager.getConfig().seamlessAccount?.authorized
-      const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
-
-      if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(account, chainId)
-
-        // if (needApproval) {
-        //   const approvalResult = await this.utils.approveAuthorization({
-        //     chainId,
-        //     quoteAddress: tokenAddress,
-        //     amount: ethers.MaxUint256.toString(),
-        //     spenderAddress: contractAddress.Account,
-        //     signer: seamlessWallet as Signer,
-        //   });
-
-        //   if (approvalResult.code !== 0) {
-        //     throw new Error(approvalResult.message);
-        //   }
-        // }
-
-        if (!isEnoughGas) {
-          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
-        }
-        const forwarderContract = await getForwarderContract(chainId)
-
-        const accountContract = new ethers.Contract(
-          contractAddress.Account,
-          Account_ABI,
-          seamlessWallet as Signer
-        );
-        const functionHash = accountContract.interface.encodeFunctionData('deposit', [account, tokenAddress, amount])
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
-
-        const forwardTxParams = {
-          from: seamlessWallet.address ?? '',
-          to: contractAddress.Account,
-          value: '0',
-          gas: '350000',
-          deadline: dayjs().add(60, 'minute').unix(),
-          data: functionHash,
-          nonce: nonce.toString(),
-        }
-
-        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-
-        return {
-          code: 0,
-          message: "deposit success",
-          data: rs,
-        };
-      }
-
       if (needApproval) {
         const approvalResult = await this.utils.approveAuthorization({
           chainId,
           quoteAddress: tokenAddress,
-          amount: ethers.MaxUint256.toString(),
+          amount: maxUint256.toString(),
           spenderAddress: contractAddress.Account,
         });
 
@@ -229,15 +108,9 @@ export class Account {
         }
       }
 
-
-      const accountContract = new ethers.Contract(
-        contractAddress.Account,
-        Account_ABI,
-        config.signer
-      );
-
-      const rs = await accountContract.deposit(account, tokenAddress, amount);
-      const receipt = await rs?.wait(1);
+      const accountContract = await getAccountContract(chainId);
+      const hash = await accountContract.write!.deposit([account, tokenAddress, amount]);
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
       return {
         code: 0,
@@ -251,19 +124,50 @@ export class Account {
     }
   }
 
-  async getAccountInfo(chainId: number, address: string, poolId: string) {
-    const contractAddress = getContractAddressByChainId(chainId);
-    const provider = await getJSONProvider(chainId)
-    const dataProviderContract = new ethers.Contract(
-      contractAddress.DATA_PROVIDER,
-      DataProvider_ABI,
-      provider
-    );
+  async getAvailableMarginBalance({ poolId, chainId, address }: { poolId: string; chainId: number; address: string }) {
     try {
-      const accountInfo = await dataProviderContract.getAccountInfo(poolId, address);
+      const marginAccountBalanceRes = await this.getAccountInfo(chainId, address, poolId);
+      if (marginAccountBalanceRes.code !== 0) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Failed to get account info"
+        );
+      }
+      const poolAppealStatusRes = await this.client.appeal.getAppealStatus(poolId, chainId, address);
+
+      const marginAccountBalance = marginAccountBalanceRes.data;
+      const quoteProfit = BigInt(marginAccountBalance?.quoteProfit ?? 0);
+      const freeAmount = BigInt(marginAccountBalance?.freeMargin ?? 0);
+      const lockedMargin = BigInt((marginAccountBalance as any)?.lockedMargin ?? 0);
+      const appealData = poolAppealStatusRes?.code === 0 ? (poolAppealStatusRes.data as any) : null;
+      const appealLockedMargin =
+        appealData?.status === AppealStatus.isAppealing ? BigInt(appealData?.lockedMargin ?? 0) : 0n;
+
+      const availableMarginBalance = freeAmount + quoteProfit - lockedMargin - appealLockedMargin;
+
       return {
         code: 0,
-        data: accountInfo,
+        data: availableMarginBalance,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async getAccountInfo(
+    chainId: number,
+    address: string,
+    poolId: string
+  ): Promise<{ code: 0; data: AccountInfo } | { code: -1; message: string }> {
+    const dataProviderContract = await getDataProviderContract(chainId);
+    try {
+      const accountInfo = await dataProviderContract.read.getAccountInfo([poolId as `0x${string}`, address as `0x${string}`]);
+      return {
+        code: 0,
+        data: accountInfo as AccountInfo,
       };
     } catch (error) {
       return {
@@ -276,18 +180,11 @@ export class Account {
   async getAccountVipInfo(chainId: number, address: string) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-
-    const provider = await getJSONProvider(chainId)
-
-    const brokerContract = new ethers.Contract(
-      config.brokerAddress,
-      Broker_ABI,
-      provider
-    );
-
-    const latestBlock = await provider.getBlock('latest')
-    const deadline = (latestBlock?.timestamp ?? dayjs().unix()) + 60 * 5
-    const accessToken = await this.configManager.getAccessToken() ?? ''
+    const brokerContract = getBrokerContract(chainId, config.brokerAddress);
+    const publicClient = getPublicClient(chainId);
+    const latestBlock = await publicClient.getBlock({ blockTag: "latest" });
+    const deadline = Number(latestBlock?.timestamp ?? BigInt(dayjs().unix())) + 60 * 5;
+    const accessToken = (await this.configManager.getAccessToken()) ?? "";
 
     try {
       const currentEpoch = await this.client.api.getCurrentEpoch({ address, accessToken, broker: config.brokerAddress });
@@ -297,8 +194,13 @@ export class Account {
           currentEpoch.msg ?? "Failed to get current epoch"
         );
       }
-      const accountVipInfo = await brokerContract.userFeeData(currentEpoch?.data ?? 0, address);
-      const nonce = await brokerContract.userNonces(address);
+      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch?.data ?? 0, address as `0x${string}`]);
+      let nonce: bigint;
+      try {
+        nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
+      } catch {
+        nonce = 0n;
+      }
       return {
         code: 0,
         data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
@@ -312,7 +214,7 @@ export class Account {
   }
 
   async getAccountVipInfoByBackend(address: string, chainId: number, deadline: number, nonce: string) {
-    const accessToken = await this.configManager.getAccessToken() ?? ''
+    const accessToken = (await this.configManager.getAccessToken()) ?? "";
 
     try {
       const res = await this.client.api.getAccountVipInfo({ address, accessToken, chainId, deadline, nonce });
@@ -334,10 +236,14 @@ export class Account {
     }
   }
 
-  async setUserFeeData(address: string, chainId: number, deadline: number, params: { tier: number, referrer: string, totalReferralRebatePct: number, referrerRebatePct: number, nonce: string }, signature: string) {
+  async setUserFeeData(
+    address: string,
+    chainId: number,
+    deadline: number,
+    params: { tier: number; referrer: string; totalReferralRebatePct: number; referrerRebatePct: number; nonce: string },
+    signature: string
+  ) {
     const config: MyxClientConfig = this.configManager.getConfig();
-    const authorized = this.configManager.getConfig().seamlessAccount?.authorized
-    const seamlessWallet = this.configManager.getConfig().seamlessAccount?.wallet
     if (deadline < dayjs().unix()) {
       throw new MyxSDKError(
         MyxErrorCode.RequestFailed,
@@ -351,73 +257,32 @@ export class Account {
       deadline: deadline,
       feeData: {
         tier: params.tier,
-        referrer: params.referrer || ethers.ZeroAddress,
+        referrer: params.referrer || zeroAddress,
         totalReferralRebatePct: params.totalReferralRebatePct,
         referrerRebatePct: params.referrerRebatePct,
       },
       signature: signature,
-    }
+    };
 
     try {
-      if (config.seamlessMode && authorized && seamlessWallet) {
-        const isEnoughGas = await this.utils.checkSeamlessGas(address, chainId)
+      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-        if (!isEnoughGas) {
-          throw new MyxSDKError(MyxErrorCode.InsufficientBalance, "Insufficient relay fee");
-        }
-        const forwarderContract = await getForwarderContract(chainId)
+      const nonce: bigint = await brokerContract.read.userNonces([address as `0x${string}`]);
 
-        const accountContract = new ethers.Contract(
-          config.brokerAddress,
-          Account_ABI,
-          seamlessWallet as Signer
+      if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
+        throw new MyxSDKError(
+          MyxErrorCode.RequestFailed,
+          "Invalid nonce, please try again"
         );
-        const functionHash = accountContract.interface.encodeFunctionData('setUserFeeData', [feeData])
-        const nonce = await forwarderContract.nonces(seamlessWallet.address)
-
-        const forwardTxParams = {
-          from: seamlessWallet.address ?? '',
-          to: config.brokerAddress,
-          value: '0',
-          gas: '350000',
-          deadline: dayjs().add(60, 'minute').unix(),
-          data: functionHash,
-          nonce: nonce.toString(),
-        }
-        const rs = await this.client.seamless.forwarderTx(forwardTxParams, chainId, seamlessWallet as Signer);
-
-        return {
-          code: 0,
-          data: rs,
-        };
-      } else {
-        const brokerContract = new ethers.Contract(
-          config.brokerAddress,
-          Broker_ABI,
-          config.signer
-        );
-
-        const nonce = await brokerContract.userNonces(address);
-
-        if (parseInt(nonce.toString()) + 1 !== parseInt(params.nonce.toString())) {
-          throw new MyxSDKError(
-            MyxErrorCode.RequestFailed,
-            "Invalid nonce, please try again"
-          );
-        }
-
-        const rs = await brokerContract.setUserFeeData(feeData);
-        const receipt = await rs?.wait(1);
-
-        return {
-          code: 0,
-          data: receipt,
-        };
       }
 
+      const hash = await brokerContract.write!.setUserFeeData([feeData]);
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
 
-
-
+      return {
+        code: 0,
+        data: receipt,
+      };
     } catch (error) {
       return {
         code: -1,

@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-02-02 10:48\n"
+"PO-Revision-Date: 2026-03-25 07:18\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -53,30 +53,35 @@ msgstr ""
 msgid " Trade "
 msgstr ""
 
-#. placeholder {0}: client.utils.formatErrorMessage(rs)
-#. placeholder {0}: client?.utils.formatErrorMessage(e)
 #. placeholder {0}: client?.utils.formatErrorMessage(error)
+#. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
+#. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
 #: src/components/Header/Menu.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/components/Seamless/ImportDialog/index.tsx
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/hooks/use-check-user-vip-info.ts
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
+msgstr ""
+
+#. placeholder {0}: formatNumber(latestPrice, { showUnit: false, })
+#. placeholder {1}: decimalToPercent(change, { showSign: false, removeTrailingZeros: true, })
+#: src/pages/Price/index.tsx
+#: src/pages/Trade/index.tsx
+msgid "{0} | {symbol} | {1} | MYX"
+msgstr ""
+
+#. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
+#: src/pages/Cook/provider/PoolProvider.tsx
+msgid "{0} | High Yield Trench | MYX"
+msgstr ""
+
+#. placeholder {0}: lpDetail?.mQuoteBaseSymbol || ''
+#: src/pages/Earn/provider/PoolProvider.tsx
+msgid "{0} | Stable Earn | MYX"
 msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
@@ -169,10 +174,12 @@ msgstr ""
 msgid "Accept now and receive rebates"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlBadConfirmation()"
 msgstr "Access control confirmation failed"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlUnauthorizedAccount(address,bytes32)"
 msgstr "Unauthorized account"
@@ -183,9 +190,18 @@ msgstr "Unauthorized account"
 msgid "Account Mode"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccountInsufficientFreeAmount()"
 msgstr "Insufficient available balance in account"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "AccountInsufficientReservedAmount()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "AccountInsufficientTradableAmount(uint256,uint256)"
+msgstr ""
 
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -232,6 +248,7 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AddressEmptyCode(address)"
 msgstr "Address cannot be empty"
@@ -259,10 +276,6 @@ msgid "Adjust margin amount is greater than the total balance"
 msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Adjust margin failed"
-msgstr ""
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust margin success"
 msgstr ""
 
@@ -271,16 +284,13 @@ msgid "Adjusted Margin"
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
+#: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "ADL"
 msgstr ""
 
 #. placeholder {0}: info.invitationCode
 #: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
 msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
-msgstr ""
-
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Age(min)"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -317,24 +327,33 @@ msgstr ""
 msgid "Alpha"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyClaimed(CaseId,address)"
 msgstr "Already claimed "
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyInitialized()"
 msgstr "Already initialized"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "AlreadyMigrated(PositionId,PositionId)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyMinted()"
 msgstr "Already minted"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyVoted()"
 msgstr "Already voted"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -384,6 +403,7 @@ msgstr ""
 msgid "Are you sure to"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ArrayEmpty()"
 msgstr "Cannot be empty"
@@ -484,10 +504,15 @@ msgstr ""
 msgid "Avg. Entry Price"
 msgstr ""
 
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Avg.Price/Order Price"
+msgstr ""
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BaseFeeNotSoldOut()"
 msgstr "Base fee not sold out"
@@ -530,9 +555,14 @@ msgstr ""
 msgid "BlueChip"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BondNotReleased()"
 msgstr "Bond not unlocked"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "BondZeroAmount()"
+msgstr ""
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
@@ -547,10 +577,12 @@ msgstr ""
 msgid "Bridge/Swap"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerAlreadyExists()"
 msgstr "Broker already exists"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerNotFound()"
 msgstr "Broker not found"
@@ -587,16 +619,7 @@ msgid "cancel all open orders?"
 msgstr ""
 
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
-#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
-msgid "Cancel all orders failed"
-msgstr ""
-
-#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 msgid "Cancel all orders success"
-msgstr ""
-
-#: src/pages/Trade/components/CancelOrderButton/index.tsx
-msgid "Cancel order failed"
 msgstr ""
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
@@ -611,6 +634,7 @@ msgstr ""
 msgid "Canceled"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseAppealNotFinished()"
 msgstr "Appeal not finished"
@@ -619,18 +643,22 @@ msgstr "Appeal not finished"
 msgid "CaseCanNotAppeal()"
 msgstr "Cannot appeal"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineNotReached()"
 msgstr "Deadline not reached"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineReached()"
 msgstr "Deadline reached"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotAccepted()"
 msgstr "Case not accepted"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotExist(CaseId)"
 msgstr "Case does not exist "
@@ -639,6 +667,7 @@ msgstr "Case does not exist "
 msgid "CaseNotInVoting()"
 msgstr "Case not in voting"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseRespondentAppealed(CaseId,address)"
 msgstr "Counter-appeal in progress"
@@ -648,6 +677,10 @@ msgstr "Counter-appeal in progress"
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Chain"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ChainIdMismatch()"
 msgstr ""
 
 #: src/components/ReceiveDialog.tsx
@@ -760,14 +793,13 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close  amount must be greater than 0"
-msgstr ""
-
+#. placeholder {0}: displayAmount(maxCloseShort.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseShort.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close  amount must be less than {0}"
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be less than {0} {1}"
 msgstr ""
 
 #: src/pages/Price/components/PriceContent/index.tsx
@@ -781,11 +813,6 @@ msgid "close all positions at market price?"
 msgstr ""
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
-#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
-msgid "Close all positions failed"
-msgstr ""
-
-#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Close all positions success"
 msgstr ""
 
@@ -793,9 +820,19 @@ msgstr ""
 msgid "Close Amount"
 msgstr ""
 
-#. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close amount must be less than {0}"
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close amount must be greater than 0 {0}"
+msgstr ""
+
+#. placeholder {0}: displayAmount(maxCloseLong.baseAmount)
+#. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
+#. placeholder {1}: symbolInfo?.baseSymbol
+#. placeholder {1}: symbolInfo?.quoteSymbol
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close amount must be less than {0} {1}"
 msgstr ""
 
 #: src/components/CloseConfirmDialog/index.tsx
@@ -838,8 +875,10 @@ msgid "Community"
 msgstr ""
 
 #: src/components/CloseConfirmDialog/index.tsx
+#: src/components/Dialog/HighRiskWarningDialog.tsx
 #: src/components/DialogBase/index.tsx
 #: src/components/Login/CodeConfirm.tsx
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -867,6 +906,12 @@ msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Confirm Token Info"
+msgstr ""
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Confirming"
 msgstr ""
 
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
@@ -907,6 +952,7 @@ msgstr ""
 msgid "contract runner does not support gas estimation"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
 msgstr "Conversion amount mismatch, please try again"
@@ -918,6 +964,10 @@ msgstr "Conversion amount mismatch, please try again"
 #: src/pages/Cook/components/ToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Cook"
+msgstr ""
+
+#: src/pages/Cook/index.tsx
+msgid "Cook - Build High-Yield Pools | MYX"
 msgstr ""
 
 #: src/pages/Cook/components/CookSubBar.tsx
@@ -994,6 +1044,14 @@ msgstr ""
 msgid "Create Market"
 msgstr ""
 
+#: src/pages/Market/index.tsx
+msgid "Create Market - Permissionless Listing for Any Asset | MYX"
+msgstr ""
+
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Create seamless failed"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
 msgstr ""
@@ -1043,6 +1101,10 @@ msgstr ""
 msgid "D"
 msgstr ""
 
+#: src/pages/Cook/components/Dashboard/index.tsx
+msgid "Dashboard"
+msgstr ""
+
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Day"
@@ -1079,6 +1141,10 @@ msgstr ""
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "DesignatedTokenMismatch(address,address)"
+msgstr ""
+
 #: src/components/SafeList/index.tsx
 msgid "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
 msgstr ""
@@ -1087,6 +1153,7 @@ msgstr ""
 msgid "Developers"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DifferentMarket(PoolId,PoolId)"
 msgstr "Market mismatch"
@@ -1099,6 +1166,7 @@ msgstr ""
 msgid "Display Currency"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DisputeNotAllowed()"
 msgstr "Dispute not allowed"
@@ -1141,18 +1209,25 @@ msgstr ""
 msgid "Earn"
 msgstr ""
 
+#: src/pages/Earn/List.tsx
+msgid "Earn - Stable Yields & Low Risk | MYX"
+msgstr ""
+
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignature()"
 msgstr "Invalid signature"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureLength(uint256)"
 msgstr "Invalid signature length"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureS(bytes32)"
 msgstr "Invalid signature"
@@ -1161,12 +1236,12 @@ msgstr "Invalid signature"
 msgid "Ecosystem"
 msgstr ""
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit"
-msgstr ""
-
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
+msgstr ""
+
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+msgid "Edit TP/SL"
 msgstr ""
 
 #: src/components/Footer/index.tsx
@@ -1186,6 +1261,7 @@ msgstr ""
 msgid "Enable Seamless Trading"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "EnforcedPause()"
 msgstr "Enforced pause"
@@ -1237,90 +1313,112 @@ msgstr ""
 msgid "EOA Wallet"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967InvalidImplementation(address)"
 msgstr "Invalid implementation"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967NonPayable()"
 msgstr "Non-payable"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientAllowance(address,uint256,uint256)"
 msgstr "Allowance exceeded"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientBalance(address,uint256,uint256)"
 msgstr "Insufficient balance"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidApprover(address)"
 msgstr "Invalid approver"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidReceiver(address)"
 msgstr "Invalid receiver"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSender(address)"
 msgstr "Invalid sender"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSpender(address)"
 msgstr "Invalid spender"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612ExpiredSignature(uint256)"
 msgstr "Signature expired"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612InvalidSigner(address,address)"
 msgstr "Invalid signer"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderExpiredRequest(uint48)"
 msgstr "Request expired (uint48)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderInvalidSigner(address,address)"
 msgstr "Invalid signer (address,address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderMismatchedValue(uint256,uint256)"
 msgstr "Mismatched value (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771UntrustfulTarget(address,address)"
 msgstr "Untrustful target (address,address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721IncorrectOwner(address,uint256,address)"
 msgstr "Incorrect owner (address,uint256,address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InsufficientApproval(address,uint256)"
 msgstr "Insufficient approval (address,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidApprover(address)"
 msgstr "Invalid approver (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidOperator(address)"
 msgstr "Invalid operator (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidOwner(address)"
 msgstr "Invalid owner (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidReceiver(address)"
 msgstr "Invalid receiver (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidSender(address)"
 msgstr "Invalid sender (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721NonexistentToken(uint256)"
 msgstr "Token does not exist (uint256)"
@@ -1354,82 +1452,121 @@ msgstr "Accumulated trading fee dividends earned from your Genesis LP share (lif
 msgid "Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations."
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed()"
 msgstr "Transfer failed()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed(address,uint256)"
 msgstr "Transfer failed"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseCollateral(uint256,uint256)"
 msgstr "Exceed base collateral (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseReserved(uint256,uint256)"
 msgstr "Exceed base reserved (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedDebt(uint256,uint256)"
 msgstr "Exceed debt limit (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedExchangeable()"
 msgstr "Exceed exchangeable limit()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxBaseProfit()"
 msgstr "Exceed max base profit()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxExchangeableAmount()"
 msgstr "Exceed max exchangeable amount()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxLeverage(PositionId)"
 msgstr "Exceed max leverage (PositionId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxPriceDeviation()"
 msgstr "Exceed max price deviation()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxProfit()"
 msgstr "Exceed max profit()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMinOutput(uint256,uint256)"
 msgstr "Below minimum limit (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMinOutputAmount()"
 msgstr "Below minimum limit()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedOrderSize(uint256)"
 msgstr "Exceed maximum order size limit (uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedPositionSize()"
 msgstr "Exceed maximum position limit()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedQuoteReserved(uint256,uint256)"
 msgstr "Insufficient margin (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ExceedReservable(uint256,uint256,uint256)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedsMaximumRelayFee()"
 msgstr "Exceed maximum fee()"
 
+#: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
+msgid "ExcessiveSlippage()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ExchangeRateAlreadyApplied()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ExchangeRateAlreadyDisabled()"
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 msgid "Execution Fee"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ExecutionFeeNotCollected()"
 msgstr ""
 
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExecutionFeeNotSupport(address)"
 msgstr "Execution fee not supported (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExpectedPause()"
 msgstr "Expected pause()"
@@ -1438,6 +1575,7 @@ msgstr "Expected pause()"
 msgid "Expired"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExpiredFeeData()"
 msgstr "Fee data expired()"
@@ -1464,6 +1602,7 @@ msgstr ""
 msgid "Failed to copy"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "FailedCall()"
 msgstr "Contract call failed()"
@@ -1493,7 +1632,7 @@ msgstr ""
 msgid "Fee"
 msgstr ""
 
-#. placeholder {0}: item.executionFeeToken?.toString() || '--'
+#. placeholder {0}: symbolInfo?.quoteSymbol?.toString() || '--'
 #: src/components/Record/Items/OrderHistory.tsx
 msgid "Fee({0})"
 msgstr ""
@@ -1589,14 +1728,18 @@ msgstr ""
 msgid "Gasless trading"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "GasLimitExceeded(address,uint256,uint256)"
 msgstr "Gas limit exceeded (address,uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "GasLimitNotSet(address)"
 msgstr "Gas not set (address)"
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr ""
@@ -1633,15 +1776,22 @@ msgstr ""
 msgid "Helper Center"
 msgstr ""
 
+#: src/components/Record/HideOuterSymbols.tsx
+msgid "Hide other"
+msgstr ""
+
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
+msgstr ""
+
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "High-Risk Asset Warning"
 msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Hold"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Earn/detail/components/TokenInfo.tsx
@@ -1655,6 +1805,10 @@ msgstr ""
 
 #: src/components/Tabbar/const.tsx
 msgid "Home"
+msgstr ""
+
+#: src/pages/Home/index.tsx
+msgid "Home - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
 #: src/404.tsx
@@ -1709,10 +1863,12 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InconsistentParamsLength()"
 msgstr "Inconsistent parameters length()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "IncorrectFee(uint256)"
 msgstr "Incorrect fee (uint256)"
@@ -1725,6 +1881,7 @@ msgstr ""
 msgid "Indicators"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InDisputeMode()"
 msgstr "In dispute mode()"
@@ -1737,10 +1894,12 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InitializationFunctionReverted(address,bytes)"
 msgstr "Initialization reverted (address,bytes)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InRewindMode()"
 msgstr "In rewind mode()"
@@ -1756,69 +1915,89 @@ msgstr ""
 msgid "Insufficient Balance"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
 msgstr "Insufficient balance"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(address,uint256,uint256)"
 msgstr "Insufficient balance"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(uint256,uint256)"
 msgstr "Insufficient balance"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(PositionId,uint256)"
 msgstr "Insufficient margin"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(uint256,uint256)"
 msgstr "Insufficient margin"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeAllowance(address,uint256,uint256)"
 msgstr "Fee allowance insufficient (address,uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeBalance(address,uint256,uint256)"
 msgstr "Fee balance insufficient"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFreeCollateral(PositionId,uint256)"
 msgstr "Insufficient available margin"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLiquidity(uint256,uint256,uint256)"
 msgstr "Insufficient liquidity"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLockedCollateral(PositionId,uint256)"
 msgstr "Insufficient locked margin"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientOutputAmount()"
 msgstr "Insufficient amount"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientPoolProfit()"
 msgstr "Insufficient pool profit"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientQuoteIn(uint256,uint256,uint256)"
 msgstr "Incorrect quote input (uint256,uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientReturnAmount(uint256,uint256)"
 msgstr "Incorrect return amount (uint256,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientRiskReserves()"
 msgstr "Insufficient risk reserves()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientSize()"
 msgstr "Insufficient trade size()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InternalOnly()"
+msgstr ""
 
 #: src/pages/Earn/detail/components/TabBar.tsx
 msgid "Introduction"
@@ -1828,94 +2007,162 @@ msgstr ""
 msgid "Invalid Market"
 msgstr ""
 
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+#: src/components/Seamless/SetPasswordDialog/index.tsx
+msgid "Invalid password"
+msgstr ""
+
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAccountNonce(address,uint256)"
 msgstr "Invalid account Nonce (address,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidADLPosition(OrderId,PositionId)"
 msgstr "Invalid ADL position (OrderId,PositionId)"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidAmount()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAmount(CaseId,address)"
 msgstr "Invalid amount (CaseId,address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAmount(uint256)"
 msgstr "Invalid amount (uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidBaseToken()"
 msgstr "Invalid base token()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidContractAddress()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidDeviationRatio()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidDistributionAmount()"
 msgstr "Invalid distribution amount()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidFeeRate()"
 msgstr "Invalid fee rate()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidFeeTier()"
 msgstr "Invalid fee tier()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidFunctionSignature()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidInitialization()"
 msgstr "Invalid initialization()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidLiquidityAmount()"
 msgstr "Invalid liquidity amount()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidOrder(OrderId)"
 msgstr "Invalid order (OrderId)"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidOrderPair(OrderId,OrderId)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidParameter()"
 msgstr "Invalid parameter()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidPayloadLength(uint256,uint256)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPoolToken()"
 msgstr "Invalid pool token()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPosition(PositionId)"
 msgstr "Invalid position (PositionId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPrice()"
 msgstr "Invalid price()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidProfitAmount()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidQuoteToken()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidQuoteTokenAddress()"
 msgstr "Invalid quote token address()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidRatioParams()"
 msgstr "Invalid ratio parameters()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidResponseVersion()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidRewindPrice()"
 msgstr "Invalid rewind price()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidShortString()"
 msgstr "Invalid short string()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "InvalidSourceChain()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidSplitConfig()"
 msgstr "Invalid configuration()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidTpsl(uint256)"
 msgstr "Invalid TP/SL settings (uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidUpdateFee()"
 msgstr "Invalid update fee()"
@@ -2046,7 +2293,6 @@ msgstr ""
 msgid "Link Referral Relationship"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "Liq"
 msgstr ""
@@ -2059,6 +2305,15 @@ msgstr ""
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "Liq. Price"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Liquidity Yield"
+msgstr ""
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Liquidity($)"
+msgstr ""
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2113,6 +2368,7 @@ msgstr ""
 msgid "LP Yield Generation"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "LPNotFullyMinted()"
 msgstr "LP not fully minted()"
@@ -2191,6 +2447,10 @@ msgstr ""
 msgid "Market Cap"
 msgstr ""
 
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Market cap($)"
+msgstr ""
+
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr ""
@@ -2202,7 +2462,7 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "market is created"
-msgstr ""
+msgstr "Market already exist"
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -2213,20 +2473,35 @@ msgstr ""
 msgid "Market Price"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketAlreadyExisted()"
 msgstr "Market already exists()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketNotExist(MarketId)"
 msgstr "Market does not exist (MarketId)"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "MarketNotExisted()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketNotInitialized()"
 msgstr "Market not initialized()"
 
 #: src/components/Tabbar/const.tsx
 msgid "Markets"
+msgstr ""
+
+#: src/pages/MarketList/index.tsx
+msgid "Markets -  Permissionless Listing for Any Asset | MYX"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "MatchNotSupported()"
 msgstr ""
 
 #: src/components/CookDetail/Order/Buy.tsx
@@ -2248,7 +2523,6 @@ msgstr ""
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr ""
 
-#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
 msgstr ""
@@ -2257,6 +2531,7 @@ msgstr ""
 msgid "Medium"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MerkleTreeVerificationFailed(CaseId,address)"
 msgstr "Merkle tree verification failed (CaseId,address)"
@@ -2269,9 +2544,14 @@ msgstr ""
 msgid "Mintable"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MismatchedSender(address)"
 msgstr "Mismatched (address)"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "MismatchExecuteFee(uint256,uint256,uint256)"
+msgstr ""
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2321,6 +2601,10 @@ msgstr ""
 
 #: src/pages/record/index.tsx
 msgid "My trades"
+msgstr ""
+
+#: src/pages/record/index.tsx
+msgid "My trades - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
 #: src/pages/Cook/detail/components/Info.tsx
@@ -2390,10 +2674,16 @@ msgstr ""
 msgid "No results found"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NoADLNeeded(OrderId)"
 msgstr "No ADL needed (OrderId)"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "NoChainResponse()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NoRebateToClaim()"
 msgstr "No rebate to claim()"
@@ -2406,34 +2696,42 @@ msgstr ""
 msgid "Not Required"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotActiveBroker(address)"
 msgstr "Inactive broker (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAddressManager()"
 msgstr "Not address manager()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAllowedCaller(address)"
 msgstr "Not allowed caller (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAllowedTarget(address)"
 msgstr "Not allowed target (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotBrokerAdmin()"
 msgstr "Not broker admin()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotBrokerSigner(address)"
 msgstr "Not broker signer (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotCaseRespondent(CaseId,address)"
 msgstr "Not case respondent (CaseId,address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotDependencyManager()"
 msgstr "Not dependency manager()"
@@ -2448,6 +2746,7 @@ msgstr ""
 msgid "Note(optional)"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotEmptyAddress()"
 msgstr "Not empty address()"
@@ -2456,41 +2755,58 @@ msgstr "Not empty address()"
 msgid "Notes can only enter letters or numbers"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "NotForwardAllowedTarget(address)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInDisputeMode()"
 msgstr "Not in dispute mode()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInitializing()"
 msgstr "Not initializing()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInRewindMode()"
 msgstr "Not in rewind mode()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotMeetEarlyCloseCriteria(PositionId)"
 msgstr "Not meet early close criteria (PositionId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotOrderOwner()"
 msgstr "Not order owner()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotPositionOwner()"
 msgstr "Not position owner()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotProxyAdmin()"
 msgstr "Not proxy admin()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotReachedPrice(OrderId,uint256,uint256,TriggerType)"
 msgstr "Price not reached (OrderId,uint256,uint256,TriggerType)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotSupportVersion()"
 msgstr "Unsupported version()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "NumberOfResponsesMismatch()"
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Obtain <0>VIP{level}</0> Experience:"
@@ -2558,10 +2874,12 @@ msgstr ""
 msgid "OnlyActiveValidator()"
 msgstr "Only active validator()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OnlyKeeper()"
 msgstr "Only keeper()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OnlyRelayer()"
 msgstr "Only relayer()"
@@ -2570,12 +2888,10 @@ msgstr "Only relayer()"
 msgid "Open"
 msgstr "Open Orders"
 
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "open  amount must be greater than 0"
-msgstr ""
-
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "open amount must be greater than 0"
+msgid "open amount must be greater than 0 {0}"
 msgstr ""
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
@@ -2646,6 +2962,10 @@ msgstr ""
 msgid "Or Continue With "
 msgstr ""
 
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+msgid "Oracle Price"
+msgstr ""
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
 msgstr ""
@@ -2666,10 +2986,17 @@ msgstr ""
 msgid "Order Rejected"
 msgstr ""
 
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Order size must be greater than the minimum required"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderExpired(OrderId)"
 msgstr "Order has expired (OrderId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderNotExist(OrderId)"
 msgstr "Order does not exist (OrderId)"
@@ -2678,10 +3005,12 @@ msgstr "Order does not exist (OrderId)"
 msgid "Others"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OwnableInvalidOwner(address)"
 msgstr "Invalid owner (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OwnableUnauthorizedAccount(address)"
 msgstr "Unauthorized account (address)"
@@ -2706,6 +3035,10 @@ msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
+msgstr ""
+
+#: src/pages/Trade/components/OrderStatus/index.tsx
+msgid "Partially filled"
 msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
@@ -2743,6 +3076,7 @@ msgstr ""
 msgid "Per trade"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PermissionDenied(address,address)"
 msgstr "Permission denied (address,address)"
@@ -2777,6 +3111,10 @@ msgstr ""
 msgid "Please enter the Referral ID"
 msgstr ""
 
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "Please note: "
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -2793,45 +3131,59 @@ msgstr ""
 msgid "Pool reprime"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolExists(PoolId)"
 msgstr "Pool already exists (PoolId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolFundingFeeNotPositive(int256,uint256,Direction)"
 msgstr "Funding fee must be positive (int256,uint256,Direction)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotActive(PoolId)"
 msgstr "Pool not active (PoolId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotCompoundable(PoolId)"
 msgstr "Pool not compoundable (PoolId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotExist(PoolId)"
 msgstr "Pool does not exist (PoolId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotInitialized()"
 msgstr "Pool not initialized()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotInPreBenchState(PoolId)"
 msgstr "Pool not in pre-bench state (PoolId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeCharged()"
 msgstr "Oracle fee already charged()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeNotCharged()"
 msgstr "Oracle fee not charged()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeNotExisted()"
 msgstr "Oracle fee does not exist()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "PoolOracleFeeNotSoldOut()"
+msgstr ""
 
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "Pools info"
@@ -2850,18 +3202,22 @@ msgstr ""
 msgid "Position({0})"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotEmpty()"
 msgstr "Position not empty()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotHealthy(PositionId,uint256)"
 msgstr "Position risk too high (PositionId,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotInitialized(PositionId)"
 msgstr "Position not initialized (PositionId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionRemainsHealthy(PositionId)"
 msgstr "Position remains healthy (PositionId)"
@@ -2888,6 +3244,11 @@ msgstr ""
 msgid "Positions{0}"
 msgstr ""
 
+#: src/pages/Cook/components/Dashboard/TradeVolume.tsx
+msgid "Prep Volume"
+msgstr ""
+
+#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -2906,8 +3267,12 @@ msgstr ""
 msgid "Price Impact"
 msgstr ""
 
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "Price/Price"
+#: src/config/error/CommonErrorMapping.tsx
+msgid "PriceDeviationBelowMinimum()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "PriceDeviationThresholdReached()"
 msgstr ""
 
 #: src/components/Seamless/ExportDialog/index.tsx
@@ -2937,6 +3302,14 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Quantity"
+msgstr ""
+
+#: src/components/DepthChart/DepthChartCanvas.tsx
+msgid "Range"
+msgstr ""
+
+#: src/pages/rank/index.tsx
+msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
@@ -3008,6 +3381,7 @@ msgstr ""
 msgid "Redeem Code"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReentrancyGuardReentrantCall()"
 msgstr "Reentrant call detected()"
@@ -3026,6 +3400,11 @@ msgstr ""
 
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "RefereeRatio"
+msgstr ""
+
+#: src/pages/Referrals/index.tsx
+#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
+msgid "Referral - Invite & Earn Lifetime Commissions | MYX"
 msgstr ""
 
 #: src/pages/Referrals/components/Record/index.tsx
@@ -3075,10 +3454,12 @@ msgstr ""
 msgid "Refund"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReimbursementValidity(CaseId)"
 msgstr "Reimbursement validity issue (CaseId)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "RelayerRegistered(address)"
 msgstr "Relayer already registered (address)"
@@ -3088,9 +3469,14 @@ msgstr "Relayer already registered (address)"
 msgid "Remaining number of promotional links to be created: {0}"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "RemoveRelayerFailed()"
 msgstr "Failed to remove relayer()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "RequestTypeMismatch()"
+msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Required"
@@ -3104,6 +3490,7 @@ msgstr ""
 msgid "Resend in {countdown}s"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReservableNotEnough(uint256,uint256)"
 msgstr "Insufficient reservable amount (uint256,uint256)"
@@ -3115,6 +3502,10 @@ msgstr ""
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "Reset Password"
+msgstr ""
+
+#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
+msgid "Reset password failed"
 msgstr ""
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
@@ -3153,6 +3544,14 @@ msgstr ""
 msgid "Risk Rating"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "RiskCloseNotAllowed()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "RiskCloseNotCompleted()"
+msgstr ""
+
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "Roe"
@@ -3173,22 +3572,27 @@ msgstr ""
 msgid "S"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedIntToUint(int256)"
 msgstr "Value conversion overflow (int256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedUintDowncast(uint8,uint256)"
 msgstr "Value conversion overflow (uint8,uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedUintToInt(uint256)"
 msgstr "Value conversion overflow (uint256)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeERC20FailedOperation(address)"
 msgstr "SafeERC20 operation failed (address)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SamePoolMigration(PoolId)"
 msgstr "Same pool migration (PoolId)"
@@ -3245,6 +3649,20 @@ msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "Search name or paste address"
+msgstr ""
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Security Notice:"
+msgstr ""
+
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
+msgstr ""
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Security Warning:"
 msgstr ""
 
 #: src/pages/Market/components/TokenSelect.tsx
@@ -3379,6 +3797,10 @@ msgstr ""
 msgid "Short Positions"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "SignatureExpired()"
+msgstr ""
+
 #. placeholder {0}: position.baseSymbol
 #: src/components/Record/Items/Position.tsx
 msgid "Size({0})"
@@ -3408,12 +3830,19 @@ msgstr ""
 msgid "SL({0})"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SlippageExceeded(uint256,uint256)"
 msgstr "Price slippage exceeded (uint256,uint256)"
 
 #: src/components/Login/MorePage.tsx
 msgid "Social Login"
+msgstr ""
+
+#. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
+#: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
 msgstr ""
 
 #: src/ErrorPage.tsx
@@ -3440,6 +3869,7 @@ msgstr ""
 msgid "Staking Unlock"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "StalePrice()"
 msgstr "Price is stale()"
@@ -3458,6 +3888,7 @@ msgstr ""
 msgid "Step 2"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "StringTooLong(string)"
 msgstr "String too long (string)"
@@ -3597,8 +4028,18 @@ msgstr ""
 msgid "The refund rate you can earn after your friend trades."
 msgstr ""
 
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
+msgstr ""
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
+msgstr ""
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
 msgstr ""
 
 #. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
@@ -3621,6 +4062,10 @@ msgstr ""
 msgid "To"
 msgstr ""
 
+#: src/components/Dialog/HighRiskWarningDialog.tsx
+msgid "To ensure a secure trading environment, the platform strictly prohibits and rejects the listing of such high-risk tokens on the contract market."
+msgstr ""
+
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
 msgstr ""
@@ -3629,6 +4074,10 @@ msgstr ""
 #. placeholder {1}: nextLevelInfo ? formatNumberPrecision(requiredTradeAmount, COMMON_PRICE_DISPLAY_DECIMALS) : '--'
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
+msgstr ""
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Token age(min)"
 msgstr ""
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
@@ -3672,7 +4121,7 @@ msgstr ""
 #: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Total Spot liq"
-msgstr ""
+msgstr "Total Spot Liquidity"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
@@ -3735,8 +4184,8 @@ msgid "Trade Now"
 msgstr ""
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/Info.tsx
-#: src/pages/Earn/detail/components/TokenInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/detail/components/TradingInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Traders"
 msgstr ""
@@ -3755,6 +4204,11 @@ msgstr ""
 msgid "Trading Setting"
 msgstr ""
 
+#: src/components/Trade/Charts/Toolbar/index.tsx
+#: src/components/Trade/Charts/Toolbar/index.tsx
+msgid "Trading View"
+msgstr ""
+
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Trading Volume"
 msgstr ""
@@ -3771,18 +4225,17 @@ msgstr ""
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-msgid "Transfer Failed"
-msgstr ""
-
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Transfer Success"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "TransferFailed()"
 msgstr "Transfer failed()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "TreeAlreadySet()"
+msgstr ""
 
 #: src/pages/Cook/components/ToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
@@ -3791,6 +4244,10 @@ msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
+msgstr ""
+
+#: src/pages/Cook/components/Dashboard/TVL.tsx
+msgid "Tvl"
 msgstr ""
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
@@ -3813,26 +4270,36 @@ msgstr ""
 msgid "Unclaimed"
 msgstr ""
 
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Unclaimed Fees"
-msgstr ""
-
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnderflowOI()"
 msgstr "Open interest underflow()"
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
-#: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Underlying Price"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnexpectedCaseState()"
 msgstr "Unexpected case state()"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UnexpectedCaseType()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UnexpectedNumberOfResults()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnexpectedPoolState()"
 msgstr "Unexpected pool state()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UnhealthyAfterRiskTierApplied(PositionId)"
+msgstr ""
 
 #: src/components/Record/Items/Position.tsx
 msgid "unPnl"
@@ -3844,13 +4311,29 @@ msgstr ""
 msgid "Unrealized PnL"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnsupportedAssetClass(AssetClass)"
 msgstr "Unsupported asset class (AssetClass)"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnsupportedFeeTier(uint8)"
 msgstr "Unsupported fee tier (uint8)"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UnsupportedQueryType(uint8)"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UntrustfulVoting()"
+msgstr ""
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "Update VIP"
+msgstr ""
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Updated successfully"
@@ -3886,6 +4369,7 @@ msgstr ""
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
+#: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
 msgstr ""
 
@@ -3893,10 +4377,16 @@ msgstr ""
 msgid "User who prefer classic DeFi UX"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "UserProfitFrozen()"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UUPSUnauthorizedCallContext()"
 msgstr "UUPS unauthorized call context()"
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UUPSUnsupportedProxiableUUID(bytes32)"
 msgstr "UUPS unsupported proxiable UUID (bytes32)"
@@ -3917,13 +4407,22 @@ msgstr ""
 msgid "Vaults"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "VerificationFailed()"
+msgstr ""
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Verify"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "VerifyPriceFailed()"
 msgstr "Price verification failed()"
+
+#: src/config/error/CommonErrorMapping.tsx
+msgid "VersionMismatch()"
+msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "View my referrer"
@@ -3936,6 +4435,10 @@ msgstr ""
 #: src/pages/Home/components/ExpressMenu/const.tsx
 #: src/pages/VIP/provider/index.tsx
 msgid "VIP"
+msgstr ""
+
+#: src/pages/VIP/index.tsx
+msgid "VIP - Exclusive Privileges & Fee Discounts | MYX"
 msgstr ""
 
 #. placeholder {0}: configData?.maxVipLevel
@@ -4020,6 +4523,10 @@ msgstr ""
 msgid "Withdrawable {0}"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "WrongQueryType(uint8,uint8)"
+msgstr ""
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "X"
@@ -4041,7 +4548,7 @@ msgid "Yes"
 msgstr ""
 
 #. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
-#. placeholder {1}: nextLevelInfo?.vipTier
+#. placeholder {1}: nextMyxLevel?.vipTier
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "You need to hold {0} MYX to upgrade to VIP{1}"
 msgstr ""
@@ -4086,6 +4593,10 @@ msgstr ""
 msgid "Your Password"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "ZeroQueries()"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -4113,6 +4624,10 @@ msgstr "From Margin Account"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "从钱包"
 msgstr "From Wallet"
+
+#: src/components/SettingDrawer.tsx
+msgid "仓位保证金共享"
+msgstr "Margin Sharing"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -4146,7 +4661,6 @@ msgstr "Margin Account balance available to transfer to Wallet"
 msgid "修改"
 msgstr "Edit"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "Close All Positions"
@@ -4166,6 +4680,7 @@ msgid "其他"
 msgstr "Other"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "Max Slippage"
@@ -4197,6 +4712,10 @@ msgstr "Transfer to Wallet"
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
 msgstr "Delete"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "加仓"
+msgstr "Increase Position"
 
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
@@ -4267,6 +4786,10 @@ msgstr "Order Price"
 msgid "委托数量"
 msgstr "Order Amount"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "完全平仓"
+msgstr "Closed"
+
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
 msgstr "Fully Loaded"
@@ -4315,6 +4838,7 @@ msgstr "Close"
 msgid "平仓二次确认"
 msgstr "Close Double-Confirmation"
 
+#: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "平仓滑点设置"
 msgstr "Close Slippage Settings"
@@ -4479,6 +5003,14 @@ msgstr "Rankings"
 msgid "止损-最新"
 msgstr "SL - Last Price"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止损平仓"
+msgstr "Closed by Stop Loss"
+
+#: src/components/Record/Items/PositionHistoryItem.tsx
+msgid "止盈平仓"
+msgstr "Closed by Take Profit"
+
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 #: src/pages/Trade/components/OrderType/index.tsx
@@ -4488,6 +5020,7 @@ msgid "止盈止损"
 msgstr "TP/SL"
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
+#: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
 msgstr "TP/SL Slippage"
 
@@ -4495,6 +5028,11 @@ msgstr "TP/SL Slippage"
 #: src/components/Record/Items/Finance.tsx
 msgid "流入/流出"
 msgstr "Inflow/Outflow"
+
+#: src/components/Trade/Charts/Toolbar/index.tsx
+#: src/components/Trade/Charts/Toolbar/index.tsx
+msgid "深度图"
+msgstr "Depth"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "添加保证金"
@@ -4544,10 +5082,6 @@ msgstr "Create my contract trading market now"
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
 msgstr "Type"
-
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "自动{defaultValue}%"
-msgstr "Auto {defaultValue}%"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -4621,6 +5155,10 @@ msgstr "Limit Open"
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "非仓位持有者"
 msgstr "Not Position Owner"
+
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "预估 <0>{defaultValue}%</0>"
+msgstr "Estimated <0>{defaultValue}%</0>"
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"

@@ -1,13 +1,14 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { parseUnits } from "ethers";
-import { CHAIN_INFO } from "@/config/chains/index";
-import { checkParams } from "@/common/checkParams";
-import { ChainId } from "@/config/chain";
-import { MarketPoolState } from "@/api/type";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals";
+import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { parseUnits } from "viem";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import { checkParams } from "@/common/checkParams.js";
+import { ChainId } from "@/config/chain.js";
+import { MarketPoolState } from "@/api/type.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
+import { getPublicClient } from "@/web3";
 
 
 export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {
@@ -16,7 +17,6 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     const toPool  = await getPoolInfo(chainId, toPoolId);
     
     if (!toPool || !fromPool) return null;
-    
     
     if([MarketPoolState.PreBench, MarketPoolState.Bench].includes(toPool.state)) {
       throw new Error(Errors[ErrorCode.Invalid_Pool_State]) // todo
@@ -36,17 +36,19 @@ export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: stri
     }
     // console.log('migrateLiquiditydata', data)
     const contract = await getLiquidityRouterContract(chainId)
-    //estimateGas
-    const _gasLimit =  await contract.migrateLiquidity.estimateGas(data)
+    // estimate gas (viem style, args array)
+    const _gasLimit =  await contract.estimateGas!.migrateLiquidity([data])
     
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const result = await contract.migrateLiquidity(data, {
+    const hash = await contract.write!.migrateLiquidity([data], {
       gasLimit,
       gasPrice
     })
-    // console.log("migrateLiquidity",result)
-    return result
+    
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
   } catch (error) {
     // console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))

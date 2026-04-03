@@ -1,9 +1,9 @@
-import { ChainId, isSupportedChainFn } from "@/config/chain";
-import { ErrorCode, Errors } from "@/config/error";
-import { getBalanceOf } from "@/common/balanceOf";
-import { MaxUint256, parseUnits } from "ethers";
-import { getAllowanceApproved } from "@/common/allowance";
-import { approve } from "@/common/approve";
+import { ChainId, isSupportedChainFn } from "@/config/chain.js";
+import { ErrorCode, Errors } from "@/config/error.js";
+import { getBalanceOf } from "@/common/balanceOf.js";
+import { maxUint256, parseUnits } from "viem";
+import { getAllowanceApproved } from "@/common/allowance.js";
+import { approve } from "@/common/approve.js";
 
 export interface  Optional {
   chainId?: number | ChainId;
@@ -39,10 +39,10 @@ export  const checkParams = async (params: OptionalParams) => {
   
   // console.log('checkbalance')
   const {tokenAddress,contractAddress, chainId, amount, decimals, account} = params
-  if(amount && chainId && decimals && account) {
+  if(amount && chainId && Number(decimals) >= 0 && account) {
     
     
-    const amountIn = parseUnits (amount.toString (), decimals)
+    const amountIn = parseUnits(amount.toString(), Number(decimals))
     if (tokenAddress ) {
       const balance = await getBalanceOf (chainId, account, tokenAddress)
       // console.log ("balance", balance, tokenAddress);
@@ -55,7 +55,7 @@ export  const checkParams = async (params: OptionalParams) => {
       const isApproved = await getAllowanceApproved (chainId, account, tokenAddress, contractAddress, amountIn)
       
       if (!isApproved) {
-        await approve (chainId, account, tokenAddress, contractAddress, MaxUint256);
+        await approve (chainId, account, tokenAddress, contractAddress, maxUint256);
       }
     }
   }

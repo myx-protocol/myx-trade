@@ -48,16 +48,25 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
         onClick={() => {
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
-              title: t`close  amount must be greater than 0`,
+              title: t`close amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
             })
             return
           }
 
-          if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.quoteAmount))) {
-            toast.error({
-              title: t`close amount must be less than ${displayAmount(maxCloseLong.quoteAmount)}`,
-            })
-            return
+          if (amountUnit === AmountUnitEnum.QUOTE) {
+            if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.quoteAmount))) {
+              toast.error({
+                title: t`close amount must be less than ${displayAmount(maxCloseLong.quoteAmount)} ${symbolInfo?.quoteSymbol as string}`,
+              })
+              return
+            }
+          } else {
+            if (parseBigNumber(longSize).gt(parseBigNumber(maxCloseLong.baseAmount))) {
+              toast.error({
+                title: t`close amount must be less than ${displayAmount(maxCloseLong.baseAmount)} ${symbolInfo?.baseSymbol as string}`,
+              })
+              return
+            }
           }
 
           if (showCloseOrderConfirmDialog) {
@@ -92,15 +101,24 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
         onClick={() => {
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({
-              title: t`close  amount must be greater than 0`,
+              title: t`close amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''}`,
             })
             return
           }
-          if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.quoteAmount))) {
-            toast.error({
-              title: t`close  amount must be less than ${displayAmount(maxCloseShort.quoteAmount)}`,
-            })
-            return
+          if (amountUnit === AmountUnitEnum.QUOTE) {
+            if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.quoteAmount))) {
+              toast.error({
+                title: t`close  amount must be less than ${displayAmount(maxCloseShort.quoteAmount)} ${symbolInfo?.quoteSymbol as string}`,
+              })
+              return
+            }
+          } else {
+            if (parseBigNumber(shortSize).gt(parseBigNumber(maxCloseShort.baseAmount))) {
+              toast.error({
+                title: t`close  amount must be less than ${displayAmount(maxCloseShort.baseAmount)} ${symbolInfo?.baseSymbol as string}`,
+              })
+              return
+            }
           }
 
           if (showCloseOrderConfirmDialog) {

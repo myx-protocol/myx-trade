@@ -259,7 +259,7 @@ export const DialogFullLoadingButton = memo(
 
     return (
       <Button
-        className={`gradient`}
+        className={`gradient !min-h-[44px] rounded`}
         disabled={confirmDisabled}
         loading={loading}
         loadingPosition={'start'}
@@ -281,7 +281,7 @@ export const ConfirmDialogFooter = memo(
     className?: string
   }) => {
     return (
-      <Box className={'flex-1 p-[16px]'}>
+      <Box className={'flex-1 p-[24px]'}>
         <DialogFullLoadingButton {...fullButtonProps}>{confirmText}</DialogFullLoadingButton>
       </Box>
     )

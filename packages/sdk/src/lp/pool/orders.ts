@@ -1,10 +1,11 @@
-import { getPoolOpenOrders } from "@/api";
-import { ChainId } from "@/config/chain";
-import { MxSDK } from "@/web3";
+import { getPoolOpenOrders } from "@/api/index.js";
+import { ChainId } from "@/config/chain.js";
+import { sdkError } from "@/logger";
+import { MxSDK } from "@/web3/index.js";
 
 export const getOpenOrders = async (chainId: ChainId, address: string) => {
   try {
-    // 自动获取 accessToken，如果没有或过期会自动刷新
+    // Automatically obtain accessToken; it will be refreshed if missing or expired
     const accessToken = await MxSDK.getInstance().getConfigManager()?.getAccessToken();
     if (!accessToken) {
       throw new Error(
@@ -15,7 +16,7 @@ export const getOpenOrders = async (chainId: ChainId, address: string) => {
     return response.data || [];
 
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw error;
   }
 }

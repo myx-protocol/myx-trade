@@ -1,6 +1,6 @@
-import { Direction } from "@/types/trading";
-import { PoolType, TriggerType } from "@/lp/pool";
-import { ChainId } from "@/config/chain";
+import { Direction, OperationType, OrderType, TimeInForce } from "@/types/trading.js";
+import { PoolType, TriggerType } from "@/lp/pool/index.js";
+import { ChainId } from "@/config/chain.js";
 export interface ObjectType<T> {
   [key: string]: T;
 }
@@ -56,11 +56,11 @@ export interface AccessTokenResponse extends BaseResponse {
 }
 
 export enum MarketPoolState {
-  Cook = 0, // 市场建立
-  Primed = 1, // 扣款手续费，等待准备oracle
-  Trench = 2, // 上架交易
-  PreBench = 3, // 预下架
-  Bench = 4, // 下架
+  Cook = 0,     // Market created
+  Primed = 1,   // Fee charged, waiting for oracle initialization
+  Trench = 2,   // Trading enabled
+  PreBench = 3, // Pending delisting
+  Bench = 4,    // Delisted
 }
 
 export type MarketPool = {
@@ -113,19 +113,64 @@ export interface ApiResponse<T = Record<string, any>> extends BaseResponse {
 }
 
 export interface PositionType {
+  chainId: number;
   poolId: string;
   positionId: string;
   direction: Direction;
   entryPrice: string;
-  fundingRateIndex: string;
   size: string;
-  riskTier: number;
   collateralAmount: string;
+  fundingRateIndex: string;
+  riskTier: number;
   txTime: number;
+  broker: string;
+  userLeverage: number;
+  baseSymbol: string;
+  quoteSymbol: string;
+  earlyClosePrice: string;
+  tradingFee: string;
+  tokenId: string | null;
+  freeAmount: string;
+  lockedAmount: string;
 }
 
 export interface PositionResponse extends BaseResponse {
   data: PositionType[];
+}
+
+export interface OrderItem {
+  baseSymbol: string;
+  chainId: number;
+  collateralAmount: string;
+  direction: Direction;
+  executionFeeAmount: string;
+  executionFeeToken: string | null;
+  filledAmount: string;
+  filledSize: string;
+  operation: OperationType;
+  orderId: number;
+  orderType: OrderType;
+  poolId: string;
+  positionId: string;
+  postOnly: 0 | 1;
+  price: string;
+  quoteSymbol: string;
+  size: string;
+  slPrice: string | null;
+  slSize: string | null;
+  slippagePct: number;
+  tif: TimeInForce;
+  tpPrice: string | null;
+  tpSize: string | null;
+  triggerType: TriggerType;
+  txHash: string;
+  txTime: number;
+  user: string;
+  useLeverage: number;
+}
+
+export interface OrderResponse extends BaseResponse {
+  data: OrderItem[];
 }
 
 export interface PoolOpenOrder {

@@ -1,28 +1,18 @@
-import { Contract } from "ethers";
 
-export type ChainDomainType = {
-  name: string
-  version: string
-  chainId: string
-  verifyingContract: string
-}
-
-export const getEIP712Domain = async (contract: Contract) => {
+export const getEIP712Domain = async (contract: any) => {
   try {
-    // @ts-ignore
-    const eip712Domain = await contract.eip712Domain()
-    console.log('eip712Domain-->', eip712Domain.name);
-    console.log('eip712Domain.version-->', eip712Domain.version);
+    const eip712Domain = await (contract as any).read.eip712Domain();
+
     return {
-      name: eip712Domain.name,
-      version: eip712Domain.version,
-      chainId: BigInt(eip712Domain.chainId), // 确保 chainId 是ForwarderGetStatus bigint 类型
-      verifyingContract: eip712Domain.verifyingContract,
-    }
+      name: eip712Domain[1],
+      version: eip712Domain[2],
+      chainId: BigInt(eip712Domain[3]),
+      verifyingContract: eip712Domain[4] as `0x${string}`,
+    };
   } catch (error) {
-    throw new Error(`Error fetching EIP712 domain: ${error}`)
+    throw new Error(`Error fetching EIP712 domain: ${error}`);
   }
-}
+};
 
 export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))

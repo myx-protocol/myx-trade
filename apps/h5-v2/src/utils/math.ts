@@ -1,7 +1,8 @@
 import Big from 'big.js'
 import { DECIMAL_ROUND } from '@/constant/regexp'
 import { isNull } from 'lodash-es'
-import { decimalToPercent, type PercentFormatOptions } from './number'
+import { decimalToPercent } from './number'
+import { isSafeNumber } from '@/utils/index.ts'
 
 export const plus = (a: number | string | Big, b: number | string | Big): Big => {
   if (isNull(a) || isNull(b)) return new Big(0)
@@ -46,4 +47,26 @@ export const getProfitRatePrecision = (realizedPnl: string, collateralAmount: st
     decimals: 2,
     showSign: true,
   })
+}
+
+export function scientificToString(num: number) {
+  if (!isSafeNumber(num)) return num
+  const str = String(num)
+  if (!/e/i.test(str)) return str
+
+  const [base, exp] = str.split('e')
+  const e = Number(exp)
+
+  const [int, dec = ''] = base.replace('-', '').split('.')
+  const sign = num < 0 ? '-' : ''
+
+  if (e < 0) {
+    return sign + '0.' + '0'.repeat(Math.abs(e) - 1) + int + dec
+  } else {
+    return sign + int + dec + '0'.repeat(e - dec.length)
+  }
+}
+
+export function parseLocaleNumber(str: string) {
+  return Number(str.replace(/[^0-9.-]/g, ''))
 }

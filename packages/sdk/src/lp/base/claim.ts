@@ -1,5 +1,6 @@
 import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import { ClaimParams, ClaimRebatesParams } from "@/lp/type";
+import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
+import { sdkError } from "@/logger";
 import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
 import {
@@ -8,6 +9,7 @@ import {
 } from "@/common/tradingGas";
 import {  getPricesData } from "@/common/price";
 import { getErrorTextFormError } from "@/config/error";
+import { getPublicClient } from "@/web3";
 
 export const claimBasePoolRebate = async (
   params: ClaimParams
@@ -32,9 +34,9 @@ export const claimBasePoolRebate = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     
@@ -46,24 +48,28 @@ export const claimBasePoolRebate = async (
     }
     // console.log('base claim', data)
     const contract = await getLiquidityRouterContract(chainId)
-    
-    // estimateGas
-    const _gasLimit = await contract["claimBasePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"].estimateGas(prices, poolId, account, {
-      value: values[0]
-    })
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.claimBasePoolRebate(
+      [prices, poolId, account],
+      { value: values[0] },
+    )
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
     const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract["claimBasePoolRebate((bytes32,uint8,uint64,bytes)[],bytes32,address)"] (prices, poolId, account, {
+    const response = await contract.write!.claimBasePoolRebate(
+      [prices, poolId, account],
+      {
       gasLimit,
       gasPrice,
       value: values[0],
-    })
+      },
+    )
     
     // console.log('base claim',response)
     return response
     
   } catch (error) {
-    console.error(error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }
@@ -89,9 +95,9 @@ export const claimBasePoolRebates = async (
     const prices = priceData.map ((item) => {
       return {
         poolId: item.poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     
@@ -107,24 +113,29 @@ export const claimBasePoolRebates = async (
     
     // console.log ('base claim pool rebates', data)
     const contract = await getLiquidityRouterContract (chainId)
-    
-    // estimateGas
-    const _gasLimit = await contract["claimBasePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"].estimateGas (prices, poolIds, account, {
-      value
-    })
+
+    // estimate gas (viem style, args array)
+    const _gasLimit = await contract.estimateGas!.claimBasePoolRebates(
+      [prices, poolIds, account],
+      { value },
+    )
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
-    const response = await contract["claimBasePoolRebates((bytes32,uint8,uint64,bytes)[],bytes32[],address)"](prices, poolIds, account, {
-      gasLimit,
-      gasPrice,
-      value
-    })
+    const hash = await contract.write!.claimBasePoolRebates(
+      [prices, poolIds, account],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
-    // console.log ('base claim rebates', response)
-    return response
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+    return receipt
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

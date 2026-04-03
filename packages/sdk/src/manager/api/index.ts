@@ -4,7 +4,7 @@ import {
   PositionHistoryItem,
   TradeFlowItem,
 } from "@/api/account";
-import { ConfigManager } from "../config";
+import { ConfigManager } from "../config/index.js";
 import { http } from "@/api/request";
 import {
   AppealDetail,
@@ -28,7 +28,7 @@ import {
   IsVoteNodeEnum,
   PostVoteResponse,
   PostVoteSignatureParams,
-} from "./appeal-type";
+} from "./appeal-type.js";
 import { Logger } from "@/logger";
 import {
   AccessTokenRequest,
@@ -38,6 +38,7 @@ import {
   KlineDataItemType,
   MarketDetailResponse,
   MarketInfo,
+  OrderResponse,
   PoolOpenOrdersResponse,
   PoolResponse,
   PositionResponse,
@@ -62,7 +63,7 @@ import {
 } from "@/api";
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
-import { Request } from "./request";
+import { Request } from "./request.js";
 
 export class Api extends Request {
   private logger: Logger;
@@ -148,10 +149,10 @@ export class Api extends Request {
     );
   }
 
-  async getPositions(accessToken: string, address: string) {
+  async getPositions({ accessToken, address, positionId }: { accessToken: string, address: string, positionId?: string }) {
     return await http.get<PositionResponse>(
       `${this.getHost()}/openapi/gateway/scan/position/open`,
-      undefined,
+      { positionId },
       {
         headers: {
           myx_openapi_access_token: accessToken,
@@ -162,7 +163,7 @@ export class Api extends Request {
   }
 
   async getOrders(accessToken: string, address: string) {
-    return await http.get<PositionResponse>(
+    return await http.get<OrderResponse>(
       `${this.getHost()}/openapi/gateway/scan/order/open`,
       undefined,
       {
@@ -550,6 +551,19 @@ export class Api extends Request {
     return http.get<ApiResponse<number>>(
       `${this.getHost()}/openapi/gateway/scan/get-current-epoch`,
       { broker },
+      {
+        headers: {
+          myx_openapi_account: address,
+          myx_openapi_access_token: accessToken,
+        },
+      }
+    );
+  }
+
+  async getPoolAppealStatus({ poolId, chainId, address, accessToken }: { poolId: string, chainId: number, address: string, accessToken: string }) {
+    return http.get<ApiResponse<number>>(
+      `${this.getHost()}/openapi/gateway/scan/pool-id-dispute-state?poolId=${poolId}&chainId=${chainId}`,
+      {},
       {
         headers: {
           myx_openapi_account: address,

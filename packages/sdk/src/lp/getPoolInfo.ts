@@ -1,6 +1,6 @@
-import { getPoolDetail, type MarketPool } from "@/api";
-import { ChainId } from "@/config/chain";
-import { getErrorTextFormError } from "@/config/error";
+import { getPoolDetail, type MarketPool } from "@/api/index.js";
+import { ChainId } from "@/config/chain.js";
+import { getErrorTextFormError } from "@/config/error.js";
 
 
 export const getPoolInfo = async (chainId: ChainId, poolId: string) => {

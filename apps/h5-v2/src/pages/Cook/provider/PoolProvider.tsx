@@ -1,20 +1,35 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { PoolContext } from '@/pages/Cook/context.ts'
 import { useParams } from 'react-router-dom'
 import type { BaseLpDetail } from '@/request/lp/type.ts'
 import { usePoolDetail } from '@/hooks/lp/usePoolDetail.ts'
 import { PoolType } from '@/request/type.ts'
+import { t } from '@lingui/core/macro'
 
 export const PoolProvider = ({ children }: { children: ReactNode }) => {
   const { chainId, poolId } = useParams()
-  const { pool, poolInfo, mode, genesisFeeRate, refetch, lpDetail, poolInfoRefetch, fundingRate } =
-    usePoolDetail(PoolType.base)
+  const {
+    pool,
+    poolInfo,
+    mode,
+    genesisFeeRate,
+    refetch,
+    lpDetail,
+    poolInfoRefetch,
+    fundingRate,
+    markets,
+    riskLevelConfig,
+  } = usePoolDetail(PoolType.base)
 
   const [refreshAssetKey, setRefreshAssetKey] = useState(Date.now())
 
   const refreshAsset = async () => {
     setRefreshAssetKey(Date.now())
   }
+
+  useEffect(() => {
+    document.title = t`${lpDetail?.mBaseQuoteSymbol || ''} | High Yield Trench | MYX`
+  }, [lpDetail])
 
   return (
     <PoolContext.Provider
@@ -33,6 +48,9 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         tvl: poolInfo?.tvl,
         poolInfoRefetch,
         fundingRate: fundingRate?.nextFundingRatePercent,
+        markets,
+        oraclePrice: poolInfo?.oraclePrice,
+        riskLevelConfig,
       }}
     >
       {children}

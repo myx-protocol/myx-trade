@@ -5,11 +5,17 @@ import { t } from '@lingui/core/macro'
 import type { EChartsOption } from 'echarts'
 
 import * as echarts from 'echarts/core'
-import { GraphicComponent, GridComponent, TooltipComponent } from 'echarts/components'
-import { BarChart, LineChart } from 'echarts/charts'
+import {
+  GraphicComponent,
+  GridComponent,
+  LegendComponent,
+  TooltipComponent,
+} from 'echarts/components'
+import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { formatNumber } from '@/utils/number.ts'
+import Big from 'big.js'
 
 type AxisExtent = { min: number; max: number }
 echarts.use([
@@ -20,6 +26,8 @@ echarts.use([
   UniversalTransition,
   BarChart,
   TooltipComponent,
+  LegendComponent,
+  PieChart,
 ])
 
 export { echarts }
@@ -87,13 +95,20 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       show: false,
     },
     yAxis: {
+      scale: true,
       type: 'value',
       // boundaryGap: [0, '100%'],
       show: false,
       splitLine: { show: false },
-      min: (value: AxisExtent) =>
-        value.min < 1 ? 0 : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
-      max: (value: AxisExtent) => (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      // min: (value: AxisExtent) =>
+      //   value.min < 1 ? value.min : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
+      // max: (value: AxisExtent) =>
+      //   value.max < 1 ? value.max : (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      min: (value: AxisExtent) => new Big(value?.min || 0).toNumber(),
+      max: (value: AxisExtent) => new Big(value?.max || 0).toNumber(),
+      // axisLabel: {
+      //   formatter: (v: number) => v.toFixed(6),
+      // },
     },
     tooltip: {
       trigger: 'axis',
@@ -116,13 +131,14 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
           color: '#848E9C',
           fontSize: '12px',
         },
-        min: minTime,
-        max: maxTime,
+        // min: minTime,
+        // max: maxTime,
+        minInterval: interval === ChartInterval.day ? 10 * 60 * 1000 : 24 * 60 * 60 * 1000,
         axisLabel: {
           // interval: ,
-          showMinLabel: true,
-          showMaxLabel: true,
-          interval: interval === ChartInterval.all ? 5 : 'auto',
+          // showMinLabel: true,
+          // showMaxLabel: true,
+          // interval: interval === ChartInterval.all ? 5 : 'auto',
           formatter: (value: number) =>
             dayjs(value)
               .utc()

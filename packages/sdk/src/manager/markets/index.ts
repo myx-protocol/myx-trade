@@ -9,10 +9,10 @@ import {
   type GetBaseDetailParams,
   type GetMarketDetailParams,
 } from "@/api";
-import { KlineResolution } from "../subscription/types";
-import { Utils } from "../utils";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
-import { Api } from "../api";
+import { KlineResolution } from "../subscription/types/index.js";
+import { Utils } from "../utils/index.js";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
+import { Api } from "../api/index.js";
 
 export class Markets {
   private configManager: ConfigManager;

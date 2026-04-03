@@ -1,7 +1,8 @@
-import { getErrorTextFormError } from "@/config/error";
-import { getMarketManageContract } from "@/web3/providers";
-import { ChainId } from "@/config/chain";
-import { checkParams } from "@/common/checkParams";
+import { getErrorTextFormError } from "@/config/error.js";
+import { sdkError } from "@/logger";
+import { getMarketManageContract } from "@/web3/providers.js";
+import { ChainId } from "@/config/chain.js";
+import { checkParams } from "@/common/checkParams.js";
 
 export const getMarket = async (chainId: ChainId, marketId: string)  => {
   try {
@@ -10,12 +11,12 @@ export const getMarket = async (chainId: ChainId, marketId: string)  => {
   
     const contract = await getMarketManageContract(chainId)
     
-    const request = await contract.getMarket(marketId)
-    console.log("MarketManage.getMarket request", request);
+    const request = await contract.read.getMarket([marketId])
+    // console.log("MarketManage.getMarket request", request);
     
     return request;
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

@@ -1,25 +1,54 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
-import type { BytesLike } from "ethers";
-import { parseUnits } from "ethers";
-import { OracleUpdatePrice, WithdrawParams } from "@/lp/type";
-import { CHAIN_INFO } from "@/config/chains/index";
+import { getAccount, getLiquidityRouterContract, getQuotePoolContract } from "@/web3/providers.js";
+import { parseUnits } from "viem";
+import { WithdrawParams } from "@/lp/type.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
 import {
-  bigintAmountSlipperCalculator,
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import { checkParams } from "@/common/checkParams";
-import { previewQuoteAmountOut } from "@/lp/quote/preview";
-import { getPoolInfo } from "@/lp/getPoolInfo";
-import { MarketPoolState } from "@/api";
-import { getPriceData } from "@/common/price";
-import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals";
-import { getErrorTextFormError } from "@/config/error";
+} from "@/common/tradingGas.js";
+import { checkParams } from "@/common/checkParams.js";
+import { getPoolInfo } from "@/lp/getPoolInfo.js";
+import { MarketPoolState } from "@/api/index.js";
+import { getPriceData } from "@/common/price.js";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { getErrorTextFormError } from "@/config/error.js";
+import { ChainId } from "@/config/chain.js";
+import { sdkError } from "@/logger";
+import { getPublicClient } from "@/web3";
+import { getWithdrawData } from "@/common/withdrawData.ts";
+import { PoolType } from "@/lp/pool";
 
+export const withdrawableLpAmount = async (
+  params: {
+    chainId: ChainId;
+    poolId: string;
+    price?: bigint;
+  }
+) => {
+  try {
+    const {chainId, poolId, price} = params;
+    let referencePrice = price
+    const quotePoolContract = await getQuotePoolContract(chainId);
+    if (typeof price === 'undefined' || price === null) {
+      try {
+        const priceData = await  getPriceData(chainId, poolId)
+        referencePrice = parseUnits(priceData?.price || '0', COMMON_PRICE_DECIMALS)
+      } catch (error) {
+        referencePrice = parseUnits( '0', COMMON_PRICE_DECIMALS)
+      }
+    }
+   
+    const request = await quotePoolContract.read.withdrawableLpAmount([poolId, referencePrice || 0n])
+    return request
+    
+  } catch (error) {
+    sdkError(error);
+    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+  }
+}
 
 export const withdraw = async (params: WithdrawParams) => {
   try {
-    
     const { chainId, poolId, amount, slippage = 0.01 } = params;
     const pool = await getPoolInfo (chainId, poolId)
     const lpAddress = pool?.quotePoolToken
@@ -40,59 +69,39 @@ export const withdraw = async (params: WithdrawParams) => {
     
     const amountIn = parseUnits (amount.toString (), decimals)
     
-    const isNeedPrice = !(Number (pool?.state) === MarketPoolState.Cook || Number (pool?.state) === MarketPoolState.Primed)
-    
-    const price: OracleUpdatePrice[] = []
-    
-    let value = 0n;
-    
-    let amountOut;
-    
-    if (isNeedPrice) {
-      // todo  getprice
-      const priceData = await getPriceData (chainId, poolId)
-      if (!priceData) return
-      const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
-      price.push ({
-        poolId,
-        oracleUpdateData: priceData.vaa,
-        publishTime: priceData.publishTime,
-        oracleType: priceData.oracleType,
-      })
-      amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-      value = priceData.value
-    } else {
-      amountOut = await previewQuoteAmountOut ({ chainId, poolId, amountIn })
-    }
-    
-    const data = {
-      poolId: poolId as unknown as BytesLike,
+    const {price, data, value} = await getWithdrawData({
+      poolId,
+      chainId,
+      account,
       amountIn,
-      minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),// todo  调合约获取
-      recipient: account,
-    }
-    
-    // console.log ("withdraw", data);
-    
-    const contract = await getLiquidityRouterContract (chainId)
-    
-    const _gasLimit = await contract["withdrawQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"].estimateGas (price, data, { value })
-    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
-    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
-    const request = await contract["withdrawQuote((bytes32,uint8,uint64,bytes)[],(bytes32,uint256,uint256,address))"](price, data, {
-      gasLimit,
-      gasPrice,
-      value,
+      slippage,
+      poolType: PoolType.Quote,
+      state: pool?.state as MarketPoolState
     })
     
-    // console.log ("withdraw quote with price", request)
-    const receipt = await request?.wait()
+    const contract = await getLiquidityRouterContract (chainId)
+
+    const _gasLimit = await contract.estimateGas!.withdrawQuote(
+      [price, data],
+      { value },
+    )
+    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
+    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId);
+    const hash = await contract.write!.withdrawQuote(
+      [price, data],
+      {
+        gasLimit,
+        gasPrice,
+        value,
+      },
+    )
     
-    // console.log ("withdraw quote receipt", receipt)
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
     return receipt
     
   } catch (error) {
-    console.error (error);
+    sdkError(error);
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

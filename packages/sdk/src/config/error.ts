@@ -1,19 +1,20 @@
 import {ErrorType, ErrorDecoder} from 'ethers-decode-error'
-import {customErrorMapping} from './customErrorMap'
+import {customErrorMapping} from './customErrorMap.js'
 const errorDecoder = ErrorDecoder.create();
 
 
 export enum ErrorCode {
   Invalid_Chain_ID = 1,
   Invalid_TOKEN_ADDRESS,
-  Insufficient_Balance =3,
+  Insufficient_Balance = 3,
   Insufficient_Amount_Of_Approved,
   USER_REJECTED_REQUEST = 4001,
   Invalid_Base,
   Invalid_slippage,
   Invalid_Amount,
   Invalid_Pool_State,
-  Invalid_Params
+  Invalid_Params,
+  Invalid_Amount_Withdrawable_Lp_Amount
 }
 
 export const Errors = {
@@ -26,7 +27,18 @@ export const Errors = {
   [ErrorCode.Invalid_slippage]: `Invalid Slippage`,
   [ErrorCode.Invalid_Amount]: `Invalid Amount`,
   [ErrorCode.Invalid_Pool_State]: `Invalid Pool State`,
-  [ErrorCode.Invalid_Params]: `Invalid Params`
+  [ErrorCode.Invalid_Params]: `Invalid Params`,
+  [ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]: `Invalid Amount Withdrawable LP Amount`,
+}
+function isUserRejected(error: any): boolean {
+  let err = error
+  
+  while (err) {
+    if (err.name === "UserRejectedRequestError") return true
+    err = err.cause
+  }
+  
+  return false
 }
 
 export function didUserReject(error: any): boolean {
@@ -38,43 +50,49 @@ export function didUserReject(error: any): boolean {
 }
 
 export async function getErrorTextFormError(error: any) {
-  if (didUserReject(error)) {
-    return {
-      error: Errors[ErrorCode.USER_REJECTED_REQUEST],
-    }
+  const message = error?.shortMessage ||
+    error?.details ||
+    error?.message
+  
+  if (typeof error === "string") {
+    return {error}
   }
   
-  const decodeErrorResult = await errorDecoder.decode(error)
-  console.log(decodeErrorResult)
-  if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
-    return {
-      error: Errors[ErrorCode.USER_REJECTED_REQUEST],
-    }
-  }
-  if (decodeErrorResult.type === ErrorType.CustomError) {
-    const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
-    if (errorKey) {
-      return {
-        error:{
-          code:  errorKey,
-          message:  customErrorMapping[errorKey]
-        },
-      }
-    }
-    return {
-      error: {
-        code: error?.code,
-        message: error?.reason || decodeErrorResult.reason || error.message
-      },
-    }
+  if(isUserRejected(error)) {
+    return {error: Errors[ErrorCode.USER_REJECTED_REQUEST]}
   }
   
-  // console.error(error)
+  // const decodeErrorResult = await errorDecoder.decode(error)
+  // // decodeErrorResult available for debugging if host sets log sink
+  // if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
+  //   return {
+  //     error: Errors[ErrorCode.USER_REJECTED_REQUEST],
+  //   }
+  // }
+  // if (decodeErrorResult.type === ErrorType.CustomError) {
+  //   const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
+  //   if (errorKey) {
+  //     return {
+  //       error:{
+  //         code:  errorKey,
+  //         message:  customErrorMapping[errorKey]
+  //       },
+  //     }
+  //   }
+  //   return {
+  //     error: {
+  //       code: error?.code,
+  //       message: error?.reason || decodeErrorResult.reason || error.message
+  //     },
+  //   }
+  // }
+  //
+  // // console.error(error)
   
   return {
     error: {
-      code: decodeErrorResult.type,
-      message: decodeErrorResult.reason
+      code: error?.code || error?.name || 'Unknow Error',
+      message
     },
   }
 }

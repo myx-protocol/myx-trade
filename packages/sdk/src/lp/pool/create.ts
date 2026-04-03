@@ -1,9 +1,10 @@
-import { CreatePoolRequest } from "@/lp/pool/type";
-import { getPoolManagerContract } from "../../web3/providers";
-import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas";
-import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error";
-import { CHAIN_INFO } from "@/config/chains/index";
-import {  getMarketPoolId } from "@/lp/pool/get";
+import { CreatePoolRequest } from "@/lp/pool/type.js";
+import { getPoolManagerContract } from "../../web3/providers.js";
+import { bigintTradingGasPriceWithRatio, bigintTradingGasToRatioCalculator } from "@/common/tradingGas.js";
+import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
+import { CHAIN_INFO } from "@/config/chains/index.js";
+import {  getMarketPoolId } from "@/lp/pool/get.js";
+import { getPublicClient } from "@/web3";
 
 export const createPool = async ({chainId, baseToken, marketId}:CreatePoolRequest) => {
   try {
@@ -22,28 +23,30 @@ export const createPool = async ({chainId, baseToken, marketId}:CreatePoolReques
     
     const chainInfo = CHAIN_INFO[chainId];
     const contract = await getPoolManagerContract(chainId)
-    
+
     const data =  { marketId, baseToken }
-    
-    const _gasLimit = await contract.deployPool.estimateGas(data)
+
+    const _gasLimit = await contract.estimateGas!.deployPool([data])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    console.log("gasLimit", _gasLimit, gasLimit);
+    // console.log("gasLimit", _gasLimit, gasLimit);
     
     const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    console.log("gasPrice", gasPrice)
+    // console.log("gasPrice", gasPrice)
     
-    const request = await contract.deployPool(data, {
+    const hash = await contract.write!.deployPool([data], {
       gasLimit,
       gasPrice
     })
-    const receipt = await request?.wait()
-    if (receipt?.hash) {
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+    
+   
+    if (receipt) {
       const poolId = await getMarketPoolId({chainId, baseToken, marketId})
       return poolId
     }
     // console.log(request)
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }
 }

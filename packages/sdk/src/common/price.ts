@@ -1,4 +1,4 @@
-import { getOraclePrice, OracleType, type PriceType } from "@/api";
+import { getOraclePrice, OracleType, type PriceType } from "@/api/index.js";
 import { ChainId } from "@/config/chain";
 import { isNil } from "lodash-es";
 // import {  getPythContract } from "@/web3/providers";
@@ -39,7 +39,7 @@ export const getPriceData = async (chainId: ChainId, poolId: string) => {
   const rs = await getOraclePrice(chainId, [poolId])
   const data = rs?.data?.[0]
   if (!data) {
-    throw new Error(`Unable to get price for ${poolId} in the deposit`)
+    throw new Error(`Unable to get price for ${poolId}`)
   }
 
   const result = await parsePriceData(chainId, [data])

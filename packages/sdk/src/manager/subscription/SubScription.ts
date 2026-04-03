@@ -1,20 +1,20 @@
-import { MyxWebSocketClient } from "./websocket/socket";
+import { MyxWebSocketClient } from "./websocket/socket.js";
 import {
   KlineResolution,
   WebSocketMethodEnum,
   WebSocketTopicEnum,
   WebSocketEvents,
-} from "./websocket/types";
+} from "./websocket/types.js";
 import {
   OnKlineCallback,
   OnOrderCallback,
   OnPositionCallback,
   OnTickersCallback,
-} from "./types";
+} from "./types/index.js";
 import { Logger } from "@/logger";
 import { ConfigManager } from "@/manager/config";
 import { WEBSOCKET_URL } from "@/manager/const";
-import { MyxErrorCode, MyxSDKError } from "../error/const";
+import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 
 export class SubScription {
   private wsClient: MyxWebSocketClient;
@@ -137,33 +137,41 @@ export class SubScription {
     );
   }
 
-  private async getAccessToken() {
-    const accessToken = await this.configManager.refreshAccessToken() ?? ''
-    this.logger.debug(`getAccessToken->${accessToken}`);
-    return accessToken;
+  private async getSdkAuthParams() {
+    const config = this.configManager.getConfig();
+    if (!this.configManager.hasSigner()) throw new MyxSDKError(MyxErrorCode.InvalidSigner);
+    const userAddress = await this.configManager.getSignerAddress(config.chainId);
+    if (!userAddress) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner);
+    }
+    return {
+      userAddress
+    }
   }
   private clientAuth = false;
-  private prevAccessToken = "";
+  private prevUserAddress: string | null = null;
   /**
    * with auth methods
    */
   public async auth(isReconnect = false) {
-    const token = await this.getAccessToken();
-    if (token === this.prevAccessToken && this.clientAuth && !isReconnect) {
+    const { userAddress } = await this.getSdkAuthParams();
+
+    if (userAddress === this.prevUserAddress && this.clientAuth && !isReconnect) {
       // client auth success
       return Promise.resolve();
     }
-    this.logger.debug(`auth ${token}`);
+
+    this.logger.debug(`sdkaccount: ${userAddress}`);
     await this.wsClient
       .request({
         request: WebSocketMethodEnum.SignIn,
-        args: `sdk.${token}`,
+        args: `sdkaccount.${userAddress}`,
       })
       .then(() => {
         // client auth success
-        this.logger.debug(`auth success ${token}`);
-        this.prevAccessToken = token;
+        this.logger.debug(`auth success ${userAddress}`);
         this.clientAuth = true;
+        this.prevUserAddress = userAddress;
       });
   }
 

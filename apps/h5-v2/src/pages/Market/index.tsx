@@ -60,7 +60,7 @@ const Market = () => {
 
   useEffect(() => {
     if (chainId && address && Markets?.length && !marketInfo) {
-      toast.error({ title: t`Invalid Market` })
+      showErrorToast(t`Invalid Market`)
     }
   }, [marketInfo, chainId, address, Markets?.length])
 
@@ -154,7 +154,7 @@ const Market = () => {
 
         const poolId = await pool.getMarketPoolId({
           chainId: +chainId,
-          baseToken: token.address,
+          baseToken: token.address as `0x${string}`,
           marketId: marketInfo?.marketId,
         })
 
@@ -167,14 +167,13 @@ const Market = () => {
             return
           }
           if (_pool) {
-            toast.success({ title: t`market is created` })
-            navigate(`/cook/${_pool.chainId}/${_pool.poolId}`)
-            // todo error pool yi created
+            toast.error({ title: t`market is created` })
+            return
           }
         } else {
           const poolId = await pool.createPool({
             chainId: +chainId,
-            baseToken: token.address,
+            baseToken: token.address as `0x${string}`,
             marketId: marketInfo?.marketId,
           })
           if (poolId && poolId.startsWith('0x')) {
@@ -218,6 +217,10 @@ const Market = () => {
 
     setStep(0)
   }, [chainId, address, curChainId])
+
+  useEffect(() => {
+    document.title = t`Create Market - Permissionless Listing for Any Asset | MYX`
+  }, [])
 
   return (
     <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pb-[50px]">

@@ -53,7 +53,6 @@ export const useGetPositionList = (filter: boolean = false) => {
       const filteredPositions = positions.filter((item: any) =>
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
-
       const positionsWithChainId = filteredPositions.filter(
         (item: any) => selectChainId === '0' || `${item.chainId}` === selectChainId,
       )

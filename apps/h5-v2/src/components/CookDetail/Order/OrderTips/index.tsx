@@ -1,19 +1,66 @@
 import IconHelp from '@/components/Icon/set/Help'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { Trans } from '@lingui/react/macro'
-import { MarketPoolState, market } from '@myx-trade/sdk'
+import { MarketPoolState } from '@myx-trade/sdk'
 import { formatNumberPercent } from '@/utils/formatNumber.ts'
 import { useCountDown } from 'ahooks'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { cutDownFormat } from '@/utils/timeFormat.ts'
 import dayjs from 'dayjs'
-import { useQuery } from '@tanstack/react-query'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
-import { MYX_DELISTING_RULES_LINK } from '@/config'
+import { MYX_CONTACT_SUPPORT, MYX_DELISTING_RULES_LINK } from '@/config/link'
+// import { Warning } from '@/components/Icon'
+import { PoolSecurityState } from '@/request/lp/type.ts'
 
+export const LPWarning = ({
+  className = '',
+  children,
+}: {
+  className?: string
+  children: ReactNode
+}) => {
+  return (
+    <div
+      className={`bg-warning-10 text-regular flex items-start rounded-[8px] border-[1px] border-[#202129] p-[12px] ${className}`}
+    >
+      <p className="inline-block text-[12px] leading-[1.5] font-[500]">
+        {/*<Warning size={14} className="mr-[4px] inline-block" />*/}
+        ⚠️ {children}
+      </p>
+    </div>
+  )
+}
+
+export const RiskWarning = ({ className = '' }: { className?: string }) => {
+  return (
+    <LPWarning className={className}>
+      <Trans>Security Warning:</Trans>{' '}
+      <Trans>
+        This token carries extreme risks. For asset safety, contract trading and liquidity provision
+        are not supported.{' '}
+        <a href={MYX_CONTACT_SUPPORT} className={'text-green'} target="_blank">
+          Contact support
+        </a>{' '}
+        for assistance.
+      </Trans>
+    </LPWarning>
+  )
+}
+export const SecurityWarning = ({ className = '' }: { className?: string }) => {
+  return (
+    <LPWarning className={className}>
+      <Trans>Security Notice:</Trans>{' '}
+      <Trans>
+        The security assessment for this token is incomplete. Providing liquidity or trading may
+        carry unknown risks. Proceed with caution at your own risk.
+      </Trans>
+    </LPWarning>
+  )
+}
 export const OrderTips = () => {
-  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl } = usePoolContext()
+  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
+    usePoolContext()
   const [targetDate, setTargetDate] = useState<number>()
   const [countdown] = useCountDown({
     targetDate,
@@ -22,35 +69,18 @@ export const OrderTips = () => {
     }, []),
   })
 
-  const { data } = useQuery({
-    queryKey: [
-      { key: 'getMarket' },
-      baseLpDetail?.marketId,
-      baseLpDetail?.chainId,
-      baseLpDetail?.state,
-      baseLpDetail?.totalTvl,
-    ],
-    enabled:
-      !!baseLpDetail?.marketId &&
-      !!baseLpDetail?.chainId &&
-      baseLpDetail?.state === MarketPoolState.Cook,
-    queryFn: async () => {
-      if (!baseLpDetail?.marketId || !baseLpDetail?.chainId) return ''
-      try {
-        const result = await market.getMarket(Number(baseLpDetail?.chainId), baseLpDetail?.marketId)
-
-        return result?.poolPrimeThreshold ? Number(result?.poolPrimeThreshold).toString() : ''
-      } catch (error) {
-        return ''
-      }
-    },
-  })
+  const data = useMemo(() => {
+    return (markets || []).find((market) => market.marketId === baseLpDetail?.marketId)
+      ?.poolPrimeThreshold
+  }, [markets, baseLpDetail])
 
   const genesis = useMemo(() => {
-    if (data) {
-      console.log(new Big(Number(data)).minus(new Big(tvl || '0')).toString())
-      const _genesis = new Big(Number(data)).minus(new Big(tvl || '0')).toString()
+    if (data && tvl) {
+      console.log(new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString())
+      const _genesis = new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString()
       return Number(_genesis) < 0 ? 0 : _genesis
+    } else {
+      return -1
     }
   }, [data, tvl])
 
@@ -66,9 +96,15 @@ export const OrderTips = () => {
   }, [baseLpDetail?.state, baseLpDetail?.poolPreTime])
 
   if (!baseLpDetail) return <></>
+  if (riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN) {
+    return <SecurityWarning className="mt-[20px]" />
+  }
+  if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) {
+    return <RiskWarning className="mt-[20px]" />
+  }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
-  if (baseLpDetail?.state === MarketPoolState.Cook && !data) return <></>
+  if (baseLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>
 
   return (
     <div className="bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">
@@ -109,7 +145,7 @@ export const OrderTips = () => {
             {baseLpDetail?.mBaseQuoteSymbol} market will be delisted in{' '}
             {cutDownFormat(dayjs.duration(countdown))}. After delisting, buys will be suspended.
             Your ability to sell will not be affected.{' '}
-            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK}>
+            <a className={'text-green'} href={MYX_DELISTING_RULES_LINK} target="_blank">
               {' '}
               View Delisting Rules
             </a>

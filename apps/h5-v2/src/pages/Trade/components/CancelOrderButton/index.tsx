@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
+import { showErrorToast } from '@/config/error'
 
 export const CancelOrderButton = ({ orderId, chainId }: { orderId: number; chainId: number }) => {
   const { client } = useMyxSdkClient(Number(chainId))
@@ -47,13 +48,11 @@ export const CancelOrderButton = ({ orderId, chainId }: { orderId: number; chain
                     title: t`Cancel order success`,
                   })
                 } else {
-                  toast.error({
-                    title: t`Cancel order failed`,
-                  })
+                  showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
                 setCancelOrderDialogOpen(false)
               } catch (e) {
-                console.log(e)
+                showErrorToast(e)
               } finally {
                 setLoading(false)
               }

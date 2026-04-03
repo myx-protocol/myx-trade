@@ -12,8 +12,9 @@ import { isSupportedChainFn } from '@/config/chain'
 import { useAccessParams } from '@/hooks/useAccessParams'
 import { SecondHeader } from '@/components/SecondHeader'
 import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 const Referrals = () => {
-  const { isConnected, address, chainId, switchChain } = useWalletConnection()
+  const { isConnected, chainId } = useWalletConnection()
   const [ratio, setRatio] = useState<number>(0)
 
   const location = useLocation()
@@ -26,6 +27,7 @@ const Referrals = () => {
     fetchRefReferrerInfo,
     setAccessParams,
     accessToken,
+    account,
   } = useReferralStore()
 
   const accessParams = useAccessParams()
@@ -38,7 +40,7 @@ const Referrals = () => {
 
   useEffect(() => {
     const checkReferral = async () => {
-      if (code && address && accessToken) {
+      if (code && (account || accessToken)) {
         await fetchRefReferrerInfo()
         const currentReferrer = useReferralStore.getState().referrerInfo
         if (!currentReferrer?.referrer) {
@@ -47,7 +49,7 @@ const Referrals = () => {
       }
     }
     checkReferral()
-  }, [code, address, accessToken, fetchRefReferrerInfo, setReceiveInviteDialogOpen])
+  }, [code, account, accessToken, fetchRefReferrerInfo, setReceiveInviteDialogOpen])
 
   // Logic to handle chain switch if needed
   useEffect(() => {
@@ -58,6 +60,7 @@ const Referrals = () => {
 
   return (
     <div>
+      <title>{t`Referral - Invite & Earn Lifetime Commissions | MYX`}</title>
       <SecondHeader title={<Trans>Referrals</Trans>} />
       <div className="flex justify-center bg-[#0B090B] px-4 pb-[50px] lg:px-5">
         <div className="flex w-full flex-col items-center lg:min-w-[1440px]">

@@ -65,12 +65,23 @@ export const LoginModal = () => {
         <div className="h-[1px] flex-1 bg-[#3A404A]" />
       </div>
       <div className="flex items-center justify-between">
-        {socialList.slice(0, 4).map((item) => (
+        {walletList.slice(0, 3).map((item) => (
+          <LoginItem
+            key={item.id}
+            label={item.name}
+            icon={item.icon}
+            id={item.id}
+            channel={LoginChannelEnum.WALLET}
+            isSingle
+            connectorId={item.connectorId}
+          />
+        ))}
+        {socialList.slice(0, 1).map((item) => (
           <LoginItem
             key={item.type}
             label={item.name}
             icon={item.icon}
-            id={item.id}
+            id={item.type}
             channel={LoginChannelEnum.SOCIAL}
             isSingle
             socialLoginType={item.socialLoginType}

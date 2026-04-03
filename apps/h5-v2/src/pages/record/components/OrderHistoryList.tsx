@@ -2,20 +2,21 @@ import { Empty } from '@/components/Empty'
 import { OrderHistoryItem } from '@/components/Record/Items/OrderHistory'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { usePositionStore } from '@/store/position/createStore'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
 
 export const OrderHistoryList = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { isWalletConnected, address } = useWalletConnection()
+  const { selectChainId } = usePositionStore()
   const { data: orderHistory, isLoading } = useQuery({
-    queryKey: ['orderHistory', address],
+    queryKey: ['orderHistory', address, selectChainId],
     enabled: Boolean(isWalletConnected && address && !!client && clientIsAuthenticated),
     queryFn: async () => {
       if (!client || !isWalletConnected) return null
       const res = await client.order.getOrderHistory(
         {
-          chainId: 0,
+          chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
           poolId: undefined,
         },
         address ?? '',

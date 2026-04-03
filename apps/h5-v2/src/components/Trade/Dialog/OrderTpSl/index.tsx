@@ -15,7 +15,7 @@ import { ethers } from 'ethers'
 import { Direction } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
-import { t } from '@lingui/core/macro'
+import { showErrorToast } from '@/config/error'
 
 export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any }) => {
   const [open, setOpen] = useState(false)
@@ -108,14 +108,10 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         reset()
         setOpen(false)
       } else {
-        toast.error({
-          title: t`${client?.utils.formatErrorMessage(rs)}`,
-        })
+        showErrorToast(client?.utils.formatErrorMessage(rs))
       }
     } catch (error) {
-      toast.error({
-        title: t`${client?.utils.formatErrorMessage(error)}`,
-      })
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }
@@ -133,7 +129,7 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
         }}
         onClick={() => setOpen(true)}
       >
-        <Trans>Edit</Trans>
+        <Trans>Edit TP/SL</Trans>
       </InfoButton>
       <DialogBase
         title={`Modify Order`}
@@ -148,13 +144,13 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
             paddingTop: '24px',
             paddingBottom: '24px',
           },
-          '& .MuiDialogTitle-root': {
-            marginLeft: '20px',
-            marginRight: '20px',
-          },
+          // '& .MuiDialogTitle-root': {
+          //   marginLeft: '20px',
+          //   marginRight: '20px',
+          // },
         }}
       >
-        <div className="px-[20px]">
+        <div>
           {/* tabs */}
           {/* <div className="mt-[6px]">
             <Tabs
@@ -177,8 +173,10 @@ export const OrderTpSlButton = ({ order, poolInfo }: { order: any; poolInfo: any
             entryPrice={formatNumber(order.price, { showUnit: false })}
           />
           {/* tpsl type */}
-          <TpslFormGroup order={order} type={'tp'} />
-          {activeTab === TpSlTabTypeEnum.TPAndSL && <TpslFormGroup order={order} type={'sl'} />}
+          <TpslFormGroup order={order} type={'tp'} currentPrice={marketPrice} />
+          {activeTab === TpSlTabTypeEnum.TPAndSL && (
+            <TpslFormGroup order={order} type={'sl'} currentPrice={marketPrice} />
+          )}
           {/* <TpslSlippage /> */}
           <div className="sticky bottom-0 flex items-center justify-between gap-[12px] bg-[#18191F] pt-[20px]">
             <InfoButton

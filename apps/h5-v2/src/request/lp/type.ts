@@ -9,7 +9,7 @@ import {
   PoolType,
   type Rating,
 } from '@/request/type.ts'
-import { type MarketPoolState, pool } from '@myx-trade/sdk'
+import { type MarketPoolState, TriggerType } from '@myx-trade/sdk'
 
 export interface PoolOpenOrder {
   amount: string
@@ -17,9 +17,9 @@ export interface PoolOpenOrder {
   minQuoteOut: string
   orderId: number
   poolId: string
-  poolType: pool.PoolType
+  poolType: PoolType
   triggerPrice: string
-  triggerType: pool.TriggerType
+  triggerType: TriggerType
   txTime: number
   user: string
 }
@@ -61,6 +61,7 @@ export interface NewCook {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 
 export interface CookNewsResponse extends BaseResponse {
@@ -81,6 +82,7 @@ export interface CookSoon {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 export interface CookSoonResponse extends BaseResponse {
   data: CookSoon[]
@@ -127,6 +129,7 @@ export interface Trench {
   marketId: string
   apr: string
   symbol: string
+  oiAmount?: string
 }
 
 export interface TrenchResponse extends BaseResponse {
@@ -205,6 +208,7 @@ export interface BaseLpDetail {
   apr: string
   globalId: number
   mBaseQuoteSymbol: string
+  mQuoteBaseSymbol: string
   state: MarketPoolState
   poolPreTime: number
   totalTvl: string
@@ -261,6 +265,7 @@ export interface LpPriceHistoryRequest {
   token: string
   interval: PriceInterval
   limit: number
+  poolType: PoolType
 }
 
 export interface LpPriceHistory {
@@ -362,6 +367,13 @@ export interface MarketPoolStateDataResponse extends BaseResponse {
   data: MarketPoolStateData[]
 }
 
+export enum PoolSecurityState {
+  UNKNOWN = 0,
+  SECURITY = 1,
+  NOT_SECURITY = 2,
+  ALLOW_PRIME = 9,
+}
+
 export interface LevelConfig {
   levelId: number
   name: Rating
@@ -384,8 +396,13 @@ export interface MarketPoolRiskLevelConfig {
   level: number
   levelConfig: LevelConfig
   levelName: Rating
+  securityState: PoolSecurityState
 }
 
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
   data: MarketPoolRiskLevelConfig
+}
+
+export interface MarketPoolPriceResponse extends BaseResponse {
+  data: string
 }
