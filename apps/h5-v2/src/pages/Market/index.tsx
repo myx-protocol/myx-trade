@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { isAddress, zeroAddress } from 'viem'
 import { TokenContext } from './context'
 import { useQuery } from '@tanstack/react-query'
-import { getTokenInfo, MarketPoolState, pool } from '@myx-trade/sdk'
+import { getTokenInfo, MarketPoolState, pool, type Address } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { toast } from '@/components/UI/Toast'
@@ -154,7 +154,7 @@ const Market = () => {
 
         const poolId = await pool.getMarketPoolId({
           chainId: +chainId,
-          baseToken: token.address,
+          baseToken: token.address as Address,
           marketId: marketInfo?.marketId,
         })
 
@@ -173,7 +173,7 @@ const Market = () => {
         } else {
           const poolId = await pool.createPool({
             chainId: +chainId,
-            baseToken: token.address,
+            baseToken: token.address as Address,
             marketId: marketInfo?.marketId,
           })
           if (poolId && poolId.startsWith('0x')) {

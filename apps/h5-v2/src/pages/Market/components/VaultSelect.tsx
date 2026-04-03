@@ -34,6 +34,7 @@ import { scientificToString } from '@/utils/math.ts'
 import { PoolSecurityState } from '@/request/lp/type.ts'
 import { usePoolRiskConfig } from '@/hooks/lp/usePoolDetail.ts'
 import { MYX_CONTACT_SUPPORT } from '@/config'
+import { isNil } from 'lodash-es'
 
 enum VaultType {
   Base,
@@ -194,7 +195,7 @@ export const VaultSelect = ({
       const address = type === VaultType.Base ? token?.address : quote?.address
       const decimals = type === VaultType.Base ? token?.decimals : quote?.decimals
 
-      if (!address || !account || !chainId) return
+      if (!address || !account || !chainId || isNil(decimals)) return
       try {
         const bigintBalance = await getBalanceOf(+chainId, account, address)
         const _balance = formatUnits(bigintBalance, decimals)

@@ -9,7 +9,7 @@ import {
   PoolType,
   type Rating,
 } from '@/request/type.ts'
-import { type MarketPoolState, pool } from '@myx-trade/sdk'
+import { type MarketPoolState, type TriggerType } from '@myx-trade/sdk'
 
 export interface PoolOpenOrder {
   amount: string
@@ -17,9 +17,9 @@ export interface PoolOpenOrder {
   minQuoteOut: string
   orderId: number
   poolId: string
-  poolType: pool.PoolType
+  poolType: PoolType
   triggerPrice: string
-  triggerType: pool.TriggerType
+  triggerType: TriggerType
   txTime: number
   user: string
 }
@@ -141,6 +141,7 @@ export interface QuotePoolListRequest extends PageRequest {
   chainId?: number
   sortField?: QuoteLPSortField
   sortOrder?: SortOrder
+  state?: 0 | 1 // 0=all status market, 1=active market
 }
 
 export interface QuotePool {
@@ -268,6 +269,11 @@ export interface LpPriceHistoryRequest {
   poolType: PoolType
 }
 
+export type LineChartsRequestParams = Pick<
+  LpPriceHistoryRequest,
+  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
+>
+
 export interface LpPriceHistory {
   time: number
   value: string
@@ -275,6 +281,20 @@ export interface LpPriceHistory {
 
 export interface LpPriceHistoryResponse extends BaseResponse {
   data: LpPriceHistory[]
+}
+
+export interface TvlHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    tvl: string
+  }>
+}
+
+export interface ExchangeRateHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    exchangeRate: string
+  }>
 }
 
 export interface QuoteAprTop {
