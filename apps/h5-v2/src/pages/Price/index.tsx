@@ -17,6 +17,7 @@ import { getPoolLevelConfig } from '@/api'
 import { t } from '@lingui/core/macro'
 import { decimalToPercent, formatNumber } from '@/utils/number'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { TradeConfig } from './components/TradeConfig'
 
 const Price = () => {
   const { tab } = usePriceStore()
@@ -100,6 +101,7 @@ const Price = () => {
       {tab === PriceTabEnum.Price ? <PriceContent /> : <></>}
       {tab === PriceTabEnum.Pool ? <PoolContent /> : <></>}
       {tab === PriceTabEnum.Info ? <InfoContent /> : <></>}
+      {tab === PriceTabEnum.TradeConfig ? <TradeConfig /> : <></>}
     </div>
   )
 }

@@ -5,13 +5,6 @@ import { type MarketInfo, type MarketPool } from '@myx-trade/sdk'
 import { Interval } from '@/request/type.ts'
 import { Mode } from '@/pages/Cook/type.ts'
 
-export interface ChartContextValue {
-  period: ChartInterval
-  setPeriod: (period: ChartInterval) => void
-}
-
-export const ChartContext = createContext<ChartContextValue>({} as ChartContextValue)
-
 export interface PoolContextValue {
   pool?: MarketPool
   chainId: number

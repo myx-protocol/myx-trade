@@ -32,7 +32,12 @@ echarts.use([
 
 export { echarts }
 
-export const formatter = (interval: ChartInterval, params: any[]) => {
+interface FormatterParams {
+  label?: string
+  value?: (value: any) => string
+}
+
+export const formatter = (interval: ChartInterval, params: any[], formater?: FormatterParams) => {
   const param = params[0]
   const time = param.data[0]
   const data = param.data[1]
@@ -42,9 +47,9 @@ export const formatter = (interval: ChartInterval, params: any[]) => {
                    <p style="color: #848E9C;fontSize: 12">${dayjs(date)
                      .utc()
                      .format(`YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''))}</p>
-                   <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${i18n._(
-                     t`Price`,
-                   )} <span style="color: white">${formatNumber(data, { showUnit: false })}
+                   <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${
+                     formater?.label ?? i18n._(t`Price`)
+                   } <span style="color: white">${formater?.value ? formater.value(data) : formatNumber(data, { showUnit: false })}
                   </span></p>
                 </div>`
 }
@@ -53,6 +58,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
   interval: ChartInterval,
   list: T[] = [],
   options: EChartsOption = {},
+  formater?: FormatterParams,
 ) => {
   let now = dayjs().utc().valueOf()
   const ONE_DAY = 24 * 60 * 60 * 1000
@@ -115,7 +121,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       backgroundColor: '#2D3138',
       borderRadius: 8,
       borderWidth: 0,
-      formatter: (params: any[]) => formatter(interval, params),
+      formatter: (params: any[]) => formatter(interval, params, formater),
       axisPointer: {
         type: 'line',
         lineStyle: {

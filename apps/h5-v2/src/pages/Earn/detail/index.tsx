@@ -33,7 +33,7 @@ const Detail = () => {
           {type === DetailTabType.Price && (
             <>
               <Chart className={'px-[16px]'} />
-              <TokenInfo className={'border-base mx-[16px] mt-[16px] border-b-1 py-[20px]'} />
+              <TokenInfo className={'border-base mx-[16px] mt-[12px] border-b pb-[20px]'} />
               <TradingInfo className={'px-[16px] py-[20px]'} />
             </>
           )}

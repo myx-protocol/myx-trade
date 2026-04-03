@@ -406,3 +406,22 @@ export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
 export interface MarketPoolPriceResponse extends BaseResponse {
   data: string
 }
+
+export type LineChartsRequestParams = Pick<
+  LpPriceHistoryRequest,
+  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
+>
+
+export interface TvlHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    tvl: string
+  }>
+}
+
+export interface ExchangeRateHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    exchangeRate: string
+  }>
+}
