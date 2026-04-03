@@ -2,6 +2,7 @@ import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { Trans } from '@lingui/react/macro'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useMemo, useState } from 'react'
+
 import { t } from '@lingui/core/macro'
 import ChangePosition from '@/components/Icon/set/ChangePosition'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -12,18 +13,24 @@ import { InfoIcon } from '@/components/UI/Icon'
 import { toast } from '@/components/UI/Toast'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { parseBigNumber } from '@/utils/bn'
-import usdcIcon from '@/assets/icon/chainIcon/usdc.svg'
-import usdtIcon from '@/assets/icon/chainIcon/usdt.svg'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { useBoolean } from 'ahooks'
 import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { AmountUnitEnum } from '../../type'
-import { MenuItem, Select, Tooltip } from '@mui/material'
-import useGlobalStore from '@/store/globalStore'
+import { MenuItem, Select } from '@mui/material'
+import { useGetPoolList } from '../../hooks/use-get-pool-list'
 import dayjs from 'dayjs'
+import { Tooltips } from '@/components/UI/Tooltips'
 import { getQuoteTokenInfo } from '@/config/token'
+import { showErrorToast } from '@/config/error'
+import useGlobalStore from '@/store/globalStore'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
+import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import { TradeMode } from '@/pages/Trade/types'
+import type { SeamlessAccount } from '@/store/seamless/initialState'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -34,17 +41,21 @@ type TransferType = (typeof TransferType)[keyof typeof TransferType]
 
 export const TransferDialogButton = () => {
   const [loading, setLoading] = useState(false)
-
   const [open, setOpen] = useState(false)
-  const { symbolInfo } = useGlobalStore()
+  const { tradeMode, symbolInfo } = useGlobalStore()
+
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { address } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const [transferType, setTransferType] = useState<TransferType>(TransferType.Account)
   const [amount, setAmount] = useState<string>('')
-  const { poolList } = useGlobalStore()
+  const { poolList } = useGetPoolList()
   const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
+
+  const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
+  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
+  const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
 
   const releaseTime = accountAssets.releaseTime
   const isExpired = dayjs().unix() > releaseTime
@@ -56,6 +67,9 @@ export const TransferDialogButton = () => {
   const handleTransfer = async () => {
     if (!symbolInfo?.chainId || !client) return
     setIsSwitchNetworkTrue()
+    setAmount('')
+    setTransferType(TransferType.Account)
+    setTokenType(AmountUnitEnum.QUOTE)
     checkWalletChainId(symbolInfo.chainId).then(() => {
       setIsSwitchNetworkFalse()
       setOpen(true)
@@ -86,9 +100,9 @@ export const TransferDialogButton = () => {
 
   return (
     <>
-      <PrimaryButton className="w-full" onClick={handleTransfer} loading={isSwitchNetwork}>
+      <InfoButton className="w-full" onClick={handleTransfer} loading={isSwitchNetwork}>
         <Trans>Transfer</Trans>
-      </PrimaryButton>
+      </InfoButton>
       {open && (
         <DialogBase
           title={t`Transfer`}
@@ -100,9 +114,13 @@ export const TransferDialogButton = () => {
               paddingRight: 0,
               width: '390px',
             },
+            '& .MuiDialogTitle-root': {
+              paddingLeft: '20px',
+              marginRight: '20px',
+            },
           }}
         >
-          <div className="pt-[16px]">
+          <div className="px-[16px]">
             <div className="flex items-center justify-between gap-[16px] rounded-[16px] bg-[#202129] p-[16px]">
               <div className="flex-1">
                 <div className="flex w-full items-center gap-[12px] py-[10px]">
@@ -115,20 +133,18 @@ export const TransferDialogButton = () => {
                     </span>
                   ) : (
                     <span className="text-[14px] font-[500] text-[#fff]">
-                      {symbolInfo?.baseSymbol}
-                      {symbolInfo?.quoteSymbol} <Trans>Margin Account</Trans>
+                      <Trans>Margin Account</Trans>
                     </span>
                   )}
                 </div>
-                <div className="w-full border-t-[1px] border-[#31333D]"></div>
+                <div className="my-[5px] w-full border-t-[1px] border-[#31333D]"></div>
                 <div className="flex w-full items-center gap-[12px] py-[10px]">
                   <p className="w-[40px] text-[14px] font-[400] text-[#848E9C]">
                     <Trans>To</Trans>
                   </p>
                   {transferType === TransferType.Wallet ? (
                     <span className="text-[14px] font-[500] text-[#fff]">
-                      {symbolInfo?.baseSymbol}
-                      {symbolInfo?.quoteSymbol} <Trans>Margin Account</Trans>
+                      <Trans>Margin Account</Trans>
                     </span>
                   ) : (
                     <span className="text-[14px] font-[500] text-[#fff]">
@@ -158,7 +174,9 @@ export const TransferDialogButton = () => {
               {transferType === TransferType.Wallet ? (
                 <div className="mt-[12px] flex items-center gap-[8px]">
                   <img
-                    src={getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)?.logoUrl}
+                    src={
+                      getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)?.logoUrl ?? ''
+                    }
                     alt=""
                     className="h-[20px] w-[20px]"
                   />
@@ -179,8 +197,8 @@ export const TransferDialogButton = () => {
                         <img
                           src={
                             isQuote
-                              ? getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)
-                                  ?.logoUrl
+                              ? (getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)
+                                  ?.logoUrl ?? '')
                               : pool?.baseTokenIcon
                           }
                           alt=""
@@ -250,7 +268,8 @@ export const TransferDialogButton = () => {
                       <div className="flex items-center gap-[12px]">
                         <img
                           src={
-                            getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)?.logoUrl
+                            getQuoteTokenInfo(symbolInfo?.chainId, symbolInfo?.quoteToken)
+                              ?.logoUrl ?? ''
                           }
                           alt=""
                           className="h-[20px] w-[20px]"
@@ -336,7 +355,7 @@ export const TransferDialogButton = () => {
               <p className="text-[14px] font-[500] text-[#848E9C]">
                 <Trans>Amount</Trans>
               </p>
-              <div className="flex items-center gap-[4px]">
+              <div className="mt-[4px] flex items-center gap-[4px]">
                 <NumberInputPrimitive
                   className="text-[24px] font-[500] text-[white]"
                   value={amount}
@@ -366,7 +385,7 @@ export const TransferDialogButton = () => {
               </div>
             </div>
             <div className="mt-[18px] flex items-center justify-between rounded-[16px]">
-              <span className="text-[14px] font-[500] text-[#848E9C]">
+              <span className="text-[12px] font-[500] text-[#848E9C]">
                 <Trans>Available</Trans>
               </span>
               <div className="flex items-center gap-[8px] text-[12px]">
@@ -383,15 +402,17 @@ export const TransferDialogButton = () => {
                       : symbolInfo?.baseSymbol}
                   </span>
                 )}
-                <Tooltip
+                <Tooltips
                   title={
                     transferType === TransferType.Wallet
                       ? t`钱包内可划转至保证金账户的余额`
                       : t`保证金账户可划转到钱包的余额`
                   }
                 >
-                  <InfoIcon className="h-[16px] w-[16px]" />
-                </Tooltip>
+                  <div>
+                    <InfoIcon className="h-[12px] w-[12px] cursor-pointer" />
+                  </div>
+                </Tooltips>
               </div>
             </div>
             <div className="mt-[20px]">
@@ -417,6 +438,108 @@ export const TransferDialogButton = () => {
 
                   try {
                     setLoading(true)
+
+                    if (tradeMode === TradeMode.Seamless) {
+                      const seamlessAccount = seamlessAccountList.find(
+                        (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
+                      )
+                      if (!seamlessAccount) {
+                        return
+                      }
+
+                      const isAuthorizedRes = await getSeamlessAuthStatus({
+                        masterAddress: activeSeamlessAddress,
+                        seamlessAddress: seamlessAccount.seamlessAddress,
+                        chainId: symbolInfo?.chainId as number,
+                        tokenAddress: symbolInfo?.quoteToken as string,
+                      })
+                      const isAuthorized = isAuthorizedRes?.data?.auth
+                      if (!isAuthorized) {
+                        toast.error({ title: t`Seamless account not authorized` })
+                      }
+
+                      if (transferType === TransferType.Wallet) {
+                        if (
+                          parseBigNumber(amount.toString()).gt(
+                            parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0'),
+                          )
+                        ) {
+                          toast.error({ title: t`Insufficient Balance` })
+                          return
+                        }
+                        const formatAmount = ethers.parseUnits(
+                          amount,
+                          symbolInfo?.quoteDecimals ?? 6,
+                        )
+
+                        const rs = await forwardSeamlessTransaction({
+                          chainId: symbolInfo?.chainId as number,
+                          masterAddress: activeSeamlessAddress,
+                          seamlessAddress: seamlessAccount.seamlessAddress,
+                          forwardFeeToken: symbolInfo?.quoteToken as string,
+                          functionName: 'deposit',
+                          orderParams: [
+                            activeSeamlessAddress,
+                            symbolInfo?.quoteToken as string,
+                            formatAmount.toString(),
+                          ],
+                        })
+
+                        if (rs?.code === 0) {
+                          toast.success({ title: t`Transfer Success` })
+                          setOpen(false)
+                        } else {
+                          showErrorToast(client?.utils.formatErrorMessage(rs))
+                        }
+                      } else {
+                        const formatAmount = ethers.parseUnits(
+                          amount,
+                          tokenType === AmountUnitEnum.QUOTE
+                            ? (symbolInfo?.quoteDecimals ?? 6)
+                            : (symbolInfo?.baseDecimals ?? 6),
+                        )
+                        let maxAmount = '0'
+                        if (tokenType === AmountUnitEnum.QUOTE) {
+                          if (isExpired) {
+                            maxAmount =
+                              parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                                .plus(parseBigNumber(accountAssets?.quoteProfit)?.toString() ?? '0')
+                                ?.toString() ?? '0'
+                          } else {
+                            maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
+                          }
+                        } else {
+                          maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                        }
+                        if (parseBigNumber(amount.toString()).gt(parseBigNumber(maxAmount))) {
+                          toast.error({ title: t`Insufficient Balance` })
+                          return
+                        }
+
+                        const rs = await forwardSeamlessTransaction({
+                          chainId: symbolInfo?.chainId as number,
+                          masterAddress: activeSeamlessAddress,
+                          seamlessAddress: seamlessAccount.seamlessAddress,
+                          forwardFeeToken: symbolInfo?.quoteToken as string,
+                          functionName: 'updateAndWithdraw',
+                          orderParams: [
+                            activeSeamlessAddress,
+                            symbolInfo?.poolId as string,
+                            tokenType === AmountUnitEnum.QUOTE,
+                            formatAmount.toString(),
+                          ],
+                        })
+
+                        if (rs?.code === 0) {
+                          toast.success({ title: t`Transfer Success` })
+                          setOpen(false)
+                        } else {
+                          showErrorToast(client?.utils.formatErrorMessage(rs))
+                        }
+                      }
+
+                      return
+                    }
                     if (transferType === TransferType.Wallet) {
                       if (
                         parseBigNumber(amount.toString()).gt(
@@ -437,7 +560,7 @@ export const TransferDialogButton = () => {
                         toast.success({ title: t`Transfer Success` })
                         setOpen(false)
                       } else {
-                        toast.error({ title: t`Transfer Failed` })
+                        showErrorToast(client?.utils.formatErrorMessage(rs))
                       }
                     } else {
                       const formatAmount = ethers.parseUnits(
@@ -463,24 +586,22 @@ export const TransferDialogButton = () => {
                         toast.error({ title: t`Insufficient Balance` })
                         return
                       }
-                      const rs = await client?.account.withdraw({
-                        poolId: symbolInfo?.poolId as string,
-                        chainId: symbolInfo?.chainId as number,
-                        receiver: address as string,
-                        amount: formatAmount.toString(),
-                        isQuoteToken: tokenType === AmountUnitEnum.QUOTE,
-                      })
+                      const rs = await client?.account.updateAndWithdraw(
+                        address as string,
+                        symbolInfo?.poolId as string,
+                        tokenType === AmountUnitEnum.QUOTE,
+                        formatAmount.toString(),
+                        symbolInfo?.chainId as number,
+                      )
                       if (rs?.code === 0) {
                         toast.success({ title: t`Transfer Success` })
                         setOpen(false)
                       } else {
-                        console.log('rs-->', rs)
-                        toast.error({ title: t`Transfer Failed` })
+                        showErrorToast(client?.utils.formatErrorMessage(rs))
                       }
                     }
                   } catch (e) {
-                    console.log(e)
-                    toast.error({ title: t`Transfer Failed` })
+                    showErrorToast(e)
                   } finally {
                     setLoading(false)
                   }

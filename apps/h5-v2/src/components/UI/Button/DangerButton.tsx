@@ -1,5 +1,6 @@
 import { Button, CircularProgress } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
+import loadingIcon from '@/assets/icon/loading.svg'
 
 interface DangerButtonProps {
   children: React.ReactNode
@@ -36,7 +37,7 @@ const DangerButton = ({
     textTransform: 'none',
     whiteSpace: 'nowrap',
     position: 'relative',
-
+    opacity: loading ? 0.6 : 1,
     '&:hover': {
       backgroundImage:
         'linear-gradient(135deg, #A52A3E 0%, #9E3D3D 100%), linear-gradient(135deg, #F6627680 0%, #EC645E80 100%)', // 悬停时稍微变暗
@@ -51,20 +52,10 @@ const DangerButton = ({
       sx={defaultSx}
       disabled={disabled || loading}
     >
-      <span style={{ visibility: loading ? 'hidden' : 'visible' }}>{children}</span>
-      {loading && (
-        <CircularProgress
-          size={20}
-          sx={{
-            color: 'white',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-10px',
-            marginLeft: '-10px',
-          }}
-        />
-      )}
+      <div className="flex items-center justify-center gap-[10px]">
+        {loading && <img src={loadingIcon} className="animate-spin" />}
+        <div className="text-[white]">{children}</div>
+      </div>
     </Button>
   )
 }

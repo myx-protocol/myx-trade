@@ -4,10 +4,11 @@ import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals'
+import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 
-export const useGetFundingFee = (poolId: string, chainId: number) => {
-  const { data: poolInfo } = usePoolInfo({ poolId, chainId })
-
+export const useGetFundingFee = (poolId: string) => {
+  const { poolList } = useGetPoolList()
+  const poolInfo = poolList.find((item: any) => item.poolId === poolId)
   const getFundingFee = useCallback(
     (fundingRateIndexEntry: string, size: string, direction: Direction) => {
       const lastFundingFeeTracker = ethers.formatUnits(

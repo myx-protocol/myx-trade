@@ -20,6 +20,7 @@ import { verifyTpSlPrice } from '@/utils/verify'
 import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import useSWR from 'swr'
+import { showErrorToast } from '@/config/error'
 
 export const RenderLiqPrice = ({
   position,
@@ -159,10 +160,10 @@ export const TpSlButton = ({ position, poolInfo }: { position: any; poolInfo: an
         reset()
         setOpen(false)
       } else {
-        toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
+        showErrorToast(client?.utils.formatErrorMessage(rs))
       }
     } catch (error) {
-      toast.error({ title: t`${client?.utils.formatErrorMessage(error)}` })
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }

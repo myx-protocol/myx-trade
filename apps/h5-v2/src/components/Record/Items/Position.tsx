@@ -28,7 +28,7 @@ export const PositionItem = ({
   marketPrice: string
   pool: any
 }) => {
-  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
+  const { getFundingFee } = useGetFundingFee(position.poolId)
 
   const { data: fundingFee } = useSWR(
     `getFundingFee-${position.positionId}`,

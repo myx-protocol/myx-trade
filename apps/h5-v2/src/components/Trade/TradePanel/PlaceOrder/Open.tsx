@@ -17,12 +17,21 @@ interface OpenPositionProps {
 }
 
 export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
-  const { longSize, shortSize, amountUnit } = useTradePanelStore()
+  const { longSize, shortSize, amountUnit, price } = useTradePanelStore()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
-  const { symbolInfo } = useGlobalStore()
-  const { submitOrder, submitLongLoading, submitShortLoading } = useSubmitOrder()
+  const { symbolInfo, poolConfig } = useGlobalStore()
+  const {
+    submitOrder,
+    submitLoadingLong,
+    submitLoadingShort,
+    longAsyncVipLoading,
+    shortAsyncVipLoading,
+  } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
+  const minOrderSizeInUsd = parseBigNumber(poolConfig?.levelConfig?.minOrderSizeInUsd ?? 0)
+  const safePrice = parseBigNumber(price ?? '1').eq(0) ? parseBigNumber('1') : parseBigNumber(price)
 
+  const minOrderSize = minOrderSizeInUsd.div(parseBigNumber(safePrice))
   const displayLongSize = useMemo(() => {
     if (!showOrderSize) return '0'
     if (parseBigNumber(longSize).eq(0)) {
@@ -64,7 +73,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
       <PrimaryButton
-        loading={submitLongLoading}
+        loading={submitLoadingLong || longAsyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -77,7 +86,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
-              title: t`open  amount must be greater than 0`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
             })
             return
           }
@@ -95,6 +104,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
             return
           }
 
+          const minSize = amountUnit === AmountUnitEnum.BASE ? minOrderSize : minOrderSizeInUsd
+
+          if (parseBigNumber(longSize).lt(minSize)) {
+            toast.error({
+              title: t`Order size must be greater than the minimum required`,
+            })
+            return
+          }
+
           if (showPlaceOrderConfirmDialog) {
             setPlaceOrderConfirmDialogOpen('LONG')
             return
@@ -103,9 +121,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          <p>
-            <Trans>Open Long</Trans>
-          </p>
+          {submitLoadingLong ? (
+            <Trans>Confirming</Trans>
+          ) : longAsyncVipLoading ? (
+            <Trans>Update VIP</Trans>
+          ) : (
+            <p>
+              <Trans>Open Long</Trans>
+            </p>
+          )}
           {showOrderSize && parseBigNumber(longSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayLongSize}
@@ -114,7 +138,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         </div>
       </PrimaryButton>
       <DangerButton
-        loading={submitShortLoading}
+        loading={submitLoadingShort || shortAsyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -127,7 +151,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         onClick={() => {
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({
-              title: t`open amount must be greater than 0`,
+              title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
             })
             return
           }
@@ -145,6 +169,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
             return
           }
 
+          const minSize = amountUnit === AmountUnitEnum.BASE ? minOrderSize : minOrderSizeInUsd
+
+          if (parseBigNumber(shortSize).lt(minSize)) {
+            toast.error({
+              title: t`Order size must be greater than the minimum required`,
+            })
+            return
+          }
+
           if (showPlaceOrderConfirmDialog) {
             setPlaceOrderConfirmDialogOpen('SHORT')
             return
@@ -153,9 +186,15 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          <p>
-            <Trans>Open Short</Trans>
-          </p>
+          {submitLoadingShort ? (
+            <Trans>Confirming</Trans>
+          ) : shortAsyncVipLoading ? (
+            <Trans>Update VIP</Trans>
+          ) : (
+            <p>
+              <Trans>Open Short</Trans>
+            </p>
+          )}
           {showOrderSize && parseBigNumber(shortSize).gt(0) && (
             <p className="mt-[4px] text-[10px] leading-[16px] text-[rgba(255,255,255,0.80)]">
               {displayShortSize}

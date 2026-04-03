@@ -27,7 +27,6 @@ export const AccountDialog = () => {
   const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { disconnect } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
@@ -58,11 +57,11 @@ export const AccountDialog = () => {
             </div>
             <div className="flex items-center gap-[4px]">
               <span className="mt-[2px] text-[14px] font-[500] text-[#848E9C]">
+                $
                 {formatNumber(accountAssets?.availableMargin?.toString() ?? '--', {
                   decimals: 2,
                   showUnit: false,
                 })}{' '}
-                {symbolInfo?.quoteSymbol ?? 'USDC'}
               </span>
             </div>
           </div>
@@ -76,7 +75,6 @@ export const AccountDialog = () => {
                 backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
               }}
               onClick={async () => {
-                await client?.seamless.startSeamlessMode({ open: false })
                 setTradeMode(TradeMode.Classic)
               }}
             >{t`Classic`}</p>

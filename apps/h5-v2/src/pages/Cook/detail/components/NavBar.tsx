@@ -10,6 +10,7 @@ import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrece
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Cook/type.ts'
 import { formatNumber } from '@/utils/number.ts'
+import { SearchTypeEnum } from '@myx-trade/sdk'
 
 export const NavBar = ({
   className,
@@ -69,7 +70,14 @@ export const NavBar = ({
                 {baseLpDetail?.mBaseQuoteSymbol}
               </span>
 
-              <Box className={'text-secondary'} onClick={() => openGlobalSearch()}>
+              <Box
+                className={'text-secondary'}
+                onClick={() =>
+                  openGlobalSearch({
+                    defaultTab: SearchTypeEnum.Cook,
+                  })
+                }
+              >
                 <Dropdown size={10} />
               </Box>
             </Box>

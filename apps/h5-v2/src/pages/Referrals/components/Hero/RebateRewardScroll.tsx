@@ -55,8 +55,8 @@ function RebateRewardCard({ info }: { info: RefClaimRecordInfo }) {
   return (
     <div className="mx-2 flex items-center gap-1 rounded-full bg-[#202129] px-3 py-2 text-[#CED1D9]">
       <User size={14} className="text-[14px]" />
-      <div className="text-xs leading-none">{encryptionAddress(info.account)}</div>
-      <div className="text-xs leading-none">
+      <div className="text-[12px] leading-none">{encryptionAddress(info.account)}</div>
+      <div className="text-[12px] leading-none">
         <Trans>
           claimed{' '}
           <span className="font-bold text-[#FFD700]">

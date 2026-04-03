@@ -12,6 +12,7 @@ import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import useGlobalStore from '@/store/globalStore'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
+import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
 const ValueLabelComponent = (props: any) => {
   const { children, value } = props
@@ -74,7 +75,7 @@ const AmountSliderMarks = [
 ]
 
 export const AmountInput = () => {
-  const { symbolInfo } = useGlobalStore()
+  const { symbolInfo, shareCollateral } = useGlobalStore()
   const [useSlider, setUseSlider] = useState(false)
   const {
     collateralAmount,
@@ -93,6 +94,8 @@ export const AmountInput = () => {
   const leverage = useLeverage(symbolInfo?.poolId)
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
+  const { longPositionAvailableMargin, shortPositionAvailableMargin } =
+    useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
 
   useEffect(() => {
     if (!useSlider) return
@@ -124,29 +127,46 @@ export const AmountInput = () => {
           setShortSize(shortSize)
         }
       } else {
-        const balance = parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
+        const longBalance = parseBigNumber(collateralAmount)
+          .plus(shareCollateral ? parseBigNumber(longPositionAvailableMargin) : 0)
+          .mul(parseBigNumber(leverage))
+          .toString()
+        const shortBalance = parseBigNumber(collateralAmount)
+          .plus(shareCollateral ? parseBigNumber(shortPositionAvailableMargin) : 0)
+          .mul(parseBigNumber(leverage))
+          .toString()
 
         if (amountUnit === AmountUnitEnum.QUOTE) {
-          const openSize = parseBigNumber(sliderValue)
+          const openSizeForLong = parseBigNumber(sliderValue)
             .div(100)
-            .mul(parseBigNumber(balance))
+            .mul(parseBigNumber(longBalance))
             .toString()
-
-          setLongSize(openSize)
-          setShortSize(openSize)
+          const openSizeForShort = parseBigNumber(sliderValue)
+            .div(100)
+            .mul(parseBigNumber(shortBalance))
+            .toString()
+          setLongSize(openSizeForLong)
+          setShortSize(openSizeForShort)
         } else {
           if (parseBigNumber(price).eq(0)) {
             setLongSize('0')
             setShortSize('0')
           } else {
-            const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
-            const openSize = parseBigNumber(sliderValue)
+            const maxSizeForLong = parseBigNumber(longBalance).div(parseBigNumber(price)).toString()
+            const maxSizeForShort = parseBigNumber(shortBalance)
+              .div(parseBigNumber(price))
+              .toString()
+            const openSizeForLong = parseBigNumber(sliderValue)
               .div(100)
-              .mul(parseBigNumber(maxSize))
+              .mul(parseBigNumber(maxSizeForLong))
+              .toString()
+            const openSizeForShort = parseBigNumber(sliderValue)
+              .div(100)
+              .mul(parseBigNumber(maxSizeForShort))
               .toString()
 
-            setLongSize(openSize)
-            setShortSize(openSize)
+            setLongSize(openSizeForLong)
+            setShortSize(openSizeForShort)
           }
         }
       }
@@ -188,6 +208,9 @@ export const AmountInput = () => {
     collateralAmount,
     leverage,
     price,
+    shareCollateral,
+    longPositionAvailableMargin,
+    shortPositionAvailableMargin,
   ])
 
   return (
