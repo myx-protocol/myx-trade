@@ -27,7 +27,6 @@ export const AccountDialog = () => {
   const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { disconnect } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
