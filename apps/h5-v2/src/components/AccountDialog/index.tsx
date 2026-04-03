@@ -76,7 +76,6 @@ export const AccountDialog = () => {
                 backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
               }}
               onClick={async () => {
-                await client?.seamless.startSeamlessMode({ open: false })
                 setTradeMode(TradeMode.Classic)
               }}
             >{t`Classic`}</p>
