@@ -154,7 +154,7 @@ const Market = () => {
 
         const poolId = await pool.getMarketPoolId({
           chainId: +chainId,
-          baseToken: token.address,
+          baseToken: token.address as `0x${string}`,
           marketId: marketInfo?.marketId,
         })
 
@@ -173,7 +173,7 @@ const Market = () => {
         } else {
           const poolId = await pool.createPool({
             chainId: +chainId,
-            baseToken: token.address,
+            baseToken: token.address as `0x${string}`,
             marketId: marketInfo?.marketId,
           })
           if (poolId && poolId.startsWith('0x')) {

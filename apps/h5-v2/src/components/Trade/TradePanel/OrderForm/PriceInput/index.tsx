@@ -21,6 +21,13 @@ export const PriceInput = () => {
     }
   }, [orderType, marketPrice, setPrice])
 
+  useEffect(() => {
+    if (!symbolInfo?.poolId && !tickerData && orderType !== OrderType.MARKET) return
+    const marketPrice = tickerData?.[symbolInfo?.poolId as string]?.price ?? 0
+
+    setPrice(marketPrice?.toString() ?? '0')
+  }, [symbolInfo?.poolId, tickerData, setPrice, orderType])
+
   return (
     <InputWrapper
       className="mb-[6px]"

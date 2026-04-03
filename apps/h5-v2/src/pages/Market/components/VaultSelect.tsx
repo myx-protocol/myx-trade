@@ -197,7 +197,7 @@ export const VaultSelect = ({
       if (!address || !account || !chainId) return
       try {
         const bigintBalance = await getBalanceOf(+chainId, account, address)
-        const _balance = formatUnits(bigintBalance, decimals)
+        const _balance = formatUnits(bigintBalance, decimals ?? 0)
         return _balance
       } catch (e) {
         console.error(e)

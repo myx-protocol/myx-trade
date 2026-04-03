@@ -35,7 +35,7 @@ export const Claim = () => {
         if (rs === 0n) {
           rewards = '0'
         } else if (rs) {
-          rewards = formatUnits(rs, quoteLpDetail?.quoteDecimals)
+          rewards = formatUnits(rs, quoteLpDetail?.quoteDecimals ?? 0)
         }
         console.log('Reward', rs, rewards)
       } catch (_e) {

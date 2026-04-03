@@ -8,6 +8,7 @@ interface Action {
   setSeamlessAccountList: (seamlessAccountList: SeamlessAccount[]) => void
   setActiveSeamlessAddress: (activeSeamlessAddress: string) => void
   setSelectedSeamlessAddress: (selectedSeamlessAddress: string) => void
+  setActiveSeamlessWallet: (activeSeamlessWallet: any) => void
 }
 
 type SeamlessStore = SeamlessState & Action
@@ -25,6 +26,7 @@ export const useSeamlessStore = createWithEqualityFn<SeamlessStore>()(
               set({ activeSeamlessAddress }),
             setSelectedSeamlessAddress: (selectedSeamlessAddress: string) =>
               set({ selectedSeamlessAddress }),
+            setActiveSeamlessWallet: (activeSeamlessWallet: any) => set({ activeSeamlessWallet }),
           }) as SeamlessStore,
       ),
       {

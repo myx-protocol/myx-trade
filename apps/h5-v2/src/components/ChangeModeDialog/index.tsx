@@ -103,7 +103,6 @@ export const ChangeModeDialog = () => {
                   className="w-full"
                   style={{ height: '36px', borderRadius: '40px' }}
                   onClick={async () => {
-                    await client?.seamless.startSeamlessMode({ open: false })
                     setTradeMode(TradeMode.Classic)
                     setChangeModeDialogOpen(false)
                   }}

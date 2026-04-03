@@ -4,7 +4,7 @@ import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { useState, useMemo, useEffect } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { Direction, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
+import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { ethers } from 'ethers'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { t } from '@lingui/core/macro'
@@ -22,6 +22,13 @@ import useGlobalStore from '@/store/globalStore'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { EditText } from '@/components/EditText'
 import { tradePubSub } from '@/utils/pubsub'
+import { showErrorToast } from '@/config/error'
+import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
+import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
+import { TradeMode } from '@/pages/Trade/types'
+import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import type { SeamlessAccount } from '@/store/seamless/initialState'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -102,7 +109,11 @@ export const ClosePositionButton = ({
   const [price, setPrice] = useState('')
   const [orderType, setOrderType] = useState<OrderType>(OrderType.MARKET)
   const [amount, setAmount] = useState(position.size) // 默认是 position.size
-  const { checkUserVipInfo } = useCheckUserVipInfo(position.chainId)
+  const { checkWalletChainId } = useWalletChainCheck()
+  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
+  const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
+  const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
+  const { asyncVipLevelInfo, isVipInfoSyncing } = useCheckUserVipInfo(position?.chainId)
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',
@@ -112,7 +123,7 @@ export const ClosePositionButton = ({
   const closeAmount = formatNumber(position.size ?? '0', { showUnit: false }) ?? '0'
   const [amountUnit, setAmountUnit] = useState<AmountUnitEnum>(AmountUnitEnum.BASE)
 
-  const { poolList } = useGlobalStore()
+  const { tradeMode } = useGlobalStore()
 
   // 当 Dialog 打开时，重置为默认值
   useEffect(() => {
@@ -524,10 +535,15 @@ export const ClosePositionButton = ({
         <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
           <PrimaryButton
             onClick={async () => {
+              await checkWalletChainId(position?.chainId as number)
+
+              const vipResult = await asyncVipLevelInfo(symbolInfo?.quoteToken as string)
+              if (!vipResult) {
+                return
+              }
               try {
                 setLoading(true)
-                await checkUserVipInfo()
-                const pool = poolList.find((poolItem: any) => poolItem.poolId === position.poolId)
+
                 let triggerType: TriggerType = TriggerType.NONE
                 if (orderType === OrderType.LIMIT) {
                   if (position.direction === Direction.LONG) {
@@ -545,11 +561,122 @@ export const ClosePositionButton = ({
                 const size = parseBigNumber(formatAmount)
                   .mul(10 ** (symbolInfo?.baseDecimals ?? 1))
                   .toFixed(0)
-                const data = {
+
+                if (tradeMode === TradeMode.Seamless) {
+                  const seamlessAccount = seamlessAccountList.find(
+                    (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
+                  )
+                  if (!seamlessAccount) {
+                    return
+                  }
+
+                  const isAuthorizedRes = await getSeamlessAuthStatus({
+                    masterAddress: activeSeamlessAddress,
+                    seamlessAddress: seamlessAccount.seamlessAddress,
+                    chainId: symbolInfo.chainId as number,
+                    tokenAddress: symbolInfo?.quoteToken as string,
+                  })
+
+                  const isAuthorized = isAuthorizedRes?.data?.auth
+
+                  if (!isAuthorized) {
+                    toast.error({ title: t`Seamless account not authorized` })
+                    return
+                  }
+
+                  const placeOrderSaltAsOne = ethers.zeroPadValue(ethers.toBeHex(1n), 32)
+
+                  console.log({
+                    chainId: symbolInfo.chainId as number,
+                    masterAddress: activeSeamlessAddress,
+                    seamlessAddress: seamlessAccount.seamlessAddress,
+                    forwardFeeToken: symbolInfo?.quoteToken as string,
+                    functionName: position.tokenId
+                      ? 'placeOrderWithPosition'
+                      : 'placeOrderWithSalt',
+                    orderParams: [
+                      position.tokenId ? position.positionId : placeOrderSaltAsOne.toString(),
+                      {
+                        token: symbolInfo?.quoteToken as string,
+                        amount: '0',
+                      },
+                      {
+                        user: address as `0x${string}`,
+                        poolId: position.poolId,
+                        orderType: orderType,
+                        triggerType: triggerType,
+                        direction: position.direction,
+                        collateralAmount: '0',
+                        size,
+                        price: ethers.parseUnits(price.toString(), 30).toString(),
+                        timeInForce: TimeInForce.IOC,
+                        postOnly: false,
+                        slippagePct: ethers
+                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .toString(), // 转换为精度4位
+                        operation: OperationType.DECREASE,
+                        leverage: position.userLeverage,
+                        tpSize: '0',
+                        tpPrice: '0',
+                        slSize: '0',
+                        slPrice: '0',
+                      },
+                    ],
+                  })
+
+                  const rs = await forwardSeamlessTransaction({
+                    chainId: symbolInfo.chainId as number,
+                    masterAddress: activeSeamlessAddress,
+                    seamlessAddress: seamlessAccount.seamlessAddress,
+                    forwardFeeToken: symbolInfo?.quoteToken as string,
+                    functionName: position.tokenId
+                      ? 'placeOrderWithPosition'
+                      : 'placeOrderWithSalt',
+                    orderParams: [
+                      position.tokenId ? position.positionId : '1',
+                      {
+                        token: symbolInfo?.quoteToken as string,
+                        amount: '0',
+                      },
+                      {
+                        user: address as `0x${string}`,
+                        poolId: position.poolId,
+                        orderType: orderType,
+                        triggerType: triggerType,
+                        direction: position.direction,
+                        collateralAmount: '0',
+                        size,
+                        price: ethers.parseUnits(price.toString(), 30).toString(),
+                        timeInForce: TimeInForce.IOC,
+                        postOnly: false,
+                        slippagePct: ethers
+                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .toString(), // 转换为精度4位
+                        operation: OperationType.DECREASE,
+                        leverage: position.userLeverage,
+                        tpSize: '0',
+                        tpPrice: '0',
+                        slSize: '0',
+                        slPrice: '0',
+                      },
+                    ],
+                  })
+
+                  if (rs?.code === 0) {
+                    toast.success({ title: t`Market close success` })
+                    setCloseDialogOpen(false)
+                  } else {
+                    showErrorToast(client?.utils.formatErrorMessage(rs))
+                  }
+
+                  return
+                }
+
+                const rs = await client?.order.createDecreaseOrder({
                   chainId: position.chainId,
                   address: address as `0x${string}`,
                   poolId: position.poolId,
-                  positionId: position.tokenId ? position.positionId : 0,
+                  positionId: position.tokenId ? position.positionId : '',
                   orderType: orderType,
                   triggerType: triggerType,
                   direction: position.direction,
@@ -561,30 +688,22 @@ export const ClosePositionButton = ({
                   slippagePct: ethers
                     .parseUnits((closePositionSlippage ?? 0).toString(), 4)
                     .toString(), // 转换为精度4位
-                  executionFeeToken: pool?.quoteToken as string,
+                  executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
-                } as any
-
-                const rs = await client?.order.createDecreaseOrder(data)
+                })
                 if (rs?.code === 0) {
-                  if (orderType === OrderType.MARKET) {
-                    toast.success({ title: t`Market close success` })
-                  } else {
-                    toast.success({ title: t`Limit close success` })
-                  }
+                  toast.success({ title: t`Market close success` })
                   setCloseDialogOpen(false)
                 } else {
-                  console.log('market close failed')
-                  toast.error({ title: t`${client?.utils.formatErrorMessage(rs)}` })
+                  showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
-                // todo toast
               } catch (e) {
-                toast.error({ title: t`${client?.utils.formatErrorMessage(e)}` })
+                showErrorToast(e)
               } finally {
                 setLoading(false)
               }
             }}
-            loading={loading}
+            loading={loading || isVipInfoSyncing}
             className="w-full"
             style={{
               borderRadius: '44px',

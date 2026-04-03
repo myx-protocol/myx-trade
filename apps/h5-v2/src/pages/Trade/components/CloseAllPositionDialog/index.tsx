@@ -23,6 +23,7 @@ import { ethers } from 'ethers'
 import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
 import { parseBigNumber } from '@/utils/bn'
+import { showErrorToast } from '@/config/error'
 
 export const CloseAllPositionDialog = () => {
   const { getTradingFee } = useGetTradingFee()
@@ -124,14 +125,10 @@ export const CloseAllPositionDialog = () => {
                 toast.success({ title: t`Close all positions success` })
                 setCloseAllPositionDialogOpen(false)
               } else {
-                toast.error({ title: t`Close all positions failed`, content: rs?.message })
+                showErrorToast(client?.utils.formatErrorMessage(rs))
               }
             } catch (error) {
-              console.log(error)
-              toast.error({
-                title: t`Close all positions failed`,
-                content: (error as Error).message,
-              })
+              showErrorToast(error)
             } finally {
               setLoading(false)
             }

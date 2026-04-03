@@ -9,7 +9,7 @@ import {
   PoolType,
   type Rating,
 } from '@/request/type.ts'
-import { type MarketPoolState, pool } from '@myx-trade/sdk'
+import { type MarketPoolState, TriggerType } from '@myx-trade/sdk'
 
 export interface PoolOpenOrder {
   amount: string
@@ -17,9 +17,9 @@ export interface PoolOpenOrder {
   minQuoteOut: string
   orderId: number
   poolId: string
-  poolType: pool.PoolType
+  poolType: PoolType
   triggerPrice: string
-  triggerType: pool.TriggerType
+  triggerType: TriggerType
   txTime: number
   user: string
 }
