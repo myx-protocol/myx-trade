@@ -347,6 +347,8 @@ export const Redeem = () => {
         <Box className={'mt-[8px] mb-[4px] w-full'}>
           <ConnectButton>
             <TradeButton
+              id="earn_detail_submit_redeem_btn_h5"
+              data-analytics="earn_detail_submit_redeem_btn_h5"
               variant="contained"
               className={'w-full'}
               disabled={!amount || isInsufficient || Number(amount) <= 0}

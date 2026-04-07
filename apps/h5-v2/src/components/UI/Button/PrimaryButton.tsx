@@ -1,8 +1,9 @@
 import { Button, CircularProgress } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
 import loadingIcon from '@/assets/icon/loading.svg'
+import React from 'react'
 
-interface PrimaryButtonProps {
+interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode
   onClick?: () => void
   className?: string

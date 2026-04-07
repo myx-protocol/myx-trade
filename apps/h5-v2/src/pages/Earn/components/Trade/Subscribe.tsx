@@ -214,6 +214,8 @@ export const Subscribe = () => {
           ) : (
             <ConnectButton>
               <TradeButton
+                id="earn_detail_submit_subscribe_btn_h5"
+                data-analytic="earn_detail_submit_subscribe_btn_h5"
                 variant="contained"
                 className={'w-full'}
                 disabled={

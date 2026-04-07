@@ -407,6 +407,8 @@ export const VaultSelect = ({
 
       <Box className={'mt-[32px] w-full'}>
         <Button
+          id="market_submit_create_btn_h5"
+          data-analytics="market_submit_create_btn_h5"
           className={'gradient primary long mx-auto w-full rounded'}
           loading={isLoading || !poolInfo}
           onClick={onConfirm}

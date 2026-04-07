@@ -86,6 +86,8 @@ export const Claim = () => {
 
       <Box className={'mb-[4px] w-full'}>
         <TradeButton
+          id="earn_detail_submit_claim_btn_h5"
+          data-analytics="earn_detail_submit_claim_btn_h5"
           variant="contained"
           className={'w-full'}
           disabled={!reward || Number(reward) < MIN_CLAIM_AMOUNT}
