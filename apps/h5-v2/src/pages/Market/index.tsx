@@ -233,6 +233,8 @@ const Market = () => {
         <Create>
           <Box className={'flex w-full items-center'}>
             <Button
+              id="create_now_btn_h5"
+              data-analytics="create_now_btn_h5"
               className={'gradient primary long !mx-auto mx-auto w-[488px] rounded'}
               onClick={() => setStep(step + 1)}
             >

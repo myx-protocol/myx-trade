@@ -111,6 +111,8 @@ export const ClaimRewardsDialog = ({
         />
       </div>
       <PrimaryButton
+        id="cook_detail_claim_rewards_btn_h5"
+        data-analytics="cook_detail_claim_rewards_btn_h5"
         loading={loading}
         disabled={
           !reward ||

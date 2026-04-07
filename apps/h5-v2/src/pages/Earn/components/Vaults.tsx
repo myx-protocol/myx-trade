@@ -1,10 +1,8 @@
 import { Box } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DEFAULT_LIMIT, getQuoteLpList } from '@/request'
+import { getQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { SearchContext } from '@/pages/Earn/context.ts'
 import { PageDirection } from '@/request/type.ts'
@@ -123,6 +121,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
         (item, index) => {
           return (
             <Box
+              data-analytics="earn_detail_btn_h5"
               key={index}
               className={
                 'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'

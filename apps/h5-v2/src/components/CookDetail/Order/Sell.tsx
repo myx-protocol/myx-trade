@@ -363,6 +363,8 @@ export const Sell = () => {
       <Box className="mt-[12px] w-full">
         <ConnectButton>
           <SellButton
+            id="cook_detail_submit_sell_btn_h5"
+            data-analytics="cook_detail_submit_sell_btn_h5"
             variant="contained"
             className={'w-full'}
             disabled={!amount || isInsufficient || Number(amount) <= 0}
