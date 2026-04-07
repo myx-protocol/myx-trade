@@ -13,6 +13,7 @@ import { KlineResolution } from "../subscription/types/index.js";
 import { Utils } from "../utils/index.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { Api } from "../api/index.js";
+import { getDataProviderContract } from "@/web3/providers.js";
 
 export class Markets {
   private configManager: ConfigManager;
@@ -29,7 +30,6 @@ export class Markets {
   }
 
   async getPoolLevelConfig(poolId: string, chainId: number) {
-    const config = this.configManager.getConfig();
     return (
       await this.api.getPoolLevelConfig({
         poolId,
@@ -47,7 +47,6 @@ export class Markets {
   }: Pick<GetKlineDataParams, "poolId" | "limit" | "endTime" | "chainId"> & {
     interval: KlineResolution;
   }) {
-    const config = this.configManager.getConfig();
     return (
       await this.api.getKlineData(
         {
@@ -98,7 +97,7 @@ export class Markets {
    */
   async searchMarketAuth(params: SearchMarketParams, address: string) {
     const accessToken = await this.configManager.getAccessToken() ?? ''
- 
+
     return (
       await this.api.searchMarketAuth(
         {
@@ -141,7 +140,7 @@ export class Markets {
    */
   async addFavorite(params: AddFavoriteParams, address: string) {
     const accessToken = await this.configManager.getAccessToken() ?? ''
- 
+
     return (
       await this.api.addFavorite(
         {
@@ -155,7 +154,7 @@ export class Markets {
 
   async removeFavorite(params: RemoveFavoriteParams, address: string) {
     const accessToken = await this.configManager.getAccessToken() ?? ''
-   
+
     return (
       await this.api.removeFavorite(
         {
@@ -192,5 +191,29 @@ export class Markets {
     return (
       await this.api.getPoolSymbolAll()
     ).data;
+  }
+
+  async getPoolFundingFeeInfo({
+    poolId,
+    chainId,
+    marketPrice,
+  }: {
+    poolId: string;
+    chainId: number;
+    marketPrice: string;
+  }) {
+    const dataProviderContract = await getDataProviderContract(chainId);
+    try {
+      const request = await dataProviderContract.read.getPoolInfo([poolId, marketPrice]);
+      return {
+        code: 0,
+        data: request,
+      };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
   }
 }
