@@ -1,4 +1,3 @@
-import { usePoolInfo } from '@/components/Trade/hooks/usePoolInfo'
 import { useCallback } from 'react'
 import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
