@@ -8,7 +8,7 @@ import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import useSWR from 'swr'
 
 export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
-  const { getFundingFee } = useGetFundingFee(poolId)
+  const { getFundingFee } = useGetFundingFee(poolId, chainId)
   const { getTradingFee } = useGetTradingFee(chainId)
   const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })
   const getLiqPrice = useCallback(
@@ -110,7 +110,7 @@ export const useCalculateLiqPrice = ({
   direction: Direction
   maintainMarginRate: string
 }) => {
-  const { getFundingFee } = useGetFundingFee(poolId)
+  const { getFundingFee } = useGetFundingFee(poolId, chainId)
   const tradingFee = useGetTradingFeeInfo({ size, price, assetClass, chainId })
   const fundingFee = getFundingFee(fundingRateIndexEntry, size, direction)
   const { getNetworkFee } = useGetNetworkFee({ poolId, chainId })

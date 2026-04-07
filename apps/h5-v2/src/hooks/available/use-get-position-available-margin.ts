@@ -12,7 +12,7 @@ export const useGetPositionAvailableMargin = (poolId: string, chainId: number) =
   const positionList = useGetPositionList()
   const { tickerData } = useMarketStore()
   const marketPrice = tickerData[poolId as string]?.price.toString() ?? '0'
-  const { getFundingFee } = useGetFundingFee(poolId as string)
+  const { getFundingFee } = useGetFundingFee(poolId as string, chainId)
 
   const tradingFeeRate = useGetUserTradingFeeRate(
     chainId,

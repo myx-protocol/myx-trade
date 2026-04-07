@@ -110,7 +110,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const { poolList } = useGlobalStore()
   const [loading, setLoading] = useState(false)
   const accountAssets = useGetAccountAssets(position.chainId, position.poolId)
-  const { getFundingFee } = useGetFundingFee(position.poolId)
+  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId as number)
   const marketPrice = tickerData[position.poolId]?.price.toString() ?? '0'
   const { poolConfig } = useGetPoolConfig(position.poolId, position.chainId)
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
