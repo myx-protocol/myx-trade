@@ -236,6 +236,16 @@ export class Account {
     }
   }
 
+  async getCurrentFeeDataEpoch(chainId: number) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+
+    const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+
+    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
+
+    return currentFeeDataEpoch
+  }
+
   async setUserFeeData(
     address: string,
     chainId: number,
@@ -250,11 +260,13 @@ export class Account {
         "Invalid deadline, please try again"
       );
     }
-    const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
 
     try {
+      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+
+      const currentFeeDataEpoch = await this.getCurrentFeeDataEpoch(chainId);
+
       const feeData = {
         user: address,
         nonce: params.nonce,
@@ -266,7 +278,7 @@ export class Account {
           totalReferralRebatePct: params.totalReferralRebatePct,
           referrerRebatePct: params.referrerRebatePct,
         },
-  
+
         signature: signature,
       };
 
