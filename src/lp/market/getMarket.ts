@@ -13,7 +13,7 @@ export const getMarket = async (chainId: ChainId, marketId: string)  => {
     
     const request = await contract.read.getMarket([marketId])
     // console.log("MarketManage.getMarket request", request);
-    
+    const {quoteToken,baseReserveRatio, quoteReserveRatio, oracleFeeUsd, boostFeeUsd, boostRefundFeeUsd, poolPrimeThreshold, executionFee, maxExecutionFee, forwardFee, maxForwardFee} = request
     return request;
   } catch (error) {
     sdkError(error);

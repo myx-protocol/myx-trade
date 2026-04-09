@@ -1,0 +1,1027 @@
+[
+  {
+    "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientBalance",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientRiskReserves",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSplitConfig",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "SafeERC20FailedOperation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "EcoFundRebatesWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "LiquidatePoolDebt",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalDebt",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "collateral",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PoolStrategyIdUpdated",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "strategyId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReservedRebatesWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "SplitConfigUpdated",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "strategyId",
+        "indexed": false
+      },
+      {
+        "type": "tuple",
+        "name": "config",
+        "indexed": false,
+        "components": [
+          {
+            "type": "uint16",
+            "name": "poolRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "stakingRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "keeperRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "treasuryRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "reservedRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "ecoFundRatio"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "StakingRebatesWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "TreasuryRebatesWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "RATIO_PRECISION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "collect",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "keeper"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "poolAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "collectToTreasury",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "depositRiskReserves",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "disburse",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "keeper"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "poolAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "ecoFundRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "ecoFundRebates"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPoolSplitConfig",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "config",
+        "components": [
+          {
+            "type": "uint16",
+            "name": "poolRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "stakingRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "keeperRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "treasuryRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "reservedRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "ecoFundRatio"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      },
+      {
+        "type": "tuple",
+        "name": "defaultSplitConfig",
+        "components": [
+          {
+            "type": "uint16",
+            "name": "poolRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "stakingRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "keeperRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "treasuryRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "reservedRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "ecoFundRatio"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "keeperRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "keeper"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "rebates"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "liquidatePoolDebt",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "pool",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "marketId"
+          },
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "address",
+            "name": "baseToken"
+          },
+          {
+            "type": "address",
+            "name": "quoteToken"
+          },
+          {
+            "type": "uint8",
+            "name": "riskTier"
+          },
+          {
+            "type": "uint8",
+            "name": "state"
+          },
+          {
+            "type": "bool",
+            "name": "compoundEnabled"
+          },
+          {
+            "type": "address",
+            "name": "basePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "quotePoolToken"
+          },
+          {
+            "type": "address",
+            "name": "poolVault"
+          },
+          {
+            "type": "address",
+            "name": "tradingVault"
+          }
+        ]
+      },
+      {
+        "type": "uint256",
+        "name": "baseCollateral"
+      },
+      {
+        "type": "uint256",
+        "name": "totalDebt"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "poolRiskReserves",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "reserves"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "poolStrategyIds",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint8",
+        "name": "strategyId"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "reservedRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "reservedRebates"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "setPoolStrategyId",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "uint8",
+        "name": "strategyId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setSplitConfig",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "strategyId"
+      },
+      {
+        "type": "tuple",
+        "name": "config",
+        "components": [
+          {
+            "type": "uint16",
+            "name": "poolRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "stakingRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "keeperRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "treasuryRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "reservedRatio"
+          },
+          {
+            "type": "uint16",
+            "name": "ecoFundRatio"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "settlerDebts",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "settler"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "debt"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "stakingRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "stakingRebates"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "strategySplitConfigs",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "strategyId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint16",
+        "name": "poolRatio"
+      },
+      {
+        "type": "uint16",
+        "name": "stakingRatio"
+      },
+      {
+        "type": "uint16",
+        "name": "keeperRatio"
+      },
+      {
+        "type": "uint16",
+        "name": "treasuryRatio"
+      },
+      {
+        "type": "uint16",
+        "name": "reservedRatio"
+      },
+      {
+        "type": "uint16",
+        "name": "ecoFundRatio"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "treasuryRebates",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "int256",
+        "name": "treasuryRebates"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawEcoFundRebates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawReservedRebates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawRiskReserves",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "poolId"
+      },
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawStakingRebates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawTreasuryRebates",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
+  }
+]

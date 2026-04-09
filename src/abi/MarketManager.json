@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -325,6 +320,14 @@
             "name": "oracleFeeUsd"
           },
           {
+            "type": "uint64",
+            "name": "boostFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "boostRefundFeeUsd"
+          },
+          {
             "type": "uint128",
             "name": "poolPrimeThreshold"
           },
@@ -377,6 +380,42 @@
     "outputs": [
       {
         "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getBoostFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getBoostRefundFee",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "marketId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
       }
     ]
   },
@@ -472,19 +511,6 @@
   },
   {
     "type": "function",
-    "name": "getImplementation",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getMarket",
     "constant": true,
     "stateMutability": "view",
@@ -514,6 +540,14 @@
           {
             "type": "uint64",
             "name": "oracleFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "boostFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "boostRefundFeeUsd"
           },
           {
             "type": "uint128",
@@ -764,24 +798,6 @@
       {
         "type": "uint32",
         "name": "_quoteReserveRatio"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "upgradeTo",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "newImplementation"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
       }
     ],
     "outputs": []

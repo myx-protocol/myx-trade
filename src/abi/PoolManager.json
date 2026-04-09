@@ -189,8 +189,39 @@
     "type": "function",
     "name": "benchPool",
     "constant": false,
-    "payable": false,
+    "stateMutability": "payable",
+    "payable": true,
     "inputs": [
+      {
+        "type": "tuple[]",
+        "name": "prices",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint256",
+            "name": "referencePrice"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          },
+          {
+            "type": "uint80",
+            "name": "roundId"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          }
+        ]
+      },
       {
         "type": "tuple",
         "name": "params",
@@ -202,6 +233,25 @@
           {
             "type": "string",
             "name": "remark"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "boostPool",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
           }
         ]
       }
@@ -274,19 +324,6 @@
         "name": "identifier"
       }
     ],
-    "outputs": [
-      {
-        "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getImplementation",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
         "type": "address"
@@ -483,6 +520,14 @@
           {
             "type": "uint64",
             "name": "oracleFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "boostFeeUsd"
+          },
+          {
+            "type": "uint64",
+            "name": "boostRefundFeeUsd"
           },
           {
             "type": "uint128",
@@ -716,6 +761,25 @@
   },
   {
     "type": "function",
+    "name": "primePoolFromBoost",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "proxiableUUID",
     "constant": true,
     "stateMutability": "view",
@@ -783,6 +847,25 @@
   },
   {
     "type": "function",
+    "name": "unboostPool",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "tuple",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "updatePoolCompoundEnabled",
     "constant": false,
     "payable": false,
@@ -823,24 +906,6 @@
             "name": "riskTier"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "upgradeTo",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "newImplementation"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
       }
     ],
     "outputs": []
