@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -16,12 +11,12 @@
   },
   {
     "type": "error",
-    "name": "AlreadyVoted",
+    "name": "BondNotReleased",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "BondNotReleased",
+    "name": "BondZeroAmount",
     "inputs": []
   },
   {
@@ -70,11 +65,6 @@
   },
   {
     "type": "error",
-    "name": "ChainIdMismatch",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "DisputeNotAllowed",
     "inputs": []
   },
@@ -100,30 +90,6 @@
   },
   {
     "type": "error",
-    "name": "InvalidAccountNonce",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "account"
-      },
-      {
-        "type": "uint256",
-        "name": "currentNonce"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "InvalidContractAddress",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InvalidFunctionSignature",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "InvalidInitialization",
     "inputs": []
   },
@@ -134,41 +100,12 @@
   },
   {
     "type": "error",
-    "name": "InvalidPayloadLength",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "received"
-      },
-      {
-        "type": "uint256",
-        "name": "expected"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "InvalidPoolToken",
     "inputs": []
   },
   {
     "type": "error",
     "name": "InvalidProfitAmount",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InvalidResponseVersion",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InvalidSourceChain",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NoChainResponse",
     "inputs": []
   },
   {
@@ -207,11 +144,6 @@
   },
   {
     "type": "error",
-    "name": "NumberOfResponsesMismatch",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "OnlyRelayer",
     "inputs": []
   },
@@ -231,11 +163,6 @@
   },
   {
     "type": "error",
-    "name": "RequestTypeMismatch",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "RiskCloseNotCompleted",
     "inputs": []
   },
@@ -248,11 +175,6 @@
         "name": "token"
       }
     ]
-  },
-  {
-    "type": "error",
-    "name": "SignatureExpired",
-    "inputs": []
   },
   {
     "type": "error",
@@ -277,55 +199,6 @@
   {
     "type": "error",
     "name": "UnexpectedCaseType",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "UnexpectedNumberOfResults",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "UnsupportedQueryType",
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "received"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "UntrustfulVoting",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "VerificationFailed",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "VersionMismatch",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "WrongQueryType",
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "received"
-      },
-      {
-        "type": "uint8",
-        "name": "expected"
-      }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "ZeroQueries",
     "inputs": []
   },
   {
@@ -529,14 +402,6 @@
           {
             "type": "uint64",
             "name": "resolveDuration"
-          },
-          {
-            "type": "uint32",
-            "name": "voteCountRate"
-          },
-          {
-            "type": "uint32",
-            "name": "effectiveVoteRate"
           }
         ]
       }
@@ -689,6 +554,72 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "ReimbursementVoteOpened",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32",
+        "name": "merkleRoot",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalBaseAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "totalQuoteAmount",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "voteDeadline",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReimbursementVoteRejected",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReimbursementVoteSubmitted",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "validator",
+        "indexed": false
+      },
+      {
+        "type": "uint8",
+        "name": "voteOption",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Upgraded",
     "inputs": [
       {
@@ -763,7 +694,11 @@
           },
           {
             "type": "address",
-            "name": "staker"
+            "name": "validatorView"
+          },
+          {
+            "type": "uint32",
+            "name": "maxAge"
           },
           {
             "type": "bytes4",
@@ -1055,29 +990,14 @@
           {
             "type": "uint64",
             "name": "resolveDuration"
-          },
-          {
-            "type": "uint32",
-            "name": "voteCountRate"
-          },
-          {
-            "type": "uint32",
-            "name": "effectiveVoteRate"
           }
         ]
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getImplementation",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
+      },
       {
-        "type": "address"
+        "type": "uint32"
+      },
+      {
+        "type": "uint32"
       }
     ]
   },
@@ -1118,21 +1038,28 @@
   },
   {
     "type": "function",
-    "name": "nonces",
-    "constant": true,
-    "stateMutability": "view",
+    "name": "openReimbursementVote",
+    "constant": false,
     "payable": false,
     "inputs": [
       {
-        "type": "address",
-        "name": "owner"
+        "type": "uint256",
+        "name": "caseId"
+      },
+      {
+        "type": "bytes32",
+        "name": "merkleRoot"
+      },
+      {
+        "type": "uint256",
+        "name": "totalBaseAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "totalQuoteAmount"
       }
     ],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
+    "outputs": []
   },
   {
     "type": "function",
@@ -1164,6 +1091,32 @@
       {
         "type": "uint256",
         "name": "caseId"
+      },
+      {
+        "type": "bytes",
+        "name": "response"
+      },
+      {
+        "type": "tuple[]",
+        "name": "guardianSignatures",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "r"
+          },
+          {
+            "type": "bytes32",
+            "name": "s"
+          },
+          {
+            "type": "uint8",
+            "name": "v"
+          },
+          {
+            "type": "uint8",
+            "name": "guardianIndex"
+          }
+        ]
       },
       {
         "type": "tuple",
@@ -1338,16 +1291,16 @@
           {
             "type": "uint64",
             "name": "resolveDuration"
-          },
-          {
-            "type": "uint32",
-            "name": "voteCountRate"
-          },
-          {
-            "type": "uint32",
-            "name": "effectiveVoteRate"
           }
         ]
+      },
+      {
+        "type": "uint32",
+        "name": "voteCountRate"
+      },
+      {
+        "type": "uint32",
+        "name": "effectiveVoteRate"
       }
     ],
     "outputs": []
@@ -1368,31 +1321,17 @@
           },
           {
             "type": "address",
-            "name": "staker"
+            "name": "validatorView"
+          },
+          {
+            "type": "uint32",
+            "name": "maxAge"
           },
           {
             "type": "bytes4",
             "name": "selector"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "upgradeTo",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "newImplementation"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
       }
     ],
     "outputs": []
@@ -1418,6 +1357,43 @@
   {
     "type": "function",
     "name": "vote",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "caseId"
+      },
+      {
+        "type": "address",
+        "name": "validator"
+      },
+      {
+        "type": "uint8",
+        "name": "voteOption"
+      },
+      {
+        "type": "uint256",
+        "name": "deadline"
+      },
+      {
+        "type": "uint8",
+        "name": "v"
+      },
+      {
+        "type": "bytes32",
+        "name": "r"
+      },
+      {
+        "type": "bytes32",
+        "name": "s"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "voteReimbursement",
     "constant": false,
     "payable": false,
     "inputs": [
