@@ -1,15 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "addressManager"
-      }
-    ]
-  },
-  {
     "type": "error",
     "name": "PositionNotHealthy",
     "inputs": [
@@ -285,10 +275,6 @@
       {
         "type": "uint256",
         "name": "marketPrice"
-      },
-      {
-        "type": "address",
-        "name": "broker"
       }
     ],
     "outputs": [
@@ -683,12 +669,133 @@
         "name": "collateralAmount"
       },
       {
-        "type": "uint256",
+        "type": "int256",
         "name": "tradingFee"
       },
       {
         "type": "int256",
         "name": "fundingFee"
+      },
+      {
+        "type": "int256",
+        "name": "unrealizedPnl"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRiskParameters",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "maxRiskTier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "tuple",
+            "name": "tradeLimitParams",
+            "components": [
+              {
+                "type": "uint64",
+                "name": "minTradeUsd"
+              },
+              {
+                "type": "uint16",
+                "name": "maxPriceDeviation"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "riskLockParams",
+            "components": [
+              {
+                "type": "uint64",
+                "name": "windowCapUsd"
+              },
+              {
+                "type": "uint64",
+                "name": "liquidityWindowSize"
+              },
+              {
+                "type": "uint64",
+                "name": "profitWindowSize"
+              },
+              {
+                "type": "uint16",
+                "name": "priceRangePct"
+              },
+              {
+                "type": "uint32",
+                "name": "baseSlippage"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "poolConfigParams",
+            "components": [
+              {
+                "type": "uint16",
+                "name": "leverage"
+              },
+              {
+                "type": "uint16",
+                "name": "maintainMarginRate"
+              },
+              {
+                "type": "uint16",
+                "name": "baseTokenCollateralRatio"
+              },
+              {
+                "type": "uint16",
+                "name": "exchangeIncentiveRate"
+              },
+              {
+                "type": "uint16",
+                "name": "genesisRebateRatio"
+              },
+              {
+                "type": "uint8",
+                "name": "assetClass"
+              }
+            ]
+          },
+          {
+            "type": "tuple",
+            "name": "fundingRateParams",
+            "components": [
+              {
+                "type": "int32",
+                "name": "maxRate"
+              },
+              {
+                "type": "uint32",
+                "name": "equilibriumRange"
+              },
+              {
+                "type": "int32",
+                "name": "lowGrowthRate"
+              },
+              {
+                "type": "int32",
+                "name": "highGrowthRate"
+              },
+              {
+                "type": "uint32",
+                "name": "epochDuration"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
