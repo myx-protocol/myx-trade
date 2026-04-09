@@ -35,6 +35,7 @@ import Reimbursement_ABI from "@/abi/Reimbursement.json";
 import DisputeCourt_ABI from "@/abi/DisputeCourt.json";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address";
+import TradingRouter_ABI from "@/abi/TradingRouter.json";
 
 export enum ProviderType {
   JSON,
@@ -46,6 +47,16 @@ export const getTokenContract = (chainId: ChainId, tokenAddress: string) => {
   return asContract(getViemContract({
     address: tokenAddress as Address,
     abi: IERC20Metadata_ABI as Abi,
+    client,
+  }));
+};
+
+export const getTradingRouterContract = async (chainId: ChainId) => {
+  const addresses = getContractAddressByChainId(chainId);
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.TRADING_ROUTER as Address,
+    abi: TradingRouter_ABI as Abi,
     client,
   }));
 };
