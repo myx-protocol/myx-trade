@@ -250,22 +250,25 @@ export class Account {
         "Invalid deadline, please try again"
       );
     }
+    const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-    const feeData = {
-      user: address,
-      nonce: params.nonce,
-      deadline: deadline,
-      feeData: {
-        tier: params.tier,
-        referrer: params.referrer || zeroAddress,
-        totalReferralRebatePct: params.totalReferralRebatePct,
-        referrerRebatePct: params.referrerRebatePct,
-      },
-      signature: signature,
-    };
+    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
 
     try {
-      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+      const feeData = {
+        user: address,
+        nonce: params.nonce,
+        deadline: deadline,
+        feeDataEpoch: currentFeeDataEpoch.toString(),
+        feeData: {
+          tier: params.tier,
+          referrer: params.referrer || zeroAddress,
+          totalReferralRebatePct: params.totalReferralRebatePct,
+          referrerRebatePct: params.referrerRebatePct,
+        },
+  
+        signature: signature,
+      };
 
       const nonce: bigint = await brokerContract.read.userNonces([address as `0x${string}`]);
 
