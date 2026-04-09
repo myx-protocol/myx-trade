@@ -1,10 +1,8 @@
-import { ConfigManager, MyxClientConfig } from "../config/index.js";
+import { ConfigManager } from "../config/index.js";
 import { Logger } from "@/logger";
 import { GetHistoryOrdersParams } from "@/api";
 import {
-  getBrokerSingerContract,
-  // getForwarderContract,
-  // getSeamlessBrokerContract,
+  getTradingRouterContract,
 } from "@/web3/providers";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { TIME_IN_FORCE } from "@/config/con";
@@ -18,9 +16,6 @@ import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { maxUint256 } from "viem";
-import { Seamless } from "../seamless/index.js";
-// import Broker_ABI from "@/abi/Broker.json";
-// import dayjs from "dayjs";
 import { Account } from "../account/index.js";
 import { ChainId } from "@/config/chain";
 import { Api } from "../api/index.js";
@@ -94,6 +89,7 @@ export class Order {
         tpPrice: params.tpPrice ?? "0",
         slSize: params.slSize ?? "0",
         slPrice: params.slPrice ?? "0",
+        broker: this.configManager.getConfig().brokerAddress,
       }
 
       const needsApproval = await this.utils.needsApproval(
@@ -121,9 +117,8 @@ export class Order {
         }
       }
 
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         params.chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
       let hash: `0x${string}`;
@@ -132,9 +127,9 @@ export class Order {
         const positionSalt = '1';
         this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
+        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
 
-        hash = await brokerContract.write!.placeOrderWithSalt(
+        hash = await tradingRouterContract.write!.placeOrderWithSalt(
           [positionSalt, { ...depositData }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
@@ -143,13 +138,13 @@ export class Order {
       } else {
         this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
 
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([
+        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithPosition([
           params.positionId.toString(),
           { ...depositData },
           data,
         ]);
 
-        hash = await brokerContract.write!.placeOrderWithPosition(
+        hash = await tradingRouterContract.write!.placeOrderWithPosition(
           [params.positionId.toString(), { ...depositData }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
@@ -213,6 +208,7 @@ export class Order {
           tpPrice: 0,
           slSize: 0,
           slPrice: 0,
+          broker: this.configManager.getConfig().brokerAddress,
         }
       })
 
@@ -222,13 +218,12 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
-      const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition([depositData, positionIds, dataMap]);
-      const hash = await brokerContract.write!.placeOrdersWithPosition([depositData, positionIds, dataMap], {
+      const gasLimit = await tradingRouterContract.estimateGas!.placeOrdersWithPosition([depositData, positionIds, dataMap]);
+      const hash = await tradingRouterContract.write!.placeOrdersWithPosition([depositData, positionIds, dataMap], {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 
@@ -274,6 +269,7 @@ export class Order {
         tpPrice: 0,
         slSize: 0,
         slPrice: 0,
+        broker: this.configManager.getConfig().brokerAddress,
       }
 
       const collateralAmount = BigInt(params.collateralAmount) //+ BigInt(tradingFee) + totalNetWorkFee
@@ -295,18 +291,17 @@ export class Order {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
 
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         params.chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
       let hash: `0x${string}`;
       if (!params.positionId) {
         const positionId = 1
         this.logger.info("createDecreaseOrder salt position params--->", [positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
+        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
 
-        hash = await brokerContract.write!.placeOrderWithSalt(
+        hash = await tradingRouterContract.write!.placeOrderWithSalt(
           [positionId.toString(), depositData, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
@@ -314,9 +309,9 @@ export class Order {
         );
       } else {
         this.logger.info("createDecreaseOrder nft position params--->", [params.positionId, depositData, { data }]);
-        const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
+        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
 
-        hash = await brokerContract.write!.placeOrderWithPosition(
+        hash = await tradingRouterContract.write!.placeOrderWithPosition(
           [params.positionId.toString(), depositData, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
@@ -353,9 +348,8 @@ export class Order {
 
   async createPositionTpSlOrder(params: PositionTpSlOrderParams) {
     try {
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         params.chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
       try {
@@ -380,6 +374,7 @@ export class Order {
               tpPrice: "0",
               slSize: "0",
               slPrice: "0",
+              broker: this.configManager.getConfig().brokerAddress,
             },
             {
               user: params.address,
@@ -399,6 +394,7 @@ export class Order {
               tpPrice: "0",
               slSize: "0",
               slPrice: "0",
+              broker: this.configManager.getConfig().brokerAddress,
             },
           ];
 
@@ -413,15 +409,15 @@ export class Order {
             this.logger.info("createPositionTpSlOrder salt position data--->", data);
 
             const positionId = 1
-            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data]);
+            const gasLimit = await tradingRouterContract.estimateGas!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data]);
 
-            hash = await brokerContract.write!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data], {
+            hash = await tradingRouterContract.write!.placeOrdersWithSalt([depositData, [positionId.toString(), positionId.toString()], data], {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           } else {
-            const gasLimit = await brokerContract.estimateGas!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data]);
+            const gasLimit = await tradingRouterContract.estimateGas!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data]);
 
-            hash = await brokerContract.write!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data], {
+            hash = await tradingRouterContract.write!.placeOrdersWithPosition([depositData, [params.positionId.toString(), params.positionId.toString()], data], {
               gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             });
           }
@@ -474,6 +470,7 @@ export class Order {
           tpPrice: "0",
           slSize: "0",
           slPrice: "0",
+          broker: this.configManager.getConfig().brokerAddress,
         };
 
         const depositData = {
@@ -485,15 +482,15 @@ export class Order {
         if (!params.positionId) {
           this.logger.info("createPositionTpOrSlOrder salt position data--->", data);
           const positionId = 1;
-          const gasLimit = await brokerContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
+          const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionId.toString(), depositData, data]);
 
-          hash = await brokerContract.write!.placeOrderWithSalt([positionId.toString(), depositData, data], {
+          hash = await tradingRouterContract.write!.placeOrderWithSalt([positionId.toString(), depositData, data], {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         } else {
           this.logger.info("createPositionTpOrSlOrder nft position data--->", data);
-          const gasLimit = await brokerContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
-          hash = await brokerContract.write!.placeOrderWithPosition([params.positionId.toString(), depositData, data], {
+          const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithPosition([params.positionId.toString(), depositData, data]);
+          hash = await tradingRouterContract.write!.placeOrderWithPosition([params.positionId.toString(), depositData, data], {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           });
         }
@@ -537,12 +534,11 @@ export class Order {
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
-      const hash = await brokerContract.write!.cancelOrders([orderIds]);
+      const hash = await tradingRouterContract.write!.cancelOrders([orderIds]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -562,12 +558,11 @@ export class Order {
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         chainId,
-        this.configManager.getConfig().brokerAddress
       );
 
-      const hash = await brokerContract.write!.cancelOrder([orderId]);
+      const hash = await tradingRouterContract.write!.cancelOrder([orderId]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -587,11 +582,10 @@ export class Order {
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
-      const brokerContract = await getBrokerSingerContract(
+      const tradingRouterContract = await getTradingRouterContract(
         chainId,
-        this.configManager.getConfig().brokerAddress
       );
-      const hash = await brokerContract.write!.cancelOrders([orderIds]);
+      const hash = await tradingRouterContract.write!.cancelOrders([orderIds]);
       await getPublicClient(chainId).waitForTransactionReceipt({ hash });
       return {
         code: 0,
@@ -608,7 +602,6 @@ export class Order {
   }
 
   async updateOrderTpSl(params: UpdateOrderParams, quoteAddress: string, chainId: number, address: string, marketId: string, isTpSlOrder?: boolean) {
-    const config: MyxClientConfig = this.configManager.getConfig();
 
     const networkFee = await this.utils.getNetworkFee(marketId, chainId)
 
@@ -616,6 +609,7 @@ export class Order {
       orderId: params.orderId,
       size: params.size,
       price: params.price,
+      broker: this.configManager.getConfig().brokerAddress,
       tpsl: {
         tpSize: isTpSlOrder ? params.tpSize : '0',
         tpPrice: isTpSlOrder ? params.tpPrice : '0',
@@ -633,9 +627,8 @@ export class Order {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
     }
 
-    const brokerContract = await getBrokerSingerContract(
+    const tradingRouterContract = await getTradingRouterContract(
       chainId,
-      config.brokerAddress
     );
 
     this.logger.info("updateOrderTpSl params", data);
@@ -662,9 +655,9 @@ export class Order {
         }
       }
 
-      const gasLimit = await brokerContract.estimateGas!.updateOrder([depositData, data]);
+      const gasLimit = await tradingRouterContract.estimateGas!.updateOrder([depositData, data]);
 
-      const hash = await brokerContract.write!.updateOrder([depositData, data], {
+      const hash = await tradingRouterContract.write!.updateOrder([depositData, data], {
         gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
       });
 

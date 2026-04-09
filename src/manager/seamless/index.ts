@@ -16,6 +16,7 @@ import Broker_ABI from "@/abi/Broker.json";
 import type { SignerLike } from "@/signer/types.js";
 import Account_ABI from '@/abi/Account.json'
 import { ChainId } from "@/config/chain.js";
+import TradingRouter_ABI from "@/abi/TradingRouter.json";
 
 const contractTypes = {
   ForwardRequest: [
@@ -123,8 +124,8 @@ export class Seamless {
 
     if (brokerFunctions.includes(functionName)) {
       return {
-        abi: Broker_ABI as any,
-        address: this.configManager.getConfig().brokerAddress,
+        abi: TradingRouter_ABI as any,
+        address: getContractAddressByChainId(chainId).TRADING_ROUTER,
       }
     }
 
@@ -136,8 +137,8 @@ export class Seamless {
     }
 
     return {
-      abi: Broker_ABI as any,
-      address: this.configManager.getConfig().brokerAddress,
+      abi: TradingRouter_ABI as any,
+      address: getContractAddressByChainId(chainId).TRADING_ROUTER,
     }
   }
 
@@ -473,13 +474,6 @@ export class Seamless {
     data: readonly unknown[] | unknown[];
     seamlessAddress: string;
   }) {
-    const brokerAddress = this.configManager.getConfig().brokerAddress;
-    if (!brokerAddress || !isAddress(brokerAddress)) {
-      throw new MyxSDKError(
-        MyxErrorCode.InvalidBrokerAddress,
-        "brokerAddress is missing or invalid; pass brokerAddress in MyxClient constructor / updateClientChainId"
-      );
-    }
     if (!address || !isAddress(address)) {
       throw new MyxSDKError(MyxErrorCode.ParamError, "address (master) is missing or invalid");
     }
@@ -504,16 +498,17 @@ export class Seamless {
 
     const forwarderContract = await getForwarderContract(chainId);
     let functionHash: `0x${string}`;
+    const { abi, address: abiAddress } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
     try {
       functionHash = encodeFunctionData({
-        abi: Broker_ABI as any,
+        abi: abi as any,
         functionName,
         args: data as any,
       });
     } catch (e) {
       throw new MyxSDKError(
         MyxErrorCode.ParamError,
-        `encodeFunctionData failed for Broker.${String(functionName)}: ${(e as Error).message}. Check args shape and that no address field is undefined.`
+        `encodeFunctionData failed for TradingRouter.${String(functionName)}: ${(e as Error).message}. Check args shape and that no address field is undefined.`
       );
     }
 
@@ -521,7 +516,7 @@ export class Seamless {
 
     return {
       from: seamlessAddress,
-      to: brokerAddress,
+      to: abiAddress,
       value: "0",
       gas: "800000",
       deadline: dayjs().add(60, "minute").unix(),

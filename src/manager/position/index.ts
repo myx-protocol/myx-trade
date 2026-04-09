@@ -6,9 +6,8 @@ import { Utils } from "../utils/index.js";
 import {  maxUint256 } from "viem";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { Seamless } from "../seamless/index.js";
 import {
-  getBrokerSingerContract,
+  getTradingRouterContract,
 } from "@/web3/providers";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
@@ -146,7 +145,7 @@ export class Position {
       /**
        * call broker contract
        */
-      const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+      const tradingRouterContract = await getTradingRouterContract(chainId);
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
@@ -160,7 +159,7 @@ export class Position {
         }
       }
 
-      const hash = await brokerContract.write!.updatePriceAndAdjustCollateral(
+      const hash = await tradingRouterContract.write!.updatePriceAndAdjustCollateral(
         [[updateParams], depositData, positionId, adjustAmount],
         {
           value: BigInt(priceData?.value ?? "1"),
