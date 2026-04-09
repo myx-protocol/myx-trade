@@ -239,7 +239,7 @@ export class Account {
   async getCurrentFeeDataEpoch(chainId: number) {
     const config: MyxClientConfig = this.configManager.getConfig();
 
-    const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+    const brokerContract = await getBrokerContract(chainId, config.brokerAddress);
 
     const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
 
