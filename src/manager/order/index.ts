@@ -36,7 +36,7 @@ export class Order {
     this.api = api;
   }
 
-  async createIncreaseOrder(params: PlaceOrderParams) {
+  async createIncreaseOrder(params: PlaceOrderParams, networkFee: string) {
     try {
       // const networkFee = await this.utils.getNetworkFee(
       //   marketId,
@@ -56,11 +56,11 @@ export class Order {
       // 2 have position + networkFee * 3 (increase tp sl)
       // 3 partly decrease position (last margin is enough (2 * networkFee)? add 0 : add networkFee)
 
-      const collateralAmount = BigInt(params.collateralAmount) //+ BigInt(tradingFee) + totalNetWorkFee
+      const needAmount = BigInt(params.collateralAmount) + BigInt(networkFee)
       const availableRes = await this.account.getAvailableMarginBalance({ poolId: params.poolId, chainId: params.chainId, address: params.address });
       const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
       let depositAmount = BigInt(0)
-      const diff = collateralAmount - availableAccountMarginBalance
+      const diff = needAmount - availableAccountMarginBalance
 
       if (diff > BigInt(0)) {
         depositAmount = diff
@@ -78,7 +78,7 @@ export class Order {
         triggerType: params.triggerType,
         operation: OperationType.INCREASE,
         direction: params.direction,
-        collateralAmount: collateralAmount.toString(),
+        collateralAmount: params.collateralAmount.toString(),
         size: params.size,
         price: params.price,
         timeInForce: TIME_IN_FORCE,
@@ -286,7 +286,7 @@ export class Order {
         token: params.executionFeeToken,
         amount: depositAmount.toString()
       }
-      
+
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
       }
