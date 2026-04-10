@@ -54,6 +54,7 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
         message: typedData.message as Record<string, unknown>,
       })) as `0x${string}`;
     },
+    signTransaction: signer.signTransaction,
     source: "custom",
   } as unknown as import("viem").LocalAccount;
 
