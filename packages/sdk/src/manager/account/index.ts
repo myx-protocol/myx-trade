@@ -188,6 +188,7 @@ export class Account {
 
     try {
       const currentEpoch = await this.client.api.getCurrentEpoch({ address, accessToken, broker: config.brokerAddress });
+      this.logger.debug('setUserFeeDataEpoch-->', currentEpoch)
       if (currentEpoch.code !== 9200) {
         throw new MyxSDKError(
           MyxErrorCode.RequestFailed,
