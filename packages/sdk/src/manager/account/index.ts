@@ -268,6 +268,7 @@ export class Account {
 
       const currentFeeDataEpoch = await this.getCurrentFeeDataEpoch(chainId);
 
+      this.logger.debug('currentFeeDataEpoch from contract-->', currentFeeDataEpoch)
       const feeData = {
         user: address,
         nonce: params.nonce,
