@@ -1,10 +1,5 @@
 [
   {
-    "type": "constructor",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "error",
     "name": "AddressEmptyCode",
     "inputs": [
@@ -66,6 +61,16 @@
   },
   {
     "type": "error",
+    "name": "InsufficientBalance",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidFeeDataEpoch",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InvalidFeeRate",
     "inputs": []
   },
@@ -91,16 +96,6 @@
   },
   {
     "type": "error",
-    "name": "NotActiveBroker",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "broker"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "NotBrokerSigner",
     "inputs": [
       {
@@ -112,16 +107,6 @@
   {
     "type": "error",
     "name": "NotInitializing",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NotOrderOwner",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NotPositionOwner",
     "inputs": []
   },
   {
@@ -210,6 +195,33 @@
       {
         "type": "uint8",
         "name": "tier"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "BrokerFeesWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "broker",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "token",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
       }
     ]
   },
@@ -330,75 +342,6 @@
         "type": "address",
         "name": "implementation",
         "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "UserFeeDataReset",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "broker",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "signer",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "epoch",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "UserFeeDataUpdated",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "broker",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "signer",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "user",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "epoch",
-        "indexed": false
-      },
-      {
-        "type": "uint8",
-        "name": "tier",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "referrer",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "totalReferralRebatePct",
-        "indexed": false
-      },
-      {
-        "type": "uint32",
-        "name": "referrerRebatePct",
-        "indexed": false
       }
     ]
   },
@@ -584,32 +527,6 @@
   },
   {
     "type": "function",
-    "name": "cancelOrder",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "orderId"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "cancelOrders",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256[]",
-        "name": "orderIds"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "claimRebate",
     "constant": false,
     "payable": false,
@@ -760,19 +677,6 @@
   },
   {
     "type": "function",
-    "name": "getImplementation",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "getSpecialFeeTier",
     "constant": true,
     "stateMutability": "view",
@@ -799,55 +703,6 @@
       {
         "type": "uint32",
         "name": "takerFeeRate"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getUserFeeDataDigest",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      },
-      {
-        "type": "uint64",
-        "name": "nonce"
-      },
-      {
-        "type": "uint64",
-        "name": "deadline"
-      },
-      {
-        "type": "tuple",
-        "name": "feeData",
-        "components": [
-          {
-            "type": "uint8",
-            "name": "tier"
-          },
-          {
-            "type": "address",
-            "name": "referrer"
-          },
-          {
-            "type": "uint32",
-            "name": "totalReferralRebatePct"
-          },
-          {
-            "type": "uint32",
-            "name": "referrerRebatePct"
-          }
-        ]
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": "digest"
       }
     ]
   },
@@ -1043,414 +898,6 @@
   },
   {
     "type": "function",
-    "name": "placeOrderWithPosition",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "positionId"
-      },
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "orderParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "user"
-          },
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "orderType"
-          },
-          {
-            "type": "uint8",
-            "name": "triggerType"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint8",
-            "name": "direction"
-          },
-          {
-            "type": "uint256",
-            "name": "collateralAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "uint8",
-            "name": "timeInForce"
-          },
-          {
-            "type": "bool",
-            "name": "postOnly"
-          },
-          {
-            "type": "uint16",
-            "name": "slippagePct"
-          },
-          {
-            "type": "uint16",
-            "name": "leverage"
-          },
-          {
-            "type": "uint256",
-            "name": "tpSize"
-          },
-          {
-            "type": "uint256",
-            "name": "tpPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "placeOrderWithSalt",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "uint64",
-        "name": "userPositionSalt"
-      },
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "orderParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "user"
-          },
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "orderType"
-          },
-          {
-            "type": "uint8",
-            "name": "triggerType"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint8",
-            "name": "direction"
-          },
-          {
-            "type": "uint256",
-            "name": "collateralAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "uint8",
-            "name": "timeInForce"
-          },
-          {
-            "type": "bool",
-            "name": "postOnly"
-          },
-          {
-            "type": "uint16",
-            "name": "slippagePct"
-          },
-          {
-            "type": "uint16",
-            "name": "leverage"
-          },
-          {
-            "type": "uint256",
-            "name": "tpSize"
-          },
-          {
-            "type": "uint256",
-            "name": "tpPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "placeOrdersWithPosition",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "bytes32[]",
-        "name": "positionIds"
-      },
-      {
-        "type": "tuple[]",
-        "name": "orderParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "user"
-          },
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "orderType"
-          },
-          {
-            "type": "uint8",
-            "name": "triggerType"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint8",
-            "name": "direction"
-          },
-          {
-            "type": "uint256",
-            "name": "collateralAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "uint8",
-            "name": "timeInForce"
-          },
-          {
-            "type": "bool",
-            "name": "postOnly"
-          },
-          {
-            "type": "uint16",
-            "name": "slippagePct"
-          },
-          {
-            "type": "uint16",
-            "name": "leverage"
-          },
-          {
-            "type": "uint256",
-            "name": "tpSize"
-          },
-          {
-            "type": "uint256",
-            "name": "tpPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "placeOrdersWithSalt",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "uint64[]",
-        "name": "userPositionSalts"
-      },
-      {
-        "type": "tuple[]",
-        "name": "orderParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "user"
-          },
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "orderType"
-          },
-          {
-            "type": "uint8",
-            "name": "triggerType"
-          },
-          {
-            "type": "uint8",
-            "name": "operation"
-          },
-          {
-            "type": "uint8",
-            "name": "direction"
-          },
-          {
-            "type": "uint256",
-            "name": "collateralAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "uint8",
-            "name": "timeInForce"
-          },
-          {
-            "type": "bool",
-            "name": "postOnly"
-          },
-          {
-            "type": "uint16",
-            "name": "slippagePct"
-          },
-          {
-            "type": "uint16",
-            "name": "leverage"
-          },
-          {
-            "type": "uint256",
-            "name": "tpSize"
-          },
-          {
-            "type": "uint256",
-            "name": "tpPrice"
-          },
-          {
-            "type": "uint256",
-            "name": "slSize"
-          },
-          {
-            "type": "uint256",
-            "name": "slPrice"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "proxiableUUID",
     "constant": true,
     "stateMutability": "view",
@@ -1553,6 +1000,10 @@
             "name": "deadline"
           },
           {
+            "type": "uint64",
+            "name": "feeDataEpoch"
+          },
+          {
             "type": "tuple",
             "name": "feeData",
             "components": [
@@ -1612,6 +1063,19 @@
         "type": "uint256[]"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "syncAssetClass",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "assetClass"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -1726,123 +1190,6 @@
   },
   {
     "type": "function",
-    "name": "updateOrder",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "uint256",
-            "name": "orderId"
-          },
-          {
-            "type": "uint256",
-            "name": "size"
-          },
-          {
-            "type": "uint256",
-            "name": "price"
-          },
-          {
-            "type": "tuple",
-            "name": "tpsl",
-            "components": [
-              {
-                "type": "uint256",
-                "name": "tpSize"
-              },
-              {
-                "type": "uint256",
-                "name": "tpPrice"
-              },
-              {
-                "type": "uint256",
-                "name": "slSize"
-              },
-              {
-                "type": "uint256",
-                "name": "slPrice"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "updatePriceAndAdjustCollateral",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "depositParams",
-        "components": [
-          {
-            "type": "address",
-            "name": "token"
-          },
-          {
-            "type": "uint256",
-            "name": "amount"
-          }
-        ]
-      },
-      {
-        "type": "bytes32",
-        "name": "positionId"
-      },
-      {
-        "type": "int256",
-        "name": "adjustAmount"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "updateUserFeeData",
     "constant": false,
     "payable": false,
@@ -1872,24 +1219,6 @@
             "name": "referrerRebatePct"
           }
         ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "upgradeTo",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "newImplementation"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
       }
     ],
     "outputs": []
@@ -1988,5 +1317,26 @@
         "name": "rebateAmount"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "withdrawBrokerFees",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "token"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "address",
+        "name": "recipient"
+      }
+    ],
+    "outputs": []
   }
 ]

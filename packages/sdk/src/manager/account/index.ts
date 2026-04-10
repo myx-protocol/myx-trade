@@ -184,17 +184,12 @@ export class Account {
     const publicClient = getPublicClient(chainId);
     const latestBlock = await publicClient.getBlock({ blockTag: "latest" });
     const deadline = Number(latestBlock?.timestamp ?? BigInt(dayjs().unix())) + 60 * 5;
-    const accessToken = (await this.configManager.getAccessToken()) ?? "";
 
     try {
-      const currentEpoch = await this.client.api.getCurrentEpoch({ address, accessToken, broker: config.brokerAddress });
-      if (currentEpoch.code !== 9200) {
-        throw new MyxSDKError(
-          MyxErrorCode.RequestFailed,
-          currentEpoch.msg ?? "Failed to get current epoch"
-        );
-      }
-      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch?.data ?? 0, address as `0x${string}`]);
+      const currentEpoch = await this.getCurrentFeeDataEpoch(chainId)
+      this.logger.debug('setUserFeeDataEpoch-->', currentEpoch)
+      
+      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch, address as `0x${string}`]);
       let nonce: bigint;
       try {
         nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
@@ -236,6 +231,16 @@ export class Account {
     }
   }
 
+  async getCurrentFeeDataEpoch(chainId: number) {
+    const config: MyxClientConfig = this.configManager.getConfig();
+
+    const brokerContract = await getBrokerContract(chainId, config.brokerAddress);
+
+    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
+
+    return currentFeeDataEpoch
+  }
+
   async setUserFeeData(
     address: string,
     chainId: number,
@@ -251,21 +256,26 @@ export class Account {
       );
     }
 
-    const feeData = {
-      user: address,
-      nonce: params.nonce,
-      deadline: deadline,
-      feeData: {
-        tier: params.tier,
-        referrer: params.referrer || zeroAddress,
-        totalReferralRebatePct: params.totalReferralRebatePct,
-        referrerRebatePct: params.referrerRebatePct,
-      },
-      signature: signature,
-    };
 
     try {
       const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
+
+      const currentFeeDataEpoch = await this.getCurrentFeeDataEpoch(chainId);
+
+      const feeData = {
+        user: address,
+        nonce: params.nonce,
+        deadline: deadline,
+        feeDataEpoch: currentFeeDataEpoch.toString(),
+        feeData: {
+          tier: params.tier,
+          referrer: params.referrer || zeroAddress,
+          totalReferralRebatePct: params.totalReferralRebatePct,
+          referrerRebatePct: params.referrerRebatePct,
+        },
+
+        signature: signature,
+      };
 
       const nonce: bigint = await brokerContract.read.userNonces([address as `0x${string}`]);
 

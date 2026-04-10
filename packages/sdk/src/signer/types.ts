@@ -6,6 +6,7 @@
 export interface ISigner {
   getAddress(): Promise<string>;
   signMessage(message: string | Uint8Array): Promise<string>;
+  signTransaction(transaction: import("viem").TransactionRequest): Promise<string>;
   sendTransaction(tx: {
     to?: string;
     data?: string;
@@ -31,12 +32,14 @@ export interface MinimalSignerLike {
   getAddress(): Promise<string>;
   signMessage(message: string | Uint8Array): Promise<string>;
   sendTransaction(tx: Record<string, unknown>): Promise<{ hash: string }>;
+  signTransaction(transaction: import("viem").TransactionRequest): Promise<string>;
 }
 
 // Viem WalletClient is not imported here to avoid hard dependency; use type-only shape
 export type WalletClientLike = {
   getAddresses(): Promise<readonly `0x${string}`[]>;
   signMessage(args: { message: string | { raw: Uint8Array } }): Promise<`0x${string}`>;
+  signTransaction(args: import("viem").TransactionRequest): Promise<`0x${string}`>;
   sendTransaction(args: {
     to: `0x${string}`;
     data?: `0x${string}`;
