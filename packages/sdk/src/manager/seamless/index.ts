@@ -139,6 +139,9 @@ export class Seamless {
       }
     }
 
+    console.log('functionName==>', functionName)
+    console.log('brokerFunctions.includes(functionName)->', brokerFunctions.includes(functionName))
+
     if(brokerFunctions.includes(functionName)) {
       return {
         abi: Broker_ABI as any,
@@ -234,6 +237,9 @@ export class Seamless {
     const domain = await this.getForwardEip712Domain(chainId)
     const { abi, address: to } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
 
+
+    console.log('functionName-->', functionName)
+    console.log('toContractAddress==>', to)
     const functionHash = encodeFunctionData({
       abi: abi as any,
       functionName: functionName,
