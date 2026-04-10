@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -53,8 +54,8 @@ msgstr ""
 msgid " Trade "
 msgstr ""
 
-#. placeholder {0}: client?.utils.formatErrorMessage(error)
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
+#. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
 #. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
 #: src/components/Header/Menu.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
@@ -62,7 +63,6 @@ msgstr ""
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
-#: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "{0}"
 msgstr ""
@@ -276,6 +276,7 @@ msgid "Adjust margin amount is greater than the total balance"
 msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust margin success"
 msgstr ""
 
@@ -319,6 +320,10 @@ msgstr ""
 #: src/components/Record/HideOuterSymbols.tsx
 msgid "All Chains"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Allowed price movement range under no-slippage protection."
+msgstr "Allowed price movement range under no-slippage protection."
 
 #: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -438,12 +443,8 @@ msgid "Authorize"
 msgstr ""
 
 #: src/components/SettingDrawer.tsx
-msgid "Authorize seamless account failed"
-msgstr ""
-
-#: src/components/SettingDrawer.tsx
-msgid "Authorize seamless account success"
-msgstr ""
+msgid "Authorized Tokens"
+msgstr "Authorized Tokens"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -511,6 +512,10 @@ msgstr ""
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Base Parameter S"
+msgstr "Base Parameter S"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1009,6 +1014,10 @@ msgstr ""
 msgid "Copy success"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Core parameter in the funding model used to adjust funding level."
+msgstr "Core parameter in the funding model used to adjust funding level."
+
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Cost Basis"
 msgstr ""
@@ -1046,10 +1055,6 @@ msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
-msgstr ""
-
-#: src/components/Seamless/SetPasswordDialog/index.tsx
-msgid "Create seamless failed"
 msgstr ""
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
@@ -1436,7 +1441,6 @@ msgstr ""
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Est. Slippage"
 msgstr ""
 
@@ -1546,6 +1550,12 @@ msgstr "Exceed maximum fee()"
 msgid "ExcessiveSlippage()"
 msgstr ""
 
+#: src/components/CookDetail/Charts/AreaCharts.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
+msgid "Exchange Rate"
+msgstr "Exchange Rate"
+
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ExchangeRateAlreadyApplied()"
 msgstr ""
@@ -1651,6 +1661,10 @@ msgstr ""
 msgid "Filter"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "First-stage growth parameter in the funding model."
+msgstr "First-stage growth parameter in the funding model."
+
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Forgot Password?"
 msgstr ""
@@ -1708,6 +1722,18 @@ msgstr ""
 msgid "Funding Fee"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Growth G1"
+msgstr "Funding Growth G1"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Growth G2"
+msgstr "Funding Growth G2"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Parameter R2"
+msgstr "Funding Parameter R2"
+
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
 msgid "Funding rate"
@@ -1717,6 +1743,10 @@ msgstr ""
 #: src/pages/Earn/detail/components/TradingInfo.tsx
 msgid "Funding Rate"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Settlement Interval"
+msgstr "Funding Settlement Interval"
 
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
@@ -1738,6 +1768,10 @@ msgstr "Gas limit exceeded (address,uint256,uint256)"
 msgid "GasLimitNotSet(address)"
 msgstr "Gas not set (address)"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Genesis LP Share"
+msgstr "Genesis LP Share"
+
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
@@ -1751,6 +1785,10 @@ msgstr ""
 #: src/pages/Earn/components/ConnectWallet.tsx
 msgid "Get Started to view"
 msgstr ""
+
+#: src/api/index.ts
+msgid "getPoolIsAppealing error"
+msgstr "getPoolIsAppealing error"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1820,6 +1858,10 @@ msgstr ""
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Hot"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Hours"
+msgstr "Hours"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How are your rights protected?"
@@ -1894,6 +1936,10 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Initial Margin Rate"
+msgstr "Initial Margin Rate"
+
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InitializationFunctionReverted(address,bytes)"
@@ -1910,6 +1956,8 @@ msgstr "In rewind mode()"
 msgid "Insufficient balance"
 msgstr ""
 
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Insufficient Balance"
@@ -2012,6 +2060,18 @@ msgstr ""
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Invalid password"
 msgstr ""
+
+#: src/hooks/seamless/use-import-seamless-key.ts
+msgid "Invalid private key"
+msgstr "Invalid private key"
+
+#: src/hooks/seamless/utils.ts
+msgid "Invalid private key generated"
+msgstr "Invalid private key generated"
+
+#: src/hooks/seamless/use-import-seamless-key.ts
+msgid "Invalid seamless key"
+msgstr "Invalid seamless key"
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2285,10 +2345,6 @@ msgstr ""
 msgid "Limit"
 msgstr ""
 
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-msgid "Limit close success"
-msgstr ""
-
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Link Referral Relationship"
 msgstr ""
@@ -2385,6 +2441,10 @@ msgstr ""
 msgid "Main-chart Indicators"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maintenance Margin Rate"
+msgstr "Maintenance Margin Rate"
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "Maker"
 msgstr ""
@@ -2456,6 +2516,8 @@ msgid "Market Close"
 msgstr ""
 
 #: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market close success"
 msgstr ""
@@ -2523,6 +2585,23 @@ msgstr ""
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Max Leverage"
+msgstr "Max Leverage"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Max Slippage"
+msgstr "Max Slippage"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maximum allowed deviation between execution price and oracle price."
+msgstr "Maximum allowed deviation between execution price and oracle price."
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maximum leverage allowed in this market."
+msgstr "Maximum leverage allowed in this market."
+
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
 msgstr ""
@@ -2540,9 +2619,29 @@ msgstr "Merkle tree verification failed (CaseId,address)"
 msgid "Min"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Min Open Size"
+msgstr "Min Open Size"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
+msgstr "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum margin ratio required to open a position."
+msgstr "Minimum margin ratio required to open a position."
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
+msgstr "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
+
 #: src/components/SafeList/index.tsx
 msgid "Mintable"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minutes"
+msgstr "Minutes"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2552,6 +2651,10 @@ msgstr "Mismatched (address)"
 #: src/config/error/CommonErrorMapping.tsx
 msgid "MismatchExecuteFee(uint256,uint256,uint256)"
 msgstr ""
+
+#: src/hooks/seamless/use-create-seamless-account.ts
+msgid "Missing chain"
+msgstr "Missing chain"
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2673,6 +2776,14 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "No results found"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "No-Slippage Capacity"
+msgstr "No-Slippage Capacity"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "No-Slippage Time Window"
+msgstr "No-Slippage Time Window"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2904,6 +3015,7 @@ msgstr ""
 msgid "Open Interest (Short)"
 msgstr ""
 
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
@@ -2924,6 +3036,7 @@ msgstr ""
 msgid "Open Orders{0}"
 msgstr ""
 
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
@@ -3255,6 +3368,9 @@ msgstr ""
 #: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
@@ -3266,6 +3382,10 @@ msgstr ""
 #: src/pages/Earn/components/Trade/PriceImpact.tsx
 msgid "Price Impact"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Price Protection Range"
+msgstr "Price Protection Range"
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "PriceDeviationBelowMinimum()"
@@ -3282,6 +3402,10 @@ msgstr ""
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Profit"
 msgstr "Genesis Earnings"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Profit Risk Control"
+msgstr "Profit Risk Control"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3505,10 +3629,6 @@ msgid "Reset Password"
 msgstr ""
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
-msgid "Reset password failed"
-msgstr ""
-
-#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 msgid "Reset Your Password"
 msgstr ""
 
@@ -3539,6 +3659,10 @@ msgstr ""
 #: src/store/transactions/options.ts
 msgid "Reward Vesting"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
+msgstr "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
 
 #: src/components/SafeList/index.tsx
 msgid "Risk Rating"
@@ -3624,12 +3748,23 @@ msgstr ""
 msgid "Seamless Account"
 msgstr ""
 
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/hooks/use-check-user-vip-info.ts
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Seamless account not authorized"
+msgstr "Seamless account not authorized"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Seamless account not found"
+msgstr "Seamless account not found"
+
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
 msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
-#: src/components/SettingDrawer.tsx
 msgid "Seamless Trading"
 msgstr ""
 
@@ -3650,6 +3785,16 @@ msgstr ""
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "Search name or paste address"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Second-stage growth parameter in the funding model."
+msgstr "Second-stage growth parameter in the funding model."
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+#: src/pages/Price/components/TradeConfig/index.tsx
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Seconds"
+msgstr "Seconds"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -3776,6 +3921,10 @@ msgstr ""
 msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Share of rewards allocated to genesis LPs."
+msgstr "Share of rewards allocated to genesis LPs."
+
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
 msgstr ""
@@ -3829,6 +3978,10 @@ msgstr ""
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL({0})"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Slippage Protection Threshold"
+msgstr "Slippage Protection Threshold"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3898,9 +4051,15 @@ msgid "Sub-chart Indicators"
 msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Submit close order failed"
+msgstr "Submit close order failed"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order success"
 msgstr ""
 
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit open order success"
 msgstr ""
@@ -4058,6 +4217,14 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Time interval for funding rate settlement and updates, displayed in seconds."
+msgstr "Time interval for funding rate settlement and updates, displayed in seconds."
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Time window during which no-slippage protection is applied, displayed in hours."
+msgstr "Time window during which no-slippage protection is applied, displayed in hours."
+
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
 msgstr ""
@@ -4213,6 +4380,10 @@ msgstr ""
 msgid "Trading Volume"
 msgstr ""
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Trading within this capacity has limited or negligible price impact."
+msgstr "Trading within this capacity has limited or negligible price impact."
+
 #: src/pages/record/components/RecordTab.tsx
 msgid "Transaction History"
 msgstr ""
@@ -4223,6 +4394,8 @@ msgstr ""
 msgid "Transfer"
 msgstr ""
 
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Transfer Success"
@@ -4250,8 +4423,12 @@ msgstr ""
 msgid "Tvl"
 msgstr ""
 
+#: src/components/CookDetail/Charts/AreaCharts.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/List.tsx
 msgid "TVL"
 msgstr ""
@@ -4364,6 +4541,10 @@ msgstr ""
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
 msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Used to calculate slippage impact within the liquidity lock range."
+msgstr "Used to calculate slippage impact within the liquidity lock range."
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
@@ -4597,6 +4778,10 @@ msgstr ""
 msgid "ZeroQueries()"
 msgstr ""
 
+#: src/pages/Price/components/Tabs.tsx
+msgid "交易参数"
+msgstr "交易参数"
+
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -4628,6 +4813,10 @@ msgstr "From Wallet"
 #: src/components/SettingDrawer.tsx
 msgid "仓位保证金共享"
 msgstr "Margin Sharing"
+
+#: src/components/PlaceOrderConfirm/index.tsx
+msgid "仓位共享保证金"
+msgstr "仓位共享保证金"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -5042,7 +5231,6 @@ msgstr "Add Margin"
 msgid "添加止盈止损"
 msgstr "Add TP/SL"
 
-#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "滑点"
 msgstr "Slippage"
@@ -5187,4 +5375,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
