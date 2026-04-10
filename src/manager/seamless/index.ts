@@ -114,7 +114,6 @@ export class Seamless {
       'cancelOrder',
       'updateOrder',
       'updatePriceAndAdjustCollateral',
-      'setUserFeeData'
     ]
 
     const brokerFunctions: string[] = [
