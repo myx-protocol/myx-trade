@@ -32,6 +32,7 @@ export function fromViemWalletClient(walletClient: WalletClientLike): ISigner {
       const msg = typeof message === "string" ? message : { raw: message };
       return (await walletClient.signMessage({ message: msg })) as string;
     },
+    signTransaction: (transaction: import("viem").TransactionRequest) => walletClient.signTransaction(transaction),
     async sendTransaction(tx) {
       const to = tx.to as `0x${string}` | undefined;
       if (!to) throw new Error("sendTransaction: to is required");
@@ -74,6 +75,7 @@ export function fromMinimalSigner(signer: MinimalSignerLike): ISigner {
       } as Record<string, unknown>);
       return { hash: res.hash };
     },
+    signTransaction: minimal.signTransaction,
     ...(typeof minimal.signTypedData === "function"
       ? {
           async signTypedData(params: { domain: Record<string, unknown>; types: Record<string, unknown>; primaryType: string; message: Record<string, unknown> }) {
