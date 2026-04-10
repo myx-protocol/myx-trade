@@ -107,7 +107,7 @@ export class Seamless {
   }
 
   async getContractAbiAndAddressByFunctionName(functionName: string, chainId: ChainId) {
-    const brokerFunctions: string[] = [
+    const tradingRouterFunctions: string[] = [
       'placeOrderWithSalt',
       'placeOrderWithPosition',
       'cancelOrders',
@@ -116,13 +116,17 @@ export class Seamless {
       'updatePriceAndAdjustCollateral',
       'setUserFeeData'
     ]
+
+    const brokerFunctions: string[] = [
+      'setUserFeeData',
+    ]
     
     const accountFunctions: string[] = [
       'updateAndWithdraw',
       'deposit',
     ]
 
-    if (brokerFunctions.includes(functionName)) {
+    if (tradingRouterFunctions.includes(functionName)) {
       return {
         abi: TradingRouter_ABI as any,
         address: getContractAddressByChainId(chainId).TRADING_ROUTER,
@@ -133,6 +137,13 @@ export class Seamless {
       return {
         abi: Account_ABI as any,
         address: getContractAddressByChainId(chainId).Account,
+      }
+    }
+
+    if(brokerFunctions.includes(functionName)) {
+      return {
+        abi: Broker_ABI as any,
+        address: this.configManager.getConfig().brokerAddress,
       }
     }
 
@@ -223,8 +234,7 @@ export class Seamless {
     const deadline = dayjs().add(60, 'minute').unix()
     const domain = await this.getForwardEip712Domain(chainId)
     const { abi, address: to } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
-    console.log('contractAddress:', to)
-    console.log('orderParams-->', orderParams)
+
     const functionHash = encodeFunctionData({
       abi: abi as any,
       functionName: functionName,
@@ -238,7 +248,6 @@ export class Seamless {
       deadline,
     })
 
-    console.log('signFunction signature-->', signature)
 
     const txRs = await this.api.forwarderTxApi(
       {
