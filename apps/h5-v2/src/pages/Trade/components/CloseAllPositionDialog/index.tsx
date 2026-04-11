@@ -21,9 +21,7 @@ import {
 } from '@myx-trade/sdk'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { ethers } from 'ethers'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
-import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
-import { parseBigNumber } from '@/utils/bn'
+import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import { showErrorToast } from '@/config/error'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
@@ -41,7 +39,7 @@ export const CloseAllPositionDialog = () => {
   const { address } = useWalletConnection()
   const { tickerData } = useMarketStore()
   const positions = useGetPositionList(true)
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGetActivePoolList()
   const { tradeMode } = useGlobalStore()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)

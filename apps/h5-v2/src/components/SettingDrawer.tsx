@@ -155,13 +155,13 @@ const TradeSetting = () => {
     setImportSeamlessKeyDialogOpen,
     setResetPasswordDialogOpen,
     setExportSeamlessInfoDialogOpen,
-    setChangeModeDialogOpen,
+    setAccountDialogOpen,
   } = useGlobalStore()
 
   return (
     <>
       {isTradePage && (
-        <>
+        <div className="px-[16px]">
           <div className="mt-[24px] mb-[40px] h-[1px] w-full bg-[#31333D]"></div>
           <div className="mb-[8px] text-[14px] font-medium text-[#848E9C]">
             <Trans>Trading Setting</Trans>
@@ -169,7 +169,9 @@ const TradeSetting = () => {
           {isConnected && (
             <div
               className="flex cursor-pointer items-center justify-between py-[16px]"
-              onClick={() => setChangeModeDialogOpen(true)}
+              onClick={() => {
+                setAccountDialogOpen(true)
+              }}
             >
               <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
                 <Trans>Account Mode</Trans>
@@ -231,7 +233,7 @@ const TradeSetting = () => {
               </div>
             </>
           )}
-        </>
+        </div>
       )}
     </>
   )
@@ -239,13 +241,8 @@ const TradeSetting = () => {
 
 export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   const {
-    tradeMode,
-    setResetSeamlessPasswordDialogOpen,
-    setExportSeamlessInfoDialogOpen,
     setVipRedeemDialogOpen,
     activeLocale,
-    setAccountDialogOpen,
-    setImportSeamlessKeyDialogOpen,
     showPlaceOrderConfirmDialog,
     setShowPlaceOrderConfirmDialog,
     showCloseOrderConfirmDialog,
@@ -271,9 +268,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   })
 
   const { amountUnit, setAmountUnit } = useTradePanelStore()
-  const { pathname } = useLocation()
-  const isTradePage = pathname.includes('/trade')
-  const isPricePage = pathname.includes('/price')
+
   return (
     <Drawer
       anchor="right"

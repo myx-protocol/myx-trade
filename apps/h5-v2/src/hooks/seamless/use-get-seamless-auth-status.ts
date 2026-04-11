@@ -1,4 +1,4 @@
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import { showErrorToast } from '@/config/error'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
@@ -48,7 +48,7 @@ export const useGetSeamlessAuthStatus = () => {
 }
 
 export const useGetAllQuoteTokenAuthStatus = () => {
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGetActivePoolList()
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
   const activeSeamlessAccount = seamlessAccountList.find(

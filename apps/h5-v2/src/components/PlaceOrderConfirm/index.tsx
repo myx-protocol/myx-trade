@@ -22,7 +22,7 @@ import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { tradePubSub } from '@/utils/pubsub'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useGetPoolList } from '../Trade/hooks/use-get-pool-list'
+import { useGetActivePoolList } from '../Trade/hooks/use-get-pool-list'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
 import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
@@ -53,7 +53,7 @@ export const PlaceOrderConfirmDialog = () => {
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { showPlaceOrderConfirmDialog } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGetActivePoolList()
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
   const { shareCollateral } = useGlobalStore()
   const positionList = useGetPositionList()

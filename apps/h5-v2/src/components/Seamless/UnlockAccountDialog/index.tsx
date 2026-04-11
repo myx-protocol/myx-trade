@@ -17,6 +17,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useUnlockSeamlessAccount } from '@/hooks/seamless/use-unlock-seamless-account'
+import { useHomeStore } from '@/pages/Home/store'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -25,8 +26,8 @@ export const UnlockAccountDialog = () => {
     setSelectedSeamlessAccountDialogOpen,
     setTradeMode,
     setSeamlessPasswordDialogOpen,
-    symbolInfo,
   } = useGlobalStore()
+  const { chainId } = useHomeStore()
   const [show, setShow] = useState(false)
   const { address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
@@ -177,7 +178,7 @@ export const UnlockAccountDialog = () => {
                 password,
                 masterAddress: targetSeamlessAccount.masterAddress as string,
                 apiKey: targetSeamlessAccount.apiKey as string,
-                chainId: symbolInfo?.chainId as number,
+                chainId: chainId as number,
               })
 
               if (rs?.code === 0) {

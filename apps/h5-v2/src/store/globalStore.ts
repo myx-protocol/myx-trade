@@ -213,6 +213,7 @@ const useGlobalStore = createWithEqualityFn<GlobalStore>()(
             manageAuthorizedTokensDialogOpen: false,
             setManageAuthorizedTokensDialogOpen: (open: boolean) =>
               set({ manageAuthorizedTokensDialogOpen: open }),
+            setTradeMode: (tradeMode: TradeMode) => set({ tradeMode }),
           }) as GlobalStore,
       ),
       {

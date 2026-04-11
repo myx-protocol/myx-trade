@@ -20,7 +20,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { AmountUnitEnum } from '../../type'
 import { MenuItem, Select } from '@mui/material'
-import { useGetPoolList } from '../../hooks/use-get-pool-list'
+import { useGetActivePoolList } from '../../hooks/use-get-pool-list'
 import dayjs from 'dayjs'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { getQuoteTokenInfo } from '@/config/token'
@@ -49,7 +49,7 @@ export const TransferDialogButton = () => {
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
   const [transferType, setTransferType] = useState<TransferType>(TransferType.Account)
   const [amount, setAmount] = useState<string>('')
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGetActivePoolList()
   const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
 

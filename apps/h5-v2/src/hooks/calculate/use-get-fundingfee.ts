@@ -3,9 +3,9 @@ import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals'
-import useSWR from 'swr'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import useSWR from 'swr'
 
 export const useGetFundingFee = (poolId: string, chainId: number) => {
   const { client } = useMyxSdkClient(chainId)

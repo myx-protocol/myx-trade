@@ -8,7 +8,6 @@ import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
 import { useSeamlessStore } from '@/store/seamless/createStore'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import avatarIcon from '@/assets/home/wallet-icon.png'
 import { Copy } from '@/components/Copy'
@@ -74,7 +73,7 @@ export const AccountDialog = () => {
                 color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
                 backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
               }}
-              onClick={async () => {
+              onClick={() => {
                 setTradeMode(TradeMode.Classic)
               }}
             >{t`Classic`}</p>

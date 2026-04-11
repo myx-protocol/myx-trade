@@ -4,7 +4,7 @@ import { useGetFundingFee } from './use-get-fundingfee'
 import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useGetPoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import useSWR from 'swr'
 
 export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
@@ -77,7 +77,7 @@ export const useGetLiqPrice = ({ poolId, chainId }: { poolId: string; chainId: n
 
 export const useGetNetworkFee = ({ poolId, chainId }: { poolId: string; chainId: number }) => {
   const { client } = useMyxSdkClient(chainId)
-  const { poolList } = useGetPoolList()
+  const { poolList } = useGetActivePoolList()
   const getNetworkFee = useCallback(async () => {
     const pool = poolList.find((item: any) => item.poolId === poolId)
     const networkFeeString = await client?.utils.getNetworkFee(pool.marketId, chainId)
