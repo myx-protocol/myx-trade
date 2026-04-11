@@ -578,10 +578,10 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
                     const availableMargin = parseBigNumber(
                       assetsRes?.code === 0 ? (assetsRes?.data?.toString() ?? '0') : '0',
-                    )
+                    ).div(10 ** (pool?.quoteDecimals ?? 6))
 
                     let diff = parseBigNumber(0)
-                    const used = parseBigNumber(displayCollateralAmountChange)
+                    const used = parseBigNumber(adjustAmountFormat)
 
                     if (
                       availableMargin.lt(parseBigNumber(displayCollateralAmountChange)) &&

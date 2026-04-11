@@ -49,15 +49,19 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
         nonce: string
         deadline: number
       }): Promise<string> => {
-        const signText = await activeSeamlessWallet.signTypedData(domain, contractTypes, {
-          from: activeSeamlessWallet.address,
-          to,
-          value: '0',
-          gas: '800000',
-          nonce,
-          deadline,
-          data: functionHash,
-        })
+        const signText = await activeSeamlessWallet.signTypedData(
+          { ...domain, chainId: parseInt(domain.chainId as string) },
+          contractTypes,
+          {
+            from: activeSeamlessWallet.address,
+            to,
+            value: value ?? '0',
+            gas: '800000',
+            nonce,
+            deadline,
+            data: functionHash,
+          },
+        )
 
         return signText
       }
@@ -70,7 +74,9 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
         forwardFeeToken,
         functionName,
         orderParams,
+        value: value ?? '0',
       })
+
       return rs
     },
     [client, chainId, activeSeamlessWallet],
