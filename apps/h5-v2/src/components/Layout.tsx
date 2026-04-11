@@ -1,10 +1,11 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 import { MyxSdkProvider } from '@/providers/MyxSdkProvider'
 import { GlobalSearch } from './GlobalSearch/GlobalSearch'
 import { useGlobalSearchStore } from './GlobalSearch/store'
 import { Tabbar } from '@/components/Tabbar/index'
 import { useLayout } from '@/hooks/layout/useLayout'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { AccountDialog } from './AccountDialog'
 import useGlobalStore from '@/store/globalStore'
 import { VipRedeemDialog } from './VipRedeemDialog'
@@ -16,18 +17,20 @@ import { ImportDialog } from '@/components/Seamless/ImportDialog'
 import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
 import { ExportDialog } from '@/components/Seamless/ExportDialog'
 import { TradeMode } from '@/pages/Trade/types'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { SelectAccountDialog } from './Seamless/SelectAccountDialog'
 import { ResetSetPasswordDialog } from './Seamless/ResetSetPasswordDialog'
 
 function Layout() {
+  const { pathname } = useLocation()
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
-  const { address } = useWalletConnection()
+  /** 链上 EOA；勿用 useWalletConnection().address，Seamless 下该值会被替换为 activeSeamlessAddress，导致与 activeSeamlessAddress 比较恒成立/恒不成立 */
+  const { address: walletEoaAddress } = useAccount()
   const { activeSeamlessAddress } = useSeamlessStore()
-  const isFirstRender = useRef(true)
+  const isTradePage = pathname.includes('/trade')
+  const isPricePage = pathname.includes('/price')
 
   useEffect(() => {
     if (tabbarActiveItem) {
@@ -50,18 +53,24 @@ function Layout() {
   } = useGlobalStore()
 
   useEffect(() => {
-    // 只在 Seamless 模式下处理
-    if (tradeMode === TradeMode.Seamless && address !== activeSeamlessAddress) {
+    // Seamless 下：仅当「当前连接的钱包地址」与「选中的无感主地址」不一致时在交易/行情页提示解锁（需用 EOA，不能用 useWalletConnection 的别名 address）
+    if (
+      tradeMode === TradeMode.Seamless &&
+      walletEoaAddress &&
+      activeSeamlessAddress &&
+      walletEoaAddress !== activeSeamlessAddress &&
+      (isTradePage || isPricePage)
+    ) {
       setUnlockAccountDialogOpen(true)
     }
-  }, [tradeMode, activeSeamlessAddress, address, setUnlockAccountDialogOpen])
-
-  useEffect(() => {
-    if (tradeMode === TradeMode.Seamless) {
-      setUnlockAccountDialogOpen(true)
-      isFirstRender.current = false
-    }
-  }, [tradeMode, setUnlockAccountDialogOpen])
+  }, [
+    tradeMode,
+    activeSeamlessAddress,
+    walletEoaAddress,
+    setUnlockAccountDialogOpen,
+    isTradePage,
+    isPricePage,
+  ])
 
   return (
     <div>
