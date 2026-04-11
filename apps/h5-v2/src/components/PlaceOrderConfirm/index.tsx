@@ -129,13 +129,14 @@ export const PlaceOrderConfirmDialog = () => {
     if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
       totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
     }
-    const position = positionList?.find(
-      (position: any) => position.poolId === symbolInfo?.poolId && position.direction === direction,
-    )
 
-    if (!position) {
-      totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
-    }
+    // const position = positionList?.find(
+    //   (position: any) => position.poolId === symbolInfo?.poolId && position.direction === direction,
+    // )
+
+    // if (!position || parseBigNumber(longPositionAvailableMargin).lt(parseBigNumber(networkFee ?? '0'))) {
+    //   totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
+    // }
 
     let total = '0'
 

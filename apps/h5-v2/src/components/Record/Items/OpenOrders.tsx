@@ -141,7 +141,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
       {/* buttons */}
       <div className="mt-[20px] flex justify-center gap-[8px]">
         <OrderTpSlButton order={order} poolInfo={pool} />
-        <CancelOrderButton orderId={order.orderId} chainId={order.chainId} />
+        <CancelOrderButton orderId={order.orderId} chainId={order.chainId} poolId={order.poolId} />
       </div>
     </div>
   )

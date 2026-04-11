@@ -126,7 +126,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   })
 
   const { checkWalletChainId } = useWalletChainCheck()
-  const { asyncVipLevelInfo, isVipInfoSyncing } = useCheckUserVipInfo(position?.chainId)
+  const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
@@ -482,7 +482,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 fontSize: '14px',
                 fontWeight: 500,
               }}
-              loading={loading || isVipInfoSyncing}
+              loading={loading || asyncVipLevelLoading}
               onClick={async () => {
                 if (parseBigNumber(adjustMargin).eq(0)) {
                   toast.error({ title: t`Adjust margin amount cannot be 0` })
@@ -515,13 +515,20 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 const adjustAmountFormat = parseBigNumber(adjustMargin)
                   .mul(adjustType === 'increase' ? 1 : -1)
                   .toString()
+                setLoading(true)
 
                 await checkWalletChainId(position?.chainId as number)
 
-                const asyncVipResult = await asyncVipLevelInfo(pool?.quoteToken as string)
+                if (!isMatch) {
+                  const rs = await asyncVipInfo(
+                    pool?.quoteToken as string,
+                    position?.chainId as string,
+                  )
 
-                if (!asyncVipResult) {
-                  return
+                  if (!rs) {
+                    setLoading(false)
+                    return
+                  }
                 }
 
                 try {
@@ -535,19 +542,20 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       return
                     }
 
-                    setLoading(true)
-
                     const isAuthorizedRes = await getSeamlessAuthStatus({
                       masterAddress: activeSeamlessAddress,
                       seamlessAddress: seamlessAccount?.seamlessAddress as string,
                       chainId: position.chainId,
                       tokenAddress: pool?.quoteToken as string,
                     })
+
                     const isAuthorized = isAuthorizedRes?.data?.auth
+
                     if (!isAuthorized) {
                       toast.error({ title: t`Seamless account not authorized` })
                       return
                     }
+
                     const priceData = await client?.utils.getOraclePrice(
                       position.poolId,
                       position.chainId,
@@ -583,27 +591,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       depositAmount = diff
                     }
 
-                    console.log({
-                      chainId: pool.chainId as number,
-                      masterAddress: activeSeamlessAddress,
-                      seamlessAddress: seamlessAccount.seamlessAddress,
-                      forwardFeeToken: pool?.quoteToken as string,
-                      functionName: 'updatePriceAndAdjustCollateral',
-                      orderParams: [
-                        [updateParams],
-                        {
-                          token: pool?.quoteToken ?? '',
-                          amount: depositAmount.mul(10 ** (pool?.quoteDecimals ?? 6)).toString(),
-                        },
-                        position.positionId,
-                        parseBigNumber(displayCollateralAmountChange)
-                          .mul(10 ** (pool?.quoteDecimals ?? 6))
-                          .mul(adjustType === 'increase' ? 1 : -1)
-                          .toString(),
-                      ],
-                      value: priceData?.value.toString() ?? '0',
-                    })
-
                     const rs = await forwardSeamlessTransaction({
                       chainId: pool.chainId as number,
                       masterAddress: activeSeamlessAddress,
@@ -619,7 +606,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                         position.positionId,
                         ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString(),
                       ],
-                      value: priceData?.value.toString() ?? '0',
+                      value: priceData?.value.toString() ?? '1',
                     })
 
                     if (rs?.code === 0) {
@@ -628,6 +615,8 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       setAdjustType('increase')
                       setOpen(false)
                     } else {
+                      console.log('error-->', rs)
+
                       showErrorToast(client?.utils.formatErrorMessage(rs))
                     }
 
@@ -653,6 +642,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     setAdjustType('increase')
                     setOpen(false)
                   } else {
+                    console.log('rs->', rs?.message)
                     showErrorToast(client?.utils.formatErrorMessage(rs))
                   }
                 } catch (error) {

@@ -28,6 +28,7 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { useGetAllQuoteTokenAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
+import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
 // import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
 export const useSubmitOrder = () => {
@@ -55,7 +56,7 @@ export const useSubmitOrder = () => {
   const { longPositionAvailableMargin, shortPositionAvailableMargin } =
     useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId as number)
 
-  const { asyncVipLevelInfo, isVipInfoSyncing } = useCheckUserVipInfo()
+  const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
 
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
 
@@ -133,6 +134,14 @@ export const useSubmitOrder = () => {
         symbolInfo.chainId as number,
       )
 
+      let formatCollateralAmount = '0'
+      const positionAvailableMargin =
+        direction === Direction.LONG ? longPositionAvailableMargin : shortPositionAvailableMargin
+      const parsedPositionAvailableMarginString = parseBigNumber(positionAvailableMargin)
+        .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+        .toFixed(0)
+      const parsedPositionAvailableMargin = parseBigNumber(parsedPositionAvailableMarginString)
+
       let totalNetworkFee = parseBigNumber(0)
       if (positionAction === PositionActionEnum.OPEN) {
         totalNetworkFee = parseBigNumber(networkFee)
@@ -141,10 +150,6 @@ export const useSubmitOrder = () => {
         }
 
         if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
-          totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee))
-        }
-
-        if (!position) {
           totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee))
         }
       }
@@ -159,13 +164,6 @@ export const useSubmitOrder = () => {
         .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
         .toFixed(0)
 
-      let formatCollateralAmount = '0'
-      const positionAvailableMargin =
-        direction === Direction.LONG ? longPositionAvailableMargin : shortPositionAvailableMargin
-      const parsedPositionAvailableMarginString = parseBigNumber(positionAvailableMargin)
-        .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
-        .toFixed(0)
-      const parsedPositionAvailableMargin = parseBigNumber(parsedPositionAvailableMarginString)
       if (positionAction === PositionActionEnum.OPEN) {
         formatCollateralAmount = parseBigNumber(collateralAmount)
           .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
@@ -181,10 +179,7 @@ export const useSubmitOrder = () => {
               parsedCollateral = parsedCollateral.mul(parseBigNumber(price))
             }
 
-            formatCollateralAmount = parsedCollateral
-              .plus(parseBigNumber(tradingFee))
-              .plus(totalNetworkFee)
-              .toFixed(0)
+            formatCollateralAmount = parsedCollateral.plus(parseBigNumber(tradingFee)).toFixed(0)
           }
         } else {
           if (autoMarginMode) {
@@ -193,7 +188,6 @@ export const useSubmitOrder = () => {
                 .mul(parseBigNumber(price))
                 .div(leverage)
                 .plus(parseBigNumber(tradingFee))
-                .plus(totalNetworkFee)
 
               if (needMargin.lt(parsedPositionAvailableMargin)) {
                 formatCollateralAmount = '0'
@@ -204,10 +198,7 @@ export const useSubmitOrder = () => {
                   .toFixed(0)
               }
             } else {
-              const needMargin = parseBigNumber(size)
-                .div(leverage)
-                .plus(parseBigNumber(tradingFee))
-                .plus(totalNetworkFee)
+              const needMargin = parseBigNumber(size).div(leverage).plus(parseBigNumber(tradingFee))
               if (needMargin.lt(parsedPositionAvailableMargin)) {
                 formatCollateralAmount = '0'
               } else {
@@ -234,6 +225,12 @@ export const useSubmitOrder = () => {
 
           formatCollateralAmount = parseBigNumber(networkFee).plus(diff).toFixed(0)
         }
+      }
+
+      if (!position || parsedPositionAvailableMargin.gt(networkFee)) {
+        formatCollateralAmount = parseBigNumber(formatCollateralAmount)
+          .plus(parseBigNumber(networkFee))
+          .toFixed()
       }
 
       const openPositionSlippage = getSlippage({
@@ -398,20 +395,31 @@ export const useSubmitOrder = () => {
         tpPrice: formatTpValue,
         slSize: formatSlSize,
         slPrice: formatSlValue,
+        broker: getMyxBrokerAddressByChainId(symbolInfo.chainId as number),
       }
 
       try {
-        if (isVipInfoSyncing) {
+        setLoading(true)
+
+        if (asyncVipLevelLoading) {
           if (direction === Direction.LONG) {
             setLongAsyncVipLoading(true)
           } else {
             setShortAsyncVipLoading(true)
           }
 
-          const asyncVipResult = await asyncVipLevelInfo(symbolInfo?.quoteToken as string)
+          if (!isMatch) {
+            const rs = await asyncVipInfo(
+              symbolInfo?.quoteToken as string,
+              position?.chainId as string,
+            )
 
-          if (!asyncVipResult) {
-            return
+            if (!rs) {
+              setLoading(false)
+              setLongAsyncVipLoading(false)
+              setShortAsyncVipLoading(true)
+              return
+            }
           }
 
           if (direction === Direction.LONG) {
@@ -421,93 +429,100 @@ export const useSubmitOrder = () => {
           }
         }
 
-        setLoading(true)
         if (direction === Direction.LONG) {
           setLongLoading(true)
         } else {
           setShortLoading(true)
         }
 
-        const isSeamlessAuthorized = quoteTokenAuthStatus.find(
-          (item) => item.quoteToken === symbolInfo?.quoteToken,
-        )?.auth
-
         if (positionAction === PositionActionEnum.OPEN) {
-          if (tradeMode === TradeMode.Seamless && isSeamlessAuthorized) {
+          if (tradeMode === TradeMode.Seamless) {
             const seamlessAccount = seamlessAccountList.find(
               (item) => item.masterAddress === activeSeamlessAddress,
             )
             if (!seamlessAccount) {
               return
             }
+            const isSeamlessAuthorized = quoteTokenAuthStatus.find(
+              (item) => item.quoteToken === symbolInfo?.quoteToken,
+            )?.auth
 
-            const availableRes = await client.account.getAvailableMarginBalance({
-              poolId: symbolInfo.poolId,
-              chainId: symbolInfo.chainId,
-              address: seamlessAccount.masterAddress,
-            })
-            const availableAccountMarginBalance =
-              availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n
-            const needAmount = parseBigNumber(formatCollateralAmount)
-            let depositAmount = parseBigNumber(0)
-
-            const diff = needAmount.minus(parseBigNumber(availableAccountMarginBalance.toString()))
-
-            if (diff.gt(0)) {
-              depositAmount = diff
-            }
-
-            const depositData = {
-              token: symbolInfo?.quoteToken as string,
-              amount: depositAmount.toString(),
-            }
-
-            const rs = await forwardSeamlessTransaction({
-              chainId: symbolInfo.chainId as number,
-              masterAddress: activeSeamlessAddress,
-              seamlessAddress: seamlessAccount.seamlessAddress,
-              forwardFeeToken: symbolInfo?.quoteToken as string,
-              functionName: positionId ? 'placeOrderWithPosition' : 'placeOrderWithSalt',
-              orderParams: [
-                positionId ? positionId : placeOrderSaltAsOne.toString(),
-                depositData,
-                {
-                  user: orderData.address,
-                  poolId: orderData.poolId,
-                  orderType: orderData.orderType,
-                  triggerType: orderData.triggerType,
-                  operation: OperationType.INCREASE,
-                  direction: orderData.direction,
-                  collateralAmount: formatCollateralAmount.toString(),
-                  size: orderData.size,
-                  price: orderData.price,
-                  timeInForce: TimeInForce.IOC,
-                  postOnly: orderData.postOnly ?? false,
-                  slippagePct: orderData.slippagePct ?? '0',
-                  leverage: orderData.leverage ?? 0,
-                  tpSize: orderData.tpSize ?? '0',
-                  tpPrice: orderData.tpPrice ?? '0',
-                  slSize: orderData.slSize ?? '0',
-                  slPrice: orderData.slPrice ?? '0',
-                },
-              ],
-            })
-
-            if (rs?.code === 0) {
-              resetStore()
-              toast.success({
-                title: t`Submit open order success`,
+            if (isSeamlessAuthorized) {
+              const availableRes = await client.account.getAvailableMarginBalance({
+                poolId: symbolInfo.poolId,
+                chainId: symbolInfo.chainId,
+                address: seamlessAccount.masterAddress,
               })
-              setPlaceOrderConfirmDialogOpen(false)
-              await sleep(1500)
-              tradePubSub.emit('place:order:success')
-            } else {
-              showErrorToast(client?.utils.formatErrorMessage(rs))
+              const availableAccountMarginBalance =
+                availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n
+
+              const needAmount = parseBigNumber(formatCollateralAmount).plus(totalNetworkFee)
+              let depositAmount = parseBigNumber(0)
+
+              const diff = needAmount.minus(
+                parseBigNumber(availableAccountMarginBalance.toString()),
+              )
+
+              if (diff.gt(0)) {
+                depositAmount = diff
+              }
+
+              const depositData = {
+                token: symbolInfo?.quoteToken as string,
+                amount: depositAmount.toString(),
+              }
+
+              const rs = await forwardSeamlessTransaction({
+                chainId: symbolInfo.chainId as number,
+                masterAddress: activeSeamlessAddress,
+                seamlessAddress: seamlessAccount.seamlessAddress,
+                forwardFeeToken: symbolInfo?.quoteToken as string,
+                functionName: positionId ? 'placeOrderWithPosition' : 'placeOrderWithSalt',
+                orderParams: [
+                  positionId ? positionId : placeOrderSaltAsOne.toString(),
+                  depositData,
+                  {
+                    user: orderData.address,
+                    poolId: orderData.poolId,
+                    orderType: orderData.orderType,
+                    triggerType: orderData.triggerType,
+                    operation: OperationType.INCREASE,
+                    direction: orderData.direction,
+                    collateralAmount: formatCollateralAmount.toString(),
+                    size: orderData.size,
+                    price: orderData.price,
+                    timeInForce: TimeInForce.IOC,
+                    postOnly: orderData.postOnly ?? false,
+                    slippagePct: orderData.slippagePct ?? '0',
+                    leverage: orderData.leverage ?? 0,
+                    tpSize: orderData.tpSize ?? '0',
+                    tpPrice: orderData.tpPrice ?? '0',
+                    slSize: orderData.slSize ?? '0',
+                    slPrice: orderData.slPrice ?? '0',
+                    broker: getMyxBrokerAddressByChainId(symbolInfo.chainId as number),
+                  },
+                ],
+              })
+
+              if (rs?.code === 0) {
+                resetStore()
+                toast.success({
+                  title: t`Submit open order success`,
+                })
+                setPlaceOrderConfirmDialogOpen(false)
+                await sleep(1500)
+                tradePubSub.emit('place:order:success')
+              } else {
+                showErrorToast(client?.utils.formatErrorMessage(rs))
+              }
+              return
             }
-            return
           }
 
-          const rs = await client?.order.createIncreaseOrder({ ...orderData, positionId })
+          const rs = await client?.order.createIncreaseOrder(
+            { ...orderData, positionId },
+            totalNetworkFee.toString(),
+          )
           if (rs?.code === 0) {
             resetStore()
             toast.success({
@@ -520,7 +535,7 @@ export const useSubmitOrder = () => {
             showErrorToast(client?.utils.formatErrorMessage(rs))
           }
         } else {
-          if (tradeMode === TradeMode.Seamless && isSeamlessAuthorized) {
+          if (tradeMode === TradeMode.Seamless) {
             const seamlessAccount = seamlessAccountList.find(
               (item) => item.masterAddress === activeSeamlessAddress,
             )
@@ -528,55 +543,62 @@ export const useSubmitOrder = () => {
               return
             }
 
-            const rs = await forwardSeamlessTransaction({
-              chainId: symbolInfo.chainId as number,
-              masterAddress: activeSeamlessAddress,
-              seamlessAddress: seamlessAccount.seamlessAddress,
-              forwardFeeToken: symbolInfo?.quoteToken as string,
-              functionName: positionId ? 'placeOrderWithPosition' : 'placeOrderWithSalt',
-              orderParams: [
-                positionId ? positionId : placeOrderSaltAsOne.toString(),
-                {
-                  token: symbolInfo?.quoteToken as string,
-                  amount: '0',
-                },
-                {
-                  user: orderData.address,
-                  poolId: orderData.poolId,
-                  orderType: orderData.orderType,
-                  triggerType: orderData.triggerType,
-                  operation: OperationType.DECREASE,
-                  direction: orderData.direction,
-                  collateralAmount: '0',
-                  size: orderData.size,
-                  price: orderData.price,
-                  timeInForce: TimeInForce.IOC,
-                  postOnly: orderData.postOnly ?? false,
-                  slippagePct: orderData.slippagePct ?? '0',
-                  leverage: orderData.leverage ?? 0,
-                  tpSize: '0',
-                  tpPrice: '0',
-                  slSize: '0',
-                  slPrice: '0',
-                },
-              ],
-            })
+            const isSeamlessAuthorized = quoteTokenAuthStatus.find(
+              (item) => item.quoteToken === symbolInfo?.quoteToken,
+            )?.auth
 
-            if (rs?.code === 0) {
-              toast.success({
-                title: t`Submit close order success`,
+            if (isSeamlessAuthorized) {
+              const rs = await forwardSeamlessTransaction({
+                chainId: symbolInfo.chainId as number,
+                masterAddress: activeSeamlessAddress,
+                seamlessAddress: seamlessAccount.seamlessAddress,
+                forwardFeeToken: symbolInfo?.quoteToken as string,
+                functionName: positionId ? 'placeOrderWithPosition' : 'placeOrderWithSalt',
+                orderParams: [
+                  positionId ? positionId : placeOrderSaltAsOne.toString(),
+                  {
+                    token: symbolInfo?.quoteToken as string,
+                    amount: '0',
+                  },
+                  {
+                    user: orderData.address,
+                    poolId: orderData.poolId,
+                    orderType: orderData.orderType,
+                    triggerType: orderData.triggerType,
+                    operation: OperationType.DECREASE,
+                    direction: orderData.direction,
+                    collateralAmount: '0',
+                    size: orderData.size,
+                    price: orderData.price,
+                    timeInForce: TimeInForce.IOC,
+                    postOnly: orderData.postOnly ?? false,
+                    slippagePct: orderData.slippagePct ?? '0',
+                    leverage: orderData.leverage ?? 0,
+                    tpSize: '0',
+                    tpPrice: '0',
+                    slSize: '0',
+                    slPrice: '0',
+                    broker: getMyxBrokerAddressByChainId(symbolInfo.chainId as number),
+                  },
+                ],
               })
-              setCloseOrderConfirmDialogOpen(false)
-              resetStore()
-              await sleep(1500)
-              tradePubSub.emit('place:order:success')
-            } else {
-              toast.success({
-                title: t`Submit close order failed`,
-              })
+
+              if (rs?.code === 0) {
+                toast.success({
+                  title: t`Submit close order success`,
+                })
+                setCloseOrderConfirmDialogOpen(false)
+                resetStore()
+                await sleep(1500)
+                tradePubSub.emit('place:order:success')
+              } else {
+                toast.success({
+                  title: t`Submit close order failed`,
+                })
+              }
+
+              return
             }
-
-            return
           }
 
           const rs = await client?.order.createDecreaseOrder({

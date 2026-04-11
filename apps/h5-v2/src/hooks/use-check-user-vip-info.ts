@@ -13,124 +13,96 @@ import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import useSWR from 'swr'
+import { getVipInfoByBackEnd } from '@/api/account'
+import type { UserVipInfoContract, VipInfoByBackend } from '@/types/vip'
+import { zeroAddress } from 'viem'
 
-export const useCheckUserVipInfo = (positionChainId?: string) => {
-  const { chainId: currentChainId } = useParams()
-  const chainId = positionChainId ?? currentChainId
+export const useCheckUserVipInfo = () => {
+  const { chainId } = useParams()
   const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
   const { address } = useWalletConnection()
-  const { getAccountVipInfoByContract } = useGetAccountVipInfoByContract(chainId)
-  const [isVipInfoSynced, setIsVipInfoSynced] = useState(true)
-  const [isVipInfoSyncing, setIsVipInfoSyncing] = useState(false)
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
+  const [isLoading, setLoading] = useState(false)
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(parseInt(chainId as string))
 
-  const getBackendVipInfo = useCallback(async () => {
-    if (
-      !client ||
-      !clientIsAuthenticated ||
-      (tradeMode === TradeMode.Seamless && !activeSeamlessAddress) ||
-      (tradeMode === TradeMode.Classic && !address) ||
-      !chainId
-    )
-      return null
-    const addressToUse = tradeMode === TradeMode.Seamless ? activeSeamlessAddress : address
-    const userVipInfoByContract = await getAccountVipInfoByContract()
-    const nonce = parseInt(userVipInfoByContract?.nonce as unknown as string) + 1
-    const res = await client?.account.getAccountVipInfoByBackend(
-      addressToUse as string,
+  const account = tradeMode === TradeMode.Seamless ? activeSeamlessAddress : address
+
+  const getVipInfo = useCallback(
+    async ({ isSign, deadline, nonce }: { isSign?: boolean; deadline: number; nonce: number }) => {
+      const vipInfoResByBackend = await getVipInfoByBackEnd({
+        access: { account: account as string },
+        isSign: !!isSign,
+        chainId: parseInt(chainId as string),
+        deadline,
+        nonce: parseInt(nonce.toString()) + 1,
+      })
+      const vipInfoByBackend = (vipInfoResByBackend.data ?? {}) as VipInfoByBackend
+
+      return vipInfoByBackend
+    },
+    [account, chainId, account],
+  )
+
+  const getVipInfoFromContract = useCallback(async () => {
+    const vipInfoResByBackend = await client?.account.getAccountVipInfo(
       parseInt(chainId as string),
-      userVipInfoByContract?.deadline as number,
-      nonce.toString(),
+      account as string,
     )
+    const vipInfoByContract = (vipInfoResByBackend?.data ?? {}) as UserVipInfoContract
 
-    return {
-      vipInfo: res?.data ?? {},
-      nonce,
-      userVipInfoByContract,
-    }
-  }, [
-    client,
-    clientIsAuthenticated,
-    address,
-    chainId,
-    getAccountVipInfoByContract,
-    activeSeamlessAddress,
-    tradeMode,
-  ])
+    return vipInfoByContract
+  }, [account, client, chainId])
 
-  const checkUserVipInfo = useCallback(async () => {
-    if (
-      !client ||
-      !clientIsAuthenticated ||
-      (tradeMode === TradeMode.Seamless && !activeSeamlessAddress) ||
-      (tradeMode === TradeMode.Classic && !address) ||
-      !chainId
-    ) {
-      setIsVipInfoSynced(false)
-      return false
-    }
+  const checkVipInfo = useCallback(async () => {
+    const vipInfoByContract = await getVipInfoFromContract()
 
-    const backendRs = await getBackendVipInfo()
-    if (!backendRs) {
-      setIsVipInfoSynced(false)
-      return false
-    }
-
-    const { vipInfo, userVipInfoByContract } = backendRs
+    const vipInfo = await getVipInfo({
+      isSign: false,
+      deadline: vipInfoByContract.deadline,
+      nonce: vipInfoByContract.nonce,
+    })
     const isMatched =
-      vipInfo?.vipTier?.toString() === userVipInfoByContract?.tier?.toString() &&
-      vipInfo?.rebatePct?.toString() ===
-        userVipInfoByContract?.totalReferralRebatePct?.toString() &&
-      vipInfo?.rebateReferrerPct?.toString() ===
-        userVipInfoByContract?.referrerRebatePct?.toString()
-
-    setIsVipInfoSynced(isMatched)
+      vipInfo?.vipTier === vipInfoByContract?.[0] &&
+      vipInfo?.rebatePct?.toString() === vipInfoByContract?.[2]?.toString() &&
+      vipInfo?.rebateReferrerPct?.toString() === vipInfoByContract?.[3]?.toString()
     return isMatched
-  }, [
-    client,
-    clientIsAuthenticated,
-    address,
-    chainId,
-    getBackendVipInfo,
-    activeSeamlessAddress,
-    tradeMode,
-  ])
+  }, [getVipInfo, getVipInfoFromContract])
 
-  useSWR(
-    ((tradeMode === TradeMode.Seamless && activeSeamlessAddress) ||
-      (tradeMode === TradeMode.Classic && address)) &&
-      client &&
-      clientIsAuthenticated &&
-      chainId
-      ? ['checkUserVipInfo', address, activeSeamlessAddress, chainId]
-      : null,
-    checkUserVipInfo,
+  const { data: isMatch } = useSWR(
+    account && clientIsAuthenticated && chainId ? { key: 'getVipInfo', account, chainId } : null,
+    async () => {
+      const vipInfoByContract = await getVipInfoFromContract()
+      const vipInfo = await getVipInfo({
+        isSign: false,
+        deadline: vipInfoByContract.deadline,
+        nonce: vipInfoByContract.nonce,
+      })
+
+      const isMatched =
+        vipInfo?.vipTier === vipInfoByContract?.[0] &&
+        vipInfo?.rebatePct?.toString() === vipInfoByContract?.[2]?.toString() &&
+        vipInfo?.rebateReferrerPct?.toString() === vipInfoByContract?.[3]?.toString()
+
+      return isMatched
+    },
     {
-      refreshInterval: 3600000,
-      revalidateOnFocus: false,
+      refreshInterval: 60000,
     },
   )
 
-  const asyncVipLevelInfo = useCallback(
-    async (quoteToken: string) => {
+  const asyncVipInfo = useCallback(
+    async (quoteToken: string, chainId: string) => {
       try {
-        if (
-          !client ||
-          !clientIsAuthenticated ||
-          (tradeMode === TradeMode.Seamless && !activeSeamlessAddress) ||
-          (tradeMode === TradeMode.Classic && !address) ||
-          !chainId
-        )
-          return false
-        if (isVipInfoSynced) return true
-        const backendRs = await getBackendVipInfo()
-        if (!backendRs) return false
-        const { vipInfo, nonce, userVipInfoByContract } = backendRs
+        setLoading(true)
+        const userVipInfoByContract = await getVipInfoFromContract()
+        const vipInfo = await getVipInfo({
+          isSign: true,
+          deadline: userVipInfoByContract.deadline,
+          nonce: userVipInfoByContract.nonce,
+        })
 
-        setIsVipInfoSyncing(true)
         if (tradeMode === TradeMode.Seamless) {
           const seamlessAccount = seamlessAccountList.find(
             (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
@@ -138,8 +110,9 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
           if (!seamlessAccount) {
             return false
           }
+
           const isAuthorizedRes = await getSeamlessAuthStatus({
-            masterAddress: activeSeamlessAddress,
+            masterAddress: seamlessAccount.masterAddress,
             seamlessAddress: seamlessAccount?.seamlessAddress as string,
             chainId: parseInt(chainId as string),
             tokenAddress: quoteToken as string,
@@ -151,35 +124,34 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
             return false
           }
 
-          const userVipInfoByContract = await getAccountVipInfoByContract()
-
-          console.log('seamless-->', {
-            user: activeSeamlessAddress as string,
-            nonce: nonce.toString(),
-            deadline: userVipInfoByContract?.deadline as number,
-            feeData: {
-              tier: vipInfo?.vipTier as number,
-              referrer: vipInfo?.rebateAddr as string,
-              totalReferralRebatePct: vipInfo?.rebatePct as number,
-              referrerRebatePct: vipInfo?.rebateReferrerPct as number,
-            },
-            signature: vipInfo?.signature as string,
-          })
+          const hasEnoughGas = await client?.utils.checkSeamlessGas(
+            seamlessAccount.masterAddress,
+            parseInt(chainId as string),
+            quoteToken,
+          )
+          if (!hasEnoughGas) {
+            toast.error({ title: t`Insufficient balance to pay execution fee` })
+            return false
+          }
+          const currentFeeDataEpoch = await client?.account.getCurrentFeeDataEpoch(
+            parseInt(chainId as string),
+          )
 
           const rs = await forwardSeamlessTransaction({
             chainId: parseInt(chainId as string),
-            masterAddress: activeSeamlessAddress,
+            masterAddress: seamlessAccount.masterAddress,
             seamlessAddress: seamlessAccount.seamlessAddress,
             forwardFeeToken: quoteToken as string,
             functionName: 'setUserFeeData',
             orderParams: [
               {
-                user: activeSeamlessAddress as string,
-                nonce: nonce.toString(),
-                deadline: userVipInfoByContract?.deadline as number,
+                user: vipInfo?.account as string,
+                nonce: vipInfo?.nonce as unknown as string,
+                deadline: vipInfo?.deadline as number,
+                feeDataEpoch: currentFeeDataEpoch,
                 feeData: {
-                  tier: vipInfo?.vipTier as number,
-                  referrer: vipInfo?.rebateAddr as string,
+                  tier: vipInfo?.vipTier,
+                  referrer: (vipInfo?.rebateAddr as string) || zeroAddress,
                   totalReferralRebatePct: vipInfo?.rebatePct as number,
                   referrerRebatePct: vipInfo?.rebateReferrerPct as number,
                 },
@@ -201,33 +173,37 @@ export const useCheckUserVipInfo = (positionChainId?: string) => {
           parseInt(chainId as string),
           userVipInfoByContract?.deadline as number,
           {
-            tier: vipInfo?.vipTier as number,
+            tier: vipInfo?.vipTier as unknown as number,
             referrer: vipInfo?.rebateAddr as string,
             totalReferralRebatePct: vipInfo?.rebatePct as number,
             referrerRebatePct: vipInfo?.rebateReferrerPct as number,
-            nonce: nonce.toString(),
+            nonce: vipInfo?.nonce as unknown as string,
           },
           vipInfo?.signature as string,
         )
 
+        console.log('rs-->', rs)
         if (rs?.code !== 0) {
           showErrorToast(client?.utils.formatErrorMessage(rs))
           return false
         }
-        setIsVipInfoSynced(true)
+
         return true
       } catch (error) {
         showErrorToast(error)
-        return false
       } finally {
-        setIsVipInfoSyncing(false)
+        setLoading(false)
       }
     },
-    [client, clientIsAuthenticated, address, chainId, getBackendVipInfo],
+    [getVipInfo, getVipInfoFromContract, setLoading, chainId],
   )
 
   return {
-    asyncVipLevelInfo,
-    isVipInfoSyncing,
+    isMatch: !!isMatch,
+    getVipInfoFromContract,
+    asyncVipLevelLoading: isLoading,
+    getVipInfo,
+    checkVipInfo,
+    asyncVipInfo,
   }
 }

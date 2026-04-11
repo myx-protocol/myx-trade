@@ -29,6 +29,7 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
+import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -113,7 +114,7 @@ export const ClosePositionButton = ({
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
-  const { asyncVipLevelInfo, isVipInfoSyncing } = useCheckUserVipInfo(position?.chainId)
+  const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
     poolId: position?.poolId ?? '',
@@ -535,14 +536,22 @@ export const ClosePositionButton = ({
         <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
           <PrimaryButton
             onClick={async () => {
-              await checkWalletChainId(position?.chainId as number)
-
-              const vipResult = await asyncVipLevelInfo(symbolInfo?.quoteToken as string)
-              if (!vipResult) {
-                return
-              }
               try {
                 setLoading(true)
+
+                await checkWalletChainId(position?.chainId as number)
+
+                if (!isMatch) {
+                  const rs = await asyncVipInfo(
+                    symbolInfo?.quoteToken as string,
+                    position?.chainId as string,
+                  )
+
+                  if (!rs) {
+                    setLoading(false)
+                    return
+                  }
+                }
 
                 let triggerType: TriggerType = TriggerType.NONE
                 if (orderType === OrderType.LIMIT) {
@@ -658,6 +667,7 @@ export const ClosePositionButton = ({
                         tpPrice: '0',
                         slSize: '0',
                         slPrice: '0',
+                        broker: getMyxBrokerAddressByChainId(symbolInfo.chainId as number),
                       },
                     ],
                   })
@@ -703,7 +713,7 @@ export const ClosePositionButton = ({
                 setLoading(false)
               }
             }}
-            loading={loading || isVipInfoSyncing}
+            loading={loading || asyncVipLevelLoading}
             className="w-full"
             style={{
               borderRadius: '44px',

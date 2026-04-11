@@ -79,6 +79,23 @@ export const getPools = async () => {
   }
 }
 
+export const getActivePools = async () => {
+  try {
+    const res = await http.get(`${baseUrl}/openapi/gateway/scan/market/pool-trade-list`)
+    return {
+      code: 0,
+      msg: null,
+      data: res.data,
+    }
+  } catch (error) {
+    return {
+      code: -1,
+      msg: 'getPools error',
+      data: null,
+    }
+  }
+}
+
 interface GetSecurityInfoParams {
   chainId: number
   address: string

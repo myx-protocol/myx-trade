@@ -23,6 +23,7 @@ import useGlobalStore from '@/store/globalStore'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import { tradePubSub } from '@/utils/pubsub'
+import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
 
 export const MarketClosePositionButton = ({
   position,
@@ -36,7 +37,7 @@ export const MarketClosePositionButton = ({
   const { client } = useMyxSdkClient(position?.chainId)
   const [loading, setLoading] = useState(false)
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
-  const { isVipInfoSyncing, asyncVipLevelInfo } = useCheckUserVipInfo(position?.chainId)
+  const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const { checkWalletChainId } = useWalletChainCheck()
   const closePositionSlippage = getSlippage({
     chainId: position?.chainId ?? 0,
@@ -153,6 +154,18 @@ export const MarketClosePositionButton = ({
               try {
                 setLoading(true)
 
+                if (!isMatch) {
+                  const rs = await asyncVipInfo(
+                    symbolInfo?.quoteToken as string,
+                    position?.chainId as string,
+                  )
+
+                  if (!rs) {
+                    setLoading(false)
+                    return
+                  }
+                }
+
                 if (tradeMode === TradeMode.Seamless) {
                   const seamlessAccount = seamlessAccountList.find(
                     (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
@@ -212,6 +225,7 @@ export const MarketClosePositionButton = ({
                         tpPrice: '0',
                         slSize: '0',
                         slPrice: '0',
+                        broker: getMyxBrokerAddressByChainId(symbolInfo.chainId as number),
                       },
                     ],
                   })
@@ -223,11 +237,6 @@ export const MarketClosePositionButton = ({
                     showErrorToast(client?.utils.formatErrorMessage(rs))
                   }
 
-                  return
-                }
-
-                const vipResult = await asyncVipLevelInfo(symbolInfo?.quoteToken as string)
-                if (!vipResult) {
                   return
                 }
 
@@ -264,7 +273,7 @@ export const MarketClosePositionButton = ({
                 setLoading(false)
               }
             }}
-            loading={loading || isVipInfoSyncing}
+            loading={loading || asyncVipLevelLoading}
             className="w-full"
             style={{
               borderRadius: '44px',
