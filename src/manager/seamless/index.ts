@@ -119,7 +119,7 @@ export class Seamless {
     const brokerFunctions: string[] = [
       'setUserFeeData',
     ]
-    
+
     const accountFunctions: string[] = [
       'updateAndWithdraw',
       'deposit',
@@ -142,7 +142,7 @@ export class Seamless {
     console.log('functionName==>', functionName)
     console.log('brokerFunctions.includes(functionName)->', brokerFunctions.includes(functionName))
 
-    if(brokerFunctions.includes(functionName)) {
+    if (brokerFunctions.includes(functionName)) {
       return {
         abi: Broker_ABI as any,
         address: this.configManager.getConfig().brokerAddress,
@@ -231,7 +231,7 @@ export class Seamless {
     orderParams: any
     value?: string
   }) {
-  
+
     const nonce = await (await getForwarderContract(chainId)).read.nonces([seamlessAddress as `0x${string}`]);
     const deadline = dayjs().add(60, 'minute').unix()
     const domain = await this.getForwardEip712Domain(chainId)
@@ -254,6 +254,16 @@ export class Seamless {
     })
 
 
+    console.log('forwarderTxApi params-->', {
+      from: seamlessAddress,
+      to,
+      value: value ?? '0',
+      gas: '800000',
+      nonce: nonce.toString(),
+      data: functionHash,
+      deadline,
+    })
+    console.log('signature-->', signature)
     const txRs = await this.api.forwarderTxApi(
       {
         from: seamlessAddress,
@@ -268,6 +278,8 @@ export class Seamless {
       },
       chainId
     );
+
+    console.log('txRs-->', txRs)
 
     if (txRs.data?.txHash) {
       const maxAttempts = 5
