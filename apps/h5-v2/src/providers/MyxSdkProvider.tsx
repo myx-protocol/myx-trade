@@ -160,7 +160,7 @@ const brokerAddressMap: Record<number, string> = {
     : '0x69a7dC1638B98dD4734e690bE5bAba835d562d9e',
   [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0x6C4655D0034c74f82B3769749cacDb6Df5cC4862',
   [ChainId.BSC_TESTNET]: isBetaMode() ? '0x144E5067E690635b2cbeE10D96f431D143739f48' : '',
-  [ChainId.BSC_MAINNET]: '0xB4d04AB1F870F3865F6cE1336cEdff56d0f937a3',
+  [ChainId.BSC_MAINNET]: '0x93152c7Bd0269ecbb53DF247e4f8ebFe3F4a2026',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
