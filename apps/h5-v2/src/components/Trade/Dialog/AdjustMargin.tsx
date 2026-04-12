@@ -402,7 +402,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                   </p>
                   <div className="flex gap-[4px]">
                     <img
-                      src={getQuoteTokenInfo(position.chainId, position.quoteToken)?.logoUrl}
+                      src={getQuoteTokenInfo(position.chainId, pool.quoteToken)?.logoUrl}
                       alt=""
                       className="h-[16px] w-[16px]"
                     />
