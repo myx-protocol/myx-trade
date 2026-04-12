@@ -91,15 +91,6 @@ export const AccountDialog = () => {
                   return
                 }
 
-                const seamlessAccount = seamlessAccountList.findIndex(
-                  (account) => account.masterAddress === address,
-                )
-
-                if (seamlessAccount === -1) {
-                  setSeamlessPasswordDialogOpen(true)
-                  return
-                }
-
                 setUnlockAccountDialogOpen(true)
               }}
             >{t`Seamless`}</p>
