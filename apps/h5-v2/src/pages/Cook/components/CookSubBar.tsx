@@ -61,6 +61,7 @@ export const CookSubBar = ({ className, end }: { className?: string; end?: React
         data={{ age, mc, progress, change, liq, holders }}
         open={filtersOpen}
         showCloseIcon
+        isShowProgress={cookType !== CookListType.Sniper}
         onClose={(_, data) => {
           setFiltersOpen(false)
           if (data?.age) {
