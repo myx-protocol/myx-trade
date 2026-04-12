@@ -214,7 +214,8 @@ export class Seamless {
     forwardFeeToken,
     functionName,
     orderParams,
-    value = '0'
+    value = '0',
+    gas = '800000',
   }: {
     chainId: number,
     masterAddress: string,
@@ -230,6 +231,7 @@ export class Seamless {
     forwardFeeToken: string
     orderParams: any
     value?: string
+    gas?: string
   }) {
 
     const nonce = await (await getForwarderContract(chainId)).read.nonces([seamlessAddress as `0x${string}`]);
@@ -237,9 +239,6 @@ export class Seamless {
     const domain = await this.getForwardEip712Domain(chainId)
     const { abi, address: to } = await this.getContractAbiAndAddressByFunctionName(functionName, chainId)
 
-
-    console.log('functionName-->', functionName)
-    console.log('toContractAddress==>', to)
     const functionHash = encodeFunctionData({
       abi: abi as any,
       functionName: functionName,
@@ -253,23 +252,12 @@ export class Seamless {
       deadline,
     })
 
-
-    console.log('forwarderTxApi params-->', {
-      from: seamlessAddress,
-      to,
-      value: value ?? '0',
-      gas: '800000',
-      nonce: nonce.toString(),
-      data: functionHash,
-      deadline,
-    })
-    console.log('signature-->', signature)
     const txRs = await this.api.forwarderTxApi(
       {
         from: seamlessAddress,
         to,
         value: value ?? '0',
-        gas: '800000',
+        gas,
         nonce: nonce.toString(),
         data: functionHash,
         deadline,
@@ -278,8 +266,6 @@ export class Seamless {
       },
       chainId
     );
-
-    console.log('txRs-->', txRs)
 
     if (txRs.data?.txHash) {
       const maxAttempts = 5
