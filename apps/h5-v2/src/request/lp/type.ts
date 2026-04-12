@@ -269,11 +269,6 @@ export interface LpPriceHistoryRequest {
   poolType: PoolType
 }
 
-export type LineChartsRequestParams = Pick<
-  LpPriceHistoryRequest,
-  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
->
-
 export interface LpPriceHistory {
   time: number
   value: string
