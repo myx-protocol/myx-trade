@@ -21,10 +21,10 @@ export const Claim = () => {
   const onAction = useWalletActions()
 
   const { data: reward, refetch } = useQuery({
-    queryKey: [{ key: 'getQuoteLpAssetRewards' }, poolId, chainId, account],
-    enabled: !!chainId && !!poolId && !!account,
+    queryKey: [{ key: 'getQuoteLpAssetRewards' }, poolId, chainId, account, quoteLpDetail],
+    enabled: !!chainId && !!poolId && !!account && !!quoteLpDetail,
     queryFn: async () => {
-      if (!chainId || !account || !poolId) return ''
+      if (!chainId || !account || !poolId || !quoteLpDetail) return ''
       let rewards = ''
       try {
         const rs = await Quote.getRewards({
@@ -35,7 +35,7 @@ export const Claim = () => {
         if (rs === 0n) {
           rewards = '0'
         } else if (rs) {
-          rewards = formatUnits(rs, quoteLpDetail?.quoteDecimals ?? 0)
+          rewards = formatUnits(rs, quoteLpDetail?.quoteDecimals)
         }
         console.log('Reward', rs, rewards)
       } catch (_e) {

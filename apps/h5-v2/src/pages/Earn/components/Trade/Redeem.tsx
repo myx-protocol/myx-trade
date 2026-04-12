@@ -328,7 +328,7 @@ export const Redeem = () => {
                   <Trans>
                     This will burn{' '}
                     <span className={'text-warning'}>
-                      {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
+                      {formatNumber(burned, { showUnit: false })}
                     </span>{' '}
                     {quoteLpDetail?.mQuoteBaseSymbol} and you will permanently forfeit the right to
                     your{' '}

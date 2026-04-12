@@ -348,9 +348,7 @@ export const Sell = () => {
           <p className={'text-regular text-[12px] leading-[1.5]'}>
             <Trans>
               This will burn{' '}
-              <span className={'text-warning'}>
-                {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
-              </span>{' '}
+              <span className={'text-warning'}>{formatNumber(burned, { showUnit: false })}</span>{' '}
               {baseLpDetail?.mBaseQuoteSymbol} and you will permanently forfeit the right to your{' '}
               <span className={'text-warning'}>
                 {formatNumberPercent(genesisFeeRate, 0, false)}
