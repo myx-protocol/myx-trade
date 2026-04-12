@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-25 07:18\n"
+"PO-Revision-Date: 2026-04-12 06:40\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -240,7 +239,7 @@ msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Add TP/SL"
-msgstr "Add TP/SL"
+msgstr ""
 
 #: src/components/ReceiveDialog.tsx
 #: src/components/WalletConnect/index.tsx
@@ -444,15 +443,15 @@ msgstr ""
 
 #: src/components/ManageAuthorizedTokensDialog/index.tsx
 msgid "Authorize failed"
-msgstr "Authorize failed"
+msgstr ""
 
 #: src/components/ManageAuthorizedTokensDialog/index.tsx
 msgid "Authorize success"
-msgstr "Authorize success"
+msgstr ""
 
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
-msgstr "Authorized Tokens"
+msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -1250,7 +1249,7 @@ msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "Edit"
-msgstr "Edit"
+msgstr ""
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
@@ -1274,7 +1273,7 @@ msgstr ""
 
 #: src/components/ManageAuthorizedTokensDialog/index.tsx
 msgid "Enable or disable seamless authorization for your assets."
-msgstr "Enable or disable seamless authorization for your assets."
+msgstr ""
 
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
@@ -1774,7 +1773,7 @@ msgstr ""
 
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
-msgstr "getPoolIsAppealing error"
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1943,7 +1942,7 @@ msgstr ""
 
 #: src/hooks/use-check-user-vip-info.ts
 msgid "Insufficient balance to pay execution fee"
-msgstr "Insufficient balance to pay execution fee"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2045,15 +2044,15 @@ msgstr ""
 
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid private key"
-msgstr "Invalid private key"
+msgstr ""
 
 #: src/hooks/seamless/utils.ts
 msgid "Invalid private key generated"
-msgstr "Invalid private key generated"
+msgstr ""
 
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid seamless key"
-msgstr "Invalid seamless key"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2430,7 +2429,7 @@ msgstr ""
 
 #: src/components/ManageAuthorizedTokensDialog/index.tsx
 msgid "Manage Authorized Tokens"
-msgstr "Manage Authorized Tokens"
+msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
@@ -2507,7 +2506,7 @@ msgstr ""
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
 msgid "Market info not ready, please try again"
-msgstr "Market info not ready, please try again"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "market is created"
@@ -2575,7 +2574,7 @@ msgstr ""
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Max Slippage"
-msgstr "Max Slippage"
+msgstr ""
 
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
@@ -2609,7 +2608,7 @@ msgstr ""
 
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
-msgstr "Missing chain"
+msgstr ""
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -3173,19 +3172,19 @@ msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Please enter the SL price"
-msgstr "Please enter the SL price"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Please enter the SL size"
-msgstr "Please enter the SL size"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Please enter the TP price"
-msgstr "Please enter the TP price"
+msgstr ""
 
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Please enter the TP size"
-msgstr "Please enter the TP size"
+msgstr ""
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Please note: "
@@ -3703,11 +3702,11 @@ msgstr ""
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Seamless account not authorized"
-msgstr "Seamless account not authorized"
+msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Seamless account not found"
-msgstr "Seamless account not found"
+msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
@@ -3887,7 +3886,7 @@ msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "Size"
-msgstr "Size"
+msgstr ""
 
 #. placeholder {0}: position.baseSymbol
 #: src/components/Record/Items/Position.tsx
@@ -3987,7 +3986,7 @@ msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
-msgstr "Submit close order failed"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4344,7 +4343,7 @@ msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "Trigger Price"
-msgstr "Trigger Price"
+msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
@@ -4735,7 +4734,7 @@ msgstr "Margin Sharing"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
-msgstr "仓位共享保证金"
+msgstr "Shared Margin"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -4904,7 +4903,7 @@ msgstr "Fully Loaded"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "市价"
-msgstr "市价"
+msgstr "Market"
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "市价买入/开多"
@@ -5021,7 +5020,7 @@ msgstr "ToBeListed"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "执行价格"
-msgstr "执行价格"
+msgstr "Execution Price"
 
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
@@ -5200,7 +5199,7 @@ msgstr "Type"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "继续添加"
-msgstr "继续添加"
+msgstr "Add More"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -5306,3 +5305,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
