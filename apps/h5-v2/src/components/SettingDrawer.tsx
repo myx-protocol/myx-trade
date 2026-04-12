@@ -145,7 +145,7 @@ export const RenderAuthButton = () => {
   )
 }
 
-const TradeSetting = () => {
+const TradeSetting = ({ onClose }: { onClose: () => void }) => {
   const { pathname } = useLocation()
   const { isConnected } = useWalletConnection()
   const isTradePage = pathname.includes('/trade')
@@ -207,7 +207,7 @@ const TradeSetting = () => {
                 <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
                   <Trans>Authorized Tokens</Trans>
                 </p>
-                <RenderAuthorizedTokens />
+                <RenderAuthorizedTokens onClose={() => onClose()} />
               </div>
               <div
                 className="flex cursor-pointer items-center justify-between py-[16px]"
@@ -341,7 +341,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
           </div>
         </div>
         {/* split line */}
-        <TradeSetting />
+        <TradeSetting onClose={() => onOpenChange(false)} />
 
         {/* split line */}
         <div className="my-[8px] h-[1px] w-full bg-[#3E3F47]">

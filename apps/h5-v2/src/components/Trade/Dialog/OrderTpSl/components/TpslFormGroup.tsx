@@ -159,10 +159,10 @@ export const TpslFormGroup = ({
     if (!targetPrice || parseBigNumber(type === 'tp' ? tpSize : slSize).eq(0)) return '--'
 
     if (parseBigNumber(targetPrice).gt(parseBigNumber(order.price))) {
-      return `>=${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
+      return `≥${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
     }
 
-    return `<=${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
+    return `≤${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
   }, [targetPrice, order?.quoteSymbol, targetPrice, order.price, tpSize, slSize, type])
 
   const totalPnl = useMemo(() => {

@@ -3,7 +3,13 @@ import useGlobalStore from '@/store/globalStore'
 import IconArrowRight from '@/assets/svg/arrowRight.svg?react'
 import ArrowRight from '@/components/UI/Icon/ArrowRight'
 
-export const RenderAuthorizedTokens = ({ isSingle }: { isSingle?: boolean }) => {
+export const RenderAuthorizedTokens = ({
+  isSingle,
+  onClose,
+}: {
+  isSingle?: boolean
+  onClose?: () => void
+}) => {
   const { quoteTokenAuthStatus } = useGetAllQuoteTokenAuthStatus()
   const { setManageAuthorizedTokensDialogOpen } = useGlobalStore()
 
@@ -14,7 +20,10 @@ export const RenderAuthorizedTokens = ({ isSingle }: { isSingle?: boolean }) => 
     <div
       className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]"
       style={{ gap: isSingle ? '4px' : '0px' }}
-      onClick={() => setManageAuthorizedTokensDialogOpen(true)}
+      onClick={() => {
+        setManageAuthorizedTokensDialogOpen(true)
+        onClose?.()
+      }}
     >
       {!!authorizedList.length && !isSingle && (
         <div className="flex">

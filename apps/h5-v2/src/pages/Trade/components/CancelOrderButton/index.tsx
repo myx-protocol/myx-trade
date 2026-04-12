@@ -19,10 +19,12 @@ export const CancelOrderButton = ({
   orderId,
   chainId,
   poolId,
+  className,
 }: {
   orderId: number
   chainId: number
   poolId: string
+  className?: string
 }) => {
   const { client } = useMyxSdkClient(Number(chainId))
   const [loading, setLoading] = useState(false)
@@ -38,6 +40,7 @@ export const CancelOrderButton = ({
   return (
     <>
       <InfoButton
+        className={className}
         style={{
           width: '100%',
           padding: '10px 16px',

@@ -19,10 +19,12 @@ import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
 import useGlobalStore from '@/store/globalStore'
 import { decimalToPercent, formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
+import { ManageAuthorizedTokensDialog } from '@/components/ManageAuthorizedTokensDialog'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
-  const { setSymbolInfo, symbolInfo, setPoolConfig } = useGlobalStore()
+  const { setSymbolInfo, symbolInfo, setPoolConfig, manageAuthorizedTokensDialogOpen } =
+    useGlobalStore()
   const { client } = useMyxSdkClient(chainId ? parseInt(chainId) : undefined)
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
@@ -131,6 +133,7 @@ export const Trade = () => {
       <LeverageDialog />
       {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
+      {manageAuthorizedTokensDialogOpen && <ManageAuthorizedTokensDialog />}
     </>
   )
 }

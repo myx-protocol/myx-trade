@@ -26,9 +26,7 @@ function Layout() {
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
-  /** 链上 EOA；勿用 useWalletConnection().address，Seamless 下该值会被替换为 activeSeamlessAddress，导致与 activeSeamlessAddress 比较恒成立/恒不成立 */
-  const { address: walletEoaAddress } = useAccount()
-  const { activeSeamlessAddress } = useSeamlessStore()
+  const { activeSeamlessAddress, activeSeamlessWallet, seamlessAccountList } = useSeamlessStore()
   const isTradePage = pathname.includes('/trade')
   const isPricePage = pathname.includes('/price')
 
@@ -53,20 +51,19 @@ function Layout() {
   } = useGlobalStore()
 
   useEffect(() => {
-    // Seamless 下：仅当「当前连接的钱包地址」与「选中的无感主地址」不一致时在交易/行情页提示解锁（需用 EOA，不能用 useWalletConnection 的别名 address）
-    if (
-      tradeMode === TradeMode.Seamless &&
-      walletEoaAddress &&
-      activeSeamlessAddress &&
-      walletEoaAddress !== activeSeamlessAddress &&
-      (isTradePage || isPricePage)
-    ) {
+    const isTradeScene = isTradePage || isPricePage
+    const hasSeamlessAccount = Boolean(activeSeamlessAddress) || seamlessAccountList.length > 0
+    const needsUnlock =
+      tradeMode === TradeMode.Seamless && hasSeamlessAccount && !activeSeamlessWallet
+
+    if (isTradeScene && needsUnlock) {
       setUnlockAccountDialogOpen(true)
     }
   }, [
     tradeMode,
     activeSeamlessAddress,
-    walletEoaAddress,
+    activeSeamlessWallet,
+    seamlessAccountList.length,
     setUnlockAccountDialogOpen,
     isTradePage,
     isPricePage,

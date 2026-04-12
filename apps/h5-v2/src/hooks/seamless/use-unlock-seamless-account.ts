@@ -24,6 +24,8 @@ export const useUnlockSeamlessAccount = () => {
       apiKey: string
       chainId: number
     }) => {
+      console.log(masterAddress, password, apiKey, chainId)
+
       try {
         setLoading(true)
         const key = Utf8.parse(charFill(password))
