@@ -1,7 +1,7 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from './wallet/useWalletConnection'
 import { useParams } from 'react-router-dom'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useGetAccountVipInfoByContract } from './use-get-account-vip-info-by-contract'
 import { showErrorToast } from '@/config/error'
 import useGlobalStore from '@/store/globalStore'
@@ -19,22 +19,50 @@ import { zeroAddress } from 'viem'
 
 export const useCheckUserVipInfo = () => {
   const { chainId } = useParams()
-  const { client, clientIsAuthenticated } = useMyxSdkClient(parseInt(chainId as string))
+  const routeChainId = useMemo(() => {
+    const normalizedChainId = Number(chainId)
+    return Number.isFinite(normalizedChainId) ? normalizedChainId : 0
+  }, [chainId])
+  const { client, clientIsAuthenticated } = useMyxSdkClient(routeChainId)
   const { address } = useWalletConnection()
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
   const [isLoading, setLoading] = useState(false)
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
-  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(parseInt(chainId as string))
+  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(routeChainId)
 
   const account = tradeMode === TradeMode.Seamless ? activeSeamlessAddress : address
+  const normalizeChainId = useCallback(
+    (targetChainId?: string | number) => {
+      const normalizedChainId =
+        typeof targetChainId === 'string' ? Number(targetChainId) : targetChainId
+
+      if (normalizedChainId && Number.isFinite(normalizedChainId)) {
+        return normalizedChainId
+      }
+
+      return routeChainId
+    },
+    [routeChainId],
+  )
 
   const getVipInfo = useCallback(
-    async ({ isSign, deadline, nonce }: { isSign?: boolean; deadline: number; nonce: number }) => {
+    async ({
+      isSign,
+      deadline,
+      nonce,
+      targetChainId,
+    }: {
+      isSign?: boolean
+      deadline: number
+      nonce: number
+      targetChainId?: string | number
+    }) => {
+      const resolvedChainId = normalizeChainId(targetChainId)
       const vipInfoResByBackend = await getVipInfoByBackEnd({
         access: { account: account as string },
         isSign: !!isSign,
-        chainId: parseInt(chainId as string),
+        chainId: resolvedChainId,
         deadline,
         nonce: parseInt(nonce.toString()) + 1,
       })
@@ -42,50 +70,60 @@ export const useCheckUserVipInfo = () => {
 
       return vipInfoByBackend
     },
-    [account, chainId, account],
+    [account, normalizeChainId],
   )
 
-  const getVipInfoFromContract = useCallback(async () => {
-    const vipInfoResByBackend = await client?.account.getAccountVipInfo(
-      parseInt(chainId as string),
-      account as string,
-    )
-    const vipInfoByContract = (vipInfoResByBackend?.data ?? {}) as UserVipInfoContract
+  const getVipInfoFromContract = useCallback(
+    async (targetChainId?: string | number) => {
+      const resolvedChainId = normalizeChainId(targetChainId)
+      const vipInfoResByBackend = await client?.account.getAccountVipInfo(
+        resolvedChainId,
+        account as string,
+      )
+      const vipInfoByContract = (vipInfoResByBackend?.data ?? {}) as UserVipInfoContract
 
-    return vipInfoByContract
-  }, [account, client, chainId])
+      return vipInfoByContract
+    },
+    [account, client, normalizeChainId],
+  )
 
-  const checkVipInfo = useCallback(async () => {
-    const vipInfoByContract = await getVipInfoFromContract()
+  const getVipMatchStatus = useCallback(
+    async (targetChainId?: string | number) => {
+      if (!account || !client) {
+        return false
+      }
 
-    const vipInfo = await getVipInfo({
-      isSign: false,
-      deadline: vipInfoByContract.deadline,
-      nonce: vipInfoByContract.nonce,
-    })
-    const isMatched =
-      vipInfo?.vipTier === vipInfoByContract?.[0] &&
-      vipInfo?.rebatePct?.toString() === vipInfoByContract?.[2]?.toString() &&
-      vipInfo?.rebateReferrerPct?.toString() === vipInfoByContract?.[3]?.toString()
-    return isMatched
-  }, [getVipInfo, getVipInfoFromContract])
+      const vipInfoByContract = await getVipInfoFromContract(targetChainId)
+      if (!vipInfoByContract?.deadline && !vipInfoByContract?.nonce) {
+        return false
+      }
 
-  const { data: isMatch } = useSWR(
-    account && clientIsAuthenticated && chainId ? { key: 'getVipInfo', account, chainId } : null,
-    async () => {
-      const vipInfoByContract = await getVipInfoFromContract()
       const vipInfo = await getVipInfo({
         isSign: false,
         deadline: vipInfoByContract.deadline,
         nonce: vipInfoByContract.nonce,
+        targetChainId,
       })
 
-      const isMatched =
+      return (
         vipInfo?.vipTier === vipInfoByContract?.[0] &&
         vipInfo?.rebatePct?.toString() === vipInfoByContract?.[2]?.toString() &&
         vipInfo?.rebateReferrerPct?.toString() === vipInfoByContract?.[3]?.toString()
+      )
+    },
+    [account, client, getVipInfo, getVipInfoFromContract],
+  )
 
-      return isMatched
+  const checkVipInfo = useCallback(async () => {
+    return getVipMatchStatus()
+  }, [getVipMatchStatus])
+
+  const { data: isMatch } = useSWR(
+    account && clientIsAuthenticated && routeChainId
+      ? { key: 'getVipInfo', account, chainId: routeChainId }
+      : null,
+    async () => {
+      return getVipMatchStatus()
     },
     {
       refreshInterval: 60000,
@@ -96,12 +134,20 @@ export const useCheckUserVipInfo = () => {
     async (quoteToken: string, chainId: string) => {
       try {
         setLoading(true)
-        const userVipInfoByContract = await getVipInfoFromContract()
+        const resolvedChainId = normalizeChainId(chainId)
+        const userVipInfoByContract = await getVipInfoFromContract(resolvedChainId)
+        if (!userVipInfoByContract?.deadline && !userVipInfoByContract?.nonce) {
+          return false
+        }
         const vipInfo = await getVipInfo({
           isSign: true,
           deadline: userVipInfoByContract.deadline,
           nonce: userVipInfoByContract.nonce,
+          targetChainId: resolvedChainId,
         })
+        if (!vipInfo?.signature) {
+          return false
+        }
 
         if (tradeMode === TradeMode.Seamless) {
           const seamlessAccount = seamlessAccountList.find(
@@ -114,7 +160,7 @@ export const useCheckUserVipInfo = () => {
           const isAuthorizedRes = await getSeamlessAuthStatus({
             masterAddress: seamlessAccount.masterAddress,
             seamlessAddress: seamlessAccount?.seamlessAddress as string,
-            chainId: parseInt(chainId as string),
+            chainId: resolvedChainId,
             tokenAddress: quoteToken as string,
           })
 
@@ -126,19 +172,17 @@ export const useCheckUserVipInfo = () => {
 
           const hasEnoughGas = await client?.utils.checkSeamlessGas(
             seamlessAccount.masterAddress,
-            parseInt(chainId as string),
+            resolvedChainId,
             quoteToken,
           )
           if (!hasEnoughGas) {
             toast.error({ title: t`Insufficient balance to pay execution fee` })
             return false
           }
-          const currentFeeDataEpoch = await client?.account.getCurrentFeeDataEpoch(
-            parseInt(chainId as string),
-          )
+          const currentFeeDataEpoch = await client?.account.getCurrentFeeDataEpoch(resolvedChainId)
 
           const rs = await forwardSeamlessTransaction({
-            chainId: parseInt(chainId as string),
+            chainId: resolvedChainId,
             masterAddress: seamlessAccount.masterAddress,
             seamlessAddress: seamlessAccount.seamlessAddress,
             forwardFeeToken: quoteToken as string,
@@ -170,7 +214,7 @@ export const useCheckUserVipInfo = () => {
 
         const rs = await client?.account.setUserFeeData(
           address as string,
-          parseInt(chainId as string),
+          resolvedChainId,
           userVipInfoByContract?.deadline as number,
           {
             tier: vipInfo?.vipTier as unknown as number,
@@ -195,7 +239,18 @@ export const useCheckUserVipInfo = () => {
         setLoading(false)
       }
     },
-    [getVipInfo, getVipInfoFromContract, setLoading, chainId],
+    [
+      activeSeamlessAddress,
+      address,
+      client,
+      forwardSeamlessTransaction,
+      getSeamlessAuthStatus,
+      getVipInfo,
+      getVipInfoFromContract,
+      normalizeChainId,
+      seamlessAccountList,
+      tradeMode,
+    ],
   )
 
   return {
