@@ -584,7 +584,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     const used = parseBigNumber(adjustAmountFormat)
 
                     if (
-                      availableMargin.lt(parseBigNumber(displayCollateralAmountChange)) &&
+                      availableMargin.lt(parseBigNumber(adjustAmountFormat)) &&
                       adjustType === 'increase'
                     ) {
                       diff = used.minus(availableMargin).lt(0)
@@ -611,6 +611,8 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       value: priceData?.value.toString() ?? '1',
                       gas: '1500000',
                     })
+
+                    console.log('rs-->', rs)
 
                     if (rs?.code === 0) {
                       toast.success({ title: t`Adjust margin success` })

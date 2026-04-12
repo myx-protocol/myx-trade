@@ -26,6 +26,8 @@ import { useGetAllQuoteTokenAuthStatus } from '@/hooks/seamless/use-get-seamless
 import { useGetActivePoolList } from '../../hooks/use-get-pool-list'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import type { PositionTpSlOrderParams } from '@myx-trade/sdk'
 
 export const OrderTpSlButton = ({
   order,
@@ -60,6 +62,11 @@ export const OrderTpSlButton = ({
   const isSeamlessAuthorized = quoteTokenAuthStatus.find(
     (item) => item.quoteToken === pool?.quoteToken,
   )?.auth
+  const tpSlSlippage = getSlippage({
+    chainId: order?.chainId ?? 0,
+    poolId: order?.poolId ?? '',
+    type: SlippageTypeEnum.TPSL,
+  })
   const comparePrice =
     order.positionEntryPrice && parseBigNumber(marketPrice.toString()).gt(0)
       ? marketPrice.toString()
@@ -113,7 +120,7 @@ export const OrderTpSlButton = ({
           ? nextTriggerType === TriggerType.GTE
           : nextTriggerType === TriggerType.LTE
 
-      const createData = {
+      const createData: PositionTpSlOrderParams = {
         chainId: order.chainId as number,
         address: address ?? '',
         poolId: order.poolId,
@@ -127,6 +134,7 @@ export const OrderTpSlButton = ({
         tpTriggerType: TriggerType.NONE,
         slTriggerType: TriggerType.NONE,
         leverage,
+        slippagePct: ethers.parseUnits((tpSlSlippage ?? 0).toString(), 4).toString(),
       }
 
       if (isTpOrder) {

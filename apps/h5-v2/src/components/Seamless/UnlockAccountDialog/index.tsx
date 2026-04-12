@@ -81,8 +81,6 @@ export const UnlockAccountDialog = () => {
       open={unlockAccountDialogOpen}
       onClose={() => {
         setUnlockAccountDialogOpen(false)
-        setTradeMode(TradeMode.Classic)
-        setActiveSeamlessAddress('')
         setSelectedSeamlessAddress('')
       }}
       sx={{
