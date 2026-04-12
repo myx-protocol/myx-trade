@@ -271,9 +271,13 @@ export interface ReferralConfigType {
   remindLine: number
 }
 export const getReferralConfig = async (access: AccessParams) => {
-  return http.get<ApiResponse<ReferralConfigType>>(`${baseUrl}/v2/ref/config`, undefined, {
-    headers: withAccessHeaders(access),
-  })
+  return http.get<ApiResponse<ReferralConfigType>>(
+    `${baseUrl}/openapi/gateway/referral/config`,
+    undefined,
+    {
+      headers: withAccessHeaders(access),
+    },
+  )
 }
 
 export interface StatisticsType {
