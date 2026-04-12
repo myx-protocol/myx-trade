@@ -62,21 +62,25 @@ export const ImportDialog = () => {
         }
 
         setActiveSeamlessWallet(rs.data?.seamlessWallet)
-        if (seamlessAccountList.length === 0) {
-          setSeamlessAccountList([seamlessAccount])
-        } else {
-          const idx = seamlessAccountList.findIndex(
-            (item) => item.masterAddress === seamlessAccount.masterAddress,
-          )
+        const nextSeamlessAccountList =
+          seamlessAccountList.length === 0
+            ? [seamlessAccount]
+            : (() => {
+                const nextList = [...seamlessAccountList]
+                const idx = nextList.findIndex(
+                  (item) => item.masterAddress === seamlessAccount.masterAddress,
+                )
 
-          if (idx !== -1) {
-            seamlessAccountList[idx] = { ...seamlessAccount }
-          } else {
-            seamlessAccountList.push(seamlessAccount)
-          }
-        }
+                if (idx !== -1) {
+                  nextList[idx] = { ...seamlessAccount }
+                } else {
+                  nextList.push(seamlessAccount)
+                }
 
-        setSeamlessAccountList([...seamlessAccountList])
+                return nextList
+              })()
+
+        setSeamlessAccountList(nextSeamlessAccountList)
         setActiveSeamlessAddress(seamlessAccount.masterAddress)
         setTradeMode(TradeMode.Seamless)
         toast.success({
@@ -100,6 +104,8 @@ export const ImportDialog = () => {
     seamlessAccountList,
     setSeamlessAccountList,
     setActiveSeamlessAddress,
+    setActiveSeamlessWallet,
+    setTradeMode,
   ])
 
   return (

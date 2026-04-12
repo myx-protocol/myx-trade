@@ -148,7 +148,9 @@ export const RenderAuthButton = () => {
 const TradeSetting = ({ onClose }: { onClose: () => void }) => {
   const { pathname } = useLocation()
   const { isConnected } = useWalletConnection()
+  const { seamlessAccountList } = useSeamlessStore()
   const isTradePage = pathname.includes('/trade')
+  const hasSeamlessAccount = seamlessAccountList.length > 0
 
   const {
     tradeMode,
@@ -166,7 +168,7 @@ const TradeSetting = ({ onClose }: { onClose: () => void }) => {
           <div className="mb-[8px] text-[14px] font-medium text-[#848E9C]">
             <Trans>Trading Setting</Trans>
           </div>
-          {isConnected && (
+          {(isConnected || hasSeamlessAccount) && (
             <div
               className="flex cursor-pointer items-center justify-between py-[16px]"
               onClick={() => {
@@ -188,7 +190,7 @@ const TradeSetting = ({ onClose }: { onClose: () => void }) => {
               </p>
             </div>
           )}
-          {!isConnected && (
+          {!isConnected && !hasSeamlessAccount && (
             <div
               className="flex cursor-pointer items-center justify-between py-[16px]"
               onClick={() => setImportSeamlessKeyDialogOpen(true)}
