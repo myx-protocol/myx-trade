@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-12 06:40\n"
+"PO-Revision-Date: 2026-04-12 07:19\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1054,6 +1054,7 @@ msgstr ""
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
+#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr ""
@@ -1071,6 +1072,7 @@ msgid "Create Time"
 msgstr ""
 
 #: src/pages/Cook/components/Banner.tsx
+#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
 msgstr ""
@@ -3904,7 +3906,15 @@ msgid "SL Est. PNL"
 msgstr ""
 
 #: src/utils/verify.ts
+msgid "SL price must be greater than current price"
+msgstr ""
+
+#: src/utils/verify.ts
 msgid "SL price must be greater than entry price"
+msgstr ""
+
+#: src/utils/verify.ts
+msgid "SL price must be less than current price"
 msgstr ""
 
 #: src/utils/verify.ts
@@ -4137,7 +4147,7 @@ msgstr ""
 msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
 msgstr ""
 
-#. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
+#. placeholder {0}: formatNumber(burned, { showUnit: false })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
@@ -4236,7 +4246,15 @@ msgid "TP Est. PNL"
 msgstr ""
 
 #: src/utils/verify.ts
+msgid "TP price must be greater than current price"
+msgstr ""
+
+#: src/utils/verify.ts
 msgid "TP price must be greater than entry price"
+msgstr ""
+
+#: src/utils/verify.ts
+msgid "TP price must be less than current price"
 msgstr ""
 
 #: src/utils/verify.ts

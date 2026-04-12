@@ -104,8 +104,17 @@ export const useCheckUserVipInfo = () => {
         targetChainId,
       })
 
+      console.log('vipInfo-->', vipInfo)
+      console.log('vipInfoByContract-->', vipInfoByContract)
+
+      const backendVipTier = vipInfo?.vipTier?.toString() ?? '0'
+      const contractVipTier = vipInfoByContract?.[0]?.toString?.() ?? '0'
+      const backendRebateAddr = (vipInfo?.rebateAddr ?? zeroAddress).toLowerCase()
+      const contractRebateAddr = (vipInfoByContract?.[1] ?? zeroAddress).toLowerCase()
+
       return (
-        vipInfo?.vipTier === vipInfoByContract?.[0] &&
+        backendVipTier === contractVipTier &&
+        backendRebateAddr === contractRebateAddr &&
         vipInfo?.rebatePct?.toString() === vipInfoByContract?.[2]?.toString() &&
         vipInfo?.rebateReferrerPct?.toString() === vipInfoByContract?.[3]?.toString()
       )
@@ -117,7 +126,7 @@ export const useCheckUserVipInfo = () => {
     return getVipMatchStatus()
   }, [getVipMatchStatus])
 
-  const { data: isMatch } = useSWR(
+  const { data: isMatch, mutate: mutateVipMatch } = useSWR(
     account && clientIsAuthenticated && routeChainId
       ? { key: 'getVipInfo', account, chainId: routeChainId }
       : null,
@@ -130,7 +139,7 @@ export const useCheckUserVipInfo = () => {
   )
 
   const asyncVipInfo = useCallback(
-    async (quoteToken: string, chainId: string) => {
+    async (quoteToken: string, chainId: string | number) => {
       try {
         setLoading(true)
         const resolvedChainId = normalizeChainId(chainId)
@@ -204,9 +213,11 @@ export const useCheckUserVipInfo = () => {
           })
 
           if (rs?.code === 0) {
+            await mutateVipMatch(true, false)
             return true
           }
 
+          await mutateVipMatch(false, false)
           showErrorToast(client?.utils.formatErrorMessage(rs))
           return false
         }
@@ -227,12 +238,15 @@ export const useCheckUserVipInfo = () => {
 
         console.log('rs-->', rs)
         if (rs?.code !== 0) {
+          await mutateVipMatch(false, false)
           showErrorToast(client?.utils.formatErrorMessage(rs))
           return false
         }
 
+        await mutateVipMatch(true, false)
         return true
       } catch (error) {
+        await mutateVipMatch(false, false)
         showErrorToast(error)
       } finally {
         setLoading(false)
@@ -246,6 +260,7 @@ export const useCheckUserVipInfo = () => {
       getSeamlessAuthStatus,
       getVipInfo,
       getVipInfoFromContract,
+      mutateVipMatch,
       normalizeChainId,
       seamlessAccountList,
       tradeMode,
@@ -253,7 +268,7 @@ export const useCheckUserVipInfo = () => {
   )
 
   return {
-    isMatch: !!isMatch,
+    isMatch: isMatch !== false,
     getVipInfoFromContract,
     asyncVipLevelLoading: isLoading,
     getVipInfo,

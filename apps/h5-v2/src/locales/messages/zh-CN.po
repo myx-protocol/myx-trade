@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-12 06:40\n"
+"PO-Revision-Date: 2026-04-12 07:19\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -1054,6 +1054,7 @@ msgstr "创建市场"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
+#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr "创建市场"
@@ -1071,6 +1072,7 @@ msgid "Create Time"
 msgstr "创建时间"
 
 #: src/pages/Cook/components/Banner.tsx
+#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
 msgstr "创建您自己的衍生品市场，享受 LP 奖励和手续费分成。"
@@ -3904,8 +3906,16 @@ msgid "SL Est. PNL"
 msgstr "止损预估盈亏"
 
 #: src/utils/verify.ts
+msgid "SL price must be greater than current price"
+msgstr "止损价格必须大于当前价格"
+
+#: src/utils/verify.ts
 msgid "SL price must be greater than entry price"
 msgstr "止损价格必须大于委托价格"
+
+#: src/utils/verify.ts
+msgid "SL price must be less than current price"
+msgstr "止损价格必须小于当前价格"
 
 #: src/utils/verify.ts
 msgid "SL price must be less than entry price"
@@ -4137,7 +4147,7 @@ msgstr "此项费用用于预言机服务。激活将在付款后 24 小时内�
 msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
 msgstr "该代币存在极高风险。为保障资产安全，平台不支持其上线合约市场及提供流动性。如您认为评估不合理，请<0>联系客服</0>处理。"
 
-#. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
+#. placeholder {0}: formatNumber(burned, { showUnit: false })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
@@ -4236,8 +4246,16 @@ msgid "TP Est. PNL"
 msgstr "预估盈亏"
 
 #: src/utils/verify.ts
+msgid "TP price must be greater than current price"
+msgstr "止盈价格必须大于当前价格"
+
+#: src/utils/verify.ts
 msgid "TP price must be greater than entry price"
 msgstr "止盈价格必须大于委托价格"
+
+#: src/utils/verify.ts
+msgid "TP price must be less than current price"
+msgstr "止盈价格必须小于当前价格"
 
 #: src/utils/verify.ts
 msgid "TP price must be less than entry price"

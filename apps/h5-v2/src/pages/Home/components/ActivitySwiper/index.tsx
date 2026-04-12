@@ -4,12 +4,13 @@ import CreateMarketPng from '@/assets/home/create-market.svg'
 import { SwiperItem } from './SwiperItem'
 import { Autoplay } from 'swiper/modules'
 import { useNavigate } from 'react-router-dom'
+import { t } from '@lingui/core/macro'
 
 const ACTIVITY_LIST = [
   {
     image: CreateMarketPng,
-    title: 'Create Market',
-    description: 'Create your own derivatives market to enjoy LP rewards and fee sharing.',
+    title: t`Create Market`,
+    description: t`Create your own derivatives market to enjoy LP rewards and fee sharing.`,
     href: '/market',
   },
 ]

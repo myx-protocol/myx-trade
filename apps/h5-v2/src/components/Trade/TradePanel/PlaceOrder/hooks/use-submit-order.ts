@@ -401,25 +401,20 @@ export const useSubmitOrder = () => {
       try {
         setLoading(true)
 
-        if (asyncVipLevelLoading) {
+        if (!isMatch) {
           if (direction === Direction.LONG) {
             setLongAsyncVipLoading(true)
           } else {
             setShortAsyncVipLoading(true)
           }
 
-          if (!isMatch) {
-            const rs = await asyncVipInfo(
-              symbolInfo?.quoteToken as string,
-              position?.chainId as string,
-            )
+          const rs = await asyncVipInfo(symbolInfo?.quoteToken as string, symbolInfo?.chainId ?? '')
 
-            if (!rs) {
-              setLoading(false)
-              setLongAsyncVipLoading(false)
-              setShortAsyncVipLoading(true)
-              return
-            }
+          if (!rs) {
+            setLoading(false)
+            setLongAsyncVipLoading(false)
+            setShortAsyncVipLoading(false)
+            return
           }
 
           if (direction === Direction.LONG) {
