@@ -27,21 +27,22 @@ export const useImportSeamlessKey = () => {
     }) => {
       try {
         setLoading(true)
-
         if (!isHex(seamlessKey as `0x${string}`) || (seamlessKey as string).length !== 66) {
           showErrorToast(t`Invalid private key`)
           return
         }
 
+        const privateKey = seamlessKey as `0x${string}`
+        const seamlessWallet = createSeamlessWalletClientFromPrivateKey(privateKey)
         const key = Utf8.parse(charFill(password))
         const iv = getIvMapString()
-        const decrypted = AES.decrypt(seamlessKey, key, { iv, mode: CBC, padding: Pkcs7 })
-        const privateKey = decrypted.toString(Utf8) as `0x${string}`
-        const seamlessWallet = createSeamlessWalletClientFromPrivateKey(privateKey)
+        const encrypted = AES.encrypt(privateKey, key, { iv, mode: CBC, padding: Pkcs7 })
+        const apiKey = encrypted.toString()
         const res = await client?.seamless.getOriginSeamlessAccount(seamlessWallet.address, chainId)
 
         if (res?.code !== 0) {
           showErrorToast(t`Invalid seamless key`)
+          return
         }
 
         const isAuthorizedRes = await getSeamlessAuthStatus({
@@ -73,7 +74,7 @@ export const useImportSeamlessKey = () => {
           data: {
             masterAddress: originWalletAddress,
             seamlessAccount: seamlessWallet.address,
-            apiKey: seamlessKey,
+            apiKey,
             seamlessWallet,
           },
         }

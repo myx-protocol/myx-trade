@@ -575,6 +575,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       chainId: position.chainId,
                       address: seamlessAccount.masterAddress,
                     })
+                    // 0xb239c4fc5b32d40b128d3c64ad3ce249cc9333d16bc7d891d125b5c52e2eaa6e
 
                     const availableMargin = parseBigNumber(
                       assetsRes?.code === 0 ? (assetsRes?.data?.toString() ?? '0') : '0',
