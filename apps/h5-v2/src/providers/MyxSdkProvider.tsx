@@ -1,5 +1,11 @@
 import { ChainId, getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain'
-import { getMarketList, type MarketInfo, MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
+import {
+  getMarketList,
+  type MarketInfo,
+  MyxClient,
+  type MyxClientConfig,
+  type SignerLike,
+} from '@myx-trade/sdk'
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { BrowserProvider, type Signer } from 'ethers'
 import { useUnmount, useUpdateEffect } from 'ahooks'
@@ -193,12 +199,11 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
           const authChainIds: number[] = []
           myxSdkClientRef.current.forEach((_client, chainId) => {
             _client.auth({
-              signer,
-              walletClient: walletClient as any,
+              signer: signer as SignerLike,
+              // walletClient: walletClient as any,
               getAccessToken: createGetAccessTokenMethod(address),
             })
 
-            // setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
             authChainIds.push(chainId)
           })
           setClientIsAuthenticated((prev) => ({
