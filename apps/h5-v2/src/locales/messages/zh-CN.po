@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -324,6 +325,10 @@ msgstr "所有链"
 msgid "All Chains"
 msgstr "所有链"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Allowed price movement range under no-slippage protection."
+msgstr ""
+
 #: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/MarketList/components/Tabs/MarketTabs.tsx
@@ -452,6 +457,9 @@ msgstr "授权成功"
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
 msgstr "已授权币种"
+#: src/components/SettingDrawer.tsx
+msgid "Authorized Tokens"
+msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -520,6 +528,10 @@ msgstr "成交均价/委托价格"
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
 msgstr "余额"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Base Parameter S"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1022,6 +1034,10 @@ msgstr "复制链接"
 #: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
 msgid "Copy success"
 msgstr "复制成功"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Core parameter in the funding model used to adjust funding level."
+msgstr ""
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Cost Basis"
@@ -1567,6 +1583,12 @@ msgstr "超过最大费用()"
 msgid "ExcessiveSlippage()"
 msgstr "交易滑点过高"
 
+#: src/components/CookDetail/Charts/AreaCharts.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
+msgid "Exchange Rate"
+msgstr ""
+
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ExchangeRateAlreadyApplied()"
 msgstr "汇率转换已应用，请勿重复操作"
@@ -1672,6 +1694,10 @@ msgstr "永久免除手续费。"
 msgid "Filter"
 msgstr "过滤器"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "First-stage growth parameter in the funding model."
+msgstr ""
+
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Forgot Password?"
 msgstr "忘记密码？"
@@ -1729,6 +1755,18 @@ msgstr "资金费"
 msgid "Funding Fee"
 msgstr "资金费"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Growth G1"
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Growth G2"
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Parameter R2"
+msgstr ""
+
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
 msgid "Funding rate"
@@ -1738,6 +1776,10 @@ msgstr "资金费率"
 #: src/pages/Earn/detail/components/TradingInfo.tsx
 msgid "Funding Rate"
 msgstr "资金费率"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Funding Settlement Interval"
+msgstr ""
 
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
@@ -1759,6 +1801,10 @@ msgstr "超过Gas 限制 (address,uint256,uint256)"
 msgid "GasLimitNotSet(address)"
 msgstr "未设置 Gas (address)"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Genesis LP Share"
+msgstr ""
+
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
@@ -1776,6 +1822,7 @@ msgstr "连接钱包"
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
 msgstr "获取申诉状态失败"
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1845,6 +1892,10 @@ msgstr "首页"
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Hot"
 msgstr "热门榜"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Hours"
+msgstr ""
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How are your rights protected?"
@@ -1918,6 +1969,10 @@ msgstr "信息"
 #: src/pages/Price/components/Tabs.tsx
 msgid "Info"
 msgstr "信息"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Initial Margin Rate"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2055,6 +2110,15 @@ msgstr "无效的无感私钥"
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid seamless key"
 msgstr "无效的无感私钥"
+msgstr ""
+
+#: src/hooks/seamless/utils.ts
+msgid "Invalid private key generated"
+msgstr ""
+
+#: src/hooks/seamless/use-import-seamless-key.ts
+msgid "Invalid seamless key"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2425,6 +2489,10 @@ msgstr "月"
 msgid "Main-chart Indicators"
 msgstr "主图指标"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maintenance Margin Rate"
+msgstr ""
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "Maker"
 msgstr "挂单者"
@@ -2577,6 +2645,22 @@ msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0}
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Max Slippage"
 msgstr "最大滑点"
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Max Leverage"
+msgstr ""
+
+#: src/components/PlaceOrderConfirm/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Max Slippage"
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maximum allowed deviation between execution price and oracle price."
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Maximum leverage allowed in this market."
+msgstr ""
 
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
@@ -2595,9 +2679,29 @@ msgstr "Merkle 树验证失败 (CaseId,address)"
 msgid "Min"
 msgstr "最小"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Min Open Size"
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum margin ratio required to open a position."
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
+msgstr ""
+
 #: src/components/SafeList/index.tsx
 msgid "Mintable"
 msgstr "可铸造"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Minutes"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2611,6 +2715,7 @@ msgstr "执行费用不匹配"
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
 msgstr "缺少链"
+msgstr ""
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2732,6 +2837,14 @@ msgstr "未找到记录"
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "No results found"
 msgstr "未找到结果"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "No-Slippage Capacity"
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "No-Slippage Time Window"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3332,6 +3445,9 @@ msgstr "合约成交额"
 #: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
@@ -3343,6 +3459,10 @@ msgstr "价格"
 #: src/pages/Earn/components/Trade/PriceImpact.tsx
 msgid "Price Impact"
 msgstr "价格影响"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Price Protection Range"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "PriceDeviationBelowMinimum()"
@@ -3359,6 +3479,10 @@ msgstr "私钥安全：请妥善保管您的私钥。如果外泄，可能会被
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Profit"
 msgstr "创世收益"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Profit Risk Control"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3613,6 +3737,10 @@ msgstr "奖励领取"
 msgid "Reward Vesting"
 msgstr "奖励释放"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
+msgstr ""
+
 #: src/components/SafeList/index.tsx
 msgid "Risk Rating"
 msgstr "风险等级"
@@ -3709,6 +3837,13 @@ msgstr "无感账户未授权"
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Seamless account not found"
 msgstr "无感账户未找到"
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Seamless account not authorized"
+msgstr ""
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Seamless account not found"
+msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
@@ -3736,6 +3871,16 @@ msgstr "搜索历史"
 msgid "Search name or paste address"
 msgstr "搜索名称或粘贴地址"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Second-stage growth parameter in the funding model."
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+#: src/pages/Price/components/TradeConfig/index.tsx
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Seconds"
+msgstr ""
+
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Security Notice:"
@@ -3743,7 +3888,9 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+msgstr ""
+"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -3861,6 +4008,10 @@ msgstr "设置"
 msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
 msgstr "保证金账户中已解锁的可用余额，可随时提取至链上钱包。"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Share of rewards allocated to genesis LPs."
+msgstr ""
+
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
 msgstr "与您的好友分享返佣"
@@ -3926,6 +4077,10 @@ msgstr "止损价格必须小于委托价格"
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL({0})"
 msgstr "止损({0})"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Slippage Protection Threshold"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3997,6 +4152,7 @@ msgstr "副图指标"
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
 msgstr "提交平仓订单失败"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4163,6 +4319,14 @@ msgstr "这将销毁 <0>{0}</0> {1}，并且您将永久丧失获得 <1>{2}</1> 
 msgid "Time"
 msgstr "时间"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Time interval for funding rate settlement and updates, displayed in seconds."
+msgstr ""
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Time window during which no-slippage protection is applied, displayed in hours."
+msgstr ""
+
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
 msgstr "至"
@@ -4328,6 +4492,10 @@ msgstr "图表"
 msgid "Trading Volume"
 msgstr "交易量"
 
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Trading within this capacity has limited or negligible price impact."
+msgstr ""
+
 #: src/pages/record/components/RecordTab.tsx
 msgid "Transaction History"
 msgstr "交易历史"
@@ -4371,8 +4539,12 @@ msgstr "尝试刷新浏览器"
 msgid "Tvl"
 msgstr "TVL"
 
+#: src/components/CookDetail/Charts/AreaCharts.tsx
+#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/List.tsx
 msgid "TVL"
 msgstr "TVL"
@@ -4485,6 +4657,10 @@ msgstr "通过交易升级到 VIP{0}"
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
 msgstr "占用保证金"
+
+#: src/pages/Price/components/TradeConfig/index.tsx
+msgid "Used to calculate slippage impact within the liquidity lock range."
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
@@ -4718,6 +4894,10 @@ msgstr "您的密码"
 msgid "ZeroQueries()"
 msgstr "请求参数不可为空"
 
+#: src/pages/Price/components/Tabs.tsx
+msgid "交易参数"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -4753,6 +4933,7 @@ msgstr "仓位保证金共享"
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
 msgstr "仓位共享保证金"
+msgstr ""
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -5323,4 +5504,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-

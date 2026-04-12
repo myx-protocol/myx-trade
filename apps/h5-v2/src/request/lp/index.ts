@@ -19,6 +19,9 @@ import type {
   MarketPoolStateDataResponse,
   MarketPoolRiskLevelConfigResponse,
   MarketPoolPriceResponse,
+  LineChartsRequestParams,
+  TvlHistoryResponse,
+  ExchangeRateHistoryResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -264,4 +267,24 @@ export const getMarketDataSearch = async ({ input, chains = [] }: MarketDataFast
       console.log('result', JSON.parse(result.data))
       return JSON.parse(result.data)
     })
+}
+
+/**
+ * tvl 折线图
+ */
+export const getTvlLineCharts = async (params: LineChartsRequestParams) => {
+  return await http.get<TvlHistoryResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/tvl-history`,
+    params,
+  )
+}
+
+/**
+ * exchange rate 兑换率折线图
+ */
+export const getExchangeRateLineCharts = async (params: LineChartsRequestParams) => {
+  return await http.get<ExchangeRateHistoryResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/exchange-rate-history`,
+    params,
+  )
 }

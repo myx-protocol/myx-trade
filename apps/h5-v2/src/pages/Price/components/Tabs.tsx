@@ -36,6 +36,7 @@ export const Tabs = () => {
       <PriceTabs value={tab} onChange={(_, value) => setTab(value as PriceTabEnum)}>
         <PriceTab label={<Trans>Price</Trans>} value={PriceTabEnum.Price} />
         <PriceTab label={<Trans>Info</Trans>} value={PriceTabEnum.Info} />
+        <PriceTab label={<Trans>交易参数</Trans>} value={PriceTabEnum.TradeConfig} />
         <PriceTab label={<Trans>Pool</Trans>} value={PriceTabEnum.Pool} />
       </PriceTabs>
     </div>

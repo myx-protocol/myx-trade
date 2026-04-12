@@ -115,6 +115,7 @@ export const deposit = async (params: Deposit) => {
     
     return receipt
   } catch (error) {
+    console.log(error, 'error')
     sdkError(error)
     throw typeof error === "string" ? error : (await getErrorTextFormError (error))
   }

@@ -2,7 +2,7 @@
  * Creates a viem WalletClient that uses ISigner for eth_sendTransaction and signTypedData.
  * Uses a local account that delegates to signer so getAddresses() and signTypedData work.
  */
-import { createWalletClient, custom, type WalletClient } from "viem";
+import { createWalletClient, custom, CustomSource, type WalletClient } from "viem";
 import { getChainInfo } from "@/config/chains/index.js";
 import { ChainId } from "@/config/chain.js";
 import type { ISigner } from "./types.js";
@@ -38,31 +38,15 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
   const chain = getChain(chainId) as import("viem").Chain;
   const address = (await signer.getAddress()) as `0x${string}`;
 
-  const account = {
-    address,
-    type: "local" as const,
-    async signMessage({ message }: { message: import("viem").SignableMessage }) {
-      const msg = typeof message === "string" ? message : message.raw;
-      return (await signer.signMessage(msg)) as `0x${string}`;
-    },
-    async signTypedData(typedData: import("viem").TypedDataDefinition) {
-      if (!signer.signTypedData) throw new Error("ISigner.signTypedData required for this operation");
-      return (await signer.signTypedData({
-        domain: typedData.domain as Record<string, unknown>,
-        types: typedData.types as Record<string, unknown>,
-        primaryType: typedData.primaryType,
-        message: typedData.message as Record<string, unknown>,
-      })) as `0x${string}`;
-    },
-    signTransaction: signer.signTransaction,
-    source: "custom",
-  } as unknown as import("viem").LocalAccount;
 
   const provider = {
     request: async (args: { method: string; params?: unknown[] }) => {
+      if (args.method === 'eth_accounts') {
+        return [address]
+      }
       if (args.method === "eth_sendTransaction") {
         const tx = (args.params?.[0] ?? {}) as Record<string, unknown>;
-        const { hash } = await signer.sendTransaction({
+      const { hash } = await signer.sendTransaction({
           to: tx.to as string,
           data: tx.data as string | undefined,
           value: tx.value != null ? BigInt(tx.value as string | number) : undefined,
@@ -106,8 +90,9 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
     },
   };
 
+
   return createWalletClient({
-    account,
+    account: address,
     chain,
     transport: custom(provider),
   }) as WalletClient;

@@ -104,6 +104,7 @@ export const Subscribe = () => {
       await refetch()
       poolInfoRefetch()
     } catch (error) {
+      console.log(error, 'error')
       showErrorToast(error)
     } finally {
       setLoading(false)
