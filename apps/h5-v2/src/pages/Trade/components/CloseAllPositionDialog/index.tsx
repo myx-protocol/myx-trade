@@ -104,70 +104,96 @@ export const CloseAllPositionDialog = () => {
                   return
                 }
 
-                const positionsByChainId = couldClosePositions.reduce((acc: any, position: any) => {
-                  if (acc[position.chainId]) {
-                    acc[position.chainId].push(position)
+                const positionsByMarket = couldClosePositions.reduce((acc: any, position: any) => {
+                  const pool = poolList.find(
+                    (poolItem: any) => position.poolId === poolItem?.poolId,
+                  )
+                  const marketId = pool?.marketId
+
+                  if (!marketId) {
+                    return acc
+                  }
+
+                  const groupKey = `${position.chainId}-${marketId}`
+                  if (acc[groupKey]) {
+                    acc[groupKey].push({
+                      position,
+                      pool,
+                    })
                   } else {
-                    acc[position.chainId] = [position]
+                    acc[groupKey] = [
+                      {
+                        position,
+                        pool,
+                      },
+                    ]
                   }
                   return acc
                 }, {})
 
-                const dataArray = Object.keys(positionsByChainId).map((chainId) => {
-                  const positions = positionsByChainId[chainId]
-                  const depositData = positions.map(() => ({
-                    token: '0x0000000000000000000000000000000000000000',
+                const dataArray = Object.values(positionsByMarket).map((group: any) => {
+                  const groupPositions = group as Array<{ position: any; pool: any }>
+                  const firstItem = groupPositions[0]
+                  const depositData = {
+                    token: ethers.ZeroAddress,
                     amount: '0',
-                  }))
-                  const positionData = positions.map((position: any) => {
+                  }
+
+                  const positionIds = groupPositions.map((item) => item.position.positionId)
+                  const orderData = groupPositions.map((item) => {
+                    const { position, pool } = item
+                    const marketPrice = tickerData[position.poolId]?.price.toString() ?? '0'
+                    const closePositionSlippage = getSlippage({
+                      chainId: position?.chainId ?? 0,
+                      poolId: position?.poolId ?? '',
+                      type: SlippageTypeEnum.CLOSE,
+                    })
+
                     return {
-                      positionId: position.positionId,
-                      data: {
-                        user: position.address,
-                        poolId: position.poolId,
-                        orderType: position.orderType,
-                        triggerType: position.triggerType,
-                        operation: OperationType.DECREASE,
-                        direction: position.direction,
-                        collateralAmount: position.collateralAmount,
-                        size: position.size,
-                        price: position.price,
-                        timeInForce: TimeInForce.IOC,
-                        postOnly: position.postOnly,
-                        slippagePct: position.slippagePct,
-                        leverage: position.leverage,
-                        tpSize: 0,
-                        tpPrice: 0,
-                        slSize: 0,
-                        slPrice: 0,
-                        broker: getMyxBrokerAddressByChainId(position.chainId as number),
-                      },
+                      user: address as `0x${string}`,
+                      poolId: position.poolId,
+                      orderType: OrderType.MARKET,
+                      triggerType: TriggerType.NONE,
+                      operation: OperationType.DECREASE,
+                      direction: position.direction,
+                      collateralAmount: '0',
+                      size: ethers
+                        .parseUnits(position.size.toString(), pool?.baseDecimals)
+                        .toString(),
+                      price: ethers.parseUnits(marketPrice, COMMON_PRICE_DECIMALS).toString(),
+                      timeInForce: TimeInForce.IOC,
+                      postOnly: false,
+                      slippagePct: ethers
+                        .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                        .toString(),
+                      leverage: position.userLeverage,
+                      tpSize: '0',
+                      tpPrice: '0',
+                      slSize: '0',
+                      slPrice: '0',
+                      broker: getMyxBrokerAddressByChainId(position.chainId as number),
                     }
                   })
+
                   return {
-                    chainId,
+                    chainId: firstItem.position.chainId,
+                    forwardFeeToken: firstItem.pool?.quoteToken as string,
                     depositData,
-                    positionData,
+                    positionIds,
+                    orderData,
                   }
                 })
 
                 const rs = await Promise.all(
                   dataArray.map(async (item: any) => {
-                    const { depositData, positionData, chainId } = item
-                    const pool = poolList.find(
-                      (poolItem: any) => positionData[0].poolId === poolItem?.poolId,
-                    )
+                    const { depositData, positionIds, orderData, chainId, forwardFeeToken } = item
                     const forwardRs = await forwardSeamlessTransaction({
                       chainId: chainId as number,
                       masterAddress: activeSeamlessAddress,
                       seamlessAddress: seamlessAccount.seamlessAddress,
-                      forwardFeeToken: pool?.quoteToken as string,
+                      forwardFeeToken,
                       functionName: 'placeOrdersWithPosition',
-                      orderParams: [
-                        depositData,
-                        positionData.map((item: any) => item.positionId),
-                        positionData.map((item: any) => item.data),
-                      ],
+                      orderParams: [depositData, positionIds, orderData],
                     })
                     if (forwardRs?.code === 0) {
                       return true

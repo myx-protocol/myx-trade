@@ -15,6 +15,7 @@ import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '../../types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
+import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
 
 export const CancelAllOrdersDialog = () => {
   const { selectChainId } = usePositionStore()
@@ -26,6 +27,7 @@ export const CancelAllOrdersDialog = () => {
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(Number(selectChainId))
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
+  const { poolList } = useGetActivePoolList()
 
   return (
     <>
@@ -56,7 +58,9 @@ export const CancelAllOrdersDialog = () => {
 
                   const authData = await Promise.all(
                     orders.map(async (order: any) => {
-                      const pool = orders.find((poolItem: any) => order.poolId === poolItem?.poolId)
+                      const pool = poolList.find(
+                        (poolItem: any) => order.poolId === poolItem?.poolId,
+                      )
                       const isAuthorizedRes = await getSeamlessAuthStatus({
                         masterAddress: activeSeamlessAddress,
                         seamlessAddress: seamlessAccount.seamlessAddress,
@@ -81,41 +85,52 @@ export const CancelAllOrdersDialog = () => {
                     return
                   }
 
-                  const ordersByChainId = couldCancelOrders.reduce((acc: any, order: any) => {
-                    if (acc[order.chainId]) {
-                      acc[order.chainId].push(order)
+                  const ordersByMarket = couldCancelOrders.reduce((acc: any, order: any) => {
+                    const pool = poolList.find((poolItem: any) => order.poolId === poolItem?.poolId)
+                    const marketId = pool?.marketId
+
+                    if (!marketId) {
+                      return acc
+                    }
+
+                    const groupKey = `${order.chainId}-${marketId}`
+                    if (acc[groupKey]) {
+                      acc[groupKey].push({
+                        order,
+                        pool,
+                      })
                     } else {
-                      acc[order.chainId] = [order]
+                      acc[groupKey] = [
+                        {
+                          order,
+                          pool,
+                        },
+                      ]
                     }
                     return acc
                   }, {})
 
-                  const dataArray = Object.keys(ordersByChainId).map((chainId) => {
-                    const orders = ordersByChainId[chainId]
-
-                    const orderData = orders.map((order: any) => {
-                      return order.orderId
-                    })
+                  const dataArray = Object.values(ordersByMarket).map((group: any) => {
+                    const groupOrders = group as Array<{ order: any; pool: any }>
+                    const firstItem = groupOrders[0]
+                    const orderIds = groupOrders.map((item) => item.order.orderId)
                     return {
-                      chainId,
-                      orderData,
+                      chainId: firstItem.order.chainId,
+                      forwardFeeToken: firstItem.pool?.quoteToken as string,
+                      orderIds,
                     }
                   })
 
                   const rs = await Promise.all(
                     dataArray.map(async (item: any) => {
-                      const { orderData, chainId } = item
-                      const pool = orders.find(
-                        (poolItem: any) => orderData[0].poolId === poolItem?.poolId,
-                      )
-
+                      const { orderIds, chainId, forwardFeeToken } = item
                       const forwardRs = await forwardSeamlessTransaction({
                         chainId: chainId as number,
                         masterAddress: activeSeamlessAddress,
                         seamlessAddress: seamlessAccount.seamlessAddress,
-                        forwardFeeToken: pool?.quoteToken as string,
+                        forwardFeeToken,
                         functionName: 'cancelOrders',
-                        orderParams: [orderData],
+                        orderParams: [orderIds],
                       })
 
                       if (forwardRs?.code === 0) {
