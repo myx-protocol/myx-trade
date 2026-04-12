@@ -147,14 +147,20 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
 
       {/* buttons */}
       <div className="mt-[20px] flex justify-center gap-[8px]">
-        {order.orderType === OrderTypeEnum.Stop || order.operation === OperationEnum.Decrease ? (
+        {order.orderType === OrderTypeEnum.Stop ? null : order.operation ===
+          OperationEnum.Decrease ? (
           <div className="flex w-full items-center rounded-[6px] bg-[#2D3138] px-[16px] py-[10px] text-[12px] leading-[1] font-[500] text-white opacity-60">
             --
           </div>
         ) : (
           <OrderTpSlButton order={order} poolInfo={pool} />
         )}
-        <CancelOrderButton orderId={order.orderId} chainId={order.chainId} poolId={order.poolId} />
+        <CancelOrderButton
+          orderId={order.orderId}
+          chainId={order.chainId}
+          poolId={order.poolId}
+          className={order.orderType === OrderTypeEnum.Stop ? 'w-full' : undefined}
+        />
       </div>
     </div>
   )

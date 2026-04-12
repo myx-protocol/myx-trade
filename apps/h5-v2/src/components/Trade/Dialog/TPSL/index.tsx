@@ -110,6 +110,9 @@ export const TpSlButton = ({
     poolId: position?.poolId ?? '',
     type: SlippageTypeEnum.TPSL,
   })
+  const comparePrice = parseBigNumber(marketPrice.toString()).gt(0)
+    ? marketPrice.toString()
+    : position.entryPrice
 
   const handleConfirm = useCallback(async () => {
     let positionId = ''
@@ -136,7 +139,7 @@ export const TpSlButton = ({
 
     if (activeTab === TpSlTabTypeEnum.TPOrSL) {
       if (position.direction === Direction.LONG) {
-        if (parseBigNumber(tpPrice).gt(parseBigNumber(position.entryPrice))) {
+        if (parseBigNumber(tpPrice).gt(parseBigNumber(comparePrice))) {
           data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
           data.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
           data.tpTriggerType = TriggerType.GTE
@@ -146,7 +149,7 @@ export const TpSlButton = ({
           data.slTriggerType = TriggerType.LTE
         }
       } else {
-        if (parseBigNumber(tpPrice).gt(parseBigNumber(position.entryPrice))) {
+        if (parseBigNumber(tpPrice).gt(parseBigNumber(comparePrice))) {
           data.slPrice = ethers.parseUnits(tpPrice, 30).toString()
           data.slSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
           data.slTriggerType = TriggerType.GTE
@@ -163,10 +166,11 @@ export const TpSlButton = ({
         data.tpTriggerType =
           position.direction === Direction.LONG ? TriggerType.GTE : TriggerType.LTE
         const tpVerify = verifyTpSlPrice(
-          ethers.parseUnits(position.entryPrice, 30).toString(),
+          ethers.parseUnits(comparePrice, 30).toString(),
           data.tpPrice,
           position.direction,
           'tp',
+          'current',
         )
         if (!tpVerify) {
           return
@@ -179,10 +183,11 @@ export const TpSlButton = ({
         data.slTriggerType =
           position.direction === Direction.LONG ? TriggerType.LTE : TriggerType.GTE
         const slVerify = verifyTpSlPrice(
-          ethers.parseUnits(position.entryPrice, 30).toString(),
+          ethers.parseUnits(comparePrice, 30).toString(),
           data.slPrice,
           position.direction,
           'sl',
+          'current',
         )
         if (!slVerify) {
           return
@@ -330,7 +335,19 @@ export const TpSlButton = ({
     } finally {
       setLoading(false)
     }
-  }, [tpPrice, slPrice, tpSize, slSize, client, setOpen, activeTab, position, address, poolInfo])
+  }, [
+    tpPrice,
+    slPrice,
+    tpSize,
+    slSize,
+    client,
+    setOpen,
+    activeTab,
+    position,
+    address,
+    poolInfo,
+    comparePrice,
+  ])
 
   return (
     <>
@@ -415,9 +432,9 @@ export const TpSlButton = ({
             }
           />
           {/* tpsl type */}
-          <TpslFormGroup position={position} autoFocus type={'tp'} />
+          <TpslFormGroup position={position} autoFocus type={'tp'} currentPrice={marketPrice} />
           {activeTab === TpSlTabTypeEnum.TPAndSL && (
-            <TpslFormGroup position={position} type={'sl'} />
+            <TpslFormGroup position={position} type={'sl'} currentPrice={marketPrice} />
           )}
           {/* <TpslSlippage /> */}
           <div className="sticky bottom-0 flex items-center justify-between gap-[12px] bg-[#18191F] pt-[20px]">

@@ -8,12 +8,16 @@ export const verifyTpSlPrice = (
   triggerPrice: string,
   direction: Direction,
   type: 'tp' | 'sl',
+  referenceLabel: 'entry' | 'current' = 'entry',
 ) => {
   if (direction === DirectionEnum.Long) {
     if (type === 'tp') {
       if (parseBigNumber(entryPrice).gt(parseBigNumber(triggerPrice))) {
         toast.error({
-          title: t`TP price must be greater than entry price`,
+          title:
+            referenceLabel === 'current'
+              ? t`TP price must be greater than current price`
+              : t`TP price must be greater than entry price`,
         })
 
         return false
@@ -21,7 +25,10 @@ export const verifyTpSlPrice = (
     } else {
       if (parseBigNumber(entryPrice).lt(parseBigNumber(triggerPrice))) {
         toast.error({
-          title: t`SL price must be less than entry price`,
+          title:
+            referenceLabel === 'current'
+              ? t`SL price must be less than current price`
+              : t`SL price must be less than entry price`,
         })
 
         return false
@@ -31,7 +38,10 @@ export const verifyTpSlPrice = (
     if (type === 'tp') {
       if (parseBigNumber(entryPrice).lt(parseBigNumber(triggerPrice))) {
         toast.error({
-          title: t`TP price must be less than entry price`,
+          title:
+            referenceLabel === 'current'
+              ? t`TP price must be less than current price`
+              : t`TP price must be less than entry price`,
         })
 
         return false
@@ -39,7 +49,10 @@ export const verifyTpSlPrice = (
     } else {
       if (parseBigNumber(entryPrice).gt(parseBigNumber(triggerPrice))) {
         toast.error({
-          title: t`SL price must be greater than entry price`,
+          title:
+            referenceLabel === 'current'
+              ? t`SL price must be greater than current price`
+              : t`SL price must be greater than entry price`,
         })
 
         return false

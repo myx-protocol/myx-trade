@@ -12,7 +12,7 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
-import { Direction, OrderType } from '@myx-trade/sdk'
+import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { verifyTpSlPrice } from '@/utils/verify'
 import { showErrorToast } from '@/config/error'
@@ -60,6 +60,10 @@ export const OrderTpSlButton = ({
   const isSeamlessAuthorized = quoteTokenAuthStatus.find(
     (item) => item.quoteToken === pool?.quoteToken,
   )?.auth
+  const comparePrice =
+    order.positionEntryPrice && parseBigNumber(marketPrice.toString()).gt(0)
+      ? marketPrice.toString()
+      : (order.positionEntryPrice ?? order.price)
 
   const handleConfirm = useCallback(async () => {
     if (tpPrice && tpSize === '') {
@@ -90,6 +94,98 @@ export const OrderTpSlButton = ({
       size: ethers.parseUnits(order.size, poolInfo.baseDecimals).toString(),
       price: ethers.parseUnits(order.price, 30).toString(),
     }
+    const nextTriggerType = parseBigNumber(tpPrice || '0').gt(parseBigNumber(comparePrice))
+      ? TriggerType.GTE
+      : TriggerType.LTE
+    const shouldRecreateStopOrder =
+      order.orderType === OrderType.STOP &&
+      isSingle &&
+      !!order.positionEntryPrice &&
+      nextTriggerType !== order.triggerType
+    const verifyReferencePrice = isSingle && order.positionEntryPrice ? comparePrice : order.price
+    const positionId = order.positionTokenId ? order.positionId : ''
+    const currentPositionId = order.positionTokenId ? order.positionId : '1'
+    const leverage = order.positionUserLeverage ?? order.userLeverage ?? 0
+
+    const recreateStopOrder = async () => {
+      const isTpOrder =
+        order.direction === Direction.LONG
+          ? nextTriggerType === TriggerType.GTE
+          : nextTriggerType === TriggerType.LTE
+
+      const createData = {
+        chainId: order.chainId as number,
+        address: address ?? '',
+        poolId: order.poolId,
+        positionId,
+        executionFeeToken: poolInfo.quoteToken,
+        direction: order.direction,
+        tpPrice: '0',
+        tpSize: '0',
+        slPrice: '0',
+        slSize: '0',
+        tpTriggerType: TriggerType.NONE,
+        slTriggerType: TriggerType.NONE,
+        leverage,
+      }
+
+      if (isTpOrder) {
+        createData.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+        createData.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
+        createData.tpTriggerType = nextTriggerType
+      } else {
+        createData.slPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+        createData.slSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
+        createData.slTriggerType = nextTriggerType
+      }
+
+      if (tradeMode === TradeMode.Seamless && isSeamlessAuthorized) {
+        const seamlessAccount = seamlessAccountList.find(
+          (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
+        )
+
+        if (!seamlessAccount) {
+          return { code: -1, message: 'Missing seamless account' }
+        }
+
+        const depositData = {
+          amount: '0',
+          token: pool?.quoteToken as string,
+        }
+
+        const orderData = {
+          user: createData.address,
+          poolId: createData.poolId,
+          orderType: OrderType.STOP,
+          triggerType: isTpOrder ? createData.tpTriggerType : createData.slTriggerType,
+          operation: OperationType.DECREASE,
+          direction: createData.direction,
+          collateralAmount: '0',
+          size: isTpOrder ? createData.tpSize : createData.slSize,
+          price: isTpOrder ? createData.tpPrice : createData.slPrice,
+          timeInForce: TimeInForce.IOC,
+          postOnly: false,
+          slippagePct: '0',
+          leverage: 0,
+          tpSize: '0',
+          tpPrice: '0',
+          slSize: '0',
+          slPrice: '0',
+          broker: getMyxBrokerAddressByChainId(createData.chainId),
+        }
+
+        return await forwardSeamlessTransaction({
+          chainId: createData.chainId,
+          masterAddress: activeSeamlessAddress,
+          seamlessAddress: seamlessAccount.seamlessAddress,
+          forwardFeeToken: pool?.quoteToken as string,
+          functionName: order.positionTokenId ? 'placeOrderWithPosition' : 'placeOrderWithSalt',
+          orderParams: [currentPositionId, depositData, orderData],
+        })
+      }
+
+      return await client?.order.createPositionTpSlOrder(createData)
+    }
 
     if (isSingle || activeTab === TpSlTabTypeEnum.TPOrSL) {
       if (order.orderType === OrderType.STOP) {
@@ -118,10 +214,11 @@ export const OrderTpSlButton = ({
         data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
 
         const tpVerify = verifyTpSlPrice(
-          ethers.parseUnits(order.price, 30).toString(),
+          ethers.parseUnits(verifyReferencePrice, 30).toString(),
           data.tpPrice,
           order.direction,
           'tp',
+          isSingle ? 'current' : 'entry',
         )
 
         if (!tpVerify) {
@@ -134,10 +231,11 @@ export const OrderTpSlButton = ({
         data.slSize = ethers.parseUnits(slSize, poolInfo.baseDecimals).toString()
 
         const slVerify = verifyTpSlPrice(
-          ethers.parseUnits(order.price, 30).toString(),
+          ethers.parseUnits(verifyReferencePrice, 30).toString(),
           data.slPrice,
           order.direction,
           'sl',
+          isSingle ? 'current' : 'entry',
         )
         if (!slVerify) {
           return
@@ -154,6 +252,36 @@ export const OrderTpSlButton = ({
         )
 
         if (!seamlessAccount) {
+          return
+        }
+
+        if (shouldRecreateStopOrder) {
+          const cancelRs = await forwardSeamlessTransaction({
+            chainId: order.chainId as number,
+            masterAddress: activeSeamlessAddress,
+            seamlessAddress: seamlessAccount.seamlessAddress,
+            forwardFeeToken: pool?.quoteToken as string,
+            functionName: 'cancelOrder',
+            orderParams: [order.orderId],
+          })
+
+          if (cancelRs?.code !== 0) {
+            showErrorToast(client?.utils.formatErrorMessage(cancelRs))
+            setLoading(false)
+            return
+          }
+
+          const recreateRs = await recreateStopOrder()
+
+          if (recreateRs?.code === 0) {
+            toast.success({ title: 'Update order success' })
+            reset()
+            setOpen(false)
+          } else {
+            showErrorToast(client?.utils.formatErrorMessage(recreateRs))
+          }
+
+          setLoading(false)
           return
         }
 
@@ -195,6 +323,31 @@ export const OrderTpSlButton = ({
           setOpen(false)
         } else {
           showErrorToast(client?.utils.formatErrorMessage(rs))
+        }
+
+        setLoading(false)
+        return
+      }
+
+      if (shouldRecreateStopOrder) {
+        const cancelRs = await client?.order.cancelOrder(order.orderId.toString(), order.chainId)
+
+        if (cancelRs?.code !== 0) {
+          showErrorToast(client?.utils.formatErrorMessage(cancelRs))
+          setLoading(false)
+          return
+        }
+
+        const recreateRs = await recreateStopOrder()
+
+        if (recreateRs?.code === 0) {
+          toast.success({
+            title: 'Update order success',
+          })
+          reset()
+          setOpen(false)
+        } else {
+          showErrorToast(client?.utils.formatErrorMessage(recreateRs))
         }
 
         setLoading(false)
@@ -243,6 +396,9 @@ export const OrderTpSlButton = ({
     pool?.marketId,
     pool?.quoteToken,
     reset,
+    comparePrice,
+    isSingle,
+    marketPrice,
   ])
 
   return (

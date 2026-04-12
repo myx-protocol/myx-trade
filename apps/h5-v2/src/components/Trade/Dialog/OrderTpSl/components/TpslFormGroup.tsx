@@ -52,12 +52,15 @@ export const TpslFormGroup = ({
   const [targetPrice, setTargetPrice] = useState<string>(currentPrice?.toString() ?? '')
   const [targetRate, setTargetRate] = useState<string>('')
   const isInitializedRef = useRef(false)
-
-  console.log('order', order)
+  const entryPrice = order.positionEntryPrice ?? order.price
+  const collateralAmount = order.positionCollateralAmount ?? order.collateralAmount
+  const maxSize = order.positionSize ?? order.size
+  const comparePrice =
+    currentPrice && parseBigNumber(currentPrice).gt(0) ? currentPrice.toString() : entryPrice
 
   // 初始化默认值：优先使用 order.tpSize/slSize，否则使用 order.size（100%）
   useEffect(() => {
-    if (order?.size) {
+    if (maxSize) {
       if (type === 'tp') {
         const defaultValue = order.tpSize ?? order.size
         setSliderValue(defaultValue)
@@ -68,7 +71,7 @@ export const TpslFormGroup = ({
         setSlSize(defaultValue.toString())
       }
     }
-  }, [order?.size, order?.tpSize, order?.slSize, type, setTpSize, setSlSize])
+  }, [maxSize, order?.size, order?.tpSize, order?.slSize, type, setTpSize, setSlSize])
 
   // 初始化触发价格和计算对应的 targetRate（只初始化一次）
   useEffect(() => {
@@ -95,20 +98,20 @@ export const TpslFormGroup = ({
 
       // 根据 tpslType 计算 targetRate
       const triggerPrice = parseBigNumber(priceToUse)
-      const entryPrice = parseBigNumber(order.price)
+      const parsedEntryPrice = parseBigNumber(entryPrice)
       const diff =
         order.direction === Direction.LONG
-          ? triggerPrice.minus(entryPrice)
-          : entryPrice.minus(triggerPrice)
-      const collateralAmount = parseBigNumber(order.collateralAmount)
+          ? triggerPrice.minus(parsedEntryPrice)
+          : parsedEntryPrice.minus(triggerPrice)
+      const parsedCollateralAmount = parseBigNumber(collateralAmount)
 
       if (tpslType === TpSlTypeEnum.PRICE) {
         setTargetRate(diff.toString())
       } else if (tpslType === TpSlTypeEnum.ROI) {
-        const radio = diff.div(collateralAmount).mul(100).toFixed(2)
+        const radio = diff.div(parsedCollateralAmount).mul(100).toFixed(2)
         setTargetRate(radio)
       } else if (tpslType === TpSlTypeEnum.Change) {
-        const radio = diff.div(entryPrice).mul(100).toFixed(2)
+        const radio = diff.div(parsedEntryPrice).mul(100).toFixed(2)
         setTargetRate(radio)
       } else if (tpslType === TpSlTypeEnum.Pnl) {
         const size = type === 'tp' ? (order.tpSize ?? order.size) : (order.slSize ?? order.size)
@@ -125,10 +128,14 @@ export const TpslFormGroup = ({
     order?.slSize,
     order?.direction,
     order?.collateralAmount,
+    order?.positionEntryPrice,
+    order?.positionCollateralAmount,
     type,
     tpslType,
     setTpPrice,
     setSlPrice,
+    entryPrice,
+    collateralAmount,
   ])
 
   // 创建防抖函数
@@ -136,10 +143,8 @@ export const TpslFormGroup = ({
     () =>
       debounce((value: number) => {
         if (type === 'tp') {
-          console.log('tp value==>', value)
           setTpSize(value.toString())
         } else {
-          console.log('sl value==>', value)
           setSlSize(value.toString())
         }
       }, 300),
@@ -158,12 +163,12 @@ export const TpslFormGroup = ({
   const displayTargetPrice = useMemo(() => {
     if (!targetPrice || parseBigNumber(type === 'tp' ? tpSize : slSize).eq(0)) return '--'
 
-    if (parseBigNumber(targetPrice).gt(parseBigNumber(order.price))) {
+    if (parseBigNumber(targetPrice).gt(parseBigNumber(comparePrice))) {
       return `≥${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
     }
 
     return `≤${displayAmount(parseBigNumber(targetPrice).toString())} ${order?.quoteSymbol ?? ''}`
-  }, [targetPrice, order?.quoteSymbol, targetPrice, order.price, tpSize, slSize, type])
+  }, [comparePrice, targetPrice, order?.quoteSymbol, tpSize, slSize, type])
 
   const totalPnl = useMemo(() => {
     const size = type === 'tp' ? tpSize : slSize
@@ -172,12 +177,12 @@ export const TpslFormGroup = ({
 
     const diff =
       order.direction === Direction.LONG
-        ? parseBigNumber(targetPrice).minus(parseBigNumber(order.price))
-        : parseBigNumber(order.price).minus(parseBigNumber(targetPrice))
+        ? parseBigNumber(targetPrice).minus(parseBigNumber(entryPrice))
+        : parseBigNumber(entryPrice).minus(parseBigNumber(targetPrice))
     const pnl = diff.mul(parseBigNumber(size)).toString()
 
     return pnl
-  }, [tpSize, slSize, targetPrice, order.price, type])
+  }, [tpSize, slSize, targetPrice, entryPrice, order.direction, type])
 
   return (
     <div className="mt-[20px]">
@@ -220,12 +225,12 @@ export const TpslFormGroup = ({
                 }
 
                 const triggerPrice = parseBigNumber(normalizedValue)
-                const entryPrice = parseBigNumber(order.price)
+                const parsedEntryPrice = parseBigNumber(entryPrice)
                 const diff =
                   order.direction === Direction.LONG
-                    ? triggerPrice.minus(entryPrice)
-                    : entryPrice.minus(triggerPrice)
-                const collateralAmount = parseBigNumber(order.collateralAmount)
+                    ? triggerPrice.minus(parsedEntryPrice)
+                    : parsedEntryPrice.minus(triggerPrice)
+                const parsedCollateralAmount = parseBigNumber(collateralAmount)
                 if (type === 'tp') {
                   setTpPrice(normalizedValue)
                 } else {
@@ -235,10 +240,10 @@ export const TpslFormGroup = ({
                 if (tpslType === TpSlTypeEnum.PRICE) {
                   setTargetRate(diff.toString())
                 } else if (tpslType === TpSlTypeEnum.ROI) {
-                  const radio = diff.div(collateralAmount).mul(100).toFixed(2)
+                  const radio = diff.div(parsedCollateralAmount).mul(100).toFixed(2)
                   setTargetRate(radio)
                 } else if (tpslType === TpSlTypeEnum.Change) {
-                  const radio = diff.div(entryPrice).mul(100).toFixed(2)
+                  const radio = diff.div(parsedEntryPrice).mul(100).toFixed(2)
                   setTargetRate(radio)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
                   const size = type === 'tp' ? tpSize : slSize
@@ -272,22 +277,22 @@ export const TpslFormGroup = ({
                 setTargetRate(displayRate ?? effectiveValue?.toString() ?? '')
                 if (tpslType === TpSlTypeEnum.ROI) {
                   const radio = parseBigNumber(effectiveValue).div(100)
-                  const totalPnl = parseBigNumber(order.collateralAmount).mul(radio)
+                  const totalPnl = parseBigNumber(collateralAmount).mul(radio)
                   const averagePnl = totalPnl
-                    .div(parseBigNumber(order.size))
+                    .div(parseBigNumber(maxSize))
                     .mul(order.direction === Direction.LONG ? 1 : -1)
-                  const targetPrice = parseBigNumber(order.price).plus(averagePnl).toFixed(6)
+                  const targetPrice = parseBigNumber(entryPrice).plus(averagePnl).toFixed(6)
                   setTargetPrice(targetPrice)
                 } else if (tpslType === TpSlTypeEnum.Change) {
                   const radio = parseBigNumber(1).plus(parseBigNumber(effectiveValue).div(100))
-                  const targetPrice = parseBigNumber(order.price).mul(radio).toFixed(6)
+                  const targetPrice = parseBigNumber(entryPrice).mul(radio).toFixed(6)
                   setTargetPrice(targetPrice)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
                   const totalPnl = parseBigNumber(floatValue ?? 0)
                   const averagePnl = totalPnl
-                    .div(parseBigNumber(order.size))
+                    .div(parseBigNumber(maxSize))
                     .mul(order.direction === Direction.LONG ? 1 : -1)
-                  const targetPrice = parseBigNumber(order.price).plus(averagePnl).toFixed(6)
+                  const targetPrice = parseBigNumber(entryPrice).plus(averagePnl).toFixed(6)
                   setTargetPrice(targetPrice)
                 }
                 if (type === 'tp') {
@@ -334,16 +339,16 @@ export const TpslFormGroup = ({
             // 失去焦点时检查是否超过最大值
             const currentValue = type === 'tp' ? tpSize : slSize
             const inputValue = Number(currentValue)
-            const maxSize = Number(order.size)
+            const currentMaxSize = Number(maxSize)
 
-            if (inputValue > maxSize) {
-              const finalValue = maxSize.toString()
+            if (inputValue > currentMaxSize) {
+              const finalValue = currentMaxSize.toString()
               if (type === 'tp') {
                 setTpSize(finalValue)
               } else {
                 setSlSize(finalValue)
               }
-              setSliderValue(maxSize)
+              setSliderValue(currentMaxSize)
             }
           }}
         />
@@ -355,8 +360,8 @@ export const TpslFormGroup = ({
             value={sliderValue}
             onChange={(_, newValue) => setSliderValue(newValue as number)}
             min={0}
-            step={parseBigNumber(order.size).div(100).toNumber()}
-            max={order.size}
+            step={parseBigNumber(maxSize).div(100).toNumber()}
+            max={maxSize}
             valueLabelDisplay="auto"
             sx={{
               width: '100%',
@@ -391,7 +396,7 @@ export const TpslFormGroup = ({
         <div className="mt-[6px] flex justify-between">
           {AmountSliderMarks.map((m) => {
             // 计算当前滑块值对应的百分比
-            const currentPercentage = (sliderValue / Number(order.size)) * 100
+            const currentPercentage = (sliderValue / Number(maxSize)) * 100
             return (
               <p
                 key={m.value}

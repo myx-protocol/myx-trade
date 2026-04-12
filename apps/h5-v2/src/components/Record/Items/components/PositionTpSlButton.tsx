@@ -19,21 +19,30 @@ const renderTriggerPrice = (order: any): string => {
   return `${symbol} ${displayAmount(order.price)}`
 }
 
-const renderTpSlType = (order: any): string => {
+const renderTpSlType = (order: any, marketPrice: string | number): string => {
   if (order.orderType === OrderTypeEnum.Stop) {
-    if (order.triggerType === TriggerType.GTE && order.direction === Direction.LONG) {
+    const comparePrice = parseBigNumber(marketPrice?.toString() ?? '0').gt(0)
+      ? marketPrice.toString()
+      : '0'
+    const triggerPrice = parseBigNumber(order.price)
+    const isAboveCurrent =
+      comparePrice !== '0'
+        ? triggerPrice.gt(parseBigNumber(comparePrice))
+        : order.triggerType === TriggerType.GTE
+
+    if (isAboveCurrent && order.direction === Direction.LONG) {
       return 'TP'
     }
 
-    if (order.triggerType === TriggerType.LTE && order.direction === Direction.LONG) {
+    if (!isAboveCurrent && order.direction === Direction.LONG) {
       return 'SL'
     }
 
-    if (order.triggerType === TriggerType.GTE && order.direction === Direction.SHORT) {
+    if (isAboveCurrent && order.direction === Direction.SHORT) {
       return 'SL'
     }
 
-    if (order.triggerType === TriggerType.LTE && order.direction === Direction.SHORT) {
+    if (!isAboveCurrent && order.direction === Direction.SHORT) {
       return 'TP'
     }
   }
@@ -121,7 +130,7 @@ export const PositionTpSlButton = ({
               className="mt-[8px] rounded-[10px] border border-[#333842] p-[16px]"
             >
               <div className="flex items-center justify-between">
-                <p className="text-[14px] text-[white]">{renderTpSlType(order)}</p>
+                <p className="text-[14px] text-[white]">{renderTpSlType(order, marketPrice)}</p>
                 <p className="text-[12px] font-[500] text-[#848E9C]">
                   {dayjs(order.txTime * 1000).format('YYYY/MM/DD HH:mm:ss')}
                 </p>
@@ -159,7 +168,14 @@ export const PositionTpSlButton = ({
                   isSingle={true}
                   className="flex-1"
                   isEdit={true}
-                  order={{ ...order, positionEntryPrice: position.entryPrice }}
+                  order={{
+                    ...order,
+                    positionEntryPrice: position.entryPrice,
+                    positionCollateralAmount: position.collateralAmount,
+                    positionSize: position.size,
+                    positionTokenId: position.tokenId,
+                    positionUserLeverage: position.userLeverage,
+                  }}
                   poolInfo={pool}
                 />
                 <CancelOrderButton
