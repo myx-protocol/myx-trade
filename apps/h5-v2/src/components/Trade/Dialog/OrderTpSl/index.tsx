@@ -265,8 +265,6 @@ export const OrderTpSlButton = ({
             lineHeight: 1,
           }}
           onClick={() => setOpen(true)}
-          id={'trade_open_order_add_tp_sl_btn'}
-          dataAnalytics="trade_open_order_add_tp_sl_btn"
         >
           <Trans>Add TP/SL</Trans>
         </InfoButton>

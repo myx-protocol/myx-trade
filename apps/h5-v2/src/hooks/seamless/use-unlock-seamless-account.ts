@@ -5,12 +5,17 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { showErrorToast } from '@/config/error'
 import { useGetSeamlessAuthStatus } from './use-get-seamless-auth-status'
 import useGlobalStore from '@/store/globalStore'
+import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
+import { useParams } from 'react-router-dom'
+import { t } from '@lingui/core/macro'
 
 export const useUnlockSeamlessAccount = () => {
   const [loading, setLoading] = useState(false)
   const { client } = useMyxSdkClient()
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { symbolInfo } = useGlobalStore()
+  const { poolList } = useGetActivePoolList()
+  const { chainId: routeChainId, poolId: routePoolId } = useParams()
 
   const unlockSeamlessAccount = useCallback(
     async ({
@@ -24,8 +29,6 @@ export const useUnlockSeamlessAccount = () => {
       apiKey: string
       chainId: number
     }) => {
-      console.log(masterAddress, password, apiKey, chainId)
-
       try {
         setLoading(true)
         const key = Utf8.parse(charFill(password))
@@ -33,12 +36,24 @@ export const useUnlockSeamlessAccount = () => {
         const decrypted = AES.decrypt(apiKey, key, { iv, mode: CBC, padding: Pkcs7 })
         const privateKey = decrypted.toString(Utf8) as `0x${string}`
         const seamlessWallet = createSeamlessWalletClientFromPrivateKey(privateKey)
+        const currentChainId = chainId || Number(routeChainId)
+        const currentPool = poolList.find(
+          (item: any) =>
+            item.poolId === routePoolId &&
+            (!currentChainId || Number(item.chainId) === Number(currentChainId)),
+        )
+        const quoteToken = symbolInfo?.quoteToken || currentPool?.quoteToken
+
+        if (!currentChainId || !quoteToken) {
+          showErrorToast(t`Market info not ready, please try again`)
+          return
+        }
 
         const isAuthorizedRes = await getSeamlessAuthStatus({
           masterAddress,
           seamlessAddress: seamlessWallet.address,
-          chainId,
-          tokenAddress: symbolInfo?.quoteToken as string,
+          chainId: currentChainId,
+          tokenAddress: quoteToken as string,
         })
 
         const isAuthorized = isAuthorizedRes?.data?.auth
@@ -47,8 +62,8 @@ export const useUnlockSeamlessAccount = () => {
           await client?.seamless.authorizeSeamlessAccount({
             approve: true,
             seamlessAddress: seamlessWallet.address,
-            chainId,
-            forwardFeeToken: symbolInfo?.quoteToken as string,
+            chainId: currentChainId,
+            forwardFeeToken: quoteToken as string,
           })
         }
 
@@ -61,13 +76,12 @@ export const useUnlockSeamlessAccount = () => {
           },
         }
       } catch (e) {
-        console.log('e-->', e)
         showErrorToast(e)
       } finally {
         setLoading(false)
       }
     },
-    [client],
+    [client, getSeamlessAuthStatus, poolList, routeChainId, routePoolId, symbolInfo?.quoteToken],
   )
 
   return {
