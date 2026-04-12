@@ -587,7 +587,9 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       availableMargin.lt(parseBigNumber(displayCollateralAmountChange)) &&
                       adjustType === 'increase'
                     ) {
-                      diff = used.minus(availableMargin)
+                      diff = used.minus(availableMargin).lt(0)
+                        ? parseBigNumber(0)
+                        : used.minus(availableMargin)
                       depositAmount = diff
                     }
 
@@ -607,6 +609,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                         ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString(),
                       ],
                       value: priceData?.value.toString() ?? '1',
+                      gas: '1500000',
                     })
 
                     if (rs?.code === 0) {

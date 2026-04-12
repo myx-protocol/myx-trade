@@ -27,6 +27,7 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
       functionName,
       orderParams,
       value,
+      gas = '800000',
     }: {
       chainId: number
       masterAddress: string
@@ -35,6 +36,7 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
       functionName: string
       orderParams: any
       value?: string
+      gas?: string
     }) => {
       const sign = async ({
         domain,
@@ -56,7 +58,7 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
             from: activeSeamlessWallet.address,
             to,
             value: value ?? '0',
-            gas: '800000',
+            gas,
             nonce,
             deadline,
             data: functionHash,
@@ -75,6 +77,7 @@ export const useForwardSeamlessTransaction = (chainId?: number) => {
         functionName,
         orderParams,
         value: value ?? '0',
+        gas,
       })
 
       return rs
