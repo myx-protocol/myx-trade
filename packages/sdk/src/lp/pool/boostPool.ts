@@ -1,5 +1,5 @@
 import { BoostPoolParams } from "@/lp/pool/type.js";
-import { getAccount, getLiquidityRouterContract } from "../../web3/providers.js";
+import { getAccount, getPoolManagerContract } from "../../web3/providers.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator
@@ -44,7 +44,7 @@ export const boostPool = async (params:BoostPoolParams) => {
     })
     
     const chainInfo = CHAIN_INFO[chainId];
-    const contract = await getLiquidityRouterContract(chainId)
+    const contract = await getPoolManagerContract(chainId)
     
     const _gasLimit = await contract.estimateGas!.boostPool([{ poolId } ])
     const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
