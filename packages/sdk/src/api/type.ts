@@ -407,4 +407,11 @@ export interface MarketInfo {
   oracleRefundFeeUsd: number;
   poolPrimeThreshold: number;
   decimals: number;
+  boostFeeUsd: string
+  boostRefundFeeUsd: string
+  executionFee: string
+  forwardFee: string
+  maxExecutionFee: string
+  maxForwardFee: string
+  relateUsd: number
 }

@@ -8,4 +8,7 @@ export {reprime} from "./reprime.js";
 import {getPoolInfo as getPoolDetail} from '../getPoolInfo.js'
 export {getPoolDetail}
 export {getOpenOrders} from './orders.js'
+export {boostPool} from './boostPool.ts'
+export {unBoostPool} from './unBoostPool.ts'
+export {claimBoostFee} from './claimBoostFee.ts'
 export * from './type.js'

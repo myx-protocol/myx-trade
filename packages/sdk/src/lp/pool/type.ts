@@ -40,3 +40,8 @@ export interface CancelTpSLParams {
   chainId: ChainId;
   orderId: string;
 }
+
+export interface BoostPoolParams {
+  chainId: ChainId;
+  poolId: string;
+}
