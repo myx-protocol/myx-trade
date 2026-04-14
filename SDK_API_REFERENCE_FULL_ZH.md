@@ -17,7 +17,8 @@
 5. [MyxClient](#5-myxclient)
 6. [顶层导出（主包）](#6-顶层导出主包)
 7. [子包 @myx-trade/sdk/lp](#7-子包-myx-tradesdklp)
-8. [附录](#8-附录)
+8. [下单、保证金与 Deposit（业务口径）](#8-下单保证金与-deposit业务口径)
+9. [附录](#9-附录)
 
 ---
 
@@ -157,6 +158,8 @@ setSdkLogSink(console);
 | `getOrderHistory` | `GetHistoryOrdersParams`, `address` | 历史订单 | **后端** |
 
 `PlaceOrderParams` 主要字段见 `src/types/trading.ts`：`chainId`, `address`, `poolId`, `positionId`, `orderType`, `triggerType`, `direction`, `collateralAmount`, `size`, `price`, `executionFeeToken`, `leverage`, `tp/sl` 等（均为字符串或数值，精度需与合约一致）。
+
+**保证金、networkFee、tradingFee 与 Deposit 的业务口径**（开仓/平仓拆分）见 [第 8 节](#8-下单保证金与-deposit业务口径)。
 
 ---
 
@@ -330,9 +333,72 @@ setSdkLogSink(console);
 
 ---
 
-## 8. 附录
+## 8. 下单、保证金与 Deposit（业务口径）
 
-### 8.1 后端 Base URL（`getBaseUrlByEnv`）
+本节描述**开仓 / 平仓**场景下，保证金占用与 **Deposit（从钱包补入保证金账户的金额）** 的**业务计算口径**，便于产品与前端对齐；链上最终结算以合约为准。
+
+### 8.1 术语
+
+| 术语 | 说明 |
+|------|------|
+| **保证金总量** | 完成该笔下单所需占用的保证金侧总量（含费用项），用于理解资金占用。 |
+| **networkFee** | 执行费（链上 execution / 网络执行费）。单笔基数可通过 `myxClient.utils.getNetworkFee(marketId, chainId)` 获取；业务上可能按场景累加多笔（开仓、TP、SL、爆仓预留、平仓等）。 |
+| **tradingFee** | 交易手续费，一般按名义价值 × 用户费率计算，例如 `size × price × takerFeeRate`；费率来自 `myxClient.utils.getUserTradingFeeRate`（链上 `Broker.getUserFeeRate`）。 |
+| **Deposit** | 若**账户可用保证金**不足以覆盖「需占用总量」，差额需从钱包转入保证金账户；对应 SDK 里下单参数中的 `depositData.amount`（由 `createIncreaseOrder` / `createDecreaseOrder` 等与 `account.getAvailableMarginBalance` 比较后算出）。 |
+
+一般地：**需 Deposit 的金额** \(=\max(0,\ \text{保证金总量} - \text{当前可用保证金})\)（与链上精度、币种一致）。
+
+### 8.2 开仓（加仓，`OperationType.INCREASE`）
+
+**无持仓（新建仓，无已有 `positionId`）**
+
+\[
+\text{保证金总量} = \text{collateral} + \text{networkFee(开仓执行费)} + \text{networkFee(若设 TP)} + \text{networkFee(若设 SL)} + \text{networkFee(预留爆仓的执行费)} + \text{tradingFee}
+\]
+
+**已有持仓（加仓，已有 `positionId`）**
+
+\[
+\text{保证金总量} = \text{collateral} + \text{networkFee(开仓执行费)} + \text{networkFee(若设 TP)} + \text{networkFee(若设 SL)} + \text{tradingFee}
+\]
+
+与「无持仓」相比，**不包含**「预留爆仓的执行费」这一项。
+
+源码中 `Order.createIncreaseOrder` 注释亦区分了无仓与有仓场景下执行费项数（例如无仓多一项预留爆仓费），与本节一致。
+
+### 8.3 平仓（减仓，`OperationType.DECREASE`）
+
+**部分平仓**
+
+\[
+\text{保证金总量} = \text{networkFee(平仓执行费)} + \Delta
+\]
+
+其中 \(\Delta\)：若**剩余保证金**不足以支付本次平仓所需的**网络执行费**，则需**增加**不足部分（等价于补足「缺口」对应的金额，使能覆盖该笔 `networkFee`）。
+
+**全部平仓**
+
+\[
+\text{保证金总量} = 0
+\]
+
+批量全平可参考 `order.closeAllPositions`：内部 `depositData.amount` 为 `'0'`。
+
+### 8.4 与 SDK `Order` 方法的衔接
+
+- **`createIncreaseOrder(params, networkFee)`**  
+  - 第二个参数 `networkFee` 为调用方传入的字符串；**当前实现**中 `needAmount = BigInt(collateralAmount) + BigInt(networkFee)`，再与 `getAvailableMarginBalance` 比较差值得到 `depositAmount`。  
+  - 若产品按 [8.2](#82-开仓加仓operationtypeincrease) 将多笔执行费拆开，应在**调用前自行汇总**为传入的 `networkFee`（并与 `tradingFee`、`collateral` 等业务公式对齐，避免重复或遗漏）。  
+  - `tradingFee` 通常体现在合约侧或订单参数的业务校验中，接入时请以实际产品规则与链上行为为准。
+
+- **`createDecreaseOrder`**  
+  - 内部用 `collateralAmount` 与可用保证金比较决定是否追加 `deposit`；部分平仓时语义与 [8.3](#83-平仓减仓operationtypedecrease) 一致。
+
+---
+
+## 9. 附录
+
+### 9.1 后端 Base URL（`getBaseUrlByEnv`）
 
 | 条件 | 主机（逻辑） |
 |------|----------------|
@@ -340,18 +406,18 @@ setSdkLogSink(console);
 | `isTestnet` | `https://api-test.myx.cash` |
 | 否则 | `https://api.myx.finance` |
 
-### 8.2 WebSocket 环境（`SubScription` 构造）
+### 9.2 WebSocket 环境（`SubScription` 构造）
 
 根据 `isBetaMode` / `isTestnet` 选择 `WEBSOCKET_URL` 中 MainNet / BetaNet / TestNet（见 `src/manager/const/socket.ts`）。
 
-### 8.3 类型与错误
+### 9.3 类型与错误
 
 - 交易枚举与 `PlaceOrderParams`：`src/types/trading.ts`
 - 订单更新：`src/types/order.ts`
 - HTTP 响应包裹与业务类型：`src/api/type.ts`
 - SDK 错误码：`src/manager/error/const.ts`
 
-### 8.4 生成与构建
+### 9.4 生成与构建
 
 - ABI：`pnpm run gen:abi`（TypeChain）
 - 构建：`pnpm run build` → 输出 `dist/`，类型定义在 `dist/index.d.ts` 与 `dist/lp.d.ts`
