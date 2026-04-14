@@ -17,7 +17,8 @@ This document describes the public surface of `@myx-trade/sdk` and `@myx-trade/s
 5. [MyxClient](#5-myxclient)
 6. [Root package exports](#6-root-package-exports)
 7. [Subpath `@myx-trade/sdk/lp`](#7-subpath-myx-tradesdklp)
-8. [Appendix](#8-appendix)
+8. [Orders: margin, fees, and deposit (business rules)](#8-orders-margin-fees-and-deposit-business-rules)
+9. [Appendix](#9-appendix)
 
 ---
 
@@ -157,6 +158,8 @@ setSdkLogSink(console);
 | `getOrderHistory` | `GetHistoryOrdersParams`, `address` | History | **Backend** |
 
 Main fields for `PlaceOrderParams` are in `src/types/trading.ts`: `chainId`, `address`, `poolId`, `positionId`, `orderType`, `triggerType`, `direction`, `collateralAmount`, `size`, `price`, `executionFeeToken`, `leverage`, TP/SL fields — use string/bigint semantics consistent with contracts.
+
+For **margin**, **networkFee**, **tradingFee**, and **deposit** (open vs close), see [Section 8](#8-orders-margin-fees-and-deposit-business-rules).
 
 ---
 
@@ -330,9 +333,70 @@ Types: `AddTpSLParams`, `CancelTpSLParams`, `CreatePoolRequest`, `TpSLParams`, `
 
 ---
 
-## 8. Appendix
+## 8. Orders: margin, fees, and deposit (business rules)
 
-### 8.1 Backend base URL (`getBaseUrlByEnv`)
+This section defines the **business formulas** for how much margin must be covered (including fees) and how **deposit** (top-up from wallet into the margin account) relates to **available margin**. On-chain settlement remains authoritative.
+
+### 8.1 Terms
+
+| Term | Description |
+|------|-------------|
+| **Total margin requirement** | Total margin-side amount required for the order (including fee components), used for product/UI understanding. |
+| **networkFee** | Execution / network execution fee on-chain. A per-leg baseline can be read via `myxClient.utils.getNetworkFee(marketId, chainId)`; multiple legs (open, TP, SL, liquidation reserve, close) may be summed in the product layer. |
+| **tradingFee** | Trading fee, typically `notional × takerFeeRate` (e.g. `size × price × rate`); rates from `myxClient.utils.getUserTradingFeeRate` (on-chain `Broker.getUserFeeRate`). |
+| **Deposit** | If **available margin** is less than what the order requires, the shortfall is deposited from the wallet; in the SDK this appears as `depositData.amount` after comparing with `getAvailableMarginBalance`. |
+
+In general: **amount to deposit** \(=\max(0,\ \text{total margin requirement} - \text{current available margin})\) (same precision and token as on-chain).
+
+### 8.2 Open / increase (`OperationType.INCREASE`)
+
+**No existing position (new position, no `positionId`)**
+
+\[
+\text{total margin} = \text{collateral} + \text{networkFee(open)} + \text{networkFee(TP if set)} + \text{networkFee(SL if set)} + \text{networkFee(liquidation reserve)} + \text{tradingFee}
+\]
+
+**Existing position (increase size, with `positionId`)**
+
+\[
+\text{total margin} = \text{collateral} + \text{networkFee(open)} + \text{networkFee(TP if set)} + \text{networkFee(SL if set)} + \text{tradingFee}
+\]
+
+Compared with the “no position” case, the **liquidation reserve networkFee** term is **omitted**.
+
+The comments in `Order.createIncreaseOrder` (e.g. different counts of execution-fee legs for no-position vs add-on) align with this breakdown.
+
+### 8.3 Close / decrease (`OperationType.DECREASE`)
+
+**Partial close**
+
+\[
+\text{total margin} = \text{networkFee(close)} + \Delta
+\]
+
+where \(\Delta\) is an **additional** amount when **remaining margin** is insufficient to pay the **network execution fee** for this close — i.e. top up the shortfall so the close leg is covered.
+
+**Full close**
+
+\[
+\text{total margin} = 0
+\]
+
+For batch full close, see `order.closeAllPositions`: it uses `depositData.amount = '0'`.
+
+### 8.4 Mapping to SDK `Order` methods
+
+- **`createIncreaseOrder(params, networkFee)`**  
+  The second argument `networkFee` is a **single string** passed by the caller. The current implementation uses `needAmount = BigInt(collateralAmount) + BigInt(networkFee)` and compares with `getAvailableMarginBalance` to set `depositAmount`. If your product splits fees as in [8.2](#82-open--increase-operationtypeincrease), **aggregate them** into `networkFee` before calling (and keep `tradingFee` / `collateral` consistent with your rules and the contract).
+
+- **`createDecreaseOrder`**  
+  Uses `collateralAmount` vs available margin to decide extra `deposit`; partial-close semantics match [8.3](#83-close--decrease-operationtypedecrease).
+
+---
+
+## 9. Appendix
+
+### 9.1 Backend base URL (`getBaseUrlByEnv`)
 
 | Condition | Host |
 |-----------|------|
@@ -340,18 +404,18 @@ Types: `AddTpSLParams`, `CancelTpSLParams`, `CreatePoolRequest`, `TpSLParams`, `
 | `isTestnet` | `https://api-test.myx.cash` |
 | else | `https://api.myx.finance` |
 
-### 8.2 WebSocket environment (`SubScription` constructor)
+### 9.2 WebSocket environment (`SubScription` constructor)
 
 Select MainNet / BetaNet / TestNet from `WEBSOCKET_URL` based on `isBetaMode` / `isTestnet` (see `src/manager/const/socket.ts`).
 
-### 8.3 Types and errors
+### 9.3 Types and errors
 
 - Trading enums and `PlaceOrderParams`: `src/types/trading.ts`
 - Order updates: `src/types/order.ts`
 - HTTP envelopes and DTOs: `src/api/type.ts`
 - SDK error codes: `src/manager/error/const.ts`
 
-### 8.4 Generation and build
+### 9.4 Generation and build
 
 - ABI: `pnpm run gen:abi` (TypeChain)
 - Build: `pnpm run build` → `dist/`, declarations in `dist/index.d.ts` and `dist/lp.d.ts`

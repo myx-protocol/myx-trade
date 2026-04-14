@@ -18,12 +18,12 @@ export const useGetTradingFee = (chainId?: number) => {
         poolConfig?.level ?? 1,
         chainId ?? 0,
       )
-      const fundingFeeInfo = rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
+      const tradingFeeInfo = rs?.data ?? { takerFeeRate: '0', makerFeeRate: '0' }
       const tradingFee = parseBigNumber(size)
         .mul(parseBigNumber(price))
         .mul(
           parseBigNumber(
-            ethers.formatUnits(fundingFeeInfo?.takerFeeRate ?? 0, TRADING_FEE_DECIMALS) ?? 0,
+            ethers.formatUnits(tradingFeeInfo?.takerFeeRate ?? 0, TRADING_FEE_DECIMALS) ?? 0,
           ),
         )
 
