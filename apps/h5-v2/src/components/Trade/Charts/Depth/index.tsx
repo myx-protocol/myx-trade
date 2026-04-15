@@ -70,6 +70,8 @@ export const Depth = ({ chainId, poolId }: DepthProps) => {
           bids={orderBookData.bids}
           asks={orderBookData.asks}
           lastPrice={String(orderBookData.basePrice)}
+          baseSymbol={symbolInfo?.baseSymbol}
+          quoteSymbol={symbolInfo?.quoteSymbol}
           colors={{
             buyColor: '#00E3A5',
             buyOpacityColor: 'rgba(0, 227, 165, 0.15)',

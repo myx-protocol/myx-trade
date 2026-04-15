@@ -30,12 +30,14 @@ export const DepthChart: React.FC<DepthChartProps> = ({
   chartData: chartDataProp,
   unit = '',
   lastPrice,
-  pricePrecision = 2,
-  amountPrecision = 2,
+  pricePrecision,
+  amountPrecision,
   colors = {},
   className = '',
   style = {},
   renderTooltip,
+  baseSymbol,
+  quoteSymbol,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -93,6 +95,8 @@ export const DepthChart: React.FC<DepthChartProps> = ({
           width={dimensions.width}
           height={dimensions.height}
           renderTooltip={renderTooltip}
+          baseSymbol={baseSymbol}
+          quoteSymbol={quoteSymbol}
         />
       )}
     </div>
