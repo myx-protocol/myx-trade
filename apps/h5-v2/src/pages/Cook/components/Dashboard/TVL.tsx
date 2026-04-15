@@ -22,9 +22,7 @@ export const TVL = () => {
     refetchInterval: 1000 * 60,
   })
   const totalTvl = useMemo(() => {
-    return (data || []).reduce((previousValue, currentValue) => {
-      return previousValue.add(currentValue.value || 0)
-    }, new Big(0))
+    return (data || []).sort((a, b) => b.time - a.time)?.[0]?.value
   }, [data])
 
   const setData = useCallback((list: LpPriceHistory[]) => {
@@ -56,7 +54,7 @@ export const TVL = () => {
     }
   }, [data, setData])
   return (
-    <Statistic title={<Trans>Tvl</Trans>} value={totalTvl.toString()}>
+    <Statistic title={<Trans>Tvl</Trans>} value={totalTvl || ''}>
       <Box className={'pointer-events-none h-full w-full'} ref={lineRef}></Box>
     </Statistic>
   )
