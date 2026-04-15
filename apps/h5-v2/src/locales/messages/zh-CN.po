@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-12 07:19\n"
+"PO-Revision-Date: 2026-04-15 08:45\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -327,7 +326,7 @@ msgstr "所有链"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Allowed price movement range under no-slippage protection."
-msgstr ""
+msgstr "可容忍的最大滑点"
 
 #: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -457,7 +456,7 @@ msgstr "授权成功"
 
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
-msgstr ""
+msgstr "已授权币种"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -529,7 +528,7 @@ msgstr "余额"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Base Parameter S"
-msgstr ""
+msgstr "流动性锁滑点"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1035,7 +1034,7 @@ msgstr "复制成功"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Core parameter in the funding model used to adjust funding level."
-msgstr ""
+msgstr "资金费率计算的基准参数或基础溢价。"
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Cost Basis"
@@ -1161,7 +1160,7 @@ msgstr "已下架：市场已关闭。仅支持资产赎回。"
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Delisting soon. Only closing positions is allowed"
-msgstr ""
+msgstr "市场即将下架，仅允许平仓操作"
 
 #: src/components/AccountDialog/index.tsx
 #: src/pages/Home/components/AccountInfo/index.tsx
@@ -1589,7 +1588,7 @@ msgstr "交易滑点过高"
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Exchange Rate"
-msgstr ""
+msgstr "兑换比例"
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ExchangeRateAlreadyApplied()"
@@ -1698,7 +1697,7 @@ msgstr "过滤器"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "First-stage growth parameter in the funding model."
-msgstr ""
+msgstr "多空轻度失衡时，资金费率增长的第一阶段斜率。"
 
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Forgot Password?"
@@ -1759,15 +1758,15 @@ msgstr "资金费"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Growth G1"
-msgstr ""
+msgstr "资金费率增长率 G1"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Growth G2"
-msgstr ""
+msgstr "资金费率增长率 G2"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Parameter R2"
-msgstr ""
+msgstr "资金费率参数 R2"
 
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
@@ -1781,7 +1780,7 @@ msgstr "资金费率"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Settlement Interval"
-msgstr ""
+msgstr "资金费率结算周期"
 
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
@@ -1805,7 +1804,7 @@ msgstr "未设置 Gas (address)"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Genesis LP Share"
-msgstr ""
+msgstr "创世LP分成"
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
@@ -1823,7 +1822,7 @@ msgstr "连接钱包"
 
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
-msgstr ""
+msgstr "获取申诉状态失败"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1896,7 +1895,7 @@ msgstr "热门榜"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Hours"
-msgstr ""
+msgstr "小时"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How are your rights protected?"
@@ -1973,7 +1972,7 @@ msgstr "信息"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Initial Margin Rate"
-msgstr ""
+msgstr "初始保证金率"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2106,11 +2105,11 @@ msgstr "无效的私钥"
 
 #: src/hooks/seamless/utils.ts
 msgid "Invalid private key generated"
-msgstr ""
+msgstr "无效的无感私钥"
 
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid seamless key"
-msgstr ""
+msgstr "无效的无感私钥"
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2483,7 +2482,7 @@ msgstr "主图指标"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maintenance Margin Rate"
-msgstr ""
+msgstr "维持保证金率"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Maker"
@@ -2635,20 +2634,20 @@ msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0}
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Max Leverage"
-msgstr ""
+msgstr "最大杠杆"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Max Slippage"
-msgstr ""
+msgstr "最大滑点"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
-msgstr ""
+msgstr "预期执行价偏离预言机价格超过此范围将拒单，防范异常波动。"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum leverage allowed in this market."
-msgstr ""
+msgstr "当前市场支持的最高杠杆倍数。"
 
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
@@ -2669,19 +2668,19 @@ msgstr "最小"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Min Open Size"
-msgstr ""
+msgstr "最小开仓数量"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
-msgstr ""
+msgstr "维持仓位的最低保证金比例，跌破将触发强平。"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum margin ratio required to open a position."
-msgstr ""
+msgstr "开仓所需的最低保证金比例。"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
-msgstr ""
+msgstr "平台允许的单笔最低开仓金额。"
 
 #: src/components/SafeList/index.tsx
 msgid "Mintable"
@@ -2689,7 +2688,7 @@ msgstr "可铸造"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minutes"
-msgstr ""
+msgstr "分钟"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2702,7 +2701,7 @@ msgstr "执行费用不匹配"
 
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
-msgstr ""
+msgstr "缺少链"
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2827,11 +2826,11 @@ msgstr "未找到结果"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "No-Slippage Capacity"
-msgstr ""
+msgstr "无滑点容量"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "No-Slippage Time Window"
-msgstr ""
+msgstr "无滑点时间窗口"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3449,7 +3448,7 @@ msgstr "价格影响"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Price Protection Range"
-msgstr ""
+msgstr "价格保护区间"
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "PriceDeviationBelowMinimum()"
@@ -3469,7 +3468,7 @@ msgstr "创世收益"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Profit Risk Control"
-msgstr ""
+msgstr "利润锁时间"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3726,7 +3725,7 @@ msgstr "奖励释放"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
-msgstr ""
+msgstr "限制极端行情风险暴露的风控参数，用于保护流动性池。"
 
 #: src/components/SafeList/index.tsx
 msgid "Risk Rating"
@@ -3819,11 +3818,11 @@ msgstr "无感账户"
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Seamless account not authorized"
-msgstr ""
+msgstr "无感账户未授权"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Seamless account not found"
-msgstr ""
+msgstr "无感账户未找到"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
@@ -3853,13 +3852,13 @@ msgstr "搜索名称或粘贴地址"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Second-stage growth parameter in the funding model."
-msgstr ""
+msgstr "多空严重失衡时触发的第二阶段斜率。"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 #: src/pages/Price/components/TradeConfig/index.tsx
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Seconds"
-msgstr ""
+msgstr "秒"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -3868,9 +3867,7 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr ""
-"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
-""
+msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -3990,7 +3987,7 @@ msgstr "保证金账户中已解锁的可用余额，可随时提取至链上钱
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Share of rewards allocated to genesis LPs."
-msgstr ""
+msgstr "分配给早期创世流动性提供者的协议收益分成比例。"
 
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
@@ -4060,7 +4057,7 @@ msgstr "止损({0})"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Slippage Protection Threshold"
-msgstr ""
+msgstr "滑点保护阈值"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4131,7 +4128,7 @@ msgstr "副图指标"
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
-msgstr ""
+msgstr "提交平仓订单失败"
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4300,11 +4297,11 @@ msgstr "时间"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Time interval for funding rate settlement and updates, displayed in seconds."
-msgstr ""
+msgstr "多空双方结算资金费率的频率"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Time window during which no-slippage protection is applied, displayed in hours."
-msgstr ""
+msgstr "零滑点额度计算和刷新的滚动时间窗口。"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
@@ -4473,7 +4470,7 @@ msgstr "交易量"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Trading within this capacity has limited or negligible price impact."
-msgstr ""
+msgstr "可享受完全“零滑点”成交的最大名义价值额度"
 
 #: src/pages/record/components/RecordTab.tsx
 msgid "Transaction History"
@@ -4639,7 +4636,7 @@ msgstr "占用保证金"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Used to calculate slippage impact within the liquidity lock range."
-msgstr ""
+msgstr "交易锁定池内流动性时产生的基础滑点摩擦"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
@@ -4875,7 +4872,7 @@ msgstr "请求参数不可为空"
 
 #: src/pages/Price/components/Tabs.tsx
 msgid "交易参数"
-msgstr ""
+msgstr "交易参数"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -4911,7 +4908,7 @@ msgstr "仓位保证金共享"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
-msgstr ""
+msgstr "仓位共享保证金"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -5482,3 +5479,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+

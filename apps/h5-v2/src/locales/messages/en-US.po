@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-12 07:19\n"
+"PO-Revision-Date: 2026-04-15 08:45\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -327,7 +326,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Allowed price movement range under no-slippage protection."
-msgstr "Allowed price movement range under no-slippage protection."
+msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -457,7 +456,7 @@ msgstr ""
 
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
-msgstr "Authorized Tokens"
+msgstr ""
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -529,7 +528,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Base Parameter S"
-msgstr "Base Parameter S"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1035,7 +1034,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Core parameter in the funding model used to adjust funding level."
-msgstr "Core parameter in the funding model used to adjust funding level."
+msgstr ""
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Cost Basis"
@@ -1161,7 +1160,7 @@ msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Delisting soon. Only closing positions is allowed"
-msgstr "Delisting soon. Only closing positions is allowed"
+msgstr ""
 
 #: src/components/AccountDialog/index.tsx
 #: src/pages/Home/components/AccountInfo/index.tsx
@@ -1589,7 +1588,7 @@ msgstr ""
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Exchange Rate"
-msgstr "Exchange Rate"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ExchangeRateAlreadyApplied()"
@@ -1698,7 +1697,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "First-stage growth parameter in the funding model."
-msgstr "First-stage growth parameter in the funding model."
+msgstr ""
 
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Forgot Password?"
@@ -1759,15 +1758,15 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Growth G1"
-msgstr "Funding Growth G1"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Growth G2"
-msgstr "Funding Growth G2"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Parameter R2"
-msgstr "Funding Parameter R2"
+msgstr ""
 
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
@@ -1781,7 +1780,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Funding Settlement Interval"
-msgstr "Funding Settlement Interval"
+msgstr ""
 
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
@@ -1805,7 +1804,7 @@ msgstr "Gas not set (address)"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Genesis LP Share"
-msgstr "Genesis LP Share"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
@@ -1823,7 +1822,7 @@ msgstr ""
 
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
-msgstr "getPoolIsAppealing error"
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1896,7 +1895,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Hours"
-msgstr "Hours"
+msgstr ""
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How are your rights protected?"
@@ -1973,7 +1972,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Initial Margin Rate"
-msgstr "Initial Margin Rate"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2106,11 +2105,11 @@ msgstr ""
 
 #: src/hooks/seamless/utils.ts
 msgid "Invalid private key generated"
-msgstr "Invalid private key generated"
+msgstr ""
 
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid seamless key"
-msgstr "Invalid seamless key"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
@@ -2483,7 +2482,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maintenance Margin Rate"
-msgstr "Maintenance Margin Rate"
+msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Maker"
@@ -2635,20 +2634,20 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Max Leverage"
-msgstr "Max Leverage"
+msgstr ""
 
 #: src/components/PlaceOrderConfirm/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Max Slippage"
-msgstr "Max Slippage"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
-msgstr "Maximum allowed deviation between execution price and oracle price."
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum leverage allowed in this market."
-msgstr "Maximum leverage allowed in this market."
+msgstr ""
 
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
@@ -2669,19 +2668,19 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Min Open Size"
-msgstr "Min Open Size"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
-msgstr "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum margin ratio required to open a position."
-msgstr "Minimum margin ratio required to open a position."
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
-msgstr "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
+msgstr ""
 
 #: src/components/SafeList/index.tsx
 msgid "Mintable"
@@ -2689,7 +2688,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Minutes"
-msgstr "Minutes"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -2702,7 +2701,7 @@ msgstr ""
 
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
-msgstr "Missing chain"
+msgstr ""
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2827,11 +2826,11 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "No-Slippage Capacity"
-msgstr "No-Slippage Capacity"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "No-Slippage Time Window"
-msgstr "No-Slippage Time Window"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -3449,7 +3448,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Price Protection Range"
-msgstr "Price Protection Range"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "PriceDeviationBelowMinimum()"
@@ -3469,7 +3468,7 @@ msgstr "Genesis Earnings"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Profit Risk Control"
-msgstr "Profit Risk Control"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3726,7 +3725,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
-msgstr "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
+msgstr ""
 
 #: src/components/SafeList/index.tsx
 msgid "Risk Rating"
@@ -3819,11 +3818,11 @@ msgstr ""
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Seamless account not authorized"
-msgstr "Seamless account not authorized"
+msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Seamless account not found"
-msgstr "Seamless account not found"
+msgstr ""
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
@@ -3853,13 +3852,13 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Second-stage growth parameter in the funding model."
-msgstr "Second-stage growth parameter in the funding model."
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 #: src/pages/Price/components/TradeConfig/index.tsx
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Seconds"
-msgstr "Seconds"
+msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -3988,7 +3987,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Share of rewards allocated to genesis LPs."
-msgstr "Share of rewards allocated to genesis LPs."
+msgstr ""
 
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
@@ -4058,7 +4057,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Slippage Protection Threshold"
-msgstr "Slippage Protection Threshold"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4129,7 +4128,7 @@ msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
-msgstr "Submit close order failed"
+msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4298,11 +4297,11 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Time interval for funding rate settlement and updates, displayed in seconds."
-msgstr "Time interval for funding rate settlement and updates, displayed in seconds."
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Time window during which no-slippage protection is applied, displayed in hours."
-msgstr "Time window during which no-slippage protection is applied, displayed in hours."
+msgstr ""
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
@@ -4471,7 +4470,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Trading within this capacity has limited or negligible price impact."
-msgstr "Trading within this capacity has limited or negligible price impact."
+msgstr ""
 
 #: src/pages/record/components/RecordTab.tsx
 msgid "Transaction History"
@@ -4637,7 +4636,7 @@ msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Used to calculate slippage impact within the liquidity lock range."
-msgstr "Used to calculate slippage impact within the liquidity lock range."
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
@@ -4873,7 +4872,7 @@ msgstr ""
 
 #: src/pages/Price/components/Tabs.tsx
 msgid "交易参数"
-msgstr "交易参数"
+msgstr "Trading Parameters"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -4909,7 +4908,7 @@ msgstr "Margin Sharing"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
-msgstr "仓位共享保证金"
+msgstr "Shared Margin"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
@@ -5480,3 +5479,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
