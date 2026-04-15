@@ -73,6 +73,8 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             </Tooltips>
           </label>
           <Box
+            id="market_select_token_btn_h5"
+            data-analytics="market_select_token_btn_h5"
             className={
               'bg-base-bg flex min-h-[56px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
             }
@@ -103,7 +105,8 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
           </label>
           <Box
             className={`bg-base-bg flex min-h-[62px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px] ${!!token || !markets || markets?.length < 2 ? 'cursor-not-allowed' : ''}`}
-            id="basic-button"
+            id="market_select_usd_vault_btn_h5"
+            data-analytics="market_select_usd_vault_btn_h5"
             aria-controls={quoteOpen ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={quoteOpen ? 'true' : undefined}
@@ -123,7 +126,7 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             onClose={handleClose}
             slotProps={{
               list: {
-                'aria-labelledby': 'basic-button',
+                'aria-labelledby': 'market_select_usd_vault_btn_h5',
               },
               paper: {
                 sx: {
@@ -149,6 +152,8 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
 
         <Box className={'mx-auto mt-[24px] w-full'}>
           <Button
+            id="market_next_step_btn_h5"
+            data-analytics="market_next_step_btn_h5"
             loading={loading}
             className={'gradient primary long w-full rounded'}
             disabled={!token || !market}

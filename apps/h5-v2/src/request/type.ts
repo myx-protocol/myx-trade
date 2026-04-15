@@ -70,6 +70,8 @@ export interface CookRequest extends FilterRequest {
   holdersMax?: string
   liquidityMin?: string
   liquidityMax?: string
+  progressMin?: string
+  progressMax?: string
 }
 
 export enum PageDirection {

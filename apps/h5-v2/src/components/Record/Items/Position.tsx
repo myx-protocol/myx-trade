@@ -18,6 +18,9 @@ import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMemo } from 'react'
 import { SharePositionDialog } from '@/components/SharePositionDialog'
+import { PositionTpSlButton } from './components/PositionTpSlButton'
+import { useGetOrderList } from '@/hooks/order/use-get-order-list'
+import { OrderTypeEnum } from '@myx-trade/sdk'
 
 export const PositionItem = ({
   position,
@@ -28,7 +31,7 @@ export const PositionItem = ({
   marketPrice: string
   pool: any
 }) => {
-  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
+  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId as number)
 
   const { data: fundingFee } = useSWR(
     `getFundingFee-${position.positionId}`,
@@ -93,6 +96,10 @@ export const PositionItem = ({
     chainId: position.chainId,
     poolId: position.poolId,
   })
+  const orderList = useGetOrderList(true)
+  const orders = orderList.filter(
+    (item: any) => item.positionId === position.positionId && item.orderType === OrderTypeEnum.Stop,
+  )
   const chainInfo = useMemo(() => {
     if (!position.chainId) return null
     return getChainInfo(position.chainId)
@@ -235,7 +242,11 @@ export const PositionItem = ({
       {/* buttons */}
       <div className="mt-[20px] flex justify-center gap-[8px]">
         <AdjustMarginDialog position={position} />
-        <TpSlButton position={position} poolInfo={pool} />
+        {orders.length > 0 ? (
+          <PositionTpSlButton position={position} orders={orders} pool={pool} />
+        ) : (
+          <TpSlButton position={position} poolInfo={pool} />
+        )}
         <ClosePositionButton
           style={{
             width: '100%',

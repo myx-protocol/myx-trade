@@ -216,6 +216,8 @@ export const Buy = () => {
           ) : (
             <ConnectButton>
               <TradeButton
+                id="cook_detail_submit_buy_btn_h5"
+                data-analytics="cook_detail_submit_buy_btn_h5"
                 variant="contained"
                 className={'w-full'}
                 disabled={

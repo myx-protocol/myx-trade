@@ -149,6 +149,8 @@ export const ActiveMarket = ({ onNext }: { onNext: () => void }) => {
 
       <Box className={'mt-[32px]'}>
         <Button
+          id="activate_market_btn_h5"
+          data-analytics="activate_market_btn_h5"
           loading={loading}
           className={'gradient primary long mx-auto w-full rounded'}
           onClick={onReprime}

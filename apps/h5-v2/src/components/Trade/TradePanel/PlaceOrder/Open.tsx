@@ -20,8 +20,13 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   const { longSize, shortSize, amountUnit, price } = useTradePanelStore()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
   const { symbolInfo, poolConfig } = useGlobalStore()
-  const { submitOrder, submitLongLoading, submitShortLoading, submitSyncVipLoading } =
-    useSubmitOrder()
+  const {
+    submitOrder,
+    submitLoadingLong,
+    submitLoadingShort,
+    longAsyncVipLoading,
+    shortAsyncVipLoading,
+  } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
   const minOrderSizeInUsd = parseBigNumber(poolConfig?.levelConfig?.minOrderSizeInUsd ?? 0)
   const safePrice = parseBigNumber(price ?? '1').eq(0) ? parseBigNumber('1') : parseBigNumber(price)
@@ -68,7 +73,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
       <PrimaryButton
-        loading={submitLongLoading || submitSyncVipLoading}
+        loading={submitLoadingLong || longAsyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -116,9 +121,9 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          {submitLongLoading ? (
+          {submitLoadingLong ? (
             <Trans>Confirming</Trans>
-          ) : submitSyncVipLoading ? (
+          ) : longAsyncVipLoading ? (
             <Trans>Update VIP</Trans>
           ) : (
             <p>
@@ -133,7 +138,7 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         </div>
       </PrimaryButton>
       <DangerButton
-        loading={submitShortLoading || submitSyncVipLoading}
+        loading={submitLoadingShort || shortAsyncVipLoading}
         className="w-full"
         style={{
           fontSize: '13px',
@@ -181,9 +186,9 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
         }}
       >
         <div>
-          {submitShortLoading ? (
+          {submitLoadingShort ? (
             <Trans>Confirming</Trans>
-          ) : submitSyncVipLoading ? (
+          ) : shortAsyncVipLoading ? (
             <Trans>Update VIP</Trans>
           ) : (
             <p>

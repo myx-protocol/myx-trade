@@ -38,9 +38,11 @@ const renderTargetUnit = (type: TpSlTypeEnum, symbol: string) => {
 export const TpslFormGroup = ({
   position,
   type,
+  currentPrice,
 }: {
   position: any
   type: 'tp' | 'sl'
+  currentPrice?: string | number
   autoFocus?: boolean
 }) => {
   const [tpslType, setTpslType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
@@ -135,12 +137,15 @@ export const TpslFormGroup = ({
   const displayTargetPrice = useMemo(() => {
     if (!targetPrice || parseBigNumber(type === 'tp' ? tpSize : slSize).eq(0)) return '--'
 
-    if (parseBigNumber(targetPrice).gt(parseBigNumber(position.entryPrice))) {
-      return `>=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
+    const comparePrice =
+      currentPrice && parseBigNumber(currentPrice).gt(0) ? currentPrice : position.entryPrice
+
+    if (parseBigNumber(targetPrice).gt(parseBigNumber(comparePrice))) {
+      return `≥${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
     }
 
-    return `<=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
-  }, [targetPrice, position?.quoteSymbol, targetPrice, position.entryPrice, tpSize, slSize, type])
+    return `≤${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
+  }, [currentPrice, targetPrice, position?.quoteSymbol, position.entryPrice, tpSize, slSize, type])
 
   const totalPnl = useMemo(() => {
     const size = type === 'tp' ? tpSize : slSize

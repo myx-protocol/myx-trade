@@ -8,7 +8,6 @@ import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
 import { useSeamlessStore } from '@/store/seamless/createStore'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import avatarIcon from '@/assets/home/wallet-icon.png'
 import { Copy } from '@/components/Copy'
@@ -27,7 +26,6 @@ export const AccountDialog = () => {
   const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { disconnect } = useWalletConnection()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
@@ -75,8 +73,7 @@ export const AccountDialog = () => {
                 color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
                 backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
               }}
-              onClick={async () => {
-                await client?.seamless.startSeamlessMode({ open: false })
+              onClick={() => {
                 setTradeMode(TradeMode.Classic)
               }}
             >{t`Classic`}</p>
@@ -90,15 +87,6 @@ export const AccountDialog = () => {
                 setAccountDialogOpen(false)
 
                 if (seamlessAccountList.length === 0) {
-                  setSeamlessPasswordDialogOpen(true)
-                  return
-                }
-
-                const seamlessAccount = seamlessAccountList.findIndex(
-                  (account) => account.masterAddress === address,
-                )
-
-                if (seamlessAccount === -1) {
                   setSeamlessPasswordDialogOpen(true)
                   return
                 }

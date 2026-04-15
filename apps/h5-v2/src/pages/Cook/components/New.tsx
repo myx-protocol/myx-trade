@@ -47,6 +47,8 @@ export const New = ({ chainId }: { chainId?: number }) => {
         tokenCreateTimeMax: age?.[0] ? dayjs().subtract(Number(age[0]), 'm').unix() : undefined,
         holdersMin: holders[0] || undefined,
         holdersMax: holders[1] || undefined,
+        progressMin: progress[0] || undefined,
+        progressMax: progress[1] || undefined,
       })
       // console.log(result)
       return result?.data || []

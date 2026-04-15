@@ -13,11 +13,11 @@ import { PrimaryButton } from '@/components/UI/Button'
 import WalletIcon from '@/components/UI/Icon/WalletIcon'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { TradeMode } from '@/pages/Trade/types'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useSeamlessStore } from '@/store/seamless/createStore'
-import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
 import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useUnlockSeamlessAccount } from '@/hooks/seamless/use-unlock-seamless-account'
+import { useParams } from 'react-router-dom'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -26,9 +26,9 @@ export const UnlockAccountDialog = () => {
     setSelectedSeamlessAccountDialogOpen,
     setTradeMode,
     setSeamlessPasswordDialogOpen,
-    symbolInfo,
   } = useGlobalStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { symbolInfo } = useGlobalStore()
+  const { chainId: routeChainId } = useParams()
   const [show, setShow] = useState(false)
   const { address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
@@ -40,9 +40,11 @@ export const UnlockAccountDialog = () => {
     setSeamlessAccountList,
     selectedSeamlessAddress,
     setSelectedSeamlessAddress,
+    setActiveSeamlessWallet,
   } = useSeamlessStore()
-  const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
+  const { unlockSeamlessAccount, unlockSeamlessAccountLoading } = useUnlockSeamlessAccount()
 
+  // 当对话框打开时，初始化要解锁的账号地址
   useEffect(() => {
     if (!unlockAccountDialogOpen) return
 
@@ -79,8 +81,6 @@ export const UnlockAccountDialog = () => {
       open={unlockAccountDialogOpen}
       onClose={() => {
         setUnlockAccountDialogOpen(false)
-        setTradeMode(TradeMode.Classic)
-        setActiveSeamlessAddress('')
         setSelectedSeamlessAddress('')
       }}
       sx={{
@@ -161,6 +161,7 @@ export const UnlockAccountDialog = () => {
               height: '44px',
               fontWeight: 500,
             }}
+            loading={unlockSeamlessAccountLoading}
             onClick={async () => {
               // 优先使用用户选择的地址，否则使用当前激活的地址
               const targetAddress = selectedSeamlessAddress || activeSeamlessAddress
@@ -172,18 +173,17 @@ export const UnlockAccountDialog = () => {
                 return
               }
 
-              const rs = await client?.seamless.unLockSeamlessWallet({
+              const rs = await unlockSeamlessAccount({
                 password,
                 masterAddress: targetSeamlessAccount.masterAddress as string,
                 apiKey: targetSeamlessAccount.apiKey as string,
-                chainId: symbolInfo?.chainId as number,
+                chainId: (symbolInfo?.chainId as number) || Number(routeChainId),
               })
 
               if (rs?.code === 0) {
                 // 先设置 activeSeamlessAddress，然后再切换模式
                 setActiveSeamlessAddress(targetSeamlessAccount.masterAddress)
 
-                await changeSdkTradeMode(true)
                 setUnlockAccountDialogOpen(false)
 
                 // 清空选中的地址
@@ -194,11 +194,12 @@ export const UnlockAccountDialog = () => {
                 )
                 seamlessAccountList[idx] = {
                   ...seamlessAccountList[idx],
-                  authorized: {
-                    [symbolInfo?.chainId as number]: { authorized: true },
-                  },
+                  authorized: {},
                 }
+
                 setSeamlessAccountList([...seamlessAccountList])
+                setActiveSeamlessWallet(rs.data?.seamlessWallet)
+                setTradeMode(TradeMode.Seamless)
               }
             }}
           >

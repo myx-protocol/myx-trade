@@ -136,14 +136,21 @@ export const AmountInput = () => {
           .mul(parseBigNumber(leverage))
           .toString()
 
+        const longAmount = parseBigNumber(maxOpenLong.quoteAmount).gte(longBalance)
+          ? longBalance
+          : maxOpenLong.quoteAmount
+        const shortAmount = parseBigNumber(maxOpenShort.quoteAmount).gte(shortBalance)
+          ? shortBalance
+          : maxOpenShort.quoteAmount
+
         if (amountUnit === AmountUnitEnum.QUOTE) {
           const openSizeForLong = parseBigNumber(sliderValue)
             .div(100)
-            .mul(parseBigNumber(longBalance))
+            .mul(parseBigNumber(longAmount))
             .toString()
           const openSizeForShort = parseBigNumber(sliderValue)
             .div(100)
-            .mul(parseBigNumber(shortBalance))
+            .mul(parseBigNumber(shortAmount))
             .toString()
           setLongSize(openSizeForLong)
           setShortSize(openSizeForShort)
@@ -152,8 +159,8 @@ export const AmountInput = () => {
             setLongSize('0')
             setShortSize('0')
           } else {
-            const maxSizeForLong = parseBigNumber(longBalance).div(parseBigNumber(price)).toString()
-            const maxSizeForShort = parseBigNumber(shortBalance)
+            const maxSizeForLong = parseBigNumber(longAmount).div(parseBigNumber(price)).toString()
+            const maxSizeForShort = parseBigNumber(shortAmount)
               .div(parseBigNumber(price))
               .toString()
             const openSizeForLong = parseBigNumber(sliderValue)
@@ -172,6 +179,7 @@ export const AmountInput = () => {
       }
       return
     }
+
     if (amountUnit === AmountUnitEnum.QUOTE) {
       const longSize = parseBigNumber(sliderValue)
         .div(100)

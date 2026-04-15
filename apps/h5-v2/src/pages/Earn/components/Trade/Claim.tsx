@@ -21,10 +21,10 @@ export const Claim = () => {
   const onAction = useWalletActions()
 
   const { data: reward, refetch } = useQuery({
-    queryKey: [{ key: 'getQuoteLpAssetRewards' }, poolId, chainId, account],
-    enabled: !!chainId && !!poolId && !!account,
+    queryKey: [{ key: 'getQuoteLpAssetRewards' }, poolId, chainId, account, quoteLpDetail],
+    enabled: !!chainId && !!poolId && !!account && !!quoteLpDetail,
     queryFn: async () => {
-      if (!chainId || !account || !poolId) return ''
+      if (!chainId || !account || !poolId || !quoteLpDetail) return ''
       let rewards = ''
       try {
         const rs = await Quote.getRewards({
@@ -86,6 +86,8 @@ export const Claim = () => {
 
       <Box className={'mb-[4px] w-full'}>
         <TradeButton
+          id="earn_detail_submit_claim_btn_h5"
+          data-analytics="earn_detail_submit_claim_btn_h5"
           variant="contained"
           className={'w-full'}
           disabled={!reward || Number(reward) < MIN_CLAIM_AMOUNT}

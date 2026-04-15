@@ -1,4 +1,4 @@
-import { DialogBase } from '@/components/UI/DialogBase'
+import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
 import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
@@ -22,6 +22,9 @@ import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { tradePubSub } from '@/utils/pubsub'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useGetActivePoolList } from '../Trade/hooks/use-get-pool-list'
+import { useGetPositionList } from '@/hooks/position/use-get-position-list'
+import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
 export const PlaceOrderConfirmDialog = () => {
   const {
@@ -45,174 +48,22 @@ export const PlaceOrderConfirmDialog = () => {
     slType,
     tpSlOpen,
   } = useTradePanelStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
-  const { submitOrder, submitLoading, submitSyncVipLoading } = useSubmitOrder()
-  const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
+  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { showPlaceOrderConfirmDialog } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
+  const { poolList } = useGetActivePoolList()
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
+  const { shareCollateral } = useGlobalStore()
+  const positionList = useGetPositionList()
   const { getLiqPrice } = useGetLiqPrice({
     poolId: symbolInfo?.poolId ?? '',
     chainId: symbolInfo?.chainId ?? 0,
   })
 
-  const { data: networkFee } = useSWR(
-    symbolInfo?.marketId && symbolInfo?.chainId
-      ? { key: 'getOpenNetWorkFee', chainId: symbolInfo?.chainId, marketId: symbolInfo?.marketId }
-      : null,
-    async () => {
-      const networkFee = await client?.utils.getNetworkFee(
-        symbolInfo?.marketId as string,
-        symbolInfo?.chainId as number,
-      )
-
-      return (
-        parseBigNumber(networkFee)
-          .div(10 ** (symbolInfo?.quoteDecimals ?? 1))
-          .toString() ?? '0'
-      )
-    },
-  )
-  const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
-  const maintainCollateralRate = poolConfig?.levelConfig?.maintainCollateralRate ?? 0
-  const formatCollateralAmount = useMemo(() => {
-    if (!autoMarginMode) {
-      let total = collateralAmount
-      if (tpValue) {
-        total = parseBigNumber(total)
-          .plus(parseBigNumber(networkFee ?? '0'))
-          .toString()
-      }
-      if (slValue) {
-        total = parseBigNumber(total)
-          .plus(parseBigNumber(networkFee ?? '0'))
-          .toString()
-      }
-      return total
-    }
-
-    const size = direction === Direction.LONG ? longSize : shortSize
-    if (amountUnit === AmountUnitEnum.QUOTE) {
-      let total = parseBigNumber(size).div(leverage).toString()
-      if (tpValue) {
-        total = parseBigNumber(total)
-          .plus(parseBigNumber(networkFee ?? '0'))
-          .toString()
-      }
-      if (slValue) {
-        total = parseBigNumber(total)
-          .plus(parseBigNumber(networkFee ?? '0'))
-          .toString()
-      }
-      return total
-    }
-
-    let total = parseBigNumber(size).mul(parseBigNumber(price)).div(leverage).toString()
-    if (tpValue) {
-      total = parseBigNumber(total)
-        .plus(parseBigNumber(networkFee ?? '0'))
-        .toString()
-    }
-    if (slValue) {
-      total = parseBigNumber(total)
-        .plus(parseBigNumber(networkFee ?? '0'))
-        .toString()
-    }
-    return total
-  }, [
-    direction,
-    longSize,
-    shortSize,
-    amountUnit,
-    price,
-    autoMarginMode,
-    collateralAmount,
-    networkFee,
-  ])
-
-  const usedInfo = useMemo(() => {
-    const freeMargin = parseBigNumber(assets?.freeMargin ?? '0')
-    const profit = parseBigNumber(assets?.quoteProfit ?? '0')
-    const accountTotal = freeMargin.plus(profit)
-    let needAccount = parseBigNumber(0)
-    let needWallet = parseBigNumber(0)
-    if (parseBigNumber(accountTotal).gte(parseBigNumber(formatCollateralAmount))) {
-      needAccount = parseBigNumber(formatCollateralAmount)
-    } else {
-      needAccount = parseBigNumber(accountTotal)
-      needWallet = parseBigNumber(formatCollateralAmount).minus(accountTotal)
-    }
-
-    return {
-      wallet: needWallet.toString(),
-      account: needAccount.toString(),
-    }
-  }, [assets, formatCollateralAmount])
-
-  const { data: liqPrice } = useSWR(
-    symbolInfo?.poolId && symbolInfo?.chainId
-      ? [
-          'liq_price',
-          symbolInfo.poolId,
-          symbolInfo.chainId,
-          direction === Direction.LONG ? longSize : shortSize,
-          direction,
-          formatCollateralAmount,
-          price,
-          assetClass,
-          maintainCollateralRate.toString(),
-        ]
-      : null,
-    async () => {
-      const size = direction === Direction.LONG ? longSize : shortSize
-      const formatSize =
-        amountUnit === AmountUnitEnum.BASE
-          ? size
-          : parseBigNumber(size).div(parseBigNumber(price)).toString()
-      const liqPrice = await getLiqPrice({
-        entryPrice: price,
-        collateralAmount: formatCollateralAmount,
-        size: formatSize,
-        price: price,
-        assetClass: assetClass,
-        fundingRateIndexEntry: '0',
-        direction: direction,
-        maintainMarginRate: maintainCollateralRate.toString(),
-        needFundingFee: false,
-      })
-
-      return liqPrice
-    },
-    {
-      keepPreviousData: true, // 保留之前的数据，避免闪烁
-    },
-  )
-  const [openPositionSlippage, setOpenPositionSlippage] = useState(
-    getSlippage({
-      chainId: symbolInfo?.chainId ?? 0,
-      poolId: symbolInfo?.poolId ?? '',
-      type: SlippageTypeEnum.OPEN,
-    }),
-  )
-
-  useEffect(() => {
-    const updateSlippage = () => {
-      setOpenPositionSlippage(
-        getSlippage({
-          chainId: symbolInfo?.chainId ?? 0,
-          poolId: symbolInfo?.poolId ?? '',
-          type: SlippageTypeEnum.OPEN,
-        }),
-      )
-    }
-    if (symbolInfo?.chainId && symbolInfo.poolId) {
-      tradePubSub.on('trade:slippage:change', updateSlippage)
-      return () => {
-        tradePubSub.off('trade:slippage:change', updateSlippage)
-      }
-    }
-  }, [symbolInfo?.chainId, symbolInfo?.poolId])
-
+  const { longPositionAvailableMargin, shortPositionAvailableMargin } =
+    useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId as number)
   const pool = useMemo(() => {
     return poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   }, [poolList, symbolInfo?.poolId])
@@ -239,12 +90,212 @@ export const PlaceOrderConfirmDialog = () => {
         price: price,
         assetClass: pool?.assetClass ?? 0,
       })
+
       return fee
     },
     {
       keepPreviousData: true, // 保留之前的数据，避免闪烁
     },
   )
+
+  const { data: networkFee } = useSWR(
+    symbolInfo?.marketId && symbolInfo?.chainId
+      ? { key: 'getOpenNetWorkFee', chainId: symbolInfo?.chainId, marketId: symbolInfo?.marketId }
+      : null,
+    async () => {
+      const networkFee = await client?.utils.getNetworkFee(
+        symbolInfo?.marketId as string,
+        symbolInfo?.chainId as number,
+      )
+
+      return (
+        parseBigNumber(networkFee)
+          .div(10 ** (symbolInfo?.quoteDecimals ?? 1))
+          .toString() ?? '0'
+      )
+    },
+  )
+
+  const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
+  const maintainCollateralRate = poolConfig?.levelConfig?.maintainCollateralRate ?? 0
+
+  const formatCollateralAmount = useMemo(() => {
+    let totalNetworkFee = parseBigNumber(0)
+    totalNetworkFee = parseBigNumber(networkFee ?? '0')
+    if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
+      totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
+    }
+
+    if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
+      totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
+    }
+
+    // const position = positionList?.find(
+    //   (position: any) => position.poolId === symbolInfo?.poolId && position.direction === direction,
+    // )
+
+    // if (!position || parseBigNumber(longPositionAvailableMargin).lt(parseBigNumber(networkFee ?? '0'))) {
+    //   totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
+    // }
+
+    let total = '0'
+
+    const openSize = direction === Direction.LONG ? longSize : shortSize
+    const size =
+      amountUnit === AmountUnitEnum.BASE
+        ? parseBigNumber(openSize).mul(parseBigNumber(price)).toString()
+        : openSize
+
+    if (autoMarginMode) {
+      const parsedCollateral = parseBigNumber(size)
+        .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+        .div(leverage)
+
+      total = parsedCollateral
+        .plus(parseBigNumber(tradingFee ?? '0').mul(10 ** (symbolInfo?.quoteDecimals ?? 1)))
+        .plus(totalNetworkFee.mul(10 ** (symbolInfo?.quoteDecimals ?? 1)))
+        .toFixed(0)
+    } else {
+      total = parseBigNumber(collateralAmount)
+        .mul(10 ** (symbolInfo?.quoteDecimals ?? 1))
+        .toFixed(0)
+    }
+
+    return total
+  }, [
+    direction,
+    longSize,
+    shortSize,
+    amountUnit,
+    price,
+    tpValue,
+    slValue,
+    autoMarginMode,
+    collateralAmount,
+    networkFee,
+    tradingFee,
+    leverage,
+    symbolInfo?.quoteDecimals,
+    symbolInfo?.poolId,
+    positionList,
+    tpSlOpen,
+  ])
+
+  const usedInfo = useMemo(() => {
+    const dec = 10 ** (symbolInfo?.quoteDecimals ?? 1)
+    const freeMargin = parseBigNumber(assets?.freeMargin ?? '0')
+    const profit = parseBigNumber(assets?.quoteProfit ?? '0')
+    const accountTotal = freeMargin.plus(profit)
+    let needAccount = parseBigNumber(0)
+    let needWallet = parseBigNumber(0)
+    let shareCollateralUsed = parseBigNumber(0)
+
+    // formatCollateralAmount 为总需求量（raw），转为人类可读单位
+    const netNeededHuman = parseBigNumber(formatCollateralAmount).div(dec)
+
+    if (shareCollateral) {
+      // 1. 优先从仓位可用保证金中拿
+      const positionMarginAvailable = parseBigNumber(
+        direction === Direction.LONG ? longPositionAvailableMargin : shortPositionAvailableMargin,
+      )
+      shareCollateralUsed = netNeededHuman.gte(positionMarginAvailable)
+        ? positionMarginAvailable
+        : netNeededHuman
+    }
+
+    // 仓位抵扣后的剩余需求
+    const remaining = netNeededHuman.minus(shareCollateralUsed)
+
+    // 2. 其次从账户保证金拿
+    if (accountTotal.gte(remaining)) {
+      needAccount = remaining
+    } else {
+      needAccount = accountTotal
+      // 3. 最后从钱包拿
+      needWallet = remaining.minus(accountTotal)
+    }
+
+    return {
+      wallet: needWallet.toString(),
+      account: needAccount.toString(),
+      shareCollateral: shareCollateralUsed.toString(),
+    }
+  }, [
+    assets,
+    formatCollateralAmount,
+    longPositionAvailableMargin,
+    shortPositionAvailableMargin,
+    direction,
+    shareCollateral,
+    symbolInfo?.quoteDecimals,
+  ])
+
+  const { data: liqPrice } = useSWR(
+    symbolInfo?.poolId && symbolInfo?.chainId
+      ? [
+          'liq_price',
+          symbolInfo.poolId,
+          symbolInfo.chainId,
+          direction === Direction.LONG ? longSize : shortSize,
+          direction,
+          formatCollateralAmount,
+          price,
+          assetClass,
+          maintainCollateralRate.toString(),
+        ]
+      : null,
+    async () => {
+      const size = direction === Direction.LONG ? longSize : shortSize
+      const formatSize =
+        amountUnit === AmountUnitEnum.BASE
+          ? size
+          : parseBigNumber(size).div(parseBigNumber(price)).toString()
+      const liqPrice = await getLiqPrice({
+        entryPrice: price,
+        collateralAmount: parseBigNumber(formatCollateralAmount)
+          .div(10 ** (symbolInfo?.quoteDecimals ?? 1))
+          .toString(),
+        size: formatSize,
+        price: price,
+        assetClass: assetClass,
+        fundingRateIndexEntry: '0',
+        direction: direction,
+        maintainMarginRate: maintainCollateralRate.toString(),
+        needFundingFee: false,
+      })
+
+      return liqPrice
+    },
+    {
+      keepPreviousData: true, // 保留之前的数据，避免闪烁
+    },
+  )
+
+  const [openPositionSlippage, setOpenPositionSlippage] = useState(
+    getSlippage({
+      chainId: symbolInfo?.chainId ?? 0,
+      poolId: symbolInfo?.poolId ?? '',
+      type: SlippageTypeEnum.OPEN,
+    }),
+  )
+
+  useEffect(() => {
+    const updateSlippage = () => {
+      setOpenPositionSlippage(
+        getSlippage({
+          chainId: symbolInfo?.chainId ?? 0,
+          poolId: symbolInfo?.poolId ?? '',
+          type: SlippageTypeEnum.OPEN,
+        }),
+      )
+    }
+    if (symbolInfo?.chainId && symbolInfo.poolId) {
+      tradePubSub.on('trade:slippage:change', updateSlippage)
+      return () => {
+        tradePubSub.off('trade:slippage:change', updateSlippage)
+      }
+    }
+  }, [symbolInfo?.chainId, symbolInfo?.poolId])
 
   const entrustAmount = useMemo(() => {
     if (amountUnit === AmountUnitEnum.BASE) {
@@ -411,14 +462,17 @@ export const PlaceOrderConfirmDialog = () => {
   }, [direction, longSize, shortSize, amountUnit, price])
 
   return (
-    <DialogBase
+    <DialogTheme
       open={!!placeOrderConfirmDialogOpen}
       onClose={() => setPlaceOrderConfirmDialogOpen(false)}
     >
-      <div>
+      <DialogTitleTheme
+        onClose={() => setPlaceOrderConfirmDialogOpen(false)}
+        className="pb-[20px]!"
+      >
         <div className="leading-[1]">
           <p className="text-[20px] leading-[1] font-bold text-[white]">
-            <Trans>{direction === Direction.LONG ? 'Open Long' : 'Open Short'}</Trans>
+            <Trans>{direction === Direction.LONG ? t`Open Long` : t`Open Short`}</Trans>
           </p>
           <p
             className="mt-[6px] text-[14px] font-bold"
@@ -431,193 +485,226 @@ export const PlaceOrderConfirmDialog = () => {
             <span className="ml-[4px]">{leverage}x</span>
           </p>
         </div>
-        {/* order info  */}
-        <div className="mt-[12px] rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
-          {/* top */}
-          <div className="flex flex-col gap-[16px] border-b-[1px] border-[#31333D] pb-[20px]">
-            <FlexRowLayout
-              left={<Trans>委托价格</Trans>}
-              right={
-                <p className="font-bold text-white">
-                  {orderType === OrderTypeEnum.Market ? (
-                    t`Market Price`
-                  ) : (
-                    <>
-                      {formatNumber(price, {
-                        showUnit: false,
-                      })}{' '}
-                      {symbolInfo?.quoteSymbol}
-                    </>
-                  )}
-                </p>
-              }
-            />
-            <FlexRowLayout
-              left={<Trans>委托数量</Trans>}
-              right={
-                <p className="font-bold text-white">
-                  {formatNumber(entrustAmount, {
-                    showUnit: false,
-                  })}
-                  <span className="ml-[2px]">{symbolInfo?.baseSymbol}</span>
-                </p>
-              }
-            />
-            <FlexRowLayout
-              left={<Trans>交易手续费</Trans>}
-              right={
-                <p className="font-bold text-white">
-                  {formatNumber(tradingFee ?? '0', {
-                    showUnit: false,
-                  })}
-                  <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
-                </p>
-              }
-            />
-            <FlexRowLayout
-              left={<Trans>强平价</Trans>}
-              right={
-                parseBigNumber(liqPrice ?? '0').eq(0) ? (
-                  <p className="font-bold text-[#F29D39]">--</p>
-                ) : (
-                  <p className="font-bold text-[#F29D39]">
-                    {formatNumber(liqPrice ?? '0', {
+      </DialogTitleTheme>
+      <div className="relative flex flex-1 flex-col overflow-hidden">
+        {/* 可滚动内容区域 */}
+        <div className="flex-1 overflow-y-auto px-[20px] pb-[20px]">
+          {/* order info  */}
+          <div className="rounded-[12px] bg-[#202129] px-[12px] py-[20px] text-[14px] leading-[1] font-medium text-[#CED1D9]">
+            {/* top */}
+            <div className="flex flex-col gap-[16px] border-b-[1px] border-[#31333D] pb-[20px]">
+              <FlexRowLayout
+                left={<Trans>委托价格</Trans>}
+                right={
+                  <p className="font-bold text-white">
+                    {orderType === OrderTypeEnum.Market ? (
+                      t`Market Price`
+                    ) : (
+                      <>
+                        {formatNumber(price, {
+                          showUnit: false,
+                        })}{' '}
+                        {symbolInfo?.quoteSymbol}
+                      </>
+                    )}
+                  </p>
+                }
+              />
+              <FlexRowLayout
+                left={<Trans>委托数量</Trans>}
+                right={
+                  <p className="font-bold text-white">
+                    {formatNumber(entrustAmount, {
+                      showUnit: false,
+                    })}
+                    <span className="ml-[2px]">{symbolInfo?.baseSymbol}</span>
+                  </p>
+                }
+              />
+              <FlexRowLayout
+                left={<Trans>交易手续费</Trans>}
+                right={
+                  <p className="font-bold text-white">
+                    {formatNumber(tradingFee ?? '0', {
                       showUnit: false,
                     })}
                     <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
                   </p>
-                )
-              }
-            />
-          </div>
-          {/* bottom */}
-          <div className="pt-[20px]">
-            {/* title */}
-            <FlexRowLayout
-              left={<Trans>保证金</Trans>}
-              right={
-                <p className="font-bold text-white">
-                  {formatNumber(formatCollateralAmount ?? '0', {
-                    showUnit: false,
-                  })}
-                  <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
-                </p>
-              }
-            />
-            {/* value */}
-            <FlexRowLayout
-              className="mt-[16px] text-[12px] font-normal text-[#9397A3]"
-              left={<Trans>从钱包</Trans>}
-              right={
-                <p className="font-semibold text-white">
-                  {formatNumber(usedInfo.wallet, {
-                    showUnit: false,
-                  })}
-                  <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
-                </p>
-              }
-            />
-            {/* value */}
-            <FlexRowLayout
-              className="mt-[10px] text-[12px] font-normal text-[#9397A3]"
-              left={<Trans>从保证金账户</Trans>}
-              right={
-                <p className="font-semibold text-white">
-                  {' '}
-                  {formatNumber(usedInfo.account, {
-                    showUnit: false,
-                  })}
-                  <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
-                </p>
-              }
-            />
-          </div>
-        </div>
-        {/* tpsl */}
-        {tpSlOpen && (
-          <div className="mt-[20px] flex flex-col gap-[10px] border-b-[1px] border-[#31333D] pb-[20px] text-[12px] leading-[1] font-normal text-[#9397A3]">
-            {!!(tpValue && !parseBigNumber(tpValue).eq(0)) && (
-              <>
-                <FlexRowLayout
-                  left={t`TP(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
-                  right={
-                    <p className="font-medium text-white">
-                      {formatNumber(tpInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol} /
-                      {formatNumber(formatTpSize, { showUnit: false })} {symbolInfo?.baseSymbol}
-                    </p>
-                  }
-                />
-                <FlexRowLayout
-                  left={t`TP Est. PNL`}
-                  right={
-                    <p className="text-green font-medium">
-                      {formatNumber(tpInfo?.pnl?.toString(), { showUnit: false, showSign: true })}
+                }
+              />
+              <FlexRowLayout
+                left={<Trans>强平价</Trans>}
+                right={
+                  parseBigNumber(liqPrice ?? '0').eq(0) ? (
+                    <p className="font-bold text-[#F29D39]">--</p>
+                  ) : (
+                    <p className="font-bold text-[#F29D39]">
+                      {formatNumber(liqPrice ?? '0', {
+                        showUnit: false,
+                      })}
                       <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
                     </p>
-                  }
-                />
-              </>
-            )}
-            {!!(slValue && !parseBigNumber(slValue).eq(0)) && (
-              <>
-                <FlexRowLayout
-                  left={t`SL(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
-                  right={
-                    <p className="font-medium text-white">
-                      {formatNumber(slInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol} /
-                      {formatNumber(formatSlSize, { showUnit: false })} {symbolInfo?.baseSymbol}
-                    </p>
-                  }
-                />
-                <FlexRowLayout
-                  left={t`SL Est. PNL`}
-                  right={
-                    <p className="text-fall font-medium">
-                      {!parseBigNumber(slInfo?.pnl).eq(0)
-                        ? `${formatNumber(slInfo?.pnl?.toString(), { showUnit: false })} ${symbolInfo?.quoteSymbol}`
-                        : '--'}
-                    </p>
-                  }
-                />
-              </>
-            )}
+                  )
+                }
+              />
+            </div>
+            {/* bottom */}
+            <div className="pt-[20px]">
+              {/* title */}
+              <FlexRowLayout
+                left={<Trans>保证金</Trans>}
+                right={
+                  <p className="font-bold text-white">
+                    {formatNumber(
+                      parseBigNumber(formatCollateralAmount)
+                        .div(10 ** (symbolInfo?.quoteDecimals ?? 1))
+                        .toString() ?? '0',
+                      {
+                        showUnit: false,
+                      },
+                    )}
+                    <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
+                  </p>
+                }
+              />
+              {/* value */}
+              <FlexRowLayout
+                className="mt-[16px] text-[12px] font-normal text-[#9397A3]"
+                left={<Trans>从钱包</Trans>}
+                right={
+                  <p className="font-semibold text-white">
+                    {formatNumber(usedInfo.wallet, {
+                      showUnit: false,
+                    })}
+                    <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
+                  </p>
+                }
+              />
+              {/* value */}
+              <FlexRowLayout
+                className="mt-[10px] text-[12px] font-normal text-[#9397A3]"
+                left={<Trans>从保证金账户</Trans>}
+                right={
+                  <p className="font-semibold text-white">
+                    {' '}
+                    {formatNumber(usedInfo.account, {
+                      showUnit: false,
+                    })}
+                    <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
+                  </p>
+                }
+              />
+              <FlexRowLayout
+                className="mt-[10px] text-[12px] font-normal text-[#9397A3]"
+                left={<Trans>仓位共享保证金</Trans>}
+                right={
+                  <p className="font-semibold text-white">
+                    {' '}
+                    {formatNumber(usedInfo.shareCollateral, {
+                      showUnit: false,
+                    })}
+                    <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
+                  </p>
+                }
+              />
+            </div>
           </div>
-        )}
-        <div className="mt-[20px] text-[12px] font-normal text-[#848E9C]">
-          <FlexRowLayout
-            left={<Trans>滑点</Trans>}
-            right={
-              <span>{((openPositionSlippage ?? 0) * 100).toFixed(2)}%</span>
-              // <EditText
-              //   value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
-              //   unit="%"
-              //   onChange={(newSlippage, closeEdit) => {
-              //     setSlippage({
-              //       chainId: symbolInfo?.chainId ?? 0,
-              //       poolId: symbolInfo?.poolId ?? '',
-              //       type: SlippageTypeEnum.OPEN,
-              //       slippage: parseBigNumber(newSlippage).div(100).toNumber(),
-              //     })
-              //     tradePubSub.emit('trade:slippage:change', {
-              //       chainId: symbolInfo?.chainId ?? 0,
-              //       poolId: symbolInfo?.poolId ?? '',
-              //     })
-              //     closeEdit?.()
-              //   }}
-              // />
-            }
-          />
+          {/* tpsl */}
+          {tpSlOpen && (
+            <div className="mt-[20px] flex flex-col gap-[10px] border-b-[1px] border-[#31333D] pb-[20px] text-[12px] leading-[1] font-normal text-[#9397A3]">
+              {!!(tpValue && !parseBigNumber(tpValue).eq(0)) && (
+                <>
+                  <FlexRowLayout
+                    left={t`TP(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
+                    right={
+                      <p className="font-medium text-white">
+                        {formatNumber(tpInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol}{' '}
+                        /{formatNumber(formatTpSize, { showUnit: false })} {symbolInfo?.baseSymbol}
+                      </p>
+                    }
+                  />
+                  <FlexRowLayout
+                    left={t`TP Est. PNL`}
+                    right={
+                      <p className="text-green font-medium">
+                        {formatNumber(tpInfo?.pnl?.toString(), { showUnit: false, showSign: true })}
+                        <span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>
+                      </p>
+                    }
+                  />
+                </>
+              )}
+              {!!(slValue && !parseBigNumber(slValue).eq(0)) && (
+                <>
+                  <FlexRowLayout
+                    left={t`SL(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
+                    right={
+                      <p className="font-medium text-white">
+                        {formatNumber(slInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol}{' '}
+                        /{formatNumber(formatSlSize, { showUnit: false })} {symbolInfo?.baseSymbol}
+                      </p>
+                    }
+                  />
+                  <FlexRowLayout
+                    left={t`SL Est. PNL`}
+                    right={
+                      <p className="text-fall font-medium">
+                        {!parseBigNumber(slInfo?.pnl).eq(0)
+                          ? `${formatNumber(slInfo?.pnl?.toString(), { showUnit: false })} ${symbolInfo?.quoteSymbol}`
+                          : '--'}
+                      </p>
+                    }
+                  />
+                </>
+              )}
+            </div>
+          )}
+          <div className="mt-[20px] text-[12px] font-normal text-[#848E9C]">
+            <FlexRowLayout
+              left={<Trans>Max Slippage</Trans>}
+              right={
+                <span className="text-white">
+                  {((openPositionSlippage ?? 0) * 100).toFixed(2)}%
+                </span>
+                // <EditText
+                //   value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
+                //   unit="%"
+                //   onChange={(newSlippage, closeEdit) => {
+                //     setSlippage({
+                //       chainId: symbolInfo?.chainId ?? 0,
+                //       poolId: symbolInfo?.poolId ?? '',
+                //       type: SlippageTypeEnum.OPEN,
+                //       slippage: parseBigNumber(newSlippage).div(100).toNumber(),
+                //     })
+                //     tradePubSub.emit('trade:slippage:change', {
+                //       chainId: symbolInfo?.chainId ?? 0,
+                //       poolId: symbolInfo?.poolId ?? '',
+                //     })
+                //     closeEdit?.()
+                //   }}
+                // />
+              }
+            />
+          </div>
         </div>
-        <div className="mt-[20px]">
+        {/* 固定在底部的按钮区域 */}
+        <div className="flex-shrink-0 px-[20px] pt-[12px] pb-[16px]">
           <DialogConfirmFooter
-            loading={submitLoading || submitSyncVipLoading}
+            loading={
+              submitLoading ||
+              (placeOrderConfirmDialogOpen === 'LONG' ? longAsyncVipLoading : shortAsyncVipLoading)
+            }
             onConfirm={() => {
               submitOrder(placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT)
             }}
             confirmText={
               submitLoading ? (
                 <Trans>Confirming</Trans>
-              ) : submitSyncVipLoading ? (
+              ) : (
+                  placeOrderConfirmDialogOpen === 'LONG'
+                    ? longAsyncVipLoading
+                    : shortAsyncVipLoading
+                ) ? (
                 <Trans>Update VIP</Trans>
               ) : (
                 <Trans>Confirm</Trans>
@@ -628,6 +715,6 @@ export const PlaceOrderConfirmDialog = () => {
           />
         </div>
       </div>
-    </DialogBase>
+    </DialogTheme>
   )
 }

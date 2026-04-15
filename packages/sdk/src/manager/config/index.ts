@@ -101,7 +101,9 @@ export class ConfigManager {
 
   /** Returns viem WalletClient for the chain (for readContract/writeContract). Use when SDK uses viem. */
   async getViemWalletClient(chainId: number): Promise<WalletClient> {
+    console.log('getViemWalletClient-->', chainId)
     if (this.config.walletClient) return this.config.walletClient as WalletClient;
+    console.log('getViemWalletClient-->', this._normalizedSigner)
     if (this._normalizedSigner) return await createWalletClientFromSigner(this._normalizedSigner, chainId);
     throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer: call auth({ signer }) or auth({ walletClient })");
   }
