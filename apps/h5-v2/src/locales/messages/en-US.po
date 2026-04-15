@@ -363,6 +363,7 @@ msgstr "Already voted"
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/DepthChart/DepthChartCanvas.tsx
+#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -454,9 +455,6 @@ msgstr ""
 msgid "Authorize success"
 msgstr ""
 
-#: src/components/SettingDrawer.tsx
-msgid "Authorized Tokens"
-msgstr ""
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
 msgstr "Authorized Tokens"
@@ -1821,7 +1819,6 @@ msgstr ""
 
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
-msgstr ""
 msgstr "getPoolIsAppealing error"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
@@ -2102,15 +2099,6 @@ msgstr ""
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid private key"
 msgstr ""
-
-#: src/hooks/seamless/utils.ts
-msgid "Invalid private key generated"
-msgstr ""
-
-#: src/hooks/seamless/use-import-seamless-key.ts
-msgid "Invalid seamless key"
-msgstr ""
-msgstr "Invalid private key"
 
 #: src/hooks/seamless/utils.ts
 msgid "Invalid private key generated"
@@ -2641,10 +2629,6 @@ msgstr ""
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr ""
 
-#: src/components/PlaceOrderConfirm/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Max Slippage"
-msgstr ""
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Max Leverage"
 msgstr "Max Leverage"
@@ -2714,7 +2698,6 @@ msgstr ""
 
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
-msgstr ""
 msgstr "Missing chain"
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
@@ -3832,13 +3815,6 @@ msgstr ""
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Seamless account not authorized"
-msgstr ""
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Seamless account not found"
-msgstr ""
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Seamless account not authorized"
 msgstr "Seamless account not authorized"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -4149,7 +4125,6 @@ msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
-msgstr ""
 msgstr "Submit close order failed"
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4930,7 +4905,6 @@ msgstr "Margin Sharing"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
-msgstr "Shared Margin"
 msgstr "仓位共享保证金"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx

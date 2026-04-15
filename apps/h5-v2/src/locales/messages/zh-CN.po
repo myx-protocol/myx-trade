@@ -363,6 +363,7 @@ msgstr "已投票"
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/DepthChart/DepthChartCanvas.tsx
+#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -454,9 +455,6 @@ msgstr "授权失败"
 msgid "Authorize success"
 msgstr "授权成功"
 
-#: src/components/SettingDrawer.tsx
-msgid "Authorized Tokens"
-msgstr "已授权币种"
 #: src/components/SettingDrawer.tsx
 msgid "Authorized Tokens"
 msgstr ""
@@ -1821,7 +1819,6 @@ msgstr "连接钱包"
 
 #: src/api/index.ts
 msgid "getPoolIsAppealing error"
-msgstr "获取申诉状态失败"
 msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
@@ -2102,15 +2099,6 @@ msgstr "密码错误"
 #: src/hooks/seamless/use-import-seamless-key.ts
 msgid "Invalid private key"
 msgstr "无效的私钥"
-
-#: src/hooks/seamless/utils.ts
-msgid "Invalid private key generated"
-msgstr "无效的无感私钥"
-
-#: src/hooks/seamless/use-import-seamless-key.ts
-msgid "Invalid seamless key"
-msgstr "无效的无感私钥"
-msgstr ""
 
 #: src/hooks/seamless/utils.ts
 msgid "Invalid private key generated"
@@ -2641,10 +2629,6 @@ msgstr "最大"
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0} 锁定已实现盈亏汇总而成"
 
-#: src/components/PlaceOrderConfirm/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Max Slippage"
-msgstr "最大滑点"
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Max Leverage"
 msgstr ""
@@ -2714,7 +2698,6 @@ msgstr "执行费用不匹配"
 
 #: src/hooks/seamless/use-create-seamless-account.ts
 msgid "Missing chain"
-msgstr "缺少链"
 msgstr ""
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
@@ -3832,13 +3815,6 @@ msgstr "无感账户"
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Seamless account not authorized"
-msgstr "无感账户未授权"
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Seamless account not found"
-msgstr "无感账户未找到"
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Seamless account not authorized"
 msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -4151,7 +4127,6 @@ msgstr "副图指标"
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
 msgid "Submit close order failed"
-msgstr "提交平仓订单失败"
 msgstr ""
 
 #: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
@@ -4932,7 +4907,6 @@ msgstr "仓位保证金共享"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "仓位共享保证金"
-msgstr "仓位共享保证金"
 msgstr ""
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
