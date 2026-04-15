@@ -57,6 +57,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
         limit: paginatedLimit,
         direction: cursor ? PageDirection.Next : undefined,
         cursor,
+        state: 1,
       })
       setIsLoading(false)
 
