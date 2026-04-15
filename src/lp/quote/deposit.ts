@@ -19,6 +19,7 @@ import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import { getPublicClient } from "@/web3";
 import { sdkError } from "@/logger";
+import {isNeedPrice} from '@/utils/isNeedPrice'
 
 
 export const deposit = async (params: Deposit) => {
@@ -49,14 +50,14 @@ export const deposit = async (params: Deposit) => {
     
     const amountIn = parseUnits(amount.toString(), decimals)
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const _isNeedPrice = isNeedPrice(pool?.state)
     
     const price : OracleUpdatePrice[] =[]
     
     let value = 0n
     let amountOut;
     
-    if (isNeedPrice) {
+    if (_isNeedPrice) {
       // todo  getprice
       const priceData = await getPriceData(chainId, poolId)
       if (!priceData) return

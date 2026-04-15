@@ -20,6 +20,7 @@ import { getTpSlParams } from "@/common/getTpSlParams.js";
 import type { TpSl } from "@/lp/pool/type.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
 import { getPublicClient } from "@/web3";
+import { isNeedPrice } from "@/utils/isNeedPrice.ts";
 
 
 export const deposit = async (params: Deposit) => {
@@ -51,12 +52,12 @@ export const deposit = async (params: Deposit) => {
       amount,
     })
     
-    const isNeedPrice = !(Number(pool?.state) === MarketPoolState.Cook || Number(pool?.state) === MarketPoolState.Primed)
+    const _isNeedPrice = isNeedPrice(pool?.state)
     const price : OracleUpdatePrice[] =[]
     const amountIn = parseUnits (amount.toString (), decimals)
     let value = 0n;
     let amountOut;
-    if (isNeedPrice) {
+    if (_isNeedPrice) {
       const priceData = await  getPriceData(chainId, poolId)
       if (!priceData) return
       const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
