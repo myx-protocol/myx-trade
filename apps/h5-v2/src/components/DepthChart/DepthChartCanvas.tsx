@@ -8,6 +8,7 @@ import { DEFAULT_DEPTH_CHART_COLORS, thousandsSeparator, formatContinuousDecimal
 import type { DepthChartColors, DepthChartTooltipItem } from './types'
 import { formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
+import Big from 'big.js'
 
 type TempChartDataItem = { x: number; y: number; value: DepthChartDataItem; side: string }
 
@@ -39,14 +40,16 @@ interface DepthChartCanvasProps {
   data: { buy: DepthChartDataItem[]; sell: DepthChartDataItem[] }
   colors: Required<DepthChartColors>
   lastPrice?: string
-  pricePrecision: number
-  amountPrecision: number
+  pricePrecision?: number
+  amountPrecision?: number
   width: number
   height: number
   renderTooltip?: (
     item: DepthChartTooltipItem,
     position: { left: number; top: number },
   ) => React.ReactNode
+  baseSymbol?: string
+  quoteSymbol?: string
 }
 
 export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
@@ -58,6 +61,8 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
   width,
   height,
   renderTooltip: renderTooltipProp,
+  baseSymbol,
+  quoteSymbol,
 }) => {
   const chartRef = useRef<HTMLCanvasElement>(null)
   const chartMaskRef = useRef<HTMLCanvasElement>(null)
@@ -297,8 +302,8 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     xContext.textAlign = 'center'
     const yHeight = 20
     const displayPrice = lastPrice
-      ? thousandsSeparator(formatContinuousDecimal(lastPrice, pricePrecision))
-      : '--'
+      ? formatNumber(lastPrice, { decimals: pricePrecision, showUnit: false })
+      : formatNumber('0', { decimals: pricePrecision, showUnit: false })
     xContext.fillText(displayPrice, drawWidth / 2, yHeight)
 
     const centerX = drawWidth / 2
@@ -375,7 +380,7 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
       let newZoom = zoomLevelRef.current - e.deltaY * 0.002
-      newZoom = Math.max(0.001, Math.min(50, newZoom))
+      newZoom = Math.max(1, Math.min(50, newZoom))
       zoomLevelRef.current = newZoom
 
       if (!isDrawingRef.current) {
@@ -393,7 +398,7 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
     return () => canvas.removeEventListener('wheel', onWheel)
   }, [initChart])
 
-  const TOOLTIP_WIDTH = 110
+  const TOOLTIP_WIDTH = 170
   const TOOLTIP_HEIGHT = 52
 
   const onMouseMove = useCallback(
@@ -563,9 +568,24 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
-            <span>{t`Amount`}</span>
+            <p className="tet-ellipsis max-w-[100px] whitespace-nowrap">
+              {t`Amount`}
+              {baseSymbol ? `(${baseSymbol})` : ''}
+            </p>
             <span className="font-medium">
               {formatNumber(item.value.total, { showUnit: true, decimals: amountPrecision })}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <p className="tet-ellipsis max-w-[100px] whitespace-nowrap">
+              {t`Amount`}
+              {quoteSymbol ? `(${quoteSymbol})` : ''}
+            </p>
+            <span className="font-medium">
+              {formatNumber(Big(item.value.total).mul(parseFloat(lastPrice || '0')), {
+                showUnit: true,
+                decimals: pricePrecision,
+              })}
             </span>
           </div>
         </div>

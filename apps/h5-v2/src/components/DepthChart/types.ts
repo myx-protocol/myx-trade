@@ -69,4 +69,8 @@ export interface DepthChartProps {
     item: DepthChartTooltipItem,
     position: { left: number; top: number },
   ) => ReactNode
+  /** 基础符号，如 BTC、USDT */
+  baseSymbol?: string
+  /** 报价符号，如 BTC、USDT */
+  quoteSymbol?: string
 }
