@@ -200,9 +200,15 @@ export const TradeConfig = () => {
             }
             right={
               <p className="text-white">
-                {decimalToPercent(poolConfig?.levelConfig?.profitWindowSize || 0, {
-                  decimals: 2,
-                })}
+                {formatNumber(
+                  Big(poolConfig?.levelConfig?.profitWindowSize || 0)
+                    .div(3600)
+                    .toNumber(),
+                  {
+                    decimals: 2,
+                  },
+                )}
+                <span className="ml-[2px]">H</span>
               </p>
             }
           />
