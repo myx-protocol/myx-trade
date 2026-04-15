@@ -6,6 +6,7 @@
 ```typescript
 enum MarketPoolState {
   Cook = 0, // 市场建立
+  Boosted = 1,  // 市场开启中，待 TVL 达标后生效
   Primed = 1, // 扣款手续费，等待准备oracle
   Trench = 2, // 上架交易
   PreBench = 3, // 预下架
