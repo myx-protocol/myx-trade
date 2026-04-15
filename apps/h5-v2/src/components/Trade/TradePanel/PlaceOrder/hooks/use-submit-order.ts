@@ -1,7 +1,14 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useCallback, useState } from 'react'
 import { useTradePanelStore } from '../../store'
-import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
+import {
+  Direction,
+  MarketPoolState,
+  OperationType,
+  OrderType,
+  TimeInForce,
+  TriggerType,
+} from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { ethers } from 'ethers'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
@@ -83,6 +90,16 @@ export const useSubmitOrder = () => {
   const submitOrder = useCallback(
     async (direction: Direction) => {
       if (!symbolInfo || !client) return
+
+      if (
+        symbolInfo.state === MarketPoolState.PreBench &&
+        positionAction === PositionActionEnum.OPEN
+      ) {
+        toast.error({
+          title: t`Delisting soon. Only closing positions is allowed`,
+        })
+        return
+      }
 
       await checkWalletChainId(symbolInfo.chainId as number)
 
