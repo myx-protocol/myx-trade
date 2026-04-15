@@ -25,6 +25,8 @@ export enum OracleType {
 
 MYX Trade SDK is a TypeScript/JavaScript SDK for derivatives trading. It provides order placement, position management, market data, subscriptions, account management, seamless wallet, and LP operations.
 
+**Companion doc**: For the full API list, data sources, and **margin / networkFee / deposit business rules**, see [`SDK_API_REFERENCE_FULL_EN.md`](./SDK_API_REFERENCE_FULL_EN.md) (Section 8).
+
 ## Installation
 
 ```bash
@@ -188,12 +190,35 @@ myxClient.updateClientChainId(newChainId, NEW_BROKER_ADDRESS);
 
 ## Module: Order
 
+### Margin, execution fee (`networkFee`), and deposit (business rules)
+
+Before placing orders, understand how much margin must be covered and how much **deposit** (top-up from wallet) is needed. **Full formulas and SDK mapping** are in [`SDK_API_REFERENCE_FULL_EN.md`, Section 8](./SDK_API_REFERENCE_FULL_EN.md#8-orders-margin-fees-and-deposit-business-rules). Summary:
+
+**Open / increase (`createIncreaseOrder`)**
+
+- **No existing position (`positionId` empty)** — total margin ≈ `collateral` + open execution fee + (if TP) fee + (if SL) fee + **liquidation-reserve execution fee** + `tradingFee` (fee from notional × rate via `utils.getUserTradingFeeRate`).
+- **Existing position (add size, non-empty `positionId`)** — same structure but **without** the liquidation-reserve execution fee term.
+
+Per-leg execution fee baseline: `myxClient.utils.getNetworkFee(marketId, chainId)`. Sum all legs your product requires before using the formula.
+
+**Second argument `networkFee` on `createIncreaseOrder`**: a **string** — the **aggregated on-chain execution fee** total you computed. The SDK uses `needAmount = collateralAmount + BigInt(networkFee)` vs `getAvailableMarginBalance` to decide `deposit`. **Do not pass `tradingFee` as this second argument**; handle trading fee in your business layer / contract rules.
+
+**Close / decrease (`createDecreaseOrder` / `closeAllPositions`)**
+
+- **Partial close** — cover close execution fee; if remaining margin cannot pay the network execution fee, top up the shortfall (see full reference).
+- **Full close** — total margin requirement is 0; `closeAllPositions` uses `deposit` amount `0`.
+
+**Deposit** — roughly `max(0, required total − available margin)` (same token/precision as on-chain).
+
 ### createIncreaseOrder
 
-Create an increase position order (open or add to position).
+Create an increase position order (open or add to position). Signature: **`createIncreaseOrder(params, networkFee)`** — **two arguments**.
 
 ```typescript
 import { OrderType, TriggerType, Direction, TimeInForce } from '@myx-trade/sdk';
+
+// Example: networkFee is the aggregated execution-fee string from your product rules (not tradingFee)
+const networkFee = '...';
 
 const result = await myxClient.order.createIncreaseOrder(
   {
@@ -217,8 +242,7 @@ const result = await myxClient.order.createIncreaseOrder(
     slSize: "0", // optional stop loss size
     slPrice: "0", // optional stop loss price
   },
-  tradingFee,   // Trading fee (string)
-  marketId      // Market ID, used for network fee etc.
+  networkFee, // string: aggregated on-chain execution fee (see "Margin, execution fee" above)
 );
 ```
 
@@ -245,6 +269,8 @@ const result = await myxClient.order.createDecreaseOrder({
   leverage: 10,
 });
 ```
+
+Whether extra **deposit** is needed depends on `collateralAmount` vs available margin; see **Margin, execution fee (`networkFee`), and deposit** above.
 
 ### closeAllPositions
 
@@ -1735,7 +1761,7 @@ The SDK provides error formatting utilities:
 
 ```typescript
 try {
-  await myxClient.order.createIncreaseOrder(params, tradingFee);
+  await myxClient.order.createIncreaseOrder(params, networkFee);
 } catch (error) {
   const errorMessage = myxClient.utils.formatErrorMessage(error);
   console.error('Transaction failed:', errorMessage);

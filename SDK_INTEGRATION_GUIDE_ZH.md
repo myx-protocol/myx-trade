@@ -24,6 +24,8 @@ export enum OracleType {
 
 MYX Trade SDK 是一个用于衍生品交易的 TypeScript/JavaScript SDK。它提供订单下单、持仓管理、市场数据、订阅、账户管理、无 Gas 钱包和 LP 操作等功能。
 
+**文档配套**：完整 API 清单、数据来源与**保证金 / networkFee / Deposit 业务公式**见同目录 [`SDK_API_REFERENCE_FULL_ZH.md`](./SDK_API_REFERENCE_FULL_ZH.md)（第 8 节）。
+
 ## 安装
 
 ```bash
@@ -159,19 +161,42 @@ myxClient.updateClientChainId(newChainId, NEW_BROKER_ADDRESS);
 
 ## 模块：订单（Order）
 
+### 保证金、执行费（networkFee）与 Deposit（业务口径）
+
+下单前需理解「需要占用多少保证金 / 从钱包补多少 Deposit」。**详细公式与 SDK 衔接**见 [`SDK_API_REFERENCE_FULL_ZH.md` 第 8 节](./SDK_API_REFERENCE_FULL_ZH.md#8-下单保证金与-deposit业务口径)。以下为摘要：
+
+**开仓 / 加仓（`createIncreaseOrder`）**
+
+- **无持仓（`positionId` 为空）**：保证金总量 ≈ `collateral` + 开仓执行费 +（有 TP）执行费 +（有 SL）执行费 + **预留爆仓执行费** + `tradingFee`（手续费按名义价值 × 费率计算，见 `utils.getUserTradingFeeRate`）。
+- **已有持仓（加仓，`positionId` 非空）**：同上，但**不含**「预留爆仓执行费」项。
+
+单笔执行费基数可通过 `myxClient.utils.getNetworkFee(marketId, chainId)` 取得；若一笔单涉及多笔执行费，业务侧需**先汇总**再参与上式。
+
+**`createIncreaseOrder` 的第二个参数 `networkFee`**：类型为**字符串**，表示你已汇总的**链上执行费（network fee）**总额；SDK 内部用 `needAmount = collateralAmount + networkFee` 与 `getAvailableMarginBalance` 比较，计算是否需要 `deposit`。**`tradingFee` 不传入该第二个参数**，应在产品侧合并进业务校验或与合约规则对齐。
+
+**平仓（`createDecreaseOrder` / `closeAllPositions`）**
+
+- **部分平仓**：需覆盖平仓执行费；若剩余保证金不足以支付本次网络执行费，需补足缺口（见全量文档）。
+- **全部平仓**：保证金总量为 0；`closeAllPositions` 内部 `deposit` 为 0。
+
+**Deposit**：若可用保证金不足，`depositAmount ≈ max(0, 需占用总量 - 当前可用保证金)`（与链上精度一致）。
+
 ### createIncreaseOrder
 
-创建增仓订单（开仓或加仓）。
+创建增仓订单（开仓或加仓）。方法签名为 **`createIncreaseOrder(params, networkFee)`**，共 **两个参数**。
 
 ```typescript
 import { OrderType, TriggerType, Direction, TimeInForce } from '@myx-trade/sdk';
+
+// 示例：networkFee 为业务侧按市场规则汇总后的执行费字符串（非 tradingFee）
+const networkFee = '...'; // e.g. sum of execution fee legs for open / TP / SL / liquidation reserve as applicable
 
 const result = await myxClient.order.createIncreaseOrder(
   {
     chainId: 421614,
     address: userAddress as `0x${string}`,
     poolId: poolId, // 从市场列表获取的 Pool ID
-    positionId: "", // 新仓位使用''，已有仓位使用现有的 positionId
+    positionId: "", // 新仓位使用 ''；已有仓位使用现有的 positionId
     orderType: OrderType.LIMIT,
     triggerType: TriggerType.NONE,
     direction: Direction.LONG,
@@ -188,8 +213,7 @@ const result = await myxClient.order.createIncreaseOrder(
     slSize: "0", // 可选：止损大小
     slPrice: "0", // 可选：止损价格
   },
-  tradingFee,   // 交易手续费（字符串）
-  marketId      // 市场 ID，用于计算网络费等
+  networkFee, // 字符串：汇总后的链上执行费（见上文「保证金、执行费与 Deposit」）
 );
 ```
 
@@ -216,6 +240,8 @@ const result = await myxClient.order.createDecreaseOrder({
   leverage: 10,
 });
 ```
+
+`collateralAmount` 等与是否需从钱包追加保证金（Deposit）有关，规则见本节开头「保证金、执行费与 Deposit」。
 
 ### closeAllPositions
 
@@ -1711,7 +1737,7 @@ SDK 提供错误格式化工具：
 
 ```typescript
 try {
-  await myxClient.order.createIncreaseOrder(params, tradingFee);
+  await myxClient.order.createIncreaseOrder(params, networkFee);
 } catch (error) {
   const errorMessage = myxClient.utils.formatErrorMessage(error);
   console.error('交易失败:', errorMessage);
