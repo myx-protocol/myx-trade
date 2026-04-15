@@ -7,10 +7,10 @@
 enum MarketPoolState {
   Cook = 0,     // Market created
   Boosted = 1,  // Market is being force-enabled. Waiting for TVL threshold…
-  Primed = 1,   // Fee charged, waiting for oracle initialization
-  Trench = 2,   // Trading enabled
-  PreBench = 3, // Pending delisting
-  Bench = 4,    // Delisted
+  Primed = 2,   // Fee charged, waiting for oracle initialization
+  Trench = 3,   // Trading enabled
+  PreBench = 4, // Pending delisting
+  Bench = 5,    // Delisted
 }
 ```
 
