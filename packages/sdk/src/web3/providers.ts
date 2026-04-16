@@ -1,5 +1,6 @@
 import { getContract as getViemContract, type Abi } from "viem";
 import LiquidityRouter_ABI from "@/abi/LiquidityRouter.json";
+import OracleReserve_ABI from "@/abi/OracleReserve.json"
 import { ChainId } from "@/config/chain.js";
 import { getPublicClient, getWalletClient } from "@/web3/viemClients.js";
 import type { WalletClient } from "viem";
@@ -82,6 +83,16 @@ export const getLiquidityRouterContract = async (chainId: ChainId) => {
   return asContract(getViemContract({
     address: addresses.LIQUIDITY_ROUTER as Address,
     abi: LiquidityRouter_ABI as Abi,
+    client,
+  }));
+};
+
+export const getOracleReserveContract = async (chainId: ChainId) => {
+  const addresses = getContractAddressByChainId(chainId);
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.ORACLE_RESERVE as Address,
+    abi: OracleReserve_ABI as Abi,
     client,
   }));
 };

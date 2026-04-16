@@ -16,6 +16,9 @@ import {
   reprime,
   getPoolDetail,
   getOpenOrders,
+  boostPool,
+  unBoostPool,
+  claimBoostFee
 } from './pool/index.js';
 export type { AddTpSLParams, CancelTpSLParams, CreatePoolRequest, TpSLParams, TpSl } from './pool/type.js';
 
@@ -30,6 +33,9 @@ const pool = {
   reprime,
   getPoolDetail,
   getOpenOrders,
+  boostPool,
+  unBoostPool,
+  claimBoostFee
 };
 
 export { base, quote, pool, market };
