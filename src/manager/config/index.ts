@@ -92,7 +92,8 @@ export class ConfigManager {
   /** Returns the signer address for the given chainId. Use when only address is needed. */
   async getSignerAddress(chainId: number): Promise<string> {
     if (this.config.walletClient) {
-      const [addr] = await this.config.walletClient.getAddresses();
+      const addresses = await this.config.walletClient.getAddresses();
+      const addr = addresses[0];
       if (addr) return addr;
     }
     if (this._normalizedSigner) return this._normalizedSigner.getAddress();
@@ -143,15 +144,16 @@ export class ConfigManager {
   }
 
   public auth(params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">) {
-    // before auth, clear the accessToken and signer state
-    this.clear();
+    // Normalize signer first before clearing, so hasSigner() is never false mid-auth
+    const nextNormalizedSigner = params.signer != null ? normalizeSigner(params.signer) : null;
+    // Clear only accessToken, keep signer state until new one is ready
+    this.accessToken = undefined;
+    this.accessTokenExpiry = undefined;
     this.config = {
       ...this.config,
       ...params,
     };
-    if (params.signer != null) {
-      this._normalizedSigner = normalizeSigner(params.signer);
-    }
+    this._normalizedSigner = nextNormalizedSigner;
     this.validateConfig(this.config);
   }
 
