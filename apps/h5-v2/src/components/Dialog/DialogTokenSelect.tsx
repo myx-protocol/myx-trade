@@ -175,7 +175,9 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
           console.log(result.data)
           const apiResults = result.data || []
           const uniqueResults = Array.from(
-            new Map(apiResults.map((item: any) => [item.address.toLowerCase(), item])).values(),
+            new Map(
+              apiResults.map((item: any) => [`${item.address.toLowerCase()}${item.chainId}`, item]),
+            ).values(),
           )
           return uniqueResults
             .filter((item: any) => item.address !== NATIVE_TOKEN)
