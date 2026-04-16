@@ -3,20 +3,20 @@ import useGlobalStore from '@/store/globalStore'
 import { usePositionStore } from '@/store/position/createStore'
 import useSWR from 'swr'
 import { useWalletConnection } from '../wallet/useWalletConnection'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { tradePubSub } from '@/utils/pubsub'
 
 export const useGetOrderList = (filter = false) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { symbolInfo } = useGlobalStore()
-  const { isWrongNetwork } = useWalletConnection()
+  const { isWrongNetwork, address } = useWalletConnection()
   const { hideOthersSymbols, selectChainId } = usePositionStore()
-  const { address } = useWalletConnection()
 
   const { data, mutate } = useSWR(
-    client && clientIsAuthenticated && !isWrongNetwork
+    client && clientIsAuthenticated && !isWrongNetwork && address
       ? {
           key: 'get_orders',
+          address,
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
           selectChainId,
@@ -48,15 +48,16 @@ export const useGetOrderList = (filter = false) => {
     },
   )
 
+  const handleRefresh = useCallback(() => {
+    mutate()
+  }, [mutate])
+
   useEffect(() => {
-    const onRefresh = () => {
-      mutate()
-    }
-    tradePubSub.on('place:order:success', onRefresh)
+    tradePubSub.on('place:order:success', handleRefresh)
     return () => {
-      tradePubSub.off('place:order:success', onRefresh)
+      tradePubSub.off('place:order:success', handleRefresh)
     }
-  }, [])
+  }, [handleRefresh])
 
   return data ?? []
 }
