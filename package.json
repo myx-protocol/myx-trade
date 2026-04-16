@@ -30,7 +30,6 @@
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean",
     "prepublishOnly": "pnpm run build",
-    "prepare": "pnpm gen:abi",
     "gen:abi": "typechain --target ethers-v6 --out-dir ./src/abi/types './src/abi/**/*.json'",
     "custom-publish": "tsx scripts/customPublish.ts",
     "push:public": "bash scripts/push-to-public-remote.sh",
