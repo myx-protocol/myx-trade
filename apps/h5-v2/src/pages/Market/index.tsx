@@ -22,6 +22,7 @@ import type { Asset } from '@/hooks/useWalletPortfolio.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { showErrorToast } from '@/config/error'
 import { TitleBar } from '@/components/TitleBar.tsx'
+import { isCookState } from '@/utils/cook.ts'
 
 const Market = () => {
   const navigate = useNavigate()
@@ -162,7 +163,7 @@ const Market = () => {
           setPoolId(poolId)
           // check pool status
           const _pool = await pool.getPoolDetail(+chainId, poolId)
-          if (_pool?.state === MarketPoolState.Bench || _pool?.state === MarketPoolState.Cook) {
+          if (_pool?.state === MarketPoolState.Bench || isCookState(_pool?.state as number)) {
             setStep(2)
             return
           }
