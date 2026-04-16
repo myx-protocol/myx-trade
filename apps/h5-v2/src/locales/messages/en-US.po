@@ -45,13 +45,21 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
 #: src/pages/Cook/detail/components/TabBar.tsx
 msgid " Trade "
 msgstr ""
+
+#. placeholder {0}: marketDetail?.baseSymbol
+#. placeholder {0}: marketDetail?.quoteSymbol
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "(Provide {0})"
+msgstr "(Provide {0})"
 
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
 #. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
@@ -842,7 +850,7 @@ msgstr ""
 msgid "Close Amount"
 msgstr ""
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close amount must be greater than 0 {0}"
@@ -2323,6 +2331,14 @@ msgstr ""
 msgid "Isolated {0}x"
 msgstr ""
 
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Cook Pool"
+msgstr "Join Cook Pool"
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Earn Pool"
+msgstr "Join Earn Pool"
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
 msgstr ""
@@ -2560,6 +2576,10 @@ msgstr ""
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market close success"
 msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Market Delisted"
+msgstr "Market Delisted"
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
 msgid "Market info not ready, please try again"
@@ -3495,6 +3515,10 @@ msgstr ""
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Reactivate Pool "
+msgstr "Reactivate Pool "
+
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -4234,6 +4258,10 @@ msgstr ""
 msgid "The experience will become effective within 10 minutes"
 msgstr ""
 
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
+msgstr "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
+
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "The market will activate immediately once total liquidity reaches ${0}."
@@ -4449,6 +4477,10 @@ msgstr ""
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
 msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
+msgstr "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5475,4 +5507,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
