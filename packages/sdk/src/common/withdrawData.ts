@@ -8,6 +8,7 @@ import { bigintAmountSlipperCalculator } from "@/common/tradingGas.ts";
 import { ChainId } from "@/config/chain.js";
 import { PoolType } from "@/lp/pool/index.js";
 import { previewQuoteAmountOut } from "@/lp/quote/preview.ts";
+import { isNeedPrice } from "@/utils/isNeedPrice.ts";
 
 export const getWithdrawData = async (
   {
@@ -28,14 +29,14 @@ export const getWithdrawData = async (
     poolType: PoolType
   }) => {
   
-  const isNeedPrice = !(state === MarketPoolState.Cook || state === MarketPoolState.Primed)
+  const _isNeedPrice = isNeedPrice(state)
   
   const price: OracleUpdatePrice[] = []
   let value = 0n;
   let amountOut;
   const previewAmountOut = poolType === PoolType.Base ? previewBaseAmountOut : previewQuoteAmountOut
   // let _withdrawableLpAmount;
-  if (isNeedPrice) {
+  if (_isNeedPrice) {
     try {
       const priceData = await getPriceData (chainId, poolId)
       if (priceData) {
