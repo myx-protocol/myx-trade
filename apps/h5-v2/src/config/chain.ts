@@ -17,8 +17,8 @@ export const MAINNET_CHAIN_IDS = [
 
 export const PROD_ENV_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
-  ChainId.LINEA_MAINNET,
-  ChainId.ARB_MAINNET,
+  // ChainId.LINEA_MAINNET,
+  // ChainId.ARB_MAINNET,
 ] as const
 export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 
