@@ -10,6 +10,8 @@ import { useChartsStore } from '@/components/Trade/Charts/store'
 import useGlobalStore from '@/store/globalStore'
 import { ChartTypeEnum } from '@/components/Trade/Charts/type'
 import { Depth } from '@/components/Trade/Charts/Depth'
+import { usePoolNoTradable } from '@/hooks/pool/usePoolNoTradable'
+import { NoTradeable } from '@/components/Trade/Charts/NoTradeable'
 
 export const Chart = () => {
   const { symbolInfo } = useGlobalStore()
@@ -26,34 +28,43 @@ export const Chart = () => {
     klinePubSub.off('kline:resolution:change', onResolutionChange)
   })
   const [chartType, setChartType] = useState(ChartTypeEnum.TradingView)
+  const { isNoTradable } = usePoolNoTradable({
+    poolId: symbolInfo?.poolId,
+    chainId: symbolInfo?.chainId,
+  })
   return (
     <div>
       <ToolBar
         showResolution={chartType === ChartTypeEnum.TradingView}
-        showStudyPanel={chartType === ChartTypeEnum.TradingView}
+        showStudyPanel={chartType === ChartTypeEnum.TradingView && !isNoTradable}
         chartType={chartType}
         onChartTypeChange={setChartType}
       />
 
-      {chartType === ChartTypeEnum.TradingView ? (
-        <div className="h-[484px] w-full">
-          <TradingView
-            poolId={symbolInfo?.poolId}
-            chainId={symbolInfo?.chainId}
-            globalId={symbolInfo?.globalId}
-            symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
-            ref={tradingViewRef}
-            defaultInterval={activeResolution as ResolutionString}
-          />
-        </div>
-      ) : (
-        <div className="h-[312px]">
-          <Depth poolId={symbolInfo?.poolId} chainId={symbolInfo?.chainId} />
-        </div>
+      {isNoTradable && <NoTradeable poolId={symbolInfo?.poolId} chainId={symbolInfo?.chainId} />}
+      {!isNoTradable && (
+        <>
+          {chartType === ChartTypeEnum.TradingView ? (
+            <div className="h-[484px] w-full">
+              <TradingView
+                poolId={symbolInfo?.poolId}
+                chainId={symbolInfo?.chainId}
+                globalId={symbolInfo?.globalId}
+                symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
+                ref={tradingViewRef}
+                defaultInterval={activeResolution as ResolutionString}
+              />
+            </div>
+          ) : (
+            <div className="h-[312px]">
+              <Depth poolId={symbolInfo?.poolId} chainId={symbolInfo?.chainId} />
+            </div>
+          )}
+          <div className="mt-[4px]">
+            <StudyList />
+          </div>
+        </>
       )}
-      <div className="mt-[4px]">
-        <StudyList />
-      </div>
     </div>
   )
 }

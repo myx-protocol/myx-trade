@@ -11,6 +11,7 @@ import useGlobalStore from '@/store/globalStore'
 import { toast } from '@/components/UI/Toast'
 import { t } from '@lingui/core/macro'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
+import { usePoolNoTradable } from '@/hooks/pool/usePoolNoTradable'
 
 interface OpenPositionProps {
   showOrderSize?: boolean
@@ -70,6 +71,11 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
     return `${displayAmount(shortSize)} ${amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol : symbolInfo?.quoteSymbol}`
   }, [shortSize, amountUnit, symbolInfo, showOrderSize])
 
+  const { isNoTradable } = usePoolNoTradable({
+    poolId: symbolInfo?.poolId,
+    chainId: symbolInfo?.chainId,
+  })
+
   return (
     <div className="mt-[8px] flex w-[full] gap-[10px]">
       <PrimaryButton
@@ -82,8 +88,19 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
           lineHeight: 1,
           borderRadius: '8px',
           height: '44px',
+          background: isNoTradable
+            ? '#2D3138'
+            : 'linear-gradient(135deg, #3D996B 0%, #00996F 100%)',
+          backgroundImage: isNoTradable
+            ? 'none'
+            : 'linear-gradient(135deg, #3D996B 0%, #00996F 100%), linear-gradient(135deg, #80FF9580 0%, #00E5A780 100%)',
+          color: isNoTradable ? 'rgba(255,255,255,0.15) !important' : 'white',
         }}
+        disabled={isNoTradable}
         onClick={() => {
+          if (isNoTradable) {
+            return
+          }
           if (parseBigNumber(longSize).lte(0)) {
             toast.error({
               title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
@@ -147,8 +164,19 @@ export const OpenPosition = ({ showOrderSize = true }: OpenPositionProps) => {
           lineHeight: 1,
           borderRadius: '8px',
           height: '44px',
+          background: isNoTradable
+            ? '#2D3138'
+            : 'linear-gradient(135deg, #C23749 0%, #BA4C47 100%)',
+          backgroundImage: isNoTradable
+            ? 'none'
+            : 'linear-gradient(135deg, #C23749 0%, #BA4C47 81.25%), linear-gradient(135deg, #F6627680 0%, #EC645E80 100%)',
+          color: isNoTradable ? 'rgba(255,255,255,0.15) !important' : 'white',
         }}
+        disabled={isNoTradable}
         onClick={() => {
+          if (isNoTradable) {
+            return
+          }
           if (parseBigNumber(shortSize).lte(0)) {
             toast.error({
               title: t`open amount must be greater than 0 ${amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')}`,
