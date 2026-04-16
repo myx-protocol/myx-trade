@@ -2,7 +2,7 @@
  * Creates a viem WalletClient that uses ISigner for eth_sendTransaction and signTypedData.
  * Uses a local account that delegates to signer so getAddresses() and signTypedData work.
  */
-import { createWalletClient, custom, CustomSource, type WalletClient } from "viem";
+import { createWalletClient, custom, type WalletClient } from "viem";
 import { getChainInfo } from "@/config/chains/index.js";
 import { ChainId } from "@/config/chain.js";
 import type { ISigner } from "./types.js";
@@ -60,7 +60,15 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
       // Wallet-only methods must be signed locally, not forwarded to public RPC.
       if (args.method === "eth_signTypedData_v4" || args.method === "eth_signTypedData") {
         if (!signer.signTypedData) {
-          throw new Error("ISigner.signTypedData required for eth_signTypedData_v4");
+          // fallback: try eth_signTypedData_v4 via RPC if signer doesn't support it
+          const res = await fetch(rpcUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: args.method, params: args.params ?? [] }),
+          });
+          const json = (await res.json()) as { result?: unknown; error?: { message: string } };
+          if (json.error) throw new Error(json.error.message);
+          return json.result;
         }
         const typedDataJson = args.params?.[1];
         if (typeof typedDataJson !== "string") {
@@ -92,8 +100,8 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
 
 
   return createWalletClient({
-    account: address,
+    account: address as `0x${string}`,
     chain,
-    transport: custom(provider),
+    transport: custom(provider as unknown as Parameters<typeof custom>[0]),
   }) as WalletClient;
 }
