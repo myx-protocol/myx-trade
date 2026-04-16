@@ -61,4 +61,9 @@ declare module 'react' {
   }
 }
 
+export interface AnalyticsProps {
+  id?: string
+  dataAnalytics?: string
+}
+
 export {}
