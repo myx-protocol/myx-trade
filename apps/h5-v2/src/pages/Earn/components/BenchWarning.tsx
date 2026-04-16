@@ -13,6 +13,7 @@ import { formatNumber } from '@/utils/number.ts'
 import { MYX_DELISTING_RULES_LINK } from '@/config'
 import { PoolSecurityState } from '@/request/lp/type.ts'
 import { RiskWarning, SecurityWarning } from '@/components/CookDetail/Order/OrderTips'
+import { isCookState } from '@/utils/cook.ts'
 
 export const BenchWarning = () => {
   const { quoteLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
@@ -64,7 +65,7 @@ export const BenchWarning = () => {
 
   if (quoteLpDetail?.state === MarketPoolState.Trench) return <></>
   if (quoteLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <>1111</>
-  if (quoteLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>
+  if (isCookState(quoteLpDetail?.state) && (!data || !pool || !tvl)) return <></>
 
   return (
     <Box
@@ -77,7 +78,7 @@ export const BenchWarning = () => {
       </Box>
 
       <p className={''}>
-        {pool && quoteLpDetail?.state === MarketPoolState.Cook && Number(genesis) >= 0 && (
+        {pool && isCookState(quoteLpDetail?.state) && Number(genesis) >= 0 && (
           <Trans>
             Only <span className={'text-warning mr-[0.5em]'}>${formatNumber(genesis)}</span>{' '}
             {quoteLpDetail?.mQuoteBaseSymbol || '--'} Genesis Shares left to lock in lifetime

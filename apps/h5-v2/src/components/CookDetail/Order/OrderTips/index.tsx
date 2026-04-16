@@ -12,6 +12,7 @@ import { formatNumber } from '@/utils/number.ts'
 import { MYX_CONTACT_SUPPORT, MYX_DELISTING_RULES_LINK } from '@/config/link'
 // import { Warning } from '@/components/Icon'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import { isCookState } from '@/utils/cook.ts'
 
 export const LPWarning = ({
   className = '',
@@ -104,13 +105,13 @@ export const OrderTips = () => {
   }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
-  if (baseLpDetail?.state === MarketPoolState.Cook && (!data || !pool || !tvl)) return <></>
+  if (isCookState(baseLpDetail?.state) && (!data || !pool || !tvl)) return <></>
 
   return (
     <div className="bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">
       <IconHelp size={14} className="flex-shrink-0 translate-y-[2px]" />
       <p className="text-[12px] leading-[1.5] text-[#CED1D9]">
-        {pool && baseLpDetail?.state === MarketPoolState.Cook && Number(genesis) >= 0 && (
+        {pool && isCookState(baseLpDetail?.state) && Number(genesis) >= 0 && (
           <Trans>
             Only{' '}
             <span className={'text-warning mr-[0.5em]'}>
