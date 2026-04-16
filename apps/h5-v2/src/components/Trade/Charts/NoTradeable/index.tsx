@@ -91,7 +91,7 @@ export const NoTradeable = (props: NoTradeableProps) => {
     )
   }
   return (
-    <div className="flex h-full w-full flex-col items-center px-[16px] pt-[40px] pb-[70px]">
+    <div className="flex h-full w-full flex-col items-center justify-center px-[16px] py-[24px]">
       <div className="bg-base flex h-[80px] w-[80px] items-center justify-center rounded-full">
         <img src={MarketStatusPng} alt="no-tradable" className="h-[44px] w-[48px]" />
       </div>

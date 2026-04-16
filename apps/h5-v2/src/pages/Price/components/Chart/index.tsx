@@ -41,7 +41,11 @@ export const Chart = () => {
         onChartTypeChange={setChartType}
       />
 
-      {isNoTradable && <NoTradeable poolId={symbolInfo?.poolId} chainId={symbolInfo?.chainId} />}
+      {isNoTradable && (
+        <div className="h-[330px] w-full">
+          <NoTradeable poolId={symbolInfo?.poolId} chainId={symbolInfo?.chainId} />
+        </div>
+      )}
       {!isNoTradable && (
         <>
           {chartType === ChartTypeEnum.TradingView ? (

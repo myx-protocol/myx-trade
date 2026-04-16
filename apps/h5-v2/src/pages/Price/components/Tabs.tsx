@@ -4,6 +4,7 @@ import { PriceTabEnum } from '../store'
 import { Trans } from '@lingui/react/macro'
 import { usePoolNoTradable } from '@/hooks/pool/usePoolNoTradable'
 import { useEffect } from 'react'
+import useGlobalStore from '@/store/globalStore'
 
 const PriceTabs = styled(MuiTabs)({
   minHeight: 'auto',
@@ -32,7 +33,8 @@ const PriceTab = styled(MuiTab)({
 })
 
 export const Tabs = () => {
-  const { tab, setTab, symbolInfo } = usePriceStore()
+  const { tab, setTab } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const { isNoTradable } = usePoolNoTradable({
     poolId: symbolInfo?.poolId,
     chainId: symbolInfo?.chainId,

@@ -43,7 +43,7 @@ import KlineIcon from '@/components/Icon/set/KlineIcon'
 import ChartsIcon from '@/components/Icon/set/ChartsIcon'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
-import { useScroll, useThrottle, useThrottleFn } from 'ahooks'
+import { useScroll, useThrottle } from 'ahooks'
 import clsx from 'clsx'
 
 export const TradePanel = () => {

@@ -21,20 +21,12 @@ export const usePoolNoTradable = (params: UsePairNoTradableParams) => {
       })
       return {
         ...marketDetail,
-        // state: MarketPoolState.Primed
+        state: MarketPoolState.Bench,
       }
     },
   })
   const isNoTradable = useMemo(() => {
     if (isLoading) return false
-    console.log(
-      marketDetail,
-      Boolean(
-        marketDetail &&
-          marketDetail.state !== MarketPoolState.Trench &&
-          marketDetail.state !== MarketPoolState.PreBench,
-      ),
-    )
     return Boolean(
       marketDetail &&
         marketDetail.state !== MarketPoolState.Trench &&
