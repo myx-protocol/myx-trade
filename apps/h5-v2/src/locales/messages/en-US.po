@@ -287,11 +287,6 @@ msgid "Adjust margin amount is greater than the total balance"
 msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Adjust margin success"
-msgstr ""
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjusted Margin"
 msgstr ""
 
@@ -2574,13 +2569,6 @@ msgstr ""
 msgid "Market Close"
 msgstr ""
 
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Market close success"
-msgstr ""
-
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Market Delisted"
 msgstr "Market Delisted"
@@ -4150,26 +4138,6 @@ msgstr "String too long (string)"
 msgid "Sub-chart Indicators"
 msgstr ""
 
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order failed"
-msgstr ""
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order success"
-msgstr ""
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit open order success"
-msgstr ""
-
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-msgid "Submit tp/sl order success"
-msgstr ""
-
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 msgid "Subscribe"
@@ -5340,6 +5308,10 @@ msgstr "Closed by Take Profit"
 msgid "止盈止损"
 msgstr "TP/SL"
 
+#: src/utils/order/action-toast.tsx
+msgid "止盈止损更新成功"
+msgstr "止盈止损更新成功"
+
 #: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
@@ -5418,13 +5390,26 @@ msgstr "Add More"
 msgid "触发价格"
 msgstr "Trigger Price"
 
+#: src/utils/order/action-toast.tsx
+msgid "订单取消"
+msgstr "订单取消"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
 msgstr "Order Execution Timed Out"
 
+#: src/utils/order/action-toast.tsx
+#: src/utils/order/action-toast.tsx
+msgid "订单提交成功"
+msgstr "订单提交成功"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
 msgstr "Order Size Limit Exceeded"
+
+#: src/utils/order/action-toast.tsx
+msgid "调整保证金成功"
+msgstr "调整保证金成功"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
