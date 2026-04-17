@@ -52,6 +52,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
         limit: paginatedLimit,
         direction: after ? PageDirection.Next : undefined,
         cursor: after,
+        state: 1,
       })
       setIsLoading(false)
 
