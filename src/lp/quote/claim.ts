@@ -39,9 +39,9 @@ export const claimQuotePoolRebate = async (
     const prices = priceResponse.map((item) => {
       return {
         poolId: item.poolId,
-        oracleUpdateData: item?.vaa ?? '0',
-        publishTime: item.publishTime,
         oracleType: item.oracleType,
+        publishTime: item.publishTime,
+        oracleUpdateData: item?.vaa ?? '0',
       }
     })
     
