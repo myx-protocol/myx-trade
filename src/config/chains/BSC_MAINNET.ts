@@ -21,5 +21,6 @@ export default {
       symbol: 'BNB',
       decimals: 18,
     },
+    gasPrice: 100000000n // 0.1 gwei
   },
 } as ChainInfo
