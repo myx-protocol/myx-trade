@@ -10,7 +10,13 @@ import { parseBigNumber } from '@/utils/bn'
 import { usePositionTPSLStore } from '../store'
 import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { t } from '@lingui/core/macro'
-import { displayAmount, formatNumber } from '@/utils/number'
+import {
+  autoPriceDecimals,
+  displayAmount,
+  formatNumber,
+  getSuperDecimalScale,
+  isSuperDecimal,
+} from '@/utils/number'
 import { Direction } from '@myx-trade/sdk'
 
 const AmountSliderMarks = [
@@ -147,6 +153,14 @@ export const TpslFormGroup = ({
     return `≤${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
   }, [currentPrice, targetPrice, position?.quoteSymbol, position.entryPrice, tpSize, slSize, type])
 
+  const decimalScale = useMemo(() => {
+    if (isSuperDecimal(currentPrice as string)) {
+      return getSuperDecimalScale(Number(currentPrice))
+    } else {
+      return autoPriceDecimals(Number(currentPrice))
+    }
+  }, [currentPrice])
+
   const totalPnl = useMemo(() => {
     const size = type === 'tp' ? tpSize : slSize
     if (parseBigNumber(size).eq(0)) return '0'
@@ -216,7 +230,7 @@ export const TpslFormGroup = ({
             allowNegative={true}
             inputMode="text"
             value={targetRate}
-            decimalScale={6}
+            decimalScale={decimalScale}
             isAllowed={(values) => {
               const { floatValue } = values
               const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
@@ -298,7 +312,7 @@ export const TpslFormGroup = ({
           className="flex-1 text-left"
           placeholder={t`数量`}
           allowLeadingZeros
-          decimalScale={6}
+          decimalScale={decimalScale}
           onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
               // 将中文小数点转换为英文小数点

@@ -11,7 +11,13 @@ import { DirectionEnum, OracleType } from '@myx-trade/sdk'
 import clsx from 'clsx'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
-import { displayAmount, formatNumber } from '@/utils/number'
+import {
+  autoPriceDecimals,
+  displayAmount,
+  formatNumber,
+  getSuperDecimalScale,
+  isSuperDecimal,
+} from '@/utils/number'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
 import { useGetFundingFee } from '@/hooks/calculate/use-get-fundingfee'
@@ -133,6 +139,14 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const { tradeMode } = useGlobalStore()
   const { activeAddress } = useWalletStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(position?.chainId)
+
+  const decimalScale = useMemo(() => {
+    if (isSuperDecimal(marketPrice)) {
+      return getSuperDecimalScale(Number(marketPrice))
+    } else {
+      return autoPriceDecimals(Number(marketPrice))
+    }
+  }, [marketPrice])
 
   const targetCollateralAmount = useMemo(() => {
     return adjustType === 'increase'
@@ -257,7 +271,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
       return {}
     }
 
-    const walletBalance = parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0')
     const quoteProfit = parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0')
     const freeMargin = parseBigNumber(accountAssets.freeMargin ?? '0')
     if (parseBigNumber(adjustMargin).lte(quoteProfit)) {
@@ -376,7 +389,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 <NumberInputPrimitive
                   placeholder={t`Please enter the amount.`}
                   value={adjustMargin}
-                  decimalScale={6}
+                  decimalScale={decimalScale}
                   onValueChange={(e) => setAdjustMargin(e.value)}
                 />
                 <div

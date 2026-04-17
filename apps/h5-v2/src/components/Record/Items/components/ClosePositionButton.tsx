@@ -9,7 +9,12 @@ import { ethers } from 'ethers'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
-import { formatNumber } from '@/utils/number'
+import {
+  autoPriceDecimals,
+  isSuperDecimal,
+  formatNumber,
+  getSuperDecimalScale,
+} from '@/utils/number'
 import { toast } from '@/components/UI/Toast'
 import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { InputWrapper } from '@/components/Trade/components/InputWrapper'
@@ -127,6 +132,13 @@ export const ClosePositionButton = ({
 
   const { tradeMode } = useGlobalStore()
 
+  const decimalScale = useMemo(() => {
+    if (isSuperDecimal(marketPrice)) {
+      return getSuperDecimalScale(Number(marketPrice))
+    } else {
+      return autoPriceDecimals(Number(marketPrice))
+    }
+  }, [marketPrice])
   // 当 Dialog 打开时，重置为默认值
   useEffect(() => {
     if (closeDialogOpen) {
@@ -254,7 +266,7 @@ export const ClosePositionButton = ({
               onValueChange={(e) => {
                 setPrice(e.value)
               }}
-              decimalScale={6}
+              decimalScale={decimalScale}
               disabled={orderType === OrderType.MARKET}
               value={orderType === OrderType.MARKET ? marketPrice : price}
               className="w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
