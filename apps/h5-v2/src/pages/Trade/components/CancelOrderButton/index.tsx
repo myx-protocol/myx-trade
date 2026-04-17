@@ -14,17 +14,29 @@ import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seam
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import { TradeMode } from '../../types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
+import { Direction, OrderType } from '@myx-trade/sdk'
+import { buildCancelOrderToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 export const CancelOrderButton = ({
   orderId,
   chainId,
   poolId,
   className,
+  orderInfo,
 }: {
   orderId: number
   chainId: number
   poolId: string
   className?: string
+  orderInfo?: {
+    direction: Direction
+    size: string
+    price: string
+    orderType: OrderType
+    isIncrease: boolean
+    baseSymbol: string
+    quoteSymbol: string
+  }
 }) => {
   const { client } = useMyxSdkClient(Number(chainId))
   const [loading, setLoading] = useState(false)
@@ -100,9 +112,15 @@ export const CancelOrderButton = ({
                   })
 
                   if (rs?.code === 0) {
-                    toast.success({
-                      title: t`Cancel order success`,
-                    })
+                    if (orderInfo) {
+                      const _parts = buildCancelOrderToastParts(orderInfo)
+                      toast.success({
+                        title: _parts.title,
+                        content: renderOrderToastContent(_parts),
+                      })
+                    } else {
+                      toast.success({ title: t`Cancel order success` })
+                    }
                     setCancelOrderDialogOpen(false)
                   } else {
                     showErrorToast(client?.utils.formatErrorMessage(rs))
@@ -113,9 +131,12 @@ export const CancelOrderButton = ({
 
                 const rs = await client?.order.cancelOrder(orderId.toString(), Number(chainId))
                 if (rs?.code === 0) {
-                  toast.success({
-                    title: t`Cancel order success`,
-                  })
+                  if (orderInfo) {
+                    const _parts = buildCancelOrderToastParts(orderInfo)
+                    toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
+                  } else {
+                    toast.success({ title: t`Cancel order success` })
+                  }
                   setCancelOrderDialogOpen(false)
                 } else {
                   showErrorToast(client?.utils.formatErrorMessage(rs))

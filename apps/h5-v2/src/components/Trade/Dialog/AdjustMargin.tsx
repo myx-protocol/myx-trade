@@ -32,6 +32,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
+import { buildAdjustMarginToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 function AdjustMarginSelect({
   adjustType,
@@ -616,7 +617,16 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     console.log('rs-->', rs)
 
                     if (rs?.code === 0) {
-                      toast.success({ title: t`Adjust margin success` })
+                      const _parts = buildAdjustMarginToastParts({
+                        adjustType,
+                        amount: adjustMargin,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: pool?.quoteSymbol ?? position.quoteSymbol,
+                      })
+                      toast.success({
+                        title: _parts.title,
+                        content: renderOrderToastContent(_parts),
+                      })
                       setAdjustMargin('')
                       setAdjustType('increase')
                       setOpen(false)
@@ -643,7 +653,13 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
                   const rs = await client?.position.adjustCollateral(data)
                   if (rs?.code === 0) {
-                    toast.success({ title: t`Adjust margin success` })
+                    const _parts = buildAdjustMarginToastParts({
+                      adjustType,
+                      amount: adjustMargin,
+                      baseSymbol: position.baseSymbol,
+                      quoteSymbol: pool?.quoteSymbol ?? position.quoteSymbol,
+                    })
+                    toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                     setAdjustMargin('')
                     setAdjustType('increase')
                     setOpen(false)

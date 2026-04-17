@@ -26,6 +26,7 @@ import { useGetAllQuoteTokenAuthStatus } from '@/hooks/seamless/use-get-seamless
 import { useGetActivePoolList } from '../../hooks/use-get-pool-list'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { buildTpSlToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import type { PositionTpSlOrderParams } from '@myx-trade/sdk'
 
@@ -282,7 +283,13 @@ export const OrderTpSlButton = ({
           const recreateRs = await recreateStopOrder()
 
           if (recreateRs?.code === 0) {
-            toast.success({ title: 'Update order success' })
+            const _parts = buildTpSlToastParts({
+              direction: order.direction,
+              size: order.size,
+              baseSymbol: poolInfo?.baseSymbol ?? order.baseSymbol,
+              quoteSymbol: poolInfo?.quoteSymbol ?? order.quoteSymbol,
+            })
+            toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
             reset()
             setOpen(false)
           } else {
@@ -326,7 +333,13 @@ export const OrderTpSlButton = ({
         })
 
         if (rs?.code === 0) {
-          toast.success({ title: 'Update order success' })
+          const _parts = buildTpSlToastParts({
+            direction: order.direction,
+            size: order.size,
+            baseSymbol: poolInfo?.baseSymbol ?? order.baseSymbol,
+            quoteSymbol: poolInfo?.quoteSymbol ?? order.quoteSymbol,
+          })
+          toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
           reset()
           setOpen(false)
         } else {
@@ -349,9 +362,13 @@ export const OrderTpSlButton = ({
         const recreateRs = await recreateStopOrder()
 
         if (recreateRs?.code === 0) {
-          toast.success({
-            title: 'Update order success',
+          const _parts = buildTpSlToastParts({
+            direction: order.direction,
+            size: order.size,
+            baseSymbol: poolInfo?.baseSymbol ?? order.baseSymbol,
+            quoteSymbol: poolInfo?.quoteSymbol ?? order.quoteSymbol,
           })
+          toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
           reset()
           setOpen(false)
         } else {
@@ -372,9 +389,13 @@ export const OrderTpSlButton = ({
       )
 
       if (rs?.code === 0) {
-        toast.success({
-          title: 'Update order success',
+        const _parts = buildTpSlToastParts({
+          direction: order.direction,
+          size: order.size,
+          baseSymbol: poolInfo?.baseSymbol ?? order.baseSymbol,
+          quoteSymbol: poolInfo?.quoteSymbol ?? order.quoteSymbol,
         })
+        toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
         reset()
         setOpen(false)
       } else {

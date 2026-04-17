@@ -30,6 +30,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { buildTpSlToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 export const RenderLiqPrice = ({
   position,
@@ -268,7 +269,13 @@ export const TpSlButton = ({
           })
 
           if (rs?.code === 0) {
-            toast.success({ title: t`Submit tp/sl order success` })
+            const _parts = buildTpSlToastParts({
+              direction: position.direction,
+              size: position.size,
+              baseSymbol: poolInfo?.baseSymbol,
+              quoteSymbol: poolInfo?.quoteSymbol,
+            })
+            toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
             reset()
             setOpen(false)
           } else {
@@ -310,7 +317,13 @@ export const TpSlButton = ({
         })
 
         if (rs?.code === 0) {
-          toast.success({ title: t`Submit tp/sl order success` })
+          const _parts = buildTpSlToastParts({
+            direction: position.direction,
+            size: position.size,
+            baseSymbol: poolInfo?.baseSymbol,
+            quoteSymbol: poolInfo?.quoteSymbol,
+          })
+          toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
           reset()
           setOpen(false)
         } else {
@@ -324,7 +337,13 @@ export const TpSlButton = ({
       const rs = await client?.order.createPositionTpSlOrder(data)
 
       if (rs?.code === 0) {
-        toast.success({ title: t`Submit tp/sl order success` })
+        const _parts = buildTpSlToastParts({
+          direction: position.direction,
+          size: position.size,
+          baseSymbol: poolInfo?.baseSymbol,
+          quoteSymbol: poolInfo?.quoteSymbol,
+        })
+        toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
         reset()
         setOpen(false)
       } else {
