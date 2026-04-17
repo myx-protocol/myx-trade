@@ -30,6 +30,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { buildClosePositionToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 const AmountSliderMarks = [
   { value: 0, label: '0%' },
@@ -673,7 +674,15 @@ export const ClosePositionButton = ({
                   })
 
                   if (rs?.code === 0) {
-                    toast.success({ title: t`Market close success` })
+                    const _parts = buildClosePositionToastParts({
+                      direction: position.direction,
+                      size: formatAmount,
+                      price: price || marketPrice,
+                      orderType,
+                      baseSymbol: position.baseSymbol,
+                      quoteSymbol: position.quoteSymbol,
+                    })
+                    toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                     setCloseDialogOpen(false)
                   } else {
                     showErrorToast(client?.utils.formatErrorMessage(rs))
@@ -702,7 +711,15 @@ export const ClosePositionButton = ({
                   leverage: position.userLeverage,
                 })
                 if (rs?.code === 0) {
-                  toast.success({ title: t`Market close success` })
+                  const _parts = buildClosePositionToastParts({
+                    direction: position.direction,
+                    size: formatAmount,
+                    price: price || marketPrice,
+                    orderType,
+                    baseSymbol: position.baseSymbol,
+                    quoteSymbol: position.quoteSymbol,
+                  })
+                  toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                   setCloseDialogOpen(false)
                 } else {
                   showErrorToast(client?.utils.formatErrorMessage(rs))
