@@ -19,10 +19,7 @@ export const usePoolNoTradable = (params: UsePairNoTradableParams) => {
         chainId,
         poolId,
       })
-      return {
-        ...marketDetail,
-        state: MarketPoolState.Bench,
-      }
+      return marketDetail
     },
   })
   const isNoTradable = useMemo(() => {
