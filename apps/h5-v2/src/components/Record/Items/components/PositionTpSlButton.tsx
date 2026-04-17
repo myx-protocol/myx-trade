@@ -7,7 +7,7 @@ import { displayAmount, formatNumber } from '@/utils/number'
 import { parseBigNumber } from '@/utils/bn'
 import { InfoButton } from '@/components/UI/Button'
 import { EditIcon } from '@/components/UI/Icon'
-import { Direction, OrderTypeEnum, TriggerType } from '@myx-trade/sdk'
+import { Direction, OperationEnum, OrderTypeEnum, TriggerType } from '@myx-trade/sdk'
 import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import dayjs from 'dayjs'
@@ -183,6 +183,15 @@ export const PositionTpSlButton = ({
                   chainId={position?.chainId}
                   className="flex-1"
                   poolId={order.poolId}
+                  orderInfo={{
+                    direction: order.direction,
+                    size: order.size ?? '0',
+                    price: order.price ?? '0',
+                    orderType: order.orderType,
+                    isIncrease: order.operation !== OperationEnum.Decrease,
+                    baseSymbol: order.baseSymbol ?? position?.baseSymbol ?? '',
+                    quoteSymbol: order.quoteSymbol ?? position?.quoteSymbol ?? '',
+                  }}
                 />
               </div>
             </div>
