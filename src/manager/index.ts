@@ -9,7 +9,7 @@ import { Utils } from "./utils/index.js";
 import { Account } from "./account/index.js";
 import { Api } from "./api/index.js";
 
-import { MxSDK, setConfigManagerForViem } from "@/web3";
+import { MxSDK, setConfigManagerForViem, getConfigManagerForViem } from "@/web3";
 import { Seamless } from "./seamless/index.js";
 import { Appeal } from "./appeal/index.js";
 import { Referrals } from "./referrals/index.js";
@@ -56,8 +56,13 @@ export class MyxClient {
      * initialize lp sdk
      */
     const lp = MxSDK.getInstance();
-    lp.setConfigManager(this.configManager);
-    setConfigManagerForViem(this.configManager);
+    // Only overwrite the global ref if no authenticated manager exists yet.
+    // This prevents a newly-constructed (unauthenticated) client from evicting an already-authed
+    // manager and causing "No signer" errors until the next auth() call completes.
+    if (!getConfigManagerForViem()?.hasSigner()) {
+      lp.setConfigManager(this.configManager);
+      setConfigManagerForViem(this.configManager);
+    }
     lp.getMarkets().then();
 
     /**

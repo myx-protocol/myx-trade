@@ -57,4 +57,4 @@ export const getWalletProvider = async (chainId: number): Promise<WalletClient> 
   return cm.getViemWalletClient(chainId);
 };
 
-export { getPublicClient, getWalletClient, setConfigManagerForViem } from "./viemClients.js";
+export { getPublicClient, getWalletClient, setConfigManagerForViem, getConfigManagerForViem } from "./viemClients.js";
