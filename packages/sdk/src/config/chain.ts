@@ -109,6 +109,7 @@ export interface BaseChainInfo {
     symbol: string // e.g. 'gorETH',
     decimals: number // e.g. 18,
   }
+  readonly gasPrice: bigint
 }
 
 export interface RpcRetryOption {
