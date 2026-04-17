@@ -18,7 +18,7 @@ export const bigintTradingGasPriceWithRatio = async (chainId: ChainId) => {
     }
     const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio);
     return {
-      gasPrice: gasPriceWithRatio,
+      gasPrice: chainId === ChainId.BSC_MAINNET ? 100000000n : gasPriceWithRatio,
     }
     
   } catch (e) {
