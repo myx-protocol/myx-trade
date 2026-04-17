@@ -3,12 +3,12 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { decimalToPercent, formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
-import { usePriceStore } from '../../store'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { useMemo } from 'react'
 import Big from 'big.js'
 import { Divider } from '@mui/material'
+import useGlobalStore from '@/store/globalStore'
 
 const formatTimeDiff = (seconds: number) => {
   if (seconds < 60)
@@ -28,7 +28,7 @@ const formatTimeDiff = (seconds: number) => {
 }
 
 export const TradeConfig = () => {
-  const { symbolInfo } = usePriceStore()
+  const { symbolInfo } = useGlobalStore()
   const leverage = useLeverage(symbolInfo?.poolId)
 
   const initMarginRate = useMemo(() => {

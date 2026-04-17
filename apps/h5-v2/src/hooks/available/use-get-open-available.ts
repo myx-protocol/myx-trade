@@ -17,18 +17,22 @@ import { useGetNetworkFee } from '../calculate/use-get-liq-price'
 import { Direction, OrderType } from '@myx-trade/sdk'
 import { useGetPositionList } from '../position/use-get-position-list'
 import { useGetPositionAvailableMargin } from './use-get-position-available-margin'
+import {
+  getOpenOrderNetworkFeeReserveQuote,
+  subtractReserveFromAvailable,
+} from '@/utils/trade/open-order-network-fee-reserve'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig } = useGlobalStore()
+  const { symbolInfo, poolConfig, shareCollateral } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
-  const { shareCollateral } = useGlobalStore()
   const { getNetworkFee } = useGetNetworkFee({
     poolId: symbolInfo?.poolId as string,
     chainId: symbolInfo?.chainId ?? 0,
   })
 
   const leverage = useLeverage(symbolInfo?.poolId)
-  const { autoMarginMode, collateralAmount, price, orderType } = useTradePanelStore()
+  const { autoMarginMode, collateralAmount, price, orderType, tpSlOpen, tpValue, slValue } =
+    useTradePanelStore()
   const tradingFeeRate = useGetUserTradingFeeRate(
     symbolInfo?.chainId ?? 0,
     poolConfig?.levelConfig?.assetClass ?? 0,
@@ -105,10 +109,20 @@ export const useGetOpenAvailable = () => {
     const adjustedRatio = parseBigNumber(1).minus(feeRatio)
 
     // 2. 计算可用保证金总值（使用缓存的稳定值）
-    const availableMargin = stableAccountAssets?.availableMargin?.toString() ?? '0'
-
+    const availableMarginRaw = stableAccountAssets?.availableMargin?.toString() ?? '0'
+    const networkFeeReserve = getOpenOrderNetworkFeeReserveQuote(
+      parseBigNumber(networkFee ?? 0).toString(),
+      tpSlOpen,
+      tpValue,
+      slValue,
+    )
+    // 自动保证金：先扣 network fee 预留（与 submit 中 totalNetworkFee 一致）；手动在 MarginAmount 里限制
+    const accountAvailableForAutoOpen = subtractReserveFromAvailable(
+      availableMarginRaw,
+      networkFeeReserve,
+    )
     const originCollateralAmountValue = autoMarginMode
-      ? parseBigNumber(availableMargin).mul(parseBigNumber(leverage))
+      ? parseBigNumber(accountAvailableForAutoOpen).mul(parseBigNumber(leverage))
       : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
     const collateralAmountValue = originCollateralAmountValue.mul(adjustedRatio).toString()
     // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
@@ -235,5 +249,9 @@ export const useGetOpenAvailable = () => {
     shortPositionAvailableMargin,
     shareCollateral,
     networkFee,
+    tpSlOpen,
+    tpValue,
+    slValue,
+    poolConfig?.levelConfig?.slip,
   ])
 }
