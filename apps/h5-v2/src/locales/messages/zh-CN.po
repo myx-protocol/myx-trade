@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-15 08:45\n"
+"PO-Revision-Date: 2026-04-17 11:40\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -59,7 +58,7 @@ msgstr " 交易 "
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "(Provide {0})"
-msgstr ""
+msgstr "(提供 {0})"
 
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
 #. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
@@ -2332,11 +2331,11 @@ msgstr "逐仓 {0}x"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Join Cook Pool"
-msgstr ""
+msgstr "Trench理财"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Join Earn Pool"
-msgstr ""
+msgstr "稳定币理财"
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
@@ -2571,7 +2570,7 @@ msgstr "市价平仓"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Market Delisted"
-msgstr ""
+msgstr "市场已下架"
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
 msgid "Market info not ready, please try again"
@@ -3058,7 +3057,7 @@ msgstr "开仓"
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open amount must be greater than 0 {0}"
-msgstr "开仓数量必须大于 {0}"
+msgstr "开仓数量必须大于0"
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
@@ -3509,7 +3508,7 @@ msgstr "排行榜 - 创建任意资产的合约市场 | MYX"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Reactivate Pool "
-msgstr ""
+msgstr "重新激活市场"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -3879,9 +3878,7 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr ""
-"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
-""
+msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4234,7 +4231,7 @@ msgstr "体验将在 10 分钟内生效"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
-msgstr ""
+msgstr "当流动性达到门槛后将自动开放交易。向下方任一流动性池添加资金，即可在未来合约交易中赚取 2% 创世手续费分成。"
 
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4454,7 +4451,7 @@ msgstr "交易手续费"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
-msgstr ""
+msgstr "该市场已下架，当前暂停交易。您可以激活流动性池，让该合约市场重新恢复上线。"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5312,7 +5309,7 @@ msgstr "止盈止损"
 
 #: src/utils/order/action-toast.tsx
 msgid "止盈止损更新成功"
-msgstr ""
+msgstr "止盈止损更新成功"
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
@@ -5394,7 +5391,7 @@ msgstr "触发价格"
 
 #: src/utils/order/action-toast.tsx
 msgid "订单取消"
-msgstr ""
+msgstr "订单已取消"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
@@ -5403,7 +5400,7 @@ msgstr "订单执行超时失效"
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 msgid "订单提交成功"
-msgstr ""
+msgstr "订单提交成功"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
@@ -5411,7 +5408,7 @@ msgstr "订单数量超限"
 
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
-msgstr ""
+msgstr "调整保证金成功"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
@@ -5498,3 +5495,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+

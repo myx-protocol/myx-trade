@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-15 08:45\n"
+"PO-Revision-Date: 2026-04-17 11:40\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -59,7 +58,7 @@ msgstr ""
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "(Provide {0})"
-msgstr "(Provide {0})"
+msgstr ""
 
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
 #. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
@@ -2332,11 +2331,11 @@ msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Join Cook Pool"
-msgstr "Join Cook Pool"
+msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Join Earn Pool"
-msgstr "Join Earn Pool"
+msgstr ""
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
@@ -2571,7 +2570,7 @@ msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Market Delisted"
-msgstr "Market Delisted"
+msgstr ""
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
 msgid "Market info not ready, please try again"
@@ -3052,13 +3051,13 @@ msgstr "Only relayer()"
 
 #: src/components/Trade/TradePanel/PositionAction/index.tsx
 msgid "Open"
-msgstr "Open Orders"
+msgstr "Open"
 
 #. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open amount must be greater than 0 {0}"
-msgstr ""
+msgstr "open amount must be greater than 0 "
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
@@ -3079,7 +3078,7 @@ msgstr ""
 
 #: src/pages/Price/components/PriceContent/index.tsx
 msgid "Open Orders"
-msgstr ""
+msgstr "Open"
 
 #. placeholder {0}: orderList.length
 #: src/pages/Price/components/PriceContent/index.tsx
@@ -3509,7 +3508,7 @@ msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Reactivate Pool "
-msgstr "Reactivate Pool "
+msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -4232,7 +4231,7 @@ msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
-msgstr "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
+msgstr ""
 
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4452,7 +4451,7 @@ msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
-msgstr "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5310,7 +5309,7 @@ msgstr "TP/SL"
 
 #: src/utils/order/action-toast.tsx
 msgid "止盈止损更新成功"
-msgstr "止盈止损更新成功"
+msgstr "TP/SL Updated Successfully"
 
 #: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
@@ -5392,7 +5391,7 @@ msgstr "Trigger Price"
 
 #: src/utils/order/action-toast.tsx
 msgid "订单取消"
-msgstr "订单取消"
+msgstr "Order Cancelled"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
@@ -5401,7 +5400,7 @@ msgstr "Order Execution Timed Out"
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 msgid "订单提交成功"
-msgstr "订单提交成功"
+msgstr "Order Submitted"
 
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
@@ -5409,7 +5408,7 @@ msgstr "Order Size Limit Exceeded"
 
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
-msgstr "调整保证金成功"
+msgstr "Margin Adjusted Successfully"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
@@ -5496,3 +5495,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
