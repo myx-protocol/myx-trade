@@ -132,6 +132,12 @@ export class MyxClient {
     params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">
   ) {
     this.configManager.auth(params);
+    // Re-register after auth so that the most recently-authed instance is always active.
+    // Without this, constructing a new MyxClient after auth overwrites configManagerRef with
+    // an unauthenticated manager, causing "No signer" errors on the next contract call.
+    const lp = MxSDK.getInstance();
+    lp.setConfigManager(this.configManager);
+    setConfigManagerForViem(this.configManager);
   }
   public updateClientChainId(chainId: number, brokerAddress: string) {
     this.configManager.updateClientChainId(chainId, brokerAddress);
