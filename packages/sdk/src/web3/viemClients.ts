@@ -54,6 +54,10 @@ export function setConfigManagerForViem(cm: ConfigManagerRef | null) {
   configManagerRef = cm;
 }
 
+export function getConfigManagerForViem(): ConfigManagerRef | null {
+  return configManagerRef;
+}
+
 /** Returns WalletClient for the chain (from config walletClient or wrapped ISigner). Use for writeContract / sendTransaction. */
 export async function getWalletClient(chainId: number): Promise<WalletClient> {
   const cm = configManagerRef;
