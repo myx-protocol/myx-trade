@@ -12,7 +12,7 @@ export default {
     explorerOfTX: 'https://bscscan.com/tx/',
     faucetUrl: 'https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/',
     logoUrl: '',
-    gasPriceRatio: 2,
+    gasPriceRatio: 1.5,
     gasLimitRatio: 2,
     gasAmountRatio: 2,
     gasFeeReservedForCollateral: (0.0005 + 1) * GAS_FEE_RESERVED_RATIO,
