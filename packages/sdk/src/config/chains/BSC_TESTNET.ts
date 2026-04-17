@@ -21,6 +21,7 @@ export default {
       symbol: 'BNB',
       decimals: 18,
     },
+    gasPrice: 0n
   },
  
 } as ChainInfo
