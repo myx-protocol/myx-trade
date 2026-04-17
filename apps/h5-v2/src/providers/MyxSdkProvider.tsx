@@ -181,27 +181,25 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    const doAuth = (signer?: Signer) => {
-      myxSdkClientRef.current.forEach((_client, chainId) => {
-        _client.auth({
-          ...(signer ? { signer } : {}),
-          walletClient: walletClient as any,
-          getAccessToken: createGetAccessTokenMethod(),
-        } as any)
-        setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
-        console.log('authed-emit-authenticated-->', Date.now(), chainId)
-      })
-    }
-
     getSigner(walletClient)
       .then((signer) => {
-        console.log('signer-->', signer)
-        doAuth(signer ?? undefined)
+        if (signer) {
+          console.log('signer-->', signer)
+          // auth the all clients
+          myxSdkClientRef.current.forEach((_client, chainId) => {
+            _client.auth({
+              signer,
+              walletClient: walletClient as any,
+              getAccessToken: createGetAccessTokenMethod(),
+            } as any)
+            setClientIsAuthenticated((prev) => ({ ...prev, [chainId]: true }))
+            console.log('authed-emit-authenticated-->', Date.now(), chainId)
+          })
+        }
       })
       .catch((error) => {
-        // OKX built-in browser: BrowserProvider may fail; fall back to walletClient-only auth
-        console.error('Failed to get ethers signer, falling back to walletClient auth:', error)
-        doAuth()
+        console.error('Failed to get signer:', error)
+        setClientIsAuthenticated({})
       })
   }, [walletClient, isWalletConnected, address, refetchWalletClient, client])
 
