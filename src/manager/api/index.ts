@@ -64,6 +64,7 @@ import {
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
 import { Request } from "./request.js";
+import { PaginationParams } from "./type.js";
 
 export class Api extends Request {
   private logger: Logger;
@@ -149,10 +150,10 @@ export class Api extends Request {
     );
   }
 
-  async getPositions({ accessToken, address, positionId }: { accessToken: string, address: string, positionId?: string }) {
+  async getPositions({ accessToken, address, ...params }: { accessToken: string, address: string, positionId?: string, poolId?: string, chainId?: number } & PaginationParams) {
     return await http.get<PositionResponse>(
       `${this.getHost()}/openapi/gateway/scan/position/open`,
-      { positionId },
+      params,
       {
         headers: {
           myx_openapi_access_token: accessToken,
@@ -162,10 +163,13 @@ export class Api extends Request {
     );
   }
 
-  async getOrders(accessToken: string, address: string) {
+  async getOrders(accessToken: string, address: string, params?: PaginationParams & {
+    chainId?: number
+    poolId?: string
+  }) {
     return await http.get<OrderResponse>(
       `${this.getHost()}/openapi/gateway/scan/order/open`,
-      undefined,
+      params,
       {
         headers: {
           myx_openapi_access_token: accessToken,
