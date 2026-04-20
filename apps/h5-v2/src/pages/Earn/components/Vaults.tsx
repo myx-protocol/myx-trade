@@ -15,6 +15,7 @@ import type { QuotePool } from '@/request/lp/type.ts'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { isSafeNumber } from '@/utils'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
+import { VaultTabsEnum } from './type'
 
 const sortField = SortField.tvl
 const sortOrder = 'desc'
@@ -22,7 +23,7 @@ const limit = 20
 
 export const Vaults = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
-  const { chainId, interval } = useContext(SearchContext)
+  const { chainId, interval, tabValue } = useContext(SearchContext)
   const [after, setAfter] = useState<string | undefined>(undefined)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +42,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
   }
 
   useQuery({
-    queryKey: [{ key: 'quotePoolList' }, chainId, interval, after],
+    queryKey: [{ key: 'quotePoolList' }, chainId, interval, after, tabValue],
     queryFn: async () => {
       const paginatedLimit = limit + 1
       const result = await getQuoteLpList({
@@ -53,6 +54,12 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
         direction: after ? PageDirection.Next : undefined,
         cursor: after,
         state: 1,
+        quoteSymbol:
+          tabValue === VaultTabsEnum.AllMarket
+            ? undefined
+            : tabValue === VaultTabsEnum.UsdtMarket
+              ? 'USDT'
+              : 'USDC',
       })
       setIsLoading(false)
 
