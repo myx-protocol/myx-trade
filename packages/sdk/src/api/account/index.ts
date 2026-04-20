@@ -66,6 +66,9 @@ export enum ExecTypeEnum {
 }
 
 export interface HistoryOrderItem {
+  id: number
+  positionId: string
+  user: Address
   chainId: number; // chainId
   poolId: string; // poolId
   orderId: number; // orderId
@@ -148,6 +151,13 @@ export enum TradeFlowAccountTypeEnum {
   ReferralReward = 3,
 }
 export interface TradeFlowItem {
+
+  id: number,
+  realizedPnl: string,
+  beforeCollateralAmount: string,
+  afterCollateralAmount: string,
+  baseSymbol: string,
+  quoteSymbol: string,
   chainId: number;
   orderId: number;
   user: Address;
