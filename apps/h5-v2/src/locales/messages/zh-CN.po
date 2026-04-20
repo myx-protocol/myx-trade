@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -3878,7 +3879,9 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+msgstr ""
+"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4628,6 +4631,14 @@ msgstr "升级进度"
 msgid "Upgrade to VIP{0} by trading"
 msgstr "通过交易升级到 VIP{0}"
 
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDC理财"
+msgstr ""
+
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDT理财"
+msgstr ""
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
@@ -4675,7 +4686,6 @@ msgid "Vault"
 msgstr "金库"
 
 #: src/pages/Earn/components/TabBar.tsx
-#: src/pages/Earn/List.tsx
 msgid "Vaults"
 msgstr "金库"
 
@@ -4953,6 +4963,10 @@ msgstr "全部撤单"
 #: src/store/transactions/options.ts
 msgid "全部撤销"
 msgstr "全部撤销"
+
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "全部理财"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5495,4 +5509,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
