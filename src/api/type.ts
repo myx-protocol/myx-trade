@@ -133,6 +133,7 @@ export interface PositionType {
   tokenId: string | null;
   freeAmount: string;
   lockedAmount: string;
+  id: number
 }
 
 export interface PositionResponse extends BaseResponse {
@@ -168,6 +169,7 @@ export interface OrderItem {
   txTime: number;
   user: string;
   useLeverage: number;
+  id: number
 }
 
 export interface OrderResponse extends BaseResponse {
