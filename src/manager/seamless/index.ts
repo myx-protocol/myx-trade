@@ -189,7 +189,8 @@ export class Seamless {
       };
       return [tradingRouterPermitParams];
     } catch (error) {
-      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, `getUSDPermitParams failed: ${msg}`);
     }
   }
 
