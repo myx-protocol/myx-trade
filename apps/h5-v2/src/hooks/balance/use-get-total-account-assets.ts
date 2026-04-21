@@ -1,7 +1,7 @@
 import { useAllMyxSdkClients } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '../wallet/useWalletConnection'
 import useSWR from 'swr'
-import { MarketPoolState, type ChainId } from '@myx-trade/sdk'
+import { type ChainId } from '@myx-trade/sdk'
 import { useMemo } from 'react'
 import { ethers } from 'ethers'
 import { parseBigNumber } from '@/utils/bn'
@@ -12,11 +12,9 @@ export const useGetTotalAccountAssets = () => {
   const { address } = useWalletConnection()
   const { poolList } = useGlobalStore()
 
-  // 相同 quoteToken 地址只取一个池子（避免重复计算钱包余额），且只取 Listed 状态的
   const targetPools = useMemo(() => {
     const seen = new Set<string>()
     return (poolList as any[]).filter((p) => {
-      if (p.state !== MarketPoolState.Listed) return false
       if (seen.has(p.quoteToken)) return false
       seen.add(p.quoteToken)
       return true
