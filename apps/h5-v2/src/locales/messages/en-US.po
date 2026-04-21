@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -123,9 +124,37 @@ msgstr ""
 msgid "{pendingTransactionsLength} 笔交易正在确认"
 msgstr "{pendingTransactionsLength} transactions pending"
 
+#. placeholder {0}: formatNumber(minTVL, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "• The {0} {tokenSymbol} minimum TVL threshold is met."
+msgstr "• The {0} {tokenSymbol} minimum TVL threshold is met."
+
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "• The token passes the Prime Check security scan."
+msgstr "• The token passes the Prime Check security scan."
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr "Insufficient tradable amount in account "
+
+#. placeholder {0}: formatNumber(penaltyAmount, { showUnit: false, decimals: 0 })
+#. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "> Aborting now will incur a strict {0} {tokenSymbol} deduction for network overhead. You will receive a partial refund of {1} {tokenSymbol}."
+msgstr "> Aborting now will incur a strict {0} {tokenSymbol} deduction for network overhead. You will receive a partial refund of {1} {tokenSymbol}."
+
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "⏳ Pending Validations:"
+msgstr "⏳ Pending Validations:"
+
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "⚠️ Cancellation Penalty:"
+msgstr "⚠️ Cancellation Penalty:"
+
+#. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "⚠️ Fund Deduction Risk (Irreversible): After payment authorization, if the activation fails or is aborted due to any of the following reasons, the system will strictly <0>deduct {0} {tokenSymbol}</0> for review costs:"
+msgstr "⚠️ Fund Deduction Risk (Irreversible): After payment authorization, if the activation fails or is aborted due to any of the following reasons, the system will strictly <0>deduct {0} {tokenSymbol}</0> for review costs:"
 
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
 msgid "1-day rebate"
@@ -165,6 +194,11 @@ msgstr ""
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "8 to 128 characters"
 msgstr ""
+
+#. placeholder {0}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "abort & refund {0} {tokenSymbol}"
+msgstr "abort & refund {0} {tokenSymbol}"
 
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Accept"
@@ -775,6 +809,10 @@ msgstr ""
 msgid "Claim referral fee"
 msgstr "Claim Referral Fee"
 
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Claim Refund"
+msgstr "Claim Refund"
+
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 msgid "Claim successfully claimed"
@@ -923,6 +961,10 @@ msgstr ""
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Confirm"
 msgstr ""
+
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "Confirm Enable Trading"
+msgstr "Confirm Enable Trading"
 
 #: src/pages/Market/components/steps.tsx
 msgid "Confirm token info"
@@ -1750,6 +1792,12 @@ msgstr ""
 msgid "From"
 msgstr ""
 
+#. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
+#. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Fund Resolution: Per platform rules, {0} {tokenSymbol} has been deducted for oracle and security review costs. The remaining {1} {tokenSymbol} has been unlocked and is available for immediate withdrawal."
+msgstr "Fund Resolution: Per platform rules, {0} {tokenSymbol} has been deducted for oracle and security review costs. The remaining {1} {tokenSymbol} has been unlocked and is available for immediate withdrawal."
+
 #: src/components/Record/Items/Position.tsx
 msgid "Funding fee"
 msgstr ""
@@ -1923,6 +1971,11 @@ msgstr ""
 #: src/store/transactions/options.ts
 msgid "Hypervault Sale"
 msgstr ""
+
+#. placeholder {0}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "If the activation is aborted, <0>the remaining {0} {tokenSymbol} will be refunded and must be claimed manually.</0>"
+msgstr "If the activation is aborted, <0>the remaining {0} {tokenSymbol} will be refunded and must be claimed manually.</0>"
 
 #: src/ErrorPage.tsx
 msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
@@ -2368,6 +2421,7 @@ msgstr ""
 msgid "Last Price/TVL"
 msgstr ""
 
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Later"
 msgstr ""
@@ -2549,6 +2603,10 @@ msgstr ""
 msgid "Market"
 msgstr ""
 
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Market Activation Failed"
+msgstr "Market Activation Failed"
+
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Earn/detail/components/TokenInfo.tsx
@@ -2579,6 +2637,29 @@ msgstr ""
 #: src/pages/Market/index.tsx
 msgid "market is created"
 msgstr "Market already exist"
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. <0>[ View Status → ]</0>"
+msgstr "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. <0>[ View Status → ]</0>"
+
+#. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(tvl?.totalTvl || '0') .toString(), { showUnit: false }, )
+#. placeholder {1}: formatNumberPercent(genesisFeeRate, 0, false)
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! <1>[ View Status → ]</1>"
+msgstr "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! <1>[ View Status → ]</1>"
+
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "Market Launch Status"
+msgstr "Market Launch Status"
+
+#. placeholder {0}: formatNumber(market?.boostRefundFeeUsd, { showUnit: false })
+#. placeholder {1}: pool?.quoteSymbol
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Market Opening Failed! You have {0} {1} funds pending.👉 <0>[ Claim Refund Now ↗ ]</0>"
+msgstr "Market Opening Failed! You have {0} {1} funds pending.👉 <0>[ Claim Refund Now ↗ ]</0>"
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -2857,6 +2938,10 @@ msgstr "No rebate to claim()"
 msgid "Not Created"
 msgstr ""
 
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "Not Now"
+msgstr "Not Now"
+
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Not Required"
 msgstr ""
@@ -3014,22 +3099,31 @@ msgstr ""
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#. placeholder {3}: pool?.quoteSymbol || '--'
-#. placeholder {4}: pool?.quoteSymbol
-#. placeholder {5}: pool?.baseSymbol
+#. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
+#. placeholder {4}: pool?.quoteSymbol || '--'
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime <1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
-msgstr ""
+msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
+msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
 
-#. placeholder {0}: formatNumber(genesis)
+#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#. placeholder {3}: pool?.baseSymbol || '--'
-#. placeholder {4}: pool?.baseSymbol
-#. placeholder {5}: pool?.quoteSymbol
+#. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
+#. placeholder {4}: pool?.quoteSymbol || '--'
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime<1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
-msgstr ""
+msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
+msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
+
+#. placeholder {0}: pool?.baseSymbol || '--'
+#. placeholder {0}: pool?.quoteSymbol || '--'
+#. placeholder {1}: pool?.baseSymbol
+#. placeholder {1}: pool?.quoteSymbol
+#. placeholder {2}: pool?.baseSymbol
+#. placeholder {2}: pool?.quoteSymbol
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Only holding {0}? <0>[m{1}.{2}↗]</0> "
+msgstr "Only holding {0}? <0>[m{1}.{2}↗]</0> "
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Only Seamless Trading private key import supported."
@@ -3224,10 +3318,19 @@ msgstr ""
 msgid "Pay"
 msgstr ""
 
+#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "Pay {0} {tokenSymbol}"
+msgstr "Pay {0} {tokenSymbol}"
+
 #. placeholder {0}: quoteLpDetail?.quoteSymbol
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pay with {0}"
 msgstr ""
+
+#: src/hooks/lp/useOnBoostPool.ts
+msgid "Payment successful. Waiting for market launch."
+msgstr "Payment successful. Waiting for market launch."
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -3651,6 +3754,11 @@ msgstr ""
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Refund"
 msgstr ""
+
+#: src/hooks/lp/useClaimRefund.ts
+#: src/hooks/lp/useOnUnBoostPool.ts
+msgid "Refund claim successful"
+msgstr "Refund claim successful"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4174,6 +4282,10 @@ msgstr ""
 msgid "Successfully subscribe"
 msgstr ""
 
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Sudden on-chain liquidity drop below the minimum threshold"
+msgstr "Sudden on-chain liquidity drop below the minimum threshold"
+
 #: src/components/CanSwitchWalletNetwork/index.tsx
 msgid "Switch Network"
 msgstr ""
@@ -4265,9 +4377,17 @@ msgstr ""
 msgid "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
 msgstr ""
 
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "The underlying token poses security risks (Failed Prime Check)"
+msgstr "The underlying token poses security risks (Failed Prime Check)"
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
 msgstr ""
+
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "This is typically due to:"
+msgstr "This is typically due to:"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4467,6 +4587,10 @@ msgstr ""
 msgid "Trading Volume"
 msgstr ""
 
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "Trading will force start instantly once the system confirms:"
+msgstr "Trading will force start instantly once the system confirms:"
+
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Trading within this capacity has limited or negligible price impact."
 msgstr ""
@@ -4546,6 +4670,10 @@ msgstr "Open interest underflow()"
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Underlying Price"
 msgstr ""
+
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Underlying token security risks (Failed Prime Check)"
+msgstr "Underlying token security risks (Failed Prime Check)"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4740,6 +4868,10 @@ msgstr "Risk Rating"
 msgid "Volume"
 msgstr ""
 
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "Wait for Launch"
+msgstr "Wait for Launch"
+
 #: src/components/AccountDialog/index.tsx
 #: src/components/Login/MorePage.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -4819,6 +4951,16 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
+#. placeholder {1}: formatNumber(tvlThreshold, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "You are about to <0>pay a {0} {tokenSymbol}</0> oracle and network fee. Once the market's TVL reaches {1} {tokenSymbol}, the system will automatically connect to the oracle and enable trading."
+msgstr "You are about to <0>pay a {0} {tokenSymbol}</0> oracle and network fee. Once the market's TVL reaches {1} {tokenSymbol}, the system will automatically connect to the oracle and enable trading."
+
+#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
+msgid "You manually cancel the payment before trading is successfully enabled"
+msgstr "You manually cancel the payment before trading is successfully enabled"
+
 #. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
 #. placeholder {1}: nextMyxLevel?.vipTier
 #: src/pages/VIP/components/Upgrade.tsx
@@ -4846,6 +4988,11 @@ msgstr ""
 msgid "You’ve unlocked the highest VIP level."
 msgstr ""
 
+#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
+#: src/components/Dialog/MarketLaunchStatusDialog.tsx
+msgid "Your {0} {tokenSymbol} fee is secured. The smart contract is automatically processing your launch request."
+msgstr "Your {0} {tokenSymbol} fee is secured. The smart contract is automatically processing your launch request."
+
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Your Current Mode"
@@ -4864,6 +5011,10 @@ msgstr ""
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Your Password"
 msgstr ""
+
+#: src/components/Dialog/MarketActivationFailedDialog.tsx
+msgid "Your request to early launch the market could not be executed."
+msgstr "Your request to early launch the market could not be executed."
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ZeroQueries()"
@@ -5495,4 +5646,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
