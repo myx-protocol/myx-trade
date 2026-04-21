@@ -270,6 +270,11 @@ export interface LpPriceHistoryRequest {
   poolType: PoolType
 }
 
+export type LineChartsRequestParams = Pick<
+  LpPriceHistoryRequest,
+  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
+>
+
 export interface LpPriceHistory {
   time: number
   value: string
@@ -390,6 +395,11 @@ export enum PoolSecurityState {
   ALLOW_PRIME = 9,
 }
 
+export enum PoolBaseState {
+  OK = 0,
+  PRIME_FAIL,
+}
+
 export interface LevelConfig {
   levelId: number
   name: Rating
@@ -413,6 +423,7 @@ export interface MarketPoolRiskLevelConfig {
   levelConfig: LevelConfig
   levelName: Rating
   securityState: PoolSecurityState
+  baseState: PoolBaseState
 }
 
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
@@ -423,21 +434,32 @@ export interface MarketPoolPriceResponse extends BaseResponse {
   data: string
 }
 
-export type LineChartsRequestParams = Pick<
-  LpPriceHistoryRequest,
-  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
->
-
-export interface TvlHistoryResponse extends BaseResponse {
-  data: Array<{
-    time: number
-    tvl: string
-  }>
+export interface RiskGlobalConfigResponse extends BaseResponse {
+  data: {
+    boostedPrimeTvl: string
+  }
 }
 
-export interface ExchangeRateHistoryResponse extends BaseResponse {
-  data: Array<{
-    time: number
-    exchangeRate: string
-  }>
+export enum BoostType {
+  Requested = 0,
+  Withdrawn = 1,
+}
+
+export interface PoolBoostInfo {
+  id: number
+  chainId: number
+  poolId: string
+  proposer: string
+  token: string
+  type: BoostType
+  amount: string
+  refundFee: null | string
+  txHash: string
+  txTime: number
+  blockNumber: number
+  eventKey: string
+  createTime: number
+}
+export interface PoolBoostResponse extends BaseResponse {
+  data: null | PoolBoostInfo
 }
