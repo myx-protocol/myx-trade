@@ -149,10 +149,10 @@ export const OrderTip = () => {
 
   if (!baseLpDetail) return <></>
   if (riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN) {
-    return <SecurityWarning className="mt-[20px]" />
+    return <SecurityWarning className="mt-[12px]" />
   }
   if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) {
-    return <RiskWarning className="mt-[20px]" />
+    return <RiskWarning className="mt-[12px]" />
   }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
@@ -166,7 +166,7 @@ export const OrderTip = () => {
         riskLevelConfig?.baseState !== PoolBaseState.PRIME_FAIL &&
         Number(genesis) >= 0 &&
         boostInfo?.type !== BoostType.Requested && (
-          <Info className="mt-[20px]">
+          <Info className="mt-[12px]">
             <Trans>
               Only{' '}
               <span className={'text-warning mr-[0.5em]'}>
@@ -202,7 +202,7 @@ export const OrderTip = () => {
         boostInfo?.proposer &&
         isAddressEqual(boostInfo?.proposer as Address, address) &&
         (new Big(tvl?.totalTvl || '0').gte(boostedPrimeTvl || '0') ? (
-          <Info className="mt-[20px]">
+          <Info className="mt-[12px]">
             <Trans>
               Market launch fee paid and TVL threshold met! Waiting for smart contract execution to
               force start trading.{' '}
@@ -215,7 +215,7 @@ export const OrderTip = () => {
             </Trans>
           </Info>
         ) : (
-          <Info className="mt-[20px]">
+          <Info className="mt-[12px]">
             <Trans>
               Market launch fee paid! Only{' '}
               <span className="text-warning">
@@ -247,7 +247,7 @@ export const OrderTip = () => {
         address &&
         boostInfo?.proposer &&
         isAddressEqual(boostInfo?.proposer as Address, address) && (
-          <Info className="mt-[20px]">
+          <Info className="mt-[12px]">
             <Trans>
               Market Opening Failed! You have{' '}
               {formatNumber(market?.boostRefundFeeUsd, { showUnit: false })} {pool?.quoteSymbol}{' '}
@@ -263,7 +263,7 @@ export const OrderTip = () => {
         )}
 
       {baseLpDetail?.state === MarketPoolState.Primed && (
-        <Info className="mt-[20px]">
+        <Info className="mt-[12px]">
           <Trans>
             The {baseLpDetail.symbolName} perpetual market is currently preparing to go live. Buy{' '}
             {baseLpDetail.mBaseQuoteSymbol} now to lock in your share and start earning immediately
@@ -273,7 +273,7 @@ export const OrderTip = () => {
       )}
 
       {baseLpDetail?.state === MarketPoolState.PreBench && (
-        <Info className="mt-[20px]">
+        <Info className="mt-[12px]">
           <Trans>
             Due to the monthly trading volume not meeting the requirement, the{' '}
             {baseLpDetail?.mBaseQuoteSymbol} market will be delisted in{' '}
@@ -288,7 +288,7 @@ export const OrderTip = () => {
       )}
 
       {baseLpDetail?.state === MarketPoolState.Bench && (
-        <Info className="mt-[20px]">
+        <Info className="mt-[12px]">
           <Trans>
             Due to [Reason for Delisting], new buys for this market have been paused. You can still
             sell your holdings at any time.
@@ -347,7 +347,7 @@ export const OrderTips = () => {
     <>
       <OrderTip />
       {pool && (
-        <Info className="mt-[20px]">
+        <Info className="mt-[12px]">
           <Trans>
             Only holding {pool?.quoteSymbol || '--'}?{' '}
             <a href={`/earn/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
