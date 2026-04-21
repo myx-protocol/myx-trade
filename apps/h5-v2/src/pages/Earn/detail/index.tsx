@@ -40,8 +40,7 @@ const Detail = () => {
           {type === DetailTabType.Trade && (
             <>
               <TradingForm className={'mt-[14px] px-[16px]'} />{' '}
-              <div className="px-[16px]">
-                {' '}
+              <div className="mt-[12px] flex flex-col gap-[12px] px-[16px]">
                 <BenchWarning />
               </div>
             </>
