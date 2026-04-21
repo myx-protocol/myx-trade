@@ -80,9 +80,10 @@ export async function createWalletClientFromSigner(signer: ISigner, chainId: num
           primaryType: string;
           message: Record<string, unknown>;
         };
+        const { EIP712Domain: _domain, ...types } = typedData.types as Record<string, unknown>;
         return (await signer.signTypedData({
           domain: typedData.domain,
-          types: typedData.types,
+          types,
           primaryType: typedData.primaryType,
           message: typedData.message,
         })) as `0x${string}`;

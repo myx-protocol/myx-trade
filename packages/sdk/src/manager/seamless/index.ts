@@ -383,6 +383,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
+        this.logger.info('getUSDPermitParams', deadline, chainId, forwardFeeToken)
         permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
       } catch (error) {
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
