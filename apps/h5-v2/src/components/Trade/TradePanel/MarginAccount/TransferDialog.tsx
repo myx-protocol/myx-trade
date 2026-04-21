@@ -361,7 +361,13 @@ export const TransferDialogButton = () => {
                   value={amount}
                   placeholder={t`Please Enter`}
                   inputMode="decimal"
-                  decimalScale={6}
+                  decimalScale={
+                    transferType === TransferType.Wallet
+                      ? (symbolInfo?.quoteDecimals ?? 6)
+                      : tokenType === AmountUnitEnum.QUOTE
+                        ? (symbolInfo?.quoteDecimals ?? 6)
+                        : (symbolInfo?.baseDecimals ?? 6)
+                  }
                   thousandSeparator=","
                   decimalSeparator="."
                   onValueChange={(values, sourceInfo) => {
@@ -501,15 +507,22 @@ export const TransferDialogButton = () => {
                         let maxAmount = '0'
                         if (tokenType === AmountUnitEnum.QUOTE) {
                           if (isExpired) {
-                            maxAmount =
-                              parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
-                                .plus(parseBigNumber(accountAssets?.quoteProfit)?.toString() ?? '0')
-                                ?.toString() ?? '0'
+                            maxAmount = parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                              .plus(parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0'))
+                              .toString()
                           } else {
                             maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
                           }
                         } else {
-                          maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                          if (isExpired) {
+                            maxAmount = parseBigNumber(
+                              accountAssets?.freeBaseAmount?.toString() ?? '0',
+                            )
+                              .plus(parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0'))
+                              .toString()
+                          } else {
+                            maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                          }
                         }
                         if (parseBigNumber(amount.toString()).gt(parseBigNumber(maxAmount))) {
                           toast.error({ title: t`Insufficient Balance` })
@@ -572,15 +585,22 @@ export const TransferDialogButton = () => {
                       let maxAmount = '0'
                       if (tokenType === AmountUnitEnum.QUOTE) {
                         if (isExpired) {
-                          maxAmount =
-                            parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
-                              .plus(parseBigNumber(accountAssets?.quoteProfit)?.toString() ?? '0')
-                              ?.toString() ?? '0'
+                          maxAmount = parseBigNumber(accountAssets?.freeMargin?.toString() ?? '0')
+                            .plus(parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0'))
+                            .toString()
                         } else {
                           maxAmount = accountAssets?.freeMargin?.toString() ?? '0'
                         }
                       } else {
-                        maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                        if (isExpired) {
+                          maxAmount = parseBigNumber(
+                            accountAssets?.freeBaseAmount?.toString() ?? '0',
+                          )
+                            .plus(parseBigNumber(accountAssets?.baseProfit?.toString() ?? '0'))
+                            .toString()
+                        } else {
+                          maxAmount = accountAssets?.freeBaseAmount?.toString() ?? '0'
+                        }
                       }
                       if (parseBigNumber(amount.toString()).gt(parseBigNumber(maxAmount))) {
                         toast.error({ title: t`Insufficient Balance` })

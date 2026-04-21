@@ -97,6 +97,12 @@ const createGetAccessTokenMethod = (address: string) => {
 // 使用 Map 存储正在创建的 Promise，确保同一个 chainId 只创建一次
 const creatingClientPromises = new Map<number, Promise<MyxClient>>()
 // eslint-disable-next-line react-refresh/only-export-components
+export const useAllMyxSdkClients = () => {
+  const { client, clientIsAuthenticated } = useContext(myxSdkContext)
+  return { clients: client ?? {}, clientIsAuthenticated }
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
 export const useMyxSdkClient = (chainId?: number) => {
   const { client, setClient, clientIsAuthenticated, markets } = useContext(myxSdkContext)
 

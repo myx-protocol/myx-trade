@@ -8,10 +8,10 @@ import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
 import { useSeamlessStore } from '@/store/seamless/createStore'
-import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import avatarIcon from '@/assets/home/wallet-icon.png'
 import { Copy } from '@/components/Copy'
 import { useTradePanelStore } from '../Trade/TradePanel/store'
+import { useGetTotalAccountAssets } from '@/hooks/balance/use-get-total-account-assets'
 
 export const AccountDialog = () => {
   const {
@@ -23,11 +23,11 @@ export const AccountDialog = () => {
     setUnlockAccountDialogOpen,
   } = useGlobalStore()
   const { address } = useWalletConnection()
-  const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
   const { disconnect } = useWalletConnection()
-  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+
+  const totalBalance = useGetTotalAccountAssets()
 
   return (
     <DialogBase
@@ -57,7 +57,7 @@ export const AccountDialog = () => {
             <div className="flex items-center gap-[4px]">
               <span className="mt-[2px] text-[14px] font-[500] text-[#848E9C]">
                 $
-                {formatNumber(accountAssets?.availableMargin?.toString() ?? '--', {
+                {formatNumber(totalBalance, {
                   decimals: 2,
                   showUnit: false,
                 })}{' '}
