@@ -19,6 +19,8 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
     fundingRate,
     markets,
     riskLevelConfig,
+    boostedPrimeTvl,
+    boostInfo,
   } = usePoolDetail(PoolType.quote)
 
   useEffect(() => {
@@ -41,6 +43,8 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         fundingRate: fundingRate?.nextFundingRatePercent,
         markets,
         riskLevelConfig,
+        boostedPrimeTvl,
+        boostInfo,
       }}
     >
       {children}

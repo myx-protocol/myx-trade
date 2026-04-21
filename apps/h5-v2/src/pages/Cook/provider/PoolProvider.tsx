@@ -19,6 +19,8 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
     fundingRate,
     markets,
     riskLevelConfig,
+    boostedPrimeTvl,
+    boostInfo,
   } = usePoolDetail(PoolType.base)
 
   const [refreshAssetKey, setRefreshAssetKey] = useState(Date.now())
@@ -51,6 +53,8 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
         markets,
         oraclePrice: poolInfo?.oraclePrice,
         riskLevelConfig,
+        boostedPrimeTvl,
+        boostInfo,
       }}
     >
       {children}

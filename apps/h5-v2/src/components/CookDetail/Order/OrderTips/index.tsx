@@ -10,8 +10,16 @@ import dayjs from 'dayjs'
 import { Big } from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
 import { MYX_CONTACT_SUPPORT, MYX_DELISTING_RULES_LINK } from '@/config/link'
-// import { Warning } from '@/components/Icon'
-import { PoolSecurityState } from '@/request/lp/type.ts'
+import { BoostType, PoolBaseState, PoolSecurityState } from '@/request/lp/type.ts'
+import { ConfirmEnableTradingDialog } from '@/components/Dialog/ConfirmEnableTradingDialog.tsx'
+import { useOnBoostPool } from '@/hooks/lp/useOnBoostPool.ts'
+import { isAddressEqual } from 'viem'
+import { useAccount } from 'wagmi'
+import type { Address } from '@/request/type.ts'
+import { MarketLaunchStatusDialog } from '@/components/Dialog/MarketLaunchStatusDialog'
+import { useOnUnBoostPool } from '@/hooks/lp/useOnUnBoostPool.ts'
+import { useClaimRefund } from '@/hooks/lp/useClaimRefund.ts'
+import { MarketActivationFailedDialog } from '@/components/Dialog/MarketActivationFailedDialog.tsx'
 import { isCookState } from '@/utils/cook.ts'
 
 export const LPWarning = ({
@@ -48,6 +56,7 @@ export const RiskWarning = ({ className = '' }: { className?: string }) => {
     </LPWarning>
   )
 }
+
 export const SecurityWarning = ({ className = '' }: { className?: string }) => {
   return (
     <LPWarning className={className}>
@@ -59,10 +68,34 @@ export const SecurityWarning = ({ className = '' }: { className?: string }) => {
     </LPWarning>
   )
 }
-export const OrderTips = () => {
-  const { baseLpDetail, refetch, genesisFeeRate, pool, tvl, markets, riskLevelConfig } =
-    usePoolContext()
+
+export const Info = ({ children, className = '' }: { children: ReactNode; className?: string }) => {
+  return (
+    <div
+      className={`bg-warning-10 text-regular flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px] ${className}`}
+    >
+      <IconHelp size={14} className="flex-shrink-0 translate-y-[2px]" />
+      <p className="text-[12px] leading-[1.5]">{children}</p>
+    </div>
+  )
+}
+export const OrderTip = () => {
+  const {
+    baseLpDetail,
+    refetch,
+    genesisFeeRate,
+    pool,
+    tvl,
+    markets,
+    riskLevelConfig,
+    boostedPrimeTvl,
+    boostInfo,
+    refetchBoostInfo,
+  } = usePoolContext()
+  const { address } = useAccount()
+
   const [targetDate, setTargetDate] = useState<number>()
+
   const [countdown] = useCountDown({
     targetDate,
     onEnd: useCallback(async () => {
@@ -70,20 +103,38 @@ export const OrderTips = () => {
     }, []),
   })
 
-  const data = useMemo(() => {
+  const market = useMemo(() => {
     return (markets || []).find((market) => market.marketId === baseLpDetail?.marketId)
-      ?.poolPrimeThreshold
   }, [markets, baseLpDetail])
 
   const genesis = useMemo(() => {
-    if (data && tvl) {
-      console.log(new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString())
-      const _genesis = new Big(Number(data)).minus(new Big(tvl?.totalTvl || '0')).toString()
+    if (market?.poolPrimeThreshold && tvl) {
+      console.log(
+        new Big(Number(market?.poolPrimeThreshold)).minus(new Big(tvl?.totalTvl || '0')).toString(),
+      )
+      const _genesis = new Big(Number(market?.poolPrimeThreshold))
+        .minus(new Big(tvl?.totalTvl || '0'))
+        .toString()
       return Number(_genesis) < 0 ? 0 : _genesis
     } else {
       return -1
     }
-  }, [data, tvl])
+  }, [market?.poolPrimeThreshold, tvl])
+
+  const deductedAmount = useMemo(() => {
+    return (
+      (market?.boostFeeUsd &&
+        market?.boostRefundFeeUsd &&
+        Big(market?.boostFeeUsd)?.minus(market?.boostRefundFeeUsd)?.toString()) ||
+      '0'
+    )
+  }, [market?.boostFeeUsd, market?.boostRefundFeeUsd])
+
+  const { boostConfirmBoostOpen, setBoostConfirmBoostOpen, onBoostPool } = useOnBoostPool()
+
+  const { unBoostConfirmBoostOpen, setUnBoostConfirmBoostOpen, onUnBoostPool } = useOnUnBoostPool()
+
+  const { claimRefundOpen, setClaimRefundOpen, onClaimRefund } = useClaimRefund()
 
   useEffect(() => {
     if (baseLpDetail?.state === MarketPoolState.PreBench) {
@@ -105,42 +156,124 @@ export const OrderTips = () => {
   }
   if (baseLpDetail?.state === MarketPoolState.Trench) return <></>
   if (baseLpDetail?.state === MarketPoolState.PreBench && !targetDate) return <></>
-  if (isCookState(baseLpDetail?.state) && (!data || !pool || !tvl)) return <></>
+  if (isCookState(baseLpDetail?.state) && (!market?.poolPrimeThreshold || !pool || !tvl))
+    return <></>
 
   return (
-    <div className="bg-warning-10 text-regular mt-[20px] flex items-start gap-[4px] rounded-[8px] border-[1px] border-[#202129] p-[12px]">
-      <IconHelp size={14} className="flex-shrink-0 translate-y-[2px]" />
-      <p className="text-[12px] leading-[1.5] text-[#CED1D9]">
-        {pool && isCookState(baseLpDetail?.state) && Number(genesis) >= 0 && (
-          <Trans>
-            Only{' '}
-            <span className={'text-warning mr-[0.5em]'}>
-              $
-              {formatNumber(genesis, {
-                showUnit: true,
-              })}
-            </span>{' '}
-            {baseLpDetail?.mBaseQuoteSymbol || '--'} Genesis Shares left to lock in lifetime{' '}
-            <span className={'text-warning mx-[0.5em]'}>
-              {formatNumberPercent(genesisFeeRate, 0, false)}
-            </span>
-            trading fees! Or use {pool?.quoteSymbol || '--'} to join the{' '}
-            <a href={`/earn/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
-              [{`m${pool?.quoteSymbol}.${pool?.baseSymbol}`}↗]
-            </a>{' '}
-            pool for the same benefit.
-          </Trans>
+    <>
+      {pool &&
+        isCookState(baseLpDetail?.state) &&
+        riskLevelConfig?.baseState !== PoolBaseState.PRIME_FAIL &&
+        Number(genesis) >= 0 &&
+        boostInfo?.type !== BoostType.Requested && (
+          <Info className="mt-[20px]">
+            <Trans>
+              Only{' '}
+              <span className={'text-warning mr-[0.5em]'}>
+                $
+                {formatNumber(genesis, {
+                  showUnit: true,
+                })}
+              </span>{' '}
+              {baseLpDetail?.mBaseQuoteSymbol || '--'} Genesis Shares left to activate the
+              market!Join now to lock in a LIFETIME{' '}
+              <span className={'text-warning mx-[0.5em]'}>
+                {formatNumberPercent(genesisFeeRate, 0, false)}
+              </span>
+              fee share! You can also pay {formatNumber(market?.boostFeeUsd, { showUnit: false })}{' '}
+              {pool?.quoteSymbol || '--'} to activate instantly! 👉{' '}
+              <button
+                className={'text-green cursor-pointer'}
+                onClick={() => setBoostConfirmBoostOpen(true)}
+              >
+                [ Unlock Market Early ↗ ]
+              </button>
+            </Trans>
+          </Info>
         )}
 
-        {baseLpDetail?.state === MarketPoolState.Primed && (
+      {pool &&
+        isCookState(baseLpDetail?.state) &&
+        boostedPrimeTvl &&
+        riskLevelConfig?.baseState !== PoolBaseState.PRIME_FAIL &&
+        Number(genesis) >= 0 &&
+        boostInfo?.type === BoostType.Requested &&
+        address &&
+        boostInfo?.proposer &&
+        isAddressEqual(boostInfo?.proposer as Address, address) &&
+        (new Big(tvl?.totalTvl || '0').gte(boostedPrimeTvl || '0') ? (
+          <Info className="mt-[20px]">
+            <Trans>
+              Market launch fee paid and TVL threshold met! Waiting for smart contract execution to
+              force start trading.{' '}
+              <button
+                className={'text-green cursor-pointer'}
+                onClick={() => setUnBoostConfirmBoostOpen(true)}
+              >
+                [ View Status → ]
+              </button>
+            </Trans>
+          </Info>
+        ) : (
+          <Info className="mt-[20px]">
+            <Trans>
+              Market launch fee paid! Only{' '}
+              <span className="text-warning">
+                $
+                {formatNumber(
+                  Big(boostedPrimeTvl)
+                    .minus(tvl?.totalTvl || '0')
+                    .toString(),
+                  { showUnit: false },
+                )}{' '}
+                more TVL
+              </span>{' '}
+              needed to force start trading. Join now to lock in a LIFETIME{' '}
+              {formatNumberPercent(genesisFeeRate, 0, false)} fee share!{' '}
+              <button
+                className={'text-green cursor-pointer'}
+                onClick={() => setUnBoostConfirmBoostOpen(true)}
+              >
+                [ View Status → ]
+              </button>
+            </Trans>
+          </Info>
+        ))}
+
+      {pool &&
+        isCookState(baseLpDetail?.state) &&
+        riskLevelConfig?.baseState === PoolBaseState.PRIME_FAIL &&
+        boostInfo?.type === BoostType.Requested &&
+        address &&
+        boostInfo?.proposer &&
+        isAddressEqual(boostInfo?.proposer as Address, address) && (
+          <Info className="mt-[20px]">
+            <Trans>
+              Market Opening Failed! You have{' '}
+              {formatNumber(market?.boostRefundFeeUsd, { showUnit: false })} {pool?.quoteSymbol}{' '}
+              funds pending.👉{' '}
+              <button
+                className={'text-green cursor-pointer'}
+                onClick={() => setClaimRefundOpen(true)}
+              >
+                [ Claim Refund Now ↗ ]
+              </button>
+            </Trans>
+          </Info>
+        )}
+
+      {baseLpDetail?.state === MarketPoolState.Primed && (
+        <Info className="mt-[20px]">
           <Trans>
             The {baseLpDetail.symbolName} perpetual market is currently preparing to go live. Buy{' '}
             {baseLpDetail.mBaseQuoteSymbol} now to lock in your share and start earning immediately
             once trading opens.
           </Trans>
-        )}
+        </Info>
+      )}
 
-        {baseLpDetail?.state === MarketPoolState.PreBench && (
+      {baseLpDetail?.state === MarketPoolState.PreBench && (
+        <Info className="mt-[20px]">
           <Trans>
             Due to the monthly trading volume not meeting the requirement, the{' '}
             {baseLpDetail?.mBaseQuoteSymbol} market will be delisted in{' '}
@@ -151,9 +284,11 @@ export const OrderTips = () => {
               View Delisting Rules
             </a>
           </Trans>
-        )}
+        </Info>
+      )}
 
-        {baseLpDetail?.state === MarketPoolState.Bench && (
+      {baseLpDetail?.state === MarketPoolState.Bench && (
+        <Info className="mt-[20px]">
           <Trans>
             Due to [Reason for Delisting], new buys for this market have been paused. You can still
             sell your holdings at any time.
@@ -164,8 +299,63 @@ export const OrderTips = () => {
               Reactivate Market
             </a>
           </Trans>
-        )}
-      </p>
-    </div>
+        </Info>
+      )}
+
+      <ConfirmEnableTradingDialog
+        open={boostConfirmBoostOpen}
+        tokenSymbol={pool?.quoteSymbol}
+        feeAmount={market?.boostFeeUsd}
+        refundAmount={market?.boostRefundFeeUsd}
+        deductedAmount={deductedAmount}
+        tvlThreshold={boostedPrimeTvl}
+        onClose={() => setBoostConfirmBoostOpen(false)}
+        onNotNow={() => setBoostConfirmBoostOpen(false)}
+        onPay={async () => {
+          await onBoostPool()
+        }}
+      />
+      <MarketLaunchStatusDialog
+        open={unBoostConfirmBoostOpen}
+        tokenSymbol={pool?.quoteSymbol}
+        minTVL={boostedPrimeTvl}
+        feeAmount={market?.boostFeeUsd}
+        penaltyAmount={deductedAmount}
+        refundAmount={market?.boostRefundFeeUsd}
+        onClose={() => setUnBoostConfirmBoostOpen(false)}
+        onAbort={async () => {
+          await onUnBoostPool()
+        }}
+        onWait={() => setUnBoostConfirmBoostOpen(false)}
+      />
+      <MarketActivationFailedDialog
+        open={claimRefundOpen}
+        tokenSymbol={pool?.quoteSymbol}
+        deductedAmount={deductedAmount}
+        refundAmount={market?.boostRefundFeeUsd}
+        onClose={() => setClaimRefundOpen(false)}
+        onLater={() => setClaimRefundOpen(false)}
+        onClaimRefund={() => onClaimRefund(baseLpDetail?.state)}
+      />
+    </>
+  )
+}
+
+export const OrderTips = () => {
+  const { pool } = usePoolContext()
+  return (
+    <>
+      <OrderTip />
+      {pool && (
+        <Info className="mt-[20px]">
+          <Trans>
+            Only holding {pool?.quoteSymbol || '--'}?{' '}
+            <a href={`/earn/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
+              [{`m${pool?.quoteSymbol}.${pool?.baseSymbol}`}↗]
+            </a>{' '}
+          </Trans>
+        </Info>
+      )}
+    </>
   )
 }

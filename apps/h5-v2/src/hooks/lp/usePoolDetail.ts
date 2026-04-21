@@ -10,15 +10,18 @@ import {
   COMMON_LP_AMOUNT_DECIMALS,
   COMMON_PRICE_DECIMALS,
   formatUnits,
+  MarketPoolState,
   parseUnits,
   pool as Pool,
 } from '@myx-trade/sdk'
 import {
   getBaseLPDetail,
   getMarketPoolPrice,
+  getPoolBoostInfo,
   getPoolRiskLevelConfig,
   getQuoteLPDetail,
-} from '@/request'
+  getRiskGlobalConfig,
+} from '@/request/lp'
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
 import Big from 'big.js'
 import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
@@ -107,6 +110,14 @@ export const usePoolDetail = (poolType: PoolType) => {
   const prevPriceRef = useRef<string | undefined>(undefined)
   const [mode, setMode] = useState<Mode>(Mode.Rise)
 
+  const { data: boostedPrimeTvl } = useQuery({
+    queryKey: [{ key: 'boostedPrimeTvl' }],
+    queryFn: async () => {
+      const res = await getRiskGlobalConfig()
+      return res?.data?.boostedPrimeTvl || '0'
+    },
+  })
+
   const { data: lpDetail, refetch } = useQuery({
     queryKey: [
       { key: poolType === PoolType.quote ? 'getQuotePoolDetail' : 'getBasePoolDetail' },
@@ -124,7 +135,20 @@ export const usePoolDetail = (poolType: PoolType) => {
       return {} as BaseLpDetail
     },
     placeholderData: (prev) => prev,
+    refetchInterval: 1000 * 10,
   })
+
+  const { data: boostInfo, refetch: refetchBoostInfo } = useQuery({
+    queryKey: [{ key: 'boostInfo' }, chainId, poolId, lpDetail?.state],
+    enabled: !!chainId && !!poolId && lpDetail?.state === MarketPoolState.Boosted,
+    queryFn: async () => {
+      if (!chainId || !poolId || lpDetail?.state !== MarketPoolState.Boosted) return
+      const res = await getPoolBoostInfo(+chainId, poolId)
+      return res?.data
+    },
+    refetchInterval: 1000 * 10,
+  })
+
   const { data: pool } = useQuery({
     queryKey: [{ key: 'pool_detail_by_poolId' }, poolId, chainId, markets?.length],
     enabled: Boolean(poolId && chainId && markets?.length),
@@ -255,5 +279,8 @@ export const usePoolDetail = (poolType: PoolType) => {
     poolInfoRefetch,
     markets,
     riskLevelConfig,
+    boostedPrimeTvl,
+    boostInfo,
+    refetchBoostInfo,
   }
 }

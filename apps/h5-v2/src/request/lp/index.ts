@@ -22,6 +22,8 @@ import type {
   LineChartsRequestParams,
   TvlHistoryResponse,
   ExchangeRateHistoryResponse,
+  RiskGlobalConfigResponse,
+  PoolBoostResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -231,6 +233,9 @@ export const getMarketPoolStateData = async (
   return await http.post(`${baseUrl}/openapi/gateway/scan/market/base_token_state`, params)
 }
 
+export const getRiskGlobalConfig = async (): Promise<RiskGlobalConfigResponse> => {
+  return await http.get(`${baseUrl}/openapi/gateway/risk/global_configs`)
+}
 export const getPoolRiskLevelConfig = async (
   poolId: string,
   chainId: number,
@@ -286,5 +291,14 @@ export const getExchangeRateLineCharts = async (params: LineChartsRequestParams)
   return await http.get<ExchangeRateHistoryResponse>(
     `${baseUrl}/openapi/gateway/scan/market/exchange-rate-history`,
     params,
+  )
+}
+
+export const getPoolBoostInfo = async (
+  chainId: number,
+  poolId: string,
+): Promise<PoolBoostResponse> => {
+  return await http.get(
+    `${baseUrl}/openapi/gateway/scan/market_pool/boost?poolId=${poolId}&chainId=${chainId}`,
   )
 }
