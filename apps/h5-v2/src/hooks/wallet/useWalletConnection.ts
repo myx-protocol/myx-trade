@@ -7,6 +7,7 @@ import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import useGlobalStore from '@/store/globalStore'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '@/pages/Trade/types'
+import { detectInAppBrowser } from '@/utils'
 
 export const useWalletConnection = () => {
   const { address, isConnected, isConnecting, chainId } = useAccount()
@@ -41,7 +42,19 @@ export const useWalletConnection = () => {
   const connectWallet = useCallback(
     async (walletItem: { id: string; connectorId: string; name: string }) => {
       try {
-        const connector = connectors.find((connector) => connector.id === walletItem.connectorId)
+        let connector = connectors.find((c) => c.id === walletItem.connectorId)
+
+        // In in-app browsers, EIP-6963 RDNS may not be available, so the registered
+        // connector ID won't match the expected connectorId (e.g. 'com.bitget.web3').
+        // Fall back to the provider-specific or generic injected connector instead of
+        // jumping straight to WalletConnect (which shows a QR code modal that's useless
+        // in an in-app browser).
+        if (!connector) {
+          const inApp = detectInAppBrowser()
+          if (inApp) {
+            connector = connectors.find((c) => inApp.connectorIds.includes(c.id))
+          }
+        }
 
         if (connector) {
           try {
@@ -91,5 +104,7 @@ export const useWalletConnection = () => {
     chainId,
     isWrongNetwork,
     switchChain,
+    // null = 普通浏览器；有值 = 内置浏览器，只应展示对应钱包
+    inAppWallet: detectInAppBrowser(),
   }
 }
