@@ -233,6 +233,9 @@ export const getMarketPoolStateData = async (
   return await http.post(`${baseUrl}/openapi/gateway/scan/market/base_token_state`, params)
 }
 
+export const getRiskGlobalConfig = async (): Promise<RiskGlobalConfigResponse> => {
+  return await http.get(`${baseUrl}/openapi/gateway/risk/global_configs`)
+}
 export const getPoolRiskLevelConfig = async (
   poolId: string,
   chainId: number,
