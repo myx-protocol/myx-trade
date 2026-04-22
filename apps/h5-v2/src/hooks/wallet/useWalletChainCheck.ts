@@ -4,7 +4,7 @@ import { getAsSupportedChainIdFn } from '@/config/chain'
 import { sleep } from '@/utils'
 
 export const useWalletChainCheck = () => {
-  const { chainId, isConnected, connector } = useAccount()
+  const { chainId, isConnected } = useAccount()
   const { switchChainAsync } = useSwitchChain()
   const { data: walletClient } = useWalletClient()
 
@@ -12,18 +12,17 @@ export const useWalletChainCheck = () => {
     async (targetChainId?: number) => {
       const _targetChainId = getAsSupportedChainIdFn(targetChainId)
       if (isConnected && _targetChainId !== chainId) {
-        const isBitget = connector?.id === 'com.bitget.web3'
-        if (isBitget) {
-          await walletClient?.switchChain({ id: _targetChainId })
-        } else {
+        try {
           await switchChainAsync({ chainId: _targetChainId })
+        } catch {
+          await walletClient?.switchChain({ id: _targetChainId })
         }
         await sleep(5000)
         return true
       }
       return Promise.resolve(true)
     },
-    [chainId, isConnected, connector, switchChainAsync, walletClient],
+    [chainId, isConnected, switchChainAsync, walletClient],
   )
 
   return {
