@@ -63,7 +63,10 @@ export const showErrorToast = (error?: any) => {
       toast.error({ title: MYXSDKErrorMapping[code as keyof typeof MYXSDKErrorMapping] })
       return
     }
-
+    if (isUserRejection(message ?? '', code)) {
+      toast.error({ title: t`User Rejected` })
+      return
+    }
     if (message && CommonErrorMapping[message]) {
       toast.error({ title: CommonErrorMapping[message] })
       return
