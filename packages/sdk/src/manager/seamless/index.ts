@@ -189,7 +189,8 @@ export class Seamless {
       };
       return [tradingRouterPermitParams];
     } catch (error) {
-      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, "Invalid private key generated");
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, `getUSDPermitParams failed: ${msg}`);
     }
   }
 
@@ -383,6 +384,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
+        this.logger.info('getUSDPermitParams', deadline, chainId, forwardFeeToken)
         permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
       } catch (error) {
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
