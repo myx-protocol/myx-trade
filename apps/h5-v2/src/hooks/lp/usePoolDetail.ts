@@ -38,8 +38,10 @@ type ReserveInfo = {
   quoteTotalAmount: bigint
   quoteReservedAmount: bigint
 }
-function calculationTvl<T extends { reserveInfo: ReserveInfo }>(poolInfo: T, oraclePrice: string) {
-  const { reserveInfo } = poolInfo
+function calculationTvl<
+  T extends { reserveInfo: ReserveInfo; baseTokenDecimals: number; quoteTokenDecimals: number },
+>(poolInfo: T, oraclePrice: string) {
+  const { reserveInfo, baseTokenDecimals, quoteTokenDecimals } = poolInfo
   const baseSize = reserveInfo.baseTotalAmount
   const quoteSize = reserveInfo.quoteTotalAmount
 
@@ -47,8 +49,16 @@ function calculationTvl<T extends { reserveInfo: ReserveInfo }>(poolInfo: T, ora
   const quoteLpPrice = parseUnits('1', COMMON_PRICE_DECIMALS)
 
   const baseTvl = baseSize * lpPrice
-  const quoteTvl = quoteSize * quoteLpPrice
-  const tvl = formatUnits(baseTvl + quoteTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS)
+  const quoteTvl = quoteSize
+
+  const _baseTvl = formatUnits(baseTvl, baseTokenDecimals + COMMON_PRICE_DECIMALS)
+  const _quoteTvl = formatUnits(quoteTvl, quoteTokenDecimals)
+
+  const tvl = Big(_baseTvl).add(Big(_quoteTvl)).toString()
+  // const tvl = formatUnits(baseTvl + quoteTvl, baseTokenDecimals + COMMON_PRICE_DECIMALS)
+  console.log('baseTvl:', _baseTvl)
+  console.log('quoteTvl:', _quoteTvl)
+  console.log('tvl:', tvl)
   /*console.log('tvl:', tvl)
   console.log('basePool.poolTokenSupply:', basePool.poolTokenSupply)
   console.log('basePool.price:', basePool.poolTokenPrice)
@@ -57,8 +67,8 @@ function calculationTvl<T extends { reserveInfo: ReserveInfo }>(poolInfo: T, ora
   console.log('quotePool.poolTokenPrice:', quotePool.poolTokenPrice)*/
   return {
     totalTvl: tvl,
-    baseTvl: formatUnits(baseTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS),
-    quoteTvl: formatUnits(quoteTvl, COMMON_LP_AMOUNT_DECIMALS + COMMON_PRICE_DECIMALS),
+    baseTvl: _baseTvl,
+    quoteTvl: _quoteTvl,
   }
 }
 
@@ -188,7 +198,14 @@ export const usePoolDetail = (poolType: PoolType) => {
           const info = {
             price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
             exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-            tvl: calculationTvl(result, tickerData?.price ?? oraclePrice),
+            tvl: calculationTvl(
+              {
+                reserveInfo: result.reserveInfo,
+                baseTokenDecimals: pool?.baseDecimals,
+                quoteTokenDecimals: pool?.quoteDecimals,
+              },
+              tickerData?.price ?? oraclePrice,
+            ),
             fundingInfo: result.fundingInfo,
             oraclePrice: tickerData?.price ?? oraclePrice,
           } as PoolInfo
