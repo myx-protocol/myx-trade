@@ -29,15 +29,19 @@ type BaseQuotePoolInfo = {
   exchangeRate: bigint
   poolTokenPrice: bigint
 }
-function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: BaseQuotePoolInfo }>(
-  poolInfo: T,
-) {
-  const { basePool, quotePool } = poolInfo
-  const baseSize = basePool.poolTokenSupply
-  const quoteSize = quotePool.poolTokenSupply
+type ReserveInfo = {
+  baseTotalAmount: bigint
+  baseReservedAmount: bigint
+  quoteTotalAmount: bigint
+  quoteReservedAmount: bigint
+}
+function calculationTvl<T extends { reserveInfo: ReserveInfo }>(poolInfo: T, oraclePrice: string) {
+  const { reserveInfo } = poolInfo
+  const baseSize = reserveInfo.baseTotalAmount
+  const quoteSize = reserveInfo.quoteTotalAmount
 
-  const lpPrice = basePool.poolTokenPrice
-  const quoteLpPrice = quotePool.poolTokenPrice
+  const lpPrice = parseUnits(oraclePrice, COMMON_PRICE_DECIMALS)
+  const quoteLpPrice = parseUnits('1', COMMON_PRICE_DECIMALS)
 
   const baseTvl = baseSize * lpPrice
   const quoteTvl = quoteSize * quoteLpPrice
@@ -160,7 +164,7 @@ export const usePoolDetail = (poolType: PoolType) => {
           const info = {
             price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
             exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-            tvl: calculationTvl(result),
+            tvl: calculationTvl(result, tickerData?.price ?? oraclePrice),
             fundingInfo: result.fundingInfo,
             oraclePrice: tickerData?.price ?? oraclePrice,
           } as PoolInfo
