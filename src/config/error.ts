@@ -34,65 +34,84 @@ function isUserRejected(error: any): boolean {
   let err = error
   
   while (err) {
-    if (err.name === "UserRejectedRequestError") return true
+    // 1️⃣ viem 标准
+    if (err.name === 'UserRejectedRequestError') return true
+    
+    // 2️⃣ EIP-1193 标准
+    if (err.code === ErrorCode.USER_REJECTED_REQUEST) return true
+    
+    // 3️⃣ message 兜底（兼容各种钱包）
+    const msg = (err.message || '').toLowerCase()
+    if (
+      msg.includes('user rejected') ||
+      msg.includes('user denied') ||
+      msg.includes('rejected the request')
+    ) {
+      return true
+    }
+    
     err = err.cause
   }
   
   return false
 }
 
-export function didUserReject(error: any): boolean {
-  return (
-    error?.code === ErrorCode.USER_REJECTED_REQUEST
-    // || (connection.type === ConnectionTypeEnum.WALLET_CONNECT_V2 && error?.toString?.() === ErrorCode.WC_V2_MODAL_CLOSED)
-    // || (connection.type === ConnectionTypeEnum.COINBASE_WALLET && error?.toString?.() === ErrorCode.CB_REJECTED_REQUEST)
-  )
+function extractMessage(err: any): string {
+  if (!err) return 'Unknown error'
+  
+  // 🔥 1️⃣ viem custom error（最关键）
+  if (err?.data?.errorName) {
+    return `${err.data.errorName}()`
+  }
+  
+  // 有些版本在 metaMessages
+  if (Array.isArray(err?.metaMessages)) {
+    const match = err.metaMessages.find((m: string) =>
+      m.includes('Error:')
+    )
+    if (match) {
+      return match.replace('Error: ', '').trim()
+    }
+  }
+  
+  // 2️⃣ 递归 cause
+  if (err?.cause) {
+    return extractMessage(err.cause)
+  }
+  
+  // 3️⃣ reason（部分 RPC）
+  if (err?.reason) {
+    return err.reason
+  }
+  
+  // 4️⃣ shortMessage（兜底）
+  if (err?.shortMessage) {
+    return err.shortMessage
+  }
+  
+  // 5️⃣ message（最后兜底）
+  if (err?.message) {
+    return err.message
+  }
+  
+  return String(err)
 }
 
 export async function getErrorTextFormError(error: any) {
-  const message = error?.shortMessage ||
-    error?.details ||
-    error?.message
-  
   if (typeof error === "string") {
-    return {error}
+    return { error }
   }
   
-  if(isUserRejected(error)) {
-    return {error: Errors[ErrorCode.USER_REJECTED_REQUEST]}
+  if (isUserRejected(error)) {
+    return { error: Errors[ErrorCode.USER_REJECTED_REQUEST] }
   }
   
-  // const decodeErrorResult = await errorDecoder.decode(error)
-  // // decodeErrorResult available for debugging if host sets log sink
-  // if (decodeErrorResult.type === ErrorType.UserRejectError || decodeErrorResult.name === "ACTION_REJECTED") {
-  //   return {
-  //     error: Errors[ErrorCode.USER_REJECTED_REQUEST],
-  //   }
-  // }
-  // if (decodeErrorResult.type === ErrorType.CustomError) {
-  //   const errorKey = Object.keys(customErrorMapping).find((k) =>  k.toLowerCase() === decodeErrorResult.selector.toLowerCase())
-  //   if (errorKey) {
-  //     return {
-  //       error:{
-  //         code:  errorKey,
-  //         message:  customErrorMapping[errorKey]
-  //       },
-  //     }
-  //   }
-  //   return {
-  //     error: {
-  //       code: error?.code,
-  //       message: error?.reason || decodeErrorResult.reason || error.message
-  //     },
-  //   }
-  // }
-  //
-  // // console.error(error)
+  const message = extractMessage(error)
   
   return {
     error: {
-      code: error?.code || error?.name || 'Unknow Error',
-      message
+      code: error?.code || error?.name || 'Unknown Error',
+      message,
     },
   }
 }
