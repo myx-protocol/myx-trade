@@ -2,7 +2,7 @@ import { MYXSDKErrorMapping, type SDKError } from './MYX_SDK_ERRORS.tsx'
 import { toast } from '@/components/UI/Toast'
 import { CommonErrorMapping } from '@/config/error/CommonErrorMapping.tsx'
 
-const isSDKError = (err: any): err is SDKError => {
+export const isSDKError = (err: any): err is SDKError => {
   return err && err.error
 }
 

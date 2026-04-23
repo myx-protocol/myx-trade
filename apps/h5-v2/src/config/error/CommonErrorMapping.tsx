@@ -294,4 +294,5 @@ export const CommonErrorMapping: Record<string, ReactElement> = {
   'NotInDisputeMode()': <Trans>NotInDisputeMode()</Trans>,
   'OrderExpired(OrderId)': <Trans>OrderExpired(OrderId)</Trans>,
   'PoolNotInitialized()': <Trans>PoolNotInitialized()</Trans>,
+  'BoostFeeClaimFailed()': <Trans>Refund already claimed.</Trans>,
 }
