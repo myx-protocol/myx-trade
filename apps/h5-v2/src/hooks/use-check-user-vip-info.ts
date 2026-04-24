@@ -232,6 +232,7 @@ export const useCheckUserVipInfo = () => {
             totalReferralRebatePct: vipInfo?.rebatePct as number,
             referrerRebatePct: vipInfo?.rebateReferrerPct as number,
             nonce: vipInfo?.nonce as unknown as string,
+            expiry: vipInfo?.vipExpireTime,
           },
           vipInfo?.signature as string,
         )
