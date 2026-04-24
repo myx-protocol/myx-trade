@@ -187,7 +187,6 @@ export const useCheckUserVipInfo = () => {
             toast.error({ title: t`Insufficient balance to pay execution fee` })
             return false
           }
-          const currentFeeDataEpoch = await client?.account.getCurrentFeeDataEpoch(resolvedChainId)
 
           const rs = await forwardSeamlessTransaction({
             chainId: resolvedChainId,
@@ -200,12 +199,12 @@ export const useCheckUserVipInfo = () => {
                 user: vipInfo?.account as string,
                 nonce: vipInfo?.nonce as unknown as string,
                 deadline: vipInfo?.deadline as number,
-                feeDataEpoch: currentFeeDataEpoch,
                 feeData: {
                   tier: vipInfo?.vipTier,
                   referrer: (vipInfo?.rebateAddr as string) || zeroAddress,
                   totalReferralRebatePct: vipInfo?.rebatePct as number,
                   referrerRebatePct: vipInfo?.rebateReferrerPct as number,
+                  expiry: vipInfo?.vipExpireTime as number,
                 },
                 signature: vipInfo?.signature as string,
               },

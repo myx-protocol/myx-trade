@@ -2,9 +2,9 @@ import { isBetaMode, isProdMode } from '@/utils/env'
 
 // Test 环境配置
 const TEST_DEFAULT_PAIR_PATH =
-  '/trade/421614/0xe15b4b8b65b288b50a6ef41919471a9461b70947ca9d5f78e6cf00afc50cd361'
+  '/trade/421614/0x26a56b66b81f8bbd7e8e0d81d2eda4138d9f13df301bf64efadc76784f08ad7b'
 const TEST_DEFAULT_PRICE_PATH =
-  '/price/421614/0xe15b4b8b65b288b50a6ef41919471a9461b70947ca9d5f78e6cf00afc50cd361'
+  '/price/421614/0x26a56b66b81f8bbd7e8e0d81d2eda4138d9f13df301bf64efadc76784f08ad7b'
 
 // Beta 环境配置 - 请配置 Beta 环境的路径
 const BETA_DEFAULT_PAIR_PATH =
