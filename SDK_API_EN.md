@@ -752,6 +752,25 @@ Get detailed account info for a pool (free margin, unrealized PnL, etc.).
 | code | `number` | Status code; 0 = success |
 | data | `AccountInfo` | Account details including freeMargin and quoteProfit |
 
+### account.getWalletQuoteTokenBalance `[On-chain]`
+
+Query the wallet's quote token balance (e.g. USDC) for a given chain.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` | Chain ID |
+| tokenAddress | `string` | Quote token contract address |
+| address | `string` (optional) | Wallet address to query; defaults to the connected signer address |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data | `bigint` | Token balance in raw token decimals |
+
 ### account.getAccountVipInfo `[On-chain]`
 
 Check the account's VIP tier and fee-rate configuration.
@@ -771,31 +790,35 @@ Check the account's VIP tier and fee-rate configuration.
 | referrer | `string` | Referrer address |
 | totalReferralRebatePct | `number` | Total referral rebate percentage |
 | referrerRebatePct | `number` | Referrer's share of the rebate |
-| nonce | `number` | Current nonce for fee data signing |
+| nonce | `string` | Current nonce for fee data signing |
 | deadline | `number` | Signature deadline timestamp |
 
-### account.getCurrentFeeDataEpoch `[On-chain]`
+### account.getAccountVipInfoByBackend `[Backend]`
 
-Get the current fee-data epoch number.
+Fetch the backend-signed VIP fee configuration for an account. Use the `deadline` and `nonce` from `getAccountVipInfo` as inputs; the response includes the `signature` required by `setUserFeeData`.
 
 **Parameters:**
 
 | Name | Type | Description |
 |------|------|-------------|
+| address | `` `0x${string}` `` | Wallet address to query |
 | chainId | `number` | Chain ID |
+| deadline | `number` | Signature expiry Unix timestamp |
+| nonce | `string` | Current nonce (obtained from `getAccountVipInfo`) |
 
 **Returns:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| (return value) | `bigint` | Current fee data epoch number |
+| code | `number` | Status code; 0 = success |
+| data | `object` | Backend-signed VIP fee data including signature |
 
 ### account.setUserFeeData `[On-chain]`
 
-Apply a backend EIP-712 signed VIP fee tier and referral configuration to the account on-chain; the contract verifies that epoch and nonce match strictly and the deadline has not expired, ensuring replay protection.
+Apply a backend EIP-712 signed VIP fee tier and referral configuration to the account on-chain; the contract verifies that nonce and deadline match strictly, ensuring replay protection.
 
 > Underlying contract: `Broker.setUserFeeData`
-> On-chain verification order: ① epoch matches current era → ② signer is in the authorized set → ③ deadline not expired → ④ nonce == userNonce + 1
+> On-chain verification order: ① signer is in the authorized set → ② deadline not expired → ③ nonce == userNonce + 1
 
 **Parameters:**
 
@@ -808,7 +831,8 @@ Apply a backend EIP-712 signed VIP fee tier and referral configuration to the ac
 | feeData.referrer | `string` | Referrer address (zero address if no referrer) |
 | feeData.totalReferralRebatePct | `number` | Total referral rebate percentage (precision 1e8; 100_000_000 = 100%) |
 | feeData.referrerRebatePct | `number` | Referrer's share of rebate (≤ totalReferralRebatePct) |
-| feeData.nonce | `number` | Must equal on-chain userNonce + 1 |
+| feeData.expiry | `number` | Expiry timestamp for the fee data |
+| feeData.nonce | `string` | Must equal on-chain userNonce + 1 |
 | signature | `string` | Backend-issued EIP-712 signature from the authorized signer |
 
 **Returns:**
