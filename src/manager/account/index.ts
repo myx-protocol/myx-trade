@@ -186,10 +186,7 @@ export class Account {
     const deadline = Number(latestBlock?.timestamp ?? BigInt(dayjs().unix())) + 60 * 5;
 
     try {
-      const currentEpoch = await this.getCurrentFeeDataEpoch(chainId)
-      this.logger.debug('setUserFeeDataEpoch-->', currentEpoch)
-      
-      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch, address as `0x${string}`]);
+
       let nonce: bigint;
       try {
         nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
@@ -198,7 +195,7 @@ export class Account {
       }
       return {
         code: 0,
-        data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
+        data: { nonce: nonce.toString(), deadline },
       };
     } catch (error) {
       return {
@@ -231,15 +228,6 @@ export class Account {
     }
   }
 
-  async getCurrentFeeDataEpoch(chainId: number) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
-    const brokerContract = await getBrokerContract(chainId, config.brokerAddress);
-
-    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
-
-    return currentFeeDataEpoch
-  }
 
   async setUserFeeData(
     address: string,
