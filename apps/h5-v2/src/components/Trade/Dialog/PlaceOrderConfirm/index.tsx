@@ -44,7 +44,7 @@ export const PlaceOrderConfirmDialog = () => {
     tpSlOpen,
   } = useTradePanelStore()
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
-  const { submitOrder, submitLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
@@ -539,7 +539,10 @@ export const PlaceOrderConfirmDialog = () => {
         </div>
         <div className="mt-[20px]">
           <DialogConfirmFooter
-            loading={submitLoading}
+            loading={
+              submitLoading ||
+              (direction === Direction.LONG ? longAsyncVipLoading : shortAsyncVipLoading)
+            }
             onConfirm={() => {
               submitOrder(placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT)
             }}

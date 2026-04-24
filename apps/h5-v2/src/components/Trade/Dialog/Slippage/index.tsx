@@ -73,7 +73,7 @@ export const SlippageDialog = ({
             defaultValue={defaultSlippage * 100}
             value={openSlippageValue}
             onChange={(value) => setOpenSlippageValue(value)}
-            maxSlippage={100}
+            maxSlippage={99.99}
           />
         </div>
         <div className="flex items-center gap-[24px]">
@@ -91,7 +91,7 @@ export const SlippageDialog = ({
             defaultValue={defaultSlippage * 100}
             value={closeSlippageValue}
             onChange={(value) => setCloseSlippageValue(value)}
-            maxSlippage={100}
+            maxSlippage={99.99}
           />
         </div>
 
@@ -110,7 +110,7 @@ export const SlippageDialog = ({
             defaultValue={defaultSlippage * 100}
             value={tpSlSlippageValue}
             onChange={(value) => setTpSlSlippageValue(value)}
-            maxSlippage={100}
+            maxSlippage={99.99}
           />
         </div>
         {/* footer */}

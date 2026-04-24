@@ -18,7 +18,7 @@ import { useSubmitOrder } from '@/components/Trade/TradePanel/PlaceOrder/hooks/u
 
 export const CloseConfirmDialog = () => {
   const { longSize, shortSize, price, amountUnit } = useTradePanelStore()
-  const { submitOrder, submitLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
   const { symbolInfo } = useGlobalStore()
 
   const {
@@ -124,7 +124,7 @@ export const CloseConfirmDialog = () => {
 
       <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
         <PrimaryButton
-          loading={submitLoading}
+          loading={submitLoading || longAsyncVipLoading || shortAsyncVipLoading}
           onClick={async () => {
             // try {
             // setLoading(true)

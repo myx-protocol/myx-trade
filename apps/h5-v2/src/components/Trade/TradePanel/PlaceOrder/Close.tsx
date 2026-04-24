@@ -21,7 +21,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
   const { shortSize, longSize, amountUnit } = useTradePanelStore()
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { symbolInfo } = useGlobalStore()
-  const { submitOrder, submitLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
   const { showCloseOrderConfirmDialog, setCloseOrderConfirmDialogOpen } = useGlobalStore()
   const displayLongSize = useMemo(() => {
     if (!showOrderSize) return '0'
@@ -58,7 +58,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
           color: isNoTradable ? 'rgba(255,255,255,0.15) !important' : 'white',
         }}
         disabled={isNoTradable}
-        loading={submitLoading}
+        loading={submitLoading || longAsyncVipLoading}
         onClick={() => {
           if (isNoTradable) {
             return
@@ -122,7 +122,7 @@ export const ClosePosition = ({ showOrderSize = true }: ClosePositionProps) => {
           color: isNoTradable ? 'rgba(255,255,255,0.15) !important' : 'white',
         }}
         disabled={isNoTradable}
-        loading={submitLoading}
+        loading={submitLoading || shortAsyncVipLoading}
         onClick={() => {
           if (isNoTradable) {
             return

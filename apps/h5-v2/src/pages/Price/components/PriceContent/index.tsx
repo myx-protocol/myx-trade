@@ -16,7 +16,7 @@ import { useLeverageDialogStore } from '@/components/Trade/Dialog/Leverage/store
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import { AssetsDialogButton } from '@/components/Trade/TradePanel/BalanceAndMarginMode'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
-import { displayAmount, formatNumberWithBaseToken } from '@/utils/number'
+import { formatNumberWithBaseToken } from '@/utils/number'
 import useGlobalStore from '@/store/globalStore'
 import ToTrade from '@/components/Icon/set/ToTrade'
 import { AmountInput } from './AmountInput'
@@ -101,7 +101,6 @@ export const PriceContent = () => {
   }
 
   const {
-    amountUnit,
     resetStore,
     setOrderType,
     setAutoMarginMode,
@@ -113,8 +112,6 @@ export const PriceContent = () => {
     setSlValue,
     setPositionAction,
     setAmountSliderValue,
-    longSize,
-    shortSize,
     setAmountUnit,
   } = useTradePanelStore()
   const { tickerData } = useMarketStore()
@@ -139,21 +136,6 @@ export const PriceContent = () => {
     setPrice(marketPrice.toString())
     setAmountUnit(AmountUnitEnum.QUOTE)
   }, [symbolInfo, tickerData, setPrice, setAmountUnit])
-
-  const displayLongSize = useMemo(() => {
-    if (parseBigNumber(longSize).eq(0)) {
-      return '0'
-    }
-
-    return `${displayAmount(longSize)} ${symbolInfo?.quoteSymbol}`
-  }, [longSize, amountUnit, symbolInfo])
-
-  const displayShortSize = useMemo(() => {
-    if (parseBigNumber(shortSize).eq(0)) {
-      return '0'
-    }
-    return `${displayAmount(shortSize)} ${symbolInfo?.quoteSymbol}`
-  }, [shortSize, amountUnit, symbolInfo])
 
   return (
     <>
@@ -212,20 +194,6 @@ export const PriceContent = () => {
             setAmountSliderValue(value)
           }}
         />
-        <div className="mt-[12px] flex items-center justify-between px-[16px]">
-          <div className="flex items-center text-[12px]">
-            <p className="text-tooltip text-[#848E9C]">
-              <Trans>Margin</Trans>
-            </p>
-            <p className="ml-[4px] font-medium text-white">{displayLongSize}</p>
-          </div>
-          <div className="flex items-center text-[12px]">
-            <p className="text-tooltip text-[#848E9C]">
-              <Trans>Margin</Trans>
-            </p>
-            <p className="ml-[4px] font-medium text-white">{displayShortSize}</p>
-          </div>
-        </div>
         <div className="mt-[12px] px-[16px]">
           <CanSwitchWalletNetwork
             targetChainId={symbolInfo?.chainId}
@@ -233,7 +201,7 @@ export const PriceContent = () => {
               marginTop: '8px',
             }}
           >
-            <PlaceOrder showOrderSize={false} />
+            <PlaceOrder />
           </CanSwitchWalletNetwork>
         </div>
         <div className="flex w-full items-center justify-between gap-[20px] border-b border-[#202129] px-[16px]">

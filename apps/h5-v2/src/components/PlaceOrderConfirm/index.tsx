@@ -615,7 +615,7 @@ export const PlaceOrderConfirmDialog = () => {
               {!!(tpValue && !parseBigNumber(tpValue).eq(0)) && (
                 <>
                   <FlexRowLayout
-                    left={t`TP(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
+                    left={t`TP(Market)`}
                     right={
                       <p className="font-medium text-white">
                         {formatNumber(tpInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol}{' '}
@@ -637,7 +637,7 @@ export const PlaceOrderConfirmDialog = () => {
               {!!(slValue && !parseBigNumber(slValue).eq(0)) && (
                 <>
                   <FlexRowLayout
-                    left={t`SL(${orderType === OrderTypeEnum.Market ? `Market` : `Limit`})`}
+                    left={t`SL(Market)`}
                     right={
                       <p className="font-medium text-white">
                         {formatNumber(slInfo.price, { showUnit: false })} {symbolInfo?.quoteSymbol}{' '}

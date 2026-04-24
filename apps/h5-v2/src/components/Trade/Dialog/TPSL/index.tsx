@@ -16,7 +16,7 @@ import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
-import { verifyTpSlPrice } from '@/utils/verify'
+import { verifyTpSlPrice, verifyTpSlTriggerLiqAutoTpBounds } from '@/utils/verify'
 import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import useSWR from 'swr'
@@ -115,11 +115,30 @@ export const TpSlButton = ({
     ? marketPrice.toString()
     : position.entryPrice
 
+  const { getLiqPrice } = useGetLiqPrice({ poolId: position.poolId, chainId: position.chainId })
+  const { poolConfig } = useGetPoolConfig(position.poolId, position.chainId)
+
   const handleConfirm = useCallback(async () => {
     let positionId = ''
     if (position.tokenId) {
       positionId = position.positionId
     }
+
+    const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
+    const maintainMarginRate = poolConfig?.levelConfig?.maintainCollateralRate.toString() ?? '0'
+    const liqPrice = await getLiqPrice({
+      entryPrice: position.entryPrice,
+      collateralAmount: position.collateralAmount,
+      size: position.size,
+      price: marketPrice.toString(),
+      assetClass,
+      fundingRateIndexEntry: position.fundingRateIndex,
+      direction: position.direction,
+      maintainMarginRate,
+    })
+    const earlyClose = position.earlyClosePrice?.toString() ?? '0'
+    const checkLiqAutoTp = (human: string) =>
+      verifyTpSlTriggerLiqAutoTpBounds(human, String(liqPrice), earlyClose, position.direction)
 
     const data: any = {
       chainId: position.chainId,
@@ -139,6 +158,9 @@ export const TpSlButton = ({
     }
 
     if (activeTab === TpSlTabTypeEnum.TPOrSL) {
+      if (!parseBigNumber(tpPrice).eq(0) && !checkLiqAutoTp(tpPrice.toString())) {
+        return
+      }
       if (position.direction === Direction.LONG) {
         if (parseBigNumber(tpPrice).gt(parseBigNumber(comparePrice))) {
           data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
@@ -166,6 +188,9 @@ export const TpSlButton = ({
         data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
         data.tpTriggerType =
           position.direction === Direction.LONG ? TriggerType.GTE : TriggerType.LTE
+        if (!checkLiqAutoTp(tpPrice.toString())) {
+          return
+        }
         const tpVerify = verifyTpSlPrice(
           ethers.parseUnits(comparePrice, 30).toString(),
           data.tpPrice,
@@ -183,6 +208,9 @@ export const TpSlButton = ({
         data.slSize = ethers.parseUnits(slSize, poolInfo.baseDecimals).toString()
         data.slTriggerType =
           position.direction === Direction.LONG ? TriggerType.LTE : TriggerType.GTE
+        if (!checkLiqAutoTp(slPrice.toString())) {
+          return
+        }
         const slVerify = verifyTpSlPrice(
           ethers.parseUnits(comparePrice, 30).toString(),
           data.slPrice,
@@ -366,6 +394,9 @@ export const TpSlButton = ({
     address,
     poolInfo,
     comparePrice,
+    getLiqPrice,
+    poolConfig,
+    marketPrice,
   ])
 
   return (
