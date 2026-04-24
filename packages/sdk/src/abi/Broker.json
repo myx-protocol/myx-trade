@@ -66,11 +66,6 @@
   },
   {
     "type": "error",
-    "name": "InvalidFeeDataEpoch",
-    "inputs": []
-  },
-  {
-    "type": "error",
     "name": "InvalidFeeRate",
     "inputs": []
   },
@@ -527,6 +522,19 @@
   },
   {
     "type": "function",
+    "name": "checkAndResetExpiredTier",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "claimRebate",
     "constant": false,
     "payable": false,
@@ -550,19 +558,6 @@
       }
     ],
     "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "currentFeeDataEpoch",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256"
-      }
-    ]
   },
   {
     "type": "function",
@@ -919,14 +914,6 @@
   },
   {
     "type": "function",
-    "name": "resetAllUserFeeData",
-    "constant": false,
-    "payable": false,
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "setSigner",
     "constant": false,
     "payable": false,
@@ -1000,10 +987,6 @@
             "name": "deadline"
           },
           {
-            "type": "uint64",
-            "name": "feeDataEpoch"
-          },
-          {
             "type": "tuple",
             "name": "feeData",
             "components": [
@@ -1022,6 +1005,10 @@
               {
                 "type": "uint32",
                 "name": "referrerRebatePct"
+              },
+              {
+                "type": "uint64",
+                "name": "expiry"
               }
             ]
           },
@@ -1217,6 +1204,10 @@
           {
             "type": "uint32",
             "name": "referrerRebatePct"
+          },
+          {
+            "type": "uint64",
+            "name": "expiry"
           }
         ]
       }
@@ -1249,10 +1240,6 @@
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
-        "name": "userFeeDataEpoch"
-      },
-      {
         "type": "address",
         "name": "user"
       }
@@ -1273,6 +1260,10 @@
       {
         "type": "uint32",
         "name": "referrerRebatePct"
+      },
+      {
+        "type": "uint64",
+        "name": "expiry"
       }
     ]
   },

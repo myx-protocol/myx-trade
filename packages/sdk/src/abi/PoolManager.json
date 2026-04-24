@@ -46,6 +46,11 @@
   },
   {
     "type": "error",
+    "name": "InvalidParameter",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "LPNotFullyMinted",
     "inputs": []
   },
@@ -145,6 +150,11 @@
   },
   {
     "type": "error",
+    "name": "UnauthorizedUnboost",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "UnexpectedPoolState",
     "inputs": []
   },
@@ -201,20 +211,12 @@
             "name": "poolId"
           },
           {
-            "type": "uint256",
-            "name": "referencePrice"
-          },
-          {
             "type": "uint8",
             "name": "oracleType"
           },
           {
             "type": "uint64",
             "name": "publishTime"
-          },
-          {
-            "type": "uint80",
-            "name": "roundId"
           },
           {
             "type": "bytes",
