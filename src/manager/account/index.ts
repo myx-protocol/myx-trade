@@ -260,13 +260,10 @@ export class Account {
     try {
       const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-      const currentFeeDataEpoch = await this.getCurrentFeeDataEpoch(chainId);
-
       const feeData = {
         user: address,
         nonce: params.nonce,
         deadline: deadline,
-        feeDataEpoch: currentFeeDataEpoch.toString(),
         feeData: {
           tier: params.tier,
           referrer: params.referrer || zeroAddress,
