@@ -142,6 +142,7 @@ export interface QuotePoolListRequest extends PageRequest {
   sortField?: QuoteLPSortField
   sortOrder?: SortOrder
   state?: 0 | 1 // 0=all status market, 1=active market
+  quoteSymbol?: 'USDT' | 'USDC'
 }
 
 export interface QuotePool {

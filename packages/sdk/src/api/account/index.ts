@@ -1,6 +1,6 @@
+import { PaginationParams } from "@/manager";
 import type { Address } from "viem";
-export interface GetHistoryOrdersParams {
-  limit?: number;
+export interface GetHistoryOrdersParams extends PaginationParams {
   chainId?: number;
   poolId?: string;
 }
@@ -66,6 +66,9 @@ export enum ExecTypeEnum {
 }
 
 export interface HistoryOrderItem {
+  id: number
+  positionId: string
+  user: Address
   chainId: number; // chainId
   poolId: string; // poolId
   orderId: number; // orderId
@@ -111,6 +114,13 @@ export enum CloseTypeEnum {
   Increase = 9,
 }
 export interface PositionHistoryItem {
+  broker: Address
+  id: number
+  orderId: number
+  tradingFee: string
+  txHash: string
+  txTime: number
+  user: Address
   chainId: number;
   poolId: string;
   positionId: number;
@@ -129,6 +139,7 @@ export interface PositionHistoryItem {
   userLeverage: number; // leverage
   closeType: CloseTypeEnum; // close type
   avgClosePrice: string; // average close price
+  fundingFee: string
 }
 
 /**
@@ -140,6 +151,13 @@ export enum TradeFlowAccountTypeEnum {
   ReferralReward = 3,
 }
 export interface TradeFlowItem {
+
+  id: number,
+  realizedPnl: string,
+  beforeCollateralAmount: string,
+  afterCollateralAmount: string,
+  baseSymbol: string,
+  quoteSymbol: string,
   chainId: number;
   orderId: number;
   user: Address;

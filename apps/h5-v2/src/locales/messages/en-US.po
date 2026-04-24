@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -4628,6 +4629,14 @@ msgstr ""
 msgid "Upgrade to VIP{0} by trading"
 msgstr ""
 
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDC理财"
+msgstr "USDC理财"
+
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDT理财"
+msgstr "USDT理财"
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
@@ -4675,7 +4684,6 @@ msgid "Vault"
 msgstr ""
 
 #: src/pages/Earn/components/TabBar.tsx
-#: src/pages/Earn/List.tsx
 msgid "Vaults"
 msgstr ""
 
@@ -4953,6 +4961,10 @@ msgstr "Cancel All Orders"
 #: src/store/transactions/options.ts
 msgid "全部撤销"
 msgstr "Cancel All"
+
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "全部理财"
+msgstr "全部理财"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5495,4 +5507,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
