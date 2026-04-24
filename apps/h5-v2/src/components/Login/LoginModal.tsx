@@ -8,7 +8,6 @@ import { ArrowRightIcon } from '../UI/Icon'
 import { LoginItem } from './LoginItem'
 import { socialList, walletList } from './constants'
 import moreIcon from '@/assets/icon/more.svg'
-import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 const RenderRecentLogin = () => {
   const { recentLoginType } = useWalletStore()
@@ -49,12 +48,6 @@ const RenderRecentLogin = () => {
 
 export const LoginModal = () => {
   const { loginModalOpen, setLoginModalOpen, setMoreLoginDrawerOpen } = useWalletStore()
-  const { inAppWallet } = useWalletConnection()
-
-  // In an in-app browser, only show the wallet that matches the environment.
-  const visibleWallets = inAppWallet
-    ? walletList.filter((w) => w.id === inAppWallet.walletId)
-    : walletList.slice(0, 3)
 
   return (
     <DialogBase
@@ -73,7 +66,7 @@ export const LoginModal = () => {
         <div className="h-[1px] flex-1 bg-[#3A404A]" />
       </div>
       <div className="flex items-center justify-between">
-        {visibleWallets.map((item) => (
+        {walletList.slice(0, 3).map((item) => (
           <LoginItem
             key={item.id}
             label={item.name}
@@ -84,31 +77,26 @@ export const LoginModal = () => {
             connectorId={item.connectorId}
           />
         ))}
-        {!inAppWallet &&
-          socialList
-            .slice(0, 1)
-            .map((item) => (
-              <LoginItem
-                key={item.type}
-                label={item.name}
-                icon={item.icon}
-                id={item.type}
-                channel={LoginChannelEnum.SOCIAL}
-                isSingle
-                socialLoginType={item.socialLoginType}
-              />
-            ))}
-        {!inAppWallet && (
-          <div
-            className="flex h-[44px] w-[44px] cursor-pointer items-center justify-center rounded-[6px] border border-[#3A404A]"
-            onClick={() => {
-              setMoreLoginDrawerOpen(true)
-              setLoginModalOpen(false)
-            }}
-          >
-            <img src={moreIcon} alt="more" className="h-[24px] w-[24px]" />
-          </div>
-        )}
+        {socialList.slice(0, 1).map((item) => (
+          <LoginItem
+            key={item.type}
+            label={item.name}
+            icon={item.icon}
+            id={item.type}
+            channel={LoginChannelEnum.SOCIAL}
+            isSingle
+            socialLoginType={item.socialLoginType}
+          />
+        ))}
+        <div
+          className="flex h-[44px] w-[44px] cursor-pointer items-center justify-center rounded-[6px] border border-[#3A404A]"
+          onClick={() => {
+            setMoreLoginDrawerOpen(true)
+            setLoginModalOpen(false)
+          }}
+        >
+          <img src={moreIcon} alt="more" className="h-[24px] w-[24px]" />
+        </div>
       </div>
       <div className="mt-[32px] flex items-center justify-center gap-[10px]">
         <p className="text-[14px] font-[500] text-[#00E3A5]">
