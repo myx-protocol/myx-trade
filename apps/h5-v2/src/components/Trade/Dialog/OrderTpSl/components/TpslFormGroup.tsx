@@ -376,6 +376,7 @@ export const TpslFormGroup = ({
             step={parseBigNumber(maxSize).div(100).toNumber()}
             max={maxSize}
             valueLabelDisplay="auto"
+            valueLabelFormat={(v) => v.toFixed(6)}
             sx={{
               width: '100%',
               boxSizing: 'border-box',
