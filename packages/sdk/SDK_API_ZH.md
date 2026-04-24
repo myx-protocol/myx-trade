@@ -827,6 +827,29 @@ interface AccountInfo {
 | data | `AccountInfo` | 账户详情对象    |
 
 
+### account.getWalletQuoteTokenBalance `[链上]`
+
+查询指定链上钱包的报价代币（如 USDC）余额。
+
+**入参：**
+
+
+| 参数名          | 类型              | 说明                         |
+| ------------ | --------------- | -------------------------- |
+| chainId      | `number`        | 链 ID                       |
+| tokenAddress | `string`        | 报价代币合约地址                   |
+| address      | `string`（可选）    | 查询的钱包地址，不传则使用当前已连接的签名者地址   |
+
+
+**返回值：**
+
+
+| 字段   | 类型       | 说明              |
+| ---- | -------- | --------------- |
+| code | `number` | 状态码，0 为成功       |
+| data | `bigint` | 代币余额（原始代币精度单位）  |
+
+
 ### account.getAccountVipInfo `[链上]`
 
 从链上读取账户的 VIP 等级、推荐人及费率配置。
@@ -849,36 +872,40 @@ interface AccountInfo {
 | referrer               | `string` | 推荐人地址           |
 | totalReferralRebatePct | `number` | 总返佣比例（精度 1e8）   |
 | referrerRebatePct      | `number` | 推荐人返佣比例（精度 1e8） |
-| nonce                  | `number` | 当前链上 nonce      |
+| nonce                  | `string` | 当前链上 nonce      |
 | deadline               | `number` | 签名过期时间戳         |
 
 
-### account.getCurrentFeeDataEpoch `[链上]`
+### account.getAccountVipInfoByBackend `[后端]`
 
-获取当前费率数据的 epoch 轮次，VIP 费率设置流程中使用。
+从后端获取账户的 VIP 费率签名数据。以 `getAccountVipInfo` 返回的 `deadline` 和 `nonce` 作为入参，响应中包含 `setUserFeeData` 所需的 `signature`。
 
 **入参：**
 
 
-| 参数名     | 类型       | 说明   |
-| ------- | -------- | ---- |
-| chainId | `number` | 链 ID |
+| 参数名      | 类型              | 说明                               |
+| -------- | --------------- | -------------------------------- |
+| address  | ``0x${string}`` | 用户钱包地址                           |
+| chainId  | `number`        | 链 ID                             |
+| deadline | `number`        | 签名过期 Unix 时间戳                    |
+| nonce    | `string`        | 当前 nonce（从 `getAccountVipInfo` 获取） |
 
 
 **返回值：**
 
 
-| 字段  | 类型       | 说明            |
-| --- | -------- | ------------- |
-| —   | `bigint` | 当前费率 epoch 轮次 |
+| 字段   | 类型       | 说明                  |
+| ---- | -------- | ------------------- |
+| code | `number` | 状态码，0 为成功           |
+| data | `object` | 含签名的后端 VIP 费率数据对象   |
 
 
 ### account.setUserFeeData `[链上]`
 
-使用后端 EIP-712 签名在链上为当前账户绑定 VIP 费率等级和推荐人返佣配置；链上合约验证 epoch、nonce 严格匹配且未过期，确保防重放安全。
+使用后端 EIP-712 签名在链上为当前账户绑定 VIP 费率等级和推荐人返佣配置；链上合约验证 nonce 和 deadline 严格匹配，确保防重放安全。
 
 > 底层合约：`Broker.setUserFeeData`  
-> 链上验证顺序：① epoch 匹配当前纪元 → ② 签名者在授权集合中 → ③ deadline 未过期 → ④ nonce == userNonce + 1
+> 链上验证顺序：① 签名者在授权集合中 → ② deadline 未过期 → ③ nonce == userNonce + 1
 
 **入参：**
 
@@ -892,7 +919,8 @@ interface AccountInfo {
 | feeData.referrer               | `string`        | 推荐人地址（无推荐传零地址）                    |
 | feeData.totalReferralRebatePct | `number`        | 总返佣比例（精度 1e8，100_000_000 = 100%）  |
 | feeData.referrerRebatePct      | `number`        | 推荐人返佣比例（≤ totalReferralRebatePct） |
-| feeData.nonce                  | `number`        | 必须等于链上 userNonce + 1              |
+| feeData.expiry                 | `number`        | 费率数据的过期时间戳                        |
+| feeData.nonce                  | `string`        | 必须等于链上 userNonce + 1              |
 | signature                      | `string`        | 后端授权签名者的 EIP-712 签名               |
 
 
