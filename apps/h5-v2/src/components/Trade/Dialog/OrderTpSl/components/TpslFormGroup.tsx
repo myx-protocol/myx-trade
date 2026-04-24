@@ -10,7 +10,13 @@ import { parseBigNumber } from '@/utils/bn'
 import { useOrderTPSLStore } from '../store'
 import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { t } from '@lingui/core/macro'
-import { displayAmount, formatNumber } from '@/utils/number'
+import {
+  autoPriceDecimals,
+  displayAmount,
+  formatNumber,
+  getSuperDecimalScale,
+  isSuperDecimal,
+} from '@/utils/number'
 import { Direction } from '@myx-trade/sdk'
 
 const AmountSliderMarks = [
@@ -58,6 +64,13 @@ export const TpslFormGroup = ({
   const comparePrice =
     currentPrice && parseBigNumber(currentPrice).gt(0) ? currentPrice.toString() : entryPrice
 
+  const decimalScale = useMemo(() => {
+    if (isSuperDecimal(comparePrice)) {
+      return getSuperDecimalScale(Number(comparePrice))
+    } else {
+      return autoPriceDecimals(Number(comparePrice))
+    }
+  }, [comparePrice])
   // 初始化默认值：优先使用 order.tpSize/slSize，否则使用 order.size（100%）
   useEffect(() => {
     if (maxSize) {
@@ -204,7 +217,7 @@ export const TpslFormGroup = ({
             placeholder={currentPrice?.toString() ?? t`触发价格`}
             autoFocus={type === 'tp'}
             value={targetPrice}
-            decimalScale={6}
+            decimalScale={decimalScale}
             inputMode="text"
             allowLeadingZeros
             onValueChange={({ value }, { source }) => {
@@ -263,7 +276,7 @@ export const TpslFormGroup = ({
             allowNegative={true}
             value={targetRate}
             allowLeadingZeros
-            decimalScale={6}
+            decimalScale={decimalScale}
             inputMode="text"
             onValueChange={({ value, floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
@@ -316,7 +329,7 @@ export const TpslFormGroup = ({
           className="flex-1 text-left"
           placeholder={t`数量`}
           allowLeadingZeros
-          decimalScale={6}
+          decimalScale={decimalScale}
           onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
               // 将中文小数点转换为英文小数点

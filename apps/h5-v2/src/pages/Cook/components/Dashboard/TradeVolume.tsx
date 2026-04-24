@@ -17,12 +17,13 @@ export const TradeVolume = () => {
     queryKey: ['getTrenchTradeVolume'],
     queryFn: async () => {
       const data = await getTrenchTradeVolume()
-      return data?.data || []
+      return (data?.data || []).sort((a, b) => a.time - b.time)
     },
     refetchInterval: 1000 * 60,
   })
   const totalVolume = useMemo(() => {
-    return (data || []).sort((a, b) => b.time - a.time)?.[0]?.value
+    if (!data?.length) return undefined
+    return (data || []).reduce((max, item) => (item.time > max.time ? item : max)).value
   }, [data])
 
   const setData = useCallback((list: LpPriceHistory[]) => {

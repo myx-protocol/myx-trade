@@ -1,13 +1,7 @@
 import { ChainId, getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain'
-import {
-  getMarketList,
-  type MarketInfo,
-  MyxClient,
-  type MyxClientConfig,
-  type SignerLike,
-} from '@myx-trade/sdk'
+import { getMarketList, type MarketInfo, MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { BrowserProvider, type Signer } from 'ethers'
+
 import { useUnmount, useUpdateEffect } from 'ahooks'
 import { useWalletClient } from 'wagmi'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -59,15 +53,11 @@ const createMyxClient = ({ chainId }: CreateMyxClientOptions) => {
   return client
 }
 
-/**
- * Get Siger
- */
-
-const getSigner = async (walletClient: WalletClient | undefined) => {
+const getSigner = (
+  walletClient: WalletClient | undefined,
+): { type: 'walletClient'; value: WalletClient } | null => {
   if (!walletClient) return null
-  const provider = new BrowserProvider(walletClient?.transport)
-  const signer = await provider.getSigner()
-  return signer as Signer
+  return { type: 'walletClient', value: walletClient }
 }
 
 // 为 SDK 提供的 accessToken 获取方法
@@ -192,32 +182,24 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
 
     setClientIsAuthenticated({})
 
-    getSigner(walletClient)
-      .then((signer) => {
-        if (signer) {
-          // auth the all clients
-          const authChainIds: number[] = []
-          myxSdkClientRef.current.forEach((_client, chainId) => {
-            _client.auth({
-              signer: signer as SignerLike,
-              getAccessToken: createGetAccessTokenMethod(address),
-            })
-
-            authChainIds.push(chainId)
-          })
-          setClientIsAuthenticated((prev) => ({
-            ...prev,
-            ...authChainIds.reduce(
-              (acc, chainId) => ({ ...acc, [chainId]: walletClient.account.address }),
-              {},
-            ),
-          }))
-        }
+    const result = getSigner(walletClient)
+    if (result) {
+      const authChainIds: number[] = []
+      myxSdkClientRef.current.forEach((_client, chainId) => {
+        _client.auth({
+          walletClient: result.value,
+          getAccessToken: createGetAccessTokenMethod(address),
+        })
+        authChainIds.push(chainId)
       })
-      .catch((error) => {
-        console.error('Failed to get signer:', error)
-        setClientIsAuthenticated({})
-      })
+      setClientIsAuthenticated((prev) => ({
+        ...prev,
+        ...authChainIds.reduce(
+          (acc, chainId) => ({ ...acc, [chainId]: walletClient.account.address }),
+          {},
+        ),
+      }))
+    }
   }, [walletClient, isWalletConnected, address, refetchWalletClient, client])
 
   useUnmount(() => {

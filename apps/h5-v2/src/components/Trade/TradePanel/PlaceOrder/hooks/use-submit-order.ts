@@ -1,7 +1,14 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useCallback, useState } from 'react'
 import { useTradePanelStore } from '../../store'
-import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
+import {
+  Direction,
+  MarketPoolState,
+  OperationType,
+  OrderType,
+  TimeInForce,
+  TriggerType,
+} from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { ethers } from 'ethers'
 import { useLeverage } from '@/components/Trade/hooks/useLeverage'
@@ -29,6 +36,7 @@ import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seam
 import { useGetAllQuoteTokenAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { buildSubmitOrderToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 // import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
 export const useSubmitOrder = () => {
@@ -84,6 +92,16 @@ export const useSubmitOrder = () => {
     async (direction: Direction) => {
       if (!symbolInfo || !client) return
 
+      if (
+        symbolInfo.state === MarketPoolState.PreBench &&
+        positionAction === PositionActionEnum.OPEN
+      ) {
+        toast.error({
+          title: t`Delisting soon. Only closing positions is allowed`,
+        })
+        return
+      }
+
       await checkWalletChainId(symbolInfo.chainId as number)
 
       const position = positionList?.find(
@@ -97,6 +115,12 @@ export const useSubmitOrder = () => {
       }
 
       const size = direction === Direction.LONG ? longSize : shortSize
+      const displaySize =
+        amountUnit === AmountUnitEnum.BASE
+          ? size
+          : parseBigNumber(size)
+              .div(parseBigNumber(price || '1'))
+              .toString()
 
       let formatTriggerType: TriggerType = TriggerType.NONE
 
@@ -501,9 +525,16 @@ export const useSubmitOrder = () => {
 
               if (rs?.code === 0) {
                 resetStore()
-                toast.success({
-                  title: t`Submit open order success`,
+                const _parts = buildSubmitOrderToastParts({
+                  isIncrease: true,
+                  direction,
+                  size: displaySize,
+                  price,
+                  orderType: orderType as any,
+                  baseSymbol: symbolInfo.baseSymbol,
+                  quoteSymbol: symbolInfo.quoteSymbol,
                 })
+                toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                 setPlaceOrderConfirmDialogOpen(false)
                 await sleep(1500)
                 tradePubSub.emit('place:order:success')
@@ -520,9 +551,16 @@ export const useSubmitOrder = () => {
           )
           if (rs?.code === 0) {
             resetStore()
-            toast.success({
-              title: t`Submit open order success`,
+            const _parts = buildSubmitOrderToastParts({
+              isIncrease: true,
+              direction,
+              size: displaySize,
+              price,
+              orderType: orderType as any,
+              baseSymbol: symbolInfo.baseSymbol,
+              quoteSymbol: symbolInfo.quoteSymbol,
             })
+            toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
             setPlaceOrderConfirmDialogOpen(false)
             await sleep(1500)
             tradePubSub.emit('place:order:success')
@@ -579,17 +617,22 @@ export const useSubmitOrder = () => {
               })
 
               if (rs?.code === 0) {
-                toast.success({
-                  title: t`Submit close order success`,
+                const _parts = buildSubmitOrderToastParts({
+                  isIncrease: false,
+                  direction,
+                  size: displaySize,
+                  price,
+                  orderType: orderType as any,
+                  baseSymbol: symbolInfo.baseSymbol,
+                  quoteSymbol: symbolInfo.quoteSymbol,
                 })
+                toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                 setCloseOrderConfirmDialogOpen(false)
                 resetStore()
                 await sleep(1500)
                 tradePubSub.emit('place:order:success')
               } else {
-                toast.success({
-                  title: t`Submit close order failed`,
-                })
+                showErrorToast(client?.utils.formatErrorMessage(rs))
               }
 
               return
@@ -601,9 +644,16 @@ export const useSubmitOrder = () => {
             collateralAmount: '0',
           } as any)
           if (rs?.code === 0) {
-            toast.success({
-              title: t`Submit close order success`,
+            const _parts = buildSubmitOrderToastParts({
+              isIncrease: false,
+              direction,
+              size: displaySize,
+              price,
+              orderType: orderType as any,
+              baseSymbol: symbolInfo.baseSymbol,
+              quoteSymbol: symbolInfo.quoteSymbol,
             })
+            toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
             setCloseOrderConfirmDialogOpen(false)
             resetStore()
             await sleep(1500)

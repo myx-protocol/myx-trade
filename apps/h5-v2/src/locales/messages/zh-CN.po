@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-15 06:33\n"
+"PO-Revision-Date: 2026-04-17 11:40\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -52,6 +52,13 @@ msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益�
 #: src/pages/Cook/detail/components/TabBar.tsx
 msgid " Trade "
 msgstr " 交易 "
+
+#. placeholder {0}: marketDetail?.baseSymbol
+#. placeholder {0}: marketDetail?.quoteSymbol
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "(Provide {0})"
+msgstr "(提供 {0})"
 
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
 #. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
@@ -277,11 +284,6 @@ msgstr "调整保证金金额大于最大可减少金额"
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust margin amount is greater than the total balance"
 msgstr "调整保证金金额大于总余额"
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Adjust margin success"
-msgstr "调整保证金成功"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjusted Margin"
@@ -842,7 +844,7 @@ msgstr "平掉所有仓位成功"
 msgid "Close Amount"
 msgstr "平仓数量"
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close amount must be greater than 0 {0}"
@@ -1157,6 +1159,10 @@ msgstr "审计"
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
 msgid "Delisted : Market is closed. Only asset redemption is available."
 msgstr "已下架：市场已关闭。仅支持资产赎回。"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Delisting soon. Only closing positions is allowed"
+msgstr "市场即将下架，仅允许平仓操作"
 
 #: src/components/AccountDialog/index.tsx
 #: src/pages/Home/components/AccountInfo/index.tsx
@@ -2323,6 +2329,14 @@ msgstr "逐仓"
 msgid "Isolated {0}x"
 msgstr "逐仓 {0}x"
 
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Cook Pool"
+msgstr "Trench理财"
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Earn Pool"
+msgstr "稳定币理财"
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
 msgstr "加入 MYX，享受 <0>20%</0> 佣金"
@@ -2554,12 +2568,9 @@ msgstr "市值($)"
 msgid "Market Close"
 msgstr "市价平仓"
 
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Market close success"
-msgstr "市价平仓成功"
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Market Delisted"
+msgstr "市场已下架"
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
 msgid "Market info not ready, please try again"
@@ -3046,7 +3057,7 @@ msgstr "开仓"
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open amount must be greater than 0 {0}"
-msgstr "开仓数量必须大于 {0}"
+msgstr "开仓数量必须大于0"
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
@@ -3494,6 +3505,10 @@ msgstr "范围"
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr "排行榜 - 创建任意资产的合约市场 | MYX"
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Reactivate Pool "
+msgstr "重新激活市场"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -4122,26 +4137,6 @@ msgstr "字符串过长 (string)"
 msgid "Sub-chart Indicators"
 msgstr "副图指标"
 
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order failed"
-msgstr "提交平仓订单失败"
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order success"
-msgstr "提交平仓订单成功"
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit open order success"
-msgstr "提交开仓订单成功"
-
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-msgid "Submit tp/sl order success"
-msgstr "提交止盈/止损订单成功"
-
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 msgid "Subscribe"
@@ -4233,6 +4228,10 @@ msgstr "添加流动性后您预计将收到的 LP 代币份额。"
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "The experience will become effective within 10 minutes"
 msgstr "体验将在 10 分钟内生效"
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
+msgstr "当流动性达到门槛后将自动开放交易。向下方任一流动性池添加资金，即可在未来合约交易中赚取 2% 创世手续费分成。"
 
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4449,6 +4448,10 @@ msgstr "交易中：合约交易已开启并正在产生收益。"
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
 msgstr "交易手续费"
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
+msgstr "该市场已下架，当前暂停交易。您可以激活流动性池，让该合约市场重新恢复上线。"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5304,6 +5307,10 @@ msgstr "止盈平仓"
 msgid "止盈止损"
 msgstr "止盈止损"
 
+#: src/utils/order/action-toast.tsx
+msgid "止盈止损更新成功"
+msgstr "止盈止损更新成功"
+
 #: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
@@ -5382,13 +5389,26 @@ msgstr "继续添加"
 msgid "触发价格"
 msgstr "触发价格"
 
+#: src/utils/order/action-toast.tsx
+msgid "订单取消"
+msgstr "订单已取消"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
 msgstr "订单执行超时失效"
 
+#: src/utils/order/action-toast.tsx
+#: src/utils/order/action-toast.tsx
+msgid "订单提交成功"
+msgstr "订单提交成功"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
 msgstr "订单数量超限"
+
+#: src/utils/order/action-toast.tsx
+msgid "调整保证金成功"
+msgstr "调整保证金成功"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"

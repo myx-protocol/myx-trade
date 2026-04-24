@@ -24,6 +24,7 @@ import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seam
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
 import { tradePubSub } from '@/utils/pubsub'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
+import { buildClosePositionToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 export const MarketClosePositionButton = ({
   position,
@@ -231,7 +232,15 @@ export const MarketClosePositionButton = ({
                   })
 
                   if (rs?.code === 0) {
-                    toast.success({ title: t`Market close success` })
+                    const _parts = buildClosePositionToastParts({
+                      direction: position.direction,
+                      size: position.size,
+                      price: marketPrice,
+                      orderType: OrderType.MARKET,
+                      baseSymbol: position.baseSymbol,
+                      quoteSymbol: position.quoteSymbol,
+                    })
+                    toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                     setMarketCloseDialogOpen(false)
                   } else {
                     showErrorToast(client?.utils.formatErrorMessage(rs))
@@ -262,7 +271,15 @@ export const MarketClosePositionButton = ({
                   leverage: position.userLeverage,
                 })
                 if (rs?.code === 0) {
-                  toast.success({ title: t`Market close success` })
+                  const _parts = buildClosePositionToastParts({
+                    direction: position.direction,
+                    size: position.size,
+                    price: marketPrice,
+                    orderType: OrderType.MARKET,
+                    baseSymbol: position.baseSymbol,
+                    quoteSymbol: position.quoteSymbol,
+                  })
+                  toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
                   setMarketCloseDialogOpen(false)
                 } else {
                   showErrorToast(client?.utils.formatErrorMessage(rs))

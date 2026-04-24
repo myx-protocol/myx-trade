@@ -11,6 +11,7 @@ export const bigintTradingGasToRatioCalculator = (gas: bigint, ratio: Number) =>
 export const bigintTradingGasPriceWithRatio = async (chainId: ChainId) => {
   try {
     const chainInfo = CHAIN_INFO[chainId];
+    const minGasPrice= chainInfo?.gasPrice || 0n;
     const client = getPublicClient(chainId);
     const gasPrice = await client.getGasPrice();
     if (gasPrice == null) {
@@ -18,7 +19,7 @@ export const bigintTradingGasPriceWithRatio = async (chainId: ChainId) => {
     }
     const gasPriceWithRatio = bigintTradingGasToRatioCalculator(gasPrice, chainInfo.gasPriceRatio);
     return {
-      gasPrice: gasPriceWithRatio,
+      gasPrice: gasPriceWithRatio > minGasPrice ? gasPriceWithRatio : minGasPrice ,
     }
     
   } catch (e) {

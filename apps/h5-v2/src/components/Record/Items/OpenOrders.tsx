@@ -160,6 +160,15 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
           chainId={order.chainId}
           poolId={order.poolId}
           className={order.orderType === OrderTypeEnum.Stop ? 'w-full' : undefined}
+          orderInfo={{
+            direction: order.direction,
+            size: order.size ?? '0',
+            price: order.price ?? '0',
+            orderType: order.orderType,
+            isIncrease: order.operation !== OperationEnum.Decrease,
+            baseSymbol: order.baseSymbol ?? '',
+            quoteSymbol: order.quoteSymbol ?? '',
+          }}
         />
       </div>
     </div>

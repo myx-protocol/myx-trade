@@ -30,6 +30,7 @@ import Big from 'big.js'
 import ChainSelector from '@/components/ChainSelector.tsx'
 import { NATIVE_TOKEN } from '@/constant/token.ts'
 import { isProdMode } from '@/utils/env.ts'
+import { isCookState } from '@/utils/cook.ts'
 
 interface TokenItemProps {
   // disabled?: boolean
@@ -52,7 +53,7 @@ const disabled = false
 const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
   const active = useMemo(() => {
     return (
-      state === MarketPoolState.Cook ||
+      isCookState(state as number) ||
       state === MarketPoolState.Trench ||
       state === MarketPoolState.Primed ||
       state === MarketPoolState.PreBench
@@ -174,7 +175,9 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
           console.log(result.data)
           const apiResults = result.data || []
           const uniqueResults = Array.from(
-            new Map(apiResults.map((item: any) => [item.address.toLowerCase(), item])).values(),
+            new Map(
+              apiResults.map((item: any) => [`${item.address.toLowerCase()}${item.chainId}`, item]),
+            ).values(),
           )
           return uniqueResults
             .filter((item: any) => item.address !== NATIVE_TOKEN)

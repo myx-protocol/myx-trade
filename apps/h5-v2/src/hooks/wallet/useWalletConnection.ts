@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect, useWalletClient } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { LoginChannelEnum } from '@/store/wallet/types'
@@ -15,15 +15,13 @@ export const useWalletConnection = () => {
   const { connect, connectors, error, isPending } = useConnect()
   const { resetStore } = useTradePanelStore()
   const { disconnect } = useDisconnect()
-  const { data: walletClient } = useWalletClient()
+  const { switchChain: switchChainWagmi } = useSwitchChain()
 
   const switchChain = useCallback(
     (targetChainId: number) => {
-      walletClient?.switchChain({
-        id: targetChainId,
-      })
+      switchChainWagmi({ chainId: targetChainId })
     },
-    [walletClient],
+    [switchChainWagmi],
   )
 
   const {

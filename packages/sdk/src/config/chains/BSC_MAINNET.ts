@@ -13,7 +13,7 @@ export default {
     faucetUrl: 'https://docs.bnbchain.org/bnb-smart-chain/developers/faucet/',
     logoUrl: '',
     gasPriceRatio: 1.5,
-    gasLimitRatio: 1.3,
+    gasLimitRatio: 2,
     gasAmountRatio: 2,
     gasFeeReservedForCollateral: (0.0005 + 1) * GAS_FEE_RESERVED_RATIO,
     nativeCurrency: {
@@ -21,5 +21,6 @@ export default {
       symbol: 'BNB',
       decimals: 18,
     },
+    gasPrice: 100000000n // 0.1 gwei
   },
 } as ChainInfo

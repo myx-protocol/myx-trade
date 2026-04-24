@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-15 06:33\n"
+"PO-Revision-Date: 2026-04-17 11:40\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -51,6 +51,13 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/TabBar.tsx
 msgid " Trade "
+msgstr ""
+
+#. placeholder {0}: marketDetail?.baseSymbol
+#. placeholder {0}: marketDetail?.quoteSymbol
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "(Provide {0})"
 msgstr ""
 
 #. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
@@ -276,11 +283,6 @@ msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust margin amount is greater than the total balance"
-msgstr ""
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Adjust margin success"
 msgstr ""
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -842,7 +844,7 @@ msgstr ""
 msgid "Close Amount"
 msgstr ""
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? symbolInfo?.baseSymbol ?? '' : symbolInfo?.quoteSymbol ?? ''
+#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
 msgid "close amount must be greater than 0 {0}"
@@ -1156,6 +1158,10 @@ msgstr "Audit"
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
 msgid "Delisted : Market is closed. Only asset redemption is available."
+msgstr ""
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Delisting soon. Only closing positions is allowed"
 msgstr ""
 
 #: src/components/AccountDialog/index.tsx
@@ -2323,6 +2329,14 @@ msgstr ""
 msgid "Isolated {0}x"
 msgstr ""
 
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Cook Pool"
+msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Join Earn Pool"
+msgstr ""
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
 msgstr ""
@@ -2554,11 +2568,8 @@ msgstr ""
 msgid "Market Close"
 msgstr ""
 
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Market close success"
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Market Delisted"
 msgstr ""
 
 #: src/hooks/seamless/use-unlock-seamless-account.ts
@@ -3040,13 +3051,13 @@ msgstr "Only relayer()"
 
 #: src/components/Trade/TradePanel/PositionAction/index.tsx
 msgid "Open"
-msgstr "Open Orders"
+msgstr "Open"
 
 #. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 msgid "open amount must be greater than 0 {0}"
-msgstr ""
+msgstr "open amount must be greater than 0 "
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
@@ -3067,7 +3078,7 @@ msgstr ""
 
 #: src/pages/Price/components/PriceContent/index.tsx
 msgid "Open Orders"
-msgstr ""
+msgstr "Open"
 
 #. placeholder {0}: orderList.length
 #: src/pages/Price/components/PriceContent/index.tsx
@@ -3493,6 +3504,10 @@ msgstr ""
 
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
+msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Reactivate Pool "
 msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
@@ -4122,26 +4137,6 @@ msgstr "String too long (string)"
 msgid "Sub-chart Indicators"
 msgstr ""
 
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order failed"
-msgstr ""
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit close order success"
-msgstr ""
-
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Submit open order success"
-msgstr ""
-
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-#: src/components/Trade/Dialog/TPSL/index.tsx
-msgid "Submit tp/sl order success"
-msgstr ""
-
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 msgid "Subscribe"
@@ -4232,6 +4227,10 @@ msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "The experience will become effective within 10 minutes"
+msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
 msgstr ""
 
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
@@ -4448,6 +4447,10 @@ msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
+msgstr ""
+
+#: src/components/Trade/Charts/NoTradeable/index.tsx
+msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
 msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
@@ -5304,6 +5307,10 @@ msgstr "Closed by Take Profit"
 msgid "止盈止损"
 msgstr "TP/SL"
 
+#: src/utils/order/action-toast.tsx
+msgid "止盈止损更新成功"
+msgstr "TP/SL Updated Successfully"
+
 #: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
@@ -5382,13 +5389,26 @@ msgstr "Add More"
 msgid "触发价格"
 msgstr "Trigger Price"
 
+#: src/utils/order/action-toast.tsx
+msgid "订单取消"
+msgstr "Order Cancelled"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
 msgstr "Order Execution Timed Out"
 
+#: src/utils/order/action-toast.tsx
+#: src/utils/order/action-toast.tsx
+msgid "订单提交成功"
+msgstr "Order Submitted"
+
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
 msgstr "Order Size Limit Exceeded"
+
+#: src/utils/order/action-toast.tsx
+msgid "调整保证金成功"
+msgstr "Margin Adjusted Successfully"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"

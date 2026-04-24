@@ -39,11 +39,11 @@ const formatSuperDecimal = (
   const isNegative = value < 0
   const absValue = Math.abs(value)
 
-  const decimalPart = new Big(absValue).toFixed(30).split('.')[1] || ''
+  const decimalPart = new Big(absValue).toFixed().split('.')[1] || ''
   const firstNonZeroIndex = decimalPart.search(/[1-9]/)
 
   if (firstNonZeroIndex === -1) {
-    return value.toString()
+    return value.toFixed()
   }
 
   const zeroCount = firstNonZeroIndex

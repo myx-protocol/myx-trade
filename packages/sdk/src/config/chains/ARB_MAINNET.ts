@@ -21,6 +21,7 @@ export default {
       symbol: 'ETH',
       decimals: 18,
     },
+    gasPrice: 0n
   },
 } as ChainInfo
 
