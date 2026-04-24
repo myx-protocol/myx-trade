@@ -186,16 +186,19 @@ export class Account {
     const deadline = Number(latestBlock?.timestamp ?? BigInt(dayjs().unix())) + 60 * 5;
 
     try {
-
+      const accountVipInfo = await brokerContract.read.userFeeData([address as `0x${string}`]);
       let nonce: bigint;
+      
       try {
         nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
       } catch {
         nonce = 0n;
       }
+
+
       return {
         code: 0,
-        data: { nonce: nonce.toString(), deadline },
+        data: { nonce: nonce.toString(), deadline, ...accountVipInfo },
       };
     } catch (error) {
       return {
