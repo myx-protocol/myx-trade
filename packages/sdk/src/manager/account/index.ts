@@ -245,7 +245,7 @@ export class Account {
     address: string,
     chainId: number,
     deadline: number,
-    params: { tier: number; referrer: string; totalReferralRebatePct: number; referrerRebatePct: number; nonce: string },
+    params: { tier: number; referrer: string; totalReferralRebatePct: number; referrerRebatePct: number; nonce: string, expiry: number },
     signature: string
   ) {
     const config: MyxClientConfig = this.configManager.getConfig();
@@ -272,6 +272,7 @@ export class Account {
           referrer: params.referrer || zeroAddress,
           totalReferralRebatePct: params.totalReferralRebatePct,
           referrerRebatePct: params.referrerRebatePct,
+          expiry: params.expiry
         },
 
         signature: signature,
