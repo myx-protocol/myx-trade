@@ -2,7 +2,7 @@ import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { LoginChannelEnum } from '@/store/wallet/types'
-import { isSupportedChainFn } from '@/config/chain'
+import { getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import useGlobalStore from '@/store/globalStore'
 import { useSeamlessStore } from '@/store/seamless/createStore'
@@ -74,6 +74,21 @@ export const useWalletConnection = () => {
   const isWrongNetwork = useMemo(() => {
     return Boolean(address && isConnected && !isSupportedChainFn(chainId))
   }, [address, isConnected, chainId])
+
+  // 钱包连接成功后，如果当前链不在支持列表中，自动切换到默认链
+  // 优先使用当前路由中的 chainId（如 /trade/421614/...），其次回退到 getAsSupportedChainIdFn
+  useEffect(() => {
+    if (isConnected && chainId && !isSupportedChainFn(chainId)) {
+      // 从 URL pathname 中解析 chainId，路由格式: /:page/:chainId/:poolId
+      const pathSegments = window.location.pathname.split('/')
+      const routeChainId = pathSegments[2] ? Number(pathSegments[2]) : undefined
+      const targetChainId =
+        routeChainId && isSupportedChainFn(routeChainId)
+          ? routeChainId
+          : getAsSupportedChainIdFn(chainId)
+      switchChain?.(targetChainId)
+    }
+  }, [isConnected, chainId, switchChain])
 
   // console.log('activeSeamlessAddress-->', activeSeamlessAddress)
 
