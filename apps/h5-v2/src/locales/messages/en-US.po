@@ -424,11 +424,6 @@ msgstr ""
 msgid "Amount to Redeem"
 msgstr ""
 
-#. placeholder {0}: item.baseSymbol
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "Amount({0})"
-msgstr ""
-
 #: src/pages/VIP/components/VipList.tsx
 msgid "and"
 msgstr ""
@@ -4756,6 +4751,14 @@ msgstr ""
 msgid "Upgrade to VIP{0} by trading"
 msgstr ""
 
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDC理财"
+msgstr "USDC理财"
+
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "USDT理财"
+msgstr "USDT理财"
+
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
@@ -4768,6 +4771,10 @@ msgstr ""
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/index.ts
+#: src/config/error/index.ts
+#: src/config/error/index.ts
+#: src/config/error/index.ts
 #: src/config/error/MYX_SDK_ERRORS.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
@@ -4803,7 +4810,6 @@ msgid "Vault"
 msgstr ""
 
 #: src/pages/Earn/components/TabBar.tsx
-#: src/pages/Earn/List.tsx
 msgid "Vaults"
 msgstr ""
 
@@ -5105,6 +5111,10 @@ msgstr "Cancel All Orders"
 msgid "全部撤销"
 msgstr "Cancel All"
 
+#: src/pages/Earn/components/VaultTabs.tsx
+msgid "全部理财"
+msgstr "全部理财"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "其他"
@@ -5224,6 +5234,11 @@ msgstr "Closed"
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
 msgstr "Fully Loaded"
+
+#. placeholder {0}: item.baseSymbol
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "已成交数量/委托数量({0})"
+msgstr "已成交数量/委托数量({0})"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "市价"
