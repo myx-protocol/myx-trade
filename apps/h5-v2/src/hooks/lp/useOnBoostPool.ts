@@ -6,7 +6,7 @@ import { isSDKError, showErrorToast } from '@/config/error'
 import { toast } from '@/components/UI/Toast'
 import { useParams } from 'react-router-dom'
 
-export const useOnBoostPool = () => {
+export const useOnBoostPool = ({ onSuccess }: { onSuccess?: () => void }) => {
   const onAction = useWalletActions()
   const { chainId, poolId } = useParams()
   const [boostConfirmBoostOpen, setBoostConfirmBoostOpen] = useState<boolean>(false)
@@ -23,6 +23,7 @@ export const useOnBoostPool = () => {
       toast.success({ title: t`Payment successful. Waiting for market launch.` })
       // await Promise.all([refetch])
       setBoostConfirmBoostOpen(false)
+      onSuccess?.()
     } catch (e) {
       console.error(e)
       if (isSDKError(e) && e?.error?.message === 'UnexpectedPoolState()') {

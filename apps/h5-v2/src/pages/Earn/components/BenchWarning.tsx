@@ -1,5 +1,3 @@
-import { Box } from '@mui/material'
-import { NoticeFill } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
@@ -75,7 +73,11 @@ export const BenchStateWarning = () => {
     )
   }, [market?.boostFeeUsd, market?.boostRefundFeeUsd])
 
-  const { boostConfirmBoostOpen, setBoostConfirmBoostOpen, onBoostPool } = useOnBoostPool()
+  const [isOnBoostSuccess, setIsOnBoostSuccess] = useState(false)
+
+  const { boostConfirmBoostOpen, setBoostConfirmBoostOpen, onBoostPool } = useOnBoostPool({
+    onSuccess: () => setIsOnBoostSuccess(true),
+  })
 
   const { unBoostConfirmBoostOpen, setUnBoostConfirmBoostOpen, onUnBoostPool } = useOnUnBoostPool()
 
@@ -129,12 +131,20 @@ export const BenchStateWarning = () => {
               </span>
               fee share! You can also pay {formatNumber(market?.boostFeeUsd, { showUnit: false })}{' '}
               {pool?.quoteSymbol || '--'} to activate instantly! 👉{' '}
-              <button
-                className={'text-green cursor-pointer'}
-                onClick={() => setBoostConfirmBoostOpen(true)}
-              >
-                [ Unlock Market Early ↗ ]
-              </button>
+              {!isOnBoostSuccess ? (
+                <>
+                  <button
+                    className={'text-green cursor-pointer'}
+                    onClick={() => setBoostConfirmBoostOpen(true)}
+                  >
+                    [ <Trans>Unlock Market Early</Trans> ↗ ]
+                  </button>
+                </>
+              ) : (
+                <button disabled className={'text-green cursor-not-allowed opacity-50'}>
+                  [ <Trans>Paid. Syncing status</Trans>... ]
+                </button>
+              )}
             </Trans>
           </Info>
         )}
@@ -145,20 +155,24 @@ export const BenchStateWarning = () => {
         riskLevelConfig?.baseState !== PoolBaseState.PRIME_FAIL &&
         Number(genesis) >= 0 &&
         boostInfo?.type === BoostType.Requested &&
-        address &&
-        boostInfo?.proposer &&
-        isAddressEqual(boostInfo?.proposer as Address, address) &&
         (new Big(tvl?.totalTvl || '0').gte(boostedPrimeTvl || '0') ? (
           <Info>
             <Trans>
               Market launch fee paid and TVL threshold met! Waiting for smart contract execution to
               force start trading.{' '}
-              <button
-                className={'text-green cursor-pointer'}
-                onClick={() => setUnBoostConfirmBoostOpen(true)}
-              >
-                [ View Status → ]
-              </button>
+              {address &&
+                boostInfo?.proposer &&
+                isAddressEqual(boostInfo?.proposer as Address, address) && (
+                  <button
+                    className={'text-green cursor-pointer'}
+                    onClick={() => {
+                      setUnBoostConfirmBoostOpen(true)
+                      setIsOnBoostSuccess(false)
+                    }}
+                  >
+                    [ <Trans>View Status</Trans> → ]
+                  </button>
+                )}
             </Trans>
           </Info>
         ) : (
@@ -177,12 +191,19 @@ export const BenchStateWarning = () => {
               </span>{' '}
               needed to force start trading. Join now to lock in a LIFETIME{' '}
               {formatNumberPercent(genesisFeeRate, 0, false)} fee share!{' '}
-              <button
-                className={'text-green cursor-pointer'}
-                onClick={() => setUnBoostConfirmBoostOpen(true)}
-              >
-                [ View Status → ]
-              </button>
+              {address &&
+                boostInfo?.proposer &&
+                isAddressEqual(boostInfo?.proposer as Address, address) && (
+                  <button
+                    className={'text-green cursor-pointer'}
+                    onClick={() => {
+                      setUnBoostConfirmBoostOpen(true)
+                      setIsOnBoostSuccess(false)
+                    }}
+                  >
+                    [ <Trans>View Status</Trans> → ]
+                  </button>
+                )}
             </Trans>
           </Info>
         ))}
@@ -190,21 +211,25 @@ export const BenchStateWarning = () => {
       {pool &&
         isCookState(quoteLpDetail?.state) &&
         riskLevelConfig?.baseState === PoolBaseState.PRIME_FAIL &&
-        boostInfo?.type === BoostType.Requested &&
-        address &&
-        boostInfo?.proposer &&
-        isAddressEqual(boostInfo?.proposer as Address, address) && (
+        boostInfo?.type === BoostType.Requested && (
           <Info>
             <Trans>
               Market Opening Failed! You have{' '}
               {formatNumber(market?.boostRefundFeeUsd, { showUnit: false })} {pool?.quoteSymbol}{' '}
               funds pending.👉{' '}
-              <button
-                className={'text-green cursor-pointer'}
-                onClick={() => setClaimRefundOpen(true)}
-              >
-                [ Claim Refund Now ↗ ]
-              </button>
+              {address &&
+                boostInfo?.proposer &&
+                isAddressEqual(boostInfo?.proposer as Address, address) && (
+                  <button
+                    className={'text-green cursor-pointer'}
+                    onClick={() => {
+                      setClaimRefundOpen(true)
+                      setIsOnBoostSuccess(false)
+                    }}
+                  >
+                    [ <Trans>Claim Refund Now</Trans> ↗ ]
+                  </button>
+                )}
             </Trans>
           </Info>
         )}
@@ -249,7 +274,7 @@ export const BenchStateWarning = () => {
       )}
 
       <ConfirmEnableTradingDialog
-        open={boostConfirmBoostOpen}
+        open={boostConfirmBoostOpen && pool?.state === MarketPoolState.Cook}
         tokenSymbol={pool?.quoteSymbol}
         feeAmount={market?.boostFeeUsd}
         refundAmount={market?.boostRefundFeeUsd}
