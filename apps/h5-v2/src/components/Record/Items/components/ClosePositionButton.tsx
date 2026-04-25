@@ -16,7 +16,8 @@ import {
   getSuperDecimalScale,
 } from '@/utils/number'
 import { toast } from '@/components/UI/Toast'
-import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, getSlippageConfig, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { InputWrapper } from '@/components/Trade/components/InputWrapper'
 import { Slider, TextField, Tooltip } from '@mui/material'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
@@ -121,11 +122,13 @@ export const ClosePositionButton = ({
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
-  const closePositionSlippage = getSlippage({
-    chainId: position?.chainId ?? 0,
-    poolId: position?.poolId ?? '',
-    type: SlippageTypeEnum.CLOSE,
-  })
+  const { poolConfig } = useGetPoolConfig(position?.poolId, position?.chainId)
+  const closePositionSlippage =
+    getSlippage({
+      chainId: position?.chainId ?? 0,
+      poolId: position?.poolId ?? '',
+      type: SlippageTypeEnum.CLOSE,
+    }) ?? getSlippageConfig(poolConfig?.level ?? 1)
   const { address } = useWalletConnection()
   const closeAmount = formatNumber(position.size ?? '0', { showUnit: false }) ?? '0'
   const [amountUnit, setAmountUnit] = useState<AmountUnitEnum>(AmountUnitEnum.BASE)
@@ -514,7 +517,7 @@ export const ClosePositionButton = ({
             <Trans>Est. Slippage</Trans>
           </p>
           <EditText
-            value={`${((closePositionSlippage ?? 0) * 100).toFixed(2)}`}
+            value={`${(closePositionSlippage * 100).toFixed(2)}`}
             unit="%"
             onChange={(newSlippage, closeEdit) => {
               setSlippage({
@@ -531,7 +534,7 @@ export const ClosePositionButton = ({
             }}
           />
           {/* <p className="text-[14px] font-[500] text-[white]">
-            {(closePositionSlippage ?? 0) * 100}%
+            {closePositionSlippage * 100}%
           </p> */}
         </div>
         <div className="mt-[12px] flex items-center justify-between">
@@ -634,7 +637,7 @@ export const ClosePositionButton = ({
                         timeInForce: TimeInForce.IOC,
                         postOnly: false,
                         slippagePct: ethers
-                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .parseUnits(closePositionSlippage.toString(), 4)
                           .toString(), // 转换为精度4位
                         operation: OperationType.DECREASE,
                         leverage: position.userLeverage,
@@ -672,7 +675,7 @@ export const ClosePositionButton = ({
                         timeInForce: TimeInForce.IOC,
                         postOnly: false,
                         slippagePct: ethers
-                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .parseUnits(closePositionSlippage.toString(), 4)
                           .toString(), // 转换为精度4位
                         operation: OperationType.DECREASE,
                         leverage: position.userLeverage,
@@ -716,9 +719,7 @@ export const ClosePositionButton = ({
                   price: ethers.parseUnits(price.toString(), 30).toString(),
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
-                  slippagePct: ethers
-                    .parseUnits((closePositionSlippage ?? 0).toString(), 4)
-                    .toString(), // 转换为精度4位
+                  slippagePct: ethers.parseUnits(closePositionSlippage.toString(), 4).toString(), // 转换为精度4位
                   executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
                 })

@@ -10,7 +10,8 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { t } from '@lingui/core/macro'
 import { parseBigNumber } from '@/utils/bn'
 import { formatNumber } from '@/utils/number'
-import { getSlippage, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, getSlippageConfig, setSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { toast } from '@/components/UI/Toast'
 import { showErrorToast } from '@/config/error'
@@ -40,11 +41,13 @@ export const MarketClosePositionButton = ({
   const [marketCloseDialogOpen, setMarketCloseDialogOpen] = useState(false)
   const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const { checkWalletChainId } = useWalletChainCheck()
-  const closePositionSlippage = getSlippage({
-    chainId: position?.chainId ?? 0,
-    poolId: position?.poolId ?? '',
-    type: SlippageTypeEnum.CLOSE,
-  })
+  const { poolConfig } = useGetPoolConfig(position?.poolId, position?.chainId)
+  const closePositionSlippage =
+    getSlippage({
+      chainId: position?.chainId ?? 0,
+      poolId: position?.poolId ?? '',
+      type: SlippageTypeEnum.CLOSE,
+    }) ?? getSlippageConfig(poolConfig?.level ?? 1)
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
@@ -118,7 +121,7 @@ export const MarketClosePositionButton = ({
             <Trans>Max Slippage</Trans>
           </p>
           <EditText
-            value={`${((closePositionSlippage ?? 0) * 100).toFixed(2)}`}
+            value={`${(closePositionSlippage * 100).toFixed(2)}`}
             unit="%"
             onChange={(newSlippage, closeEdit) => {
               setSlippage({
@@ -218,7 +221,7 @@ export const MarketClosePositionButton = ({
                         timeInForce: TimeInForce.IOC,
                         postOnly: false,
                         slippagePct: ethers
-                          .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                          .parseUnits(closePositionSlippage.toString(), 4)
                           .toString(), // 转换为精度4位
                         operation: OperationType.DECREASE,
                         leverage: position.userLeverage,
@@ -264,9 +267,7 @@ export const MarketClosePositionButton = ({
                   price: ethers.parseUnits(marketPrice.toString(), 30).toString(),
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
-                  slippagePct: ethers
-                    .parseUnits((closePositionSlippage ?? 0).toString(), 4)
-                    .toString(), // 转换为精度4位
+                  slippagePct: ethers.parseUnits(closePositionSlippage.toString(), 4).toString(), // 转换为精度4位
                   executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
                 })

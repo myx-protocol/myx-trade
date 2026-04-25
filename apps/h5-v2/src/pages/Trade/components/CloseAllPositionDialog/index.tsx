@@ -19,7 +19,7 @@ import {
   TimeInForce,
   TriggerType,
 } from '@myx-trade/sdk'
-import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
+import { getSlippage, getSlippageConfig, SlippageTypeEnum } from '@/utils/slippage'
 import { ethers } from 'ethers'
 import { useGetActivePoolList } from '@/components/Trade/hooks/use-get-pool-list'
 import { showErrorToast } from '@/config/error'
@@ -164,7 +164,7 @@ export const CloseAllPositionDialog = () => {
                       timeInForce: TimeInForce.IOC,
                       postOnly: false,
                       slippagePct: ethers
-                        .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                        .parseUnits((closePositionSlippage ?? getSlippageConfig(1)).toString(), 4)
                         .toString(),
                       leverage: position.userLeverage,
                       tpSize: '0',
@@ -240,7 +240,7 @@ export const CloseAllPositionDialog = () => {
                   timeInForce: TimeInForce.IOC,
                   postOnly: false,
                   slippagePct: ethers
-                    .parseUnits((closePositionSlippage ?? 0).toString(), 4)
+                    .parseUnits((closePositionSlippage ?? getSlippageConfig(1)).toString(), 4)
                     .toString(), // 转换为精度4位
                   executionFeeToken: symbolInfo?.quoteToken as string,
                   leverage: position.userLeverage,
