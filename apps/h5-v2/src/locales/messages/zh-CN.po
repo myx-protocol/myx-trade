@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -135,6 +136,10 @@ msgstr "• 代币通过安全检测。"
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr "账户可用余额不足"
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+msgid "`Paid. Syncing status"
+msgstr ""
 
 #. placeholder {0}: formatNumber(penaltyAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
@@ -255,6 +260,10 @@ msgstr "激活市场"
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Activate Your Trading Contract"
 msgstr "激活合约交易"
+
+#: src/hooks/lp/useOnBoostPool.ts
+msgid "Activation fee already paid."
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Activation Successful"
@@ -806,6 +815,11 @@ msgstr "领取返佣奖励"
 #: src/components/Dialog/MarketActivationFailedDialog.tsx
 msgid "Claim Refund"
 msgstr "领取退款"
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Claim Refund Now"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
@@ -2630,17 +2644,19 @@ msgstr "市场信息未准备好，请重试"
 msgid "market is created"
 msgstr "市场已创建"
 
+#. placeholder {0}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. <0>[ View Status → ]</0>"
-msgstr "市场开启费已支付且 TVL 已达标！等待智能合约执行以强制开启交易。 <0>[ 查看状态 → ]</0>"
+msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. {0}"
+msgstr ""
 
 #. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(tvl?.totalTvl || '0') .toString(), { showUnit: false }, )
 #. placeholder {1}: formatNumberPercent(genesisFeeRate, 0, false)
+#. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! <1>[ View Status → ]</1>"
-msgstr "市场开启费已支付！仅差 <0>${0} TVL</0> 即可提前开启交易。立即加入，锁定终身 {1} 手续费分成！ <1>[ 查看状态 → ]</1>"
+msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! {2}"
+msgstr ""
 
 #: src/components/Dialog/MarketLaunchStatusDialog.tsx
 msgid "Market Launch Status"
@@ -2648,10 +2664,11 @@ msgstr "市场开启状态"
 
 #. placeholder {0}: formatNumber(market?.boostRefundFeeUsd, { showUnit: false })
 #. placeholder {1}: pool?.quoteSymbol
+#. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setClaimRefundOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>Claim Refund Now</Trans> ↗ ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market Opening Failed! You have {0} {1} funds pending.👉 <0>[ Claim Refund Now ↗ ]</0>"
-msgstr "市场开启失败！您有 {0} {1} 待处理资金。👉 <0>[ 立即领取退款 ↗ ]</0>"
+msgid "Market Opening Failed! You have {0} {1} funds pending.👉 {2}"
+msgstr ""
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -3093,18 +3110,20 @@ msgstr "一次邀请，多重奖励"
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
 #. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
 #. placeholder {4}: pool?.quoteSymbol || '--'
+#. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => { setBoostConfirmBoostOpen(true) }} > [ {<Trans>Unlock Market Early</Trans>} ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ {<Trans>`Paid. Syncing status</Trans>}... ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
-msgstr "仅剩 <0>${0}</0> {1} 创世份额即可激活市场！立即加入，锁定终身 <1>{2}</1> 手续费分成！您也可以支付 {3} {4} 立即激活！ 👉 <2>[ 提前开启市场 ↗ ]</2>"
+msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
+msgstr ""
 
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
 #. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
 #. placeholder {4}: pool?.quoteSymbol || '--'
+#. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => setBoostConfirmBoostOpen(true)} > [ <Trans>Unlock Market Early</Trans> ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ <Trans>Paid. Syncing status</Trans>... ] </button> )
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 <2>[ Unlock Market Early ↗ ]</2>"
-msgstr "仅剩 <0>${0}</0> {1} 创世份额即可激活市场！立即加入，锁定终身 <1>{2}</1> 手续费分成！您也可以支付 {3} {4} 立即激活！ 👉 <2>[ 提前开启市场 ↗ ]</2>"
+msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
+msgstr ""
 
 #. placeholder {0}: pool?.baseSymbol || '--'
 #. placeholder {0}: pool?.quoteSymbol || '--'
@@ -3285,6 +3304,10 @@ msgstr "从锁定已实现盈亏中支付：{0} {1}"
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Paid from Wallet: {0} {1}"
 msgstr "从钱包中支付：{0} {1}"
+
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Paid. Syncing status"
+msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
@@ -3747,6 +3770,10 @@ msgstr "立即刷新"
 msgid "Refund"
 msgstr "返还"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Refund already claimed."
+msgstr ""
+
 #: src/hooks/lp/useClaimRefund.ts
 #: src/hooks/lp/useOnUnBoostPool.ts
 msgid "Refund claim successful"
@@ -3978,7 +4005,9 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+msgstr ""
+"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -4628,6 +4657,10 @@ msgstr "Trench"
 msgid "Trigger Price"
 msgstr "触发价格"
 
+#: src/utils/verify.ts
+msgid "Trigger price must be between Liquidation and Auto-TP prices."
+msgstr ""
+
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
 msgstr "尝试刷新浏览器"
@@ -4694,6 +4727,11 @@ msgstr "意外的资金池状态()"
 #: src/config/error/CommonErrorMapping.tsx
 msgid "UnhealthyAfterRiskTierApplied(PositionId)"
 msgstr "应用风险等级后状态不健康"
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "Unlock Market Early"
+msgstr ""
 
 #: src/components/Record/Items/Position.tsx
 msgid "unPnl"
@@ -4840,6 +4878,13 @@ msgstr "查看我的邀请人"
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "View referral rules"
 msgstr "查看邀请规则"
+
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+#: src/pages/Earn/components/BenchWarning.tsx
+msgid "View Status"
+msgstr ""
 
 #: src/pages/Home/components/ExpressMenu/const.tsx
 #: src/pages/VIP/provider/index.tsx
@@ -5664,4 +5709,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
