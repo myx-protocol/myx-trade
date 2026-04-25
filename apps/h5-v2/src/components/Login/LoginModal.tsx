@@ -1,22 +1,16 @@
 import { DialogBase } from '../UI/DialogBase'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { t } from '@lingui/core/macro'
-import { LoginChannelEnum, RecentLoginTypeEnum } from '@/store/wallet/types'
-import { EmailForm } from './EmailForm'
+import { LoginChannelEnum } from '@/store/wallet/types'
 import { Trans } from '@lingui/react/macro'
 import { ArrowRightIcon } from '../UI/Icon'
 import { LoginItem } from './LoginItem'
-import { socialList, walletList } from './constants'
+import { walletList } from './constants'
 import moreIcon from '@/assets/icon/more.svg'
 
 const RenderRecentLogin = () => {
   const { recentLoginType } = useWalletStore()
   const recentWallet = walletList.find((item) => item.id === recentLoginType)
-  const recentSocial = socialList.find((item) => item.id === recentLoginType)
-
-  if (!recentLoginType || recentLoginType === RecentLoginTypeEnum.Email) {
-    return <EmailForm />
-  }
 
   if (recentWallet) {
     return (
@@ -27,18 +21,6 @@ const RenderRecentLogin = () => {
         id={recentWallet.id}
         connectorId={recentWallet.connectorId}
         channel={LoginChannelEnum.WALLET}
-      />
-    )
-  }
-
-  if (recentSocial) {
-    return (
-      <LoginItem
-        quickLogin
-        label={recentSocial.name}
-        icon={recentSocial.icon}
-        id={recentSocial.id}
-        channel={LoginChannelEnum.SOCIAL}
       />
     )
   }
@@ -66,7 +48,7 @@ export const LoginModal = () => {
         <div className="h-[1px] flex-1 bg-[#3A404A]" />
       </div>
       <div className="flex items-center justify-between">
-        {walletList.slice(0, 3).map((item) => (
+        {walletList.slice(0, 4).map((item) => (
           <LoginItem
             key={item.id}
             label={item.name}
@@ -75,17 +57,6 @@ export const LoginModal = () => {
             channel={LoginChannelEnum.WALLET}
             isSingle
             connectorId={item.connectorId}
-          />
-        ))}
-        {socialList.slice(0, 1).map((item) => (
-          <LoginItem
-            key={item.type}
-            label={item.name}
-            icon={item.icon}
-            id={item.type}
-            channel={LoginChannelEnum.SOCIAL}
-            isSingle
-            socialLoginType={item.socialLoginType}
           />
         ))}
         <div
