@@ -156,6 +156,13 @@ Button.gradient {
     }
   }
 
+  &.gray {
+    border: none;
+    background-image: none;
+    background-color: var(--dark-border);
+    color: var(--basic-white);
+  }
+
   &[type='primary'],
   &.primary {
     background-image: var(--brand-deep-gradient);

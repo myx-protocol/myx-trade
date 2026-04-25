@@ -42,9 +42,7 @@ const MarketLaunchStatusFooter = memo(
     return (
       <Box className={'flex w-full gap-[10px] px-[20px] pb-[24px]'}>
         <Button
-          className={
-            '!border-dark-border !bg-dark-border !hover:bg-dark-border !hover:opacity-60 !min-h-[44px] !rounded-[44px] !border-1 !px-[14px]'
-          }
+          className={'gradient gray !min-h-[44px] !rounded-[44px] !px-[14px]'}
           loading={abortLoading}
           onClick={onAbortHandle}
         >

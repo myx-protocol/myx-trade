@@ -28,9 +28,7 @@ const MarketActivationFailedFooter = memo(
     return (
       <Box className={'flex w-full gap-[12px] px-[20px] pb-[24px]'}>
         <Button
-          className={
-            '!border-dark-border !bg-dark-border !hover:bg-dark-border !hover:opacity-60 !min-h-[44px] !rounded-[44px] !border-1 !px-[32px]'
-          }
+          className={'gradient gray !min-h-[44px] !rounded-[44px]'}
           loading={laterLoading}
           onClick={onLaterHandle}
         >
