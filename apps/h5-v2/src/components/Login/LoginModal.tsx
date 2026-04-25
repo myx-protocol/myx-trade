@@ -7,6 +7,8 @@ import { ArrowRightIcon } from '../UI/Icon'
 import { LoginItem } from './LoginItem'
 import { walletList } from './constants'
 import moreIcon from '@/assets/icon/more.svg'
+import useGlobalStore from '@/store/globalStore'
+import { useSeamlessStore } from '@/store/seamless/createStore'
 
 const RenderRecentLogin = () => {
   const { recentLoginType } = useWalletStore()
@@ -30,6 +32,8 @@ const RenderRecentLogin = () => {
 
 export const LoginModal = () => {
   const { loginModalOpen, setLoginModalOpen, setMoreLoginDrawerOpen } = useWalletStore()
+  const { setSeamlessPasswordDialogOpen, setUnlockAccountDialogOpen } = useGlobalStore()
+  const { seamlessAccountList } = useSeamlessStore()
 
   return (
     <DialogBase
@@ -69,7 +73,17 @@ export const LoginModal = () => {
           <img src={moreIcon} alt="more" className="h-[24px] w-[24px]" />
         </div>
       </div>
-      <div className="mt-[32px] flex items-center justify-center gap-[10px]">
+      <div
+        className="mt-[32px] flex cursor-pointer items-center justify-center gap-[10px]"
+        onClick={() => {
+          setLoginModalOpen(false)
+          if (seamlessAccountList.length === 0) {
+            setSeamlessPasswordDialogOpen(true)
+          } else {
+            setUnlockAccountDialogOpen(true)
+          }
+        }}
+      >
         <p className="text-[14px] font-[500] text-[#00E3A5]">
           <Trans>Continue With Seamless Account</Trans>
         </p>
