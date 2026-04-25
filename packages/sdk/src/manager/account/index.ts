@@ -186,19 +186,19 @@ export class Account {
     const deadline = Number(latestBlock?.timestamp ?? BigInt(dayjs().unix())) + 60 * 5;
 
     try {
-      const currentEpoch = await this.getCurrentFeeDataEpoch(chainId)
-      this.logger.debug('setUserFeeDataEpoch-->', currentEpoch)
-      
-      const accountVipInfo = await brokerContract.read.userFeeData([currentEpoch, address as `0x${string}`]);
+      const accountVipInfo = await brokerContract.read.userFeeData([address as `0x${string}`]);
       let nonce: bigint;
+      
       try {
         nonce = await this.withRetry(() => brokerContract.read.userNonces([address as `0x${string}`]));
       } catch {
         nonce = 0n;
       }
+
+
       return {
         code: 0,
-        data: { ...accountVipInfo, nonce: nonce.toString(), deadline },
+        data: { nonce: nonce.toString(), deadline, ...accountVipInfo },
       };
     } catch (error) {
       return {
@@ -231,21 +231,12 @@ export class Account {
     }
   }
 
-  async getCurrentFeeDataEpoch(chainId: number) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
-    const brokerContract = await getBrokerContract(chainId, config.brokerAddress);
-
-    const currentFeeDataEpoch = await brokerContract.read.currentFeeDataEpoch();
-
-    return currentFeeDataEpoch
-  }
 
   async setUserFeeData(
     address: string,
     chainId: number,
     deadline: number,
-    params: { tier: number; referrer: string; totalReferralRebatePct: number; referrerRebatePct: number; nonce: string },
+    params: { tier: number; referrer: string; totalReferralRebatePct: number; referrerRebatePct: number; nonce: string, expiry: number },
     signature: string
   ) {
     const config: MyxClientConfig = this.configManager.getConfig();
@@ -260,18 +251,16 @@ export class Account {
     try {
       const brokerContract = await getBrokerSingerContract(chainId, config.brokerAddress);
 
-      const currentFeeDataEpoch = await this.getCurrentFeeDataEpoch(chainId);
-
       const feeData = {
         user: address,
         nonce: params.nonce,
         deadline: deadline,
-        feeDataEpoch: currentFeeDataEpoch.toString(),
         feeData: {
           tier: params.tier,
           referrer: params.referrer || zeroAddress,
           totalReferralRebatePct: params.totalReferralRebatePct,
           referrerRebatePct: params.referrerRebatePct,
+          expiry: params.expiry
         },
 
         signature: signature,

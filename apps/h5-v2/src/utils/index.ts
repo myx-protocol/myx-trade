@@ -10,6 +10,20 @@ export const isMobile = (): boolean => {
   return window.innerWidth < 768
 }
 
+type InAppWalletInfo = { walletId: string; connectorIds: string[] } | null
+
+export const detectInAppBrowser = (): InAppWalletInfo => {
+  if (typeof window === 'undefined') return null
+  const win = window as any
+  if (win.bitkeep || win.ethereum?.isBitKeep) {
+    return { walletId: 'bitget', connectorIds: ['com.bitget.web3', 'bitKeep', 'injected'] }
+  }
+  if (win.okxwallet || win.ethereum?.isOkxWallet) {
+    return { walletId: 'okx', connectorIds: ['com.okex.wallet', 'injected'] }
+  }
+  return null
+}
+
 export const encryptionAddress = (address?: string, start = 6, end = 4) => {
   if (!address) return ''
   return `${address.slice(0, Math.max(0, start)).toLowerCase()}...${address.slice(-end).toLowerCase()}`

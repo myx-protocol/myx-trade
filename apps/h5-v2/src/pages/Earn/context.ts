@@ -4,6 +4,7 @@ import type { MarketPoolRiskLevelConfig, PoolBoostInfo, QuoteLpDetail } from '@/
 import { type MarketInfo, type MarketPool } from '@myx-trade/sdk'
 import { Interval } from '@/request/type.ts'
 import { Mode } from '@/pages/Cook/type.ts'
+import type { VaultTabsEnum } from './components/type.ts'
 
 export interface PoolContextValue {
   pool?: MarketPool
@@ -35,5 +36,7 @@ export interface SearchContextValue {
   setChainId: (chainId: number | undefined) => void
   interval?: Interval
   setInterval: (interval: Interval) => void
+  tabValue: VaultTabsEnum
+  setTabValue: (tabValue: VaultTabsEnum) => void
 }
 export const SearchContext = createContext<SearchContextValue>({} as SearchContextValue)

@@ -7,11 +7,17 @@ import { useState } from 'react'
 import ArrowDownIcon from '@/components/UI/Icon/ArrowDownIcon'
 import { LoginItem } from './LoginItem'
 import { LoginChannelEnum } from '@/store/wallet/types'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 
 export const MorePage = () => {
   const { moreLoginDrawerOpen, setMoreLoginDrawerOpen } = useWalletStore()
+  const { inAppWallet } = useWalletConnection()
   const [showSocialLogin, setShowSocialLogin] = useState(true)
   const [showWalletLogin, setShowWalletLogin] = useState(true)
+
+  const visibleWallets = inAppWallet
+    ? walletList.filter((w) => w.id === inAppWallet.walletId)
+    : walletList
 
   return (
     <Drawer
@@ -73,7 +79,7 @@ export const MorePage = () => {
           </div>
         </div>
         {showWalletLogin &&
-          walletList.map((item) => (
+          visibleWallets.map((item) => (
             <LoginItem
               key={item.id}
               id={item.id}

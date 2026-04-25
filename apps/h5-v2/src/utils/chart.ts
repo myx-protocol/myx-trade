@@ -44,9 +44,9 @@ export const formatter = (interval: ChartInterval, params: any[], formater?: For
   const date = new Date(time)
 
   return `<div style="display:flex;flex-direction: column; border-radius: 8px">
-                   <p style="color: #848E9C;fontSize: 12">${dayjs(date)
-                     .utc()
-                     .format(`YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''))}</p>
+                   <p style="color: #848E9C;fontSize: 12">${dayjs(date).format(
+                     `YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''),
+                   )}</p>
                    <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${
                      formater?.label ?? i18n._(t`Price`)
                    } <span style="color: white">${formater?.value ? formater.value(data) : formatNumber(data, { showUnit: false })}
@@ -70,9 +70,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
 
   // 只有一个点 → 锁定在该点时间
   if (list.length === 1) {
-    now = dayjs(list[0].time * 1000)
-      .utc()
-      .valueOf()
+    now = dayjs(list[0].time * 1000).valueOf()
     // maxTime = list[0].time * 1000;
   }
 
@@ -146,9 +144,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
           // showMaxLabel: true,
           // interval: interval === ChartInterval.all ? 5 : 'auto',
           formatter: (value: number) =>
-            dayjs(value)
-              .utc()
-              .format(interval === ChartInterval.day ? ' HH:mm' : ' MM-DD'),
+            dayjs(value).format(interval === ChartInterval.day ? ' HH:mm' : ' MM-DD'),
         },
         axisPointer: {
           type: 'line',

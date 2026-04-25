@@ -48,6 +48,7 @@ const RenderRecentLogin = () => {
 
 export const LoginModal = () => {
   const { loginModalOpen, setLoginModalOpen, setMoreLoginDrawerOpen } = useWalletStore()
+
   return (
     <DialogBase
       open={loginModalOpen}

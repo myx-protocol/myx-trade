@@ -14,7 +14,9 @@ import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
 import { Direction, OperationType, OrderType, TimeInForce, TriggerType } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
-import { verifyTpSlPrice } from '@/utils/verify'
+import { verifyTpSlPrice, verifyTpSlTriggerLiqAutoTpBounds } from '@/utils/verify'
+import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
+import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
 import { showErrorToast } from '@/config/error'
 import { t } from '@lingui/core/macro'
 import { EditIcon } from '@/components/UI/Icon'
@@ -56,6 +58,9 @@ export const OrderTpSlButton = ({
   const pool = useMemo(() => {
     return poolList.find((item: any) => item.poolId === order.poolId)
   }, [poolList, order.poolId])
+  const { getLiqPrice } = useGetLiqPrice({ poolId: order.poolId, chainId: order.chainId })
+  const { poolConfig } = useGetPoolConfig(order.poolId, order.chainId)
+
   const { tradeMode } = useGlobalStore()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(order.chainId)
@@ -90,6 +95,21 @@ export const OrderTpSlButton = ({
       toast.error({ title: t`Please enter the SL price` })
       return
     }
+
+    const entryPriceForLiq = order.positionEntryPrice ?? order.price
+    const liqPrice = await getLiqPrice({
+      entryPrice: entryPriceForLiq,
+      collateralAmount: order.collateralAmount,
+      size: order.size,
+      price: String(marketPrice ?? 0),
+      assetClass: poolConfig?.levelConfig?.assetClass ?? 0,
+      fundingRateIndexEntry: order.fundingRateIndex ?? '0',
+      direction: order.direction,
+      maintainMarginRate: poolConfig?.levelConfig?.maintainCollateralRate.toString() ?? '0',
+    })
+    const earlyClose = order.earlyClosePrice?.toString() ?? '0'
+    const checkLiqAutoTp = (human: string) =>
+      verifyTpSlTriggerLiqAutoTpBounds(human, String(liqPrice), earlyClose, order.direction)
 
     const data = {
       orderId: order.orderId,
@@ -198,18 +218,24 @@ export const OrderTpSlButton = ({
 
     if (isSingle || activeTab === TpSlTabTypeEnum.TPOrSL) {
       if (order.orderType === OrderType.STOP) {
+        if (!parseBigNumber(tpPrice).eq(0) && !checkLiqAutoTp(tpPrice.toString())) {
+          return
+        }
         data.price = ethers.parseUnits(tpPrice.toString(), 30).toString()
         data.size = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
-      } else if (order.direction === Direction.LONG) {
-        if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
-          data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
-          data.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
-        } else {
-          data.slPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
-          data.slSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
-        }
       } else {
-        if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
+        if (!parseBigNumber(tpPrice).eq(0) && !checkLiqAutoTp(tpPrice.toString())) {
+          return
+        }
+        if (order.direction === Direction.LONG) {
+          if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
+            data.tpPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+            data.tpSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
+          } else {
+            data.slPrice = ethers.parseUnits(tpPrice.toString(), 30).toString()
+            data.slSize = ethers.parseUnits(tpSize.toString(), poolInfo.baseDecimals).toString()
+          }
+        } else if (parseBigNumber(tpPrice).gt(parseBigNumber(order.price))) {
           data.slPrice = ethers.parseUnits(tpPrice, 30).toString()
           data.slSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
         } else {
@@ -219,6 +245,9 @@ export const OrderTpSlButton = ({
       }
     } else {
       if (!parseBigNumber(tpPrice).eq(0) && !parseBigNumber(tpSize).eq(0)) {
+        if (!checkLiqAutoTp(tpPrice.toString())) {
+          return
+        }
         data.tpPrice = ethers.parseUnits(tpPrice, 30).toString()
         data.tpSize = ethers.parseUnits(tpSize, poolInfo.baseDecimals).toString()
 
@@ -236,6 +265,9 @@ export const OrderTpSlButton = ({
       }
 
       if (!parseBigNumber(slPrice).eq(0) && !parseBigNumber(slSize).eq(0)) {
+        if (!checkLiqAutoTp(slPrice.toString())) {
+          return
+        }
         data.slPrice = ethers.parseUnits(slPrice, 30).toString()
         data.slSize = ethers.parseUnits(slSize, poolInfo.baseDecimals).toString()
 
@@ -428,6 +460,8 @@ export const OrderTpSlButton = ({
     comparePrice,
     isSingle,
     marketPrice,
+    getLiqPrice,
+    poolConfig,
   ])
 
   return (
