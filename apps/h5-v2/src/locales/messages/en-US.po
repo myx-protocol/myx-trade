@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-24 08:29\n"
+"PO-Revision-Date: 2026-04-25 02:16\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -139,7 +138,7 @@ msgstr "Insufficient tradable amount in account "
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 msgid "`Paid. Syncing status"
-msgstr "`Paid. Syncing status"
+msgstr ""
 
 #. placeholder {0}: formatNumber(penaltyAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
@@ -263,7 +262,7 @@ msgstr ""
 
 #: src/hooks/lp/useOnBoostPool.ts
 msgid "Activation fee already paid."
-msgstr "Activation fee already paid."
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Activation Successful"
@@ -819,7 +818,7 @@ msgstr ""
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Claim Refund Now"
-msgstr "Claim Refund Now"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
@@ -2648,7 +2647,7 @@ msgstr "Market already exist"
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. {0}"
-msgstr "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. {0}"
+msgstr ""
 
 #. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(tvl?.totalTvl || '0') .toString(), { showUnit: false }, )
 #. placeholder {1}: formatNumberPercent(genesisFeeRate, 0, false)
@@ -2656,7 +2655,7 @@ msgstr "Market launch fee paid and TVL threshold met! Waiting for smart contract
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! {2}"
-msgstr "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! {2}"
+msgstr ""
 
 #: src/components/Dialog/MarketLaunchStatusDialog.tsx
 msgid "Market Launch Status"
@@ -2668,7 +2667,7 @@ msgstr ""
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market Opening Failed! You have {0} {1} funds pending.👉 {2}"
-msgstr "Market Opening Failed! You have {0} {1} funds pending.👉 {2}"
+msgstr ""
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -3113,7 +3112,7 @@ msgstr ""
 #. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => { setBoostConfirmBoostOpen(true) }} > [ {<Trans>Unlock Market Early</Trans>} ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ {<Trans>`Paid. Syncing status</Trans>}... ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
-msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
+msgstr ""
 
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
@@ -3123,7 +3122,7 @@ msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now
 #. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => setBoostConfirmBoostOpen(true)} > [ <Trans>Unlock Market Early</Trans> ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ <Trans>Paid. Syncing status</Trans>... ] </button> )
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
-msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
+msgstr ""
 
 #. placeholder {0}: pool?.baseSymbol || '--'
 #. placeholder {0}: pool?.quoteSymbol || '--'
@@ -3307,7 +3306,7 @@ msgstr ""
 
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Paid. Syncing status"
-msgstr "Paid. Syncing status"
+msgstr ""
 
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
@@ -3772,7 +3771,7 @@ msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "Refund already claimed."
-msgstr "Refund already claimed."
+msgstr ""
 
 #: src/hooks/lp/useClaimRefund.ts
 #: src/hooks/lp/useOnUnBoostPool.ts
@@ -4657,7 +4656,7 @@ msgstr ""
 
 #: src/utils/verify.ts
 msgid "Trigger price must be between Liquidation and Auto-TP prices."
-msgstr "Trigger price must be between Liquidation and Auto-TP prices."
+msgstr ""
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
@@ -4729,7 +4728,7 @@ msgstr ""
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Unlock Market Early"
-msgstr "Unlock Market Early"
+msgstr ""
 
 #: src/components/Record/Items/Position.tsx
 msgid "unPnl"
@@ -4882,7 +4881,7 @@ msgstr ""
 #: src/pages/Earn/components/BenchWarning.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "View Status"
-msgstr "View Status"
+msgstr ""
 
 #: src/pages/Home/components/ExpressMenu/const.tsx
 #: src/pages/VIP/provider/index.tsx
@@ -5707,3 +5706,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
