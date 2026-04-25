@@ -156,7 +156,7 @@ const brokerAddressMap: Record<number, string> = {
     : '0x5126E4585c96837Afd833F838F76966768A6807F',
   [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0xDfD7CcaAd4000E82604261839f5c05D44B37121b',
   [ChainId.BSC_TESTNET]: isBetaMode() ? '0x144E5067E690635b2cbeE10D96f431D143739f48' : '',
-  [ChainId.BSC_MAINNET]: '0x93152c7Bd0269ecbb53DF247e4f8ebFe3F4a2026',
+  [ChainId.BSC_MAINNET]: '0x83C6F0BEDebF759fDB4Be8096dF558c1EE544999',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
