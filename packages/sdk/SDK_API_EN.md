@@ -6,6 +6,24 @@
 
 ---
 
+## Changelog
+
+### Latest update
+
+Changes to the **Account module** (`account.*`):
+
+| # | Change | Detail |
+|---|--------|--------|
+| 1 | **Removed** `account.getCurrentFeeDataEpoch` | Method deleted from SDK — epoch concept removed entirely |
+| 2 | **Added** `account.getWalletQuoteTokenBalance` | New on-chain query: returns raw quote-token balance for a given address |
+| 3 | **Added** `account.getAccountVipInfoByBackend` | New backend query: fetches backend-signed VIP fee config (includes the `signature` required by `setUserFeeData`) |
+| 4 | **Type fix** `account.getAccountVipInfo` → `nonce` | Return type changed `number` → `string` |
+| 5 | **Updated** `account.setUserFeeData` — `feeData.nonce` | Type changed `number` → `string` |
+| 6 | **Updated** `account.setUserFeeData` — `feeData.expiry` | New required field added (Unix timestamp) |
+| 7 | **Updated** `account.setUserFeeData` — verification order | Epoch check removed; order is now: ① signer authorised → ② deadline not expired → ③ nonce == userNonce + 1 |
+
+---
+
 ## Table of Contents
 
 1. [Initialization & Authentication](#1-initialization--authentication)

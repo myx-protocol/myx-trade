@@ -6,6 +6,24 @@
 
 ---
 
+## 更新日志
+
+### 最近一次更新
+
+**账户模块**（`account.*`）变更：
+
+| # | 变更类型 | 详情 |
+|---|---------|------|
+| 1 | **删除** `account.getCurrentFeeDataEpoch` | 该方法已从 SDK 移除，epoch 概念整体废弃 |
+| 2 | **新增** `account.getWalletQuoteTokenBalance` | 链上查询：返回指定地址的 quote token 原始余额 |
+| 3 | **新增** `account.getAccountVipInfoByBackend` | 后端查询：获取后端签名的 VIP 费率配置（含 `setUserFeeData` 所需的 `signature`） |
+| 4 | **类型修正** `account.getAccountVipInfo` → `nonce` | 返回值类型 `number` 改为 `string` |
+| 5 | **类型修正** `account.setUserFeeData` → `feeData.nonce` | 字段类型 `number` 改为 `string` |
+| 6 | **新增字段** `account.setUserFeeData` → `feeData.expiry` | 新增必填字段，Unix 时间戳 |
+| 7 | **逻辑变更** `account.setUserFeeData` 校验顺序 | 移除 epoch 校验；当前顺序：① signer 已授权 → ② deadline 未过期 → ③ nonce == userNonce + 1 |
+
+---
+
 ## 目录
 
 1. [初始化与认证](#1-初始化与认证)
