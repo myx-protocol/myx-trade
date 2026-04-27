@@ -381,6 +381,14 @@ export class Seamless {
       }
     }
 
+    console.log('authorizeSeamlessAccount-->', {
+      masterAddress,
+      approve,
+      seamlessAddress,
+      chainId,
+      forwardFeeToken,
+    })
+
     const deadline = dayjs().add(60, 'minute').unix()
     let permitParams: any[] = []
     if (approve) {
@@ -394,6 +402,7 @@ export class Seamless {
           const contractAddress = getContractAddressByChainId(chainId)
           const approvalResult = await tokenContract.write?.approve([contractAddress.TRADING_ROUTER, maxUint256])
 
+          this.logger.info('approvalResult-->', approvalResult)
           if (approvalResult?.hash) {
             permitParams = []
           }
