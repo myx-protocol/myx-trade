@@ -97,12 +97,14 @@ export class Seamless {
   async onCheckRelayer(account: string, relayer: string, chainId: number, tokenAddress: string) {
     const forwarderContract = await getForwarderContract(chainId);
     const checkRelayerResult = await forwarderContract.read.isUserRelayerEnabled([account as `0x${string}`, relayer as `0x${string}`]);
-
+    const marketManagerContract = await getMarketManageContract(chainId);
+    const pledgeFee = await marketManagerContract.read.getForwardFeeByToken([tokenAddress as `0x${string}`]);
+    const gasFee = BigInt(pledgeFee) * BigInt(FORWARD_PLEDGE_FEE_RADIO)
     const isNeedApprove = await this.utils.needsApproval(
       account,
       chainId,
       tokenAddress,
-      maxUint256.toString(),
+      gasFee.toString(),
       getContractAddressByChainId(chainId).TRADING_ROUTER,
     );
 
