@@ -59,12 +59,18 @@ export const useUnlockSeamlessAccount = () => {
         const isAuthorized = isAuthorizedRes?.data?.auth
 
         if (!isAuthorized) {
-          await client?.seamless.authorizeSeamlessAccount({
+          const authRes = await client?.seamless.authorizeSeamlessAccount({
             approve: true,
             seamlessAddress: seamlessWallet.address,
             chainId: currentChainId,
             forwardFeeToken: quoteToken as string,
           })
+          if (authRes?.code !== 0) {
+            if (authRes?.message !== 'User Rejected') {
+              showErrorToast(client?.utils.formatErrorMessage(authRes))
+            }
+            return
+          }
         }
 
         return {

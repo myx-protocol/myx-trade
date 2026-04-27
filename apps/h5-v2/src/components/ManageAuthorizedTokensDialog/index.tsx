@@ -101,7 +101,7 @@ export const ManageAuthorizedTokensDialog = () => {
                       toast.success({
                         title: t`Authorize success`,
                       })
-                    } else {
+                    } else if (rs?.message !== 'User Rejected') {
                       toast.error({
                         title: t`Authorize failed`,
                       })

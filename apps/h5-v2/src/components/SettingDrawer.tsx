@@ -92,7 +92,7 @@ export const RenderAuthButton = () => {
             toast.success({
               title: t`Revoke seamless account success`,
             })
-          } else {
+          } else if (authRs?.message !== 'User Rejected') {
             toast.error({
               title: t`Revoke seamless account failed`,
             })

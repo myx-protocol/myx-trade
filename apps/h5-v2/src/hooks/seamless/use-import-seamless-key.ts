@@ -62,7 +62,9 @@ export const useImportSeamlessKey = () => {
             forwardFeeToken: symbolInfo?.quoteToken as string,
           })
           if (authRes?.code !== 0) {
-            showErrorToast(client?.utils.formatErrorMessage(authRes))
+            if (authRes?.message !== 'User Rejected') {
+              showErrorToast(client?.utils.formatErrorMessage(authRes))
+            }
             return
           }
         }
