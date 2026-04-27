@@ -357,6 +357,18 @@ export class Seamless {
     const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
     return txRs;
   }
+  
+
+  async approveBalance(chainId: ChainId, forwardFeeToken: string, approveAmount: string) {
+    if (!this.configManager.hasSigner()) {
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
+    }
+
+    const tokenContract = await getERC20Contract(chainId, forwardFeeToken);
+    const contractAddress = getContractAddressByChainId(chainId)
+    const approvalResult = await tokenContract.write?.approve([contractAddress.TRADING_ROUTER, approveAmount])
+    return approvalResult
+  }
 
   async authorizeSeamlessAccount({
     approve,
@@ -397,15 +409,8 @@ export class Seamless {
     if (approve) {
       try {
         if(forwardFeeToken === USDT_TOKEN) {
-          if (!this.configManager.hasSigner()) {
-            throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
-          }
-      
-          const tokenContract = await getERC20Contract(chainId, forwardFeeToken);
-          const contractAddress = getContractAddressByChainId(chainId)
-          const approvalResult = await tokenContract.write?.approve([contractAddress.TRADING_ROUTER, maxUint256])
+          const approvalResult = await  this.approveBalance(chainId, forwardFeeToken, maxUint256.toString())
 
-          this.logger.info('approvalResult-->', approvalResult)
           if (approvalResult?.hash) {
             permitParams = []
           }
