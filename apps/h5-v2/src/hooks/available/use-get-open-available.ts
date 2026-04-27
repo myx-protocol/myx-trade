@@ -11,6 +11,7 @@ import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 import useGlobalStore from '@/store/globalStore'
+import { TradeMode } from '@/pages/Trade/types'
 import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
 import useSWR from 'swr'
 import { useGetNetworkFee } from '../calculate/use-get-liq-price'
@@ -23,7 +24,7 @@ import {
 } from '@/utils/trade/open-order-network-fee-reserve'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig, shareCollateral } = useGlobalStore()
+  const { symbolInfo, poolConfig, shareCollateral, tradeMode } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
   const { getNetworkFee } = useGetNetworkFee({
     poolId: symbolInfo?.poolId as string,
@@ -117,9 +118,10 @@ export const useGetOpenAvailable = () => {
       slValue,
     )
     // 自动保证金：先扣 network fee 预留（与 submit 中 totalNetworkFee 一致）；手动在 MarginAmount 里限制
+    const forwardFeeReserve = tradeMode === TradeMode.Seamless ? '2' : '0'
     const accountAvailableForAutoOpen = subtractReserveFromAvailable(
-      availableMarginRaw,
-      networkFeeReserve,
+      subtractReserveFromAvailable(availableMarginRaw, networkFeeReserve),
+      forwardFeeReserve,
     )
     const originCollateralAmountValue = autoMarginMode
       ? parseBigNumber(accountAvailableForAutoOpen).mul(parseBigNumber(leverage))
@@ -248,6 +250,7 @@ export const useGetOpenAvailable = () => {
     longPositionAvailableMargin,
     shortPositionAvailableMargin,
     shareCollateral,
+    tradeMode,
     networkFee,
     tpSlOpen,
     tpValue,
