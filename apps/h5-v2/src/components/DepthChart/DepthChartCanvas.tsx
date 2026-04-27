@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import type { DepthChartDataItem } from './types'
 import { DEFAULT_DEPTH_CHART_COLORS, thousandsSeparator, formatContinuousDecimal } from './utils'
 import type { DepthChartColors, DepthChartTooltipItem } from './types'
-import { formatNumber } from '@/utils/number'
+import { decimalToPercent, formatNumber } from '@/utils/number'
 import { t } from '@lingui/core/macro'
 import Big from 'big.js'
 
@@ -97,10 +97,12 @@ export const DepthChartCanvas: React.FC<DepthChartCanvasProps> = ({
   const getPriceRangeData = useCallback(
     (price: number): string => {
       if (!lastPrice || !Number(lastPrice)) return '--'
-      const calcPrice = ((price - Number(lastPrice)) / Number(lastPrice)) * 100
+      const calcPrice = (price - Number(lastPrice)) / Number(lastPrice)
       if (!isFinite(calcPrice)) return '--'
-      const sign = calcPrice > 0 ? '+' : ''
-      return `${sign}${calcPrice.toFixed(pricePrecision)}%`
+      return decimalToPercent(calcPrice, {
+        showSign: true,
+        decimals: pricePrecision || 2,
+      })
     },
     [lastPrice, pricePrecision],
   )
