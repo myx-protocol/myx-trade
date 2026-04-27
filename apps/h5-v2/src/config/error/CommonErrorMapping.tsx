@@ -10,6 +10,8 @@ export const CommonErrorMapping: Record<string, ReactElement> = {
   UserRejectedRequestError: <Trans>User Rejected</Trans>,
   ACTION_REJECTED: <Trans>User Rejected</Trans>,
   'User Rejected': <Trans>User Rejected</Trans>,
+  INSUFFICIENT_BALANCE: <Trans>Insufficient wallet balance</Trans>,
+  'Insufficient wallet balance': <Trans>Insufficient wallet balance</Trans>,
   'AccountInsufficientFreeAmount()': <Trans>AccountInsufficientFreeAmount()</Trans>,
   'AccountInsufficientReservedAmount()': <Trans>AccountInsufficientReservedAmount()</Trans>,
   'AccountInsufficientTradableAmount(uint256,uint256)': (

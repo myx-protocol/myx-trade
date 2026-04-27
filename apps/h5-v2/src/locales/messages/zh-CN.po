@@ -4879,6 +4879,10 @@ msgstr "交易锁定池内流动性时产生的基础滑点摩擦"
 msgid "User Rejected"
 msgstr "用户已拒绝"
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Insufficient wallet balance"
+msgstr "钱包余额不足"
+
 #: src/components/ChangeModeDialog/index.tsx
 msgid "User who prefer classic DeFi UX"
 msgstr "偏好经典 DeFi 用户体验的用户"

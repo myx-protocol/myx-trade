@@ -4879,6 +4879,10 @@ msgstr ""
 msgid "User Rejected"
 msgstr ""
 
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Insufficient wallet balance"
+msgstr ""
+
 #: src/components/ChangeModeDialog/index.tsx
 msgid "User who prefer classic DeFi UX"
 msgstr ""
