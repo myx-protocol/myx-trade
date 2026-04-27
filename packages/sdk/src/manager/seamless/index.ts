@@ -413,6 +413,9 @@ export class Seamless {
         if (isUserRejected(error)) {
           return { code: -1, data: null, message: 'User Rejected' }
         }
+        if ((error as any)?.name === 'AccountNotFoundError') {
+          return { code: -1, data: null, message: 'Wallet not connected' }
+        }
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
@@ -442,6 +445,9 @@ export class Seamless {
     } catch (error) {
       if (isUserRejected(error)) {
         return { code: -1, data: null, message: 'User Rejected' }
+      }
+      if ((error as any)?.name === 'AccountNotFoundError') {
+        return { code: -1, data: null, message: 'Wallet not connected' }
       }
       throw error
     }
