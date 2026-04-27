@@ -31,7 +31,7 @@ const DEFAULT_ACCOUNT_ASSETS = {
 }
 
 export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient(chainId)
+  const { client } = useMyxSdkClient(chainId)
 
   const { address } = useWalletConnection()
   const { poolList } = useGlobalStore()
@@ -41,14 +41,12 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
   const isPreBench = pool?.state === MarketPoolState.PreBench
 
   const { data } = useSWR(
-    address && poolId && client && clientIsAuthenticated && chainId && !isPreBench
+    address && poolId && client && chainId && !isPreBench
       ? {
           key: 'getAccountAssets',
           chainId: chainId,
           address,
           poolId: poolId as string,
-          clientIsAuthenticated,
-          client,
         }
       : null,
     async () => {

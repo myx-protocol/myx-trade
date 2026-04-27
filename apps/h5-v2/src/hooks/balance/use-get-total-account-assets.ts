@@ -8,7 +8,7 @@ import { parseBigNumber } from '@/utils/bn'
 import useGlobalStore from '@/store/globalStore'
 
 export const useGetTotalAccountAssets = () => {
-  const { clients, clientIsAuthenticated } = useAllMyxSdkClients()
+  const { clients } = useAllMyxSdkClients()
   const { address } = useWalletConnection()
   const { poolList } = useGlobalStore()
 
@@ -21,12 +21,6 @@ export const useGetTotalAccountAssets = () => {
     })
   }, [poolList])
 
-  // 所有涉及链都已鉴权才发请求
-  const allAuthenticated = useMemo(() => {
-    const chainIds = [...new Set<number>(targetPools.map((p) => p.chainId))]
-    return chainIds.length > 0 && chainIds.every((id) => Boolean(clientIsAuthenticated?.[id]))
-  }, [targetPools, clientIsAuthenticated])
-
   // SWR key 只用稳定字符串，不带对象引用
   const poolKey = useMemo(
     () => targetPools.map((p) => `${p.chainId}:${p.poolId}`).join(','),
@@ -34,9 +28,7 @@ export const useGetTotalAccountAssets = () => {
   )
 
   const { data } = useSWR(
-    address && allAuthenticated && poolKey
-      ? { key: 'getTotalAccountAssets', address, poolKey }
-      : null,
+    address && poolKey ? { key: 'getTotalAccountAssets', address, poolKey } : null,
     async () => {
       const results = await Promise.allSettled(
         targetPools.map((pool) => {
