@@ -32,6 +32,8 @@ const contractTypes = {
 }
 const FORWARD_PLEDGE_FEE_RADIO = 2
 
+const USDT_TOKEN = '0x55d398326f99059ff775485246999027b3197955'
+
 function splitSignatureToVrs(signatureHex: `0x${string}`): { v: number; r: `0x${string}`; s: `0x${string}` } {
   const bytes = hexToBytes(signatureHex);
   if (bytes.length < 65) throw new Error("Invalid signature length");
@@ -139,9 +141,6 @@ export class Seamless {
         address: getContractAddressByChainId(chainId).Account,
       }
     }
-
-    console.log('functionName==>', functionName)
-    console.log('brokerFunctions.includes(functionName)->', brokerFunctions.includes(functionName))
 
     if (brokerFunctions.includes(functionName)) {
       return {
@@ -386,8 +385,21 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        this.logger.info('getUSDPermitParams', deadline, chainId, forwardFeeToken)
-        permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
+        if(forwardFeeToken === USDT_TOKEN) {
+          if (!this.configManager.hasSigner()) {
+            throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
+          }
+      
+          const tokenContract = getTokenContract(chainId, forwardFeeToken);
+          const contractAddress = getContractAddressByChainId(chainId)
+          const approvalResult = await tokenContract.write?.approve([contractAddress.TRADING_ROUTER, maxUint256])
+
+          if (approvalResult?.hash) {
+            permitParams = []
+          }
+        } else {
+          permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
+        }
       } catch (error) {
         if (isUserRejected(error)) {
           return { code: -1, data: null, message: 'User Rejected' }
@@ -405,7 +417,8 @@ export class Seamless {
       args: [seamlessAddress, approve, permitParams],
     });
 
-    let txRs: Awaited<ReturnType<typeof this.forwarderTx>>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let txRs: any
     try {
       txRs = await this.forwarderTx({
         from: masterAddress,
