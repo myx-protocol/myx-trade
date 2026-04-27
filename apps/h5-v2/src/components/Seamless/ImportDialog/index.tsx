@@ -82,6 +82,14 @@ export const ImportDialog = () => {
 
         setSeamlessAccountList(nextSeamlessAccountList)
         setActiveSeamlessAddress(seamlessAccount.masterAddress)
+        client?.auth({
+          signer: rs.data?.seamlessWallet,
+          getAccessToken: async () => ({
+            accessToken: 'myx',
+            expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
+          }),
+        })
+        await client?.refreshAccessToken(true)
         setTradeMode(TradeMode.Seamless)
         toast.success({
           title: t`Import seamless key success`,
