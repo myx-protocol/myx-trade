@@ -34,32 +34,6 @@ export class Utils {
     this.logger = logger;
   }
 
-  getOrderIdFromTransaction(receipt: any): string | null {
-    if (!receipt || !receipt.logs) {
-      return null;
-    }
-
-    for (let i = 0; i < receipt.logs.length; i++) {
-      const log = receipt.logs[i];
-      this.logger.info(`Log ${i}:`, { address: log.address, topics: log.topics, data: log.data });
-      try {
-        const decoded = decodeEventLog({
-          abi: Emiter_ABI as never,
-          data: (log.data ?? "0x") as `0x${string}`,
-          topics: (log.topics ?? []) as [`0x${string}`, ...`0x${string}`[]],
-        });
-        const args = (decoded as { eventName?: string; args?: { orderId?: unknown } }).args;
-        if (decoded.eventName === "OrderPlaced" && args?.orderId != null) {
-          return String(args.orderId);
-        }
-      } catch {
-        continue;
-      }
-    }
-    // this.logger.warn("OrderPlaced event not found in transaction logs");
-    return null;
-  }
-
   private async getApproveQuoteAmount(
     account: string,
     chainId: number,
