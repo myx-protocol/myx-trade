@@ -102,6 +102,7 @@ export const CloseConfirmDialog = () => {
           <EditText
             value={`${(closePositionSlippage * 100).toFixed(2)}`}
             unit="%"
+            max={99.99}
             onChange={(newSlippage) => {
               setSlippageAction({
                 chainId: symbolInfo?.chainId ?? 0,

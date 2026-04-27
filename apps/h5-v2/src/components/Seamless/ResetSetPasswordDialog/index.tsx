@@ -186,7 +186,7 @@ export const ResetSetPasswordDialog = () => {
                   setActiveSeamlessWallet(rs.data?.seamlessWallet)
                   setTradeMode(TradeMode.Seamless)
                   setResetPasswordDialogOpen(false)
-                } else {
+                } else if (rs !== undefined) {
                   showErrorToast(client?.utils.formatErrorMessage(rs))
                 }
               } catch (error) {

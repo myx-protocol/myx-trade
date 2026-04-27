@@ -16,14 +16,23 @@ const RenderRecentLogin = () => {
 
   if (recentWallet) {
     return (
-      <LoginItem
-        quickLogin
-        label={recentWallet.name}
-        icon={recentWallet.icon}
-        id={recentWallet.id}
-        connectorId={recentWallet.connectorId}
-        channel={LoginChannelEnum.WALLET}
-      />
+      <>
+        <LoginItem
+          quickLogin
+          label={recentWallet.name}
+          icon={recentWallet.icon}
+          id={recentWallet.id}
+          connectorId={recentWallet.connectorId}
+          channel={LoginChannelEnum.WALLET}
+        />
+        <div className="my-[32px] flex items-center gap-[10px]">
+          <div className="h-[1px] flex-1 bg-[#3A404A]" />
+          <span className="mx-[12px] text-[14px] font-[500] text-[#848E9C]">
+            <Trans>Or Continue With </Trans>
+          </span>
+          <div className="h-[1px] flex-1 bg-[#3A404A]" />
+        </div>
+      </>
     )
   }
 
@@ -43,13 +52,6 @@ export const LoginModal = () => {
     >
       <div className="mt-[24px]">
         <RenderRecentLogin />
-      </div>
-      <div className="my-[32px] flex items-center gap-[10px]">
-        <div className="h-[1px] flex-1 bg-[#3A404A]" />
-        <span className="mx-[12px] text-[14px] font-[500] text-[#848E9C]">
-          <Trans>Or Continue With </Trans>
-        </span>
-        <div className="h-[1px] flex-1 bg-[#3A404A]" />
       </div>
       <div className="flex items-center justify-between">
         {walletList.slice(0, 4).map((item) => (

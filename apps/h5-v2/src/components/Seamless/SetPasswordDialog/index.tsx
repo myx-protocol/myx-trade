@@ -179,7 +179,7 @@ export const SetPasswordDialog = () => {
                   setActiveSeamlessWallet(rs.data?.seamlessWallet)
                   setTradeMode(TradeMode.Seamless)
                   setSeamlessPasswordDialogOpen(false)
-                } else {
+                } else if (rs !== undefined) {
                   toast.error({
                     title: client?.utils.formatErrorMessage(rs),
                   })

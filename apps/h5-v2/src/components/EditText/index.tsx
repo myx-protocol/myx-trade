@@ -13,12 +13,14 @@ export const EditText = ({
   unit,
   editWidth,
   symbol,
+  max,
 }: {
   loading?: boolean
   symbol?: string
   value: string
   unit?: string
   editWidth?: number
+  max?: number
   onChange: (value: string, cb?: () => void) => void
 }) => {
   const [isEdit, setIsEdit] = useState(false)
@@ -51,6 +53,7 @@ export const EditText = ({
       <NumberInputPrimitive
         className="w-[50px] rounded-[4px] bg-[#202129] px-[12px] py-[8px] text-center text-[12px] font-medium"
         value={text}
+        max={max}
         onValueChange={(values) => setText(values.value)}
       />
       {!loading ? (

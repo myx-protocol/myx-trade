@@ -520,6 +520,7 @@ export const PlaceOrderConfirmDialog = () => {
               <EditText
                 value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
                 unit="%"
+                max={99.99}
                 onChange={(newSlippage, closeEdit) => {
                   setSlippage({
                     chainId: symbolInfo?.chainId ?? 0,
