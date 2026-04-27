@@ -30,7 +30,7 @@ export const Errors = {
   [ErrorCode.Invalid_Params]: `Invalid Params`,
   [ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]: `Invalid Amount Withdrawable LP Amount`,
 }
-function isUserRejected(error: any): boolean {
+export function isUserRejected(error: any): boolean {
   let err = error
   
   while (err) {
