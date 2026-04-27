@@ -6,7 +6,7 @@ import { getWalletClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import { isUserRejected } from "@/config/error.js";
 import { hexToBytes, toHex, encodeFunctionData, maxUint256, isAddress } from "viem";
-import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
+import { getForwarderContract, getMarketManageContract, getTokenContract, getERC20Contract, ProviderType } from "@/web3/providers";
 import { Account as AccountManager } from "../account/index.js";
 import dayjs from "dayjs";
 import { getContractAddressByChainId } from "@/config/address/index.js";
@@ -398,7 +398,7 @@ export class Seamless {
             throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Signer is required for permit");
           }
       
-          const tokenContract = getTokenContract(chainId, forwardFeeToken);
+          const tokenContract = await getERC20Contract(chainId, forwardFeeToken);
           const contractAddress = getContractAddressByChainId(chainId)
           const approvalResult = await tokenContract.write?.approve([contractAddress.TRADING_ROUTER, maxUint256])
 
