@@ -16,6 +16,7 @@ import deleteIcon from '@/assets/icon/commons/delete.svg'
 import { useImportSeamlessKey } from '@/hooks/seamless/use-import-seamless-key'
 import { TradeMode } from '@/pages/Trade/types'
 import { showErrorToast } from '@/config/error'
+import type { SignerLike } from '@myx-trade/sdk'
 
 export const ImportDialog = () => {
   const { importSeamlessKeyDialogOpen, setImportSeamlessKeyDialogOpen, symbolInfo, setTradeMode } =
@@ -83,7 +84,7 @@ export const ImportDialog = () => {
         setSeamlessAccountList(nextSeamlessAccountList)
         setActiveSeamlessAddress(seamlessAccount.masterAddress)
         client?.auth({
-          signer: rs.data?.seamlessWallet,
+          signer: rs.data?.seamlessWallet as unknown as SignerLike,
           getAccessToken: async () => ({
             accessToken: 'myx',
             expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,

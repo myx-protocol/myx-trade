@@ -19,6 +19,7 @@ import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useUnlockSeamlessAccount } from '@/hooks/seamless/use-unlock-seamless-account'
 import { useParams } from 'react-router-dom'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import type { SignerLike } from '@myx-trade/sdk'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -202,7 +203,7 @@ export const UnlockAccountDialog = () => {
                 setSeamlessAccountList([...seamlessAccountList])
                 setActiveSeamlessWallet(rs.data?.seamlessWallet)
                 client?.auth({
-                  signer: rs.data?.seamlessWallet,
+                  signer: rs.data?.seamlessWallet as unknown as SignerLike,
                   getAccessToken: async () => ({
                     accessToken: 'myx',
                     expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
