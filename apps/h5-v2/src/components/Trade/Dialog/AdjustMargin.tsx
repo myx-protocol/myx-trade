@@ -32,6 +32,7 @@ import useGlobalStore from '@/store/globalStore'
 import { getQuoteTokenInfo } from '@/config/token'
 import { showErrorToast } from '@/config/error'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import { useCheckSeamlessAllowance } from '@/hooks/seamless/use-check-seamless-allowance'
 import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
 import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { useSeamlessStore } from '@/store/seamless/createStore'
@@ -135,6 +136,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const { checkWalletChainId } = useWalletChainCheck()
   const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
+  const { checkSeamlessAllowance } = useCheckSeamlessAllowance()
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
   const { activeAddress } = useWalletStore()
@@ -569,6 +571,17 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       toast.error({ title: t`Seamless account not authorized` })
                       return
                     }
+
+                    const isAllowed = await checkSeamlessAllowance({
+                      chainId: position.chainId,
+                      masterAddress: activeSeamlessAddress,
+                      seamlessAddress: seamlessAccount?.seamlessAddress as string,
+                      quoteToken: pool?.quoteToken as string,
+                      amount: parseBigNumber(adjustAmountFormat).gt(0)
+                        ? ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString()
+                        : '0',
+                    })
+                    if (!isAllowed) return
 
                     const priceData = await client?.utils.getOraclePrice(
                       position.poolId,

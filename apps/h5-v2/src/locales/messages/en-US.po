@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-27 03:08\n"
+"PO-Revision-Date: 2026-04-27 11:26\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -433,6 +433,11 @@ msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "and"
+msgstr ""
+
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Approve failed"
 msgstr ""
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -2083,6 +2088,11 @@ msgid "Insufficient balance to pay execution fee"
 msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Insufficient wallet balance"
+msgstr ""
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
 msgstr "Insufficient balance"
@@ -3419,6 +3429,10 @@ msgstr "Permission denied (address,address)"
 msgid "Perp Trading Info"
 msgstr ""
 
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Please approve a new limit via your wallet."
+msgstr ""
+
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Please confirm whether to"
 msgstr ""
@@ -3462,6 +3476,11 @@ msgstr ""
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Please note: "
+msgstr ""
+
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Please try again."
 msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
@@ -4646,6 +4665,10 @@ msgstr ""
 msgid "Trading : Market is live. Trading is open and generating earnings."
 msgstr ""
 
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Trading allowance reached"
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
 msgstr ""
@@ -4877,10 +4900,6 @@ msgstr ""
 #: src/config/error/MYX_SDK_ERRORS.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
-msgstr ""
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "Insufficient wallet balance"
 msgstr ""
 
 #: src/components/ChangeModeDialog/index.tsx

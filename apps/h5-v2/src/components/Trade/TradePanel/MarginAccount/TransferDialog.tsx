@@ -29,6 +29,7 @@ import useGlobalStore from '@/store/globalStore'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import { useCheckSeamlessAllowance } from '@/hooks/seamless/use-check-seamless-allowance'
 import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 
@@ -56,6 +57,7 @@ export const TransferDialogButton = () => {
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
+  const { checkSeamlessAllowance } = useCheckSeamlessAllowance()
 
   const releaseTime = accountAssets.releaseTime
   const isExpired = dayjs().unix() > releaseTime
@@ -462,9 +464,23 @@ export const TransferDialogButton = () => {
                       const isAuthorized = isAuthorizedRes?.data?.auth
                       if (!isAuthorized) {
                         toast.error({ title: t`Seamless account not authorized` })
+                        return
                       }
 
                       if (transferType === TransferType.Wallet) {
+                        const formatAmount = ethers.parseUnits(
+                          amount || '0',
+                          symbolInfo?.quoteDecimals ?? 6,
+                        )
+                        const isAllowed = await checkSeamlessAllowance({
+                          chainId: symbolInfo?.chainId as number,
+                          masterAddress: activeSeamlessAddress,
+                          seamlessAddress: seamlessAccount.seamlessAddress,
+                          quoteToken: symbolInfo?.quoteToken as string,
+                          amount: formatAmount.toString(),
+                        })
+                        if (!isAllowed) return
+
                         if (
                           parseBigNumber(amount.toString()).gt(
                             parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0'),
@@ -473,7 +489,7 @@ export const TransferDialogButton = () => {
                           toast.error({ title: t`Insufficient Balance` })
                           return
                         }
-                        const formatAmount = ethers.parseUnits(
+                        const formatAmount2 = ethers.parseUnits(
                           amount,
                           symbolInfo?.quoteDecimals ?? 6,
                         )
@@ -487,7 +503,7 @@ export const TransferDialogButton = () => {
                           orderParams: [
                             activeSeamlessAddress,
                             symbolInfo?.quoteToken as string,
-                            formatAmount.toString(),
+                            formatAmount2.toString(),
                           ],
                         })
 

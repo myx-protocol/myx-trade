@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-27 03:08\n"
+"PO-Revision-Date: 2026-04-27 11:26\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -434,6 +434,11 @@ msgstr "赎回数量"
 #: src/pages/VIP/components/VipList.tsx
 msgid "and"
 msgstr "及"
+
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Approve failed"
+msgstr "授权失败"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
@@ -2083,6 +2088,11 @@ msgid "Insufficient balance to pay execution fee"
 msgstr "余额不足以支付执行费用"
 
 #: src/config/error/CommonErrorMapping.tsx
+#: src/config/error/CommonErrorMapping.tsx
+msgid "Insufficient wallet balance"
+msgstr "钱包余额不足"
+
+#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
 msgstr "余额不足()"
@@ -3419,6 +3429,10 @@ msgstr "权限被拒绝 (address,address)"
 msgid "Perp Trading Info"
 msgstr "永续合约交易信息"
 
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Please approve a new limit via your wallet."
+msgstr "交易授权额度不足，请通过钱包批准新的额度。"
+
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Please confirm whether to"
 msgstr "请确认是否要"
@@ -3463,6 +3477,11 @@ msgstr "请输入止盈数量"
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Please note: "
 msgstr "请注意："
+
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Please try again."
+msgstr "请重试。"
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
@@ -4646,6 +4665,10 @@ msgstr "交易者"
 msgid "Trading : Market is live. Trading is open and generating earnings."
 msgstr "交易中：合约交易已开启并正在产生收益。"
 
+#: src/hooks/seamless/use-check-seamless-allowance.ts
+msgid "Trading allowance reached"
+msgstr "交易授权额度不足"
+
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
 msgstr "交易手续费"
@@ -4878,10 +4901,6 @@ msgstr "交易锁定池内流动性时产生的基础滑点摩擦"
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
 msgstr "用户已拒绝"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "Insufficient wallet balance"
-msgstr "钱包余额不足"
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "User who prefer classic DeFi UX"

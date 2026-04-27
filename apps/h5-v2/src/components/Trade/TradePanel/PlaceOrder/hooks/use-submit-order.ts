@@ -34,6 +34,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '@/pages/Trade/types'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { useGetAllQuoteTokenAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
+import { useCheckSeamlessAllowance } from '@/hooks/seamless/use-check-seamless-allowance'
 import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 import { getMyxBrokerAddressByChainId } from '@/config/brokerAddress'
 import { buildSubmitOrderToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
@@ -86,6 +87,7 @@ export const useSubmitOrder = () => {
     tpSlOpen,
   } = useTradePanelStore()
   const { quoteTokenAuthStatus } = useGetAllQuoteTokenAuthStatus()
+  const { checkSeamlessAllowance } = useCheckSeamlessAllowance()
   const leverage = useLeverage(symbolInfo?.poolId ?? '')
 
   const submitOrder = useCallback(
@@ -485,6 +487,15 @@ export const useSubmitOrder = () => {
               if (diff.gt(0)) {
                 depositAmount = diff
               }
+
+              const isAllowed = await checkSeamlessAllowance({
+                chainId: symbolInfo.chainId as number,
+                masterAddress: activeSeamlessAddress,
+                seamlessAddress: seamlessAccount.seamlessAddress,
+                quoteToken: symbolInfo?.quoteToken as string,
+                amount: depositAmount.toString(),
+              })
+              if (!isAllowed) return
 
               const depositData = {
                 token: symbolInfo?.quoteToken as string,
