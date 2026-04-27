@@ -1,5 +1,11 @@
 import { ChainId, getAsSupportedChainIdFn, isSupportedChainFn } from '@/config/chain'
-import { getMarketList, type MarketInfo, MyxClient, type MyxClientConfig } from '@myx-trade/sdk'
+import {
+  getMarketList,
+  type MarketInfo,
+  MyxClient,
+  type MyxClientConfig,
+  type SignerLike,
+} from '@myx-trade/sdk'
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 import { useUnmount, useUpdateEffect } from 'ahooks'
@@ -11,6 +17,9 @@ import { useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { WalletClient } from 'viem'
 import { isBetaMode } from '@/utils/env'
+import useGlobalStore from '@/store/globalStore'
+import { TradeMode } from '@/pages/Trade/types'
+import { useSeamlessStore } from '@/store/seamless/createStore'
 
 interface MyxSdkContextValue {
   client?: Record<number, MyxClient>
@@ -167,6 +176,37 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   const { isWalletConnected, address } = useWalletConnection()
   const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
   const myxSdkClientRef = useRef<Map<number, MyxClient>>(new Map())
+  const { tradeMode } = useGlobalStore()
+  const { activeSeamlessAddress, activeSeamlessWallet } = useSeamlessStore()
+
+  useUpdateEffect(() => {
+    if (tradeMode !== TradeMode.Seamless || !activeSeamlessAddress || !activeSeamlessWallet) return
+    const isClientEmpty = myxSdkClientRef.current.size === 0
+    if (isClientEmpty) return
+
+    myxSdkClientRef.current.forEach((_client) => {
+      _client.auth({
+        signer: activeSeamlessWallet as SignerLike,
+        getAccessToken: async () => ({
+          accessToken: 'myx',
+          expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
+        }),
+      })
+    })
+    const authChainIds = Array.from(myxSdkClientRef.current.keys())
+    setClientIsAuthenticated((prev) => ({
+      ...prev,
+      ...authChainIds.reduce((acc, chainId) => ({ ...acc, [chainId]: activeSeamlessAddress }), {}),
+    }))
+
+    Promise.all(
+      Array.from(myxSdkClientRef.current.values()).map((_client) =>
+        _client.refreshAccessToken(true),
+      ),
+    ).catch((error) => {
+      console.error('Failed to refresh seamless access token:', error)
+    })
+  }, [tradeMode, activeSeamlessAddress, activeSeamlessWallet])
 
   useUpdateEffect(() => {
     const isClientEmpty = myxSdkClientRef.current.size === 0

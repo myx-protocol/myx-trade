@@ -18,6 +18,7 @@ import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useUnlockSeamlessAccount } from '@/hooks/seamless/use-unlock-seamless-account'
 import { useParams } from 'react-router-dom'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -43,6 +44,7 @@ export const UnlockAccountDialog = () => {
     setActiveSeamlessWallet,
   } = useSeamlessStore()
   const { unlockSeamlessAccount, unlockSeamlessAccountLoading } = useUnlockSeamlessAccount()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
 
   // 当对话框打开时，初始化要解锁的账号地址
   useEffect(() => {
@@ -199,6 +201,14 @@ export const UnlockAccountDialog = () => {
 
                 setSeamlessAccountList([...seamlessAccountList])
                 setActiveSeamlessWallet(rs.data?.seamlessWallet)
+                client?.auth({
+                  signer: rs.data?.seamlessWallet,
+                  getAccessToken: async () => ({
+                    accessToken: 'myx',
+                    expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
+                  }),
+                })
+                await client?.refreshAccessToken(true)
                 setTradeMode(TradeMode.Seamless)
               }
             }}
