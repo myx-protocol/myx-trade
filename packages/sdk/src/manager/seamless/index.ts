@@ -4,6 +4,7 @@ import { Logger } from "@/logger";
 import { Utils } from "../utils/index.js";
 import { getWalletClient } from "@/web3/viemClients.js";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
+import { isUserRejected } from "@/config/error.js";
 import { hexToBytes, toHex, encodeFunctionData, maxUint256, isAddress } from "viem";
 import { getForwarderContract, getMarketManageContract, getTokenContract, ProviderType } from "@/web3/providers";
 import { Account as AccountManager } from "../account/index.js";
@@ -189,6 +190,7 @@ export class Seamless {
       };
       return [tradingRouterPermitParams];
     } catch (error) {
+      if (isUserRejected(error)) throw error;
       const msg = error instanceof Error ? error.message : String(error);
       throw new MyxSDKError(MyxErrorCode.InvalidPrivateKey, `getUSDPermitParams failed: ${msg}`);
     }
@@ -387,6 +389,9 @@ export class Seamless {
         this.logger.info('getUSDPermitParams', deadline, chainId, forwardFeeToken)
         permitParams = await this.getUSDPermitParams(deadline, chainId, forwardFeeToken)
       } catch (error) {
+        if (isUserRejected(error)) {
+          return { code: -1, data: null, message: 'User Rejected' }
+        }
         this.logger.warn('Failed to get USD permit params, proceeding without permit:', error)
         permitParams = []
       }
@@ -400,16 +405,24 @@ export class Seamless {
       args: [seamlessAddress, approve, permitParams],
     });
 
-    const txRs = await this.forwarderTx({
-      from: masterAddress,
-      to: forwarderContract.address,
-      value: '0',
-      gas: '800000',//gas.toString(),
-      nonce: nonce.toString(),
-      data: functionHash,
-      deadline,
-      forwardFeeToken,
-    }, chainId)
+    let txRs: Awaited<ReturnType<typeof this.forwarderTx>>
+    try {
+      txRs = await this.forwarderTx({
+        from: masterAddress,
+        to: forwarderContract.address,
+        value: '0',
+        gas: '800000',
+        nonce: nonce.toString(),
+        data: functionHash,
+        deadline,
+        forwardFeeToken,
+      }, chainId)
+    } catch (error) {
+      if (isUserRejected(error)) {
+        return { code: -1, data: null, message: 'User Rejected' }
+      }
+      throw error
+    }
 
     if (txRs.data?.txHash) {
       // Poll chain for transaction status
