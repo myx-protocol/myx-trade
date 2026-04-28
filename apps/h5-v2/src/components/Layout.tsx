@@ -46,6 +46,7 @@ function Layout() {
     exportSeamlessKeyDialogOpen,
     tradeMode,
     setUnlockAccountDialogOpen,
+    setImportSeamlessKeyDialogOpen,
     selectedSeamlessAccountDialogOpen,
     resetSeamlessPasswordDialogOpen,
   } = useGlobalStore()
@@ -58,6 +59,11 @@ function Layout() {
 
     if (isTradeScene && needsUnlock) {
       setUnlockAccountDialogOpen(true)
+      return
+    }
+
+    if (isTradeScene && tradeMode === TradeMode.Seamless && !hasSeamlessAccount) {
+      setImportSeamlessKeyDialogOpen(true)
     }
   }, [
     tradeMode,
@@ -65,6 +71,7 @@ function Layout() {
     activeSeamlessWallet,
     seamlessAccountList.length,
     setUnlockAccountDialogOpen,
+    setImportSeamlessKeyDialogOpen,
     isTradePage,
     isPricePage,
   ])
