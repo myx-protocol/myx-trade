@@ -19,8 +19,14 @@ import { showErrorToast } from '@/config/error'
 import type { SignerLike } from '@myx-trade/sdk'
 
 export const ImportDialog = () => {
-  const { importSeamlessKeyDialogOpen, setImportSeamlessKeyDialogOpen, symbolInfo, setTradeMode } =
-    useGlobalStore()
+  const {
+    importSeamlessKeyDialogOpen,
+    setImportSeamlessKeyDialogOpen,
+    symbolInfo,
+    setTradeMode,
+    poolList,
+  } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
   const [seamlessKey, setSeamlessKey] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -51,7 +57,7 @@ export const ImportDialog = () => {
       const rs = await importSeamlessKey({
         seamlessKey: seamlessKey as `0x${string}`,
         password: password,
-        chainId: symbolInfo?.chainId as number,
+        chainId: effectivePool?.chainId as number,
       })
 
       if (rs?.code === 0) {

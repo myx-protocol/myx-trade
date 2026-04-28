@@ -211,17 +211,19 @@ const TradeSetting = ({ onClose }: { onClose: () => void }) => {
                 </p>
                 <RenderAuthorizedTokens onClose={() => onClose()} />
               </div>
-              <div
-                className="flex cursor-pointer items-center justify-between py-[16px]"
-                onClick={() => setResetPasswordDialogOpen(true)}
-              >
-                <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                  <Trans>Reset Password</Trans>
-                </p>
-                <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                  <IconArrowRight className="h-[16px] w-[16px]" />
-                </p>
-              </div>
+              {isConnected && (
+                <div
+                  className="flex cursor-pointer items-center justify-between py-[16px]"
+                  onClick={() => setResetPasswordDialogOpen(true)}
+                >
+                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                    <Trans>Reset Password</Trans>
+                  </p>
+                  <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                    <IconArrowRight className="h-[16px] w-[16px]" />
+                  </p>
+                </div>
+              )}
               <div
                 className="flex cursor-pointer items-center justify-between py-[16px]"
                 onClick={() => setExportSeamlessInfoDialogOpen(true)}

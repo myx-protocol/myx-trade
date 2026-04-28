@@ -17,9 +17,10 @@ import { useWalletConnection } from '../wallet/useWalletConnection'
 import useGlobalStore from '@/store/globalStore'
 
 export const useCreateSeamlessAccount = () => {
-  const { symbolInfo } = useGlobalStore()
+  const { symbolInfo, poolList } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
   const { data: walletClient } = useWalletClient()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { client } = useMyxSdkClient(effectivePool?.chainId)
   const [loading, setLoading] = useState(false)
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { address } = useWalletConnection()
@@ -37,7 +38,7 @@ export const useCreateSeamlessAccount = () => {
 
         const hashedSignature = await calculateSignature(createAccountSignature ?? '')
         const { privateKey } = generateEthWalletFromHashedSignature(hashedSignature)
-        const chainId = symbolInfo?.chainId as number
+        const chainId = effectivePool?.chainId as number
         if (!chainId) {
           showErrorToast(t`Missing chain`)
           return
@@ -53,7 +54,7 @@ export const useCreateSeamlessAccount = () => {
           masterAddress: address as string,
           seamlessAddress: seamlessWallet.address,
           chainId,
-          tokenAddress: symbolInfo?.quoteToken as string,
+          tokenAddress: effectivePool?.quoteToken as string,
         })
 
         const isAuthorized = isAuthorizedRes?.data?.auth
@@ -63,7 +64,7 @@ export const useCreateSeamlessAccount = () => {
             approve: true,
             seamlessAddress: seamlessWallet.address,
             chainId,
-            forwardFeeToken: symbolInfo?.quoteToken as string,
+            forwardFeeToken: effectivePool?.quoteToken as string,
           })
           if (authRes?.code !== 0) {
             if (authRes?.message !== 'User Rejected') {
@@ -88,7 +89,7 @@ export const useCreateSeamlessAccount = () => {
         setLoading(false)
       }
     },
-    [walletClient, client, symbolInfo?.chainId],
+    [walletClient, client, effectivePool?.chainId],
   )
 
   return {

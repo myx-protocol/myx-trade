@@ -32,7 +32,7 @@ export const UnlockAccountDialog = () => {
   const { symbolInfo } = useGlobalStore()
   const { chainId: routeChainId } = useParams()
   const [show, setShow] = useState(false)
-  const { address } = useWalletConnection()
+  const { address, isConnected } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const [password, setPassword] = useState('')
   const {
@@ -85,6 +85,11 @@ export const UnlockAccountDialog = () => {
       onClose={() => {
         setUnlockAccountDialogOpen(false)
         setSelectedSeamlessAddress('')
+        if (!isConnected) {
+          setTradeMode(TradeMode.Classic)
+          setActiveSeamlessAddress('')
+          setActiveSeamlessWallet(null)
+        }
       }}
       sx={{
         '& .MuiDialog-paper': {
