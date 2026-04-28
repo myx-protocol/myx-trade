@@ -187,10 +187,6 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
     myxSdkClientRef.current.forEach((_client) => {
       _client.auth({
         signer: activeSeamlessWallet as SignerLike,
-        getAccessToken: async () => ({
-          accessToken: 'myx',
-          expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
-        }),
       })
     })
     const authChainIds = Array.from(myxSdkClientRef.current.keys())
@@ -198,14 +194,6 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       ...authChainIds.reduce((acc, chainId) => ({ ...acc, [chainId]: activeSeamlessAddress }), {}),
     }))
-
-    Promise.all(
-      Array.from(myxSdkClientRef.current.values()).map((_client) =>
-        _client.refreshAccessToken(true),
-      ),
-    ).catch((error) => {
-      console.error('Failed to refresh seamless access token:', error)
-    })
   }, [tradeMode, activeSeamlessAddress, activeSeamlessWallet])
 
   useUpdateEffect(() => {

@@ -204,12 +204,7 @@ export const UnlockAccountDialog = () => {
                 setActiveSeamlessWallet(rs.data?.seamlessWallet)
                 client?.auth({
                   signer: rs.data?.seamlessWallet as unknown as SignerLike,
-                  getAccessToken: async () => ({
-                    accessToken: 'myx',
-                    expireAt: Math.floor(Date.now() / 1000) + 3600 * 24,
-                  }),
                 })
-                await client?.refreshAccessToken(true)
                 setTradeMode(TradeMode.Seamless)
               }
             }}
