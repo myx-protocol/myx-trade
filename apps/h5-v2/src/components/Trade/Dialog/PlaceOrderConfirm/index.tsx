@@ -20,6 +20,7 @@ import { useGetTradingFee } from '@/hooks/calculate/use-get-trading-fee'
 import { useGetLiqPrice } from '@/hooks/calculate/use-get-liq-price'
 import { tradePubSub } from '@/utils/pubsub'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 
 export const PlaceOrderConfirmDialog = () => {
   const {
@@ -47,7 +48,24 @@ export const PlaceOrderConfirmDialog = () => {
   const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
+  const { data: networkFee } = useSWR(
+    symbolInfo?.marketId && symbolInfo?.chainId
+      ? { key: 'getOpenNetWorkFee', chainId: symbolInfo?.chainId, marketId: symbolInfo?.marketId }
+      : null,
+    async () => {
+      const fee = await client?.utils.getNetworkFee(
+        symbolInfo?.marketId as string,
+        symbolInfo?.chainId as number,
+      )
+      return (
+        parseBigNumber(fee)
+          .div(10 ** (symbolInfo?.quoteDecimals ?? 1))
+          .toString() ?? '0'
+      )
+    },
+  )
   const { getLiqPrice } = useGetLiqPrice({
     poolId: symbolInfo?.poolId ?? '',
     chainId: symbolInfo?.chainId ?? 0,
@@ -55,16 +73,38 @@ export const PlaceOrderConfirmDialog = () => {
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
   const maintainCollateralRate = poolConfig?.levelConfig?.maintainCollateralRate ?? 0
   const formatCollateralAmount = useMemo(() => {
-    if (!autoMarginMode) {
-      return collateralAmount
+    let totalNetworkFee = parseBigNumber(networkFee ?? '0')
+    if (tpSlOpen && tpValue && !parseBigNumber(tpValue).eq(0)) {
+      totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
+    }
+    if (tpSlOpen && slValue && !parseBigNumber(slValue).eq(0)) {
+      totalNetworkFee = totalNetworkFee.plus(parseBigNumber(networkFee ?? '0'))
     }
 
-    const size = direction === Direction.LONG ? longSize : shortSize
-    if (amountUnit === AmountUnitEnum.QUOTE) {
-      return parseBigNumber(size).div(leverage).toString()
+    if (autoMarginMode) {
+      const size = direction === Direction.LONG ? longSize : shortSize
+      const collateral =
+        amountUnit === AmountUnitEnum.QUOTE
+          ? parseBigNumber(size).div(leverage)
+          : parseBigNumber(size).mul(parseBigNumber(price)).div(leverage)
+      return collateral.plus(totalNetworkFee).toString()
     }
-    return parseBigNumber(size).mul(parseBigNumber(price)).div(leverage).toString()
-  }, [direction, longSize, shortSize, amountUnit, price, autoMarginMode, collateralAmount])
+
+    return parseBigNumber(collateralAmount).plus(totalNetworkFee).toString()
+  }, [
+    direction,
+    longSize,
+    shortSize,
+    amountUnit,
+    price,
+    autoMarginMode,
+    collateralAmount,
+    networkFee,
+    tpSlOpen,
+    tpValue,
+    slValue,
+    leverage,
+  ])
 
   const usedInfo = useMemo(() => {
     const freeMargin = parseBigNumber(assets?.freeMargin ?? '0')
