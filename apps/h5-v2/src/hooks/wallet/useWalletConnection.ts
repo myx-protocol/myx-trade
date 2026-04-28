@@ -114,7 +114,10 @@ export const useWalletConnection = () => {
     connectors,
     connectWallet,
     disconnect,
-    isWalletConnected: Boolean(isConnected && address),
+    isWalletConnected:
+      tradeMode === TradeMode.Seamless
+        ? Boolean(activeSeamlessAddress)
+        : Boolean(isConnected && address),
     setLoginModalOpen,
     chainId,
     isWrongNetwork,
