@@ -22,10 +22,11 @@ export const AccountDialog = () => {
     setSeamlessPasswordDialogOpen,
     setUnlockAccountDialogOpen,
   } = useGlobalStore()
-  const { address } = useWalletConnection()
+  const { address, disconnect, isConnected } = useWalletConnection()
   const { setReceiveDialogOpen } = useTradePanelStore()
   const { seamlessAccountList } = useSeamlessStore()
-  const { disconnect } = useWalletConnection()
+
+  const isImportedSeamless = tradeMode === TradeMode.Seamless && !isConnected
 
   const totalBalance = useGetTotalAccountAssets()
 
@@ -65,37 +66,39 @@ export const AccountDialog = () => {
             </div>
           </div>
         </div>
-        <div>
-          <div className="flex items-center bg-[#202129]">
-            <p
-              className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
-              style={{
-                color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
-                backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
-              }}
-              onClick={() => {
-                setTradeMode(TradeMode.Classic)
-              }}
-            >{t`Classic`}</p>
-            <p
-              className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
-              style={{
-                color: tradeMode === TradeMode.Seamless ? 'white' : '#848E9C',
-                backgroundColor: tradeMode === TradeMode.Seamless ? '#00996F' : '',
-              }}
-              onClick={async () => {
-                setAccountDialogOpen(false)
+        {!isImportedSeamless && (
+          <div>
+            <div className="flex items-center bg-[#202129]">
+              <p
+                className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
+                style={{
+                  color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
+                  backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
+                }}
+                onClick={() => {
+                  setTradeMode(TradeMode.Classic)
+                }}
+              >{t`Classic`}</p>
+              <p
+                className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
+                style={{
+                  color: tradeMode === TradeMode.Seamless ? 'white' : '#848E9C',
+                  backgroundColor: tradeMode === TradeMode.Seamless ? '#00996F' : '',
+                }}
+                onClick={async () => {
+                  setAccountDialogOpen(false)
 
-                if (seamlessAccountList.length === 0) {
-                  setSeamlessPasswordDialogOpen(true)
-                  return
-                }
+                  if (seamlessAccountList.length === 0) {
+                    setSeamlessPasswordDialogOpen(true)
+                    return
+                  }
 
-                setUnlockAccountDialogOpen(true)
-              }}
-            >{t`Seamless`}</p>
+                  setUnlockAccountDialogOpen(true)
+                }}
+              >{t`Seamless`}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="mt-[74px] flex flex-col items-center gap-[10px]">
         <PrimaryButton

@@ -13,7 +13,8 @@ export const useImportSeamlessKey = () => {
   const [loading, setLoading] = useState(false)
   const { client } = useMyxSdkClient()
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
-  const { symbolInfo } = useGlobalStore()
+  const { symbolInfo, poolList } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
 
   const importSeamlessKey = useCallback(
     async ({
@@ -49,7 +50,7 @@ export const useImportSeamlessKey = () => {
           masterAddress: res?.data?.masterAddress,
           seamlessAddress: seamlessWallet.address,
           chainId,
-          tokenAddress: symbolInfo?.quoteToken as string,
+          tokenAddress: effectivePool?.quoteToken as string,
         })
 
         const isAuthorized = isAuthorizedRes?.data?.auth
@@ -59,7 +60,7 @@ export const useImportSeamlessKey = () => {
             approve: true,
             seamlessAddress: seamlessWallet.address,
             chainId,
-            forwardFeeToken: symbolInfo?.quoteToken as string,
+            forwardFeeToken: effectivePool?.quoteToken as string,
           })
           if (authRes?.code !== 0) {
             if (authRes?.message !== 'User Rejected') {

@@ -19,8 +19,14 @@ import { TradeMode } from '@/pages/Trade/types'
 import { useCreateSeamlessAccount } from '@/hooks/seamless/use-create-seamless-account'
 
 export const SetPasswordDialog = () => {
-  const { seamlessPasswordDialogOpen, setSeamlessPasswordDialogOpen, setTradeMode } =
-    useGlobalStore()
+  const {
+    seamlessPasswordDialogOpen,
+    setSeamlessPasswordDialogOpen,
+    setTradeMode,
+    symbolInfo,
+    poolList,
+  } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
   const [show, setShow] = useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -30,9 +36,8 @@ export const SetPasswordDialog = () => {
     setActiveSeamlessAddress,
     setActiveSeamlessWallet,
   } = useSeamlessStore()
-  const { symbolInfo } = useGlobalStore()
 
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { client } = useMyxSdkClient(effectivePool?.chainId)
   const { createSeamlessAccount, loading: createSeamlessLoading } = useCreateSeamlessAccount()
 
   return (
