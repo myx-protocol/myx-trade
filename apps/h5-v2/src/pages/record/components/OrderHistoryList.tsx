@@ -11,12 +11,12 @@ import { SuspenseLoading } from '@/components/Loading'
 import { useUpdateEffect } from 'ahooks'
 
 export const OrderHistoryList = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { client } = useMyxSdkClient()
   const { address } = useWalletConnection()
   const { selectChainId } = usePositionStore()
   const getDataFunc: InfiniteScrollGetData<HistoryOrderItem> = useCallback(
     async (pageParams) => {
-      if (!client || !clientIsAuthenticated) return null
+      if (!client) return null
       console.log('getOrderHistory', pageParams)
       const res = await client.order.getOrderHistory(
         {
@@ -28,7 +28,7 @@ export const OrderHistoryList = () => {
       )
       return res.data
     },
-    [client, clientIsAuthenticated, selectChainId, address],
+    [client, selectChainId, address],
   )
   const { data, isLoading, hasMore, getData, reset } = useInfiniteScrollData({
     getData: getDataFunc,

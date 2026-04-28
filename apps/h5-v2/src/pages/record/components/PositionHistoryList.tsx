@@ -12,12 +12,12 @@ import { SuspenseLoading } from '@/components/Loading'
 import { useUpdateEffect } from 'ahooks'
 
 export const PositionHistoryList = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { client } = useMyxSdkClient()
   const { address } = useWalletConnection()
   const { selectChainId } = usePositionStore()
   const getDataFunc: InfiniteScrollGetData<PositionHistoryItemType> = useCallback(
     async (pageParams) => {
-      if (!client || !clientIsAuthenticated) return null
+      if (!client) return null
       const res = await client.position.getPositionHistory(
         {
           chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
@@ -28,7 +28,7 @@ export const PositionHistoryList = () => {
       )
       return res.data
     },
-    [client, clientIsAuthenticated, selectChainId, address],
+    [client, selectChainId, address],
   )
   const { data, isLoading, hasMore, getData, reset } = useInfiniteScrollData({
     getData: getDataFunc,

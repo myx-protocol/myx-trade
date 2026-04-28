@@ -10,12 +10,12 @@ import { useUpdateEffect } from 'ahooks'
 import { SuspenseLoading } from '@/components/Loading'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView'
 export const FinanceList = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { client } = useMyxSdkClient()
   const { address } = useWalletConnection()
   const { selectChainId } = usePositionStore()
   const getDataFunc: InfiniteScrollGetData<TradeFlowItem> = useCallback(
     async (pageParams) => {
-      if (!client || !clientIsAuthenticated) return null
+      if (!client) return null
       const res = await client.account.getTradeFlow(
         {
           chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
@@ -26,7 +26,7 @@ export const FinanceList = () => {
       )
       return res.data
     },
-    [client, clientIsAuthenticated, selectChainId, address],
+    [client, selectChainId, address],
   )
   const { data, isLoading, hasMore, getData, reset } = useInfiniteScrollData({
     getData: getDataFunc,
