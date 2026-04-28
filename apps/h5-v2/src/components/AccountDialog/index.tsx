@@ -24,7 +24,8 @@ export const AccountDialog = () => {
   } = useGlobalStore()
   const { address } = useWalletConnection()
   const { setReceiveDialogOpen } = useTradePanelStore()
-  const { seamlessAccountList } = useSeamlessStore()
+  const { seamlessAccountList, setActiveSeamlessAddress, setActiveSeamlessWallet } =
+    useSeamlessStore()
   const { disconnect } = useWalletConnection()
 
   const totalBalance = useGetTotalAccountAssets()
@@ -112,7 +113,13 @@ export const AccountDialog = () => {
           className="w-full"
           style={{ height: '44px', borderRadius: '44px', color: '#EC605A' }}
           onClick={async () => {
-            await disconnect()
+            if (tradeMode === TradeMode.Seamless) {
+              setTradeMode(TradeMode.Classic)
+              setActiveSeamlessAddress('')
+              setActiveSeamlessWallet(null)
+            } else {
+              await disconnect()
+            }
             setAccountDialogOpen(false)
           }}
         >
