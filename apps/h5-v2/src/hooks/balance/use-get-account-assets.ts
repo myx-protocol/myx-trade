@@ -71,7 +71,7 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
           ethers.formatUnits(assets.reservedAmount, pool?.quoteDecimals ?? 6).toString(),
         )
 
-        const availableMargin = walletBalance.plus(freeMargin).toString()
+        const availableMargin = walletBalance.plus(freeMargin).plus(quoteProfit).toString()
 
         return {
           availableMargin: availableMargin.toString(),
