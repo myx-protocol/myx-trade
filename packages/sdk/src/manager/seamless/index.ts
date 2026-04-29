@@ -507,6 +507,28 @@ export class Seamless {
     }
   }
 
+  async getApproveBalance({
+    chainId,
+    forwardFeeToken,
+    address,
+  }: {
+    chainId: ChainId;
+    forwardFeeToken: string;
+    address: string;
+  }) {
+    try {
+      const spender = getContractAddressByChainId(chainId).TRADING_ROUTER;
+      const tokenContract = getTokenContract(chainId, forwardFeeToken);
+      const allowance = await tokenContract.read.allowance([
+        address as `0x${string}`,
+        spender as `0x${string}`,
+      ]);
+      return { code: 0, data: String(allowance) };
+    } catch (error) {
+      return { code: -1, message: (error as Error)?.message };
+    }
+  }
+
   async getOriginSeamlessAccount(address: string, chainId: number) {
     const forwarderContract = await getForwarderContract(chainId);
     const masterAddress = await forwarderContract.read.originAccount([address as `0x${string}`]);
