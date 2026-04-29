@@ -9,6 +9,7 @@ import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPri
 
 import { ethers } from 'ethers'
 import { displayAmount } from '@/utils/number'
+import { autoAmountDecimals } from '@/utils/number'
 import { InfoIcon } from '@/components/UI/Icon'
 import { toast } from '@/components/UI/Toast'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
@@ -32,6 +33,7 @@ import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth
 import { useCheckSeamlessAllowance } from '@/hooks/seamless/use-check-seamless-allowance'
 import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
+import { useMarketStore } from '../../store/MarketStore'
 
 const TransferType = {
   Wallet: 'wallet',
@@ -53,6 +55,10 @@ export const TransferDialogButton = () => {
   const { poolList } = useGetActivePoolList()
   const pool = poolList.find((item: any) => item.poolId === symbolInfo?.poolId)
   const [tokenType, setTokenType] = useState<string>(AmountUnitEnum.QUOTE)
+
+  const { tickerData } = useMarketStore()
+  const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
+  const amountDecimalScale = useMemo(() => autoAmountDecimals(Number(marketPrice)), [marketPrice])
 
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
   const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(symbolInfo?.chainId)
@@ -190,7 +196,10 @@ export const TransferDialogButton = () => {
                 <Select
                   className="mt-[13px] w-full"
                   value={tokenType}
-                  onChange={(e) => setTokenType(e.target.value)}
+                  onChange={(e) => {
+                    setTokenType(e.target.value)
+                    setAmount('')
+                  }}
                   renderValue={(value) => {
                     const isQuote = value === AmountUnitEnum.QUOTE
 
@@ -368,7 +377,7 @@ export const TransferDialogButton = () => {
                       ? (symbolInfo?.quoteDecimals ?? 6)
                       : tokenType === AmountUnitEnum.QUOTE
                         ? (symbolInfo?.quoteDecimals ?? 6)
-                        : (symbolInfo?.baseDecimals ?? 6)
+                        : amountDecimalScale
                   }
                   thousandSeparator=","
                   decimalSeparator="."

@@ -69,6 +69,22 @@ const formatSuperDecimal = (
   return formatted
 }
 
+export const autoAmountDecimals = (value: number) => {
+  if (value >= 100) {
+    return 6
+  }
+  if (value >= 1) {
+    return 4
+  }
+  if (value >= 0.01) {
+    return 2
+  }
+  if (value >= 0.0001) {
+    return 1
+  }
+  return 0
+}
+
 export const autoPriceDecimals = (value: number) => {
   if (value >= 1000) {
     return 2
