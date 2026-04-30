@@ -83,7 +83,7 @@ export const PositionItem = ({
         .minus(parseBigNumber(marketPrice))
         .mul(parseBigNumber(position.size)) ?? '0'
   }
-  const rate = pnl.div(parseBigNumber(position.collateralAmount).plus(pnl)).toString() ?? '0'
+  const rate = pnl.div(parseBigNumber(position.collateralAmount)).toString() ?? '0'
 
   const originalCollateralRatio = parseBigNumber(position.entryPrice)
     .mul(parseBigNumber(position.size))
