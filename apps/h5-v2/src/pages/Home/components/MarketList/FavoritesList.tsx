@@ -13,14 +13,19 @@ import { useCallback, useEffect } from 'react'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useNavigate } from 'react-router-dom'
 import { usePoolSymbolsAll } from '@/hooks/pool/usePoolSymbolsAll'
+import { FavoritesDefault } from '@/components/FavoritesDefault'
 
-export const FavoritesList = () => {
+interface FavoritesListProps {
+  onFavoritiesDefaultChange?: (bool: boolean) => void
+}
+
+export const FavoritesList = ({ onFavoritiesDefaultChange }: FavoritesListProps) => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { address, isWalletConnected } = useWalletConnection()
   const navigate = useNavigate()
   const marketTickerDataMap = useMarketStore((state) => state.tickerData)
 
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ['home-market-list-favorites', address, isWalletConnected],
     enabled: Boolean(isWalletConnected && address && client && clientIsAuthenticated),
     queryFn: () => {
@@ -68,8 +73,22 @@ export const FavoritesList = () => {
   }
 
   if (!data?.contractInfo?.list?.length) {
+    if (data?.contractInfo.favorites.length) {
+      onFavoritiesDefaultChange?.(true)
+      return (
+        <div className="mt-[28px]">
+          <FavoritesDefault
+            favorites={data.contractInfo.favorites}
+            onAddFavoritesSuccess={() => {
+              refetch()
+            }}
+          />
+        </div>
+      )
+    }
     return <Empty />
   }
+  onFavoritiesDefaultChange?.(false)
 
   return (
     <div>

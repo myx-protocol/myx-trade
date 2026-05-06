@@ -4,11 +4,11 @@ import loadingIcon from '@/assets/icon/loading.svg'
 import React from 'react'
 import type { AnalyticsProps } from '@/vite-env'
 
-interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface PrimaryButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'style'> {
   children?: React.ReactNode
   onClick?: () => void
   className?: string
-  style?: React.CSSProperties
+  style?: SxProps<Theme>
   loading?: boolean
   disabled?: boolean
   simple?: boolean
