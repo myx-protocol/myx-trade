@@ -17,14 +17,19 @@ import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useSortData } from '@/hooks/useSortData'
+import { FavoritesDefault } from '@/components/FavoritesDefault'
 
-export const List = () => {
+interface ListProps {
+  onFavoritiesDefaultChange?: (bool: boolean) => void
+}
+
+export const List = ({ onFavoritiesDefaultChange }: ListProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { chainId, tab, sort, setSort } = useMarketPageStore()
   const { client, clientIsAuthenticated } = useMyxSdkClient()
   const { isWalletConnected, address } = useWalletConnection()
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ['market-page-list', chainId, tab, isWalletConnected, address, clientIsAuthenticated],
     enabled: !!client,
     queryFn: async () => {
@@ -94,6 +99,24 @@ export const List = () => {
     }
   }, [list, client, dataSorted.length, subscribeToTicker])
 
+  const isEmpty = !isLoading && !dataSorted.length
+
+  if (isEmpty && tab === SearchSecondTypeEnum.Favorite && data?.contractInfo.favorites.length) {
+    onFavoritiesDefaultChange?.(true)
+    return (
+      <div className="mt-[28px] px-[12px]">
+        <FavoritesDefault
+          favorites={data?.contractInfo.favorites || []}
+          onAddFavoritesSuccess={() => {
+            refetch()
+          }}
+        />
+      </div>
+    )
+  }
+
+  onFavoritiesDefaultChange?.(false)
+
   // return <SelectFavoritesToken />
   return (
     <div className="mt-[8px] flex min-h-0 flex-[1_1_0%] flex-col">
@@ -148,7 +171,7 @@ export const List = () => {
 
       {/* list */}
       {isLoading && <Loading total={10} />}
-      {Boolean(!isLoading && !dataSorted.length) && <Empty />}
+      {isEmpty && <Empty />}
       {Boolean(!isLoading && dataSorted.length) && (
         <div className="min-h-0 flex-[1_1_0%] overflow-y-auto" ref={containerRef}>
           <div ref={wrapperRef} className="min-h-0 pb-[10px]">

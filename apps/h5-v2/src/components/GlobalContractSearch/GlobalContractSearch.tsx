@@ -4,7 +4,7 @@ import { GlobalSearchHeader } from './GlobalSearchHeader'
 import { SearchList } from './SearchList/SearchList'
 import { SearchTabs } from './SearchList/SearchTabs'
 import { useGlobalContractSearchStore } from './store'
-import type { SearchResultContractItem } from '@myx-trade/sdk'
+import { SearchSecondTypeEnum, type SearchResultContractItem } from '@myx-trade/sdk'
 
 interface GlobalContractSearchProps {
   onClose: () => void
@@ -19,7 +19,12 @@ export const GlobalContractSearch = ({
   isOpen,
   onSelected,
 }: GlobalContractSearchProps) => {
-  const { searchChainId, setSearchChainId } = useGlobalContractSearchStore()
+  const { searchChainId, setSearchChainId, searchResult, secondSearchTab } =
+    useGlobalContractSearchStore()
+  const hideSearchResult =
+    searchResult?.contractInfo.favorites.length &&
+    !searchResult.contractInfo.list.length &&
+    secondSearchTab === SearchSecondTypeEnum.Favorite
   return (
     <Drawer
       open={isOpen}
@@ -42,12 +47,15 @@ export const GlobalContractSearch = ({
       <div className="flex h-full max-h-[80vh] flex-col pb-[16px]">
         <GlobalSearchHeader onClose={close} />
         <SearchTabs />
-        <div className="px-[12px] py-[10px]">
-          <ChainsSelectRow
-            chainIdSelected={searchChainId || 0}
-            onChainIdChange={setSearchChainId}
-          />
-        </div>
+        {!hideSearchResult && (
+          <div className="px-[12px] py-[10px]">
+            <ChainsSelectRow
+              chainIdSelected={searchChainId || 0}
+              onChainIdChange={setSearchChainId}
+            />
+          </div>
+        )}
+
         <SearchList onSelected={onSelected} />
       </div>
     </Drawer>
