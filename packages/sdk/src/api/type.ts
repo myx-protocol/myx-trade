@@ -315,6 +315,16 @@ export interface SearchResultEarnItem {
   globalId: number;
 }
 
+export interface FavoritesDefaultItem {
+  baseQuoteSymbol: string;
+  baseToken: Address;
+  chainId: number;
+  favorites: FavoritesType;
+  favoritesSort: number;
+  poolId: string;
+  symbol: string;
+}
+
 export interface SearchResultResponse {
   earnInfo: {
     list: SearchResultEarnItem[];
@@ -327,6 +337,7 @@ export interface SearchResultResponse {
   contractInfo: {
     list: SearchResultContractItem[];
     total: number;
+    favorites: FavoritesDefaultItem[];
   };
 }
 
