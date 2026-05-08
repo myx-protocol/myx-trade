@@ -25,7 +25,11 @@ export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 export const BETA_ENV_CHAIN_IDS = [ChainId.ARB_TESTNET, ChainId.BSC_TESTNET] as const
 export type SupportedBetaEnvChainId = [typeof BETA_ENV_CHAIN_IDS][number]
 
-export const TEST_ENV_CHAIN_IDS = [ChainId.LINEA_SEPOLIA, ChainId.ARB_TESTNET] as const
+export const TEST_ENV_CHAIN_IDS = [
+  ChainId.LINEA_SEPOLIA,
+  ChainId.ARB_TESTNET,
+  ChainId.BSC_TESTNET,
+] as const
 export type SupportedTestEnvChainId = [typeof TEST_ENV_CHAIN_IDS][number]
 
 export const OKX_BRIDGE_CHAIN_IDS = [ChainId.LINEA_MAINNET, ChainId.ARB_MAINNET] as const
@@ -33,7 +37,7 @@ export const OKX_BRIDGE_CHAIN_IDS = [ChainId.LINEA_MAINNET, ChainId.ARB_MAINNET]
 export const DEV_ENV_CHAIN_IDS = [
   ChainId.LINEA_SEPOLIA,
   ChainId.ARB_TESTNET,
-  // ChainId.BSC_TESTNET,
+  ChainId.BSC_TESTNET,
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
