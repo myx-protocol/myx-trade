@@ -12,7 +12,7 @@ import { previewLpAmountOut } from "@/lp/quote/preview.js";
 import { type Address, MarketPoolState } from "@/api/index.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { getPriceData } from "@/common/price.js";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import type { TpSl } from "@/lp/pool/index.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
@@ -82,7 +82,7 @@ export const deposit = async (params: Deposit) => {
       } as TpSl
     })
     
-    const tpslParams = getTpSlParams(slippage, _tpsl, decimals, decimals);
+    const tpslParams = getTpSlParams(slippage, _tpsl, COMMON_LP_AMOUNT_DECIMALS, decimals);
    
     const data = {
       poolId: poolId as unknown as import("viem").Hex,

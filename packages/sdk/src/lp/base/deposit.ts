@@ -14,7 +14,7 @@ import { checkParams } from "@/common/checkParams.js";
 import { previewLpAmountOut } from "@/lp/base/preview.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
 import { type Address, MarketPoolState } from "@/api/index.js";
-import { COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
 import { getPriceData } from "@/common/price.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import type { TpSl } from "@/lp/pool/type.js";
@@ -81,7 +81,7 @@ export const deposit = async (params: Deposit) => {
         triggerType: item.triggerType,
       } as TpSl
     })
-    const tpslParams = getTpSlParams(slippage, _tpsl, decimals, quoteDecimals);
+    const tpslParams = getTpSlParams(slippage, _tpsl, COMMON_LP_AMOUNT_DECIMALS, quoteDecimals);
     
     const data = {
       poolId: poolId as unknown as import("viem").Hex,
