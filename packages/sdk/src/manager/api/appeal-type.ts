@@ -9,6 +9,8 @@ export enum AppealType {
   Failed = 6,
   PlatformRuling = 7,
   PlatformRevoked = 8,
+  SettlementVoting = 10,
+  SettlementFailed = 11,
 }
 
 export enum AppealReconsiderationType {
@@ -63,6 +65,8 @@ export interface AppealListItem {
   baseAmount?: string
   quoteAmount?: string
   successVoteCount: number
+  settleVotedCount: number
+  settleTotalVoteCount: number
 }
 
 export interface GetAppealDetailParams {
@@ -243,6 +247,7 @@ export enum AppealNodeVotedStateEnum {
 export enum AppealCaseTypeEnum {
   Appeal = 1,
   Reconsideration = 2,
+  Settlement = 3,
 }
 
 export enum AppealNodeStateEnum {
