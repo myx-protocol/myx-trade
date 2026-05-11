@@ -120,8 +120,8 @@ const checkGitRemote = () => {
     } catch (error) {
         console.error('🚨 Failed to check remote repository status:', error);
         console.error(
-            '💡 HTTPS 远程在本脚本里没有交互终端：请配置凭证（推荐 Git Credential Manager、`gh auth login`、或 PAT），',
-            '或把 origin 改成 SSH（git@github.com:...）。也可先在 GitHub Desktop 里 fetch/push 一次，让系统凭证助手存好令牌。',
+            '💡 HTTPS：GitHub 已禁止用「账户登录密码」做 git 操作；若提示输入密码，应填 Personal Access Token（PAT），不要用网页登录密码。',
+            '推荐：Git Credential Manager、`gh auth login`、或 SSH（git@github.com:...）。本脚本用 pipe 时没有交互终端，需先在本机把凭证配好。',
         );
         process.exit(1);
     }
