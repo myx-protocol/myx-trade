@@ -5,24 +5,63 @@ import path from 'path'
 
 import ora from 'ora';
 
+/** 当前 ora 实例，便于 SIGINT 时停掉转圈，避免终端残留一半输出 */
+let activeSpinner: ReturnType<typeof ora> | null = null;
 
 const loadingAdapter = async <T = any>(message: string, fn: () => T | Promise<T>): Promise<T> => {
     const spinner = ora(message).start();
+    activeSpinner = spinner;
     try {
         const result = await fn();
         spinner.succeed();
-        spinner.stop()
         return result;
     } catch (error) {
         spinner.fail();
-        spinner.stop()
-        throw error
+        throw error;
+    } finally {
+        spinner.stop();
+        activeSpinner = null;
     }
 }
+
+/** 用户中断（如 inquirer 取消、子进程被 SIGINT 结束） */
+const isUserInterrupted = (err: unknown): boolean => {
+    if (typeof err !== 'object' || err === null) return false;
+    const e = err as { name?: string; signal?: string };
+    if (e.name === 'ExitPromptError') return true;
+    if (e.signal === 'SIGINT') return true;
+    return false;
+};
+
+/** 终端里按 Ctrl+C 会收到 SIGINT（macOS 终端里「复制」一般是 Cmd+C，不是中断） */
+const installCancelOnInterrupt = () => {
+    const onSigint = () => {
+        try {
+            activeSpinner?.stop();
+        } catch {
+            // ignore
+        }
+        activeSpinner = null;
+        console.error('\n⚠️ 已取消发布（收到中断信号，一般为终端中的 Ctrl+C）。');
+        process.exit(130);
+    };
+    process.on('SIGINT', onSigint);
+    return () => {
+        process.removeListener('SIGINT', onSigint);
+    };
+};
+
+const teardownInterrupt = installCancelOnInterrupt();
 
 const PUBLISH_BRANCH = 'release/sdk'
 
 const npmRegistry = 'https://registry.npmjs.org';
+
+/** 脚本里 stdio 是 pipe，没有终端给 Git 弹用户名/密码；设为 0 避免 HTTPS 无凭证时一直卡住 */
+const gitNonInteractiveEnv = {
+    ...process.env,
+    GIT_TERMINAL_PROMPT: '0',
+} as NodeJS.ProcessEnv;
 
 const checkBranch = () => {
     try {
@@ -47,7 +86,9 @@ const checkGitRemote = () => {
     try {
         // Fetch latest remote information (silent, no console output)
         execSync('git fetch', {
+            encoding: 'utf-8',
             stdio: 'pipe',
+            env: gitNonInteractiveEnv,
         });
 
         // Compare commit counts between local and remote branches
@@ -57,6 +98,7 @@ const checkGitRemote = () => {
             {
                 encoding: 'utf-8',
                 stdio: 'pipe',
+                env: gitNonInteractiveEnv,
             },
         ).trim();
 
@@ -77,6 +119,10 @@ const checkGitRemote = () => {
         return true;
     } catch (error) {
         console.error('🚨 Failed to check remote repository status:', error);
+        console.error(
+            '💡 HTTPS 远程在本脚本里没有交互终端：请配置凭证（推荐 Git Credential Manager、`gh auth login`、或 PAT），',
+            '或把 origin 改成 SSH（git@github.com:...）。也可先在 GitHub Desktop 里 fetch/push 一次，让系统凭证助手存好令牌。',
+        );
         process.exit(1);
     }
 }
@@ -99,6 +145,7 @@ const pushCommit = () => {
     try {
         execSync('git push', {
             stdio: 'pipe',
+            env: gitNonInteractiveEnv,
         });
         console.log('✅ Commit pushed successfully!')
     } catch (error) {
@@ -201,7 +248,15 @@ loadingAdapter('Checking publish branch', () => checkBranch())
         }
         console.log('✅ Publish succeeded!')
         console.log(`🚀 Latest version: v${latestVersion}`)
-    }).catch(err => {
+    })
+    .catch(err => {
+        if (isUserInterrupted(err)) {
+            console.error('\n⚠️ 已取消发布。');
+            process.exit(130);
+        }
         console.error('🚨 Publish failed:', err);
         process.exit(1);
     })
+    .finally(() => {
+        teardownInterrupt();
+    });
