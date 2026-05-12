@@ -127,27 +127,27 @@ export class Order {
         const positionSalt = '1';
         this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
-        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
-
+        // const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
         hash = await tradingRouterContract.write!.placeOrderWithSalt(
           [positionSalt, { ...depositData }, data],
           {
-            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+            gasLimit: 1500000n,
+            // gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       } else {
         this.logger.info("createIncreaseOrder nft position params--->", { ...data, positionId: params.positionId });
 
-        const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithPosition([
-          params.positionId.toString(),
-          { ...depositData },
-          data,
-        ]);
-
+        // const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithPosition([
+        //   params.positionId.toString(),
+        //   { ...depositData },
+        //   data,
+        // ]);
         hash = await tradingRouterContract.write!.placeOrderWithPosition(
           [params.positionId.toString(), { ...depositData }, data],
           {
-            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+            gasLimit: 1500000n,
+            // gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
           }
         );
       }
