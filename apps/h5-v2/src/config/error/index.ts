@@ -88,6 +88,18 @@ export const showErrorToast = (error?: any) => {
       toast.error({ title: t`User Rejected` })
       return
     }
+
+    // viem EstimateGasExecutionError / ContractFunctionExecutionError:
+    // the revert selector lives in error.cause.data (or nested cause chain)
+    const revertData: string = error?.cause?.data ?? error?.data ?? error?.cause?.cause?.data ?? ''
+    if (revertData && typeof revertData === 'string') {
+      const selector = revertData.slice(0, 10).toLowerCase()
+      if (MYXSDKErrorMapping[selector]) {
+        toast.error({ title: MYXSDKErrorMapping[selector] })
+        return
+      }
+    }
+
     // message / details check — viem puts the raw wallet message in shortMessage / details
     const msg: string =
       error?.shortMessage || error?.details || error?.cause?.message || error?.message || ''
