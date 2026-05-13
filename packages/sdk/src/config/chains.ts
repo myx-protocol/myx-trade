@@ -12,7 +12,19 @@ export const arbitrumSepolia: ChainConfig = {
   },
 };
 
-export const defaultChains: ChainConfig[] = [arbitrumSepolia];
+export const bscTestnet: ChainConfig = {
+  id: 97,
+  name: 'BNB Chain Testnet',
+  rpcUrls: ['https://bsc-testnet-dataseed.bnbchain.org'],
+  blockExplorers: ['https://testnet.bscscan.com'],
+  nativeCurrency: {
+    name: 'BNB',
+    symbol: 'BNB',
+    decimals: 18,
+  },
+};
+
+export const defaultChains: ChainConfig[] = [arbitrumSepolia, bscTestnet];
 
 export function getChainInfo(chainId: number): ChainConfig | undefined {
   return defaultChains.find(chain => chain.id === chainId);
