@@ -48,6 +48,8 @@ import CaretRight from './set/CaretRight.tsx'
 import Selected from './set/Selected.tsx'
 import Warning from './set/Warning'
 import BigWaningLine from '@/components/Icon/set/BigWaningLine.tsx'
+import IconTpsl from './set/Tpsl.tsx'
+import IconClaimRewards from './set/ClaimRewards.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -118,6 +120,8 @@ export {
   Selected,
   Warning,
   BigWaningLine,
+  IconTpsl,
+  IconClaimRewards,
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

@@ -12,7 +12,7 @@ import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Error } from '@/pages/Earn/components/Trade/Error'
+import { InsufficientBalance } from '@/pages/Earn/components/Trade/Error'
 import {
   getBalanceOf,
   base as Base,
@@ -338,7 +338,7 @@ export const Sell = () => {
         />
       </div>
       <OrderOptions />
-      {isInsufficient && <Error className={'mt-[8px]'} />}
+      {isInsufficient && <InsufficientBalance className={'mt-[8px]'} />}
 
       {burned && Number(burned) > 0 && (
         <Box className={'border-base mt-[8px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>

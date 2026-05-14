@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -246,11 +247,16 @@ msgstr ""
 msgid "AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr ""
 
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Action"
 msgstr ""
+
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+msgid "Actions"
+msgstr "Actions"
 
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Activate Market"
@@ -406,13 +412,19 @@ msgstr "Already voted"
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/DepthChart/DepthChartCanvas.tsx
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/OrderForm/AmountInput/index.tsx
+#: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Earn/List.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -444,6 +456,7 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/pages/Cook/components/TrenchList.tsx
 #: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 #: src/pages/Earn/List.tsx
 msgid "APR"
 msgstr ""
@@ -561,6 +574,10 @@ msgstr ""
 msgid "Available Short"
 msgstr ""
 
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+msgid "Avg Price"
+msgstr "Avg Price"
+
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "Avg. Close Price"
 msgstr ""
@@ -658,6 +675,7 @@ msgstr "Broker not found"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/OrderSide/index.tsx
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
@@ -677,6 +695,9 @@ msgid "By importing this key on another device, you can access MYX from any brow
 msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel"
 msgstr ""
@@ -700,6 +721,9 @@ msgstr ""
 msgid "Cancel order success"
 msgstr ""
 
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel this order?"
 msgstr ""
@@ -707,6 +731,12 @@ msgstr ""
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Canceled"
 msgstr ""
+
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+msgid "Cancelled"
+msgstr "Cancelled"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -836,6 +866,10 @@ msgstr ""
 msgid "Claim Refund Now"
 msgstr ""
 
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+msgid "Claim Rewards"
+msgstr "Claim Rewards"
+
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 msgid "Claim successfully claimed"
@@ -959,8 +993,15 @@ msgstr ""
 msgid "Community"
 msgstr ""
 
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+msgid "Completed"
+msgstr "Completed"
+
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Dialog/HighRiskWarningDialog.tsx
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/DialogBase/index.tsx
 #: src/components/Login/CodeConfirm.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
@@ -1165,6 +1206,10 @@ msgstr ""
 msgid "Current Level"
 msgstr ""
 
+#: src/pages/Cook/detail/index.tsx
+msgid "Current Orders"
+msgstr "Current Orders"
+
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
@@ -1242,6 +1287,10 @@ msgstr ""
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
 msgstr ""
 
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+msgid "Deposit(Amount)"
+msgstr "Deposit(Amount)"
+
 #: src/config/error/CommonErrorMapping.tsx
 msgid "DesignatedTokenMismatch(address,address)"
 msgstr ""
@@ -1258,6 +1307,10 @@ msgstr ""
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DifferentMarket(PoolId,PoolId)"
 msgstr "Market mismatch"
+
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+msgid "Direction"
+msgstr "Direction"
 
 #: src/components/Footer/index.tsx
 msgid "Discord"
@@ -1686,6 +1739,9 @@ msgstr "Execution fee not supported (address)"
 msgid "ExpectedPause()"
 msgstr "Expected pause()"
 
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Expired"
 msgstr ""
@@ -1760,6 +1816,10 @@ msgstr ""
 #: src/pages/Earn/components/Trade/Fee.tsx
 msgid "Fees are permanently free."
 msgstr ""
+
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+msgid "Filled Amount"
+msgstr "Filled Amount"
 
 #: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Card.tsx
@@ -1912,6 +1972,9 @@ msgstr ""
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/OrderHistory.tsx
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
@@ -1929,13 +1992,13 @@ msgstr ""
 msgid "Hide other"
 msgstr ""
 
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Hide other symbols"
-msgstr ""
-
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "High-Risk Asset Warning"
 msgstr ""
+
+#: src/pages/Cook/detail/index.tsx
+msgid "History Orders"
+msgstr "History Orders"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Hold"
@@ -2578,6 +2641,14 @@ msgstr ""
 msgid "M"
 msgstr ""
 
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "m{baseSymbol}.{quoteSymbol} Base Vault"
+msgstr "m{baseSymbol}.{quoteSymbol} Base Vault"
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "m{quoteSymbol}.{baseSymbol} Stable Vault"
+msgstr "m{quoteSymbol}.{baseSymbol} Stable Vault"
+
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Main-chart Indicators"
 msgstr ""
@@ -2848,13 +2919,21 @@ msgstr ""
 msgid "More detailed help content will be available soon."
 msgstr ""
 
-#: src/pages/Cook/detail/components/Assets.tsx
+#: src/pages/Cook/detail/index.tsx
 msgid "My Assets"
 msgstr ""
+
+#: src/pages/Earn/detail/components/MyHoldings.tsx
+msgid "My Deposit"
+msgstr "My Deposit"
 
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
 msgid "My Friend"
 msgstr ""
+
+#: src/pages/Earn/detail/index.tsx
+msgid "My Holdings"
+msgstr "My Holdings"
 
 #: src/pages/Referrals/components/SelectReferral/RebateSettingDialog.tsx
 msgid "My rebate"
@@ -2954,6 +3033,7 @@ msgstr ""
 #: src/components/Empty.tsx
 #: src/components/GlobalContractSearch/SearchList/NotFound.tsx
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "No results found"
 msgstr ""
 
@@ -3217,6 +3297,7 @@ msgstr ""
 msgid "Open Long"
 msgstr ""
 
+#: src/pages/Earn/detail/index.tsx
 #: src/pages/Price/components/PriceContent/index.tsx
 msgid "Open Orders"
 msgstr "Open"
@@ -3297,6 +3378,7 @@ msgstr ""
 msgid "Order Filled"
 msgstr ""
 
+#: src/pages/Earn/detail/index.tsx
 #: src/pages/record/components/RecordTab.tsx
 msgid "Order History"
 msgstr ""
@@ -3477,6 +3559,10 @@ msgstr ""
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Please note: "
 msgstr ""
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "Please set at least one TP/SL"
+msgstr "Please set at least one TP/SL"
 
 #: src/hooks/seamless/use-check-seamless-allowance.ts
 #: src/hooks/seamless/use-check-seamless-allowance.ts
@@ -3691,6 +3777,11 @@ msgstr ""
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+msgid "Rate"
+msgstr "Rate"
+
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Reactivate Pool "
 msgstr ""
@@ -3757,6 +3848,8 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Redeem"
 msgstr ""
 
@@ -4129,6 +4222,7 @@ msgstr ""
 #: src/components/CookDetail/Order/OrderSide/index.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
@@ -4231,8 +4325,13 @@ msgstr ""
 msgid "Size({0})"
 msgstr ""
 
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Record/Items/OpenOrders.tsx
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
 msgid "SL"
 msgstr ""
 
@@ -4261,6 +4360,10 @@ msgstr ""
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL({0})"
 msgstr ""
+
+#: src/components/CookDetail/Order/TPSL.tsx
+msgid "SL({quoteSymbol})"
+msgstr "SL({quoteSymbol})"
 
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "SL(Market)"
@@ -4316,6 +4419,10 @@ msgstr "Price is stale()"
 msgid "Statistics"
 msgstr ""
 
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+msgid "Status"
+msgstr "Status"
+
 #: src/pages/Market/components/steps.tsx
 msgid "Step 1"
 msgstr ""
@@ -4340,6 +4447,8 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Subscribe"
 msgstr ""
 
@@ -4359,6 +4468,12 @@ msgstr "Filled"
 msgid "Successfully buy"
 msgstr ""
 
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
+msgid "Successfully canceled the order."
+msgstr "Successfully canceled the order."
+
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr ""
@@ -4370,6 +4485,10 @@ msgstr ""
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Successfully sell"
 msgstr ""
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "Successfully set TP/SL"
+msgstr "Successfully set TP/SL"
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Successfully subscribe"
@@ -4496,6 +4615,8 @@ msgstr ""
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
 msgstr ""
 
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
@@ -4583,8 +4704,13 @@ msgstr "Total Spot Liquidity"
 msgid "Total supply"
 msgstr ""
 
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Record/Items/OpenOrders.tsx
+#: src/pages/Cook/detail/components/HistoryOrders.tsx
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
 msgid "TP"
 msgstr ""
 
@@ -4614,15 +4740,22 @@ msgstr ""
 msgid "TP({0})"
 msgstr ""
 
+#: src/components/CookDetail/Order/TPSL.tsx
+msgid "TP({quoteSymbol})"
+msgstr "TP({quoteSymbol})"
+
 #: src/components/PlaceOrderConfirm/index.tsx
 msgid "TP(Market)"
 msgstr ""
 
+#: src/components/CookDetail/Order/TPSL.tsx
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/TradePanel/TPSL/index.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 msgid "TP/SL"
 msgstr ""
 
@@ -4735,12 +4868,18 @@ msgid "Trench"
 msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
+#: src/pages/Cook/detail/components/OpenOrders.tsx
 msgid "Trigger Price"
 msgstr ""
 
 #: src/utils/verify.ts
 msgid "Trigger price must be between Liquidation and Auto-TP prices."
 msgstr ""
+
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
+msgid "Trigger Rate"
+msgstr "Trigger Rate"
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
@@ -4764,6 +4903,11 @@ msgstr ""
 msgid "Twitter"
 msgstr ""
 
+#: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Type"
@@ -4773,6 +4917,11 @@ msgstr ""
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Unclaimed"
 msgstr ""
+
+#: src/pages/Earn/detail/components/MyHoldings.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+msgid "Unclaimed Fees"
+msgstr "Unclaimed Fees"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4821,6 +4970,8 @@ msgstr ""
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
+#: src/pages/Earn/detail/components/MyHoldings.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "Unrealized PnL"
 msgstr ""
 
@@ -4927,6 +5078,13 @@ msgid "Valid From: {0} — {1}"
 msgstr ""
 
 #: src/pages/Earn/components/Dashboard.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/MyHoldings.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Earn/List.tsx
 msgid "Vault"
 msgstr ""
@@ -5337,6 +5495,23 @@ msgstr "Contract"
 msgid "哈希"
 msgstr "Hash"
 
+#: src/components/Dialog/TPSLDialog.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
+msgid "回撤保护"
+msgstr "回撤保护"
+
+#: src/components/Dialog/TPSLDialog.tsx
+#: src/pages/Earn/components/Trade/TPSL.tsx
+msgid "回撤保护({quoteSymbol})"
+msgstr "回撤保护({quoteSymbol})"
+
+#: src/components/Dialog/TPSLDialog.tsx
+#: src/pages/Earn/components/Trade/TPSL.tsx
+#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
+msgid "回撤保护/自动赎回"
+msgstr "回撤保护/自动赎回"
+
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "基础设置"
@@ -5468,6 +5643,7 @@ msgstr "Liq. Price"
 msgid "当最新价格 <0>{displayTargetPrice}</0> 时，将以市价平仓, 数量{0} {1},预期收益<1>{2} {3}</1>"
 msgstr "When the last price is <0>{displayTargetPrice}</0>, it will close at market price, amount {0} {1}, expected profit <1>{2} {3}</1>"
 
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/PriceInfo.tsx
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "当前价格"
@@ -5486,6 +5662,10 @@ msgstr "Max open short position in the current market"
 #: src/pages/Cook/components/Token.tsx
 msgid "待上架"
 msgstr "ToBeListed"
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "成本价"
+msgstr "成本价"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "执行价格"
@@ -5528,6 +5708,7 @@ msgstr "Search Results"
 msgid "数据"
 msgstr "Data"
 
+#: src/components/Dialog/TPSLDialog.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslFormGroup.tsx
 msgid "数量"
@@ -5679,6 +5860,17 @@ msgstr "Type"
 msgid "继续添加"
 msgstr "Add More"
 
+#: src/components/Dialog/TPSLDialog.tsx
+#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
+#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
+msgid "自动赎回"
+msgstr "自动赎回"
+
+#: src/components/Dialog/TPSLDialog.tsx
+#: src/pages/Earn/components/Trade/TPSL.tsx
+msgid "自动赎回({quoteSymbol})"
+msgstr "自动赎回({quoteSymbol})"
+
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -5805,4 +5997,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

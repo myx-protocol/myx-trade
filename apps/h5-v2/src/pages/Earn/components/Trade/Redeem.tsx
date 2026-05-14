@@ -10,7 +10,6 @@ import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { t } from '@lingui/core/macro'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
-import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -23,7 +22,7 @@ import {
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
-import { isSafeNumber } from '@/utils'
+import { isSafeNumber, sleep } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from '@/components/UI/Toast'
 import { calculationPnl } from '@/utils/pnl.ts'
@@ -38,7 +37,8 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { formatNumber } from '@/utils/number.ts'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
-import { Error } from './Error.tsx'
+import { InsufficientBalance } from './Error.tsx'
+import { useEarnOrderStore } from '@/pages/Earn/store'
 
 const inputStyle = {
   htmlInput: {
@@ -52,7 +52,7 @@ const inputStyle = {
 export const Redeem = () => {
   const { pool, quoteLpDetail, chainId, poolId, price, poolInfoRefetch, genesisFeeRate } =
     useContext(PoolContext)
-  const { slippage, setSlippage } = useContext(TradeContext)
+  const { slippage } = useEarnOrderStore()
   const { address: account } = useWalletConnection()
   const [retainLPShare, setRetailLpShare] = useState(true)
   const [amount, setAmount] = useState<string>('')
@@ -343,7 +343,7 @@ export const Redeem = () => {
           </>
         )}
 
-        {isInsufficient && <Error className={'mt-[4px]'} />}
+        {isInsufficient && <InsufficientBalance className={'mt-[4px]'} />}
         <Box className={'mt-[8px] mb-[4px] w-full'}>
           <ConnectButton>
             <TradeButton
