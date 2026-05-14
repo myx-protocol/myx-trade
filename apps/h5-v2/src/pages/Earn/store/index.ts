@@ -1,12 +1,8 @@
 import { immer } from 'zustand/middleware/immer'
 import { createWithEqualityFn } from 'zustand/traditional'
-import { CookOrderSideEnum } from './type'
 import { TpSlTypeEnum } from '@/components/Trade/type.ts'
 
-interface ICookOrderStore {
-  orderSide: CookOrderSideEnum
-  setOrderSide: (orderSide: CookOrderSideEnum) => void
-
+interface IEarnOrderStore {
   slippage: string
   setSlippage: (slippage: string) => void
 
@@ -47,11 +43,8 @@ interface ICookOrderStore {
   setSlValue: (slValue: string) => void
 }
 
-export const useCookOrderStore = createWithEqualityFn<ICookOrderStore>()(
+export const useEarnOrderStore = createWithEqualityFn<IEarnOrderStore>()(
   immer((set) => ({
-    // order side
-    orderSide: CookOrderSideEnum.Buy,
-    setOrderSide: (orderSide: CookOrderSideEnum) => set({ orderSide }),
     /**
      * tpsl
      */

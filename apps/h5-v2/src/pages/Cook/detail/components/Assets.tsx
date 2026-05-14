@@ -1,5 +1,4 @@
 import { Box, Button, Skeleton } from '@mui/material'
-import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { Trans } from '@lingui/react/macro'
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -24,32 +23,13 @@ import { RiseFallText } from '@/components/RiseFallText'
 import { formatNumber } from '@/utils/number.ts'
 import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
 import Big from 'big.js'
+import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols.tsx'
+import { TPSLDialog } from '@/components/Dialog/TPSLDialog.tsx'
 
 type Rewards = { rebates: string; genesisRebates: string }
 // type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
 type RewardsMapType = { [poolId: string]: Rewards }
-
-const AssetHeader = ({
-  checked,
-  onChange,
-}: {
-  checked: boolean
-  onChange: (checked: boolean) => void
-}) => {
-  return (
-    <Box className={'border-base flex items-center justify-between border-b-1 px-[16px] py-[12px]'}>
-      <span className={''}>
-        <Trans>My Assets</Trans>
-      </span>
-      <CustomCheckBox
-        checked={checked}
-        onChange={(checked) => onChange(checked)}
-        label={<Trans>Hide other symbols</Trans>}
-      />
-    </Box>
-  )
-}
 
 const Token = ({ asset }: { asset?: LpAsset }) => {
   return (
@@ -116,42 +96,51 @@ const AssetItem = ({
   summary,
   details,
   canClaim = false,
+  onTpsl,
 }: {
   asset?: LpAsset
   summary: ReactNode
   details: ReactNode
   onClaim: (asset: LpAsset) => void
+  onTpsl: (asset: LpAsset) => void
   canClaim: boolean
 }) => {
   return (
-    <Box className="border-base flex flex-col gap-[20px] border-b py-[16px]">
+    <Box className="border-base flex flex-col gap-[20px] border-b-1 py-[16px]">
       {/* header */}
       <Box className="flex items-center justify-between">
         <Token asset={asset} />
 
         {asset ? (
-          <Button
-            variant="contained"
-            className="!text-deep !rounded-[24px] !bg-white !text-[10px] [&.Mui-disabled]:opacity-[0.3]"
-            onClick={() => onClaim(asset)}
-            disabled={!canClaim}
-          >
-            <Trans>Claim</Trans>
-          </Button>
+          <Box className="flex items-center gap-[16px]">
+            <span
+              className="cursor-pointer text-[12px] text-white capitalize"
+              onClick={() => onTpsl(asset)}
+            >
+              <Trans>TP/SL</Trans>
+            </span>
+            <span className="border-dark-border h-[12px] border-l-1" />
+            <span
+              className={`cursor-pointer text-[12px] text-white capitalize ${!canClaim ? 'opacity-30' : ''}`}
+              onClick={() => canClaim && onClaim(asset)}
+            >
+              <Trans>Claim</Trans>
+            </span>
+          </Box>
         ) : (
           <Skeleton width={58} />
         )}
       </Box>
 
       <Box className={'flex flex-col gap-[16px]'}>
-        <Box className="flex justify-between gap-[20px]">{summary}</Box>
+        <Box className="flex justify-between">{summary}</Box>
 
         <Box className="flex flex-col gap-[10px]">{details}</Box>
       </Box>
     </Box>
   )
 }
-export const Assets = () => {
+export const Assets = ({ chainId, showAll }: { chainId?: ChainId; showAll: boolean }) => {
   const { accessToken } = useAccessToken()
   const { poolId, pool, price, refreshAssetKey } = usePoolContext()
   const { address: account } = useWalletConnection()
@@ -159,7 +148,7 @@ export const Assets = () => {
   const { markets } = useMyxSdkClient()
   const [lpAsset, setLpAsset] = useState<LpAsset | undefined>(undefined)
   const [openClaimRewardsDialog, setOpenClaimRewardsDialog] = useState(false)
-  const [showAllAssets, setShowAllAssets] = useState(false)
+  const [openTPSLDialog, setOpenTPSLDialog] = useState(false)
 
   const {
     data,
@@ -172,18 +161,19 @@ export const Assets = () => {
       accessToken,
       poolId,
       pool?.basePoolToken,
-      showAllAssets,
+      showAll,
     ],
     enabled: !!account,
     queryFn: async () => {
       // console.log('getMineBaseLpAssets:', poolId, pool?.basePoolToken, accessToken)
       if (!account) return [] as LpAsset[]
 
-      if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
+      if (!showAll && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
       const request = await getLpAssets(account, accessToken || '', {
         poolType: PoolType.base,
-        poolId: showAllAssets ? undefined : poolId,
-        poolToken: showAllAssets ? undefined : pool?.basePoolToken,
+        poolId: showAll ? undefined : poolId,
+        poolToken: showAll ? undefined : pool?.basePoolToken,
+        chainId,
       })
       return (request?.data || []).filter((asset) => new Big(asset?.lastTotal || '0').gt(0))
     },
@@ -205,8 +195,8 @@ export const Assets = () => {
   }, [rewardsQueryParams, poolId])
 
   const { data: priceMap } = useQuery({
-    queryKey: [{ key: 'getBaseLpAssetBalance' }, priceQueryParams, showAllAssets],
-    enabled: showAllAssets && !!priceQueryParams.length,
+    queryKey: [{ key: 'getBaseLpAssetBalance' }, priceQueryParams, showAll],
+    enabled: showAll && !!priceQueryParams.length,
     queryFn: async () => {
       if (!priceQueryParams.length) return {} as PriceMapType
       const result = await Promise.all(
@@ -335,8 +325,7 @@ export const Assets = () => {
 
   return (
     <>
-      <Box className={'mt-[8px]'}>
-        <AssetHeader checked={!showAllAssets} onChange={(checked) => setShowAllAssets(!checked)} />
+      <Box>
         <Box className={'px-[16px]'}>
           {(isLoading
             ? (Array.from({ length: 3 }).fill(null) as LpAsset[])
@@ -354,6 +343,10 @@ export const Assets = () => {
                 onClaim={(asset) => {
                   setLpAsset(asset)
                   onHandleClaim(asset)
+                }}
+                onTpsl={(asset) => {
+                  setLpAsset(asset)
+                  setOpenTPSLDialog(true)
                 }}
                 summary={
                   <>
@@ -418,6 +411,20 @@ export const Assets = () => {
           {!isLoading && data?.length === 0 && <Empty />}
         </Box>
       </Box>
+      {lpAsset && (
+        <TPSLDialog
+          open={openTPSLDialog}
+          onClose={() => setOpenTPSLDialog(false)}
+          poolId={lpAsset.poolId}
+          chainId={lpAsset.chainId}
+          poolType={PoolType.base}
+          amount={lpAsset.lastTotal}
+          baseSymbol={lpAsset.baseSymbol}
+          quoteSymbol={lpAsset.quoteSymbol}
+          costPrice={lpAsset.avgPrice}
+          poolName={`m${lpAsset.baseSymbol}.${lpAsset.quoteSymbol}`}
+        />
+      )}
       <ClaimRewardsDialog
         refetch={refetch}
         reward={rewardsMap?.[lpAsset?.poolId as string]}

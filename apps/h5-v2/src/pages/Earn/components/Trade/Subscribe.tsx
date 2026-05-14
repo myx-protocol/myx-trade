@@ -7,7 +7,13 @@ import { Describe } from '@/components/Describe.tsx'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Card } from '@/pages/Earn/components/Trade/Card.tsx'
 import { t } from '@lingui/core/macro'
-import { quote as Quote, getBalanceOf, formatUnits, MarketPoolState } from '@myx-trade/sdk'
+import {
+  quote as Quote,
+  getBalanceOf,
+  formatUnits,
+  MarketPoolState,
+  TriggerType,
+} from '@myx-trade/sdk'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { PoolContext } from '../../context'
@@ -28,8 +34,13 @@ import { showErrorToast } from '@/config/error'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
 import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
-import { Error } from './Error.tsx'
+import { InsufficientBalance } from './Error.tsx'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import { TPSL } from '@/pages/Earn/components/Trade/TPSL.tsx'
+import { useEarnOrderStore } from '@/pages/Earn/store'
+import { parseTriggerPrice } from '@/utils/TpSl.ts'
+import { TpSlTypeEnum } from '@/components/Trade/type.ts'
+import Big from 'big.js'
 
 const inputStyle = {
   htmlInput: {
@@ -41,9 +52,19 @@ const inputStyle = {
 }
 export const Subscribe = () => {
   const { chainId, poolId } = useParams()
-  const { pool, quoteLpDetail, poolInfoRefetch, riskLevelConfig } = useContext(PoolContext)
+  const { pool, quoteLpDetail, poolInfoRefetch, riskLevelConfig, price } = useContext(PoolContext)
+  const {
+    slippage,
+    setSlippage,
+    tpType,
+    tpValue,
+    slValue,
+    setSlValue,
+    setTpValue,
+    slType,
+    tpSlOpen,
+  } = useEarnOrderStore()
   const { address: account } = useWalletConnection()
-  const { slippage, setSlippage } = useContext(TradeContext)
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
 
@@ -93,23 +114,80 @@ export const Subscribe = () => {
 
       if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
-      await Quote.deposit({
+      const tpsl = tpSlOpen
+        ? [
+            {
+              triggerType: TriggerType.GTE,
+              triggerPrice: parseTriggerPrice({
+                type: tpType,
+                value: tpValue,
+                currentPrice: price,
+                amount,
+              }),
+            },
+            {
+              triggerType: TriggerType.LTE,
+              triggerPrice: parseTriggerPrice({
+                type: slType,
+                value:
+                  slValue && slType !== TpSlTypeEnum.PRICE
+                    ? new Big(slValue).mul(-1).toString()
+                    : slValue,
+                currentPrice: price,
+                amount,
+              }),
+            },
+          ]
+        : []
+
+      const params = {
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
-      })
+        tpsl: tpSlOpen
+          ? tpsl
+              .filter((item) => item.triggerPrice && Number(item.triggerPrice) > 0)
+              .map((data) => {
+                return {
+                  triggerType: data.triggerType,
+                  triggerPrice: Number(data.triggerPrice),
+                }
+              })
+          : undefined,
+      }
+
+      console.log('Quote lp Deposit params:', params)
+      await Quote.deposit(params)
       toast.success({ title: t`Successfully subscribe` })
       setAmount('')
+      setSlValue('')
+      setTpValue('')
       await refetch()
       poolInfoRefetch()
     } catch (error) {
-      console.log(error, 'error')
       showErrorToast(error)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, riskLevelConfig])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    poolInfoRefetch,
+    riskLevelConfig,
+    price,
+    refetch,
+    tpSlOpen,
+    tpType,
+    tpValue,
+    slType,
+    slValue,
+    setTpValue,
+    setSlValue,
+  ])
   return (
     <>
       <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
@@ -203,7 +281,10 @@ export const Subscribe = () => {
             </Box>
           </Card>
         </Box>
-        {isInsufficient && <Error className={'mt-[4px]'} />}
+        {/* TP/SL */}
+        {pool?.quoteToken && <TPSL className="mt-[8px]" quoteSymbol={pool?.quoteSymbol} />}
+
+        {isInsufficient && <InsufficientBalance className={'mt-[4px]'} />}
         <Box className="mt-[8px] mb-[4px] w-full">
           {quoteLpDetail?.state === MarketPoolState.PreBench ||
           quoteLpDetail?.state === MarketPoolState.Bench ? (

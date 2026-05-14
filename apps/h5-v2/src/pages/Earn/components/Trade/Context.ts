@@ -8,8 +8,6 @@ export enum TradeSide {
 export interface TradeContextValue {
   side: TradeSide
   setSide: (side: TradeSide) => void
-  slippage: string
-  setSlippage: (slippage: string) => void
 }
 
 export const TradeContext = createContext<TradeContextValue>({} as TradeContextValue)

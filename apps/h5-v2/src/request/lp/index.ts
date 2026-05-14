@@ -24,6 +24,9 @@ import type {
   ExchangeRateHistoryResponse,
   RiskGlobalConfigResponse,
   PoolBoostResponse,
+  PoolOpenOrdersResponse,
+  IPoolOrdersRequest,
+  PoolHistoryOrdersResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -300,5 +303,39 @@ export const getPoolBoostInfo = async (
 ): Promise<PoolBoostResponse> => {
   return await http.get(
     `${baseUrl}/openapi/gateway/scan/market_pool/boost?poolId=${poolId}&chainId=${chainId}`,
+  )
+}
+
+export const getPoolOpenOrders = async (
+  account: Address,
+  accessToken: string = '',
+  params: IPoolOrdersRequest,
+): Promise<PoolOpenOrdersResponse> => {
+  return await http.get(
+    `${baseUrl}/openapi/gateway/scan/market/pool-order/open${addQueryParams(params)}`,
+    undefined,
+    {
+      headers: {
+        myx_openapi_access_token: accessToken,
+        myx_openapi_account: account,
+      },
+    },
+  )
+}
+
+export const getPoolHistoryOrders = async (
+  account: Address,
+  accessToken: string = '',
+  params: IPoolOrdersRequest,
+): Promise<PoolHistoryOrdersResponse> => {
+  return await http.get(
+    `${baseUrl}/openapi/gateway/scan/market/lp-history-order${addQueryParams(params)}`,
+    undefined,
+    {
+      headers: {
+        myx_openapi_access_token: accessToken,
+        myx_openapi_account: account,
+      },
+    },
   )
 }

@@ -39,7 +39,7 @@ export const HideOuterSymbols = ({
   }, [checked, onChange])
   return (
     <div className="flex items-center justify-between px-[16px] pt-[16px] pb-[10px]">
-      <div className="flex items-center">
+      <div className="flex flex-1 items-center justify-between">
         <Select
           isSingle
           value={selectChainId || '0'}

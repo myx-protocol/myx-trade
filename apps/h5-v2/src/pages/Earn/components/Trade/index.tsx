@@ -10,7 +10,6 @@ import { Claim } from '@/pages/Earn/components/Trade/Claim.tsx'
 export const TradingForm = ({ className = '' }: { className?: string }) => {
   const [searchParams] = useSearchParams()
   const [side, setSide] = useState<TradeSide>(TradeSide.Subscribe)
-  const [slippage, setSlippage] = useState('0.01')
 
   useEffect(() => {
     if (searchParams) {
@@ -21,7 +20,7 @@ export const TradingForm = ({ className = '' }: { className?: string }) => {
     }
   }, [searchParams])
   return (
-    <TradeContext.Provider value={{ side, setSide, slippage, setSlippage }}>
+    <TradeContext.Provider value={{ side, setSide }}>
       <Box className={`flex flex-col ${className}`}>
         <TradeTabBar />
         {side === TradeSide.Subscribe && <Subscribe />}
