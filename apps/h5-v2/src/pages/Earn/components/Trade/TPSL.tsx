@@ -71,6 +71,7 @@ export const TPSL = ({
           <TPSLInput
             type={tpType}
             value={tpValue}
+            source="lp"
             onChange={setTpValue}
             onTypeChange={setTpType}
             quoteToken={quoteSymbol}
@@ -83,6 +84,7 @@ export const TPSL = ({
           <TPSLInput
             type={slType}
             value={slValue}
+            source="lp"
             onChange={setSlValue}
             onTypeChange={setSlType}
             quoteToken={quoteSymbol}
