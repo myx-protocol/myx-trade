@@ -9,6 +9,8 @@ export enum AppealType {
   Failed = 6,
   PlatformRuling = 7,
   PlatformRevoked = 8,
+  SettlementVoting = 10,
+  SettlementFailed = 11,
 }
 
 export enum AppealReconsiderationType {
@@ -21,7 +23,7 @@ export enum AppealReconsiderationType {
   PlatformRevoked = 7,
   ReconsiderationVoting = 8,
   AppealRevert = 9,
-  NotAppealFailed = 10
+  NotAppealFailed = 10,
 }
 
 export enum AppealStage {
@@ -57,12 +59,14 @@ export interface AppealListItem {
   appealDeadline: number; // Appeal deadline
   compClaimDeadline: number; // Compensation claim deadline
   updateTime: number; // Update time
-  disputeBondState: AppealClaimStatusEnum
-  disputeBondClaimTime: number
-  claimStatus: AppealClaimStatusEnum // Compensation claim status
-  baseAmount?: string
-  quoteAmount?: string
-  successVoteCount: number
+  disputeBondState: AppealClaimStatusEnum;
+  disputeBondClaimTime: number;
+  claimStatus: AppealClaimStatusEnum; // Compensation claim status
+  baseAmount?: string;
+  quoteAmount?: string;
+  successVoteCount: number;
+  settleVotedCount: number;
+  settleTotalVoteCount: number;
 }
 
 export interface GetAppealDetailParams {
@@ -95,6 +99,8 @@ export interface AppealReconsiderationItem {
 }
 
 export interface AppealDetail {
+  id: number;
+  proof: string | null;
   caseId: number;
   chainId: number;
   poolId: string;
@@ -118,11 +124,15 @@ export interface AppealDetail {
   disputeTime: number; // Dispute time
   txHash: string; // Dispute tx hash
   disputeBondState: AppealClaimStatusEnum;
-  disputeBondClaimTime: number
-  claimStatus: AppealClaimStatusEnum
-  baseAmount?: string
-  quoteAmount?: string
-  successVoteCount: number
+  disputeBondClaimTime: number;
+  claimStatus: AppealClaimStatusEnum;
+  baseAmount?: string;
+  quoteAmount?: string;
+  successVoteCount: number;
+  settleTotalVoteCount: number | null;
+  settleVoteDeadline: number | null;
+  settleVotedCount: number | null;
+  settleVotes?: AppealVoteItem[];
 }
 
 export interface AppealUploadEvidenceParams {
@@ -152,16 +162,16 @@ export interface AppealReconsiderationListItem {
   type: AppealReconsiderationType;
   stage: AppealStage;
   totalVoteCount: number;
-  votedCount: number
+  votedCount: number;
   appealDeadline: number; // appeal deadline
   publicNoticeEndTime: number; // public notice end time
   updateTime: number; // update time
   appealCaseId?: number; // Appeal case ID
-  appealBondClaimTime?: number
-  successVoteCount: number
-  appealSuccessVoteCount?: number
-  appealTotalVoteCount?: number
-  appealVotedCount?: number 
+  appealBondClaimTime?: number;
+  successVoteCount: number;
+  appealSuccessVoteCount?: number;
+  appealTotalVoteCount?: number;
+  appealVotedCount?: number;
 }
 
 export interface GetAppealReconsiderationDetailParams {
@@ -196,12 +206,12 @@ export interface AppealReconsiderationDetail {
   appealType: AppealReconsiderationType; // Appeal type (bound to current user)
   appealStage: AppealStage; // Appeal stage (bound to current user)
   appealBondState: AppealClaimStatusEnum; // Appeal bond state
-  appealBondClaimTime?: number
-  txHash: string
-  appealStartTime: number
-  appealEndTime: number
-  appealSuccessVoteCount?: number
-  successVoteCount: number
+  appealBondClaimTime?: number;
+  txHash: string;
+  appealStartTime: number;
+  appealEndTime: number;
+  appealSuccessVoteCount?: number;
+  successVoteCount: number;
 }
 
 export interface AppealReimbursementParams {
@@ -222,11 +232,13 @@ export interface AppealReimbursementItem {
   poolId: string;
   baseAmount: string;
   quoteAmount: string;
-  claimStatus: AppealClaimStatusEnum
+  claimStatus: AppealClaimStatusEnum;
   claimTime: number;
   expireTime: number;
   createTime: number;
-  proof: string
+  proof: string;
+  type: AppealType;
+  stage: AppealStage
 }
 
 export interface GetAppealNodeVoteListParams {
@@ -243,6 +255,7 @@ export enum AppealNodeVotedStateEnum {
 export enum AppealCaseTypeEnum {
   Appeal = 1,
   Reconsideration = 2,
+  Settlement = 3,
 }
 
 export enum AppealNodeStateEnum {
@@ -306,21 +319,20 @@ export interface PostVoteSignatureParams {
 
 export type PostVoteResponse = 1 | 0;
 
-
 export interface GetWarmholeSignParams {
-  account: string
+  account: string;
 }
 
 export interface GuardianSignatureItem {
-  r: string
-  s: string
-  v: string
-  guardianIndex: number
+  r: string;
+  s: string;
+  v: string;
+  guardianIndex: number;
 }
 export interface GetWarmholeSignResponse {
-  epoch: number // Staking epoch
-  response: string // data
-  guardianSignatures: GuardianSignatureItem[]
+  epoch: number; // Staking epoch
+  response: string; // data
+  guardianSignatures: GuardianSignatureItem[];
 }
 
 export enum AppealStatus {

@@ -128,7 +128,6 @@ export class Order {
         this.logger.info("createIncreaseOrder salt position params--->", { positionSalt, data, depositData });
 
         const gasLimit = await tradingRouterContract.estimateGas!.placeOrderWithSalt([positionSalt, { ...depositData }, data]);
-
         hash = await tradingRouterContract.write!.placeOrderWithSalt(
           [positionSalt, { ...depositData }, data],
           {
@@ -143,7 +142,6 @@ export class Order {
           { ...depositData },
           data,
         ]);
-
         hash = await tradingRouterContract.write!.placeOrderWithPosition(
           [params.positionId.toString(), { ...depositData }, data],
           {

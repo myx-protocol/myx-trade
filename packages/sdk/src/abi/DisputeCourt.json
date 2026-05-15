@@ -328,6 +328,11 @@
         "type": "uint256",
         "name": "caseId",
         "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "remaining",
+        "indexed": false
       }
     ]
   },
@@ -620,6 +625,30 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "RelayerAdded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "relayer",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RelayerRemoved",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "relayer",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Upgraded",
     "inputs": [
       {
@@ -720,6 +749,19 @@
         "type": "string"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "addRelayers",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address[]",
+        "name": "relayers"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -891,32 +933,6 @@
       {
         "type": "bytes32",
         "name": "poolId"
-      },
-      {
-        "type": "bytes",
-        "name": "response"
-      },
-      {
-        "type": "tuple[]",
-        "name": "guardianSignatures",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "r"
-          },
-          {
-            "type": "bytes32",
-            "name": "s"
-          },
-          {
-            "type": "uint8",
-            "name": "v"
-          },
-          {
-            "type": "uint8",
-            "name": "guardianIndex"
-          }
-        ]
       }
     ],
     "outputs": []
@@ -998,6 +1014,19 @@
       },
       {
         "type": "uint32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRelayers",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address[]"
       }
     ]
   },
@@ -1093,32 +1122,6 @@
         "name": "caseId"
       },
       {
-        "type": "bytes",
-        "name": "response"
-      },
-      {
-        "type": "tuple[]",
-        "name": "guardianSignatures",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "r"
-          },
-          {
-            "type": "bytes32",
-            "name": "s"
-          },
-          {
-            "type": "uint8",
-            "name": "v"
-          },
-          {
-            "type": "uint8",
-            "name": "guardianIndex"
-          }
-        ]
-      },
-      {
         "type": "tuple",
         "name": "reimbursementInfo",
         "components": [
@@ -1178,6 +1181,19 @@
   },
   {
     "type": "function",
+    "name": "removeRelayers",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address[]",
+        "name": "relayers"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "resolveCaseAppeals",
     "constant": false,
     "payable": false,
@@ -1187,30 +1203,8 @@
         "name": "caseId"
       },
       {
-        "type": "bytes",
-        "name": "response"
-      },
-      {
-        "type": "tuple[]",
-        "name": "guardianSignatures",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "r"
-          },
-          {
-            "type": "bytes32",
-            "name": "s"
-          },
-          {
-            "type": "uint8",
-            "name": "v"
-          },
-          {
-            "type": "uint8",
-            "name": "guardianIndex"
-          }
-        ]
+        "type": "uint256",
+        "name": "limit"
       }
     ],
     "outputs": []
@@ -1224,32 +1218,6 @@
       {
         "type": "uint256",
         "name": "caseId"
-      },
-      {
-        "type": "bytes",
-        "name": "response"
-      },
-      {
-        "type": "tuple[]",
-        "name": "guardianSignatures",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "r"
-          },
-          {
-            "type": "bytes32",
-            "name": "s"
-          },
-          {
-            "type": "uint8",
-            "name": "v"
-          },
-          {
-            "type": "uint8",
-            "name": "guardianIndex"
-          }
-        ]
       }
     ],
     "outputs": []

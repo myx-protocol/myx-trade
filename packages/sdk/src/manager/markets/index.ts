@@ -8,6 +8,7 @@ import {
   FavoritesListParams,
   type GetBaseDetailParams,
   type GetMarketDetailParams,
+  AddFavoritesBatchParams,
 } from "@/api";
 import { KlineResolution } from "../subscription/types/index.js";
 import { Utils } from "../utils/index.js";
@@ -149,6 +150,12 @@ export class Markets {
           accessToken: accessToken,
         }
       )
+    ).data;
+  }
+
+  async addFavoritesBatch(params: AddFavoritesBatchParams) {
+    return (
+      await this.api.addFavoritesBatch(params)
     ).data;
   }
 
