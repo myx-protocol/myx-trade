@@ -70,14 +70,18 @@ export const DetailHeaderSection = ({
         className="!border-[#31333D]"
         items={subTabItems}
         value={activeAction}
-        handleChange={onChangeAction}
+        handleChange={(value) => onChangeAction(value as 'deposit' | 'redeem' | 'activate')}
       />
     )
   }
 
   return (
     <>
-      <SubTabBar items={subTabItems} value={activeAction} handleChange={onChangeAction} />
+      <SubTabBar
+        items={subTabItems}
+        value={activeAction}
+        handleChange={(value) => onChangeAction(value as 'deposit' | 'redeem' | 'activate')}
+      />
       {isShowVaultTabs && (
         <Box className="mt-[12px] flex h-[42px] rounded-[10px] bg-[#18191F] p-[2px]">
           {vaultTabList.map((vault) => {
