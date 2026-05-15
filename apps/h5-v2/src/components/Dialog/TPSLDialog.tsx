@@ -6,17 +6,16 @@ import { TpSlTypeEnum } from '@/components/Trade/type'
 import { formatNumber } from '@/utils/number'
 import { parseBigNumber } from '@/utils/bn'
 import { TradeButton } from '@/components/Button/TradeButton'
-import { CustomCheckBox } from '@/components/CheckBox'
 import { PercentSlider } from '@/components/PercentSlider'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import {
-  pool as Pool,
-  parseUnits,
-  formatUnits,
-  TriggerType,
-  COMMON_PRICE_DECIMALS,
-  COMMON_LP_AMOUNT_DECIMALS,
   type AddTpSLParams,
+  COMMON_LP_AMOUNT_DECIMALS,
+  COMMON_PRICE_DECIMALS,
+  formatUnits,
+  parseUnits,
+  pool as Pool,
+  TriggerType,
 } from '@myx-trade/sdk'
 import { PoolType } from '@/request/type'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
@@ -25,10 +24,29 @@ import Big from 'big.js'
 import { toast } from '@/components/UI/Toast'
 import { showErrorToast } from '@/config/error'
 import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
+import { NumericInput } from '@/components/Dialog/NumberInput'
 import { getMarketPoolPrice } from '@/request'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 
 const DEFAULT_SLIPPAGE = 0.01
+
+const EstPnlDisplay = memo(({ value }: { value: string }) => (
+  <div className="flex items-center justify-between">
+    <p className="text-[12px] text-[#848E9C]">
+      <Trans>Est. PnL</Trans>
+    </p>
+    <p
+      className="text-[12px] font-medium"
+      style={{
+        color:
+          value && Number(value) !== 0 ? (Number(value) > 0 ? '#00E3A5' : '#EC605A') : '#848E9C',
+      }}
+    >
+      {value ? `$${formatNumber(value, { showUnit: false })}` : '$--'}
+    </p>
+  </div>
+))
+EstPnlDisplay.displayName = 'EstPnlDisplay'
 // --- Types ---
 export interface TPSLDialogProps {
   open: boolean
@@ -61,22 +79,20 @@ export const TPSLDialog = memo(
     const isBase = poolType === PoolType.base
 
     // TP state
-    const [tpEnabled, setTpEnabled] = useState(true)
     const [tpType, setTpType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
     const [tpValue, setTpValue] = useState('')
 
     // SL state
-    const [slEnabled, setSlEnabled] = useState(true)
     const [slType, setSlType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
     const [slValue, setSlValue] = useState('')
 
     // Amount / slider
     const [sliderValue, setSliderValue] = useState(100)
+    const [amountInputValue, setAmountInputValue] = useState('')
+    const [amountInputFocused, setAmountInputFocused] = useState(false)
     const [slippage, setSlippage] = useState('1')
 
     const [loading, setLoading] = useState(false)
-    // const [slippageFocused, setSlippageFocused] = useState(false)
-    // const slippageInputRef = useRef<HTMLInputElement>(null)
 
     // Ticker data for oracle price
     const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
@@ -103,8 +119,9 @@ export const TPSLDialog = memo(
           poolId,
           parseUnits(price, COMMON_PRICE_DECIMALS),
         )
+        // console.log('-----tpsl dialog get poolinfo', poolType, result)
         if (result) {
-          const pool = isBase ? result.basePool : result.quotePool
+          const pool = poolType === PoolType.base ? result.basePool : result.quotePool
           return {
             lpPrice: formatUnits(pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
             exchangeRate: formatUnits(pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
@@ -113,10 +130,10 @@ export const TPSLDialog = memo(
         return null
       },
       refetchInterval: 10000,
+      placeholderData: keepPreviousData,
     })
 
     const lpPrice = poolInfo?.lpPrice || ''
-    const exchangeRate = poolInfo?.exchangeRate || ''
 
     // Calculate actual redeem amount based on slider
     const redeemAmount = useMemo(() => {
@@ -132,41 +149,41 @@ export const TPSLDialog = memo(
 
     // Est. PnL for TP
     const tpEstPnl = useMemo(() => {
-      if (!tpEnabled || !tpValue || !lpPrice || !redeemAmount) return ''
+      if (!tpValue || !costPrice || !redeemAmount) return ''
       try {
         const triggerPrice = parseTriggerPrice({
           type: tpType,
           value: tpValue,
-          currentPrice: lpPrice,
+          currentPrice: costPrice,
           amount: redeemAmount,
         })
         if (!triggerPrice || Number(triggerPrice) <= 0) return ''
-        const pnl = new Big(triggerPrice).minus(new Big(lpPrice)).mul(new Big(redeemAmount))
+        const pnl = new Big(triggerPrice).minus(new Big(costPrice)).mul(new Big(redeemAmount))
         return pnl.toString()
       } catch {
         return ''
       }
-    }, [tpEnabled, tpValue, tpType, lpPrice, redeemAmount])
+    }, [tpValue, tpType, costPrice, redeemAmount])
 
     // Est. PnL for SL
     const slEstPnl = useMemo(() => {
-      if (!slEnabled || !slValue || !lpPrice || !redeemAmount) return ''
+      if (!slValue || !costPrice || !redeemAmount) return ''
       try {
         const adjustedValue =
           slValue && slType !== TpSlTypeEnum.PRICE ? new Big(slValue).mul(-1).toString() : slValue
         const triggerPrice = parseTriggerPrice({
           type: slType,
           value: adjustedValue,
-          currentPrice: lpPrice,
+          currentPrice: costPrice,
           amount: redeemAmount,
         })
         if (!triggerPrice || Number(triggerPrice) <= 0) return ''
-        const pnl = new Big(triggerPrice).minus(new Big(lpPrice)).mul(new Big(redeemAmount))
+        const pnl = new Big(triggerPrice).minus(new Big(costPrice)).mul(new Big(redeemAmount))
         return pnl.toString()
       } catch {
         return ''
       }
-    }, [slEnabled, slValue, slType, lpPrice, redeemAmount])
+    }, [slValue, slType, costPrice, redeemAmount])
 
     // Labels based on poolType
     const tpLabel = isBase ? <Trans>TP</Trans> : <Trans>回撤保护</Trans>
@@ -197,8 +214,6 @@ export const TPSLDialog = memo(
     // Reset state when dialog opens
     useEffect(() => {
       if (open) {
-        setTpEnabled(true)
-        setSlEnabled(true)
         setTpType(TpSlTypeEnum.Pnl)
         setSlType(TpSlTypeEnum.Pnl)
         setTpValue('')
@@ -218,7 +233,7 @@ export const TPSLDialog = memo(
 
         const tpsl: Array<{ triggerType: TriggerType; triggerPrice: number }> = []
 
-        if (tpEnabled && tpValue) {
+        if (tpValue) {
           const triggerPrice = parseTriggerPrice({
             type: tpType,
             value: tpValue,
@@ -233,7 +248,7 @@ export const TPSLDialog = memo(
           }
         }
 
-        if (slEnabled && slValue) {
+        if (slValue) {
           const adjustedValue =
             slValue && slType !== TpSlTypeEnum.PRICE ? new Big(slValue).mul(-1).toString() : slValue
           const triggerPrice = parseTriggerPrice({
@@ -287,10 +302,8 @@ export const TPSLDialog = memo(
     }, [
       chainId,
       poolId,
-      tpEnabled,
       tpValue,
       tpType,
-      slEnabled,
       slValue,
       slType,
       lpPrice,
@@ -301,11 +314,11 @@ export const TPSLDialog = memo(
     ])
 
     const displayPoolName = isBase
-      ? t`m${baseSymbol}.${quoteSymbol} Base Vault`
-      : t`m${quoteSymbol}.${baseSymbol} Stable Vault`
+      ? t`${baseSymbol}${quoteSymbol} Base Vault`
+      : t`${baseSymbol}${quoteSymbol} Stable Vault`
 
     return (
-      <DialogTheme open={open} onClose={onClose}>
+      <DialogTheme open={open} onClose={onClose} sx={{ zIndex: 1100 }}>
         <DialogTitleTheme onClose={onClose}>{dialogTitle}</DialogTitleTheme>
         <div>
           {/* Order Info Section */}
@@ -334,7 +347,7 @@ export const TPSLDialog = memo(
                 <Trans>当前价格</Trans>
               </p>
               <p className="text-[12px] font-medium text-[#CED1D9]">
-                {lpPrice ? formatNumber(lpPrice, { showUnit: false }) : '--'} {quoteSymbol}
+                ${lpPrice ? formatNumber(lpPrice, { showUnit: false }) : '--'}
               </p>
             </div>
           </div>
@@ -346,104 +359,57 @@ export const TPSLDialog = memo(
               <div className="flex flex-col gap-[12px] px-[20px]">
                 <div className="flex flex-col gap-[12px]">
                   <div className="flex items-center gap-[4px]">
-                    <CustomCheckBox
-                      type="em"
-                      size={12}
-                      checked={tpEnabled}
-                      onChange={setTpEnabled}
-                      label={<span className="text-[12px] font-medium text-white">{tpLabel}</span>}
-                    />
+                    <span className="text-[12px] font-medium text-white">{tpLabel}</span>
                   </div>
-                  {tpEnabled && (
-                    <div className="flex flex-col gap-[8px]">
-                      <div className="flex gap-[8px]">
-                        <TPSLInput
-                          type={tpType}
-                          value={tpValue}
-                          onChange={setTpValue}
-                          onTypeChange={setTpType}
-                          quoteToken={quoteSymbol}
-                          placeHolder={tpPlaceHolder}
-                          inputPrefix={tpType === TpSlTypeEnum.PRICE ? '' : '+'}
-                          allowNegative={false}
-                          source="lp"
-                          inputSuffix={
-                            tpType === TpSlTypeEnum.ROI || tpType === TpSlTypeEnum.Change
-                              ? '%'
-                              : undefined
-                          }
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-[12px] text-[#848E9C]">Est. PnL</p>
-                        <p
-                          className="text-[12px] font-medium"
-                          style={{
-                            color:
-                              tpEstPnl && Number(tpEstPnl) !== 0
-                                ? Number(tpEstPnl) > 0
-                                  ? '#00E3A5'
-                                  : '#EC605A'
-                                : '#848E9C',
-                          }}
-                        >
-                          {tpEstPnl ? `$${formatNumber(tpEstPnl, { showUnit: false })}` : '$--'}
-                        </p>
-                      </div>
+                  <div className="flex flex-col gap-[8px]">
+                    <div className="flex gap-[8px]">
+                      <TPSLInput
+                        type={tpType}
+                        value={tpValue}
+                        onChange={setTpValue}
+                        onTypeChange={setTpType}
+                        quoteToken={quoteSymbol}
+                        placeHolder={tpPlaceHolder}
+                        inputPrefix={tpType === TpSlTypeEnum.PRICE ? '' : '+'}
+                        allowNegative={false}
+                        inputSuffix={
+                          tpType === TpSlTypeEnum.ROI || tpType === TpSlTypeEnum.Change
+                            ? '%'
+                            : undefined
+                        }
+                      />
                     </div>
-                  )}
+                    <EstPnlDisplay value={tpEstPnl} />
+                  </div>
                 </div>
               </div>
 
               {/* SL Section */}
               <div className="flex flex-col gap-[12px]">
                 <div className="flex items-center gap-[4px] px-[20px]">
-                  <CustomCheckBox
-                    type="em"
-                    size={12}
-                    checked={slEnabled}
-                    onChange={setSlEnabled}
-                    label={<span className="text-[12px] font-medium text-white">{slLabel}</span>}
-                  />
+                  <span className="text-[12px] font-medium text-white">{slLabel}</span>
                 </div>
-                {slEnabled && (
-                  <div className="flex flex-col gap-[8px] px-[20px]">
-                    <div className="flex gap-[8px]">
-                      <TPSLInput
-                        type={slType}
-                        value={slValue}
-                        onChange={setSlValue}
-                        onTypeChange={setSlType}
-                        quoteToken={quoteSymbol}
-                        placeHolder={slPlaceHolder}
-                        inputPrefix={slType === TpSlTypeEnum.PRICE ? '' : '-'}
-                        allowNegative={false}
-                        source="lp"
-                        inputSuffix={
-                          slType === TpSlTypeEnum.ROI || slType === TpSlTypeEnum.Change
-                            ? '%'
-                            : undefined
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[12px] text-[#848E9C]">Est. PnL</p>
-                      <p
-                        className="text-[12px] font-medium"
-                        style={{
-                          color:
-                            slEstPnl && Number(slEstPnl) !== 0
-                              ? Number(slEstPnl) > 0
-                                ? '#00E3A5'
-                                : '#EC605A'
-                              : '#848E9C',
-                        }}
-                      >
-                        {slEstPnl ? `$${formatNumber(slEstPnl, { showUnit: false })}` : '$--'}
-                      </p>
-                    </div>
+
+                <div className="flex flex-col gap-[8px] px-[20px]">
+                  <div className="flex gap-[8px]">
+                    <TPSLInput
+                      type={slType}
+                      value={slValue}
+                      onChange={setSlValue}
+                      onTypeChange={setSlType}
+                      quoteToken={quoteSymbol}
+                      placeHolder={slPlaceHolder}
+                      inputPrefix={slType === TpSlTypeEnum.PRICE ? '' : '-'}
+                      allowNegative={false}
+                      inputSuffix={
+                        slType === TpSlTypeEnum.ROI || slType === TpSlTypeEnum.Change
+                          ? '%'
+                          : undefined
+                      }
+                    />
                   </div>
-                )}
+                  <EstPnlDisplay value={slEstPnl} />
+                </div>
               </div>
             </div>
 
@@ -487,19 +453,55 @@ export const TPSLDialog = memo(
                   </div>
                   <div className="flex h-[18px] items-center justify-between gap-[8px] leading-[1]">
                     <div className="min-w-0 flex-1">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={`${sliderValue}%`}
-                        onChange={(e) => {
-                          const num = parseInt(e.target.value.replace(/%/g, ''), 10)
-                          if (!isNaN(num)) {
-                            setSliderValue(Math.min(100, Math.max(0, num)))
-                          } else if (e.target.value === '' || e.target.value === '%') {
+                      <NumericInput
+                        value={
+                          amountInputFocused
+                            ? amountInputValue
+                            : formatNumber(
+                                parseBigNumber(amount).mul(sliderValue).div(100).toString(),
+                                { showUnit: false },
+                              )
+                        }
+                        onValueChange={(values) => {
+                          const num = parseFloat(values.value)
+                          if (!isNaN(num) && parseBigNumber(amount).gt(0)) {
+                            const clamped = Math.min(parseFloat(amount), Math.max(0, num))
+                            setAmountInputValue(clamped.toString())
+                            const pct = Math.min(
+                              100,
+                              Math.max(
+                                0,
+                                Math.round(
+                                  parseBigNumber(clamped.toString())
+                                    .div(parseBigNumber(amount))
+                                    .mul(100)
+                                    .toNumber(),
+                                ),
+                              ),
+                            )
+                            setSliderValue(pct)
+                          } else if (values.value === '') {
+                            setAmountInputValue('')
                             setSliderValue(0)
                           }
                         }}
-                        className="w-full bg-transparent text-[18px] leading-[1] font-bold text-white outline-none"
+                        onFocus={() => {
+                          setAmountInputFocused(true)
+                          setAmountInputValue(
+                            parseBigNumber(amount).mul(sliderValue).div(100).toString(),
+                          )
+                        }}
+                        onBlur={() => setAmountInputFocused(false)}
+                        className="w-full"
+                        sx={{
+                          '.MuiInputBase-root': {
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            padding: 0,
+                            height: '18px',
+                            backgroundColor: 'transparent',
+                          },
+                        }}
                       />
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-[2px] rounded-[30px]">
@@ -536,7 +538,7 @@ export const TPSLDialog = memo(
                   loading={loading}
                   onClick={handleConfirm}
                   className="!h-[44px] w-full !rounded-[24px] !text-[14px]"
-                  disabled={(!tpEnabled || !tpValue) && (!slEnabled || !slValue)}
+                  disabled={(!tpValue && !slValue) || sliderValue <= 0}
                 >
                   <Trans>Confirm</Trans>
                 </TradeButton>

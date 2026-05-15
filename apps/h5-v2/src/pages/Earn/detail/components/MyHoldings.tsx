@@ -267,7 +267,7 @@ export const MyHoldings = ({ showAll, chainId }: { showAll: boolean; chainId?: n
 }
 
 const HoldingCardSkeleton = () => (
-  <Box className={'border-b-base-plus flex flex-col gap-[20px] border-b py-[16px]'}>
+  <Box className={'border-b-base flex flex-col gap-[20px] border-b py-[16px]'}>
     <Box className={'flex items-center justify-between'}>
       <Skeleton width={120} height={28} />
       <Skeleton width={80} height={20} />

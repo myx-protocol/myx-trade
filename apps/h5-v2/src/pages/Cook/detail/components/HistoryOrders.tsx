@@ -235,7 +235,7 @@ const HistoryOrderCard = ({
               <Skeleton width={120} />
             ) : (
               <span
-                className={'cursor-pointer text-[13px] font-[500] text-white'}
+                className={'cursor-pointer text-[13px] font-[500] text-white underline'}
                 onClick={() => {
                   if (explorerUrl && order?.txHash) {
                     window.open(`${explorerUrl}${order.txHash}`, '_blank')
