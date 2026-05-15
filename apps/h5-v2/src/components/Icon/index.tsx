@@ -52,6 +52,7 @@ import CheckBoxBorder from './set/CheckBoxBorder.tsx'
 import Checked from './set/Checked.tsx'
 import IconTpsl from './set/Tpsl.tsx'
 import IconClaimRewards from './set/ClaimRewards.tsx'
+import Help from '@/components/Icon/set/Help.tsx'
 
 const Components: Record<string, React.FC<SvgIconProps>> = {}
 const modules = import.meta.glob('./set/**/*', { eager: true })
@@ -121,6 +122,7 @@ export {
   CaretRight,
   Selected,
   Warning,
+  Help,
   BigWaningLine,
   CheckBoxBorder,
   Checked,
