@@ -15,6 +15,7 @@ export const useWalletChainCheck = () => {
         try {
           await switchChainAsync({ chainId: _targetChainId })
         } catch {
+          console.log('error switchChainAsync', _targetChainId)
           await walletClient?.switchChain({ id: _targetChainId })
         }
         await sleep(5000)

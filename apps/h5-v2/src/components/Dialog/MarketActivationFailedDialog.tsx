@@ -1,4 +1,4 @@
-import { DialogBase } from '@/components/DialogBase'
+import { DialogBase } from '@/components/UI/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import React, { memo } from 'react'
 import { Box, Button } from '@mui/material'
@@ -26,7 +26,7 @@ const MarketActivationFailedFooter = memo(
     })
 
     return (
-      <Box className={'flex w-full gap-[12px] px-[20px] pb-[24px]'}>
+      <Box className={'flex w-full gap-[12px] pb-[8px]'}>
         <Button
           className={'gradient gray !min-h-[44px] !rounded-[44px]'}
           loading={laterLoading}
@@ -61,13 +61,7 @@ export const MarketActivationFailedDialog = memo(
     tokenSymbol = '--',
   }: MarketActivationFailedDialogProps) => {
     return (
-      <DialogBase
-        open={open}
-        onClose={onClose}
-        showCloseIcon
-        title={null}
-        footer={<MarketActivationFailedFooter onLater={onLater} onClaimRefund={onClaimRefund} />}
-      >
+      <DialogBase open={open} onClose={onClose}>
         <Box className={'flex flex-col items-center'}>
           <Box className={'text-secondary pb-[20px]'}>
             <WarningLine size={56} />
@@ -100,6 +94,7 @@ export const MarketActivationFailedDialog = memo(
             </p>
           </Box>
         </Box>
+        <MarketActivationFailedFooter onLater={onLater} onClaimRefund={onClaimRefund} />
       </DialogBase>
     )
   },
