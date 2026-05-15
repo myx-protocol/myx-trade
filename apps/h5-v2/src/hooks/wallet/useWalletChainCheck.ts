@@ -1,7 +1,6 @@
 import { useAccount, useSwitchChain } from 'wagmi'
 import { useCallback } from 'react'
 import { getAsSupportedChainIdFn } from '@/config/chain'
-import { sleep } from '@/utils'
 
 export const useWalletChainCheck = () => {
   const { chainId, isConnected, connector } = useAccount()
@@ -24,7 +23,6 @@ export const useWalletChainCheck = () => {
             throw error
           }
         }
-        await sleep(5000)
         return true
       }
       return Promise.resolve(true)
