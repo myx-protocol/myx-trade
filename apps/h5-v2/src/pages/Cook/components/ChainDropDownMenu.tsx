@@ -1,10 +1,9 @@
-import { Box, Button, MenuItem } from '@mui/material'
-import { ChainId, getSupportedChainIdsByEnv } from '@/config/chain.ts'
+import { Button } from '@mui/material'
+import { ChainId } from '@/config/chain.ts'
 import { Trans } from '@lingui/react/macro'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { ArrowDown } from '@/components/Icon'
 import { useState } from 'react'
-import { StyledMenu } from '@/components/Menu.tsx'
 import { ChainsDrawer } from '@/components/ChainsDrawer.tsx'
 
 export const ChainDropDownMenu = ({
