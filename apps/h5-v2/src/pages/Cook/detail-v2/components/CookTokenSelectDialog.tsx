@@ -1,7 +1,8 @@
 import { Copy } from '@/components/Copy'
 import { ArrowDown, CloseIcon } from '@/components/Icon'
 import { Search } from '@/components/Search'
-import { DialogSuspense } from '@/components/Loading'
+import { DialogSuspense, SuspenseLoading } from '@/components/Loading'
+import { Empty } from '@/components/Empty'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { DialogBase } from '@/components/UI/DialogBase'
 import { ChainsDrawer } from '@/components/ChainsDrawer'
@@ -161,90 +162,94 @@ export const CookTokenSelectDialog = memo(
                 </span>
               </Box>
 
-              <Box className="max-h-[360px] overflow-y-auto pr-[4px]">
-                {displayList.map((item) => {
-                  const walletAsset = resolveWalletAsset(item.chainId, item.address)
-                  const balance = walletAsset?.balance
-                  const price = walletAsset?.price
+              {Boolean(!displayList.length && !isLoading) && <Empty />}
+              {isLoading && <SuspenseLoading block />}
+              {!isLoading && displayList.length > 0 && (
+                <Box className="max-h-[360px] overflow-y-auto pr-[4px]">
+                  {displayList.map((item) => {
+                    const walletAsset = resolveWalletAsset(item.chainId, item.address)
+                    const balance = walletAsset?.balance
+                    const price = walletAsset?.price
 
-                  const onRowClick = () => {
-                    if (!onSelectBaseToken) return
-                    const quoteAddrs = baseTokenMapQuoteToken[item.address] ?? []
-                    const quoteTokens = quoteAddrs
-                      .map((addr) => tokenInfoMap.get(addr as `0x${string}`))
-                      .filter((x): x is CookTokenItem => !!x)
-                    onSelectBaseToken(item, quoteTokens, findCookPool)
-                  }
+                    const onRowClick = () => {
+                      if (!onSelectBaseToken) return
+                      const quoteAddrs = baseTokenMapQuoteToken[item.address] ?? []
+                      const quoteTokens = quoteAddrs
+                        .map((addr) => tokenInfoMap.get(addr as `0x${string}`))
+                        .filter((x): x is CookTokenItem => !!x)
+                      onSelectBaseToken(item, quoteTokens, findCookPool)
+                    }
 
-                  const chainInfo = getChainInfoFunc(item.chainId)
+                    const chainInfo = getChainInfoFunc(item.chainId)
 
-                  return (
-                    <Box
-                      key={item.address}
-                      role="button"
-                      className={`flex h-[60px] items-center justify-between rounded-[6px] px-[8px] py-[12px] hover:bg-[#202129] ${onSelectBaseToken ? 'cursor-pointer' : ''}`}
-                      onClick={onRowClick}
-                    >
-                      <Box className="flex items-center gap-[8px]">
-                        <PairLogo
-                          baseLogoSize={32}
-                          quoteLogoSize={12}
-                          baseSymbol={item.tokenSymbol}
-                          quoteSymbol={chainInfo?.label}
-                          quoteLogo={chainInfo?.logoUrl}
-                          baseLogo={item.tokenIcon ?? baseTokenIcon}
-                          baseClassName="rounded-[56px]"
-                          quoteClassName="rounded-[12px] border border-[#101114]"
-                        />
-                        <Box className="flex flex-col gap-[6px]">
-                          <p className="text-[14px] leading-none font-[500] text-white">
-                            {item.tokenSymbol}
-                          </p>
-                          <Box className="flex items-center gap-[6px] text-[12px] leading-none text-[#848E9C]">
-                            <span>{item.tokenName}</span>
-                            <Box
-                              className="flex items-center gap-[4px]"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <span>{encryptionAddress(item.address)}</span>
-                              <Copy content={item.address} />
+                    return (
+                      <Box
+                        key={item.address}
+                        role="button"
+                        className={`flex h-[60px] items-center justify-between rounded-[6px] px-[8px] py-[12px] hover:bg-[#202129] ${onSelectBaseToken ? 'cursor-pointer' : ''}`}
+                        onClick={onRowClick}
+                      >
+                        <Box className="flex items-center gap-[8px]">
+                          <PairLogo
+                            baseLogoSize={32}
+                            quoteLogoSize={12}
+                            baseSymbol={item.tokenSymbol}
+                            quoteSymbol={chainInfo?.label}
+                            quoteLogo={chainInfo?.logoUrl}
+                            baseLogo={item.tokenIcon ?? baseTokenIcon}
+                            baseClassName="rounded-[56px]"
+                            quoteClassName="rounded-[12px] border border-[#101114]"
+                          />
+                          <Box className="flex flex-col gap-[6px]">
+                            <p className="text-[14px] leading-none font-[500] text-white">
+                              {item.tokenSymbol}
+                            </p>
+                            <Box className="flex items-center gap-[6px] text-[12px] leading-none text-[#848E9C]">
+                              <span>{item.tokenName}</span>
+                              <Box
+                                className="flex items-center gap-[4px]"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <span>{encryptionAddress(item.address)}</span>
+                                <Copy content={item.address} />
+                              </Box>
                             </Box>
                           </Box>
                         </Box>
-                      </Box>
 
-                      <Box className="flex w-[105px] flex-col items-end gap-[6px] text-right leading-[1]">
-                        <Box className="text-[14px] font-[500] text-white">
-                          {!isWalletConnected ? (
-                            '--'
-                          ) : isWalletPending ? (
-                            <Skeleton width={60} height={14} />
-                          ) : isWalletError && walletAssets === undefined ? (
-                            '--'
-                          ) : balance ? (
-                            formatNumber(balance)
-                          ) : (
-                            '0'
-                          )}
-                        </Box>
-                        <Box className="text-[12px] font-[500] text-[#848E9C]">
-                          {!isWalletConnected ? (
-                            '--'
-                          ) : isWalletPending ? (
-                            <Skeleton width={50} height={12} />
-                          ) : isWalletError && walletAssets === undefined ? (
-                            '--'
-                          ) : isSafeNumber(price) && balance ? (
-                            `$${formatNumber(new Big(price || '0').mul(new Big(balance)), { showUnit: false })}`
-                          ) : (
-                            '$0'
-                          )}
+                        <Box className="flex w-[105px] flex-col items-end gap-[6px] text-right leading-[1]">
+                          <Box className="text-[14px] font-[500] text-white">
+                            {!isWalletConnected ? (
+                              '--'
+                            ) : isWalletPending ? (
+                              <Skeleton width={60} height={14} />
+                            ) : isWalletError && walletAssets === undefined ? (
+                              '--'
+                            ) : balance ? (
+                              formatNumber(balance)
+                            ) : (
+                              '0'
+                            )}
+                          </Box>
+                          <Box className="text-[12px] font-[500] text-[#848E9C]">
+                            {!isWalletConnected ? (
+                              '--'
+                            ) : isWalletPending ? (
+                              <Skeleton width={50} height={12} />
+                            ) : isWalletError && walletAssets === undefined ? (
+                              '--'
+                            ) : isSafeNumber(price) && balance ? (
+                              `$${formatNumber(new Big(price || '0').mul(new Big(balance)), { showUnit: false })}`
+                            ) : (
+                              '$0'
+                            )}
+                          </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  )
-                })}
-              </Box>
+                    )
+                  })}
+                </Box>
+              )}
             </Box>
           </Box>
         </DialogSuspense>

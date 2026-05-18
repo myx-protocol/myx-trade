@@ -9,6 +9,7 @@ import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { formatNumber } from '@/utils/number'
+import { AutoTooltips } from '@/components/AutoTooltips'
 
 type ActionType = 'deposit' | 'redeem' | 'activate'
 
@@ -93,8 +94,8 @@ export const TradeContentSection = ({
                 <span className="text-[16px] leading-none font-[700] text-white">
                   {displayTokenSymbol}
                 </span>
-                <span className="text-[14px] leading-none text-[#848E9C]">
-                  {displayTradeTokenSymbol}
+                <span className="block max-w-[100px] text-[14px] leading-none text-[#848E9C]">
+                  <AutoTooltips title={displayTradeTokenSymbol} />
                 </span>
               </Box>
             </Box>
@@ -137,8 +138,8 @@ export const TradeContentSection = ({
                 <span className="text-[16px] leading-none font-[700] text-white">
                   {displayTokenSymbol}
                 </span>
-                <span className="text-[14px] leading-none text-[#848E9C]">
-                  {displayTradeTokenSymbol}
+                <span className="block max-w-[100px] text-[14px] leading-none text-[#848E9C]">
+                  <AutoTooltips title={displayTradeTokenSymbol} />
                 </span>
               </Box>
             </Box>
