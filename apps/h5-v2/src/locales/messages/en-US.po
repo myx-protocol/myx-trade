@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -114,6 +115,14 @@ msgstr ""
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "{0}x"
 msgstr ""
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "{baseSymbol}{quoteSymbol} Base Vault"
+msgstr "{baseSymbol}{quoteSymbol} Base Vault"
+
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "{baseSymbol}{quoteSymbol} Stable Vault"
+msgstr "{baseSymbol}{quoteSymbol} Stable Vault"
 
 #: src/components/Trade/TradePanel/Leverage/index.tsx
 msgid "{leverage}x"
@@ -246,15 +255,10 @@ msgstr ""
 msgid "AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr ""
 
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Action"
-msgstr ""
-
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
-msgid "Actions"
 msgstr ""
 
 #: src/pages/Market/components/activeMarket.tsx
@@ -286,6 +290,7 @@ msgstr ""
 msgid "Add New Referral"
 msgstr ""
 
+#: src/components/FavoritesDefault/index.tsx
 #: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
 msgid "Add to Favorites"
 msgstr ""
@@ -363,12 +368,14 @@ msgstr ""
 #: src/components/ChainSelector.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/Cook/components/ChainDropDownMenu.tsx
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 #: src/pages/rank/components/ChainSelector/index.tsx
 msgid "All Chain"
 msgstr ""
 
 #: src/components/ChainSelector.tsx
 #: src/components/Record/HideOuterSymbols.tsx
+#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 msgid "All Chains"
 msgstr ""
 
@@ -422,8 +429,6 @@ msgstr "Already voted"
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Earn/List.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 #: src/pages/Market/components/VaultSelect.tsx
@@ -433,6 +438,10 @@ msgstr "Already voted"
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Amount"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
+msgid "Amount / Value"
+msgstr "Amount / Value"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Amount must be greater than 0"
@@ -455,7 +464,6 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/pages/Cook/components/TrenchList.tsx
 #: src/pages/Earn/components/Dashboard.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 #: src/pages/Earn/List.tsx
 msgid "APR"
 msgstr ""
@@ -593,9 +601,19 @@ msgstr ""
 msgid "Balance"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
+msgid "Balance:"
+msgstr "Balance:"
+
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Base Parameter S"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "Base Valut"
+msgstr "Base Valut"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -696,7 +714,6 @@ msgstr ""
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel"
 msgstr ""
@@ -722,7 +739,6 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel this order?"
 msgstr ""
@@ -733,7 +749,6 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Cancelled"
 msgstr ""
 
@@ -861,12 +876,9 @@ msgid "Claim Refund"
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Claim Refund Now"
-msgstr ""
-
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
-msgid "Claim Rewards"
 msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
@@ -994,7 +1006,6 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Completed"
 msgstr ""
 
@@ -1011,6 +1022,7 @@ msgstr ""
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 #: src/components/VipRedeemDialog/index.tsx
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -1286,10 +1298,6 @@ msgstr ""
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
 msgstr ""
 
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
-msgid "Deposit(Amount)"
-msgstr ""
-
 #: src/config/error/CommonErrorMapping.tsx
 msgid "DesignatedTokenMismatch(address,address)"
 msgstr ""
@@ -1333,6 +1341,7 @@ msgid "Dont show again"
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to [Reason for Delisting], new buys for this market have been paused. You can still sell your holdings at any time.<0>Reactivate Market</0>"
 msgstr ""
@@ -1344,6 +1353,12 @@ msgstr ""
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0> View Delisting Rules</0>"
 msgstr ""
+
+#. placeholder {0}: baseLpDetail.mBaseQuoteSymbol
+#. placeholder {1}: cutDownFormat(dayjs.duration(countdown))
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
+msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0>View Delisting Rules</0>"
+msgstr "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0>View Delisting Rules</0>"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "During the validity period, if your level is below <0>VIP{level}</0>, you can enjoy the benefits of <1>VIP{level}</1>."
@@ -1591,6 +1606,10 @@ msgstr "Token does not exist (uint256)"
 msgid "Est. Pnl"
 msgstr ""
 
+#: src/components/Dialog/TPSLDialog.tsx
+msgid "Est. PnL"
+msgstr "Est. PnL"
+
 #: src/components/CookDetail/Order/EstRate.tsx
 #: src/pages/Earn/components/Trade/EstRate.tsx
 msgid "Est. Rate"
@@ -1740,7 +1759,6 @@ msgstr "Expected pause()"
 
 #: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Expired"
 msgstr ""
@@ -1973,7 +1991,6 @@ msgstr ""
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/pages/Cook/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Hash"
@@ -1990,6 +2007,10 @@ msgstr ""
 #: src/components/Record/HideOuterSymbols.tsx
 msgid "Hide other"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
+msgid "Hide other symbols"
+msgstr "Hide other symbols"
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "High-Risk Asset Warning"
@@ -2640,14 +2661,6 @@ msgstr ""
 msgid "M"
 msgstr ""
 
-#: src/components/Dialog/TPSLDialog.tsx
-msgid "m{baseSymbol}.{quoteSymbol} Base Vault"
-msgstr ""
-
-#: src/components/Dialog/TPSLDialog.tsx
-msgid "m{quoteSymbol}.{baseSymbol} Stable Vault"
-msgstr ""
-
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Main-chart Indicators"
 msgstr ""
@@ -2750,16 +2763,21 @@ msgstr ""
 msgid "market is created"
 msgstr "Market already exist"
 
+#. placeholder {0}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenViewLaunchStatus() }} > [ <Trans>View Status</Trans> → ] </button> )
 #. placeholder {0}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. {0}"
 msgstr ""
 
+#. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(poolInfoTvl?.totalTvl || '0') .toString(), { showUnit: false }, )
 #. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(tvl?.totalTvl || '0') .toString(), { showUnit: false }, )
 #. placeholder {1}: formatNumberPercent(genesisFeeRate, 0, false)
+#. placeholder {2}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenViewLaunchStatus() }} > [ <Trans>View Status</Trans> → ] </button> )
 #. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! {2}"
 msgstr ""
@@ -2770,8 +2788,10 @@ msgstr ""
 
 #. placeholder {0}: formatNumber(market?.boostRefundFeeUsd, { showUnit: false })
 #. placeholder {1}: pool?.quoteSymbol
+#. placeholder {2}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenClaimRefund() }} > [ <Trans>Claim Refund Now</Trans> ↗ ] </button> )
 #. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setClaimRefundOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>Claim Refund Now</Trans> ↗ ] </button> )
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Market Opening Failed! You have {0} {1} funds pending.👉 {2}"
 msgstr ""
@@ -2824,6 +2844,7 @@ msgstr ""
 #: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
 #: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
 #: src/components/Trade/TradePanel/OrderForm/MarginAmount/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Max"
@@ -3032,7 +3053,6 @@ msgstr ""
 #: src/components/Empty.tsx
 #: src/components/GlobalContractSearch/SearchList/NotFound.tsx
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "No results found"
 msgstr ""
 
@@ -3219,6 +3239,13 @@ msgstr ""
 #: src/pages/Referrals/components/RewardsCard/index.tsx
 msgid "One Invitation for Multiple Rewards"
 msgstr ""
+
+#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
+#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
+#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
+msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
+msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
 
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
@@ -3580,6 +3607,10 @@ msgstr ""
 msgid "Pool"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "Pool not found"
+msgstr "Pool not found"
+
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pool reprime"
 msgstr ""
@@ -3777,7 +3808,6 @@ msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Rate"
 msgstr ""
 
@@ -3848,7 +3878,6 @@ msgstr ""
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Redeem"
 msgstr ""
 
@@ -4144,6 +4173,7 @@ msgid "Search History"
 msgstr ""
 
 #: src/components/Dialog/DialogTokenSelect.tsx
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "Search name or paste address"
 msgstr ""
 
@@ -4167,6 +4197,7 @@ msgid "Security scans indicate that this token has critical security risks (e.g.
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Security Warning:"
 msgstr ""
@@ -4213,6 +4244,7 @@ msgstr ""
 msgid "Select token"
 msgstr ""
 
+#: src/components/FavoritesDefault/index.tsx
 #: src/pages/MarketList/components/List/SelectFavoritesToken.tsx
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "Select Token"
@@ -4379,6 +4411,7 @@ msgstr "Price slippage exceeded (uint256,uint256)"
 
 #. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
 msgstr ""
@@ -4394,6 +4427,11 @@ msgstr ""
 #: src/404.tsx
 msgid "Sorry, the page you are trying to access does not exist"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "Stable Vault"
+msgstr "Stable Vault"
 
 #: src/store/transactions/options.ts
 msgid "Staking"
@@ -4418,10 +4456,6 @@ msgstr "Price is stale()"
 msgid "Statistics"
 msgstr ""
 
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-msgid "Status"
-msgstr ""
-
 #: src/pages/Market/components/steps.tsx
 msgid "Step 1"
 msgstr ""
@@ -4429,6 +4463,14 @@ msgstr ""
 #: src/pages/Market/components/steps.tsx
 msgid "Step 2"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
+msgid "Step1"
+msgstr "Step1"
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+msgid "Step2"
+msgstr "Step2"
 
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
@@ -4447,7 +4489,6 @@ msgstr ""
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 msgid "Subscribe"
 msgstr ""
 
@@ -4469,14 +4510,18 @@ msgstr ""
 
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 msgid "Successfully canceled the order."
 msgstr ""
+
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "Successfully deposit"
+msgstr "Successfully deposit"
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Successfully redeem"
 msgstr ""
@@ -4518,6 +4563,7 @@ msgstr ""
 #. placeholder {1}: baseLpDetail.mBaseQuoteSymbol
 #. placeholder {1}: quoteLpDetail.mQuoteBaseSymbol
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
 msgstr ""
@@ -4601,6 +4647,7 @@ msgid "This is typically due to:"
 msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
 msgstr ""
@@ -4614,8 +4661,13 @@ msgstr ""
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
 msgstr ""
 
+#. placeholder {0}: formatNumber(burned, { showUnit: false })
+#. placeholder {1}: lpSymbol || '--'
+#: src/pages/Cook/detail-v2/components/CookRedeemGenesisBurnTip.tsx
+msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
+msgstr "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
+
 #: src/pages/Cook/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
@@ -4648,6 +4700,10 @@ msgstr ""
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
+msgid "Token"
+msgstr "Token"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Token age(min)"
@@ -4876,7 +4932,6 @@ msgid "Trigger price must be between Liquidation and Auto-TP prices."
 msgstr ""
 
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 msgid "Trigger Rate"
 msgstr ""
 
@@ -4905,8 +4960,6 @@ msgstr ""
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Type"
@@ -4918,7 +4971,6 @@ msgid "Unclaimed"
 msgstr ""
 
 #: src/pages/Earn/detail/components/MyHoldings.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "Unclaimed Fees"
 msgstr ""
 
@@ -4970,7 +5022,6 @@ msgstr ""
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Earn/detail/components/MyHoldings.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "Unrealized PnL"
 msgstr ""
 
@@ -5080,10 +5131,6 @@ msgstr ""
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/MyHoldings.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 #: src/pages/Earn/List.tsx
 msgid "Vault"
 msgstr ""
@@ -5119,6 +5166,8 @@ msgstr ""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/components/CookDetail/Order/OrderTips/index.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
+#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "View Status"
@@ -5205,6 +5254,7 @@ msgid "What is the {0} Vault?"
 msgstr ""
 
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "When checked, the system will only redeem your regular LP shares."
 msgstr ""
@@ -5312,6 +5362,10 @@ msgstr ""
 msgid "ZeroQueries()"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "也可以支付"
+msgstr "也可以支付"
+
 #: src/pages/Price/components/Tabs.tsx
 msgid "交易参数"
 msgstr "Trading Parameters"
@@ -5357,11 +5411,16 @@ msgstr "Shared Margin"
 msgid "仓位已平仓"
 msgstr "Position Closed"
 
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+msgid "余额"
+msgstr "余额"
+
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
 msgstr "Save Failed"
 
 #: src/components/CookDetail/Order/Sell.tsx
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "保留创世LP份额"
 msgstr "Retain Genesis LP Share"
 
@@ -5382,6 +5441,7 @@ msgstr "Margin Account balance available to transfer to Wallet"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "修改"
 msgstr "Edit"
 
@@ -5401,6 +5461,11 @@ msgstr "Cancel All"
 #: src/pages/Earn/components/VaultTabs.tsx
 msgid "全部理财"
 msgstr "ALL"
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
+msgid "关闭"
+msgstr "关闭"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5436,6 +5501,14 @@ msgstr "Transfer to Margin"
 msgid "划转至钱包"
 msgstr "Transfer to Wallet"
 
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
+msgid "创世 LP 可额外获得平台手续费分成。"
+msgstr "创世 LP 可额外获得平台手续费分成。"
+
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
+msgid "创世收益"
+msgstr "创世收益"
+
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
@@ -5448,6 +5521,10 @@ msgstr "Increase Position"
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
 msgstr "Loading..."
+
+#: src/pages/Cook/detail-v2/components/ProgressSection.tsx
+msgid "募集进度"
+msgstr "募集进度"
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5495,8 +5572,6 @@ msgid "哈希"
 msgstr "Hash"
 
 #: src/components/Dialog/TPSLDialog.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 msgid "回撤保护"
 msgstr "Drawdown Protection"
 
@@ -5507,7 +5582,6 @@ msgstr "Drawdown Protection({quoteSymbol})"
 
 #: src/components/Dialog/TPSLDialog.tsx
 #: src/pages/Earn/components/Trade/TPSL.tsx
-#: src/pages/Earn/detail/components/temp/MyHoldingTable.tsx
 msgid "回撤保护/自动赎回"
 msgstr "Drawdown Protection / Auto-Redeem"
 
@@ -5531,6 +5605,10 @@ msgstr "Order Price"
 msgid "委托数量"
 msgstr "Order Amount"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "存入"
+msgstr "存入"
+
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "完全平仓"
 msgstr "Closed"
@@ -5543,6 +5621,10 @@ msgstr "Fully Loaded"
 #: src/components/Record/Items/OrderHistory.tsx
 msgid "已成交数量/委托数量({0})"
 msgstr "Filled / Order ({0})"
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+msgid "已选择token"
+msgstr "已选择token"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "市价"
@@ -5689,6 +5771,10 @@ msgstr "Sort by PnL"
 msgid "授权"
 msgstr "Authorize"
 
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "提前启动市场。"
+msgstr "提前启动市场。"
+
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "提前平仓"
@@ -5701,6 +5787,10 @@ msgstr "Withdraw Margin"
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "搜索结果"
 msgstr "Search Results"
+
+#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
+msgid "支付"
+msgstr "支付"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5822,6 +5912,11 @@ msgstr "Slippage"
 msgid "滑点超限"
 msgstr "Slippage Exceeded"
 
+#: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "激活"
+msgstr "激活"
+
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
 msgstr "Liquidation"
@@ -5847,6 +5942,18 @@ msgstr "Confirm"
 msgid "确认"
 msgstr "Confirm"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "确认存入"
+msgstr "确认存入"
+
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "确认激活"
+msgstr "确认激活"
+
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "确认赎回"
+msgstr "确认赎回"
+
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "Create my contract trading market now"
@@ -5860,8 +5967,6 @@ msgid "继续添加"
 msgstr "Add More"
 
 #: src/components/Dialog/TPSLDialog.tsx
-#: src/pages/Earn/detail/components/temp/HistoryOrders.tsx
-#: src/pages/Earn/detail/components/temp/OpenOrders.tsx
 msgid "自动赎回"
 msgstr "Auto-Redeem"
 
@@ -5906,6 +6011,10 @@ msgstr "Order Submitted"
 msgid "订单数量超限"
 msgstr "Order Size Limit Exceeded"
 
+#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
+msgid "订单记录"
+msgstr "订单记录"
+
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
 msgstr "Margin Adjusted Successfully"
@@ -5914,6 +6023,23 @@ msgstr "Margin Adjusted Successfully"
 msgid "购买MLP"
 msgstr "Buy MLP"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "赎回"
+msgstr "赎回"
+
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "达到启动阈值，可快速达成募集并开盘。"
+msgstr "达到启动阈值，可快速达成募集并开盘。"
+
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "还差"
+msgstr "还差"
+
+#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
+msgid "选择Token"
+msgstr "选择Token"
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择合约计价资产"
 msgstr "Select Contract Quote Asset"
@@ -5925,6 +6051,10 @@ msgstr "Select Token"
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择您的资产"
 msgstr "Select Your Assets"
+
+#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
+msgid "选择计价单位"
+msgstr "选择计价单位"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择链接"
@@ -5996,4 +6126,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-
