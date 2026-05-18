@@ -134,7 +134,7 @@ export class MyxClient {
    */
   /** Auth with signer (ethers v5/v6 or ISigner) and/or walletClient (viem). Use walletClient when app uses viem to avoid ethers in bundle. */
   public auth(
-    params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">
+    params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken" | "getWalletClient">
   ) {
     this.configManager.auth(params);
     // Re-register after auth so that the most recently-authed instance is always active.
