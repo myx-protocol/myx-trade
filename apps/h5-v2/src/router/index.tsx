@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Market from '@/pages/Market'
 import Cook from '@/pages/Cook'
 import { CookDetail } from '@/pages/Cook/detail/index'
+import { TrenchDetail } from '@/pages/Trench/detail/index'
 import EarnList from '@/pages/Earn/List.tsx'
 import EarnDetail from '@/pages/Earn/detail/index'
 import { Home } from '@/pages/Home'
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: 'cook/:chainId/:poolId',
         element: <CookDetail />,
+      },
+      {
+        path: 'trench/:chainId/:poolId',
+        element: <TrenchDetail />,
       },
       {
         path: 'earn',
