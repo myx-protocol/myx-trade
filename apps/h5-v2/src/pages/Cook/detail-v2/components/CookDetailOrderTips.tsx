@@ -116,7 +116,7 @@ export const CookDetailOrderTips = ({
 
       {showCookLifecycleTips && baseLpDetail && (
         <>
-          {pool &&
+          {/* {pool &&
             isCookState(baseLpDetail.state) &&
             riskLevelConfig?.baseState !== PoolBaseState.PRIME_FAIL &&
             Number(genesis) >= 0 &&
@@ -138,7 +138,7 @@ export const CookDetailOrderTips = ({
                   fee share!
                 </Trans>
               </Info>
-            )}
+            )} */}
 
           {pool &&
             isCookState(baseLpDetail.state) &&

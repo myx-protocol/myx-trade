@@ -85,6 +85,8 @@ export const CookDetail = () => {
   const [amount, setAmount] = useState('')
   const [selectedRatio, setSelectedRatio] = useState<string>('25%')
   const [submitLoading, setSubmitLoading] = useState(false)
+  /** 快速启动链上已付、boostInfo 尚未同步为 Requested 时的过渡态 */
+  const [isOnBoostSuccess, setIsOnBoostSuccess] = useState(false)
   const [tokenSelectDialogOpen, setTokenSelectDialogOpen] = useState(false)
   const [quoteSelectDialogOpen, setQuoteSelectDialogOpen] = useState(false)
   const [draftBaseToken, setDraftBaseToken] = useState<CookTokenItem | null>(null)
@@ -151,6 +153,16 @@ export const CookDetail = () => {
     prevRoutePoolKeyRef.current = routeKey
     setAmount('')
     setSelectedRatio('25%')
+  }, [chainId, poolId])
+
+  useEffect(() => {
+    if (isBoostActivationRequested) {
+      setIsOnBoostSuccess(false)
+    }
+  }, [isBoostActivationRequested])
+
+  useEffect(() => {
+    setIsOnBoostSuccess(false)
   }, [chainId, poolId])
 
   const { data: balance = '' as string, refetch: refetchBalance } = useQuery({
@@ -226,8 +238,18 @@ export const CookDetail = () => {
 
   const displayBalance = isSafeNumber(balance) ? Number(balance) : 0
 
-  const progressCurrent = totalTvl
-  const progressTotal = marketPrimeThreshold || boostedPrimeTvl
+  /** 与 CookDetailOrderTips 一致：快速启动费已付后，进度以 base 池 TVL → boostedPrimeTvl 为准 */
+  const baseBoostedPrimeTvl = Number(basePoolDetail.boostedPrimeTvl || 0)
+  const basePoolTotalTvl = Number(
+    basePoolDetail.poolInfo?.tvl?.totalTvl ||
+      basePoolDetail.lpDetail?.totalTvl ||
+      basePoolDetail.lpDetail?.tvl ||
+      0,
+  )
+  const progressCurrent = isBoostActivationRequested ? basePoolTotalTvl : totalTvl
+  const progressTotal = isBoostActivationRequested
+    ? baseBoostedPrimeTvl
+    : marketPrimeThreshold || boostedPrimeTvl
   const progressPercent = calcProgressPercent(progressCurrent, progressTotal)
   const progressDisplayCurrent = Math.min(progressCurrent, progressTotal || progressCurrent)
 
@@ -253,9 +275,15 @@ export const CookDetail = () => {
     return ratio
   }
 
+  /** 快速启动费已付（含链上已付待同步、boostInfo 已为 Requested） */
+  const isQuickActivateFeePaid = isOnBoostSuccess || isBoostActivationRequested
+
   const confirmButtonText = useMemo(() => {
+    if (isActivate && isQuickActivateFeePaid) {
+      return t`等待市场开启`
+    }
     return getActionButtonLabel(activeAction)
-  }, [activeAction])
+  }, [activeAction, isActivate, isQuickActivateFeePaid])
 
   const numericAmount = Number(amount || 0)
   const isAmountInvalid = !numericAmount || numericAmount > displayBalance
@@ -279,7 +307,9 @@ export const CookDetail = () => {
     currentPool?.baseSymbol && currentPool.quoteSymbol
       ? `${currentPool.baseSymbol}${currentPool.quoteSymbol}`
       : '--'
-  const displayAddress = currentPool?.baseToken || ''
+  const displayAddress = isQuoteSideVault
+    ? currentPool?.quoteToken || ''
+    : currentPool?.baseToken || ''
   const displayBaseTokenName = currentLpDetail?.symbolName || '--'
 
   const displayTradeTokenSymbol = isActivate
@@ -304,13 +334,16 @@ export const CookDetail = () => {
   const canOpenQuickActivate =
     isCookState(baseLpState as number) &&
     !isBoostActivationRequested &&
+    !isOnBoostSuccess &&
     progressTotal > 0 &&
     progressCurrent < progressTotal &&
     currentRiskConfig?.securityState !== PoolSecurityState.UNKNOWN &&
     currentRiskConfig?.securityState !== PoolSecurityState.NOT_SECURITY
   /** 不允许快速启动时整颗隐藏，与 Trench 侧仅在有资格时出现入口一致 */
   const canShowQuickActivateEntry = isDeposit && canOpenQuickActivate
-  const isSubmitDisabled = isActivate ? !canOpenQuickActivate : isAmountInvalid
+  const isSubmitDisabled = isActivate
+    ? !canOpenQuickActivate || isQuickActivateFeePaid
+    : isAmountInvalid
 
   const refreshAllData = async () => {
     await Promise.all([
@@ -324,6 +357,7 @@ export const CookDetail = () => {
 
   const { boostConfirmBoostOpen, setBoostConfirmBoostOpen, onBoostPool } = useOnBoostPool({
     onSuccess: async () => {
+      setIsOnBoostSuccess(true)
       await refreshAllData()
       await sleep(1200)
       await refreshAllData()
@@ -541,6 +575,8 @@ export const CookDetail = () => {
         <WarningTipsSection
           securityState={currentRiskConfig?.securityState}
           isDeposit={isDeposit}
+          isBoostActivationRequested={isBoostActivationRequested}
+          isOnBoostSuccess={isOnBoostSuccess}
           progressTotal={progressTotal}
           progressCurrent={progressCurrent}
           progressRemainingDisplay={formatNumber(Math.max(progressTotal - progressCurrent, 0), {
@@ -548,6 +584,10 @@ export const CookDetail = () => {
           })}
           boostFeeDisplay={formatNumber(boostFeeUsd, { showUnit: false })}
           boostFeeUsd={boostFeeUsd}
+          onOpenQuickActivateDialog={() => {
+            if (!canOpenQuickActivate) return
+            setBoostConfirmBoostOpen(true)
+          }}
         />
 
         <CookDetailOrderTips
