@@ -1,6 +1,4 @@
-import {ErrorType, ErrorDecoder} from 'ethers-decode-error'
 import {customErrorMapping} from './customErrorMap.js'
-const errorDecoder = ErrorDecoder.create();
 
 
 export enum ErrorCode {
@@ -56,6 +54,52 @@ export function isUserRejected(error: any): boolean {
   return false
 }
 
+/**
+ * Try to extract a 4-byte custom error selector from a hex string
+ * and look it up in customErrorMapping.
+ * Returns the mapped error name or null if not found.
+ */
+function tryDecodeCustomError(hexData: string): string | null {
+  if (!hexData || typeof hexData !== 'string') return null
+  // Match a 0x-prefixed hex string that is at least 10 chars (0x + 8 hex = 4-byte selector)
+  const match = hexData.match(/(0x[0-9a-fA-F]{8,})/)
+  if (!match) return null
+  const selector = match[1].slice(0, 10).toLowerCase()
+  const errorKey = Object.keys(customErrorMapping).find(
+    (k) => k.toLowerCase() === selector
+  )
+  return errorKey ? customErrorMapping[errorKey] : null
+}
+
+/**
+ * Recursively search an error and all its causes for raw hex error data,
+ * checking: err.data, err.details, err.message, err.shortMessage
+ */
+function tryDecodeCustomErrorFromError(err: any): string | null {
+  let current = err
+  while (current) {
+    // 1. err.data (string hex or object with hex)
+    if (typeof current.data === 'string') {
+      const decoded = tryDecodeCustomError(current.data)
+      if (decoded) return decoded
+    }
+    // 2. err.details (viem v2.48+ puts raw hex here)
+    if (typeof current.details === 'string') {
+      const decoded = tryDecodeCustomError(current.details)
+      if (decoded) return decoded
+    }
+    // 3. err.message / err.shortMessage may contain embedded hex
+    for (const field of ['message', 'shortMessage'] as const) {
+      if (typeof current[field] === 'string') {
+        const decoded = tryDecodeCustomError(current[field])
+        if (decoded) return decoded
+      }
+    }
+    current = current.cause
+  }
+  return null
+}
+
 function extractMessage(err: any): string {
   if (!err) return 'Unknown error'
   
@@ -74,22 +118,28 @@ function extractMessage(err: any): string {
     }
   }
   
-  // 2️⃣ 递归 cause
+  // 🔥 2️⃣ 从 details / data / message 中提取 hex selector 并查 customErrorMapping
+  const customError = tryDecodeCustomErrorFromError(err)
+  if (customError) {
+    return customError
+  }
+  
+  // 3️⃣ 递归 cause
   if (err?.cause) {
     return extractMessage(err.cause)
   }
   
-  // 3️⃣ reason（部分 RPC）
+  // 4️⃣ reason（部分 RPC）
   if (err?.reason) {
     return err.reason
   }
   
-  // 4️⃣ shortMessage（兜底）
+  // 5️⃣ shortMessage（兜底）
   if (err?.shortMessage) {
     return err.shortMessage
   }
   
-  // 5️⃣ message（最后兜底）
+  // 6️⃣ message（最后兜底）
   if (err?.message) {
     return err.message
   }
