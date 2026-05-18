@@ -162,8 +162,8 @@ export const useMyxSdkClient = (chainId?: number) => {
 const brokerAddressMap: Record<number, string> = {
   [ChainId.ARB_TESTNET]: isBetaMode()
     ? '0x4A3054177DBdC01BfcA007FB45d9A9803eBc2eA4'
-    : '0x5126E4585c96837Afd833F838F76966768A6807F',
-  [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0xDfD7CcaAd4000E82604261839f5c05D44B37121b',
+    : '0x31e65de738482Dc2740eBE601a0e28A9d81De2a8',
+  [ChainId.LINEA_SEPOLIA]: isBetaMode() ? '' : '0xCf60b036DeDCE08441DfAF211E12fC45AdBDd929',
   [ChainId.BSC_TESTNET]: isBetaMode() ? '0x144E5067E690635b2cbeE10D96f431D143739f48' : '',
   [ChainId.BSC_MAINNET]: '0x83C6F0BEDebF759fDB4Be8096dF558c1EE544999',
 }

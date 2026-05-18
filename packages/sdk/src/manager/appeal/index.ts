@@ -35,19 +35,38 @@ export class Appeal extends BaseMyxClient {
   }
 
   private getDisputeCourtContract(auth: boolean = true) {
-    return getDisputeCourtContract(this.config.chainId, auth ? ProviderType.Signer : ProviderType.JSON);
+    return getDisputeCourtContract(
+      this.config.chainId,
+      auth ? ProviderType.Signer : ProviderType.JSON,
+    );
   }
 
   private getReimbursementContract(auth: boolean = true) {
-    return getReimbursementContract(this.config.chainId, auth ? ProviderType.Signer : ProviderType.JSON);
+    return getReimbursementContract(
+      this.config.chainId,
+      auth ? ProviderType.Signer : ProviderType.JSON,
+    );
   }
 
-  private getCaseIdFromReceiptLogs(receipt: { logs: { address: Address; topics: unknown[]; data: `0x${string}` }[] }, eventName: "DisputeFiled" | "AppealFiled") {
+  private getCaseIdFromReceiptLogs(
+    receipt: {
+      logs: { address: Address; topics: unknown[]; data: `0x${string}` }[];
+    },
+    eventName: "DisputeFiled" | "AppealFiled",
+  ) {
     const key = eventName === "DisputeFiled" ? "caseId" : "appealCaseId";
     for (const log of receipt.logs) {
       try {
-        const decoded = decodeEventLog({ abi: DisputeCourt_ABI as any, data: log.data, topics: log.topics as [`0x${string}`, ...`0x${string}`[]] }) as { eventName: string; args?: Record<string, bigint> };
-        if (decoded.eventName === eventName && decoded.args && key in decoded.args) {
+        const decoded = decodeEventLog({
+          abi: DisputeCourt_ABI as any,
+          data: log.data,
+          topics: log.topics as [`0x${string}`, ...`0x${string}`[]],
+        }) as { eventName: string; args?: Record<string, bigint> };
+        if (
+          decoded.eventName === eventName &&
+          decoded.args &&
+          key in decoded.args
+        ) {
           return decoded.args[key];
         }
       } catch {
@@ -65,13 +84,15 @@ export class Appeal extends BaseMyxClient {
    */
   async submitAppeal(poolId: string, lpToken: Address, lpAmount: string) {
     // lp approve check
-    const account = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(this.config.chainId) : "";
+    const account = this.configManager.hasSigner()
+      ? await this.configManager.getSignerAddress(this.config.chainId)
+      : "";
     const needApprove = await this.client.utils.needsApproval(
       account,
       this.config.chainId,
       lpToken,
       lpAmount,
-      this.getAddressConfig().DISPUTE_COURT
+      this.getAddressConfig().DISPUTE_COURT,
     );
     this.client.logger.debug("need-approve", needApprove);
     if (needApprove) {
@@ -84,23 +105,34 @@ export class Appeal extends BaseMyxClient {
     const contract = await this.getDisputeCourtContract();
     const prices = await this.client.utils.buildUpdatePriceParams(
       poolId,
-      this.config.chainId
+      this.config.chainId,
     );
 
     const value = BigInt(prices[0].value.toString() || "1");
 
-    const _gasLimit = await contract.estimateGas!.fileDispute([prices, poolId as `0x${string}`, lpToken], { value });
+    const _gasLimit = await contract.estimateGas!.fileDispute(
+      [prices, poolId as `0x${string}`, lpToken],
+      { value },
+    );
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await contract.write!.fileDispute([prices, poolId as `0x${string}`, lpToken], {
-      value,
-      gasLimit,
-      gasPrice,
-    });
-    const receipt = await getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const hash = await contract.write!.fileDispute(
+      [prices, poolId as `0x${string}`, lpToken],
+      {
+        value,
+        gasLimit,
+        gasPrice,
+      },
+    );
+    const receipt = await getPublicClient(
+      this.config.chainId,
+    ).waitForTransactionReceipt({ hash });
     const caseId = this.getCaseIdFromReceiptLogs(receipt, "DisputeFiled");
     if (caseId == null) {
-      throw new MyxSDKError(MyxErrorCode.TransactionFailed, "DisputeFiledLog not found");
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "DisputeFiledLog not found",
+      );
     }
     return { transaction: receipt, caseId };
   }
@@ -121,11 +153,24 @@ export class Appeal extends BaseMyxClient {
     s,
   }: AppealVoteParams) {
     const contract = await this.getDisputeCourtContract();
-    const _gasLimit = await contract.estimateGas!.vote([caseId, validator, isFor ? 1 : 0, deadline, v, r, s]);
+    const _gasLimit = await contract.estimateGas!.vote([
+      caseId,
+      validator,
+      isFor ? 1 : 0,
+      deadline,
+      v,
+      r,
+      s,
+    ]);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await contract.write!.vote([caseId, validator, isFor ? 1 : 0, deadline, v, r, s], { gasLimit, gasPrice });
-    const receipt = await getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const hash = await contract.write!.vote(
+      [caseId, validator, isFor ? 1 : 0, deadline, v, r, s],
+      { gasLimit, gasPrice },
+    );
+    const receipt = await getPublicClient(
+      this.config.chainId,
+    ).waitForTransactionReceipt({ hash });
     return receipt;
   }
 
@@ -139,8 +184,13 @@ export class Appeal extends BaseMyxClient {
     const _gasLimit = await contract.estimateGas!.claimBond([caseId]);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await contract.write!.claimBond([caseId], { gasLimit, gasPrice });
-    return getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const hash = await contract.write!.claimBond([caseId], {
+      gasLimit,
+      gasPrice,
+    });
+    return getPublicClient(this.config.chainId).waitForTransactionReceipt({
+      hash,
+    });
   }
 
   /**
@@ -155,14 +205,24 @@ export class Appeal extends BaseMyxClient {
     caseId: number,
     baseAmount: string,
     quoteAmount: string,
-    merkleProof: `0x${string}`[]
+    merkleProof: `0x${string}`[],
   ) {
     const contract = await this.getReimbursementContract();
-    const _gasLimit = await contract.estimateGas!.claimReimbursement([caseId, baseAmount, quoteAmount, merkleProof]);
+    const _gasLimit = await contract.estimateGas!.claimReimbursement([
+      caseId,
+      baseAmount,
+      quoteAmount,
+      merkleProof,
+    ]);
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await contract.write!.claimReimbursement([caseId, baseAmount, quoteAmount, merkleProof], { gasLimit, gasPrice });
-    return getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const hash = await contract.write!.claimReimbursement(
+      [caseId, baseAmount, quoteAmount, merkleProof],
+      { gasLimit, gasPrice },
+    );
+    return getPublicClient(this.config.chainId).waitForTransactionReceipt({
+      hash,
+    });
   }
 
   /**
@@ -174,34 +234,49 @@ export class Appeal extends BaseMyxClient {
   }
 
   /**
-   * 
+   *
    * vote node for submit appeal
    */
-  async submitAppealByVoteNode(poolId: string, response: string, guardianSignatures: GuardianSignatureItem[]) {
+  async submitAppealByVoteNode(poolId: string) {
     const contract = await this.getDisputeCourtContract();
     const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const gasLimit = await this.client.utils.getGasLimitByRatio(await contract.estimateGas!.fileDisputeFromStaker([poolId as `0x${string}`, response, guardianSignatures]));
-    const hash = await contract.write!.fileDisputeFromStaker([poolId as `0x${string}`, response, guardianSignatures], { gasLimit, gasPrice });
-    const receipt = await getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const gasLimit = await this.client.utils.getGasLimitByRatio(
+      await contract.estimateGas!.fileDisputeFromStaker([
+        poolId as `0x${string}`,
+      ]),
+    );
+    const hash = await contract.write!.fileDisputeFromStaker(
+      [poolId as `0x${string}`],
+      { gasLimit, gasPrice },
+    );
+    const receipt = await getPublicClient(
+      this.config.chainId,
+    ).waitForTransactionReceipt({ hash });
     const caseId = this.getCaseIdFromReceiptLogs(receipt, "DisputeFiled");
-    if (caseId == null) throw new MyxSDKError(MyxErrorCode.TransactionFailed, "DisputeFiledLog not found");
+    if (caseId == null)
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "DisputeFiledLog not found",
+      );
     return { tx: receipt, caseId };
   }
 
   async appealReconsideration(
     caseId: number,
     appealToken: Address,
-    appealAmount: string
+    appealAmount: string,
   ) {
     const contract = await this.getDisputeCourtContract();
-    const account = this.configManager.hasSigner() ? await this.configManager.getSignerAddress(this.config.chainId) : "";
+    const account = this.configManager.hasSigner()
+      ? await this.configManager.getSignerAddress(this.config.chainId)
+      : "";
     const spenderAddress = this.getAddressConfig().DISPUTE_COURT;
     const isNeedApprove = await this.client.utils.needsApproval(
       account,
       this.config.chainId,
       appealToken,
       appealAmount,
-      spenderAddress
+      spenderAddress,
     );
     if (isNeedApprove) {
       const res = await this.client.utils.approveAuthorization({
@@ -217,9 +292,15 @@ export class Appeal extends BaseMyxClient {
     const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
     const gasPrice = await this.client.utils.getGasPriceByRatio();
     const hash = await contract.write!.appeal([caseId], { gasLimit, gasPrice });
-    const receipt = await getPublicClient(this.config.chainId).waitForTransactionReceipt({ hash });
+    const receipt = await getPublicClient(
+      this.config.chainId,
+    ).waitForTransactionReceipt({ hash });
     const appealCaseId = this.getCaseIdFromReceiptLogs(receipt, "AppealFiled");
-    if (appealCaseId == null) throw new MyxSDKError(MyxErrorCode.TransactionFailed, "AppealFiledLog not found");
+    if (appealCaseId == null)
+      throw new MyxSDKError(
+        MyxErrorCode.TransactionFailed,
+        "AppealFiledLog not found",
+      );
     return { tx: receipt, appealCaseId, caseId };
   }
 
@@ -240,13 +321,13 @@ export class Appeal extends BaseMyxClient {
   }
 
   async getAppealReconsiderationList(
-    params: GetAppealReconsiderationListParams
+    params: GetAppealReconsiderationListParams,
   ) {
     return this.client.api.getAppealReconsiderationList(params);
   }
 
   async getAppealReconsiderationDetail(
-    params: GetAppealReconsiderationDetailParams
+    params: GetAppealReconsiderationDetailParams,
   ) {
     return this.client.api.getAppealReconsiderationDetail(params);
   }
@@ -280,7 +361,7 @@ export class Appeal extends BaseMyxClient {
   }
 
   async getWarmholeSign(params: GetWarmholeSignParams) {
-    return this.client.api.getWarmholeSign(params)
+    return this.client.api.getWarmholeSign(params);
   }
   async getDisputeTotalCount() {
     return this.client.api.getDisputeTotalCount();
@@ -292,6 +373,11 @@ export class Appeal extends BaseMyxClient {
     return this.client.api.getReimbursementTotalCount();
   }
   async getAppealStatus(poolId: string, chainId: number, address: string) {
-    return this.client.api.getPoolAppealStatus({ poolId, chainId, address, accessToken: await this.configManager.getAccessToken() ?? '' });
+    return this.client.api.getPoolAppealStatus({
+      poolId,
+      chainId,
+      address,
+      accessToken: (await this.configManager.getAccessToken()) ?? "",
+    });
   }
 }

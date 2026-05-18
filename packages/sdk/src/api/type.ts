@@ -1,4 +1,9 @@
-import { Direction, OperationType, OrderType, TimeInForce } from "@/types/trading.js";
+import {
+  Direction,
+  OperationType,
+  OrderType,
+  TimeInForce,
+} from "@/types/trading.js";
 import { PoolType, TriggerType } from "@/lp/pool/index.js";
 import { ChainId } from "@/config/chain.js";
 export interface ObjectType<T> {
@@ -56,12 +61,12 @@ export interface AccessTokenResponse extends BaseResponse {
 }
 
 export enum MarketPoolState {
-  Cook = 0,     // Market created
-  Boosted = 1,  // Market is being force-enabled. Waiting for TVL threshold…
-  Primed = 2,   // Fee charged, waiting for oracle initialization
-  Trench = 3,   // Trading enabled
+  Cook = 0, // Market created
+  Boosted = 1, // Market is being force-enabled. Waiting for TVL threshold…
+  Primed = 2, // Fee charged, waiting for oracle initialization
+  Trench = 3, // Trading enabled
   PreBench = 4, // Pending delisting
-  Bench = 5,    // Delisted
+  Bench = 5, // Delisted
 }
 
 export type MarketPool = {
@@ -133,7 +138,7 @@ export interface PositionType {
   tokenId: string | null;
   freeAmount: string;
   lockedAmount: string;
-  id: number
+  id: number;
 }
 
 export interface PositionResponse extends BaseResponse {
@@ -169,7 +174,7 @@ export interface OrderItem {
   txTime: number;
   user: string;
   useLeverage: number;
-  id: number
+  id: number;
 }
 
 export interface OrderResponse extends BaseResponse {
@@ -199,7 +204,7 @@ export interface AccessTokenRequest {
 }
 
 export interface HttpEnvParams {
-  isProd?: boolean
+  isProd?: boolean;
 }
 
 export enum HttpKlineIntervalEnum {
@@ -263,6 +268,11 @@ export interface ChainIdRequest {
 export type FavoritesType = -1 | 1;
 
 export interface SearchResultContractItem {
+  holders: number;
+  id: number;
+  quoteToken: Address;
+  state: MarketPoolState;
+  traders: number;
   chainId: ChainId;
   poolId: string;
   baseQuoteSymbol: string;
@@ -284,6 +294,9 @@ export interface SearchResultContractItem {
 }
 
 export interface SearchResultCookItem {
+  baseSymbol: string;
+  quoteSymbol: string;
+  quoteToken: Address;
   chainId: ChainId;
   poolId: string;
   mBaseQuoteSymbol: string;
@@ -300,6 +313,9 @@ export interface SearchResultCookItem {
 }
 
 export interface SearchResultEarnItem {
+  baseSymbol: string;
+  quoteSymbol: string;
+  quoteToken: Address;
   chainId: ChainId;
   poolId: string;
   mQuoteBaseSymbol: string;
@@ -315,6 +331,16 @@ export interface SearchResultEarnItem {
   globalId: number;
 }
 
+export interface FavoritesDefaultItem {
+  baseQuoteSymbol: string;
+  baseToken: Address;
+  chainId: number;
+  favorites: FavoritesType;
+  favoritesSort: number;
+  poolId: string;
+  symbol: string;
+}
+
 export interface SearchResultResponse {
   earnInfo: {
     list: SearchResultEarnItem[];
@@ -327,6 +353,7 @@ export interface SearchResultResponse {
   contractInfo: {
     list: SearchResultContractItem[];
     total: number;
+    favorites: FavoritesDefaultItem[];
   };
 }
 
@@ -410,11 +437,11 @@ export interface MarketInfo {
   oracleRefundFeeUsd: number;
   poolPrimeThreshold: number;
   decimals: number;
-  boostFeeUsd: string
-  boostRefundFeeUsd: string
-  executionFee: string
-  forwardFee: string
-  maxExecutionFee: string
-  maxForwardFee: string
-  relateUsd: number
+  boostFeeUsd: string;
+  boostRefundFeeUsd: string;
+  executionFee: string;
+  forwardFee: string;
+  maxExecutionFee: string;
+  maxForwardFee: string;
+  relateUsd: number;
 }

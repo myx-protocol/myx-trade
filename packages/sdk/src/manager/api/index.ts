@@ -47,6 +47,7 @@ import {
 } from "@/api/type";
 import {
   AddFavoriteParams,
+  AddFavoritesBatchParams,
   FavoritesListParams,
   FetchForwarderGetParams,
   FetchForwarderGetResponse,
@@ -279,6 +280,19 @@ export class Api extends Request {
         },
       }
     );
+  }
+
+  async addFavoritesBatch(
+    params: AddFavoritesBatchParams
+  ) {
+    return this.post<ApiResponse<null>>(
+      '/openapi/gateway/scan/market/add-favorites-batch',
+      params,
+      {
+        auth: true
+      }
+
+    )
   }
 
   async removeFavorite({
