@@ -35,6 +35,8 @@ export interface MyxClientConfig {
   //   authorized: boolean;
   // };
   walletClient?: WalletClient;
+  /** Optional getter that returns the latest WalletClient. Use this instead of walletClient to avoid stale client after chain switch. */
+  getWalletClient?: () => WalletClient | undefined;
   brokerAddress: string;
   isTestnet?: boolean;
   isBetaMode?: boolean;
@@ -86,7 +88,7 @@ export class ConfigManager {
 
   /** True if auth was done with signer or walletClient. */
   hasSigner(): boolean {
-    return !!(this.config.walletClient || this.config.signer != null || this._normalizedSigner != null);
+    return !!(this.config.getWalletClient?.() || this.config.walletClient || this.config.signer != null || this._normalizedSigner != null);
   }
 
   /** Returns the signer address for the given chainId. Use when only address is needed. */
@@ -102,6 +104,19 @@ export class ConfigManager {
 
   /** Returns viem WalletClient for the chain (for readContract/writeContract). Use when SDK uses viem. */
   async getViemWalletClient(chainId: number): Promise<WalletClient> {
+    // If a getter is provided, poll until it returns a valid client (handles MetaMask chain-switch gap where walletClient briefly becomes undefined)
+    if (this.config.getWalletClient) {
+      const maxWait = 10000
+      const interval = 200
+      let elapsed = 0
+      while (elapsed < maxWait) {
+        const wc = this.config.getWalletClient()
+        if (wc) return wc as WalletClient
+        await new Promise((r) => setTimeout(r, interval))
+        elapsed += interval
+      }
+      throw new MyxSDKError(MyxErrorCode.InvalidSigner, "WalletClient not available after chain switch")
+    }
     if (this.config.walletClient) return this.config.walletClient as WalletClient;
     if (this._normalizedSigner) return await createWalletClientFromSigner(this._normalizedSigner, chainId);
     throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer: call auth({ signer }) or auth({ walletClient })");
@@ -143,7 +158,7 @@ export class ConfigManager {
     };
   }
 
-  public auth(params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken">) {
+  public auth(params: Pick<MyxClientConfig, "signer" | "walletClient" | "getAccessToken" | "getWalletClient">) {
     // Normalize signer first before clearing, so hasSigner() is never false mid-auth
     const nextNormalizedSigner = params.signer != null ? normalizeSigner(params.signer) : null;
     // Clear only accessToken, keep signer state until new one is ready
