@@ -177,9 +177,14 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   >({})
   const { isWalletConnected, address } = useWalletConnection()
   const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
+  const walletClientRef = useRef(walletClient)
   const myxSdkClientRef = useRef<Map<number, MyxClient>>(new Map())
   const { tradeMode } = useGlobalStore()
   const { activeSeamlessAddress, activeSeamlessWallet } = useSeamlessStore()
+
+  useEffect(() => {
+    walletClientRef.current = walletClient
+  }, [walletClient])
 
   useUpdateEffect(() => {
     if (tradeMode !== TradeMode.Seamless || !activeSeamlessAddress || !activeSeamlessWallet) return
@@ -224,6 +229,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       myxSdkClientRef.current.forEach((_client, chainId) => {
         _client.auth({
           walletClient: result.value,
+          getWalletClient: () => walletClientRef.current ?? undefined,
           getAccessToken: createGetAccessTokenMethod(address),
         })
         authChainIds.push(chainId)

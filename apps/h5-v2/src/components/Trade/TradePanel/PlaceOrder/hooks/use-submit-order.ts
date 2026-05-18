@@ -1,5 +1,5 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTradePanelStore } from '../../store'
 import {
   Direction,
@@ -47,7 +47,7 @@ export const useSubmitOrder = () => {
   const { chainId, address } = useWalletConnection()
   const positionList = useGetPositionList()
   const { symbolInfo } = useGlobalStore()
-  const { client, clientIsAuthenticated } = useMyxSdkClient(symbolInfo?.chainId)
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const { oraclePriceData } = useMarketStore()
   const { setCloseOrderConfirmDialogOpen, setPlaceOrderConfirmDialogOpen } = useGlobalStore()
   const { checkWalletChainId } = useWalletChainCheck()
@@ -55,10 +55,6 @@ export const useSubmitOrder = () => {
   const [longAsyncVipLoading, setLongAsyncVipLoading] = useState(false)
   const [shortAsyncVipLoading, setShortAsyncVipLoading] = useState(false)
   const { tradeMode } = useGlobalStore()
-  const clientIsAuthenticatedRef = useRef(clientIsAuthenticated)
-  useEffect(() => {
-    clientIsAuthenticatedRef.current = clientIsAuthenticated
-  }, [clientIsAuthenticated])
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
   const { poolConfig } = useGetPoolConfig(
     symbolInfo?.poolId as string,
@@ -109,21 +105,6 @@ export const useSubmitOrder = () => {
       }
 
       await checkWalletChainId(symbolInfo.chainId as number)
-
-      // wait for SDK to re-auth after chain switch (MetaMask refreshes walletClient async)
-      if (!clientIsAuthenticatedRef.current) {
-        await new Promise<void>((resolve, reject) => {
-          const maxWait = 15000
-          const start = Date.now()
-          const check = () => {
-            if (clientIsAuthenticatedRef.current) return resolve()
-            if (Date.now() - start > maxWait)
-              return reject(new Error('Wallet auth timeout after chain switch'))
-            setTimeout(check, 300)
-          }
-          check()
-        })
-      }
 
       const position = positionList?.find(
         (position: any) =>
