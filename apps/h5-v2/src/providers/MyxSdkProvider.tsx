@@ -211,10 +211,8 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // 如果 walletClient 为 undefined（比如切换链后），尝试手动重新获取
+    // 不清空 auth，保留 getWalletClient getter，SDK 会轮询等待
     if (!walletClient) {
-      setClientIsAuthenticated({})
-      // 手动触发重新获取 walletClient
-      // 使用 setTimeout 避免在 effect 中直接调用异步函数
       refetchWalletClient().catch((error) => {
         console.error('Failed to refetch walletClient:', error)
       })
