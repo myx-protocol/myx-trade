@@ -129,7 +129,7 @@ export const OpenOrders = ({ showAll, chainId }: { showAll: boolean; chainId?: n
               : list
             ).map((item, index) => (
               <OrderCard
-                key={item?.orderId ?? index}
+                key={`${item?.orderId}-${item?.txHash || index}`}
                 order={item}
                 isLoading={isLoading && !item}
                 onCancel={() => setOrder(item)}
@@ -222,7 +222,7 @@ const OrderCard = ({
             )}
           </span>
           <span className={'text-secondary text-[12px]'}>
-            <Trans>Trigger Rate</Trans>
+            <Trans>Trigger Price</Trans>
           </span>
         </Box>
         <Box className={'flex flex-col items-end gap-[6px]'}>

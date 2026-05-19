@@ -27,6 +27,12 @@ const orderTypeLabel: Record<LpOrderType, ReactNode> = {
   [LpOrderType.SL]: <Trans>SL</Trans>,
 }
 
+const orderTypeColorMap: Record<number, string> = {
+  [LpOrderType.Buy]: 'text-[#00E3A5]',
+  [LpOrderType.Sell]: 'text-[#FF5C5C]',
+  [LpOrderType.TP]: 'text-[#00E3A5]',
+  [LpOrderType.SL]: 'text-[#FF5C5C]',
+}
 const orderStatusLabel: Record<LpOrderStatus, ReactNode> = {
   [LpOrderStatus.Cancel]: <Trans>Cancelled</Trans>,
   [LpOrderStatus.Expired]: <Trans>Expired</Trans>,
@@ -110,7 +116,7 @@ export const HistoryOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll
             : list
           ).map((item, index) => (
             <HistoryOrderCard
-              key={item?.orderId ?? index}
+              key={`${item?.orderId}-${item?.txHash || index}`}
               order={item}
               isLoading={isLoading && !item}
             />
@@ -192,7 +198,9 @@ const HistoryOrderCard = ({
         {/* Row 1: Direction | Amount | Avg Price */}
         <Box className={'flex items-center justify-between'}>
           <Box className={'flex flex-col gap-[6px]'}>
-            <span className={'text-[13px] font-[500] text-white'}>
+            <span
+              className={`text-[13px] font-[500] ${orderTypeColorMap[order?.orderType as LpOrderType]}`}
+            >
               {isLoading ? (
                 <Skeleton width={30} />
               ) : (
@@ -209,7 +217,7 @@ const HistoryOrderCard = ({
                 <Skeleton width={60} />
               ) : (
                 <>
-                  {formatNumber(order?.amount)} {order?.baseSymbol}
+                  {formatNumber(order?.amount)} m{order?.baseSymbol}.{order?.quoteSymbol}
                 </>
               )}
             </span>
