@@ -67,19 +67,19 @@ export const TrenchDetail = () => {
               {activeTab === AssetTabType.MyAssets && (
                 <Assets
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
               {activeTab === AssetTabType.OpenOrders && (
                 <OpenOrders
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
               {activeTab === AssetTabType.HistoryOrders && (
                 <HistoryOrders
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
             </>

@@ -72,19 +72,19 @@ const Detail = () => {
               {activeTab === AssetTabType.MyHoldings && (
                 <MyHoldings
                   showAll={showAll}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? +selectChainId : undefined}
                 />
               )}
               {activeTab === AssetTabType.OpenOrders && (
                 <OpenOrders
                   showAll={showAll}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? +selectChainId : undefined}
                 />
               )}
               {activeTab === AssetTabType.HistoryOrders && (
                 <HistoryOrders
                   showAll={showAll}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? +selectChainId : undefined}
                 />
               )}
             </>

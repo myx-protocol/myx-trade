@@ -13,7 +13,6 @@ import { PositionTabBar } from '@/components/PositionTabBar'
 import { Trans } from '@lingui/react/macro'
 import { OpenOrders } from '@/pages/Cook/detail/components/OpenOrders.tsx'
 import { HistoryOrders } from '@/pages/Cook/detail/components/HistoryOrders.tsx'
-import type { LpAsset } from '@/request/lp/type.ts'
 import { HideOuterSymbols } from '@/components/Record/HideOuterSymbols.tsx'
 import { usePositionStore } from '@/store/position/createStore.ts'
 
@@ -67,19 +66,19 @@ export const CookDetail = () => {
               {activeTab === AssetTabType.MyAssets && (
                 <Assets
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
               {activeTab === AssetTabType.OpenOrders && (
                 <OpenOrders
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
               {activeTab === AssetTabType.HistoryOrders && (
                 <HistoryOrders
                   showAll={showAllAssets}
-                  chainId={Number(selectChainId) > 0 ? +chainId : undefined}
+                  chainId={Number(selectChainId) > 0 ? Number(selectChainId) : undefined}
                 />
               )}
             </>
