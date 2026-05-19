@@ -125,7 +125,7 @@ export const OpenOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll: b
               : list
             ).map((item, index) => (
               <OrderCard
-                key={item?.orderId ?? index}
+                key={`${item?.orderId}-${item?.txHash || index}`}
                 order={item}
                 isLoading={isLoading && !item}
                 onCancel={() => {
@@ -221,7 +221,7 @@ const OrderCard = ({
                 <Skeleton width={60} />
               ) : (
                 <>
-                  {formatNumber(order?.amount)} {order?.baseSymbol}
+                  {formatNumber(order?.amount)} m{order?.baseSymbol}.{order?.quoteSymbol}
                 </>
               )}
             </span>
