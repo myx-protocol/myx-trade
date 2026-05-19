@@ -99,6 +99,8 @@ export interface AppealReconsiderationItem {
 }
 
 export interface AppealDetail {
+  id: number;
+  proof: string | null;
   caseId: number;
   chainId: number;
   poolId: string;
@@ -130,7 +132,7 @@ export interface AppealDetail {
   settleTotalVoteCount: number | null;
   settleVoteDeadline: number | null;
   settleVotedCount: number | null;
-  settleVotes?: AppealVoteItem[]
+  settleVotes?: AppealVoteItem[];
 }
 
 export interface AppealUploadEvidenceParams {
@@ -235,6 +237,8 @@ export interface AppealReimbursementItem {
   expireTime: number;
   createTime: number;
   proof: string;
+  type: AppealType;
+  stage: AppealStage
 }
 
 export interface GetAppealNodeVoteListParams {
