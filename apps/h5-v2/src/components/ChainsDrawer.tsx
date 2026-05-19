@@ -4,7 +4,6 @@ import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { Box, type BoxProps } from '@mui/material'
 import type { ReactNode } from 'react'
 import { GlobalLine, SuccessFill } from '@/components/Icon'
-import { chain } from 'lodash-es'
 import { Trans } from '@lingui/react/macro'
 
 export interface ChainsDrawerProps {

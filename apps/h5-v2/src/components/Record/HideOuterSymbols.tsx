@@ -53,7 +53,13 @@ export const HideOuterSymbols = ({
             ...CHAIN_LIST.map((chain) => ({
               label: <span className="text-[12px] text-[#FFFFFF]">{chain.label}</span>,
               value: chain.chainId.toString(),
-              icon: <img src={chain.logoUrl} alt={chain.label} className="h-[14px] w-[14px]" />,
+              icon: (
+                <img
+                  src={chain.logoUrl}
+                  alt={chain.label}
+                  className="h-[14px] w-[14px] rounded-full"
+                />
+              ),
             })),
             // { label: 'Arbitrum', value: ChainId, icon: ethIcon },
           ]}

@@ -162,6 +162,7 @@ export const Assets = ({ chainId, showAll }: { chainId?: ChainId; showAll: boole
       poolId,
       pool?.basePoolToken,
       showAll,
+      chainId,
     ],
     enabled: !!account,
     queryFn: async () => {
@@ -350,10 +351,7 @@ export const Assets = ({ chainId, showAll }: { chainId?: ChainId; showAll: boole
                 }}
                 summary={
                   <>
-                    <Value label={<Trans>Quantity</Trans>}>
-                      {formatNumber(+item?.lastTotal)}
-                      {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
-                    </Value>
+                    <Value label={<Trans>Quantity</Trans>}>{formatNumber(+item?.lastTotal)}</Value>
                     <Value label={<Trans>Cost Basis</Trans>}>
                       ${formatNumber(item?.avgPrice, { showUnit: false })}
                     </Value>
