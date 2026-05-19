@@ -54,12 +54,17 @@ export function isUserRejected(error: any): boolean {
   return false
 }
 
+interface DecodedCustomError {
+  selector: string
+  message: string
+}
+
 /**
  * Try to extract a 4-byte custom error selector from a hex string
  * and look it up in customErrorMapping.
- * Returns the mapped error name or null if not found.
+ * Returns { selector, message } or null if not found.
  */
-function tryDecodeCustomError(hexData: string): string | null {
+function tryDecodeCustomError(hexData: string): DecodedCustomError | null {
   if (!hexData || typeof hexData !== 'string') return null
   // Match a 0x-prefixed hex string that is at least 10 chars (0x + 8 hex = 4-byte selector)
   const match = hexData.match(/(0x[0-9a-fA-F]{8,})/)
@@ -68,14 +73,14 @@ function tryDecodeCustomError(hexData: string): string | null {
   const errorKey = Object.keys(customErrorMapping).find(
     (k) => k.toLowerCase() === selector
   )
-  return errorKey ? customErrorMapping[errorKey] : null
+  return errorKey ? { selector, message: customErrorMapping[errorKey] } : null
 }
 
 /**
  * Recursively search an error and all its causes for raw hex error data,
  * checking: err.data, err.details, err.message, err.shortMessage
  */
-function tryDecodeCustomErrorFromError(err: any): string | null {
+function tryDecodeCustomErrorFromError(err: any): DecodedCustomError | null {
   let current = err
   while (current) {
     // 1. err.data (string hex or object with hex)
@@ -121,7 +126,7 @@ function extractMessage(err: any): string {
   // 🔥 2️⃣ 从 details / data / message 中提取 hex selector 并查 customErrorMapping
   const customError = tryDecodeCustomErrorFromError(err)
   if (customError) {
-    return customError
+    return customError.message
   }
   
   // 3️⃣ 递归 cause
@@ -154,6 +159,17 @@ export async function getErrorTextFormError(error: any) {
   
   if (isUserRejected(error)) {
     return { error: Errors[ErrorCode.USER_REJECTED_REQUEST] }
+  }
+  
+  // 优先尝试从 hex data 解码自定义合约错误，拿到 selector 作为 code
+  const customError = tryDecodeCustomErrorFromError(error)
+  if (customError) {
+    return {
+      error: {
+        code: customError.selector,
+        message: customError.message,
+      },
+    }
   }
   
   const message = extractMessage(error)
