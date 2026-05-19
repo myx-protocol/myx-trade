@@ -177,7 +177,7 @@ const OrderCard = ({
               <Skeleton width={80} />
             ) : (
               <span className={'font-[500] text-white'}>
-                {order?.baseSymbol} {t`Vault`}
+                m{order?.quoteSymbol}.{order?.baseSymbol} {t`Vault`}
               </span>
             )}
             <Box className={'text-secondary flex items-center gap-[4px]'}>
@@ -215,7 +215,11 @@ const OrderCard = ({
         </Box>
         <Box className={'flex flex-col gap-[6px]'}>
           <span className={'text-[13px] font-[500] text-white'}>
-            {isLoading ? <Skeleton width={60} /> : formatNumber(order?.triggerPrice)}
+            {isLoading ? (
+              <Skeleton width={60} />
+            ) : (
+              formatNumber(order?.triggerPrice, { showUnit: false })
+            )}
           </span>
           <span className={'text-secondary text-[12px]'}>
             <Trans>Trigger Rate</Trans>

@@ -43,9 +43,11 @@ export const InfiniteScrollView = ({
         </Box>
       }
       endMessage={
-        <Box className={'text-placeholder py-[20px] text-center text-[12px]'}>
-          <Trans>已全部加载完毕</Trans>
-        </Box>
+        dataLength > 0 ? (
+          <Box className={'text-placeholder py-[20px] text-center text-[12px]'}>
+            <Trans>已全部加载完毕</Trans>
+          </Box>
+        ) : null
       }
       scrollableTarget={scrollableTarget}
       scrollThreshold={0.7}

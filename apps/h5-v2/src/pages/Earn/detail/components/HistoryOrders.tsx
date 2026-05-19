@@ -152,7 +152,7 @@ const HistoryOrderCard = ({
               <Skeleton width={80} />
             ) : (
               <span className={'font-[500] text-white'}>
-                {order?.baseSymbol} {t`Vault`}
+                m{order?.quoteSymbol}.{order?.baseSymbol} {t`Vault`}
               </span>
             )}
             <Box className={'text-secondary flex items-center gap-[4px]'}>
@@ -206,7 +206,11 @@ const HistoryOrderCard = ({
           </Box>
           <Box className={'flex flex-col gap-[6px]'}>
             <span className={'text-[13px] font-[500] text-white'}>
-              {isLoading ? <Skeleton width={60} /> : formatNumber(order?.price)}
+              {isLoading ? (
+                <Skeleton width={60} />
+              ) : (
+                formatNumber(order?.price, { showUnit: false })
+              )}
             </span>
             <span className={'text-secondary text-[12px]'}>
               <Trans>Rate</Trans>

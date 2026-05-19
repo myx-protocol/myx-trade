@@ -174,7 +174,9 @@ const OrderCard = ({
             {isLoading ? (
               <Skeleton width={50} />
             ) : (
-              <span className={'font-[500] text-white'}>m{order?.baseSymbol}</span>
+              <span className={'font-[500] text-white'}>
+                m{order?.baseSymbol}.{order?.quoteSymbol}
+              </span>
             )}
             <Box className={'text-secondary flex items-center gap-[4px]'}>
               {isLoading ? (
@@ -229,7 +231,11 @@ const OrderCard = ({
           </Box>
           <Box className={'flex flex-col items-end gap-[6px]'}>
             <span className={'text-[13px] font-[500] text-white'}>
-              {isLoading ? <Skeleton width={60} /> : <>${formatNumber(order?.triggerPrice)}</>}
+              {isLoading ? (
+                <Skeleton width={60} />
+              ) : (
+                <>${formatNumber(order?.triggerPrice, { showUnit: false })}</>
+              )}
             </span>
             <span className={'text-secondary text-[12px]'}>
               <Trans>Trigger Price</Trans>
