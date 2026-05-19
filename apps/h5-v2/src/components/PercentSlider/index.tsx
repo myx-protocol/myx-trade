@@ -1,6 +1,7 @@
 import { Slider, Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import type { SxProps, Theme } from '@mui/material'
+import Big from 'big.js'
 
 const DEFAULT_MARKS = [
   { value: 0, label: '0%' },
@@ -94,14 +95,41 @@ const defaultSliderSx: SxProps<Theme> = {
 }
 
 export interface PercentSliderProps {
-  value: number
+  /** The actual value (not percentage). Will be displayed as percentage internally. */
+  value: number | string
+  /** Called with the actual value (not percentage) when the slider changes. */
   onChange: (value: number) => void
-  min?: number
-  max?: number
+  /** Minimum of the actual value range. Defaults to 0. */
+  min?: number | string
+  /** Maximum of the actual value range. Defaults to 100. */
+  max?: number | string
   step?: number
   marks?: Array<{ value: number; label: string }>
   sliderSx?: SxProps<Theme>
   className?: string
+}
+
+/**
+ * Converts an actual value within [min, max] to a percentage (0–100).
+ * Formula: (value - min) * 100 / (max - min)
+ */
+const toPercent = (value: number | string, min: number | string, max: number | string): number => {
+  const bigMin = new Big(min)
+  const bigMax = new Big(max)
+  const range = bigMax.minus(bigMin)
+  if (range.eq(0)) return 0
+  return new Big(value).minus(bigMin).mul(100).div(range).toNumber()
+}
+
+/**
+ * Converts a percentage (0–100) back to an actual value within [min, max].
+ * Formula: percent * (max - min) / 100 + min
+ */
+const fromPercent = (percent: number, min: number | string, max: number | string): number => {
+  const bigMin = new Big(min)
+  const bigMax = new Big(max)
+  const range = bigMax.minus(bigMin)
+  return new Big(percent).mul(range).div(100).plus(bigMin).toNumber()
 }
 
 export const PercentSlider = ({
@@ -114,13 +142,21 @@ export const PercentSlider = ({
   sliderSx,
   className,
 }: PercentSliderProps) => {
+  // Convert actual value to percentage for display
+  const percent = toPercent(value, min, max)
+  // Clamp to [0, 100]
+  const clampedPercent = Math.min(100, Math.max(0, Math.round(percent)))
+
   return (
     <div className={className}>
       <Slider
-        value={value}
-        onChange={(_, newValue) => onChange(newValue as number)}
-        min={min}
-        max={max}
+        value={clampedPercent}
+        onChange={(_, newPercent) => {
+          const actualValue = fromPercent(newPercent as number, min, max)
+          onChange(actualValue)
+        }}
+        min={0}
+        max={100}
         step={step}
         valueLabelDisplay="auto"
         slots={{ valueLabel: ValueLabelComponent }}
@@ -132,7 +168,7 @@ export const PercentSlider = ({
             key={m.value}
             className={clsx(
               'text-center text-[10px] font-medium',
-              value >= m.value ? 'text-white' : 'text-[#4D515C]',
+              clampedPercent >= m.value ? 'text-white' : 'text-[#4D515C]',
             )}
           >
             {m.label}

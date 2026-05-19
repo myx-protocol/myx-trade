@@ -1,10 +1,10 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { TPSLInput } from '@/components/Trade/TradePanel/TPSL/TPSLInput'
 import { TpSlTypeEnum } from '@/components/Trade/type'
 import { formatNumber } from '@/utils/number'
-import { parseBigNumber } from '@/utils/bn'
+import { clampBigNumber, parseBigNumber } from '@/utils/bn'
 import { TradeButton } from '@/components/Button/TradeButton'
 import { PercentSlider } from '@/components/PercentSlider'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
@@ -23,12 +23,30 @@ import { parseTriggerPrice } from '@/utils/TpSl'
 import Big from 'big.js'
 import { toast } from '@/components/UI/Toast'
 import { showErrorToast } from '@/config/error'
-import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 import { NumericInput } from '@/components/Dialog/NumberInput'
 import { getMarketPoolPrice } from '@/request'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
+import { Drawer } from '@/components/Drawer'
+import { styled } from '@mui/material'
 
 const DEFAULT_SLIPPAGE = 0.01
+
+const AMOUNT_INPUT_SX = {
+  '.MuiInputBase-root': {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    padding: 0,
+    height: '18px',
+    backgroundColor: 'transparent',
+  },
+} as const
+
+const StyledDrawer = styled(Drawer)`
+  .MuiPaper-root {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+`
 
 const EstPnlDisplay = memo(({ value }: { value: string }) => (
   <div className="flex items-center justify-between">
@@ -61,8 +79,8 @@ export interface TPSLDialogProps {
   poolName?: string
 }
 
-// --- Main Component ---
-export const TPSLDialog = memo(
+// --- Content Component ---
+const TPSLDialogContent = memo(
   ({
     open,
     onClose,
@@ -86,10 +104,8 @@ export const TPSLDialog = memo(
     const [slType, setSlType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
     const [slValue, setSlValue] = useState('')
 
-    // Amount / slider
-    const [sliderValue, setSliderValue] = useState(100)
-    const [amountInputValue, setAmountInputValue] = useState('')
-    const [amountInputFocused, setAmountInputFocused] = useState(false)
+    // Amount / slider — redeemAmountValue is the raw input string (can be '' when cleared)
+    const [redeemAmountValue, setRedeemAmountValue] = useState(amount || '0')
     const [slippage, setSlippage] = useState('1')
 
     const [loading, setLoading] = useState(false)
@@ -135,11 +151,42 @@ export const TPSLDialog = memo(
 
     const lpPrice = poolInfo?.lpPrice || ''
 
-    // Calculate actual redeem amount based on slider
-    const redeemAmount = useMemo(() => {
-      if (!amount) return '0'
-      return parseBigNumber(amount).mul(sliderValue).div(100).toString()
-    }, [amount, sliderValue])
+    // For calculations, treat '' as '0'
+    const redeemAmount = redeemAmountValue || '0'
+
+    const handleAmountValueChange = useCallback(
+      (values: { value: string }) => {
+        if (values.value === '') {
+          setRedeemAmountValue('')
+        } else if (values.value && parseBigNumber(amount).gt(0)) {
+          try {
+            const clamped = clampBigNumber(values.value, amount, '0')
+            const clampedStr = clamped.toString()
+            // Only update if the numeric value actually changed to avoid render loops
+            // Preserve the raw input string (e.g. "5." or "5.0") when the numeric value is equivalent
+            setRedeemAmountValue((prev) => {
+              try {
+                if (prev !== '' && new Big(prev).eq(clamped)) {
+                  // If clamped value equals the current value numerically,
+                  // keep the user's raw input to avoid fighting with react-number-format
+                  return prev
+                }
+              } catch {
+                // prev is not a valid number, update
+              }
+              return clampedStr
+            })
+          } catch {
+            // invalid input, ignore
+          }
+        }
+      },
+      [amount],
+    )
+
+    const handleAmountBlur = useCallback(() => {
+      setRedeemAmountValue((prev) => prev || '0')
+    }, [])
 
     // Calculate size in quote
     const sizeInQuote = useMemo(() => {
@@ -188,7 +235,6 @@ export const TPSLDialog = memo(
     // Labels based on poolType
     const tpLabel = isBase ? <Trans>TP</Trans> : <Trans>回撤保护</Trans>
     const slLabel = isBase ? <Trans>SL</Trans> : <Trans>自动赎回</Trans>
-    const dialogTitle = isBase ? t`TP/SL` : t`回撤保护/自动赎回`
 
     // TP/SL Placeholders
     const [tpPlaceHolder, slPlaceHolder] = useMemo(() => {
@@ -218,7 +264,7 @@ export const TPSLDialog = memo(
         setSlType(TpSlTypeEnum.Pnl)
         setTpValue('')
         setSlValue('')
-        setSliderValue(100)
+        setRedeemAmountValue(amount || '0')
         setSlippage('1')
       }
     }, [open])
@@ -318,106 +364,106 @@ export const TPSLDialog = memo(
       : t`${baseSymbol}${quoteSymbol} Stable Vault`
 
     return (
-      <DialogTheme open={open} onClose={onClose} sx={{ zIndex: 1100 }}>
-        <DialogTitleTheme onClose={onClose}>{dialogTitle}</DialogTitleTheme>
-        <div>
-          {/* Order Info Section */}
-          <div className="flex flex-col gap-[8px] px-[20px] py-[12px]">
-            <div className="flex items-center gap-[4px]">
-              <p className="text-[12px] font-semibold text-white">{displayPoolName}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-[#848E9C]">
-                <Trans>数量</Trans>
-              </p>
-              <p className="text-[12px] font-medium text-[#CED1D9]">
-                {formatNumber(amount, { showUnit: false })} {poolName}
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-[#848E9C]">
-                <Trans>成本价</Trans>
-              </p>
-              <p className="text-[12px] font-medium text-[#CED1D9]">
-                ${formatNumber(costPrice || '0', { showUnit: false })}
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[12px] text-[#848E9C]">
-                <Trans>当前价格</Trans>
-              </p>
-              <p className="text-[12px] font-medium text-[#CED1D9]">
-                ${lpPrice ? formatNumber(lpPrice, { showUnit: false }) : '--'}
-              </p>
-            </div>
+      <div>
+        {/* Order Info Section */}
+        <div className="flex flex-col gap-[8px] px-[20px] py-[12px]">
+          <div className="flex items-center gap-[4px]">
+            <p className="text-[12px] font-semibold text-white">{displayPoolName}</p>
           </div>
+          <div className="flex items-center justify-between">
+            <p className="text-[12px] text-[#848E9C]">
+              <Trans>数量</Trans>
+            </p>
+            <p className="text-[12px] font-medium text-[#CED1D9]">
+              {formatNumber(amount, { showUnit: false })} {poolName}
+            </p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-[12px] text-[#848E9C]">
+              <Trans>成本价</Trans>
+            </p>
+            <p className="text-[12px] font-medium text-[#CED1D9]">
+              ${formatNumber(costPrice || '0', { showUnit: false })}
+            </p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-[12px] text-[#848E9C]">
+              <Trans>当前价格</Trans>
+            </p>
+            <p className="text-[12px] font-medium text-[#CED1D9]">
+              ${lpPrice ? formatNumber(lpPrice, { showUnit: false }) : '--'}
+            </p>
+          </div>
+        </div>
 
-          {/* TP/SL Sections */}
-          <div className="flex flex-col gap-[20px] px-0 pt-[20px] pb-[24px]">
-            <div className="flex flex-col gap-[20px]">
-              {/* TP Section */}
-              <div className="flex flex-col gap-[12px] px-[20px]">
-                <div className="flex flex-col gap-[12px]">
-                  <div className="flex items-center gap-[4px]">
-                    <span className="text-[12px] font-medium text-white">{tpLabel}</span>
-                  </div>
-                  <div className="flex flex-col gap-[8px]">
-                    <div className="flex gap-[8px]">
-                      <TPSLInput
-                        type={tpType}
-                        value={tpValue}
-                        onChange={setTpValue}
-                        onTypeChange={setTpType}
-                        quoteToken={quoteSymbol}
-                        placeHolder={tpPlaceHolder}
-                        inputPrefix={tpType === TpSlTypeEnum.PRICE ? '' : '+'}
-                        allowNegative={false}
-                        inputSuffix={
-                          tpType === TpSlTypeEnum.ROI || tpType === TpSlTypeEnum.Change
-                            ? '%'
-                            : undefined
-                        }
-                      />
-                    </div>
-                    <EstPnlDisplay value={tpEstPnl} />
-                  </div>
-                </div>
-              </div>
-
-              {/* SL Section */}
+        {/* TP/SL Sections */}
+        <div className="flex flex-col gap-[20px] px-0 pt-[20px] pb-[24px]">
+          <div className="flex flex-col gap-[20px]">
+            {/* TP Section */}
+            <div className="flex flex-col gap-[12px] px-[20px]">
               <div className="flex flex-col gap-[12px]">
-                <div className="flex items-center gap-[4px] px-[20px]">
-                  <span className="text-[12px] font-medium text-white">{slLabel}</span>
+                <div className="flex items-center gap-[4px]">
+                  <span className="text-[12px] font-medium text-white">{tpLabel}</span>
                 </div>
-
-                <div className="flex flex-col gap-[8px] px-[20px]">
+                <div className="flex flex-col gap-[8px]">
                   <div className="flex gap-[8px]">
                     <TPSLInput
-                      type={slType}
-                      value={slValue}
-                      onChange={setSlValue}
-                      onTypeChange={setSlType}
+                      type={tpType}
+                      value={tpValue}
+                      source="lp"
+                      onChange={setTpValue}
+                      onTypeChange={setTpType}
                       quoteToken={quoteSymbol}
-                      placeHolder={slPlaceHolder}
-                      inputPrefix={slType === TpSlTypeEnum.PRICE ? '' : '-'}
+                      placeHolder={tpPlaceHolder}
+                      inputPrefix={tpType === TpSlTypeEnum.PRICE ? '' : '+'}
                       allowNegative={false}
                       inputSuffix={
-                        slType === TpSlTypeEnum.ROI || slType === TpSlTypeEnum.Change
+                        tpType === TpSlTypeEnum.ROI || tpType === TpSlTypeEnum.Change
                           ? '%'
                           : undefined
                       }
                     />
                   </div>
-                  <EstPnlDisplay value={slEstPnl} />
+                  <EstPnlDisplay value={tpEstPnl} />
                 </div>
               </div>
             </div>
 
-            {/* Amount Section with Slider */}
+            {/* SL Section */}
             <div className="flex flex-col gap-[12px]">
-              <div className="flex flex-col gap-[12px] px-[20px]">
-                {/* Slippage Row */}
-                {/*<div
+              <div className="flex items-center gap-[4px] px-[20px]">
+                <span className="text-[12px] font-medium text-white">{slLabel}</span>
+              </div>
+
+              <div className="flex flex-col gap-[8px] px-[20px]">
+                <div className="flex gap-[8px]">
+                  <TPSLInput
+                    type={slType}
+                    value={slValue}
+                    source="lp"
+                    onChange={setSlValue}
+                    onTypeChange={setSlType}
+                    quoteToken={quoteSymbol}
+                    placeHolder={slPlaceHolder}
+                    inputPrefix={slType === TpSlTypeEnum.PRICE ? '' : '-'}
+                    allowNegative={false}
+                    inputSuffix={
+                      slType === TpSlTypeEnum.ROI || slType === TpSlTypeEnum.Change
+                        ? '%'
+                        : undefined
+                    }
+                  />
+                </div>
+                <EstPnlDisplay value={slEstPnl} />
+              </div>
+            </div>
+          </div>
+
+          {/* Amount Section with Slider */}
+          <div className="flex flex-col gap-[12px]">
+            <div className="flex flex-col gap-[12px] px-[20px]">
+              {/* Slippage Row */}
+              {/*<div
                   className={`flex h-[44px] items-center justify-between rounded-[8px] px-[12px] ${
                     slippageFocused
                       ? 'border-[0.5px] border-white bg-[#18191F] shadow-[0px_0px_8px_0px_rgba(0,0,0,0.8)]'
@@ -446,109 +492,85 @@ export const TPSLDialog = memo(
                   />
                 </div>*/}
 
-                {/* Amount Card */}
-                <div className="flex flex-col gap-[12px] rounded-[10px] bg-[#202129] px-[12px] py-[14px] leading-[1]">
-                  <div className="text-[12px] font-medium text-[#848E9C]">
-                    <Trans>Amount</Trans>
-                  </div>
-                  <div className="flex h-[18px] items-center justify-between gap-[8px] leading-[1]">
-                    <div className="min-w-0 flex-1">
-                      <NumericInput
-                        value={
-                          amountInputFocused
-                            ? amountInputValue
-                            : formatNumber(
-                                parseBigNumber(amount).mul(sliderValue).div(100).toString(),
-                                { showUnit: false },
-                              )
-                        }
-                        onValueChange={(values) => {
-                          const num = parseFloat(values.value)
-                          if (!isNaN(num) && parseBigNumber(amount).gt(0)) {
-                            const clamped = Math.min(parseFloat(amount), Math.max(0, num))
-                            setAmountInputValue(clamped.toString())
-                            const pct = Math.min(
-                              100,
-                              Math.max(
-                                0,
-                                Math.round(
-                                  parseBigNumber(clamped.toString())
-                                    .div(parseBigNumber(amount))
-                                    .mul(100)
-                                    .toNumber(),
-                                ),
-                              ),
-                            )
-                            setSliderValue(pct)
-                          } else if (values.value === '') {
-                            setAmountInputValue('')
-                            setSliderValue(0)
-                          }
-                        }}
-                        onFocus={() => {
-                          setAmountInputFocused(true)
-                          setAmountInputValue(
-                            parseBigNumber(amount).mul(sliderValue).div(100).toString(),
-                          )
-                        }}
-                        onBlur={() => setAmountInputFocused(false)}
-                        className="w-full"
-                        sx={{
-                          '.MuiInputBase-root': {
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            padding: 0,
-                            height: '18px',
-                            backgroundColor: 'transparent',
-                          },
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-shrink-0 items-center gap-[2px] rounded-[30px]">
-                      <span className="text-[12px] font-medium text-[#CED1D9]">{poolName}</span>
-                    </div>
-                  </div>
-
-                  {/* Slider inside card */}
-                  <div className={'px-[6px]'}>
-                    <PercentSlider
-                      value={sliderValue}
-                      onChange={(val) => {
-                        setSliderValue(val)
-                      }}
+              {/* Amount Card */}
+              <div className="flex flex-col gap-[12px] rounded-[10px] bg-[#202129] px-[12px] py-[14px] leading-[1]">
+                <div className="text-[12px] font-medium text-[#848E9C]">
+                  <Trans>Amount</Trans>
+                </div>
+                <div className="flex h-[18px] items-center justify-between gap-[8px] leading-[1]">
+                  <div className="min-w-0 flex-1">
+                    <NumericInput
+                      value={redeemAmountValue}
+                      onValueChange={handleAmountValueChange}
+                      onBlur={handleAmountBlur}
+                      className="w-full"
+                      sx={AMOUNT_INPUT_SX}
                     />
                   </div>
+                  <div className="flex flex-shrink-0 items-center gap-[2px] rounded-[30px]">
+                    <span className="text-[12px] font-medium text-[#CED1D9]">{poolName}</span>
+                  </div>
                 </div>
 
-                {/* Size info */}
-                <div className="flex items-center justify-between px-[4px]">
-                  <p className="text-[12px] text-[#848E9C]">Size</p>
-                  <p className="text-[12px] font-medium text-[#CED1D9]">
-                    {sizeInQuote !== '--'
-                      ? `${formatNumber(sizeInQuote, { showUnit: false })} ${quoteSymbol}`
-                      : '--'}
-                  </p>
+                {/* Slider inside card */}
+                <div className={'px-[6px]'}>
+                  <PercentSlider
+                    value={redeemAmount}
+                    max={amount || '0'}
+                    onChange={(val) => {
+                      setRedeemAmountValue(val.toString())
+                    }}
+                  />
                 </div>
               </div>
 
-              {/* Confirm Button */}
-              <div className="px-[20px]">
-                <TradeButton
-                  variant="contained"
-                  loading={loading}
-                  onClick={handleConfirm}
-                  className="!h-[44px] w-full !rounded-[24px] !text-[14px]"
-                  disabled={(!tpValue && !slValue) || sliderValue <= 0}
-                >
-                  <Trans>Confirm</Trans>
-                </TradeButton>
+              {/* Size info */}
+              <div className="flex items-center justify-between px-[4px]">
+                <p className="text-[12px] text-[#848E9C]">Size</p>
+                <p className="text-[12px] font-medium text-[#CED1D9]">
+                  {sizeInQuote !== '--'
+                    ? `${formatNumber(sizeInQuote, { showUnit: false })} ${quoteSymbol}`
+                    : '--'}
+                </p>
               </div>
+            </div>
+
+            {/* Confirm Button */}
+            <div className="px-[20px]">
+              <TradeButton
+                variant="contained"
+                loading={loading}
+                onClick={handleConfirm}
+                className="!h-[44px] w-full !rounded-[24px] !text-[14px]"
+                disabled={!lpPrice || (!tpValue && !slValue) || new Big(redeemAmount || '0').lte(0)}
+              >
+                <Trans>Confirm</Trans>
+              </TradeButton>
             </div>
           </div>
         </div>
-      </DialogTheme>
+      </div>
     )
   },
 )
+TPSLDialogContent.displayName = 'TPSLDialogContent'
 
+// --- Main Component ---
+export const TPSLDialog = memo(({ open, onClose, ...rest }: TPSLDialogProps) => {
+  const isBase = rest.poolType === PoolType.base
+  const dialogTitle = isBase ? t`TP/SL` : t`回撤保护/自动赎回`
+
+  return (
+    <StyledDrawer
+      showPuller={false}
+      open={open}
+      onClose={() => onClose()}
+      onOpen={() => {}}
+      anchor="bottom"
+      title={dialogTitle}
+    >
+      <TPSLDialogContent open={open} onClose={onClose} {...rest} />
+    </StyledDrawer>
+  )
+})
 TPSLDialog.displayName = 'TPSLDialog'
