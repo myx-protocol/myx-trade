@@ -117,7 +117,7 @@ export const HistoryOrders = ({ showAll, chainId }: { showAll: boolean; chainId?
             : list
           ).map((item, index) => (
             <HistoryOrderCard
-              key={`${item.orderId}-${item.txHash || index}`}
+              key={`${item?.orderId}-${item?.txHash || index}`}
               order={item}
               isLoading={isLoading && !item}
             />
