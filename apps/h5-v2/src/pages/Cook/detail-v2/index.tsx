@@ -16,6 +16,7 @@ import {
   formatUnits,
   getBalanceOf,
   parseUnits,
+  MarketPoolState,
 } from '@myx-trade/sdk'
 import { formatNumber } from '@/utils/number'
 import { isCookState } from '@/utils/cook'
@@ -279,11 +280,16 @@ export const CookDetail = () => {
   const isQuickActivateFeePaid = isOnBoostSuccess || isBoostActivationRequested
 
   const confirmButtonText = useMemo(() => {
-    if (isActivate && isQuickActivateFeePaid) {
-      return t`等待市场开启`
+    if (isActivate) {
+      if (isQuickActivateFeePaid) {
+        return t`等待市场开启`
+      }
+      if (baseLpState === MarketPoolState.Primed) {
+        return t`准备上线中`
+      }
     }
     return getActionButtonLabel(activeAction)
-  }, [activeAction, isActivate, isQuickActivateFeePaid])
+  }, [activeAction, isActivate, isQuickActivateFeePaid, baseLpState])
 
   const numericAmount = Number(amount || 0)
   const isAmountInvalid = !numericAmount || numericAmount > displayBalance
@@ -584,6 +590,7 @@ export const CookDetail = () => {
           })}
           boostFeeDisplay={formatNumber(boostFeeUsd, { showUnit: false })}
           boostFeeUsd={boostFeeUsd}
+          baseLpDetail={basePoolDetail.lpDetail as BaseLpDetail}
           onOpenQuickActivateDialog={() => {
             if (!canOpenQuickActivate) return
             setBoostConfirmBoostOpen(true)

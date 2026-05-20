@@ -1,7 +1,8 @@
 import { Trans } from '@lingui/react/macro'
 import { BoostPaidSyncingStatus } from './BoostPaidSyncingStatus'
 import { TipBox } from './TipBox'
-import { PoolSecurityState } from '@/request/lp/type'
+import { PoolSecurityState, type BaseLpDetail } from '@/request/lp/type'
+import { MarketPoolState } from '@myx-trade/sdk'
 
 interface WarningTipsSectionProps {
   /** 与 CookDetailOrderTips 中安全提示一致：非 UNKNOWN/NOT_SECURITY 时才展示募集提示 */
@@ -18,6 +19,7 @@ interface WarningTipsSectionProps {
   boostFeeUsd: number
   /** 点击「去激活」直接打开快速启动确认弹窗 */
   onOpenQuickActivateDialog?: () => void
+  baseLpDetail?: BaseLpDetail
 }
 
 export const WarningTipsSection = ({
@@ -31,10 +33,12 @@ export const WarningTipsSection = ({
   boostFeeDisplay,
   boostFeeUsd,
   onOpenQuickActivateDialog,
+  baseLpDetail,
 }: WarningTipsSectionProps) => {
   const showFundraisingTip =
     securityState !== PoolSecurityState.UNKNOWN &&
     securityState !== PoolSecurityState.NOT_SECURITY &&
+    baseLpDetail?.state !== MarketPoolState.Primed &&
     !isBoostActivationRequested &&
     progressTotal > 0 &&
     progressCurrent < progressTotal &&

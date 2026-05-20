@@ -58,7 +58,7 @@ export const TradeContentSection = ({
   showRetainGenesisOption = false,
   displayTradeTokenSymbol = displayTokenSymbol,
 }: TradeContentSectionProps) => {
-  const { retainGenesisLPShares, setRetainGenesisLPShares } = useCookOrderStore()
+  // const { retainGenesisLPShares, setRetainGenesisLPShares } = useCookOrderStore()
   return (
     <Box className="flex flex-col gap-[12px]">
       {isActivate ? (
@@ -167,7 +167,7 @@ export const TradeContentSection = ({
             })}
           </Box>
 
-          {showRetainGenesisOption && (
+          {/* {showRetainGenesisOption && (
             <FormControlLabel
               control={
                 <CheckBox
@@ -190,7 +190,7 @@ export const TradeContentSection = ({
                 </Box>
               }
             />
-          )}
+          )} */}
         </Box>
       )}
 
