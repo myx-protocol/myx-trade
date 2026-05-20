@@ -2008,7 +2008,7 @@ msgstr "帮助中心"
 msgid "Hide other"
 msgstr "隐藏其他"
 
-#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
 msgstr ""
 
@@ -3471,6 +3471,7 @@ msgstr "从锁定已实现盈亏中支付：{0} {1}"
 msgid "Paid from Wallet: {0} {1}"
 msgstr "从钱包中支付：{0} {1}"
 
+#: src/pages/Cook/detail-v2/components/BoostPaidSyncingStatus.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Paid. Syncing status"
 msgstr "支付状态同步中"
@@ -4510,15 +4511,6 @@ msgstr "已成交"
 msgid "Successfully buy"
 msgstr "成功买入"
 
-#: src/pages/Cook/detail/components/OpenOrders.tsx
-#: src/pages/Earn/detail/components/OpenOrders.tsx
-msgid "Successfully canceled the order."
-msgstr "订单取消成功"
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "Successfully deposit"
-msgstr ""
-
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr "充值成功"
@@ -4662,6 +4654,12 @@ msgstr "该代币存在极高风险。为保障资产安全，平台不支持其
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
 msgstr "这将销毁 <0>{0}</0> {1}，并且您将永久丧失获得 <1>{2}</1> 交易手续费分成的权利。"
+
+#. placeholder {0}: formatNumber(burned, { showUnit: false })
+#. placeholder {1}: lpSymbol || '--'
+#: src/pages/Cook/detail-v2/components/CookRedeemGenesisBurnTip.tsx
+msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
+msgstr ""
 
 #. placeholder {0}: formatNumber(burned, { showUnit: false })
 #. placeholder {1}: lpSymbol || '--'
@@ -5487,6 +5485,10 @@ msgstr "最大滑点"
 msgid "最新价/24h涨跌幅"
 msgstr "最新价/24h涨跌幅"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "准备上线中"
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
 msgstr "减少保证金"
@@ -5523,10 +5525,6 @@ msgstr "加仓"
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
 msgstr "加载中..."
-
-#: src/pages/Cook/detail-v2/components/ProgressSection.tsx
-msgid "募集进度"
-msgstr ""
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5959,6 +5957,10 @@ msgstr ""
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "立即创建我的合约交易市场"
+
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "等待市场开启"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
