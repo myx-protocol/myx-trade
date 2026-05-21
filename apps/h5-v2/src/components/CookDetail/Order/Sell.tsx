@@ -88,7 +88,7 @@ export const Sell = () => {
     queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account, pool],
     enabled: !!amount && !!account && !!poolId && !!pool,
     queryFn: async () => {
-      if (!account || !poolId || !account || !pool) return
+      if (!account || !poolId || !amount || !pool) return
       const res = await Base.previewUserWithdrawData({
         chainId,
         amount,
@@ -119,8 +119,8 @@ export const Sell = () => {
   }, [balance, userShareBase, retainGenesisLPShares])
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(trueBalance)) {
-      if (Number(amount) > Number(trueBalance)) return true
+    if (amount && trueBalance) {
+      if (new Big(amount).gt(trueBalance)) return true
       return false
     }
     return false
@@ -155,9 +155,12 @@ export const Sell = () => {
     }
   }, [trueBalance])
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
-  }, [])
+  const onAmountChange = useCallback(
+    ({ floatValue, value }: { value: string; floatValue?: number }) => {
+      setAmount(value || '')
+    },
+    [],
+  )
 
   const onHandleSell = useCallback(async () => {
     try {
@@ -178,7 +181,7 @@ export const Sell = () => {
       await Base.withdraw({
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully sell` })

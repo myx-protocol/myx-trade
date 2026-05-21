@@ -22,7 +22,7 @@ import {
   parseUnits,
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from '@/components/UI/Toast'
@@ -112,7 +112,7 @@ export const Redeem = () => {
 
   const trueBalance = useMemo(() => {
     if (retainLPShare) {
-      if (isSafeNumber(balance)) {
+      if (balance) {
         const _balance = new Big(balance || 0).minus(new Big(userShare || '0')).toString()
         return Number(_balance) < 0 ? '0' : _balance
       }
@@ -123,8 +123,8 @@ export const Redeem = () => {
   }, [balance, userShare, retainLPShare])
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(trueBalance)) {
-      if (Number(amount) > Number(trueBalance)) return true
+    if (amount && trueBalance) {
+      if (new Big(amount).gt(trueBalance)) return true
       return false
     }
     return false
@@ -159,8 +159,8 @@ export const Redeem = () => {
     },
   })
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
+  const onAmountChange = useCallback(({ value }: { value: string; floatValue?: number }) => {
+    setAmount(value || '')
   }, [])
 
   const onHandleRedeem = useCallback(async () => {
@@ -183,7 +183,7 @@ export const Redeem = () => {
       await Quote.withdraw({
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
       })
 

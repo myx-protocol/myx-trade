@@ -12,10 +12,9 @@ import { useCallback, useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { PoolContext } from '../../context'
 import { useQuery } from '@tanstack/react-query'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
+import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { isSafeNumber } from '@/utils'
 import { toast } from '@/components/UI/Toast'
 import { DefaultButton } from '@/components/Button/DefaultButton.tsx'
@@ -29,6 +28,7 @@ import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import { Error } from './Error.tsx'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import Big from 'big.js'
 
 const inputStyle = {
   htmlInput: {
@@ -60,14 +60,14 @@ export const Subscribe = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.quoteToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, pool.quoteDecimals)
-        return formatNumberPrecision(_balance, COMMON_PRICE_DISPLAY_DECIMALS, false, false)
+        return _balance
       }
     },
   })
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(balance)) {
-      if (Number(amount) > Number(balance)) return true
+    if (amount && balance) {
+      if (new Big(amount).gt(balance)) return true
       return false
     }
     return false
@@ -79,8 +79,8 @@ export const Subscribe = () => {
     }
   }, [balance])
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
+  const onAmountChange = useCallback(({ value }: { value: string; floatValue?: number }) => {
+    setAmount(value || '')
   }, [])
 
   const onHandleSubscribe = useCallback(async () => {
@@ -95,7 +95,7 @@ export const Subscribe = () => {
       await Quote.deposit({
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully subscribe` })
