@@ -16,8 +16,8 @@ export enum TriggerType {
 }
 
 export interface TpSl {
-  amount: number;
-  triggerPrice: number;
+  amount: number | string;
+  triggerPrice: number | string;
   triggerType: TriggerType;
 }
 

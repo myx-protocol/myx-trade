@@ -9,7 +9,7 @@ export interface Deposit {
   poolId: string;
   decimals?: number;
   // address: AddressLike;
-  amount: number;
+  amount: string | number;
   slippage: number;
   tpsl?: DepositTpSl[]
 }
@@ -20,7 +20,7 @@ export interface WithdrawParams {
   poolId: string;
   // lpAddress: string;
   // account?: AddressLike;
-  amount:  number;
+  amount:  number | string;
   // minAmount ?: string | number;
   slippage: number;
 }

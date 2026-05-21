@@ -270,6 +270,10 @@ export interface AddFavoriteParams {
   chainId: ChainId;
 }
 
+export interface AddFavoritesBatchParams {
+  list: AddFavoriteParams[];
+}
+
 // export const addFavorite = async (
 //   { accessToken, address, ...params }: AddFavoriteParams & AccessTokenRequest,
 //   envParams: HttpEnvParams
