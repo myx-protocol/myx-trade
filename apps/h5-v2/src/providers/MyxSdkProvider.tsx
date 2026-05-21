@@ -175,9 +175,14 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
   >({})
   const { isWalletConnected, address } = useWalletConnection()
   const { data: walletClient, refetch: refetchWalletClient } = useWalletClient()
+  const walletClientRef = useRef(walletClient)
   const myxSdkClientRef = useRef<Map<number, MyxClient>>(new Map())
   const { tradeMode } = useGlobalStore()
   const { activeSeamlessAddress, activeSeamlessWallet } = useSeamlessStore()
+
+  useEffect(() => {
+    walletClientRef.current = walletClient
+  }, [walletClient])
 
   useUpdateEffect(() => {
     if (tradeMode !== TradeMode.Seamless || !activeSeamlessAddress || !activeSeamlessWallet) return
@@ -204,10 +209,8 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // 如果 walletClient 为 undefined（比如切换链后），尝试手动重新获取
+    // 不清空 auth，保留 getWalletClient getter，SDK 会轮询等待
     if (!walletClient) {
-      setClientIsAuthenticated({})
-      // 手动触发重新获取 walletClient
-      // 使用 setTimeout 避免在 effect 中直接调用异步函数
       refetchWalletClient().catch((error) => {
         console.error('Failed to refetch walletClient:', error)
       })
@@ -222,6 +225,7 @@ export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
       myxSdkClientRef.current.forEach((_client, chainId) => {
         _client.auth({
           walletClient: result.value,
+          getWalletClient: () => walletClientRef.current ?? undefined,
           getAccessToken: createGetAccessTokenMethod(address),
         })
         authChainIds.push(chainId)
