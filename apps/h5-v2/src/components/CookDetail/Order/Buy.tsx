@@ -16,10 +16,7 @@ import {
   MarketPoolState,
   TriggerType,
 } from '@myx-trade/sdk'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
-import { isSafeNumber } from '@/utils'
 import { formatNumber } from '@/utils/number.ts'
 import { useExchangeRate } from '@/pages/Cook/hook/rate.ts'
 import { toast } from '@/components/UI/Toast'
@@ -68,14 +65,14 @@ export const Buy = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.baseToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, pool.baseDecimals)
-        return formatNumberPrecision(_balance, COMMON_BASE_DISPLAY_DECIMALS, false, false)
+        return _balance
       }
     },
   })
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(balance)) {
-      if (Number(amount) > Number(balance)) return true
+    if (amount && balance) {
+      if (new Big(amount).gt(balance)) return true
       return false
     }
     return false
@@ -87,9 +84,12 @@ export const Buy = () => {
     }
   }, [balance])
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
-  }, [])
+  const onAmountChange = useCallback(
+    ({ floatValue, value }: { value: string; floatValue?: number }) => {
+      setAmount(value || '')
+    },
+    [],
+  )
 
   const onHandleBuy = useCallback(async () => {
     try {
@@ -131,7 +131,7 @@ export const Buy = () => {
       const params = {
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
         tpsl: tpSlOpen
           ? tpsl
