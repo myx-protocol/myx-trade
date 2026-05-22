@@ -40,7 +40,7 @@ export const boostPool = async (params:BoostPoolParams) => {
       decimals: pool.quoteDecimals,
       account,
       chainId,
-      amount: Number(formatUnits(_amount, pool.quoteDecimals)),
+      amount: formatUnits(_amount, pool.quoteDecimals),
     })
     
     const chainInfo = CHAIN_INFO[chainId];
