@@ -1,4 +1,4 @@
-import { DialogBase } from '@/components/UI/DialogBase'
+import { DialogBase } from '@/components/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import React, { memo } from 'react'
 import { Box, Button } from '@mui/material'
@@ -40,7 +40,7 @@ const MarketLaunchStatusFooter = memo(
     })
 
     return (
-      <Box className={'flex w-full gap-[10px] pb-[8px]'}>
+      <Box className={'flex w-full gap-[10px] px-[20px] pb-[24px]'}>
         <Button
           className={'gradient gray !min-h-[44px] !rounded-[44px] !px-[14px]'}
           loading={abortLoading}
@@ -80,7 +80,22 @@ export const MarketLaunchStatusDialog = memo(
     tokenSymbol = '--',
   }: MarketLaunchStatusDialogProps) => {
     return (
-      <DialogBase open={open} onClose={onClose}>
+      <DialogBase
+        open={open}
+        onClose={onClose}
+        showCloseIcon
+        title={null}
+        footer={
+          <MarketLaunchStatusFooter
+            onAbort={onAbort}
+            onWait={onWait}
+            refundAmount={refundAmount}
+            penaltyAmount={penaltyAmount}
+            tokenSymbol={tokenSymbol}
+          />
+        }
+        contentClassname={'!pt-0'}
+      >
         <Box className={'flex flex-col items-center'}>
           <Box className={'text-secondary pb-[20px]'}>
             <WarningLine size={56} />
@@ -121,13 +136,6 @@ export const MarketLaunchStatusDialog = memo(
             </p>
           </Box>
         </Box>
-        <MarketLaunchStatusFooter
-          onAbort={onAbort}
-          onWait={onWait}
-          refundAmount={refundAmount}
-          penaltyAmount={penaltyAmount}
-          tokenSymbol={tokenSymbol}
-        />
       </DialogBase>
     )
   },

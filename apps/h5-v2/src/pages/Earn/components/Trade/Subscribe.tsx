@@ -220,7 +220,7 @@ export const Subscribe = () => {
               {pool?.quoteSymbol && (
                 <Box
                   className={
-                    'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
+                    'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[3px] pr-[6px] pl-[4px] text-[14px]'
                   }
                 >
                   <img

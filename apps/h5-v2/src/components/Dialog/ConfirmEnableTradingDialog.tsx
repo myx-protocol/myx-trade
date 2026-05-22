@@ -1,4 +1,4 @@
-import { DialogBase } from '@/components/UI/DialogBase'
+import { DialogBase } from '@/components/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import React, { memo } from 'react'
 import { Box, Button } from '@mui/material'
@@ -38,7 +38,7 @@ const ConfirmEnableTradingFooter = memo(
     })
 
     return (
-      <Box className={'flex w-full gap-[12px] pb-[8px]'}>
+      <Box className={'flex w-full gap-[12px] px-[20px] pb-[24px]'}>
         <Button
           className={'gradient gray !min-h-[44px] flex-[122] !rounded-[44px]'}
           loading={notNowLoading}
@@ -77,7 +77,21 @@ export const ConfirmEnableTradingDialog = memo(
     tokenSymbol = '--',
   }: ConfirmEnableTradingDialogProps) => {
     return (
-      <DialogBase open={open} onClose={onClose}>
+      <DialogBase
+        open={open}
+        onClose={onClose}
+        showCloseIcon
+        title={null}
+        footer={
+          <ConfirmEnableTradingFooter
+            onNotNow={onNotNow}
+            onPay={onPay}
+            feeAmount={feeAmount}
+            tokenSymbol={tokenSymbol}
+          />
+        }
+        contentClassname={'!pt-0'}
+      >
         <Box className={'flex flex-col items-center'}>
           <Box className={'text-secondary pb-[20px]'}>
             <RocketLaunchLine size={56} />
@@ -136,12 +150,6 @@ export const ConfirmEnableTradingDialog = memo(
             </p>
           </Box>
         </Box>
-        <ConfirmEnableTradingFooter
-          onNotNow={onNotNow}
-          onPay={onPay}
-          feeAmount={feeAmount}
-          tokenSymbol={tokenSymbol}
-        />
       </DialogBase>
     )
   },

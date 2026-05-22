@@ -11,7 +11,7 @@ import { COMMON_LP_AMOUNT_DECIMALS } from "@/config/decimals.js";
 import { getPublicClient } from "@/web3";
 
 
-export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number) => {
+export const transfer = async (chainId:ChainId,fromPoolId:string, toPoolId: string, amount: number | string) => {
   try {
     const fromPool  = await getPoolInfo(chainId, fromPoolId);
     const toPool  = await getPoolInfo(chainId, toPoolId);

@@ -63,7 +63,7 @@ export const previewUserWithdrawData = async ({ chainId, account, poolId, amount
       decimals,
       account,
       chainId,
-      amount: Number(amount),
+      amount: amount,
     })
     
     const amountIn = parseUnits(amount.toString(), decimals);

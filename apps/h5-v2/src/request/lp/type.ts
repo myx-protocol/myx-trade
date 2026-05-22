@@ -8,6 +8,7 @@ import {
   type PriceInterval,
   PoolType,
   type Rating,
+  type IPage,
 } from '@/request/type.ts'
 import { type MarketPoolState, type TriggerType } from '@myx-trade/sdk'
 
@@ -466,7 +467,7 @@ export interface PoolBoostResponse extends BaseResponse {
   data: null | PoolBoostInfo
 }
 
-export interface IPoolOrdersRequest extends PageRequest {
+export interface IPoolOrdersRequest extends IPage {
   chainId?: number
   poolId?: string
   poolType: PoolType
@@ -504,6 +505,7 @@ export type LpOpenOrder = {
   triggerType: TriggerType
   tokenIcon: string
   triggerPrice: string
+  id: number
 }
 
 export interface PoolOpenOrdersResponse extends BaseResponse {
@@ -526,6 +528,7 @@ export interface PoolHistoryOrder {
   orderType: LpOrderType
   tokenIcon: string
   price: string
+  id: number
 }
 
 export interface PoolHistoryOrdersResponse extends BaseResponse {
