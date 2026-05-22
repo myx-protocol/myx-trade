@@ -155,8 +155,11 @@ export const DialogNoTitleTheme = memo(
     return (
       <Box>
         <Box
-          className={twMerge('flex items-center justify-end px-[20px] text-[#FFFFFF]', className)}
-          padding={'16px 16px 0'}
+          className={twMerge(
+            'text-secondary flex cursor-pointer items-center justify-end px-[20px] hover:text-white',
+            className,
+          )}
+          padding={'24px 20px 8px'}
         >
           {onClose ? <CloseIcon size={16} onClick={onClose} /> : null}
         </Box>

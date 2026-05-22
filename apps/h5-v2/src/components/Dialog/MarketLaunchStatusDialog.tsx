@@ -94,6 +94,7 @@ export const MarketLaunchStatusDialog = memo(
             tokenSymbol={tokenSymbol}
           />
         }
+        contentClassname={'!pt-0'}
       >
         <Box className={'flex flex-col items-center'}>
           <Box className={'text-secondary pb-[20px]'}>

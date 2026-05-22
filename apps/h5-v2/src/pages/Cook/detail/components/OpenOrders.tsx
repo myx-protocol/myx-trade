@@ -4,7 +4,7 @@ import { type ReactNode, useCallback, useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { LpOpenOrder } from '@/request/lp/type.ts'
 import { getPoolOpenOrders } from '@/request'
-import { PoolType, PageDirection, type Address } from '@/request/type.ts'
+import { PoolType, type Address } from '@/request/type.ts'
 import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
@@ -44,7 +44,7 @@ export const OpenOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll: b
   const { poolId } = usePoolContext()
 
   const [list, setList] = useState<LpOpenOrder[]>([])
-  const [cursor, setCursor] = useState<string | undefined>(undefined)
+  const [cursor, setCursor] = useState<number | undefined>(undefined)
   const [hasMore, setHasMore] = useState(true)
   const [order, setOrder] = useState<LpOpenOrder | null>(null)
 
@@ -59,8 +59,7 @@ export const OpenOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll: b
         chainId,
         poolType: PoolType.base,
         limit: paginatedLimit,
-        direction: cursor ? PageDirection.Next : undefined,
-        cursor,
+        after: cursor ?? undefined,
         poolId: showAll ? undefined : poolId,
       })
       const data = result?.data || []
@@ -78,7 +77,7 @@ export const OpenOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll: b
 
   const loadMore = () => {
     if (list.length > 0) {
-      setCursor(list[list.length - 1].orderId.toString())
+      setCursor(list[list.length - 1].id)
     }
   }
 

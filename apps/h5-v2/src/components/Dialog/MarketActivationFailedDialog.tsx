@@ -67,6 +67,7 @@ export const MarketActivationFailedDialog = memo(
         showCloseIcon
         title={null}
         footer={<MarketActivationFailedFooter onLater={onLater} onClaimRefund={onClaimRefund} />}
+        contentClassname={'!pt-0'}
       >
         <Box className={'flex flex-col items-center'}>
           <Box className={'text-secondary pb-[20px]'}>

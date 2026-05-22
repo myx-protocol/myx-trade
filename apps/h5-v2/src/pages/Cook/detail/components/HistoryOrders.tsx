@@ -4,7 +4,7 @@ import { type ReactNode, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { type PoolHistoryOrder, LpOrderStatus, LpOrderType } from '@/request/lp/type.ts'
 import { getPoolHistoryOrders } from '@/request'
-import { PoolType, PageDirection, type Address } from '@/request/type.ts'
+import { PoolType, type Address } from '@/request/type.ts'
 import { useAccessToken } from '@/hooks/useAccessToken.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
@@ -51,7 +51,7 @@ export const HistoryOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll
   const { poolId } = usePoolContext()
 
   const [list, setList] = useState<PoolHistoryOrder[]>([])
-  const [cursor, setCursor] = useState<string | undefined>(undefined)
+  const [cursor, setCursor] = useState<number | undefined>(undefined)
   const [hasMore, setHasMore] = useState(true)
 
   const queryKey = [
@@ -73,8 +73,7 @@ export const HistoryOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll
         chainId: chainId!,
         poolType: PoolType.base,
         limit: paginatedLimit,
-        direction: cursor ? PageDirection.Next : undefined,
-        cursor,
+        after: cursor,
         poolId: showAll ? undefined : poolId,
       })
       const data = result?.data || []
@@ -92,7 +91,7 @@ export const HistoryOrders = ({ chainId, showAll }: { chainId?: ChainId; showAll
 
   const loadMore = () => {
     if (list.length > 0) {
-      setCursor(list[list.length - 1].orderId.toString())
+      setCursor(list[list.length - 1].id)
     }
   }
 
