@@ -17,6 +17,7 @@ import { lazy } from 'react'
 import Referrals from '@/pages/Referrals'
 import SelectReferral from '@/pages/Referrals/SelectReferral'
 import VIP from '@/pages/VIP'
+import { CookDetail as CookDetailV2 } from '@/pages/Cook/detail-v2'
 
 const Record = lazy(() => import('@/pages/record'))
 const Price = lazy(() => import('@/pages/Price'))
@@ -73,7 +74,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'cook/:chainId/:poolId',
-        element: <CookDetail />,
+        element: <CookDetailV2 />,
+        // element: <CookDetail />,
       },
       {
         path: 'trench/:chainId/:poolId',
