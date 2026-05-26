@@ -48,8 +48,6 @@ import CaretRight from './set/CaretRight.tsx'
 import Selected from './set/Selected.tsx'
 import Warning from './set/Warning'
 import BigWaningLine from '@/components/Icon/set/BigWaningLine.tsx'
-import CheckBoxBorder from './set/CheckBoxBorder.tsx'
-import Checked from './set/Checked.tsx'
 import IconTpsl from './set/Tpsl.tsx'
 import IconClaimRewards from './set/ClaimRewards.tsx'
 import Help from '@/components/Icon/set/Help.tsx'
@@ -124,8 +122,6 @@ export {
   Warning,
   Help,
   BigWaningLine,
-  CheckBoxBorder,
-  Checked,
   IconTpsl,
   IconClaimRewards,
 }

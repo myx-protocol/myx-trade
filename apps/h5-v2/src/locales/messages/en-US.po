@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-15 09:31\n"
+"PO-Revision-Date: 2026-05-26 09:00\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -118,11 +117,11 @@ msgstr ""
 
 #: src/components/Dialog/TPSLDialog.tsx
 msgid "{baseSymbol}{quoteSymbol} Base Vault"
-msgstr "{baseSymbol}{quoteSymbol} Base Vault"
+msgstr ""
 
 #: src/components/Dialog/TPSLDialog.tsx
 msgid "{baseSymbol}{quoteSymbol} Stable Vault"
-msgstr "{baseSymbol}{quoteSymbol} Stable Vault"
+msgstr ""
 
 #: src/components/Trade/TradePanel/Leverage/index.tsx
 msgid "{leverage}x"
@@ -441,7 +440,7 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "Amount / Value"
-msgstr "Amount / Value"
+msgstr ""
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Amount must be greater than 0"
@@ -604,7 +603,7 @@ msgstr ""
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "Balance:"
-msgstr "Balance:"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Base Parameter S"
@@ -613,7 +612,7 @@ msgstr ""
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Base Valut"
-msgstr "Base Valut"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1358,7 +1357,7 @@ msgstr ""
 #. placeholder {1}: cutDownFormat(dayjs.duration(countdown))
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0>View Delisting Rules</0>"
-msgstr "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0>View Delisting Rules</0>"
+msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "During the validity period, if your level is below <0>VIP{level}</0>, you can enjoy the benefits of <1>VIP{level}</1>."
@@ -1608,7 +1607,7 @@ msgstr ""
 
 #: src/components/Dialog/TPSLDialog.tsx
 msgid "Est. PnL"
-msgstr "Est. PnL"
+msgstr ""
 
 #: src/components/CookDetail/Order/EstRate.tsx
 #: src/pages/Earn/components/Trade/EstRate.tsx
@@ -2009,9 +2008,8 @@ msgid "Hide other"
 msgstr ""
 
 #: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
-#: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
-msgstr "Hide other symbols"
+msgstr ""
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "High-Risk Asset Warning"
@@ -3246,7 +3244,7 @@ msgstr ""
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
-msgstr "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
+msgstr ""
 
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
@@ -3472,7 +3470,6 @@ msgstr ""
 msgid "Paid from Wallet: {0} {1}"
 msgstr ""
 
-#: src/pages/Cook/detail-v2/components/BoostPaidSyncingStatus.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Paid. Syncing status"
 msgstr ""
@@ -3611,7 +3608,7 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Pool not found"
-msgstr "Pool not found"
+msgstr ""
 
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pool reprime"
@@ -4433,7 +4430,7 @@ msgstr ""
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Stable Vault"
-msgstr "Stable Vault"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "Staking"
@@ -4468,11 +4465,11 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "Step1"
-msgstr "Step1"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "Step2"
-msgstr "Step2"
+msgstr ""
 
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
@@ -4517,7 +4514,7 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Successfully deposit"
-msgstr "Successfully deposit"
+msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
@@ -4667,7 +4664,7 @@ msgstr ""
 #. placeholder {1}: lpSymbol || '--'
 #: src/pages/Cook/detail-v2/components/CookRedeemGenesisBurnTip.tsx
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
-msgstr "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
+msgstr ""
 
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -4705,7 +4702,7 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "Token"
-msgstr "Token"
+msgstr ""
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Token age(min)"
@@ -5366,7 +5363,7 @@ msgstr ""
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "也可以支付"
-msgstr "也可以支付"
+msgstr "Or pay with"
 
 #: src/pages/Price/components/Tabs.tsx
 msgid "交易参数"
@@ -5415,7 +5412,7 @@ msgstr "Position Closed"
 
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "余额"
-msgstr "余额"
+msgstr "Balance"
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
@@ -5467,7 +5464,7 @@ msgstr "ALL"
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "关闭"
-msgstr "关闭"
+msgstr "Close"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5487,10 +5484,6 @@ msgstr "Max Slippage"
 msgid "最新价/24h涨跌幅"
 msgstr "Last Price / 24h Chg"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "准备上线中"
-msgstr "准备上线中"
-
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
 msgstr "Decrease Margin"
@@ -5509,11 +5502,11 @@ msgstr "Transfer to Wallet"
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "创世 LP 可额外获得平台手续费分成。"
-msgstr "创世 LP 可额外获得平台手续费分成。"
+msgstr "Genesis LPs earn an additional share of platform fees."
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "创世收益"
-msgstr "创世收益"
+msgstr "Genesis Rewards"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
@@ -5530,11 +5523,7 @@ msgstr "Loading..."
 
 #: src/pages/Cook/detail-v2/components/ProgressSection.tsx
 msgid "募集进度"
-msgstr "募集进度"
-
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "去激活"
-msgstr "去激活"
+msgstr "Bootstrapping Progress"
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5617,7 +5606,7 @@ msgstr "Order Amount"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "存入"
-msgstr "存入"
+msgstr "Deposit"
 
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "完全平仓"
@@ -5634,7 +5623,7 @@ msgstr "Filled / Order ({0})"
 
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "已选择token"
-msgstr "已选择token"
+msgstr "Selected token"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 msgid "市价"
@@ -5783,7 +5772,7 @@ msgstr "Authorize"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "提前启动市场。"
-msgstr "提前启动市场。"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
@@ -5800,7 +5789,7 @@ msgstr "Search Results"
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
-msgstr "支付"
+msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5925,7 +5914,7 @@ msgstr "Slippage Exceeded"
 #: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "激活"
-msgstr "激活"
+msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -5954,23 +5943,19 @@ msgstr "Confirm"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认存入"
-msgstr "确认存入"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认激活"
-msgstr "确认激活"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认赎回"
-msgstr "确认赎回"
+msgstr ""
 
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "Create my contract trading market now"
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "等待市场开启"
-msgstr "等待市场开启"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
@@ -6027,7 +6012,7 @@ msgstr "Order Size Limit Exceeded"
 
 #: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 msgid "订单记录"
-msgstr "订单记录"
+msgstr ""
 
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
@@ -6039,19 +6024,19 @@ msgstr "Buy MLP"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "赎回"
-msgstr "赎回"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "达到启动阈值，可快速达成募集并开盘。"
-msgstr "达到启动阈值，可快速达成募集并开盘。"
+msgstr "Launch threshold reached. Ready to finalize bootstrapping and open market."
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "还差"
-msgstr "还差"
+msgstr "Needed"
 
 #: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "选择Token"
-msgstr "选择Token"
+msgstr "Select Token"
 
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Market/components/TokenSelect.tsx
@@ -6068,7 +6053,7 @@ msgstr "Select Your Assets"
 
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "选择计价单位"
-msgstr "选择计价单位"
+msgstr "Select Quote Token"
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择链接"
@@ -6140,3 +6125,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
