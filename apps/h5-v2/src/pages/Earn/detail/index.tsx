@@ -48,7 +48,7 @@ const Detail = () => {
     <PoolProvider>
       <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pb-[50px]">
         <div className={'bg-deep sticky top-[0] z-[10]'}>
-          <NavBar onBack={() => navigate('/earn', { replace: true })} />
+          <NavBar onBack={() => navigate('/earn?type=earn', { replace: true })} />
           <TabBar value={type} onChange={(value) => setType(value)} />
         </div>
         <div className={'relative'}>
