@@ -3,3 +3,8 @@ export enum VaultTabsEnum {
   UsdtMarket = 'usdt_market',
   UsdcMarket = 'usdc_market',
 }
+
+export enum EarnTabType {
+  Trench = 'trench',
+  Earn = 'earn',
+}

@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-26 09:00\n"
+"PO-Revision-Date: 2026-05-27 06:11\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1179,10 +1179,6 @@ msgstr ""
 msgid "Create a Contract Market"
 msgstr ""
 
-#: src/pages/Cook/components/Banner.tsx
-msgid "Create a Market"
-msgstr ""
-
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
 #: src/pages/Home/components/ActivitySwiper/index.tsx
@@ -1194,6 +1190,10 @@ msgstr ""
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
 msgstr ""
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Create Now"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
 msgstr ""
@@ -1202,7 +1202,6 @@ msgstr ""
 msgid "Create Time"
 msgstr ""
 
-#: src/pages/Cook/components/Banner.tsx
 #: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
@@ -1217,6 +1216,7 @@ msgid "Current Level"
 msgstr ""
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "Current Orders"
 msgstr ""
 
@@ -1371,7 +1371,7 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
-#: src/components/Tabbar/const.tsx
+#: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
 msgstr ""
@@ -1895,6 +1895,10 @@ msgstr ""
 msgid "From"
 msgstr ""
 
+#: src/pages/Earn/components/TrenchBanner.tsx
+msgid "Fuel the MPM 2.0 engine. Turn your holdings into a high-yield generating powerhouse"
+msgstr ""
+
 #. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
 #: src/components/Dialog/MarketActivationFailedDialog.tsx
@@ -2016,6 +2020,7 @@ msgid "High-Risk Asset Warning"
 msgstr ""
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "History Orders"
 msgstr ""
 
@@ -2548,6 +2553,10 @@ msgstr ""
 msgid "Latest Price"
 msgstr ""
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Launch Any Pair, Claim 2% Genesis Rewards!"
+msgstr ""
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "Level"
 msgstr ""
@@ -2864,6 +2873,10 @@ msgstr ""
 msgid "Max Slippage"
 msgstr ""
 
+#: src/pages/Earn/components/TrenchBanner.tsx
+msgid "Maximize Your Base Assets"
+msgstr ""
+
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
 msgstr ""
@@ -2939,6 +2952,7 @@ msgid "More detailed help content will be available soon."
 msgstr ""
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "My Assets"
 msgstr ""
 
@@ -3242,13 +3256,6 @@ msgstr ""
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
-msgstr ""
-
-#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
-#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
-#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
 #. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
 #. placeholder {4}: pool?.quoteSymbol || '--'
 #. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => { setBoostConfirmBoostOpen(true) }} > [ {<Trans>Unlock Market Early</Trans>} ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ {<Trans>`Paid. Syncing status</Trans>}... ] </button> )
@@ -3470,6 +3477,7 @@ msgstr ""
 msgid "Paid from Wallet: {0} {1}"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/components/BoostPaidSyncingStatus.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Paid. Syncing status"
 msgstr ""
@@ -3742,6 +3750,7 @@ msgstr ""
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
@@ -3804,10 +3813,6 @@ msgstr ""
 
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
-msgstr ""
-
-#: src/pages/Earn/detail/components/HistoryOrders.tsx
-msgid "Rate"
 msgstr ""
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
@@ -4917,21 +4922,19 @@ msgid "TreeAlreadySet()"
 msgstr ""
 
 #: src/pages/Cook/components/ToolBar.tsx
+#: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Trench"
 msgstr ""
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
 msgid "Trigger Price"
 msgstr ""
 
 #: src/utils/verify.ts
 msgid "Trigger price must be between Liquidation and Auto-TP prices."
-msgstr ""
-
-#: src/pages/Earn/detail/components/OpenOrders.tsx
-msgid "Trigger Rate"
 msgstr ""
 
 #: src/ErrorPage.tsx
@@ -5126,6 +5129,7 @@ msgstr "UUPS unsupported proxiable UUID (bytes32)"
 msgid "Valid From: {0} — {1}"
 msgstr ""
 
+#: src/components/Tabbar/const.tsx
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/MyHoldings.tsx
@@ -5253,7 +5257,6 @@ msgid "What is the {0} Vault?"
 msgstr ""
 
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "When checked, the system will only redeem your regular LP shares."
 msgstr ""
@@ -5357,6 +5360,10 @@ msgstr ""
 msgid "Your request to early launch the market could not be executed."
 msgstr ""
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Zero setup required. Be the first to provide liquidity and capture exclusive fee shares."
+msgstr ""
+
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ZeroQueries()"
 msgstr ""
@@ -5419,7 +5426,6 @@ msgid "保存失败"
 msgstr "Save Failed"
 
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "保留创世LP份额"
 msgstr "Retain Genesis LP Share"
 
@@ -5484,6 +5490,10 @@ msgstr "Max Slippage"
 msgid "最新价/24h涨跌幅"
 msgstr "Last Price / 24h Chg"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "准备上线中"
+msgstr "Launch Pending"
+
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
 msgstr "Decrease Margin"
@@ -5524,6 +5534,10 @@ msgstr "Loading..."
 #: src/pages/Cook/detail-v2/components/ProgressSection.tsx
 msgid "募集进度"
 msgstr "Bootstrapping Progress"
+
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "去激活"
+msgstr "Deactivate"
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5772,7 +5786,7 @@ msgstr "Authorize"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "提前启动市场。"
-msgstr ""
+msgstr "Launch market early."
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
@@ -5789,7 +5803,7 @@ msgstr "Search Results"
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
-msgstr ""
+msgstr "Pay"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5914,7 +5928,7 @@ msgstr "Slippage Exceeded"
 #: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "激活"
-msgstr ""
+msgstr "Activate"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -5943,19 +5957,23 @@ msgstr "Confirm"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认存入"
-msgstr ""
+msgstr "Confirm Deposit"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认激活"
-msgstr ""
+msgstr "Confirm Activation"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认赎回"
-msgstr ""
+msgstr "Confirm Redeem"
 
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "Create my contract trading market now"
+
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "等待市场开启"
+msgstr "Awaiting Launch"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
@@ -6012,7 +6030,7 @@ msgstr "Order Size Limit Exceeded"
 
 #: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 msgid "订单记录"
-msgstr ""
+msgstr "Order History"
 
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
@@ -6024,7 +6042,7 @@ msgstr "Buy MLP"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "赎回"
-msgstr ""
+msgstr "Redeem"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "达到启动阈值，可快速达成募集并开盘。"
