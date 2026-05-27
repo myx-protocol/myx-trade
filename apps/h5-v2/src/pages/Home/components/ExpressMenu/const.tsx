@@ -1,12 +1,11 @@
 import MenuEarn from '@/assets/home/earn.png'
 import MenuReferral from '@/assets/home/referral.png'
 import MenuVip from '@/assets/home/vip.png'
-import MenuDate from '@/assets/home/date.png'
 import MenuCook from '@/assets/home/cook.png'
 import MenuTrench from '@/assets/home/trench.png'
 
 import { Trans } from '@lingui/react/macro'
-import { CookType } from '@/pages/Cook/type'
+import { EarnTabType } from '@/pages/Earn/components/type'
 
 interface MenuItem {
   icon: string
@@ -28,7 +27,7 @@ export const EXPRESS_MENU_LIST: MenuItem[] = [
   {
     title: () => <Trans>Trench</Trans>,
     icon: MenuTrench,
-    href: `/cook?type=${CookType.Trench}`,
+    href: `/earn?type=${EarnTabType.Trench}`,
   },
   {
     title: () => <Trans>Cook</Trans>,

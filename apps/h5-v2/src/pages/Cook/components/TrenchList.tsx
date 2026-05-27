@@ -1,12 +1,11 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { CookType, type Token, TrenchType } from '@/pages/Cook/type.ts'
+import { useEffect, useMemo, useState } from 'react'
+import { type Token, TrenchType } from '@/pages/Cook/type.ts'
 import Box from '@mui/material/Box'
 import { useQuery } from '@tanstack/react-query'
 import { getTrenchList } from '@/request'
 import type { PriceMapType, Trench } from '@/request/lp/type.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { useNavigate } from 'react-router-dom'
-import { CookContext } from '@/pages/Cook/context.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { Interval, PageDirection, type TrenchSortField } from '@/request/type.ts'
 import { CoinIcon } from '@/components/UI/CoinIcon'
@@ -41,13 +40,14 @@ export const TrenchList = ({
   sortField,
   interval,
   chainId,
+  enabled = true,
 }: {
   sortField: TrenchType
   interval?: Interval
   chainId?: number
+  enabled?: boolean
 }) => {
   const navigate = useNavigate()
-  const { type } = useContext(CookContext)
   const { markets } = useMyxSdkClient()
   const { address: account } = useWalletConnection()
   const [after, setAfter] = useState<string | undefined>(undefined)
@@ -68,8 +68,8 @@ export const TrenchList = ({
   }
 
   const { isLoading } = useQuery({
-    queryKey: [{ key: 'TokenNewList' }, type, interval, chainId, sortField, account, after],
-    enabled: type === CookType.Trench,
+    queryKey: [{ key: 'TokenNewList' }, interval, chainId, sortField, account, after],
+    enabled,
     queryFn: async () => {
       const paginatedLimit = limit + 1
       const result = await getTrenchList({

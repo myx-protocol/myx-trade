@@ -31,7 +31,7 @@ const sortField = SortField.tvl
 const sortOrder = 'desc'
 const limit = 20
 
-export const Positions = ({ className = '' }: { className?: string }) => {
+export const Positions = () => {
   const navigate = useNavigate()
   const { accessToken } = useAccessToken()
   const { address: account } = useWalletConnection()
@@ -219,7 +219,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
 
   return (
     <InfiniteScrollView
-      dataLength={list.length}
+      dataLength={positions.length}
       loadMore={() => infiniteQuery.fetchNextPage()}
       hasMore={!!infiniteQuery.hasNextPage}
       scrollableTarget={'scrollView'}

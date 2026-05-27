@@ -1,30 +1,18 @@
-import { ToolBar } from '@/pages/Cook/components/ToolBar.tsx'
 import { CookContext } from '@/pages/Cook/context.ts'
 import { useEffect, useState } from 'react'
-import { CookListType, CookType, TrenchType } from '@/pages/Cook/type.ts'
+import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import { Box } from '@mui/material'
-import { TrenchTabBar } from '@/pages/Cook/components/TrenchTabBar.tsx'
-import { Interval } from '@/request/type.ts'
 import { t } from '@lingui/core/macro'
 import { Banner } from '@/pages/Cook/components/Banner.tsx'
 import { CookSubBar } from '@/pages/Cook/components/CookSubBar.tsx'
 import { ChainsBar } from './components/ChainsBar'
-import { TrenchSubBar } from '@/pages/Cook/components/TrenchSubBar.tsx'
-import { IntervalList } from '@/pages/Cook/components/Interval.tsx'
-import { ChainDropDownMenu } from './components/ChainDropDownMenu'
 import { CookTabs } from '@/pages/Cook/components/CookTabs.tsx'
-import { TrenchList } from './components/TrenchList'
-import { useSearchParams } from 'react-router-dom'
 import { SearchBar } from '@/components/SearchBar.tsx'
 import { SearchTypeEnum } from '@myx-trade/sdk'
-import { Dashboard } from './components/Dashboard'
 
 const Cook = () => {
-  const [type, setType] = useState<CookType>(CookType.Cook)
   const [cookType, setCookType] = useState<CookListType>(CookListType.Sniper)
   const [chainId, setChainId] = useState<number | undefined>(undefined)
-  const [interval, setInterval] = useState<Interval | undefined>(Interval['24h'])
-  const [trenchType, setTrenchType] = useState<TrenchType>(TrenchType.Eligible)
 
   const [age, setAge] = useState<[string, string]>(['', ''])
   const [mc, setMC] = useState<[string, string]>(['', ''])
@@ -32,22 +20,10 @@ const Cook = () => {
   const [change, setChange] = useState<[string, string]>(['', ''])
   const [liq, setLiq] = useState<[string, string]>(['', ''])
   const [holders, setHolders] = useState<[string, string]>(['', ''])
-  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     document.title = t`Cook - Build High-Yield Pools | MYX`
   }, [])
-
-  useEffect(() => {
-    let type = searchParams.get('type')
-    if (Array.isArray(type)) {
-      type = type[0]
-    }
-    if (!type) return
-    if (type === CookType.Cook || type === CookType.Trench) {
-      setType(type)
-    }
-  }, [searchParams])
 
   return (
     <Box className={'h-[calc(100vh-var(--tabbar-height))] overflow-hidden'}>
@@ -57,11 +33,10 @@ const Cook = () => {
       >
         <SearchBar defaultTab={SearchTypeEnum.Cook} />
         <Banner />
-        <Dashboard />
         <CookContext.Provider
           value={{
-            type,
-            setType,
+            type: CookType.Cook,
+            setType: () => {},
             cookType,
             setCookType,
             age,
@@ -79,32 +54,10 @@ const Cook = () => {
           }}
         >
           <Box className={'bg-deep sticky top-[0] z-[1]'}>
-            <ToolBar />
-            {type === CookType.Cook ? (
-              <>
-                <CookSubBar className={'mt-[-4px]'} />
-                <ChainsBar className={'mt-[4px]'} setChainId={setChainId} chainId={chainId} />
-              </>
-            ) : (
-              <>
-                <TrenchTabBar
-                  className={'mt-[-4px]'}
-                  type={trenchType}
-                  onTypeChange={(_type) => setTrenchType(_type)}
-                />
-
-                <TrenchSubBar>
-                  <IntervalList interval={interval} setInterval={setInterval} />
-                  <ChainDropDownMenu setChainId={setChainId} chainId={chainId} />
-                </TrenchSubBar>
-              </>
-            )}
+            <CookSubBar className={'mt-[-4px]'} />
+            <ChainsBar className={'mt-[4px]'} setChainId={setChainId} chainId={chainId} />
           </Box>
-          {type === CookType.Cook ? (
-            <CookTabs chainId={chainId} />
-          ) : (
-            <TrenchList sortField={trenchType} interval={interval} chainId={chainId} />
-          )}
+          <CookTabs chainId={chainId} />
         </CookContext.Provider>
       </Box>
     </Box>

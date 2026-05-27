@@ -40,7 +40,7 @@ export const TAB_LIST: TabItem[] = [
     hidden: false,
   },
   {
-    label: () => t`Earn`,
+    label: () => t`Vault`,
     path: '/earn',
     icon: <EarnIcon size={18} />,
     hidden: false,
