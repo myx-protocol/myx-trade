@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-26 09:00\n"
+"PO-Revision-Date: 2026-05-27 06:11\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -1193,7 +1192,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Create Now"
-msgstr "Create Now"
+msgstr ""
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1898,7 +1897,7 @@ msgstr ""
 
 #: src/pages/Earn/components/TrenchBanner.tsx
 msgid "Fuel the MPM 2.0 engine. Turn your holdings into a high-yield generating powerhouse"
-msgstr "Fuel the MPM 2.0 engine. Turn your holdings into a high-yield generating powerhouse"
+msgstr ""
 
 #. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
@@ -2556,7 +2555,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Launch Any Pair, Claim 2% Genesis Rewards!"
-msgstr "Launch Any Pair, Claim 2% Genesis Rewards!"
+msgstr ""
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Level"
@@ -2876,7 +2875,7 @@ msgstr ""
 
 #: src/pages/Earn/components/TrenchBanner.tsx
 msgid "Maximize Your Base Assets"
-msgstr "Maximize Your Base Assets"
+msgstr ""
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
@@ -5363,7 +5362,7 @@ msgstr ""
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Zero setup required. Be the first to provide liquidity and capture exclusive fee shares."
-msgstr "Zero setup required. Be the first to provide liquidity and capture exclusive fee shares."
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ZeroQueries()"
@@ -5493,7 +5492,7 @@ msgstr "Last Price / 24h Chg"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "准备上线中"
-msgstr "准备上线中"
+msgstr "Launch Pending"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
@@ -5538,7 +5537,7 @@ msgstr "Bootstrapping Progress"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "去激活"
-msgstr "去激活"
+msgstr "Deactivate"
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5787,7 +5786,7 @@ msgstr "Authorize"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "提前启动市场。"
-msgstr ""
+msgstr "Launch market early."
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
@@ -5804,7 +5803,7 @@ msgstr "Search Results"
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
-msgstr ""
+msgstr "Pay"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5929,7 +5928,7 @@ msgstr "Slippage Exceeded"
 #: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "激活"
-msgstr ""
+msgstr "Activate"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -5958,15 +5957,15 @@ msgstr "Confirm"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认存入"
-msgstr ""
+msgstr "Confirm Deposit"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认激活"
-msgstr ""
+msgstr "Confirm Activation"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认赎回"
-msgstr ""
+msgstr "Confirm Redeem"
 
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
@@ -5974,7 +5973,7 @@ msgstr "Create my contract trading market now"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "等待市场开启"
-msgstr "等待市场开启"
+msgstr "Awaiting Launch"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
@@ -6031,7 +6030,7 @@ msgstr "Order Size Limit Exceeded"
 
 #: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 msgid "订单记录"
-msgstr ""
+msgstr "Order History"
 
 #: src/utils/order/action-toast.tsx
 msgid "调整保证金成功"
@@ -6043,7 +6042,7 @@ msgstr "Buy MLP"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "赎回"
-msgstr ""
+msgstr "Redeem"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "达到启动阈值，可快速达成募集并开盘。"
@@ -6144,3 +6143,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+

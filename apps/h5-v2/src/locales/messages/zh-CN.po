@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-26 09:00\n"
+"PO-Revision-Date: 2026-05-27 06:11\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -1193,7 +1192,7 @@ msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Create Now"
-msgstr ""
+msgstr "立即创建"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1898,7 +1897,7 @@ msgstr "从"
 
 #: src/pages/Earn/components/TrenchBanner.tsx
 msgid "Fuel the MPM 2.0 engine. Turn your holdings into a high-yield generating powerhouse"
-msgstr ""
+msgstr "解锁基础资产的高额生息潜力"
 
 #. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
@@ -2556,7 +2555,7 @@ msgstr "最新价格"
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Launch Any Pair, Claim 2% Genesis Rewards!"
-msgstr ""
+msgstr "上线任意交易对，立享 2% 创世奖励！"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Level"
@@ -2876,7 +2875,7 @@ msgstr "最大滑点"
 
 #: src/pages/Earn/components/TrenchBanner.tsx
 msgid "Maximize Your Base Assets"
-msgstr ""
+msgstr "闲置资产，极致收益"
 
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
@@ -4199,9 +4198,7 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr ""
-"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
-""
+msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
@@ -5365,7 +5362,7 @@ msgstr "您提前开启市场的请求未能执行。"
 
 #: src/pages/Cook/components/Banner.tsx
 msgid "Zero setup required. Be the first to provide liquidity and capture exclusive fee shares."
-msgstr ""
+msgstr "提供流动性，独享专属手续费分成。"
 
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ZeroQueries()"
@@ -5495,7 +5492,7 @@ msgstr "最新价/24h涨跌幅"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "准备上线中"
-msgstr ""
+msgstr "准备上线中"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
@@ -5540,7 +5537,7 @@ msgstr "募集进度"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "去激活"
-msgstr ""
+msgstr "去激活"
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5976,7 +5973,7 @@ msgstr "立即创建我的合约交易市场"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "等待市场开启"
-msgstr ""
+msgstr "等待市场开启"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
@@ -6146,3 +6143,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+
