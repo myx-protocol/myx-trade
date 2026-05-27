@@ -243,12 +243,14 @@ export enum MarketType {
   Contract = 1,
   Cook = 2,
   Earn = 3,
+  Cooking = 4
 }
 export enum SearchTypeEnum {
   All = 0,
   Contract = MarketType.Contract,
   Cook = MarketType.Cook,
   Earn = MarketType.Earn,
+  Cooking = MarketType.Cooking,
 }
 
 export enum MarketCapType {
