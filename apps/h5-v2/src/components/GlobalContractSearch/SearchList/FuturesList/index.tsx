@@ -1,5 +1,5 @@
 import { useGlobalContractSearchStore } from '../../store'
-import { type SearchResultContractItem } from '@myx-trade/sdk'
+import { SearchSecondTypeEnum, type SearchResultContractItem } from '@myx-trade/sdk'
 import { NotFound } from '../NotFound'
 import { useCallback, useRef, useState } from 'react'
 import { SearchListLoading } from '../Loading'
@@ -10,13 +10,16 @@ import { Sort } from '@/components/Sort'
 import { Trans } from '@lingui/react/macro'
 import { useSortData } from '@/hooks/useSortData'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
+import { FavoritesDefault } from '@/components/FavoritesDefault'
+import { tradePubSub } from '@/utils/pubsub'
 
 interface FuturesListProps {
   onSelected: (item: SearchResultContractItem) => void
 }
 
 export const FuturesList = ({ onSelected }: FuturesListProps) => {
-  const { searchResult, searchLoading, sort, setSort } = useGlobalContractSearchStore()
+  const { searchResult, searchLoading, sort, setSort, secondSearchTab } =
+    useGlobalContractSearchStore()
   const contractInfoData = searchResult?.contractInfo
   const tickerData = useMarketStore((state) => state.tickerData)
 
@@ -109,7 +112,21 @@ export const FuturesList = ({ onSelected }: FuturesListProps) => {
     setActivePool([])
   })
 
-  if (!contractInfoData?.list?.length && !searchLoading) return <NotFound />
+  if (!contractInfoData?.list?.length && !searchLoading) {
+    if (contractInfoData?.favorites.length && secondSearchTab === SearchSecondTypeEnum.Favorite) {
+      return (
+        <div className="mt-[8px]">
+          <FavoritesDefault
+            favorites={contractInfoData.favorites}
+            onAddFavoritesSuccess={() => {
+              tradePubSub.emit('global:search:update')
+            }}
+          />
+        </div>
+      )
+    }
+    return <NotFound />
+  }
 
   return (
     <div className="flex min-h-0 flex-[1_1_0%] flex-col">

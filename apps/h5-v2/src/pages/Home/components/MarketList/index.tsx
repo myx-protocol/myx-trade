@@ -31,7 +31,12 @@ export const MarketList = () => {
     ]
   }, [])
   const [activeMarket, setActiveMarket] = useState<TabMarketValue>('Hot')
+  const [isShowFavoritiesDefault, setIsShowFavoritiesDefault] = useState(false)
+  const onFavoritiesDefaultChange = (bool: boolean) => {
+    setIsShowFavoritiesDefault(bool)
+  }
 
+  const hideHeader = activeMarket === 'Favorites' && isShowFavoritiesDefault
   return (
     <div className="mt-[24px] w-full px-[16px]">
       {/* header */}
@@ -58,12 +63,16 @@ export const MarketList = () => {
       </div>
 
       {/* list header */}
-      <div className="mt-[20px] w-full text-[12px] leading-[1.2] text-[#848E9C]">
-        <MarketListRow
-          values={[<Trans>Name</Trans>, <Trans>Last Price</Trans>, <Trans>Change %</Trans>]}
-        />
-      </div>
-      {activeMarket === 'Favorites' && <FavoritesList />}
+      {!hideHeader && (
+        <div className="mt-[20px] w-full text-[12px] leading-[1.2] text-[#848E9C]">
+          <MarketListRow
+            values={[<Trans>Name</Trans>, <Trans>Last Price</Trans>, <Trans>Change %</Trans>]}
+          />
+        </div>
+      )}
+      {activeMarket === 'Favorites' && (
+        <FavoritesList onFavoritiesDefaultChange={onFavoritiesDefaultChange} />
+      )}
       {activeMarket !== 'Favorites' && <MarketListComponent activeMarket={activeMarket} />}
     </div>
   )
