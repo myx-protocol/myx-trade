@@ -9,11 +9,14 @@ import { Box } from '@mui/material'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { formatUnits, getBalanceOf, base as Base, MarketPoolState } from '@myx-trade/sdk'
-import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import {
+  formatUnits,
+  getBalanceOf,
+  base as Base,
+  MarketPoolState,
+  TriggerType,
+} from '@myx-trade/sdk'
 import { usePoolContext } from '@/pages/Cook/hook'
-import { isSafeNumber } from '@/utils'
 import { formatNumber } from '@/utils/number.ts'
 import { useExchangeRate } from '@/pages/Cook/hook/rate.ts'
 import { toast } from '@/components/UI/Toast'
@@ -26,9 +29,11 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import Big from 'big.js'
-import { Error } from '@/pages/Earn/components/Trade/Error'
-import { HighRiskWarningDialog } from '@/components/Dialog/HighRiskWarningDialog.tsx'
+import { InsufficientBalance } from '@/pages/Earn/components/Trade/Error'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import { CookDetailTPSL } from '@/components/CookDetail/Order/TPSL.tsx'
+import { parseTriggerPrice } from '@/utils/TpSl.ts'
+import { TpSlTypeEnum } from '@/components/Trade/type.ts'
 
 const inputStyle = {
   htmlInput: {
@@ -39,8 +44,10 @@ const inputStyle = {
   },
 }
 export const Buy = () => {
-  const { slippage } = useCookOrderStore()
-  const { chainId, baseLpDetail, pool, poolId, poolInfoRefetch, riskLevelConfig } = usePoolContext()
+  const { slippage, tpSlOpen, tpValue, tpType, slValue, slType, setSlValue, setTpValue } =
+    useCookOrderStore()
+  const { chainId, baseLpDetail, pool, poolId, poolInfoRefetch, riskLevelConfig, price } =
+    usePoolContext()
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
   const [amount, setAmount] = useState<string>('')
@@ -58,14 +65,14 @@ export const Buy = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.baseToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, pool.baseDecimals)
-        return formatNumberPrecision(_balance, COMMON_BASE_DISPLAY_DECIMALS, false, false)
+        return _balance
       }
     },
   })
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(balance)) {
-      if (Number(amount) > Number(balance)) return true
+    if (amount && balance) {
+      if (new Big(amount).gt(balance)) return true
       return false
     }
     return false
@@ -77,9 +84,12 @@ export const Buy = () => {
     }
   }, [balance])
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
-  }, [])
+  const onAmountChange = useCallback(
+    ({ floatValue, value }: { value: string; floatValue?: number }) => {
+      setAmount(value || '')
+    },
+    [],
+  )
 
   const onHandleBuy = useCallback(async () => {
     try {
@@ -92,24 +102,80 @@ export const Buy = () => {
 
       if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
-      await Base.deposit({
+      const tpsl = tpSlOpen
+        ? [
+            {
+              triggerType: TriggerType.GTE,
+              triggerPrice: parseTriggerPrice({
+                type: tpType,
+                value: tpValue,
+                currentPrice: price,
+                amount,
+              }),
+            },
+            {
+              triggerType: TriggerType.LTE,
+              triggerPrice: parseTriggerPrice({
+                type: slType,
+                value:
+                  slValue && slType !== TpSlTypeEnum.PRICE
+                    ? new Big(slValue).mul(-1).toString()
+                    : slValue,
+                currentPrice: price,
+                amount,
+              }),
+            },
+          ]
+        : []
+
+      const params = {
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
-      })
+        tpsl: tpSlOpen
+          ? tpsl
+              .filter((item) => item.triggerPrice && Number(item.triggerPrice) > 0)
+              .map((data) => {
+                return {
+                  triggerType: data.triggerType,
+                  triggerPrice: Number(data.triggerPrice),
+                }
+              })
+          : undefined,
+      }
+      console.log('Base Deposit params:', params)
+      await Base.deposit(params)
 
       toast.success({ title: t`Successfully buy` })
 
       setAmount('')
+      setSlValue('')
+      setTpValue('')
       await refetch()
       poolInfoRefetch()
     } catch (e) {
+      console.error(e)
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch, riskLevelConfig])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    refetch,
+    poolInfoRefetch,
+    riskLevelConfig,
+    price,
+    tpSlOpen,
+    tpType,
+    slValue,
+    tpValue,
+    slType,
+  ])
   return (
     <>
       <Box className="mt-[12px]">
@@ -202,9 +268,14 @@ export const Buy = () => {
           </div>
         </div>
 
+        {/* TP/SL */}
+        {pool?.quoteToken && (
+          <CookDetailTPSL className="mt-[8px]" quoteSymbol={pool?.quoteSymbol} />
+        )}
+
         <OrderOptions />
 
-        {isInsufficient && <Error className={'mt-[8px]'} />}
+        {isInsufficient && <InsufficientBalance className={'mt-[8px]'} />}
         <Box className="mt-[12px] w-full">
           {baseLpDetail?.state === MarketPoolState.PreBench ||
           baseLpDetail?.state === MarketPoolState.Bench ? (

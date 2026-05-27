@@ -14,6 +14,11 @@ export const TPSLInput = ({
   placeHolder,
   quoteToken,
   inputPrefix,
+  inputSuffix,
+  className: classNameProp,
+  allowNegative = true,
+  source = 'trade',
+  onBlur,
 }: {
   value: string
   type: TpSlTypeEnum
@@ -23,6 +28,10 @@ export const TPSLInput = ({
   quoteToken: string
   inputPrefix?: string
   inputSuffix?: string
+  className?: string
+  allowNegative?: boolean
+  source?: 'trade' | 'lp'
+  onBlur?: () => void
 }) => {
   const [isFocused, setIsFocused] = useState(false)
   const [open, setOpen] = useState(false)
@@ -57,9 +66,11 @@ export const TPSLInput = ({
   return (
     <div
       className={clsx(
-        'flex w-[100%] gap-[4px]',
-        'rounded-[8px] border-[1px] border-[#18191F] bg-[#18191F] px-[12px] py-[16px] shadow-[0px_0px_8px_0px_rgba(0,0,0,0.2)]',
-        isFocused && 'border-[#fff]',
+        'flex h-[44px] w-full items-center gap-[4px] rounded-[8px] px-[12px]',
+        isFocused
+          ? 'border-[0.5px] border-white bg-[#18191F] shadow-[0px_0px_8px_0px_rgba(0,0,0,0.8)]'
+          : 'border-[0.5px] border-transparent bg-[#202129]',
+        classNameProp,
       )}
     >
       <NumberInputPrimitive
@@ -69,7 +80,9 @@ export const TPSLInput = ({
         inputMode="text"
         allowLeadingZeros
         allowNegative={
-          type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
+          source === 'trade'
+            ? type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change || type === TpSlTypeEnum.Pnl
+            : allowNegative
         }
         decimalScale={6}
         onValueChange={(values) => {
@@ -84,9 +97,12 @@ export const TPSLInput = ({
           }
         }}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={() => {
+          setIsFocused(false)
+          onBlur?.()
+        }}
         prefix={inputPrefix}
-        suffix={renderInputSuffix()}
+        suffix={source === 'trade' ? renderInputSuffix() : inputSuffix}
       />
       <div
         className="flex flex-shrink-0 items-center gap-[4px]"

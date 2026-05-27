@@ -321,7 +321,7 @@ export const BenchWarning = () => {
         <Info>
           <Trans>
             Only holding {pool?.baseSymbol || '--'}?{' '}
-            <a href={`/cook/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
+            <a href={`/trench/${pool?.chainId}/${pool?.poolId}`} className={'text-green'}>
               [{`m${pool?.baseSymbol}.${pool?.quoteSymbol}`}↗]
             </a>{' '}
           </Trans>

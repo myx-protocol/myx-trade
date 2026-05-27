@@ -84,6 +84,11 @@ export interface PageRequest {
   cursor?: string
 }
 
+export interface IPage {
+  limit: number
+  before?: string | number
+  after?: string | number
+}
 export enum PriceInterval {
   '10min' = 1,
   '1d' = 21,

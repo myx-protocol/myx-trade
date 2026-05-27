@@ -8,7 +8,7 @@ import { approve } from "@/common/approve.js";
 export interface  Optional {
   chainId?: number | ChainId;
   slippage?: number;
-  amount?: number,
+  amount?: number | string,
   decimals?: number;
   tokenAddress?: string;
   contractAddress?: string;
@@ -40,7 +40,6 @@ export  const checkParams = async (params: OptionalParams) => {
   // console.log('checkbalance')
   const {tokenAddress,contractAddress, chainId, amount, decimals, account} = params
   if(amount && chainId && Number(decimals) >= 0 && account) {
-    
     
     const amountIn = parseUnits(amount.toString(), Number(decimals))
     if (tokenAddress ) {

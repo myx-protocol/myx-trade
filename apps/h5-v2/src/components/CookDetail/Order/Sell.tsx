@@ -12,7 +12,7 @@ import { useCookOrderStore } from '@/components/CookDetail/Order/store.ts'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Error } from '@/pages/Earn/components/Trade/Error'
+import { InsufficientBalance } from '@/pages/Earn/components/Trade/Error'
 import {
   getBalanceOf,
   base as Base,
@@ -21,8 +21,7 @@ import {
   COMMON_LP_AMOUNT_DECIMALS,
   parseUnits,
 } from '@myx-trade/sdk'
-import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber'
-import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { formatNumberPercent } from '@/utils/formatNumber'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from '@/components/UI/Toast'
@@ -88,7 +87,7 @@ export const Sell = () => {
     queryKey: [{ key: 'previewUserWithdrawData' }, amount, poolId, account, pool],
     enabled: !!amount && !!account && !!poolId && !!pool,
     queryFn: async () => {
-      if (!account || !poolId || !account || !pool) return
+      if (!account || !poolId || !amount || !pool) return
       const res = await Base.previewUserWithdrawData({
         chainId,
         amount,
@@ -119,8 +118,8 @@ export const Sell = () => {
   }, [balance, userShareBase, retainGenesisLPShares])
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(trueBalance)) {
-      if (Number(amount) > Number(trueBalance)) return true
+    if (amount && trueBalance) {
+      if (new Big(amount).gt(trueBalance)) return true
       return false
     }
     return false
@@ -155,9 +154,12 @@ export const Sell = () => {
     }
   }, [trueBalance])
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
-  }, [])
+  const onAmountChange = useCallback(
+    ({ floatValue, value }: { value: string; floatValue?: number }) => {
+      setAmount(value || '')
+    },
+    [],
+  )
 
   const onHandleSell = useCallback(async () => {
     try {
@@ -178,7 +180,7 @@ export const Sell = () => {
       await Base.withdraw({
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
       })
       toast.success({ title: t`Successfully sell` })
@@ -338,7 +340,7 @@ export const Sell = () => {
         />
       </div>
       <OrderOptions />
-      {isInsufficient && <Error className={'mt-[8px]'} />}
+      {isInsufficient && <InsufficientBalance className={'mt-[8px]'} />}
 
       {burned && Number(burned) > 0 && (
         <Box className={'border-base mt-[8px] flex gap-[4px] rounded-[8px] border-1 p-[12px]'}>

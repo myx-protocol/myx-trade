@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Market from '@/pages/Market'
 import Cook from '@/pages/Cook'
 import { CookDetail } from '@/pages/Cook/detail/index'
+import { TrenchDetail } from '@/pages/Trench/detail/index'
 import EarnList from '@/pages/Earn/List.tsx'
 import EarnDetail from '@/pages/Earn/detail/index'
 import { Home } from '@/pages/Home'
@@ -16,6 +17,7 @@ import { lazy } from 'react'
 import Referrals from '@/pages/Referrals'
 import SelectReferral from '@/pages/Referrals/SelectReferral'
 import VIP from '@/pages/VIP'
+import { CookDetail as CookDetailV2 } from '@/pages/Cook/detail-v2'
 
 const Record = lazy(() => import('@/pages/record'))
 const Price = lazy(() => import('@/pages/Price'))
@@ -72,7 +74,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'cook/:chainId/:poolId',
-        element: <CookDetail />,
+        element: <CookDetailV2 />,
+        // element: <CookDetail />,
+      },
+      {
+        path: 'trench/:chainId/:poolId',
+        element: <TrenchDetail />,
       },
       {
         path: 'earn',

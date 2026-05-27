@@ -8,25 +8,26 @@ import {
   type PriceInterval,
   PoolType,
   type Rating,
+  type IPage,
 } from '@/request/type.ts'
 import { type MarketPoolState, type TriggerType } from '@myx-trade/sdk'
 
-export interface PoolOpenOrder {
-  amount: string
-  chainId: number
-  minQuoteOut: string
-  orderId: number
-  poolId: string
-  poolType: PoolType
-  triggerPrice: string
-  triggerType: TriggerType
-  txTime: number
-  user: string
-}
-
-export interface PoolOpenOrdersResponse extends BaseResponse {
-  data: PoolOpenOrder[]
-}
+// export interface PoolOpenOrder {
+//   amount: string
+//   chainId: number
+//   minQuoteOut: string
+//   orderId: number
+//   poolId: string
+//   poolType: PoolType
+//   triggerPrice: string
+//   triggerType: TriggerType
+//   txTime: number
+//   user: string
+// }
+//
+// export interface PoolOpenOrdersResponse extends BaseResponse {
+//   data: PoolOpenOrder[]
+// }
 
 export interface TokenSniper {
   tokenIcon: string
@@ -143,6 +144,7 @@ export interface QuotePoolListRequest extends PageRequest {
   sortOrder?: SortOrder
   state?: 0 | 1 // 0=all status market, 1=active market
   quoteSymbol?: 'USDT' | 'USDC'
+  poolId?: string
 }
 
 export interface QuotePool {
@@ -163,6 +165,8 @@ export interface QuotePool {
   tvl: string
   id: number
   quotePoolToken: string
+  quoteSymbol: string
+  baseSymbol: string
 }
 
 export interface QuotePoolResponse extends BaseResponse {
@@ -462,4 +466,72 @@ export interface PoolBoostInfo {
 }
 export interface PoolBoostResponse extends BaseResponse {
   data: null | PoolBoostInfo
+}
+
+export interface IPoolOrdersRequest extends IPage {
+  chainId?: number
+  poolId?: string
+  poolType: PoolType
+}
+
+// 订单状态：1-取消，2-过期，9-完成
+// 订单类型： 1-买入,2-卖出,3-止盈，4-止损
+
+export enum LpOrderStatus {
+  Cancel = 1,
+  Expired = 2,
+  Completed = 9,
+}
+
+export enum LpOrderType {
+  Buy = 1,
+  Sell = 2,
+  TP = 3,
+  SL = 4,
+}
+
+export type LpOpenOrder = {
+  chainId: string
+  poolId: string
+  orderId: number
+  baseSymbol: string
+  quoteSymbol: string
+  user: string
+  poolType: PoolType
+  txTime: number
+  poolToken: string
+  amount: string
+  txHash: string
+  orderStatus: LpOrderStatus
+  triggerType: TriggerType
+  tokenIcon: string
+  triggerPrice: string
+  id: number
+}
+
+export interface PoolOpenOrdersResponse extends BaseResponse {
+  data: LpOpenOrder[]
+}
+
+export interface PoolHistoryOrder {
+  chainId: string
+  poolId: string
+  orderId: number
+  baseSymbol: string
+  quoteSymbol: string
+  user: string
+  poolType: PoolType
+  txTime: number
+  poolToken: string
+  amount: string
+  txHash: string
+  orderStatus: LpOrderStatus
+  orderType: LpOrderType
+  tokenIcon: string
+  price: string
+  id: number
+}
+
+export interface PoolHistoryOrdersResponse extends BaseResponse {
+  data: PoolHistoryOrder[]
 }

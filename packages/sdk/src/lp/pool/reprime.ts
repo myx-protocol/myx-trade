@@ -36,7 +36,7 @@ export const reprime = async (chainId: ChainId, poolId: string, marketId: string
       decimals: pool.quoteDecimals,
       account,
       chainId,
-      amount: Number(formatUnits(_amount, pool.quoteDecimals)),
+      amount: formatUnits(_amount, pool.quoteDecimals),
     })
 
     const chainInfo = CHAIN_INFO[chainId];

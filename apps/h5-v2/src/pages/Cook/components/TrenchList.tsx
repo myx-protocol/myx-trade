@@ -190,7 +190,7 @@ export const TrenchList = ({
               className={`item border-base hover:bg-base-bg flex items-center justify-between px-[16px] py-[20px] [&+.item]:border-t-1 ${isLoading ? 'pointer-events-none' : 'cursor-pointer'}`}
               onClick={() => {
                 if (row) {
-                  navigate(`/cook/${row.market.chainId}/${row.poolId}`)
+                  navigate(`/trench/${row.market.chainId}/${row.poolId}`)
                 }
               }}
             >

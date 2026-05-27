@@ -10,7 +10,6 @@ import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { t } from '@lingui/core/macro'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
-import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -22,7 +21,7 @@ import {
   parseUnits,
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
+import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { isSafeNumber } from '@/utils'
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { toast } from '@/components/UI/Toast'
@@ -38,7 +37,8 @@ import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
 import { formatNumber } from '@/utils/number.ts'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
-import { Error } from './Error.tsx'
+import { InsufficientBalance } from './Error.tsx'
+import { useEarnOrderStore } from '@/pages/Earn/store'
 
 const inputStyle = {
   htmlInput: {
@@ -52,7 +52,7 @@ const inputStyle = {
 export const Redeem = () => {
   const { pool, quoteLpDetail, chainId, poolId, price, poolInfoRefetch, genesisFeeRate } =
     useContext(PoolContext)
-  const { slippage, setSlippage } = useContext(TradeContext)
+  const { slippage } = useEarnOrderStore()
   const { address: account } = useWalletConnection()
   const [retainLPShare, setRetailLpShare] = useState(true)
   const [amount, setAmount] = useState<string>('')
@@ -112,7 +112,7 @@ export const Redeem = () => {
 
   const trueBalance = useMemo(() => {
     if (retainLPShare) {
-      if (isSafeNumber(balance)) {
+      if (balance) {
         const _balance = new Big(balance || 0).minus(new Big(userShare || '0')).toString()
         return Number(_balance) < 0 ? '0' : _balance
       }
@@ -123,8 +123,8 @@ export const Redeem = () => {
   }, [balance, userShare, retainLPShare])
 
   const isInsufficient = useMemo(() => {
-    if (isSafeNumber(amount) && isSafeNumber(trueBalance)) {
-      if (Number(amount) > Number(trueBalance)) return true
+    if (amount && trueBalance) {
+      if (new Big(amount).gt(trueBalance)) return true
       return false
     }
     return false
@@ -159,8 +159,8 @@ export const Redeem = () => {
     },
   })
 
-  const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
-    setAmount(floatValue?.toString() || '')
+  const onAmountChange = useCallback(({ value }: { value: string; floatValue?: number }) => {
+    setAmount(value || '')
   }, [])
 
   const onHandleRedeem = useCallback(async () => {
@@ -183,7 +183,7 @@ export const Redeem = () => {
       await Quote.withdraw({
         chainId: +chainId,
         poolId,
-        amount: Number(amount),
+        amount: amount,
         slippage: Number(slippage),
       })
 
@@ -239,7 +239,7 @@ export const Redeem = () => {
             </Box>
             <Box
               className={
-                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
+                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[3px] pr-[6px] pl-[4px] text-[14px]'
               }
             >
               <img
@@ -284,7 +284,7 @@ export const Redeem = () => {
             </Box>
             <Box
               className={
-                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[4px] pr-[6px] pl-[4px] text-[14px]'
+                'bg-deep border-dark-border flex items-center gap-[2px] rounded-[30px] border-1 py-[3px] pr-[6px] pl-[4px] text-[14px]'
               }
             >
               <img
@@ -343,7 +343,7 @@ export const Redeem = () => {
           </>
         )}
 
-        {isInsufficient && <Error className={'mt-[4px]'} />}
+        {isInsufficient && <InsufficientBalance className={'mt-[4px]'} />}
         <Box className={'mt-[8px] mb-[4px] w-full'}>
           <ConnectButton>
             <TradeButton
