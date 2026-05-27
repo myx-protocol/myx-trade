@@ -166,6 +166,7 @@ export interface QuotePool {
   id: number
   quotePoolToken: string
   quoteSymbol: string
+  baseSymbol: string
 }
 
 export interface QuotePoolResponse extends BaseResponse {
