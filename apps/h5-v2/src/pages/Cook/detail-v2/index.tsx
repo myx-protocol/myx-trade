@@ -303,7 +303,33 @@ export const CookDetail = () => {
   }, [activeAction, isActivate, isQuickActivateFeePaid, baseLpState])
 
   const numericAmount = Number(amount || 0)
-  const isAmountInvalid = !numericAmount || numericAmount > displayBalance
+  const isAmountInvalid = useMemo(() => {
+    if (!amount || !isSafeNumber(amount)) return true
+    if (!isSafeNumber(balance)) return true
+
+    if (isRedeem) {
+      try {
+        return (
+          parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) >
+          parseUnits(balance, COMMON_LP_AMOUNT_DECIMALS)
+        )
+      } catch {
+        return true
+      }
+    }
+
+    const numericAmount = Number(amount)
+    return !numericAmount || numericAmount > Number(balance)
+  }, [amount, balance, isRedeem])
+
+  /**
+   * 赎回提交金额：Max 时始终用链上 balance（输入框默认 2 位会截断 amount 并触发 onChange）
+   */
+  const redeemSubmitAmount = useMemo(() => {
+    if (!isRedeem) return amount
+    if (selectedRatio === 'Max' && isSafeNumber(balance)) return balance
+    return amount
+  }, [isRedeem, selectedRatio, balance, amount])
 
   const displayTokenSymbol = useMemo(() => {
     if (isActivate) return currentPool?.quoteSymbol || '--'
@@ -477,7 +503,7 @@ export const CookDetail = () => {
       if (activeAction === 'redeem') {
         if (
           withdrawableLpAmount !== undefined &&
-          parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
+          parseUnits(redeemSubmitAmount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
         ) {
           toast.error({
             title: t`Some funds are locked in active trades. Max available to sell: [${formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })}] LP.`,
@@ -489,14 +515,14 @@ export const CookDetail = () => {
           await Quote.withdraw({
             chainId: +chainId,
             poolId,
-            amount: Number(amount),
+            amount: redeemSubmitAmount,
             slippage: Number(slippage),
           })
         } else {
           await Base.withdraw({
             chainId: +chainId,
             poolId,
-            amount: Number(amount),
+            amount: Number(redeemSubmitAmount),
             slippage: Number(slippage),
           })
         }
