@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -1179,10 +1180,6 @@ msgstr "创建时间"
 msgid "Create a Contract Market"
 msgstr "创建合约交易市场"
 
-#: src/pages/Cook/components/Banner.tsx
-msgid "Create a Market"
-msgstr "创建市场"
-
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
 #: src/pages/Home/components/ActivitySwiper/index.tsx
@@ -1194,6 +1191,10 @@ msgstr "创建市场"
 msgid "Create Market - Permissionless Listing for Any Asset | MYX"
 msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Create Now"
+msgstr ""
+
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
 msgstr "立即创建市场，成为创世 LP，享受永久 2% 的佣金分红！"
@@ -1202,7 +1203,6 @@ msgstr "立即创建市场，成为创世 LP，享受永久 2% 的佣金分红�
 msgid "Create Time"
 msgstr "创建时间"
 
-#: src/pages/Cook/components/Banner.tsx
 #: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
@@ -1217,6 +1217,7 @@ msgid "Current Level"
 msgstr "当前等级"
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "Current Orders"
 msgstr "当前订单"
 
@@ -1371,7 +1372,7 @@ msgstr "在有效期内，您可以享受 <0>VIP{level}</0> 体验"
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
-#: src/components/Tabbar/const.tsx
+#: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Earn"
 msgstr "赚取"
@@ -1895,6 +1896,10 @@ msgstr "好友获得"
 msgid "From"
 msgstr "从"
 
+#: src/pages/Earn/components/TrenchBanner.tsx
+msgid "Fuel the MPM 2.0 engine. Turn your holdings into a high-yield generating powerhouse"
+msgstr ""
+
 #. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
 #. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
 #: src/components/Dialog/MarketActivationFailedDialog.tsx
@@ -2016,6 +2021,7 @@ msgid "High-Risk Asset Warning"
 msgstr "高风险资产警告"
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "History Orders"
 msgstr "历史订单"
 
@@ -2548,6 +2554,10 @@ msgstr "稍后"
 msgid "Latest Price"
 msgstr "最新价格"
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Launch Any Pair, Claim 2% Genesis Rewards!"
+msgstr ""
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "Level"
 msgstr "等级"
@@ -2864,6 +2874,10 @@ msgstr "最大杠杆"
 msgid "Max Slippage"
 msgstr "最大滑点"
 
+#: src/pages/Earn/components/TrenchBanner.tsx
+msgid "Maximize Your Base Assets"
+msgstr ""
+
 #: src/pages/Price/components/TradeConfig/index.tsx
 msgid "Maximum allowed deviation between execution price and oracle price."
 msgstr "预期执行价偏离预言机价格超过此范围将拒单，防范异常波动。"
@@ -2939,6 +2953,7 @@ msgid "More detailed help content will be available soon."
 msgstr "更多详细帮助内容即将上线。"
 
 #: src/pages/Cook/detail/index.tsx
+#: src/pages/Trench/detail/index.tsx
 msgid "My Assets"
 msgstr "我的资产"
 
@@ -3242,13 +3257,6 @@ msgstr "一次邀请，多重奖励"
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market! Join now to lock in a LIFETIME <1>{2}</1>fee share!"
-msgstr "仅剩 <0>${0}</0> {1} 创世份额即可激活市场！立即加入，锁定终身 <1>{2}</1> 手续费分成！"
-
-#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
-#. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
-#. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
 #. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
 #. placeholder {4}: pool?.quoteSymbol || '--'
 #. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => { setBoostConfirmBoostOpen(true) }} > [ {<Trans>Unlock Market Early</Trans>} ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ {<Trans>`Paid. Syncing status</Trans>}... ] </button> )
@@ -3470,6 +3478,7 @@ msgstr "从锁定已实现盈亏中支付：{0} {1}"
 msgid "Paid from Wallet: {0} {1}"
 msgstr "从钱包中支付：{0} {1}"
 
+#: src/pages/Cook/detail-v2/components/BoostPaidSyncingStatus.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Paid. Syncing status"
 msgstr "支付状态同步中"
@@ -3742,6 +3751,7 @@ msgstr "合约成交额"
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
+#: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
@@ -3805,10 +3815,6 @@ msgstr "范围"
 #: src/pages/rank/index.tsx
 msgid "Rankings - Permissionless Listing for Any Asset | MYX"
 msgstr "排行榜 - 创建任意资产的合约市场 | MYX"
-
-#: src/pages/Earn/detail/components/HistoryOrders.tsx
-msgid "Rate"
-msgstr "价格"
 
 #: src/components/Trade/Charts/NoTradeable/index.tsx
 msgid "Reactivate Pool "
@@ -4193,7 +4199,9 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+msgstr ""
+"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
@@ -4917,22 +4925,20 @@ msgid "TreeAlreadySet()"
 msgstr "默克尔树 (Merkle Tree) 数据已配置"
 
 #: src/pages/Cook/components/ToolBar.tsx
+#: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Trench"
 msgstr "Trench"
 
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Cook/detail/components/OpenOrders.tsx
+#: src/pages/Earn/detail/components/OpenOrders.tsx
 msgid "Trigger Price"
 msgstr "触发价格"
 
 #: src/utils/verify.ts
 msgid "Trigger price must be between Liquidation and Auto-TP prices."
 msgstr "触发价格必须在强平价和自动止盈价格之间"
-
-#: src/pages/Earn/detail/components/OpenOrders.tsx
-msgid "Trigger Rate"
-msgstr "触发价"
 
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
@@ -5126,6 +5132,7 @@ msgstr "UUPS 不支持的 Proxiable UUID (bytes32)"
 msgid "Valid From: {0} — {1}"
 msgstr "有效期：{0} — {1}"
 
+#: src/components/Tabbar/const.tsx
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/detail/components/HistoryOrders.tsx
 #: src/pages/Earn/detail/components/MyHoldings.tsx
@@ -5253,7 +5260,6 @@ msgid "What is the {0} Vault?"
 msgstr "什么是 {0} 金库？"
 
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "When checked, the system will only redeem your regular LP shares."
 msgstr "选中时，系统将仅赎回您的常规 LP 份额。"
@@ -5357,6 +5363,10 @@ msgstr "您的密码"
 msgid "Your request to early launch the market could not be executed."
 msgstr "您提前开启市场的请求未能执行。"
 
+#: src/pages/Cook/components/Banner.tsx
+msgid "Zero setup required. Be the first to provide liquidity and capture exclusive fee shares."
+msgstr ""
+
 #: src/config/error/CommonErrorMapping.tsx
 msgid "ZeroQueries()"
 msgstr "请求参数不可为空"
@@ -5419,7 +5429,6 @@ msgid "保存失败"
 msgstr "保存失败"
 
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "保留创世LP份额"
 msgstr "保留创世LP份额"
 
@@ -5484,6 +5493,10 @@ msgstr "最大滑点"
 msgid "最新价/24h涨跌幅"
 msgstr "最新价/24h涨跌幅"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "准备上线中"
+msgstr ""
+
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
 msgstr "减少保证金"
@@ -5524,6 +5537,10 @@ msgstr "加载中..."
 #: src/pages/Cook/detail-v2/components/ProgressSection.tsx
 msgid "募集进度"
 msgstr "募集进度"
+
+#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
+msgid "去激活"
+msgstr ""
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5957,6 +5974,10 @@ msgstr "确认赎回"
 msgid "立即创建我的合约交易市场"
 msgstr "立即创建我的合约交易市场"
 
+#: src/pages/Cook/detail-v2/index.tsx
+msgid "等待市场开启"
+msgstr ""
+
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
 msgstr "类型"
@@ -6125,4 +6146,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
