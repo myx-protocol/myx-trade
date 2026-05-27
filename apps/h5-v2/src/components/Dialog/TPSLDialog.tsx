@@ -188,6 +188,30 @@ const TPSLDialogContent = memo(
       setRedeemAmountValue((prev) => prev || '0')
     }, [])
 
+    // SL blur handler: clamp value based on type
+    const handleSlBlur = useCallback(() => {
+      if (!slValue) return
+      try {
+        const val = new Big(slValue)
+        if (slType === TpSlTypeEnum.ROI || slType === TpSlTypeEnum.Change) {
+          // Max 99.99% for ROI/Change
+          if (val.gt(99.99)) {
+            setSlValue('99.99')
+          }
+        } else if (slType === TpSlTypeEnum.Pnl) {
+          // Max loss PnL = costPrice * redeemAmount
+          if (costPrice && redeemAmount) {
+            const maxLoss = new Big(costPrice).mul(new Big(redeemAmount))
+            if (maxLoss.gt(0) && val.gt(maxLoss)) {
+              setSlValue(maxLoss.toFixed(6, Big.roundDown))
+            }
+          }
+        }
+      } catch {
+        // invalid value, ignore
+      }
+    }, [slValue, slType, costPrice, redeemAmount])
+
     // Calculate size in quote
     const sizeInQuote = useMemo(() => {
       if (!redeemAmount || !lpPrice) return '--'
@@ -412,7 +436,10 @@ const TPSLDialogContent = memo(
                       value={tpValue}
                       source="lp"
                       onChange={setTpValue}
-                      onTypeChange={setTpType}
+                      onTypeChange={(type) => {
+                        setTpType(type)
+                        setTpValue('')
+                      }}
                       quoteToken={quoteSymbol}
                       placeHolder={tpPlaceHolder}
                       inputPrefix={tpType === TpSlTypeEnum.PRICE ? '' : '+'}
@@ -442,7 +469,10 @@ const TPSLDialogContent = memo(
                     value={slValue}
                     source="lp"
                     onChange={setSlValue}
-                    onTypeChange={setSlType}
+                    onTypeChange={(type) => {
+                      setSlType(type)
+                      setSlValue('')
+                    }}
                     quoteToken={quoteSymbol}
                     placeHolder={slPlaceHolder}
                     inputPrefix={slType === TpSlTypeEnum.PRICE ? '' : '-'}
@@ -452,6 +482,7 @@ const TPSLDialogContent = memo(
                         ? '%'
                         : undefined
                     }
+                    onBlur={handleSlBlur}
                   />
                 </div>
                 <EstPnlDisplay value={slEstPnl} />

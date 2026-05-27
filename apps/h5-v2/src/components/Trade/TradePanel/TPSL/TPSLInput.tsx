@@ -18,6 +18,7 @@ export const TPSLInput = ({
   className: classNameProp,
   allowNegative = true,
   source = 'trade',
+  onBlur,
 }: {
   value: string
   type: TpSlTypeEnum
@@ -30,6 +31,7 @@ export const TPSLInput = ({
   className?: string
   allowNegative?: boolean
   source?: 'trade' | 'lp'
+  onBlur?: () => void
 }) => {
   const [isFocused, setIsFocused] = useState(false)
   const [open, setOpen] = useState(false)
@@ -95,7 +97,10 @@ export const TPSLInput = ({
           }
         }}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={() => {
+          setIsFocused(false)
+          onBlur?.()
+        }}
         prefix={inputPrefix}
         suffix={source === 'trade' ? renderInputSuffix() : inputSuffix}
       />
