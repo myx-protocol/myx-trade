@@ -124,9 +124,9 @@ export {
   Warning,
   Help,
   BigWaningLine,
-  IconTpsl,
   CheckBoxBorder,
   Checked,
+  IconTpsl,
   IconClaimRewards,
 }
 
