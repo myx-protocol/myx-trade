@@ -32,7 +32,9 @@ const Cook = () => {
         className="flex h-full w-full flex-col overflow-x-hidden overflow-y-auto"
       >
         <SearchBar defaultTab={SearchTypeEnum.Cook} />
-        <Banner />
+        <Box className={'mt-[16px] mb-[16px]'}>
+          <Banner />
+        </Box>
         <CookContext.Provider
           value={{
             type: CookType.Cook,
