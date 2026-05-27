@@ -37,7 +37,6 @@ import { SellButton } from '@/components/Button/SellButton'
 import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { useCookOrderStore } from '@/components/CookDetail/Order/store'
 import { CookDetailNavBar } from './components/CookDetailNavBar'
-import { CookOrderRecordsSection } from './components/CookOrderRecordsSection'
 import { DetailHeaderSection } from './components/DetailHeaderSection'
 import { TradeContentSection } from './components/TradeContentSection'
 import { ProgressSection } from './components/ProgressSection'
@@ -73,6 +72,18 @@ const ratioList: Array<{ label: string; value: number | 'max' }> = [
 const calcProgressPercent = (current: number, total: number) => {
   if (!total) return 0
   return Math.min((current / total) * 100, 100)
+}
+
+const RATIO_AMOUNT_DECIMALS = 2
+
+/** 比例/Max 填入金额：截断到指定位小数（不四舍五入、无千分位） */
+const toRatioAmountString = (value: number | string, decimals = RATIO_AMOUNT_DECIMALS): string => {
+  const str = String(value)
+  if (!str || str === 'NaN') return '0'
+  const [intPart, decPart] = str.split('.')
+  if (!decPart || decimals <= 0) return intPart
+  const trimmedDec = decPart.slice(0, decimals)
+  return trimmedDec ? `${intPart}.${trimmedDec}` : intPart
 }
 
 export const CookDetail = () => {
@@ -308,7 +319,14 @@ export const CookDetail = () => {
       return isQuoteSideVault ? currentPool?.quoteSymbol || '--' : currentPool?.baseSymbol || '--'
     }
     return isQuoteSideVault ? currentPool?.quoteSymbol || '--' : currentPool?.baseSymbol || '--'
-  }, [isActivate, isRedeem, isQuoteSideVault, currentPool?.baseSymbol, currentPool?.quoteSymbol])
+  }, [
+    isActivate,
+    isRedeem,
+    isQuoteSideVault,
+    currentPool?.baseSymbol,
+    currentPool?.quoteSymbol,
+    chainInfo?.label,
+  ])
   const displayPairSymbol =
     currentPool?.baseSymbol && currentPool.quoteSymbol
       ? `${currentPool.baseSymbol}${currentPool.quoteSymbol}`
@@ -398,17 +416,28 @@ export const CookDetail = () => {
   const onClickRatio = (ratioLabel: string, ratioValue: number | 'max') => {
     setSelectedRatio(ratioLabel)
     if (ratioValue === 'max') {
-      setAmount(formatNumber(displayBalance, { showUnit: false }))
+      setAmount(toRatioAmountString(displayBalance))
       return
     }
-    setAmount(formatNumber(displayBalance * ratioValue, { showUnit: false }))
+    setAmount(toRatioAmountString(displayBalance * ratioValue))
   }
-
   const onChangeAction = (action: ActionType) => {
     setActiveAction(action)
     setSelectedRatio('25%')
     setAmount('')
   }
+
+  const displayTradeTokenIcon = useMemo(() => {
+    if (isActivate || isQuoteSideVault)
+      return getQuoteTokenInfo(currentPool?.chainId, currentPool?.quoteToken || '')?.logoUrl || ''
+    return poolInfo?.baseTokenIcon || ''
+  }, [
+    isQuoteSideVault,
+    isActivate,
+    currentPool?.chainId,
+    currentPool?.quoteToken,
+    poolInfo?.baseTokenIcon,
+  ])
 
   const onConfirm = async () => {
     try {
@@ -546,7 +575,7 @@ export const CookDetail = () => {
           displayTokenName={displayTokenName}
           chainLabel={chainInfo?.label}
           chainLogo={chainInfo?.logoUrl}
-          baseTokenIcon={poolInfo?.baseTokenIcon}
+          baseTokenIcon={displayTradeTokenIcon}
           amount={amount}
           setAmount={setAmount}
           ratioList={ratioList}
