@@ -302,11 +302,10 @@ export const CookDetail = () => {
     return getActionButtonLabel(activeAction)
   }, [activeAction, isActivate, isQuickActivateFeePaid, baseLpState])
 
-  const numericAmount = Number(amount || 0)
   const isAmountInvalid = useMemo(() => {
     if (!amount || !isSafeNumber(amount)) return true
     if (!isSafeNumber(balance)) return true
-
+    if (basePoolDetail.lpDetail?.state === MarketPoolState.Bench) return true
     if (isRedeem) {
       try {
         return (
@@ -320,7 +319,7 @@ export const CookDetail = () => {
 
     const numericAmount = Number(amount)
     return !numericAmount || numericAmount > Number(balance)
-  }, [amount, balance, isRedeem])
+  }, [amount, balance, isRedeem, basePoolDetail.lpDetail?.state])
 
   /**
    * 赎回提交金额：Max 时始终用链上 balance（输入框默认 2 位会截断 amount 并触发 onChange）
