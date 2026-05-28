@@ -24,7 +24,7 @@ export const ProgressSection = ({
   return (
     <Box className="flex flex-col gap-[12px] p-[4px]">
       <Box className="relative">
-        <Box className="h-[8px] w-full rounded-[8px] bg-[#2D3138]">
+        <Box className="h-[8px] w-full overflow-hidden rounded-[8px] bg-[#2D3138]">
           <Box
             className="h-full rounded-[8px] bg-[#00E3A5]"
             style={{ width: `${progressPercent}%` }}
