@@ -305,7 +305,7 @@ export const CookDetail = () => {
   const isAmountInvalid = useMemo(() => {
     if (!amount || !isSafeNumber(amount)) return true
     if (!isSafeNumber(balance)) return true
-    if (basePoolDetail.lpDetail?.state === MarketPoolState.Bench) return true
+    if (basePoolDetail.lpDetail?.state === MarketPoolState.Bench && !isRedeem) return true
     if (isRedeem) {
       try {
         return (
