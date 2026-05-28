@@ -38,7 +38,7 @@ export const CookDetailNavBar = ({
       >
         <PairLogo
           baseLogoSize={36}
-          quoteLogoSize={10}
+          quoteLogoSize={12}
           baseSymbol={displayPairSymbol}
           quoteSymbol={chainLabel}
           quoteLogo={chainLogo}
