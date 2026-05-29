@@ -354,6 +354,7 @@ export class Seamless {
       },
     });
 
+    // todo  调整保证金  增加poolId
     const txRs = await this.api.forwarderTxApi({ from, to, value, gas, nonce, data, deadline, signature, forwardFeeToken }, chainId);
     return txRs;
   }

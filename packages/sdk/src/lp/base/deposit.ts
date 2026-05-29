@@ -1,121 +1,148 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers.js";
-import { parseUnits } from "viem";
-import { sdkError } from "@/logger";
 import {
-  bigintAmountSlipperCalculator,
-  bigintTradingGasPriceWithRatio,
-  bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas.js";
-import { CHAIN_INFO } from "@/config/chains/index.js";
+  getAccount,
+  getExecutionPoolSingerContract,
+} from "@/web3/providers.js";
+import { encodeFunctionData, parseUnits } from "viem";
+import { sdkError } from "@/logger";
+import { bigintAmountSlipperCalculator } from "@/common/tradingGas.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 
-import { Deposit,type OracleUpdatePrice } from "@/lp/type.js";
+import { Deposit } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";
 import { previewLpAmountOut } from "@/lp/base/preview.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
-import { type Address, MarketPoolState } from "@/api/index.js";
-import { COMMON_LP_AMOUNT_DECIMALS, COMMON_PRICE_DECIMALS } from "@/config/decimals.js";
+import {
+  COMMON_LP_AMOUNT_DECIMALS,
+  COMMON_PRICE_DECIMALS,
+} from "@/config/decimals.js";
 import { getPriceData } from "@/common/price.js";
 import { getTpSlParams } from "@/common/getTpSlParams.js";
 import type { TpSl } from "@/lp/pool/type.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
-import { getPublicClient } from "@/web3";
+import { getWalletClient } from "@/web3";
 import { isNeedPrice } from "@/utils/isNeedPrice.ts";
-
+import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
+import { execution, transactions } from "@/common";
 
 export const deposit = async (params: Deposit) => {
   try {
     const { poolId, chainId, amount, slippage = 0.01, tpsl = [] } = params;
-    await checkParams (params)
-    
-    const pool = await getPoolInfo (chainId,poolId);
+    await checkParams(params);
+
+    const pool = await getPoolInfo(chainId, poolId);
     if (!pool) {
-      throw new Error(Errors[ErrorCode.Invalid_Params])
+      throw new Error(Errors[ErrorCode.Invalid_Params]);
     }
-    const decimals = pool?.baseDecimals
-    const quoteDecimals = pool?.quoteDecimals
-    const tokenAddress = pool?.baseToken
-    
-    
-    const chainInfo = CHAIN_INFO[chainId];
-    const account = await getAccount (chainId);
-    
+    const decimals = pool?.baseDecimals;
+    const quoteDecimals = pool?.quoteDecimals;
+    const tokenAddress = pool?.baseToken;
+
+    const account = await getAccount(chainId);
+
     const addresses = getContractAddressByChainId(chainId);
     const contractAddress = addresses.BASE_POOL;
-    
-    await checkParams ({
+
+    await checkParams({
       tokenAddress,
       contractAddress,
       decimals,
       account,
       chainId,
       amount,
-    })
-    
-    const _isNeedPrice = isNeedPrice(pool?.state)
-    const price : OracleUpdatePrice[] =[]
-    const amountIn = parseUnits (amount.toString (), decimals)
-    let value = 0n;
+    });
+
+    const _isNeedPrice = isNeedPrice(pool?.state);
+    const amountIn = parseUnits(amount.toString(), decimals);
     let amountOut;
     if (_isNeedPrice) {
-      const priceData = await  getPriceData(chainId, poolId)
-      if (!priceData) return
-      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS)
-      price.push({
-        poolId: poolId as Address,
-        oracleType: priceData.oracleType,
-        publishTime: BigInt(priceData.publishTime),
-        oracleUpdateData: priceData.vaa as Address,
-      })
-      
-      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-      value = priceData.value
+      const priceData = await getPriceData(chainId, poolId);
+      if (!priceData) return;
+      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS);
+
+      amountOut = await previewLpAmountOut({
+        chainId,
+        poolId,
+        amountIn,
+        price: referencePrice,
+      });
     } else {
-      amountOut = await previewLpAmountOut ({ chainId, poolId, amountIn})
+      amountOut = await previewLpAmountOut({ chainId, poolId, amountIn });
     }
-    
+
     const _tpsl = tpsl.map((item) => {
       return {
         amount,
         triggerPrice: item.triggerPrice,
         triggerType: item.triggerType,
-      } as TpSl
-    })
-    const tpslParams = getTpSlParams(slippage, _tpsl, COMMON_LP_AMOUNT_DECIMALS, quoteDecimals);
-    
-    const data = {
-      poolId: poolId as unknown as import("viem").Hex,
-      amountIn,
-      minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
-      recipient: account,
-      tpslParams
-    }
-    
-    const  contract = await getLiquidityRouterContract(chainId)
+      } as TpSl;
+    });
+    const tpslParams = getTpSlParams(
+      slippage,
+      _tpsl,
+      COMMON_LP_AMOUNT_DECIMALS,
+      quoteDecimals,
+    );
+    const minAmountOut = bigintAmountSlipperCalculator(amountOut, slippage);
 
-    // estimate gas (viem style, args array)
-    const _gasLimit = await contract.estimateGas!.depositBase(
-      [price, data],
-      { value },
-    )
-    
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice} = await bigintTradingGasPriceWithRatio (chainId);
-    const hash = await contract.write!.depositBase(
-      [price, data],
+    const hexData = encodeFunctionData({
+      abi: LiquidityRouter_abi,
+      functionName: "depositBase",
+      args: [
+        {
+          poolId,
+          amountIn,
+          minAmountOut,
+          recipient: account,
+          tpslParams,
+        },
+      ],
+    });
+    const { domain, createAt, txId, types, primaryType, signData } =
+      await execution.buildSignData({
+        from: account,
+        chainId,
+        to: addresses.LIQUIDITY_ROUTER,
+        data: hexData,
+      });
+    const walletClient = await getWalletClient(chainId);
+    const signature = await walletClient.signTypedData({
+      account,
+      domain,
+      types,
+      primaryType,
+      message: signData,
+    });
+
+    const executionPoolContract = await getExecutionPoolSingerContract(
+      chainId,
+      addresses.EXECUTION_POOL,
+    );
+    const hash = await executionPoolContract.write!.submit(
+      [
+        txId,
+        {
+          ...signData,
+          createdAt: BigInt(createAt),
+          signature,
+        },
+        [poolId],
+      ],
       {
-        gasLimit,
-        gasPrice,
-        value,
+        value: 0n,
+        gas: signData.gas,
       },
-    )
-    
-    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
-    
-    return receipt
-    
+    );
+
+    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
+    return {
+      hash,
+      txId,
+      receipt,
+    };
   } catch (error) {
-    sdkError(error)
-    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+    sdkError(error);
+    throw typeof error === "string"
+      ? error
+      : await getErrorTextFormError(error);
   }
-}
+};

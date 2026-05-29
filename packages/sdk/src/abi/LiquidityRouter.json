@@ -45,6 +45,20 @@
   },
   {
     "type": "error",
+    "name": "ForwardedRecipientMustBeMasterAccount",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "recipient"
+      },
+      {
+        "type": "address",
+        "name": "master"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InsufficientQuoteIn",
     "inputs": [
       {
@@ -130,6 +144,20 @@
       {
         "type": "uint8",
         "name": "triggerType"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
       }
     ]
   },
@@ -299,91 +327,11 @@
     "type": "function",
     "name": "claimBasePoolRebate",
     "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "bytes32",
-        "name": "poolId"
-      },
-      {
-        "type": "address",
-        "name": "recipient"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "claimBasePoolRebate",
-    "constant": false,
     "payable": false,
     "inputs": [
       {
         "type": "bytes32",
         "name": "poolId"
-      },
-      {
-        "type": "address",
-        "name": "recipient"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "claimBasePoolRebates",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "bytes32[]",
-        "name": "poolIds"
       },
       {
         "type": "address",
@@ -418,86 +366,6 @@
       {
         "type": "bytes32",
         "name": "poolId"
-      },
-      {
-        "type": "address",
-        "name": "recipient"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "claimQuotePoolRebate",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "bytes32",
-        "name": "poolId"
-      },
-      {
-        "type": "address",
-        "name": "recipient"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "claimQuotePoolRebates",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "bytes32[]",
-        "name": "poolIds"
       },
       {
         "type": "address",
@@ -591,82 +459,6 @@
   },
   {
     "type": "function",
-    "name": "depositBase",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "amountIn"
-          },
-          {
-            "type": "uint256",
-            "name": "minAmountOut"
-          },
-          {
-            "type": "address",
-            "name": "recipient"
-          },
-          {
-            "type": "tuple[]",
-            "name": "tpslParams",
-            "components": [
-              {
-                "type": "uint256",
-                "name": "amount"
-              },
-              {
-                "type": "uint256",
-                "name": "triggerPrice"
-              },
-              {
-                "type": "uint8",
-                "name": "triggerType"
-              },
-              {
-                "type": "uint256",
-                "name": "minQuoteOut"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "depositQuote",
     "constant": false,
     "payable": false,
@@ -720,139 +512,10 @@
   },
   {
     "type": "function",
-    "name": "depositQuote",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "amountIn"
-          },
-          {
-            "type": "uint256",
-            "name": "minAmountOut"
-          },
-          {
-            "type": "address",
-            "name": "recipient"
-          },
-          {
-            "type": "tuple[]",
-            "name": "tpslParams",
-            "components": [
-              {
-                "type": "uint256",
-                "name": "amount"
-              },
-              {
-                "type": "uint256",
-                "name": "triggerPrice"
-              },
-              {
-                "type": "uint8",
-                "name": "triggerType"
-              },
-              {
-                "type": "uint256",
-                "name": "minQuoteOut"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "executeTpsl",
     "constant": false,
     "payable": false,
     "inputs": [
-      {
-        "type": "uint256",
-        "name": "orderId"
-      },
-      {
-        "type": "uint256",
-        "name": "quoteInIfNecessary"
-      },
-      {
-        "type": "uint256",
-        "name": "minOut"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "baseOut"
-      },
-      {
-        "type": "uint256",
-        "name": "quoteOut"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "executeTpsl",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
       {
         "type": "uint256",
         "name": "orderId"
@@ -902,19 +565,6 @@
         "name": "identifier"
       }
     ],
-    "outputs": [
-      {
-        "type": "address"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getImplementation",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
         "type": "address"
@@ -1077,24 +727,6 @@
   },
   {
     "type": "function",
-    "name": "upgradeTo",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "newImplementation"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "upgradeToAndCall",
     "constant": false,
     "stateMutability": "payable",
@@ -1115,60 +747,6 @@
     "type": "function",
     "name": "withdrawBase",
     "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "amountIn"
-          },
-          {
-            "type": "uint256",
-            "name": "minAmountOut"
-          },
-          {
-            "type": "address",
-            "name": "recipient"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "withdrawBase",
-    "constant": false,
     "payable": false,
     "inputs": [
       {
@@ -1202,60 +780,6 @@
     "constant": false,
     "payable": false,
     "inputs": [
-      {
-        "type": "tuple",
-        "name": "params",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint256",
-            "name": "amountIn"
-          },
-          {
-            "type": "uint256",
-            "name": "minAmountOut"
-          },
-          {
-            "type": "address",
-            "name": "recipient"
-          }
-        ]
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "withdrawQuote",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
       {
         "type": "tuple",
         "name": "params",

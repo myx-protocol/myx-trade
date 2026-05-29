@@ -1,20 +1,21 @@
-import { ConfigManager, MyxClientConfig } from "../config/index.js";
+import { ConfigManager } from "../config/index.js";
 import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
-import {  maxUint256 } from "viem";
-import { getPublicClient } from "@/web3/viemClients.js";
+import { encodeFunctionData, maxUint256 } from "viem";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import {
-  getTradingRouterContract,
+  getExecutionPoolSingerContract,
+  getForwarderContract,
 } from "@/web3/providers";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
-import { TRADE_GAS_LIMIT_RATIO } from "@/config/fee";
 import { ChainId } from "@/config/chain";
 import { getContractAddressByChainId } from "@/config/address/index.js";
-
+import TradingRouter_abi from "@/abi/TradingRouter.json";
+import dayjs from "dayjs";
+import { forwarder } from "@/common/index.js";
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -26,7 +27,7 @@ export class Position {
     logger: Logger,
     utils: Utils,
     account: Account,
-    api: Api
+    api: Api,
   ) {
     this.configManager = configManager;
     this.logger = logger;
@@ -41,7 +42,7 @@ export class Position {
 
     try {
       const res = await this.api.getPositions({
-        accessToken: accessToken ?? '',
+        accessToken: accessToken ?? "",
         address: address,
         positionId: positionId,
       });
@@ -59,15 +60,32 @@ export class Position {
   }
 
   async getPositionHistory(params: GetHistoryOrdersParams, address: string) {
-    const accessToken = await this.configManager.getAccessToken() ?? ''
+    const accessToken = (await this.configManager.getAccessToken()) ?? "";
 
-    const res = await this.api.getPositionHistory(
-      { accessToken, ...params, address: address },
-    );
+    const res = await this.api.getPositionHistory({
+      accessToken,
+      ...params,
+      address: address,
+    });
     return {
       code: 0,
       data: res.data,
     };
+  }
+
+  async getForwardEip712Domain(chainId: number) {
+    const forwarderContract = await getForwarderContract(chainId);
+    const forwarderJsonRpcContractDomain =
+      await forwarderContract.read.eip712Domain();
+
+    const domain = {
+      name: forwarderJsonRpcContractDomain[1],
+      version: forwarderJsonRpcContractDomain[2],
+      chainId: forwarderJsonRpcContractDomain[3],
+      verifyingContract: forwarderJsonRpcContractDomain[4],
+    };
+
+    return domain;
   }
 
   async adjustCollateral({
@@ -85,23 +103,7 @@ export class Position {
     chainId: number;
     address: string;
   }) {
-    const config: MyxClientConfig = this.configManager.getConfig();
-
     try {
-      /**
-       * fetch oracle price
-       */
-      const priceData = await this.utils.getOraclePrice(poolId, chainId);
-      if (!priceData) {
-        throw new Error("Failed to get price data");
-      }
-      const updateParams = {
-        poolId: poolId,
-        oracleType: priceData.oracleType,
-        publishTime: priceData.publishTime,
-        oracleUpdateData: priceData?.vaa ?? "0",
-      };
-
       let needsApproval = false;
 
       if (Number(adjustAmount) > 0) {
@@ -110,14 +112,13 @@ export class Position {
           chainId,
           quoteToken,
           adjustAmount,
-          getContractAddressByChainId(chainId).TRADING_ROUTER
+          getContractAddressByChainId(chainId).TRADING_ROUTER,
         );
       }
 
-      // const authorized =
-      //   this.configManager.getConfig().seamlessAccount?.authorized;
-      // const seamlessWallet =
-      //   this.configManager.getConfig().seamlessAccount?.wallet;
+      if (!this.configManager.hasSigner()) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
 
       let depositAmount = BigInt(0);
 
@@ -127,7 +128,8 @@ export class Position {
         chainId,
         address,
       });
-      const availableAccountMarginBalance = availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
+      const availableAccountMarginBalance =
+        availableRes.code === 0 ? (availableRes.data ?? 0n) : 0n;
       let diff = BigInt(0);
       if (availableAccountMarginBalance < used) {
         diff = used - availableAccountMarginBalance;
@@ -138,14 +140,6 @@ export class Position {
         token: quoteToken,
         amount: depositAmount.toString(),
       };
-      
-      if (!this.configManager.hasSigner()) {
-        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-      }
-      /**
-       * call broker contract
-       */
-      const tradingRouterContract = await getTradingRouterContract(chainId);
 
       if (needsApproval) {
         const approvalResult = await this.utils.approveAuthorization({
@@ -158,21 +152,76 @@ export class Position {
           throw new Error(approvalResult.message);
         }
       }
+      const tradingRouterAddress =
+        getContractAddressByChainId(chainId).TRADING_ROUTER;
 
-      const hash = await tradingRouterContract.write!.updatePriceAndAdjustCollateral(
-        [[updateParams], depositData, positionId, adjustAmount],
-        {
-          value: BigInt(priceData?.value ?? "1"),
-          gas: (BigInt(10000000) * TRADE_GAS_LIMIT_RATIO[chainId as ChainId]) / 100n,
-        }
+      const data = encodeFunctionData({
+        abi: TradingRouter_abi as any,
+        functionName: "adjustCollateral",
+        args: [depositData, positionId, adjustAmount],
+      });
+
+      const domain = await forwarder.getForwardEip712Domain(chainId);
+      const deadline = dayjs().add(10, "second").unix();
+      const txId = await this.utils.generateTxId();
+      const walletClient =
+        await this.configManager.getViemWalletClient(chainId);
+      const [account] = await walletClient.getAddresses();
+
+      const signature = await walletClient.signTypedData({
+        account,
+        domain,
+        types: {
+          ForwardRequest: [
+            { name: "from", type: "address" },
+            { name: "to", type: "address" },
+            { name: "value", type: "uint256" },
+            { name: "gas", type: "uint256" },
+            { name: "deadline", type: "uint48" },
+            { name: "data", type: "bytes" },
+          ],
+        },
+        primaryType: "ForwardRequest",
+        message: {
+          from: address as `0x${string}`,
+          to: tradingRouterAddress as `0x${string}`,
+          value: 0n,
+          gas: 1500000n,
+          deadline,
+          data,
+        },
+      });
+
+      const executionPoolContract = await getExecutionPoolSingerContract(
+        chainId,
+        getContractAddressByChainId(chainId).EXECUTION_POOL,
       );
 
-      await getPublicClient(chainId).waitForTransactionReceipt({ hash });
+      const createdAt = BigInt(dayjs().unix());
 
+      const hash = await executionPoolContract.write!.submit(
+        [
+          txId,
+          {
+            from: address as `0x${string}`,
+            to: tradingRouterAddress as `0x${string}`,
+            value: 0n,
+            gas: 1500000n,
+            createdAt,
+            deadline: BigInt(deadline),
+            data,
+            signature,
+          },
+          [poolId],
+        ],
+        {
+          value: 0n,
+          gas: 1500000n,
+        },
+      );
       return {
         code: 0,
-        data: { hash },
-        message: "Adjust collateral transaction submitted",
+        data: { hash, txId },
       };
     } catch (error) {
       return {

@@ -22,6 +22,7 @@ import { getPublicClient } from "@/web3/viemClients.js";
 import {
   bigintTradingGasPriceWithRatio,
   bigintTradingGasToRatioCalculator,
+  execution,
 } from "@/common";
 import { CHAIN_INFO } from "@/config/chains/index";
 // import { executeAddressByChainId } from "@/config/address/index.js";
@@ -38,19 +39,30 @@ export class Utils {
     account: string,
     chainId: number,
     tokenAddress: string,
-    spenderAddress?: string
+    spenderAddress?: string,
   ) {
     try {
-      if (!tokenAddress || (typeof tokenAddress === "string" && !tokenAddress.trim())) {
-        throw new Error("getApproveQuoteAmount: tokenAddress is required (ERC20 contract address)");
+      if (
+        !tokenAddress ||
+        (typeof tokenAddress === "string" && !tokenAddress.trim())
+      ) {
+        throw new Error(
+          "getApproveQuoteAmount: tokenAddress is required (ERC20 contract address)",
+        );
       }
-      const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
+      const spender =
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const tokenContract = getTokenContract(chainId, tokenAddress);
-      const allowance = await tokenContract.read.allowance([account as `0x${string}`, spender as `0x${string}`]);
+      const allowance = await tokenContract.read.allowance([
+        account as `0x${string}`,
+        spender as `0x${string}`,
+      ]);
       return { code: 0, data: String(allowance) };
     } catch (error) {
       this.logger.error("Error getting allowance:", error);
-      throw typeof error === "string" ? error : (await getErrorTextFormError(error));
+      throw typeof error === "string"
+        ? error
+        : await getErrorTextFormError(error);
     }
   }
 
@@ -59,14 +71,14 @@ export class Utils {
     chainId: number,
     tokenAddress: string,
     requiredAmount: string,
-    spenderAddress?: string
+    spenderAddress?: string,
   ): Promise<boolean> {
     try {
       const currentAllowanceRes = await this.getApproveQuoteAmount(
         account,
         chainId,
         tokenAddress,
-        spenderAddress
+        spenderAddress,
       );
       const currentAllowance = currentAllowanceRes.data;
       const allowanceBigInt = BigInt(currentAllowance);
@@ -96,9 +108,13 @@ export class Utils {
     try {
       const contract = await getERC20Contract(chainId, quoteAddress);
       const approveAmount = amount ?? maxUint256;
-      const spender = spenderAddress ?? getContractAddressByChainId(chainId).Account;
+      const spender =
+        spenderAddress ?? getContractAddressByChainId(chainId).Account;
       const gasPrice = await this.getGasPriceByRatio();
-      const hash = await contract.write!.approve([spender as `0x${string}`, approveAmount], { gasPrice });
+      const hash = await contract.write!.approve(
+        [spender as `0x${string}`, approveAmount],
+        { gasPrice },
+      );
       const client = getPublicClient(chainId);
       await client.waitForTransactionReceipt({ hash });
       return { code: 0, message: "Approval success" };
@@ -112,9 +128,17 @@ export class Utils {
     assetClass: number,
     riskTier: number,
     chainId: number,
-    userAddress?: string
+    userAddress?: string,
   ): Promise<
-    | { code: 0; data: { takerFeeRate: string; makerFeeRate: string; baseTakerFeeRate: string; baseMakerFeeRate: string } }
+    | {
+        code: 0;
+        data: {
+          takerFeeRate: string;
+          makerFeeRate: string;
+          baseTakerFeeRate: string;
+          baseMakerFeeRate: string;
+        };
+      }
     | { code: -1; message: string }
   > {
     const config: MyxClientConfig = this.configManager.getConfig();
@@ -122,13 +146,14 @@ export class Utils {
 
     try {
       const brokerContract = getBrokerContract(chainId, brokerAddress);
-      const targetAddress = userAddress ?? await this.configManager.getSignerAddress(chainId);
+      const targetAddress =
+        userAddress ?? (await this.configManager.getSignerAddress(chainId));
 
       const userFeeRate = await brokerContract.read.getUserFeeRate([
         targetAddress as `0x${string}`,
         assetClass,
-        riskTier]
-      );
+        riskTier,
+      ]);
 
       return {
         code: 0,
@@ -150,8 +175,13 @@ export class Utils {
 
   async getNetworkFee(marketId: string, chainId: number) {
     try {
-      const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
-      const networkFee = await marketManagerContract.read.getExecutionFee([marketId as `0x${string}`]);
+      const marketManagerContract = await getMarketManageContract(
+        chainId,
+        ProviderType.JSON,
+      );
+      const networkFee = await marketManagerContract.read.getExecutionFee([
+        marketId as `0x${string}`,
+      ]);
       return networkFee.toString();
     } catch (error) {
       this.logger.error("Error getting network fee:", error);
@@ -208,7 +238,7 @@ export class Utils {
       default:
         throw new MyxSDKError(
           MyxErrorCode.ParamError,
-          `Invalid kline resolution: ${resolution}`
+          `Invalid kline resolution: ${resolution}`,
         );
     }
   }
@@ -233,12 +263,24 @@ export class Utils {
     }
   }
 
-  async checkSeamlessGas(userAddress: string, chainId: number, forwardFeeToken: string) {
-    const marketManagerContract = await getMarketManageContract(chainId, ProviderType.JSON);
-    const relayFee = await marketManagerContract.read.getForwardFeeByToken([forwardFeeToken as `0x${string}`]);
+  async checkSeamlessGas(
+    userAddress: string,
+    chainId: number,
+    forwardFeeToken: string,
+  ) {
+    const marketManagerContract = await getMarketManageContract(
+      chainId,
+      ProviderType.JSON,
+    );
+    const relayFee = await marketManagerContract.read.getForwardFeeByToken([
+      forwardFeeToken as `0x${string}`,
+    ]);
     const tokenContract = getTokenContract(chainId, forwardFeeToken);
-    const balance = await tokenContract.read.balanceOf([userAddress as `0x${string}`]);
-    if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee)) return false;
+    const balance = await tokenContract.read.balanceOf([
+      userAddress as `0x${string}`,
+    ]);
+    if (BigInt(relayFee) > 0n && BigInt(balance) < BigInt(relayFee))
+      return false;
     return true;
   }
 
@@ -252,9 +294,15 @@ export class Utils {
     marketPrice: string;
   }) {
     try {
-      const dataProviderContract = await getDataProviderContract(chainId, ProviderType.JSON);
+      const dataProviderContract = await getDataProviderContract(
+        chainId,
+        ProviderType.JSON,
+      );
       // viem read methods require args to be passed as an array, otherwise AbiEncodingLengthMismatchError (Given length: 0) will be thrown
-      const poolInfo = await dataProviderContract.read.getPoolInfo([poolId as `0x${string}`, marketPrice]);
+      const poolInfo = await dataProviderContract.read.getPoolInfo([
+        poolId as `0x${string}`,
+        marketPrice,
+      ]);
       return { code: 0, data: poolInfo };
     } catch (error) {
       this.logger.error("Error getting pool info:", error);
@@ -305,7 +353,7 @@ export class Utils {
       if (selector) {
         // Look up in error mapping
         const errorKey = Object.keys(customErrorMapping).find(
-          (k) => k.toLowerCase() === selector
+          (k) => k.toLowerCase() === selector,
         );
         if (errorKey) {
           return customErrorMapping[errorKey];
@@ -334,7 +382,11 @@ export class Utils {
     const chainInfo = CHAIN_INFO[chainId];
     return bigintTradingGasToRatioCalculator(
       gasLimit,
-      chainInfo?.gasLimitRatio ?? 1.3
+      chainInfo?.gasLimitRatio ?? 1.3,
     );
+  }
+
+  async generateTxId() {
+    return execution.generateTxId();
   }
 }

@@ -17,3 +17,5 @@ export const TRADE_GAS_LIMIT_RATIO: Record<ChainId, bigint> = {
   [ChainId.BSC_MAINNET]: 150n,
   [ChainId.BSC_TESTNET]: 150n,
 }
+
+export const FORWARD_GAS_LIMIT = 1500000n

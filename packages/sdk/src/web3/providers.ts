@@ -37,6 +37,7 @@ import DisputeCourt_ABI from "@/abi/DisputeCourt.json";
 import Account_ABI from "@/abi/Account.json";
 import { getContractAddressByChainId } from "@/config/address";
 import TradingRouter_ABI from "@/abi/TradingRouter.json";
+import ExecutionPool_ABI from "@/abi/ExecutionPool.json";
 
 export enum ProviderType {
   JSON,
@@ -145,6 +146,15 @@ export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: s
   return asContract(getViemContract({
     address: brokerAddress as Address,
     abi: Broker_ABI as Abi,
+    client,
+  }));
+};
+
+export const getExecutionPoolSingerContract = async (chainId: ChainId, executionPoolAddress: string) => {
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: executionPoolAddress as Address,
+    abi: ExecutionPool_ABI as Abi,  
     client,
   }));
 };
