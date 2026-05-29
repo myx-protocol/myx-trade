@@ -150,10 +150,12 @@ export const getBrokerSingerContract = async (chainId: ChainId, brokerAddress: s
   }));
 };
 
-export const getExecutionPoolSingerContract = async (chainId: ChainId, executionPoolAddress: string) => {
+export const getExecutionPoolSingerContract = async (chainId: ChainId) => {
   const client = await getWalletClient(chainId);
+  const addresses = getContractAddressByChainId(chainId);
+
   return asContract(getViemContract({
-    address: executionPoolAddress as Address,
+    address: addresses.EXECUTION_POOL as Address,
     abi: ExecutionPool_ABI as Abi,  
     client,
   }));

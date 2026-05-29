@@ -113,8 +113,7 @@ export const deposit = async (params: Deposit) => {
     });
 
     const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      addresses.EXECUTION_POOL,
+      chainId
     );
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],

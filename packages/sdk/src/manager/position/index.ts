@@ -11,7 +11,6 @@ import {
 } from "@/web3/providers";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
-import { ChainId } from "@/config/chain";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import TradingRouter_abi from "@/abi/TradingRouter.json";
 import dayjs from "dayjs";
@@ -193,8 +192,7 @@ export class Position {
       });
 
       const executionPoolContract = await getExecutionPoolSingerContract(
-        chainId,
-        getContractAddressByChainId(chainId).EXECUTION_POOL,
+        chainId
       );
 
       const createdAt = BigInt(dayjs().unix());

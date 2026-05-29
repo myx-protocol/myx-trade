@@ -116,8 +116,7 @@ export const withdraw = async (params: WithdrawParams) => {
       message: signData,
     });
     const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      chainAddress.EXECUTION_POOL,
+      chainId
     );
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
