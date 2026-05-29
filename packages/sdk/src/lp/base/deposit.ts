@@ -2,7 +2,7 @@ import {
   getAccount,
   getExecutionPoolSingerContract,
 } from "@/web3/providers.js";
-import { encodeFunctionData, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { sdkError } from "@/logger";
 import { bigintAmountSlipperCalculator } from "@/common/tradingGas.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
@@ -23,6 +23,7 @@ import { getWalletClient } from "@/web3";
 import { isNeedPrice } from "@/utils/isNeedPrice.ts";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
 import { execution, transactions } from "@/common";
+import { getGasByRatio } from "@/common/tradingGas.js";
 
 export const deposit = async (params: Deposit) => {
   try {
@@ -83,20 +84,20 @@ export const deposit = async (params: Deposit) => {
       quoteDecimals,
     );
     const minAmountOut = bigintAmountSlipperCalculator(amountOut, slippage);
-
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "depositBase",
-      args: [
-        {
-          poolId,
-          amountIn,
-          minAmountOut,
-          recipient: account,
-          tpslParams,
-        },
-      ],
-    });
+    const data = {
+      poolId,
+      amountIn,
+      minAmountOut,
+      recipient: account,
+      tpslParams,
+    };
+    const { hexData, executionGasFee } =
+      await execution.buildHexDataAndExecutionGasFee({
+        abi: LiquidityRouter_abi,
+        method: "depositBase",
+        args: [data],
+        chainId,
+      });
     const { domain, createAt, txId, types, primaryType, signData } =
       await execution.buildSignData({
         from: account,
@@ -113,10 +114,12 @@ export const deposit = async (params: Deposit) => {
       message: signData,
     });
 
-    const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      addresses.EXECUTION_POOL,
+    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
+    const _gasLimit = await executionPoolContract.estimateGas!.submit(
+      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
+      { value: executionGasFee },
     );
+    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
     const hash = await executionPoolContract.write!.submit(
       [
         txId,
@@ -128,8 +131,9 @@ export const deposit = async (params: Deposit) => {
         [poolId],
       ],
       {
-        value: 0n,
-        gas: signData.gas,
+        value: executionGasFee,
+        gasLimit,
+        gasPrice,
       },
     );
 

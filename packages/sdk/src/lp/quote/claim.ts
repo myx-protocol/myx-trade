@@ -13,6 +13,7 @@ import { encodeFunctionData } from "viem";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
 import { execution, transactions } from "@/common";
 import { getContractAddressByChainId } from "@/config/address";
+import { getGasByRatio } from "@/common/tradingGas.js";
 
 export const claimQuotePoolRebate = async (params: ClaimParams) => {
   try {
@@ -25,11 +26,13 @@ export const claimQuotePoolRebate = async (params: ClaimParams) => {
       chainId,
     });
 
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "claimQuotePoolRebate",
-      args: [poolId, account],
-    });
+    const { hexData, executionGasFee } =
+      await execution.buildHexDataAndExecutionGasFee({
+        abi: LiquidityRouter_abi,
+        method: "claimQuotePoolRebate",
+        args: [poolId, account],
+        chainId,
+      });
     const chainAddress = getContractAddressByChainId(chainId);
     const { domain, createAt, txId, types, primaryType, signData } =
       await execution.buildSignData({
@@ -46,13 +49,15 @@ export const claimQuotePoolRebate = async (params: ClaimParams) => {
       primaryType,
       message: signData,
     });
-    const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      chainAddress.EXECUTION_POOL,
+    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
+    const _gasLimit = await executionPoolContract.estimateGas!.submit(
+      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
+      { value: executionGasFee },
     );
+    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
-      { value: 0n, gas: signData.gas },
+      { value: executionGasFee, gasLimit, gasPrice },
     );
     const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
     return {
@@ -79,11 +84,13 @@ export const claimQuotePoolRebates = async (params: ClaimRebatesParams) => {
       account,
       chainId,
     });
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "claimQuotePoolRebates",
-      args: [poolIds, account],
-    });
+    const { hexData, executionGasFee } =
+      await execution.buildHexDataAndExecutionGasFee({
+        abi: LiquidityRouter_abi,
+        method: "claimQuotePoolRebates",
+        args: [poolIds, account],
+        chainId,
+      });
 
     const chainAddress = getContractAddressByChainId(chainId);
 
@@ -103,13 +110,16 @@ export const claimQuotePoolRebates = async (params: ClaimRebatesParams) => {
       primaryType,
       message: signData,
     });
-    const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      chainAddress.EXECUTION_POOL,
+    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
+    const _gasLimit = await executionPoolContract.estimateGas!.submit(
+      [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
+      { value: 0n },
     );
+
+    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
-      { value: 0n, gas: signData.gas },
+      { value: executionGasFee, gasLimit, gasPrice },
     );
     const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
     return {

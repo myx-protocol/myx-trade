@@ -3,7 +3,7 @@ import {
   getBasePoolContract,
   getExecutionPoolSingerContract,
 } from "@/web3/providers.js";
-import { encodeFunctionData, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { WithdrawParams } from "@/lp/type.js";
 import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
@@ -23,6 +23,7 @@ import { MarketPoolState } from "@/api";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
 import { getContractAddressByChainId } from "@/config/address";
 import { execution, transactions } from "@/common";
+import { getGasByRatio } from "@/common/tradingGas.js";
 
 export const withdrawableLpAmount = async (params: {
   chainId: ChainId;
@@ -93,11 +94,13 @@ export const withdraw = async (params: WithdrawParams) => {
 
     const chainAddress = getContractAddressByChainId(chainId);
 
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "withdrawBase",
-      args: [data],
-    });
+    const { hexData, executionGasFee } =
+      await execution.buildHexDataAndExecutionGasFee({
+        abi: LiquidityRouter_abi,
+        method: "withdrawBase",
+        args: [data],
+        chainId,
+      });
 
     const { domain, createAt, txId, types, primaryType, signData } =
       await execution.buildSignData({
@@ -115,13 +118,15 @@ export const withdraw = async (params: WithdrawParams) => {
       primaryType,
       message: signData,
     });
-    const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      chainAddress.EXECUTION_POOL,
+    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
+    const _gasLimit = await executionPoolContract.estimateGas!.submit(
+      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
+      { value: executionGasFee },
     );
+    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
-      { value: 0n, gas: signData.gas },
+      { value: executionGasFee, gasLimit, gasPrice },
     );
     const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
 
