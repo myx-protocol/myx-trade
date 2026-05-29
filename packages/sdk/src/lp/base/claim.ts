@@ -45,8 +45,7 @@ export const claimBasePoolRebate = async (params: ClaimParams) => {
       message: signData,
     });
     const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      chainAddress.EXECUTION_POOL,
+      chainId
     );
     const hash = await executionPoolContract.write!.submit(
       [
@@ -118,8 +117,7 @@ export const claimBasePoolRebates = async (params: ClaimRebatesParams) => {
       message: signData,
     });
     const executionPoolContract = await getExecutionPoolSingerContract(
-      chainId,
-      executionPoolAddress,
+      chainId
     );
     const hash = await executionPoolContract.write!.submit(
       [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
