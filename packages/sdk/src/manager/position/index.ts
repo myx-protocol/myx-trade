@@ -67,11 +67,7 @@ export class Position {
     };
   }
 
-  generateTxId(): `0x${string}` {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    return `0x${Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')}`;
-  }
+
 
   async getForwardEip712Domain(chainId: number) {
     const forwarderContract = await getForwarderContract(chainId);
@@ -160,7 +156,7 @@ export class Position {
 
       const domain = await this.getForwardEip712Domain(chainId);
       const deadline = dayjs().add(10, 'second').unix();
-      const txId = this.generateTxId()
+      const txId = await this.utils.generateTxId()
       const walletClient = await this.configManager.getViemWalletClient(chainId);
       const [account] = await walletClient.getAddresses();
 
