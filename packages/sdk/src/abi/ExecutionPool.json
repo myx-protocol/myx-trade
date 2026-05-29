@@ -1,0 +1,782 @@
+[
+  {
+    "type": "error",
+    "name": "AddressEmptyCode",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "CollectFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeadlineInPast",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ERC1967InvalidImplementation",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ERC1967NonPayable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ExecutionExpired",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ExecutionNotExpired",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ExecutionsNotExist",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "FailedCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GracePeriodNotExpired",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientGasEscrow",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDataLength",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidGasEscrow",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidInitialization",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidRequest",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "MaxPendingExceeded",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotAddressManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDependencyManager",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotExecutionOwner",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "NotInitializing",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotProxyAdmin",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PermissionDenied",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "caller"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "PoolNotExists",
+    "inputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "RefundExceedsEscrow",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "refund"
+      },
+      {
+        "type": "uint256",
+        "name": "escrow"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "RefundFailed",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "SelectorNotRegistered",
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "TxIdAlreadyExists",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnauthorizedCallContext",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "slot"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExecutionCancelled",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId",
+        "indexed": false
+      },
+      {
+        "type": "string",
+        "name": "remark",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExecutionExecuted",
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "txIds",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ExecutionSubmitted",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId",
+        "indexed": false
+      },
+      {
+        "type": "bytes32[]",
+        "name": "poolId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "from",
+        "indexed": false
+      },
+      {
+        "type": "uint64",
+        "name": "deadline",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "GasCollected",
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "txIds",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "gasAmount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "GasEscrowSelectorRemoved",
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "GasEscrowSelectorUpdated",
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "gasEscrow",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "GracePeriodUpdated",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "gracePeriod",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MaxPendingUpdated",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "maxPendingPerUser",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Upgraded",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "cancel",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "cancelExpired",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "consumeExecutions",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32[]",
+        "name": "txIds"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "executePublic",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      },
+      {
+        "type": "tuple[]",
+        "name": "params",
+        "components": [
+          {
+            "type": "bytes32",
+            "name": "poolId"
+          },
+          {
+            "type": "uint8",
+            "name": "oracleType"
+          },
+          {
+            "type": "uint64",
+            "name": "publishTime"
+          },
+          {
+            "type": "bytes",
+            "name": "oracleUpdateData"
+          }
+        ]
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getAddressManager",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getAllGasEscrowSelectors",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32[]",
+        "name": "selectors"
+      },
+      {
+        "type": "uint256[]",
+        "name": "escrows"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDependencyAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "identifier"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getExecutionRequest",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "isExpired"
+      },
+      {
+        "type": "tuple",
+        "components": [
+          {
+            "type": "address",
+            "name": "from"
+          },
+          {
+            "type": "address",
+            "name": "to"
+          },
+          {
+            "type": "uint256",
+            "name": "value"
+          },
+          {
+            "type": "uint256",
+            "name": "gas"
+          },
+          {
+            "type": "uint48",
+            "name": "deadline"
+          },
+          {
+            "type": "bytes",
+            "name": "data"
+          },
+          {
+            "type": "bytes",
+            "name": "signature"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getGasEscrowForSelector",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "gracePeriod",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint64"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "addressManager"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "maxPendingCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "pendingCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "count"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "proxiableUUID",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "removeGasEscrowForSelector",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setGasEscrowForSelector",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "selector"
+      },
+      {
+        "type": "uint256",
+        "name": "escrow"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setGracePeriod",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "_gracePeriod"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setMaxPendingCount",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_maxPendingCount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "submit",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "txId"
+      },
+      {
+        "type": "tuple",
+        "name": "execution",
+        "components": [
+          {
+            "type": "address",
+            "name": "from"
+          },
+          {
+            "type": "address",
+            "name": "to"
+          },
+          {
+            "type": "uint256",
+            "name": "value"
+          },
+          {
+            "type": "uint256",
+            "name": "gas"
+          },
+          {
+            "type": "uint48",
+            "name": "createdAt"
+          },
+          {
+            "type": "uint48",
+            "name": "deadline"
+          },
+          {
+            "type": "bytes",
+            "name": "data"
+          },
+          {
+            "type": "bytes",
+            "name": "signature"
+          }
+        ]
+      },
+      {
+        "type": "bytes32[]",
+        "name": "updatePricePoolIds"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "upgradeToAndCall",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newImplementation"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  }
+]
