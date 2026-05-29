@@ -10,70 +10,59 @@ import { PoolType } from "@/lp/pool/index.js";
 import { previewQuoteAmountOut } from "@/lp/quote/preview.ts";
 import { isNeedPrice } from "@/utils/isNeedPrice.ts";
 
-export const getWithdrawData = async (
-  {
-    amountIn,
-    chainId,
-    poolId,
-    state,
-    slippage,
-    poolType,
-    account
-  }: {
-    amountIn: bigint,
-    account: string,
-    chainId: ChainId,
-    poolId: string,
-    state:MarketPoolState,
-    slippage: number,
-    poolType: PoolType
-  }) => {
-  
-  const _isNeedPrice = isNeedPrice(state)
-  
-  const price: OracleUpdatePrice[] = []
-  let value = 0n;
+export const getWithdrawData = async ({
+  amountIn,
+  chainId,
+  poolId,
+  state,
+  slippage,
+  poolType,
+  account,
+}: {
+  amountIn: bigint;
+  account: string;
+  chainId: ChainId;
+  poolId: string;
+  state: MarketPoolState;
+  slippage: number;
+  poolType: PoolType;
+}) => {
+  const _isNeedPrice = isNeedPrice(state);
+
   let amountOut;
-  const previewAmountOut = poolType === PoolType.Base ? previewBaseAmountOut : previewQuoteAmountOut
-  // let _withdrawableLpAmount;
+  const previewAmountOut =
+    poolType === PoolType.Base ? previewBaseAmountOut : previewQuoteAmountOut;
   if (_isNeedPrice) {
     try {
-      const priceData = await getPriceData (chainId, poolId)
+      const priceData = await getPriceData(chainId, poolId);
       if (priceData) {
-        const referencePrice = parseUnits (priceData.price, COMMON_PRICE_DECIMALS)
-        price.push ({
-          poolId: poolId as Address,
-          oracleType: priceData.oracleType,
-          publishTime: BigInt(priceData.publishTime),
-          oracleUpdateData: priceData.vaa as Address,
-        })
-        amountOut = await previewAmountOut ({ chainId, poolId, amountIn, price: referencePrice })
-        value = priceData.value
+        const referencePrice = parseUnits(
+          priceData.price,
+          COMMON_PRICE_DECIMALS,
+        );
+        amountOut = await previewAmountOut({
+          chainId,
+          poolId,
+          amountIn,
+          price: referencePrice,
+        });
       }
     } catch (e) {
-      console.error(e)
-      amountOut = await previewAmountOut ({ chainId, poolId, amountIn })
+      console.error(e);
+      amountOut = await previewAmountOut({ chainId, poolId, amountIn });
     }
-    // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: referencePrice})
   } else {
-    amountOut = await previewAmountOut ({ chainId, poolId, amountIn })
-    // _withdrawableLpAmount = await withdrawableLpAmount({chainId, poolId, price: 0n})
+    amountOut = await previewAmountOut({ chainId, poolId, amountIn });
   }
-  
-  /*if (_withdrawableLpAmount &&  amountIn > _withdrawableLpAmount) {
-    throw new Error(Errors[ErrorCode.Invalid_Amount_Withdrawable_Lp_Amount]);
-  }*/
-  
+
   const data = {
     poolId,
     amountIn,
-    minAmountOut: bigintAmountSlipperCalculator (amountOut, slippage),
-    recipient: account
-  }
-  
+    minAmountOut: bigintAmountSlipperCalculator(amountOut, slippage),
+    recipient: account,
+  };
+
   return {
-    price,
     data,
-    value
-  }
-}
+  };
+};

@@ -1,141 +1,140 @@
-import { getAccount, getLiquidityRouterContract } from "@/web3/providers";
+import { getAccount, getExecutionPoolSingerContract } from "@/web3/providers";
 import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
 import { sdkError } from "@/logger";
-import { CHAIN_INFO } from "@/config/chains/index";
 import { checkParams } from "@/common/checkParams";
-import {
-  bigintTradingGasPriceWithRatio,
-  bigintTradingGasToRatioCalculator
-} from "@/common/tradingGas";
-import {  getPricesData } from "@/common/price";
 import { getErrorTextFormError } from "@/config/error";
-import { getPublicClient } from "@/web3";
+import { getWalletClient } from "@/web3";
+import { encodeFunctionData } from "viem";
+import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
+import { execution, forwarder, transactions } from "@/common";
+import { getContractAddressByChainId } from "@/config/address";
+import { FORWARD_GAS_LIMIT } from "@/config/fee";
 
-export const claimBasePoolRebate = async (
-  params: ClaimParams
-) => {
+export const claimBasePoolRebate = async (params: ClaimParams) => {
   try {
-    const { chainId, poolId} = params;
-    
-    const chainInfo =  CHAIN_INFO[chainId];
-    const account = await getAccount (chainId);
-    
-    await checkParams ({
+    const { chainId, poolId } = params;
+
+    const account = await getAccount(chainId);
+
+    await checkParams({
       account,
       chainId,
-    })
-    const priceResponse = await getPricesData(chainId, [poolId]);
-    if (!priceResponse) return
-   
-    const values = priceResponse.map((item) => {
-      return item.value
-    })
+    });
+    const hexData = encodeFunctionData({
+      abi: LiquidityRouter_abi,
+      functionName: "claimBasePoolRebate",
+      args: [poolId, account],
+    });
+    const walletClient = await getWalletClient(chainId);
+    const chainAddress = getContractAddressByChainId(chainId);
+    const liquidityRouterAddress = chainAddress.LIQUIDITY_ROUTER;
     
-    const prices = priceResponse.map((item) => {
-      return {
-        poolId: poolId,
-        oracleType: item.oracleType,
-        publishTime: item.publishTime,
-        oracleUpdateData: item?.vaa ?? '0',
-      }
-    })
-    
-    const data = {
-      prices,
-      values,
-      poolId,
-      recipient: account
-    }
-    // console.log('base claim', data)
-    const contract = await getLiquidityRouterContract(chainId)
+    const { domain, createAt, txId, types, primaryType, signData } =
+      await execution.buildSignData({
+        chainId,
+        data: hexData,
+        from: account,
+        to: liquidityRouterAddress,
+      });
 
-    // estimate gas (viem style, args array)
-    const _gasLimit = await contract.estimateGas!.claimBasePoolRebate(
-      [prices, poolId, account],
-      { value: values[0] },
-    )
-    const gasLimit = bigintTradingGasToRatioCalculator(_gasLimit, chainInfo.gasLimitRatio)
-    const {gasPrice}  = await bigintTradingGasPriceWithRatio(chainId)
-    const response = await contract.write!.claimBasePoolRebate(
-      [prices, poolId, account],
+    const signature = await walletClient.signTypedData({
+      account,
+      domain,
+      types,
+      primaryType,
+      message: signData,
+    });
+    const executionPoolContract = await getExecutionPoolSingerContract(
+      chainId,
+      chainAddress.EXECUTION_POOL,
+    );
+    const hash = await executionPoolContract.write!.submit(
+      [
+        txId,
+        {
+          ...signData,
+          createdAt: BigInt(createAt),
+          signature,
+        },
+        [poolId],
+      ],
       {
-      gasLimit,
-      gasPrice,
-      value: values[0],
+        value: 0n,
+        gas: signData.gas,
       },
-    )
-    
-    // console.log('base claim',response)
-    return response
-    
+    );
+
+    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
+
+    return {
+      hash,
+      txId,
+      receipt,
+    };
   } catch (error) {
     sdkError(error);
-    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+    throw typeof error === "string"
+      ? error
+      : await getErrorTextFormError(error);
   }
-}
+};
 
-
-export const claimBasePoolRebates = async (
-  params: ClaimRebatesParams
-) => {
+export const claimBasePoolRebates = async (params: ClaimRebatesParams) => {
   try {
     const { chainId, poolIds } = params;
     if (poolIds.length === 0) return;
-    
-    const chainInfo = CHAIN_INFO[chainId];
-    const account = await getAccount (chainId);
-    
-    await checkParams ({
+
+    const account = await getAccount(chainId);
+
+    await checkParams({
       account,
       chainId,
-    })
-    const priceData = await getPricesData (chainId, poolIds)
-    if (!priceData) return
-    
-    const prices = priceData.map ((item) => {
-      return {
-        poolId: item.poolId,
-        oracleType: item.oracleType,
-        publishTime: item.publishTime,
-        oracleUpdateData: item?.vaa ?? '0',
-      }
-    })
-    
-    const values = priceData.map ((item) => item.value)
-    const value = values.reduce ((prev, curr) => curr + prev, 0n)
-    
-    const data = {
-      prices,
-      poolIds,
-      value,
-      recipient: account
-    }
-    
-    // console.log ('base claim pool rebates', data)
-    const contract = await getLiquidityRouterContract (chainId)
+    });
 
-    // estimate gas (viem style, args array)
-    const _gasLimit = await contract.estimateGas!.claimBasePoolRebates(
-      [prices, poolIds, account],
-      { value },
-    )
-    const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
-    const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
-    const hash = await contract.write!.claimBasePoolRebates(
-      [prices, poolIds, account],
-      {
-        gasLimit,
-        gasPrice,
-        value,
-      },
-    )
-    
-    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash });
-    
-    return receipt
-    
+    const hexData = encodeFunctionData({
+      abi: LiquidityRouter_abi,
+      functionName: "claimBasePoolRebates",
+      args: [poolIds, account],
+    });
+    const chainAddress = getContractAddressByChainId(chainId);
+    const walletClient = await getWalletClient(chainId);
+
+    const liquidityRouterAddress = chainAddress.LIQUIDITY_ROUTER;
+    const executionPoolAddress = chainAddress.EXECUTION_POOL;
+
+    const { domain, createAt, txId, types, primaryType, signData } =
+      await execution.buildSignData({
+        chainId,
+        data: hexData,
+        from: account,
+        to: liquidityRouterAddress,
+      });
+
+    const signature = await walletClient.signTypedData({
+      account,
+      domain,
+      types,
+      primaryType,
+      message: signData,
+    });
+    const executionPoolContract = await getExecutionPoolSingerContract(
+      chainId,
+      executionPoolAddress,
+    );
+    const hash = await executionPoolContract.write!.submit(
+      [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
+      { value: 0n, gas: signData.gas },
+    );
+    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
+    return {
+      hash,
+      txId,
+      receipt,
+    };
   } catch (error) {
     sdkError(error);
-    throw typeof error === "string" ? error : (await getErrorTextFormError (error))
+    throw typeof error === "string"
+      ? error
+      : await getErrorTextFormError(error);
   }
-}
+};
