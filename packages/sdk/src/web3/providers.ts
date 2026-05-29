@@ -161,6 +161,16 @@ export const getExecutionPoolSingerContract = async (chainId: ChainId) => {
   }));
 };
 
+export const getExecutionPoolContract = async (chainId: ChainId) => {
+  const client = await getPublicClient(chainId);
+  const addresses = getContractAddressByChainId(chainId);
+  return asContract(getViemContract({
+    address: addresses.EXECUTION_POOL as Address,
+    abi: ExecutionPool_ABI as Abi,
+    client,
+  }));
+};
+
 export const getSeamlessBrokerContract = (brokerAddress: string, walletClient: WalletClient) => {
   return asContract(getViemContract({
     address: brokerAddress as Address,

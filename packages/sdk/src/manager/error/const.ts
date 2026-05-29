@@ -14,6 +14,7 @@ export enum MyxErrorCode {
   InsufficientMarginBalance = "INSUFFICIENT_MARGIN_BALANCE",
   InvalidBrokerAddress = "INVALID_BROKER_ADDRESS",
   TransactionFailed = "TRANSACTION_FAILED",
+  InvalidABI = 'INVALID_ABI'
 }
 
 export class MyxSDKError extends Error {
