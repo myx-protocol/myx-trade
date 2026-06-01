@@ -13,6 +13,10 @@ interface GlobalSearchStore {
   isOpen: boolean
   open: (params?: OpenGlobalSearchParams) => void
   close: () => void
+
+  isDropdownOpen: boolean
+  openDropdown: (params?: OpenGlobalSearchParams) => void
+  closeDropdown: () => void
   searchValue: string
   searchHistory: string[]
   setSearchValue: (value: string) => void
@@ -23,8 +27,8 @@ interface GlobalSearchStore {
   searchTab: SearchTypeEnum
   setSearchTab: (tab: SearchTypeEnum) => void
 
-  secondSearchTab: SearchSecondTypeEnum
-  setSecondSearchTab: (tab: SearchSecondTypeEnum) => void
+  secondSearchTab: SearchSecondTypeEnum | 'all'
+  setSecondSearchTab: (tab: SearchSecondTypeEnum | 'all') => void
 
   searchChainId: number | null
   setSearchChainId: (chainId: number | null) => void
@@ -53,7 +57,31 @@ export const useGlobalSearchStore = create<GlobalSearchStore>()(
             return state
           })
         },
-        close: () => set({ isOpen: false }),
+        close: () =>
+          set((state) => {
+            state.isOpen = false
+            state.searchValue = ''
+            return state
+          }),
+
+        isDropdownOpen: false,
+        openDropdown: (params) => {
+          const defaultTab = params?.defaultTab ?? SearchTypeEnum.Contract
+          const secondTab = params?.secondTab ?? 'all'
+
+          set((state) => {
+            state.isDropdownOpen = true
+            state.searchTab = defaultTab
+            state.secondSearchTab = secondTab
+            return state
+          })
+        },
+        closeDropdown: () =>
+          set((state) => {
+            state.isDropdownOpen = false
+            state.searchValue = ''
+            return state
+          }),
         searchValue: '',
         searchHistory: [],
         setSearchValue: (value: string) => set({ searchValue: value }),
@@ -69,8 +97,8 @@ export const useGlobalSearchStore = create<GlobalSearchStore>()(
         searchTab: SearchTypeEnum.Contract,
         setSearchTab: (tab: SearchTypeEnum) => set({ searchTab: tab }),
 
-        secondSearchTab: SearchSecondTypeEnum.Favorite,
-        setSecondSearchTab: (tab: SearchSecondTypeEnum) => set({ secondSearchTab: tab }),
+        secondSearchTab: 'all',
+        setSecondSearchTab: (tab) => set({ secondSearchTab: tab }),
 
         searchChainId: null,
         setSearchChainId: (chainId: number | null) => set({ searchChainId: chainId }),

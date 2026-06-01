@@ -38,6 +38,15 @@ type AppPubSubEvents = {
 export const appPubSub = mitt<AppPubSubEvents>()
 
 /**
+ * global search pubsub events
+ */
+type GlobalSearchPubSubEvents = {
+  'global:search:focus': void
+}
+
+export const globalSearchPubSub = mitt<GlobalSearchPubSubEvents>()
+
+/**
  * kline pubsub events
  */
 type KlinePubSubEvents = {
