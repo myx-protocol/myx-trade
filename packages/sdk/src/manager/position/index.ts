@@ -3,7 +3,7 @@ import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
-import { Address, maxUint256 } from "viem";
+import { Address, maxUint256, toHex, padHex, isHex } from "viem";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import {
   getExecutionPoolSingerContract,
@@ -18,6 +18,13 @@ import {
   getGasByRatio,
   transactions,
 } from "@/common/index.js";
+
+const toBytes32 = (value: string): `0x${string}` => {
+  if (isHex(value)) {
+    return padHex(value as `0x${string}`, { size: 32 });
+  }
+  return padHex(toHex(value), { size: 32 });
+};
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -161,7 +168,7 @@ export class Position {
         await execution.buildHexDataAndExecutionGasFee({
           abi: TradingRouter_abi as any,
           method: "adjustCollateral",
-          args: [depositData, positionId, adjustAmount],
+          args: [depositData, toBytes32(positionId), adjustAmount],
           chainId,
         });
 
