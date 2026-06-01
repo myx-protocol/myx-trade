@@ -89,6 +89,7 @@ export const buildHexDataAndExecutionGasFee = async ({
   }) as AbiFunction;
 
   const functionSelector = toFunctionSelector(abiItem);
+  console.log('functionSelector-->', functionSelector)
   const executionPoolContract = await getExecutionPoolContract(chainId);
 
   const executionGasFee =
