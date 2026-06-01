@@ -449,7 +449,7 @@ export interface MarketInfo {
 }
 
 export interface GetTransactionOnlineParams {
-  chainId: number;
+  chainId?: number;
   poolId: string;
   after?: number;
   before?: number;
