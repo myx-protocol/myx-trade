@@ -16,7 +16,7 @@ import {
 import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { maxUint256 } from "viem";
+import { maxUint256, padHex, isHex, toHex } from "viem";
 import { Account } from "../account/index.js";
 import { ChainId } from "@/config/chain";
 import { Api } from "../api/index.js";
@@ -713,9 +713,14 @@ export class Order {
     chainId: ChainId;
     txtId: `0x${string}`;
   }) {
+    const toBytes32 = (value: string): `0x${string}` => {
+      if (isHex(value)) return padHex(value as `0x${string}`, { size: 32 })
+      return padHex(toHex(value), { size: 32 })
+    }
+
     const executionPoolContract = await getExecutionPoolSingerContract(chainId)
 
-    const hash = await executionPoolContract.write?.cancel([txtId])
+    const hash = await executionPoolContract.write?.cancel([toBytes32(txtId)])
 
     const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash })
 
