@@ -44,6 +44,7 @@ import {
   PositionResponse,
   SearchResultResponse,
   TickerDataItem,
+  GetTransactionOnlineParams
 } from "@/api/type";
 import {
   AddFavoriteParams,
@@ -272,6 +273,23 @@ export class Api extends Request {
   }: AddFavoriteParams & AccessTokenRequest) {
     return http.get<ApiResponse<null>>(
       `${this.getHost()}/openapi/gateway/scan/market/add-favorites`,
+      params,
+      {
+        headers: {
+          myx_openapi_access_token: accessToken,
+          myx_openapi_account: address,
+        },
+      }
+    );
+  }
+
+  async getTransactionOnline({
+    accessToken,
+    address,
+    ...params
+  }: GetTransactionOnlineParams & AccessTokenRequest) {
+    return http.get<ApiResponse<any>>(
+      `${this.getHost()}/openapi/gateway/scan/execution/list`,
       params,
       {
         headers: {

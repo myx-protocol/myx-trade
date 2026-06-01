@@ -447,3 +447,12 @@ export interface MarketInfo {
   maxForwardFee: string;
   relateUsd: number;
 }
+
+export interface GetTransactionOnlineParams {
+  chainId: number;
+  poolId: string;
+  after: number;
+  before: number;
+  txId: string;
+  limit: number;
+}
