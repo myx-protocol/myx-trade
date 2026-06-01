@@ -1,19 +1,10 @@
-import {
-  getAccount,
-  getExecutionPoolSingerContract,
-} from "@/web3/providers.js";
+import { getAccount } from "@/web3/providers.js";
 import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
-import { CHAIN_INFO } from "@/config/chains/index.js";
 import { checkParams } from "@/common/checkParams.js";
-
 import { getErrorTextFormError } from "@/config/error.js";
 import { sdkError } from "@/logger";
-import { getWalletClient } from "@/web3";
-import { encodeFunctionData } from "viem";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
-import { execution, transactions } from "@/common";
-import { getContractAddressByChainId } from "@/config/address";
-import { getGasByRatio } from "@/common/tradingGas.js";
+import { signAndSubmit } from "@/common/signAndSubmit";
 
 export const claimQuotePoolRebate = async (params: ClaimParams) => {
   try {
@@ -26,45 +17,14 @@ export const claimQuotePoolRebate = async (params: ClaimParams) => {
       chainId,
     });
 
-    const { hexData, executionGasFee } =
-      await execution.buildHexDataAndExecutionGasFee({
-        abi: LiquidityRouter_abi,
-        method: "claimQuotePoolRebate",
-        args: [poolId, account],
-        chainId,
-      });
-    const chainAddress = getContractAddressByChainId(chainId);
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        from: account,
-        chainId,
-        to: chainAddress.LIQUIDITY_ROUTER,
-        data: hexData,
-      });
-    const walletClient = await getWalletClient(chainId);
-    const signature = await walletClient.signTypedData({
+    return await signAndSubmit({
+      chainId,
       account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
+      abi: LiquidityRouter_abi,
+      method: "claimQuotePoolRebate",
+      args: [poolId, account],
+      poolIds: [poolId],
     });
-    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
-    const _gasLimit = await executionPoolContract.estimateGas!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
-      { value: executionGasFee },
-    );
-    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
-    const hash = await executionPoolContract.write!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
-      { value: executionGasFee, gasLimit, gasPrice },
-    );
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-    return {
-      txId,
-      receipt,
-      hash,
-    };
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"
@@ -84,49 +44,14 @@ export const claimQuotePoolRebates = async (params: ClaimRebatesParams) => {
       account,
       chainId,
     });
-    const { hexData, executionGasFee } =
-      await execution.buildHexDataAndExecutionGasFee({
-        abi: LiquidityRouter_abi,
-        method: "claimQuotePoolRebates",
-        args: [poolIds, account],
-        chainId,
-      });
-
-    const chainAddress = getContractAddressByChainId(chainId);
-
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        from: account,
-        chainId,
-        to: chainAddress.LIQUIDITY_ROUTER,
-        data: hexData,
-      });
-
-    const walletClient = await getWalletClient(chainId);
-    const signature = await walletClient.signTypedData({
+    return await signAndSubmit({
+      chainId,
       account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
+      abi: LiquidityRouter_abi,
+      method: "claimQuotePoolRebates",
+      args: [poolIds, account],
+      poolIds,
     });
-    const executionPoolContract = await getExecutionPoolSingerContract(chainId);
-    const _gasLimit = await executionPoolContract.estimateGas!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
-      { value: 0n },
-    );
-
-    const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
-    const hash = await executionPoolContract.write!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
-      { value: executionGasFee, gasLimit, gasPrice },
-    );
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-    return {
-      txId,
-      receipt,
-      hash,
-    };
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"
