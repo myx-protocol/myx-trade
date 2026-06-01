@@ -451,8 +451,8 @@ export interface MarketInfo {
 export interface GetTransactionOnlineParams {
   chainId: number;
   poolId: string;
-  after: number;
-  before: number;
+  after?: number;
+  before?: number;
   txId: string;
   limit: number;
 }
