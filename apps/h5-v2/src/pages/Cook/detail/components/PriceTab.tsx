@@ -1,30 +1,140 @@
-import { Box } from '@mui/material'
+import { Box, styled, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { usePoolContext } from '@/pages/Cook/hook'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent.tsx'
 import { useMarketStore } from '@/components/Trade/store/MarketStore.tsx'
 import { formatNumber } from '@/utils/number.ts'
 import { Mode } from '@/pages/Cook/type.ts'
 import { TradingInfo } from '@/pages/Cook/detail/components/TradingInfo.tsx'
-import { ChartInterval } from '@/pages/Earn/type.ts'
+import { ChartInterval, ChartType } from '@/pages/Earn/type.ts'
 import { t } from '@lingui/core/macro'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { AreaCharts } from '@/components/CookDetail/Charts/AreaCharts.tsx'
-import clsx from 'clsx'
+import { Trans } from '@lingui/react/macro'
+
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+  &.MuiToggleButtonGroup-root {
+    border-radius: 0;
+    border: 1px solid #292b33;
+    gap: 0px;
+    padding: 4px;
+    border-radius: 9999px;
+    .MuiToggleButtonGroup-grouped {
+      color: var(--regular-text);
+      border-radius: 9999px;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 1;
+      padding: 4px 8px;
+      &.Mui-selected {
+        color: var(--brand-green);
+        background-color: var(--brand-10);
+      }
+    }
+  }
+`
+
+interface IntervalSelectorProps {
+  interval: ChartInterval
+  setInterval: (interval: ChartInterval) => void
+}
+const IntervalSelector = ({ interval, setInterval }: IntervalSelectorProps) => {
+  const handleChange = useCallback(
+    (_event: React.MouseEvent<HTMLElement>, newInterval: ChartInterval | null) => {
+      setInterval(newInterval as ChartInterval)
+    },
+    [setInterval],
+  )
+
+  const options = useMemo(() => {
+    return [
+      {
+        label: <Trans>Day</Trans>,
+        value: ChartInterval.day,
+      },
+      {
+        label: <Trans>Week</Trans>,
+        value: ChartInterval.week,
+      },
+      {
+        label: <Trans>All</Trans>,
+        value: ChartInterval.all,
+      },
+    ]
+  }, [])
+  return (
+    <StyledToggleButtonGroup
+      value={interval}
+      exclusive
+      onChange={handleChange}
+      aria-label="chart interval"
+    >
+      {options.map((option, index) => {
+        return (
+          <ToggleButton key={index} value={option.value}>
+            {option.label}
+          </ToggleButton>
+        )
+      })}
+    </StyledToggleButtonGroup>
+  )
+}
+
+const StyledChartTypeToggleButton = styled(StyledToggleButtonGroup)`
+  &.MuiToggleButtonGroup-root {
+    .MuiToggleButtonGroup-grouped {
+      color: var(--secondary-text);
+    }
+  }
+`
+
+interface ChartTypeSelectorProps {
+  chartType: ChartType
+  setChartType: (chartType: ChartType) => void
+}
+const ChartTypeSelector = ({ chartType, setChartType }: ChartTypeSelectorProps) => {
+  const handleChange = useCallback(
+    (_event: React.MouseEvent<HTMLElement>, chartType: ChartType | null) => {
+      setChartType(chartType as ChartType)
+    },
+    [setChartType],
+  )
+
+  const options = useMemo(() => {
+    return [
+      {
+        label: <Trans>Price</Trans>,
+        value: ChartType.Price,
+      },
+      {
+        label: <Trans>TVL</Trans>,
+        value: ChartType.TVL,
+      },
+    ]
+  }, [])
+  return (
+    <StyledChartTypeToggleButton
+      value={chartType}
+      exclusive
+      onChange={handleChange}
+      aria-label="chart type"
+    >
+      {options.map((option, index) => {
+        return (
+          <ToggleButton key={index} value={option.value}>
+            {option.label}
+          </ToggleButton>
+        )
+      })}
+    </StyledChartTypeToggleButton>
+  )
+}
 
 export const PriceTab = () => {
-  const { baseLpDetail, price, poolId, mode } = usePoolContext()
+  const { baseLpDetail, price, poolId, mode, oraclePrice } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
-  const resolutionOptions: {
-    label: string
-    value: ChartInterval
-  }[] = [
-    { label: t`Day`, value: ChartInterval.day },
-    { label: t`Week`, value: ChartInterval.week },
-    { label: t`All`, value: ChartInterval.all },
-  ]
   const [resolution, setResolution] = useState<ChartInterval>(ChartInterval.day)
-
+  const [chartType, setChartType] = useState<ChartType>(ChartType.Price)
   return (
     <Box>
       <Box className={'flex justify-between px-[16px] py-[20px]'}>
@@ -39,35 +149,20 @@ export const PriceTab = () => {
           >
             <span className={'text-regular'}>
               $
-              {tickerData?.price
-                ? formatNumber(tickerData?.price, {
-                    showUnit: false,
-                  })
-                : '--'}
+              {formatNumber(tickerData?.price || oraclePrice, {
+                showUnit: false,
+              })}
             </span>
             <RiseFallTextPrecent value={Number(baseLpDetail?.lpPriceChange)} />
           </Box>
         </Box>
-
-        <div
-          className={clsx(
-            'flex h-[24px] items-center gap-[0] text-[12px] leading-[1] font-[500] font-medium text-[#9397A3]',
-          )}
-        >
-          {resolutionOptions.map((option) => (
-            <div
-              key={option.value}
-              role="button"
-              className={`px-[12px] py-[6px] transition-all ${option.value === resolution ? 'text-green bg-brand-10' : 'text-regular bg-none'}`}
-              onClick={() => setResolution(option.value)}
-            >
-              {option.label}
-            </div>
-          ))}
-        </div>
       </Box>
 
-      <AreaCharts interval={resolution} />
+      <AreaCharts interval={resolution} chartType={chartType} />
+      <div className="flex items-center justify-between p-[16px]">
+        <IntervalSelector interval={resolution} setInterval={setResolution} />
+        <ChartTypeSelector chartType={chartType} setChartType={setChartType} />
+      </div>
 
       <TradingInfo />
     </Box>

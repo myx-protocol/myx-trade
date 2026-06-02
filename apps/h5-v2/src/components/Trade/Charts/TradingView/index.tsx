@@ -5,7 +5,7 @@ import {
   type ChartingLibraryWidgetOptions,
 } from '@public/charting_library/charting_library'
 import { useInitTradingView } from '../hooks/useInitTradingView'
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import useGlobalStore from '@/store/globalStore'
 import { useUnmount, useUpdateEffect } from 'ahooks'
 import { generateDataFeed } from '../lib/datafeed'
@@ -15,6 +15,7 @@ import { Colors } from '../const'
 import { useMarketDetail } from '@/hooks/useMarketDetail'
 import { buildTradingViewSymbol, type TradingViewSymbol } from './utils'
 import { klinePubSub } from '@/utils/pubsub'
+import { SuspenseLoading } from '@/components/Loading'
 
 type TradingViewProps = Partial<TradingViewSymbol> & {
   defaultInterval?: ResolutionString
@@ -39,6 +40,7 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
     const { initTradingView } = useInitTradingView()
     const widgetRef = useRef<IChartingLibraryWidget>(null)
     const { getDetail, client } = useMarketDetail()
+    const [tradingViewLoading, setTradingViewLoading] = useState(true)
 
     /**
      * init trading view widget
@@ -112,6 +114,7 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
             currentSymbolRef.current = initPoolId
           }
           widgetRef.current = widget
+          setTradingViewLoading(false)
           klinePubSub.emit('kline:ready', widget)
         })
       }
@@ -237,8 +240,13 @@ export const TradingView = forwardRef<TradingViewInstance, TradingViewProps>(
     }))
 
     return (
-      <div className="flex h-full w-full items-center justify-center">
+      <div className="relative flex h-full w-full items-center justify-center">
         <div className="h-full w-full" id="tradingview_widget_container"></div>
+        {tradingViewLoading && (
+          <div className="absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-[#101114]">
+            <SuspenseLoading block />
+          </div>
+        )}
       </div>
     )
   },

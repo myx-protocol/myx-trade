@@ -5,11 +5,17 @@ import { t } from '@lingui/core/macro'
 import type { EChartsOption } from 'echarts'
 
 import * as echarts from 'echarts/core'
-import { GraphicComponent, GridComponent, TooltipComponent } from 'echarts/components'
-import { BarChart, LineChart } from 'echarts/charts'
+import {
+  GraphicComponent,
+  GridComponent,
+  LegendComponent,
+  TooltipComponent,
+} from 'echarts/components'
+import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { formatNumber } from '@/utils/number.ts'
+import Big from 'big.js'
 
 type AxisExtent = { min: number; max: number }
 echarts.use([
@@ -20,23 +26,30 @@ echarts.use([
   UniversalTransition,
   BarChart,
   TooltipComponent,
+  LegendComponent,
+  PieChart,
 ])
 
 export { echarts }
 
-export const formatter = (interval: ChartInterval, params: any[]) => {
+interface FormatterParams {
+  label?: string
+  value?: (value: any) => string
+}
+
+export const formatter = (interval: ChartInterval, params: any[], formater?: FormatterParams) => {
   const param = params[0]
   const time = param.data[0]
   const data = param.data[1]
   const date = new Date(time)
 
   return `<div style="display:flex;flex-direction: column; border-radius: 8px">
-                   <p style="color: #848E9C;fontSize: 12">${dayjs(date)
-                     .utc()
-                     .format(`YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''))}</p>
-                   <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${i18n._(
-                     t`Price`,
-                   )} <span style="color: white">${formatNumber(data, { showUnit: false })}
+                   <p style="color: #848E9C;fontSize: 12">${dayjs(date).format(
+                     `YYYY-MM-DD` + (interval === ChartInterval.day ? ' HH:mm' : ''),
+                   )}</p>
+                   <p style="margin-top: 12px;color: #848E9C;fontSize: 12">${
+                     formater?.label ?? i18n._(t`Price`)
+                   } <span style="color: white">${formater?.value ? formater.value(data) : formatNumber(data, { showUnit: false })}
                   </span></p>
                 </div>`
 }
@@ -45,6 +58,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
   interval: ChartInterval,
   list: T[] = [],
   options: EChartsOption = {},
+  formater?: FormatterParams,
 ) => {
   let now = dayjs().utc().valueOf()
   const ONE_DAY = 24 * 60 * 60 * 1000
@@ -56,9 +70,7 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
 
   // 只有一个点 → 锁定在该点时间
   if (list.length === 1) {
-    now = dayjs(list[0].time * 1000)
-      .utc()
-      .valueOf()
+    now = dayjs(list[0].time * 1000).valueOf()
     // maxTime = list[0].time * 1000;
   }
 
@@ -87,20 +99,27 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
       show: false,
     },
     yAxis: {
+      scale: true,
       type: 'value',
       // boundaryGap: [0, '100%'],
       show: false,
       splitLine: { show: false },
-      min: (value: AxisExtent) =>
-        value.min < 1 ? 0 : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
-      max: (value: AxisExtent) => (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      // min: (value: AxisExtent) =>
+      //   value.min < 1 ? value.min : (Math.floor((value.min * 1000) / 10) * 10) / 1000,
+      // max: (value: AxisExtent) =>
+      //   value.max < 1 ? value.max : (Math.ceil((value.max * 1000) / 10) * 10) / 1000,
+      min: (value: AxisExtent) => new Big(value?.min || 0).toNumber(),
+      max: (value: AxisExtent) => new Big(value?.max || 0).toNumber(),
+      // axisLabel: {
+      //   formatter: (v: number) => v.toFixed(6),
+      // },
     },
     tooltip: {
       trigger: 'axis',
       backgroundColor: '#2D3138',
       borderRadius: 8,
       borderWidth: 0,
-      formatter: (params: any[]) => formatter(interval, params),
+      formatter: (params: any[]) => formatter(interval, params, formater),
       axisPointer: {
         type: 'line',
         lineStyle: {
@@ -116,17 +135,16 @@ export const getAreaChartOptions = <T extends { time: number; value: number | st
           color: '#848E9C',
           fontSize: '12px',
         },
-        min: minTime,
-        max: maxTime,
+        // min: minTime,
+        // max: maxTime,
+        minInterval: interval === ChartInterval.day ? 10 * 60 * 1000 : 24 * 60 * 60 * 1000,
         axisLabel: {
           // interval: ,
-          showMinLabel: true,
-          showMaxLabel: true,
-          interval: interval === ChartInterval.all ? 5 : 'auto',
+          // showMinLabel: true,
+          // showMaxLabel: true,
+          // interval: interval === ChartInterval.all ? 5 : 'auto',
           formatter: (value: number) =>
-            dayjs(value)
-              .utc()
-              .format(interval === ChartInterval.day ? ' HH:mm' : ' MM-DD'),
+            dayjs(value).format(interval === ChartInterval.day ? ' HH:mm' : ' MM-DD'),
         },
         axisPointer: {
           type: 'line',

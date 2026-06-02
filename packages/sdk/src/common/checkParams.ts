@@ -52,7 +52,7 @@ export  const checkParams = async (params: OptionalParams) => {
     }
     if (contractAddress && tokenAddress) {
       const isApproved = await getAllowanceApproved (chainId, account, tokenAddress, contractAddress, amountIn)
-      
+      console.log('checkParams-->', isApproved)
       if (!isApproved) {
         await approve (chainId, account, tokenAddress, contractAddress, maxUint256);
       }

@@ -9,9 +9,10 @@ import { SymbolInfo } from '@/components/MarketList/SymbolInfo'
 import { formatNumber } from '@/utils/number'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useNavigate } from 'react-router-dom'
+import { usePoolSymbolsAll } from '@/hooks/pool/usePoolSymbolsAll'
 
 export const FavoritesList = () => {
   const { client, clientIsAuthenticated } = useMyxSdkClient()
@@ -50,6 +51,18 @@ export const FavoritesList = () => {
       }
     }
   }, [data?.contractInfo?.list, client])
+
+  const { symbolDataAllMap } = usePoolSymbolsAll()
+
+  const getSymbol = useCallback(
+    (chainId: number, poolId: string) => {
+      return symbolDataAllMap[chainId]?.[poolId]
+        ? `${symbolDataAllMap[chainId]?.[poolId]?.baseSymbol}${symbolDataAllMap[chainId]?.[poolId]?.quoteSymbol}`
+        : '--'
+    },
+    [symbolDataAllMap],
+  )
+
   if (isLoading) {
     return <MarketListLoading />
   }
@@ -69,7 +82,7 @@ export const FavoritesList = () => {
           }}
           values={[
             <SymbolInfo
-              symbol={item.baseQuoteSymbol}
+              symbol={getSymbol(item.chainId, item.poolId)}
               baseTokenLogo={item.tokenIcon}
               chainId={item.chainId}
             />,

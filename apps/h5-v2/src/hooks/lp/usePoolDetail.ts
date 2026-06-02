@@ -1,7 +1,6 @@
 import { PoolType } from '@/request/type'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Mode, type PoolInfo } from '@/pages/Cook/type.ts'
-import { useUpdateEffect } from 'ahooks'
 import { useQuery } from '@tanstack/react-query'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useParams } from 'react-router-dom'
@@ -11,30 +10,92 @@ import {
   COMMON_LP_AMOUNT_DECIMALS,
   COMMON_PRICE_DECIMALS,
   formatUnits,
+  MarketPoolState,
   parseUnits,
   pool as Pool,
 } from '@myx-trade/sdk'
-import { getBaseLPDetail, getPoolRiskLevelConfig, getQuoteLPDetail } from '@/request'
+import {
+  getBaseLPDetail,
+  getMarketPoolPrice,
+  getPoolBoostInfo,
+  getPoolRiskLevelConfig,
+  getQuoteLPDetail,
+  getRiskGlobalConfig,
+} from '@/request/lp'
 import type { BaseLpDetail, QuoteLpDetail } from '@/request/lp/type.ts'
-import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
 import Big from 'big.js'
+import { FUNDING_FEE_TRACKER_DECIMALS } from '@/constant/decimals.ts'
+import type { ChainId } from '@/config/chain.ts'
 type BaseQuotePoolInfo = {
   poolToken: string
   poolTokenSupply: bigint
   exchangeRate: bigint
   poolTokenPrice: bigint
 }
-function calculationTvl<T extends { basePool: BaseQuotePoolInfo; quotePool: BaseQuotePoolInfo }>(
-  poolInfo: T,
-) {
-  const { basePool, quotePool } = poolInfo
-  const baseSize = basePool.poolTokenSupply * basePool.exchangeRate
-  const quoteSize = quotePool.poolTokenSupply * quotePool.exchangeRate
-  const lpPrice = basePool.poolTokenPrice
-  const quoteLpPrice = quotePool.poolTokenPrice
+type ReserveInfo = {
+  baseTotalAmount: bigint
+  baseReservedAmount: bigint
+  quoteTotalAmount: bigint
+  quoteReservedAmount: bigint
+}
+function calculationTvl<
+  T extends { reserveInfo: ReserveInfo; baseTokenDecimals: number; quoteTokenDecimals: number },
+>(poolInfo: T, oraclePrice: string) {
+  const { reserveInfo, baseTokenDecimals, quoteTokenDecimals } = poolInfo
+  const baseSize = reserveInfo.baseTotalAmount
+  const quoteSize = reserveInfo.quoteTotalAmount
+
+  const lpPrice = parseUnits(oraclePrice, COMMON_PRICE_DECIMALS)
+  const quoteLpPrice = parseUnits('1', COMMON_PRICE_DECIMALS)
+
   const baseTvl = baseSize * lpPrice
-  const quoteTvl = quoteSize * quoteLpPrice
-  return formatUnits(baseTvl + quoteTvl, COMMON_LP_AMOUNT_DECIMALS * 2 + COMMON_PRICE_DECIMALS)
+  const quoteTvl = quoteSize
+
+  const _baseTvl = formatUnits(baseTvl, baseTokenDecimals + COMMON_PRICE_DECIMALS)
+  const _quoteTvl = formatUnits(quoteTvl, quoteTokenDecimals)
+
+  const tvl = Big(_baseTvl).add(Big(_quoteTvl)).toString()
+  // const tvl = formatUnits(baseTvl + quoteTvl, baseTokenDecimals + COMMON_PRICE_DECIMALS)
+  console.log('baseTvl:', _baseTvl)
+  console.log('quoteTvl:', _quoteTvl)
+  console.log('tvl:', tvl)
+  /*console.log('tvl:', tvl)
+  console.log('basePool.poolTokenSupply:', basePool.poolTokenSupply)
+  console.log('basePool.price:', basePool.poolTokenPrice)
+
+  console.log('quotePool.poolTokenSupply:', quotePool.poolTokenSupply)
+  console.log('quotePool.poolTokenPrice:', quotePool.poolTokenPrice)*/
+  return {
+    totalTvl: tvl,
+    baseTvl: _baseTvl,
+    quoteTvl: _quoteTvl,
+  }
+}
+
+export const usePoolRiskConfig = ({
+  chainId,
+  poolId,
+}: {
+  chainId?: ChainId | string
+  poolId?: string
+}) => {
+  const { data: riskLevelConfig } = useQuery({
+    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
+    enabled: !!poolId && !!chainId,
+    queryFn: async () => {
+      // console.log('getMarketPoolRiskRate')
+      if (!poolId || !chainId) return null
+      try {
+        const result = await getPoolRiskLevelConfig(poolId, +chainId)
+
+        return result?.data
+      } catch (error) {
+        return null
+      }
+    },
+    refetchInterval: 1000 * 60,
+  })
+  return { riskLevelConfig }
 }
 
 export const usePoolDetail = (poolType: PoolType) => {
@@ -42,11 +103,20 @@ export const usePoolDetail = (poolType: PoolType) => {
   const { client, markets } = useMyxSdkClient()
   const { subscribeToTicker } = useSubscription()
   const currentSymbolGlobalIdRef = useRef<number>(null)
+  const { riskLevelConfig } = usePoolRiskConfig({ chainId, poolId })
 
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   const prevPriceRef = useRef<string | undefined>(undefined)
   const [mode, setMode] = useState<Mode>(Mode.Rise)
+
+  const { data: boostedPrimeTvl } = useQuery({
+    queryKey: [{ key: 'boostedPrimeTvl' }],
+    queryFn: async () => {
+      const res = await getRiskGlobalConfig()
+      return res?.data?.boostedPrimeTvl || '0'
+    },
+  })
 
   const { data: lpDetail, refetch } = useQuery({
     queryKey: [
@@ -65,48 +135,17 @@ export const usePoolDetail = (poolType: PoolType) => {
       return {} as BaseLpDetail
     },
     placeholderData: (prev) => prev,
+    refetchInterval: 1000 * 10,
   })
 
-  const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
-    queryKey: [
-      { key: poolType === PoolType.quote ? 'getQuoteContractPoolInfo' : 'getBaseContractPoolInfo' },
-      poolId,
-      chainId,
-      tickerData?.price,
-    ],
-    enabled: !!poolId && !!chainId,
+  const { data: boostInfo, refetch: refetchBoostInfo } = useQuery({
+    queryKey: [{ key: 'boostInfo' }, chainId, poolId, lpDetail?.state],
+    enabled: !!chainId && !!poolId && lpDetail?.state === MarketPoolState.Boosted,
     queryFn: async () => {
-      // console.log(poolId, tickerData?.price)
-      if (!poolId || !chainId) {
-        console.error('poolId must be a positive integer')
-        return null
-      }
-
-      try {
-        const result = await Pool.getPoolInfo(
-          +chainId,
-          poolId,
-          parseUnits(tickerData?.price || '0', COMMON_PRICE_DECIMALS),
-        )
-
-        // console.log(result)
-        if (result) {
-          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
-          const info = {
-            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
-            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
-            tvl: calculationTvl(result),
-            fundingInfo: result.fundingInfo,
-          } as PoolInfo
-
-          return info
-        }
-      } catch (error) {
-        console.error(error)
-        return null
-      }
+      if (!chainId || !poolId || lpDetail?.state !== MarketPoolState.Boosted) return
+      const res = await getPoolBoostInfo(+chainId, poolId)
+      return res?.data
     },
-    placeholderData: (prev) => prev,
     refetchInterval: 1000 * 10,
   })
 
@@ -121,20 +160,64 @@ export const usePoolDetail = (poolType: PoolType) => {
     },
   })
 
-  const { data: levelConfig } = useQuery({
-    queryKey: [{ key: 'getMarketPoolRiskRate' }, chainId, poolId],
-    enabled: !!poolId && !!chainId,
+  const { data: poolInfo, refetch: poolInfoRefetch } = useQuery({
+    queryKey: [
+      { key: poolType === PoolType.quote ? 'getQuoteContractPoolInfo' : 'getBaseContractPoolInfo' },
+      poolId,
+      chainId,
+      tickerData?.price,
+      pool,
+    ],
+    enabled: !!poolId && !!chainId && !!pool,
     queryFn: async () => {
-      // console.log('getMarketPoolRiskRate')
-      if (!poolId || !chainId) return null
-      try {
-        const result = await getPoolRiskLevelConfig(poolId, +chainId)
-
-        return result?.data?.levelConfig
-      } catch (error) {
-        return null
+      // console.log(poolId, tickerData?.price)
+      if (!poolId || !chainId || !pool) {
+        console.error('poolId must be a positive integer')
+        return {} as PoolInfo
       }
+
+      let oraclePrice = tickerData?.price || '0'
+
+      if (!tickerData?.price) {
+        const res = await getMarketPoolPrice(+chainId, poolId)
+        if (res?.data) {
+          oraclePrice = res.data
+        }
+      }
+
+      if (Big(oraclePrice).gt(0)) {
+        const result = await Pool.getPoolInfo(
+          +chainId,
+          poolId,
+          parseUnits(oraclePrice, COMMON_PRICE_DECIMALS),
+        )
+
+        // console.log(result)
+        if (result) {
+          const _pool = poolType === PoolType.quote ? result.quotePool : result.basePool
+          const info = {
+            price: formatUnits(_pool.poolTokenPrice, COMMON_PRICE_DECIMALS),
+            exchangeRate: formatUnits(_pool.exchangeRate, COMMON_LP_AMOUNT_DECIMALS),
+            tvl: calculationTvl(
+              {
+                reserveInfo: result.reserveInfo,
+                baseTokenDecimals: pool?.baseDecimals,
+                quoteTokenDecimals: pool?.quoteDecimals,
+              },
+              tickerData?.price ?? oraclePrice,
+            ),
+            fundingInfo: result.fundingInfo,
+            oraclePrice: tickerData?.price ?? oraclePrice,
+          } as PoolInfo
+
+          return info
+        }
+      }
+
+      return {} as PoolInfo
     },
+    placeholderData: (prev) => prev,
+    refetchInterval: 1000 * 10,
   })
 
   useEffect(() => {
@@ -152,18 +235,15 @@ export const usePoolDetail = (poolType: PoolType) => {
     ).toString()
 
     // if fundingFeeSeconds is 1, return hourly funding rate
-    if (levelConfig?.fundingFeeSeconds === 1) {
-      // console.log('fundingRate:', Big(nextFundingRatePercent).mul(3600).toString())
+    if (riskLevelConfig?.levelConfig?.fundingFeeSeconds === 1) {
       return {
         nextFundingRatePercent: Big(nextFundingRatePercent).mul(3600).toString(),
       }
     }
-    // console.log('fundingRate:', nextFundingRatePercent)
-
     return {
       nextFundingRatePercent,
     }
-  }, [poolInfo?.fundingInfo, levelConfig?.fundingFeeSeconds])
+  }, [poolInfo?.fundingInfo, riskLevelConfig?.levelConfig?.fundingFeeSeconds])
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined = undefined
@@ -189,7 +269,7 @@ export const usePoolDetail = (poolType: PoolType) => {
   }, [poolId, lpDetail?.globalId, subscribeToTicker])
 
   return {
-    genesisFeeRate: levelConfig?.genesisFeeRate,
+    genesisFeeRate: riskLevelConfig?.levelConfig?.genesisFeeRate || '',
     fundingRate,
     pool,
     poolInfo,
@@ -197,5 +277,10 @@ export const usePoolDetail = (poolType: PoolType) => {
     lpDetail,
     refetch,
     poolInfoRefetch,
+    markets,
+    riskLevelConfig,
+    boostedPrimeTvl,
+    boostInfo,
+    refetchBoostInfo,
   }
 }

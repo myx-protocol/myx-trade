@@ -23,6 +23,7 @@ export const ChangeModeDialog = () => {
     setTradeMode,
     setSeamlessPasswordDialogOpen,
     setUnlockAccountDialogOpen,
+    setImportSeamlessKeyDialogOpen,
   } = useGlobalStore()
   const { address } = useWalletConnection()
   const { symbolInfo } = useGlobalStore()
@@ -103,7 +104,6 @@ export const ChangeModeDialog = () => {
                   className="w-full"
                   style={{ height: '36px', borderRadius: '40px' }}
                   onClick={async () => {
-                    await client?.seamless.startSeamlessMode({ open: false })
                     setTradeMode(TradeMode.Classic)
                     setChangeModeDialogOpen(false)
                   }}
@@ -216,7 +216,7 @@ export const ChangeModeDialog = () => {
                     setChangeModeDialogOpen(false)
 
                     if (seamlessAccountList.length === 0) {
-                      setSeamlessPasswordDialogOpen(true)
+                      setImportSeamlessKeyDialogOpen(true)
                       return
                     }
 

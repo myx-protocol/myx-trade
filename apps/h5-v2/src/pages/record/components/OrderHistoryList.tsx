@@ -1,38 +1,60 @@
 import { Empty } from '@/components/Empty'
+import { InfiniteScrollView } from '@/components/InfiniteScrollView'
 import { OrderHistoryItem } from '@/components/Record/Items/OrderHistory'
+import { useInfiniteScrollData, type InfiniteScrollGetData } from '@/hooks/useInfiniteScrollData'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { usePositionStore } from '@/store/position/createStore'
+import type { HistoryOrderItem } from '@myx-trade/sdk'
+import { useCallback } from 'react'
+import { SuspenseLoading } from '@/components/Loading'
+import { useUpdateEffect } from 'ahooks'
 
 export const OrderHistoryList = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
-  const { isWalletConnected, address } = useWalletConnection()
-  const { data: orderHistory, isLoading } = useQuery({
-    queryKey: ['orderHistory', address],
-    enabled: Boolean(isWalletConnected && address && !!client && clientIsAuthenticated),
-    queryFn: async () => {
-      if (!client || !isWalletConnected) return null
+  const { client } = useMyxSdkClient()
+  const { address } = useWalletConnection()
+  const { selectChainId } = usePositionStore()
+  const getDataFunc: InfiniteScrollGetData<HistoryOrderItem> = useCallback(
+    async (pageParams) => {
+      if (!client) return null
+      console.log('getOrderHistory', pageParams)
       const res = await client.order.getOrderHistory(
         {
-          chainId: 0,
+          chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
           poolId: undefined,
+          ...pageParams,
         },
         address ?? '',
       )
       return res.data
     },
+    [client, selectChainId, address],
+  )
+  const { data, isLoading, hasMore, getData, reset } = useInfiniteScrollData({
+    getData: getDataFunc,
   })
 
-  if (!isLoading && !orderHistory?.length) {
+  useUpdateEffect(() => {
+    reset()
+  }, [selectChainId])
+
+  if (!isLoading && !data?.length && !hasMore) {
     return <Empty />
   }
 
   return (
     <>
-      {orderHistory?.map((item) => (
-        <OrderHistoryItem key={item.orderId} item={item} />
-      ))}
+      <InfiniteScrollView
+        dataLength={data?.length}
+        hasMore={hasMore}
+        loadMore={getData}
+        scrollableTarget={null}
+      >
+        {data?.map((item) => (
+          <OrderHistoryItem key={item.orderId} item={item} />
+        ))}
+      </InfiniteScrollView>
+      {Boolean(isLoading && !data?.length) && <SuspenseLoading block />}
     </>
   )
 }

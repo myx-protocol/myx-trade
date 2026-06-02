@@ -1,36 +1,59 @@
 import { FinanceItem } from '@/components/Record/Items/Finance'
 import { Empty } from '@/components/Empty'
-import { useQuery } from '@tanstack/react-query'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { usePositionStore } from '@/store/position/createStore'
+import { useInfiniteScrollData, type InfiniteScrollGetData } from '@/hooks/useInfiniteScrollData'
+import { useCallback } from 'react'
+import type { TradeFlowItem } from '@myx-trade/sdk'
+import { useUpdateEffect } from 'ahooks'
+import { SuspenseLoading } from '@/components/Loading'
+import { InfiniteScrollView } from '@/components/InfiniteScrollView'
 export const FinanceList = () => {
-  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { client } = useMyxSdkClient()
   const { address } = useWalletConnection()
-  const { data: financeData, isLoading } = useQuery({
-    queryKey: ['financeList', address],
-    enabled: Boolean(address && !!client && clientIsAuthenticated),
-    queryFn: async () => {
-      if (!client || !clientIsAuthenticated) return null
+  const { selectChainId } = usePositionStore()
+  const getDataFunc: InfiniteScrollGetData<TradeFlowItem> = useCallback(
+    async (pageParams) => {
+      if (!client) return null
       const res = await client.account.getTradeFlow(
         {
-          chainId: 0,
+          chainId: selectChainId === '0' ? 0 : parseInt(selectChainId),
           poolId: undefined,
+          ...pageParams,
         },
         address ?? '',
       )
       return res.data
     },
+    [client, selectChainId, address],
+  )
+  const { data, isLoading, hasMore, getData, reset } = useInfiniteScrollData({
+    getData: getDataFunc,
   })
 
-  if (!isLoading && !financeData?.length) {
+  useUpdateEffect(() => {
+    reset()
+  }, [selectChainId])
+
+  if (!isLoading && !data?.length && !hasMore) {
     return <Empty />
   }
 
   return (
     <>
-      {financeData?.map((item, index) => (
-        <FinanceItem key={index} item={item} />
-      ))}
+      <InfiniteScrollView
+        dataLength={data?.length}
+        hasMore={hasMore}
+        loadMore={getData}
+        scrollableTarget={null}
+      >
+        {data?.map((item, index) => (
+          <FinanceItem key={index} item={item} />
+        ))}
+      </InfiniteScrollView>
+
+      {Boolean(isLoading && !data?.length) && <SuspenseLoading block />}
     </>
   )
 }

@@ -6,8 +6,8 @@ import { useGetOrderList } from '@/hooks/order/use-get-order-list'
 import { useEffect, useRef } from 'react'
 
 export const RecordTab = ({ tab, setTab }: { tab: TabType; setTab: (tab: TabType) => void }) => {
-  const positionList = useGetPositionList()
-  const orderList = useGetOrderList()
+  const positionList = useGetPositionList(true)
+  const orderList = useGetOrderList(true)
   const tabsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,8 +44,8 @@ export const RecordTab = ({ tab, setTab }: { tab: TabType; setTab: (tab: TabType
           value={TabType.ENTRUSTS}
           label={<Trans>Entrusts({orderList.length})</Trans>}
         />
-        <TradeRecordTab value={TabType.HISTORY} label={<Trans>Order History</Trans>} />
         <TradeRecordTab value={TabType.POSITION_HISTORY} label={<Trans>Positions History</Trans>} />
+        <TradeRecordTab value={TabType.HISTORY} label={<Trans>Order History</Trans>} />
         <TradeRecordTab value={TabType.FINANCE} label={<Trans>Transaction History</Trans>} />
       </TradeRecordTabs>
     </div>

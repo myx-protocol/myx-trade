@@ -115,7 +115,7 @@
 }
 
 Button.gradient {
-  border: 1px solid var(--green-yellow);
+  border: 1px solid rgba(128, 255, 149, 0.5);
   background-image: var(--brand-deep-gradient);
   display: inline-flex;
   min-height: 40px;
@@ -144,20 +144,40 @@ Button.gradient {
   }
   &[type='default'],
   &.default {
+    border: none;
     color: var(--basic-white);
     background-image: none;
     background-color: var(--placeholder-text);
+
+    &[disabled] {
+      opacity: 1;
+      color: var(--placeholder-text);
+      background-color: var(--bg-plus);
+    }
+  }
+
+  &.gray {
+    border: none;
+    background-image: none;
+    background-color: var(--dark-border);
+    color: var(--basic-white);
   }
 
   &[type='primary'],
   &.primary {
     background-image: var(--brand-deep-gradient);
-    border-color: var(--green-yellow);
+    border-color: rgba(128, 255, 149, 0.5);
   }
+
+  &:hover {
+    opacity: 0.6;
+  }
+
   &[disabled] {
     cursor: not-allowed;
-    opacity: 0.6;
-    color: inherit;
+    pointer-events: auto;
+    opacity: 0.3;
+    color: var(--basic-white);
   }
 
   &.rounded {
@@ -165,7 +185,7 @@ Button.gradient {
   }
   .MuiButton-loadingIndicator {
     position: relative;
-    color: inherit;
+    color: var(--basic-white);
     left: auto;
     transform: none;
   }

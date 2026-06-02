@@ -87,11 +87,12 @@ const useSliderPropsWrapper = ({
       marks.map((item) => {
         const { value: valueOrigin, label } = item
         const value = minus(valueOrigin, minValueProxy).toNumber()
-        // let value = ''
         let returnValue = ''
-        if (Big(value).eq(Big(minValueProxy))) {
+
+        // 修复：应该比较 valueOrigin 而不是 value
+        if (Big(valueOrigin).eq(Big(minValueProxy))) {
           returnValue = '0'
-        } else if (Big(value).eq(Big(maxValueProxy))) {
+        } else if (Big(valueOrigin).eq(Big(maxValueProxy))) {
           returnValue = '100'
         } else {
           returnValue = div(value, valueRange).mul(100).toString()

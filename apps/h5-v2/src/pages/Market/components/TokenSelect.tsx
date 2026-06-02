@@ -6,14 +6,14 @@ import { TokenInfo } from '@/pages/Market/components/TokenInfo.tsx'
 import { TokenContext } from '@/pages/Market/context.ts'
 import { DialogTokenSelect } from '@/components/Dialog/DialogTokenSelect.tsx'
 import { Button, MenuItem } from '@mui/material'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { t } from '@lingui/core/macro'
 import { StyledMenu } from '@/components/Menu.tsx'
 
 export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
   const navigate = useNavigate()
-  const { token, quote, market, setMarketIndex, markets } = useContext(TokenContext)
+  const { token, market, setMarketIndex, markets } = useContext(TokenContext)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -30,7 +30,7 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
   }, [onNext])
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!token) {
+    if (!token || !markets || markets?.length < 2) {
       event.preventDefault()
       event.stopPropagation()
       setAnchorEl(null)
@@ -73,6 +73,8 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             </Tooltips>
           </label>
           <Box
+            id="market_select_token_btn_h5"
+            data-analytics="market_select_token_btn_h5"
             className={
               'bg-base-bg flex min-h-[56px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
             }
@@ -102,19 +104,20 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             </Tooltips>
           </label>
           <Box
-            className={
-              'bg-base-bg flex min-h-[62px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px]'
-            }
-            id="basic-button"
+            className={`bg-base-bg flex min-h-[62px] cursor-pointer items-center justify-between rounded-[10px] px-[16px] py-[20px] ${!!token || !markets || markets?.length < 2 ? 'cursor-not-allowed' : ''}`}
+            id="market_select_usd_vault_btn_h5"
+            data-analytics="market_select_usd_vault_btn_h5"
             aria-controls={quoteOpen ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={quoteOpen ? 'true' : undefined}
             onClick={handleClick}
           >
             <span className={'text-[14px] leading-[1] font-[500] text-white'}>
-              {quote?.symbol || 'USDC'}
+              {market?.quoteSymbol || 'USDC'}
             </span>
-            {!!token && <ArrowDown size={20} className={'text-regular'} />}
+            {!!token && !!markets && markets?.length > 1 && (
+              <ArrowDown size={20} className={'text-regular'} />
+            )}
           </Box>
           <StyledMenu
             id="basic-mode-menu"
@@ -123,7 +126,7 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
             onClose={handleClose}
             slotProps={{
               list: {
-                'aria-labelledby': 'basic-button',
+                'aria-labelledby': 'market_select_usd_vault_btn_h5',
               },
               paper: {
                 sx: {
@@ -149,6 +152,8 @@ export const TokenSelect = ({ onNext }: { onNext: () => void }) => {
 
         <Box className={'mx-auto mt-[24px] w-full'}>
           <Button
+            id="market_next_step_btn_h5"
+            data-analytics="market_next_step_btn_h5"
             loading={loading}
             className={'gradient primary long w-full rounded'}
             disabled={!token || !market}

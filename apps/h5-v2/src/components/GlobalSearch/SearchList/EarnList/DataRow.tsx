@@ -34,7 +34,6 @@ export const EarnListDataRow = ({ item, onItemClick }: EarnListDataRowProps) => 
         <RiseFallTextPrecent
           value={item.apr}
           renderOptions={{
-            decimals: 2,
             showSign: false,
           }}
         />

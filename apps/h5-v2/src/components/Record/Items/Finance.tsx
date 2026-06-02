@@ -341,48 +341,43 @@ export const FinanceDetailItem = ({ item }: { item: TradeFlowItem }) => {
           style={{ overflow: 'hidden' }}
         >
           {/* PnL */}
-          {Big(item.quotePnl || '0')
-            .abs()
-            .gt(0) ||
-            (Big(item.basePnl || '0')
-              .abs()
-              .gt(0) && (
-              <FlexRowLayout
-                left={<Trans>PnL</Trans>}
-                right={
-                  <div className="flex flex-col items-end gap-[10px]">
-                    {Big(item.quotePnl || '0')
-                      .abs()
-                      .gt(0) && (
-                      <p className="font-medium text-white">
-                        <RiseFallText
-                          value={item.quotePnl}
-                          renderOptions={{
-                            showUnit: false,
-                            showSign: true,
-                          }}
-                          suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
-                        />
-                      </p>
-                    )}
-                    {Big(item.basePnl || '0')
-                      .abs()
-                      .gt(0) && (
-                      <p className="font-medium text-white">
-                        <RiseFallText
-                          value={item.basePnl}
-                          renderOptions={{
-                            showUnit: false,
-                            showSign: true,
-                          }}
-                          suffix={<span className="ml-[2px]">{symbolInfo?.baseSymbol}</span>}
-                        />
-                      </p>
-                    )}
-                  </div>
-                }
-              />
-            ))}
+          {Boolean(Number(item.basePnl) || Number(item.quotePnl)) && (
+            <FlexRowLayout
+              left={<Trans>PnL</Trans>}
+              right={
+                <div className="flex flex-col items-end gap-[10px]">
+                  {Big(item.basePnl || '0')
+                    .abs()
+                    .gt(0) && (
+                    <p className="font-medium text-white">
+                      <RiseFallText
+                        value={item.basePnl}
+                        renderOptions={{
+                          showUnit: false,
+                          showSign: true,
+                        }}
+                        suffix={<span className="ml-[2px]">{symbolInfo?.baseSymbol}</span>}
+                      />
+                    </p>
+                  )}
+                  {Big(item.quotePnl || '0')
+                    .abs()
+                    .gt(0) && (
+                    <p className="font-medium text-white">
+                      <RiseFallText
+                        value={item.quotePnl}
+                        renderOptions={{
+                          showUnit: false,
+                          showSign: true,
+                        }}
+                        suffix={<span className="ml-[2px]">{symbolInfo?.quoteSymbol}</span>}
+                      />
+                    </p>
+                  )}
+                </div>
+              }
+            />
+          )}
 
           {/* margin */}
           {Boolean(Number(item.collateralAmount)) && (
