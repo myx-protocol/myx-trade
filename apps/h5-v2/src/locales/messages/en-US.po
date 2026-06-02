@@ -8,7 +8,7 @@ msgstr ""
 "Language: en\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-05-27 06:11\n"
+"PO-Revision-Date: 2026-06-02 10:37\n"
 "Last-Translator: \n"
 "Language-Team: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -471,7 +470,7 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 msgid "APY"
-msgstr "APY"
+msgstr ""
 
 #: src/components/DialogBase/WarningDialog.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
@@ -623,7 +622,7 @@ msgstr ""
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 msgid "Base Vault"
-msgstr "Base Vault"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -745,7 +744,7 @@ msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Cancel failed"
-msgstr "Cancel failed"
+msgstr ""
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
@@ -875,7 +874,7 @@ msgstr "Claim Airdrop"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Claim Base Rewards"
-msgstr "Claim Base Rewards"
+msgstr ""
 
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Claim History"
@@ -889,11 +888,11 @@ msgstr ""
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 msgid "Claim Order Submitted"
-msgstr "Claim Order Submitted"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Claim Quote Rewards"
-msgstr "Claim Quote Rewards"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "Claim referral fee"
@@ -911,7 +910,7 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/Claim.tsx
 msgid "Claim Rewards Canceled"
-msgstr "Claim Rewards Canceled"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
@@ -1328,23 +1327,23 @@ msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Deposit Base"
-msgstr "Deposit Base"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit Order Canceled"
-msgstr "Deposit Order Canceled"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit Order Submitted"
-msgstr "Deposit Order Submitted"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Deposit Quote"
-msgstr "Deposit Quote"
+msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
@@ -1396,7 +1395,7 @@ msgstr ""
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to [Reason for Delisting], new buys for this market have been paused. You can still sell your holdings at any time.<0>Reactivate Market</0>"
-msgstr ""
+msgstr "Market Delisted. New buys have been paused, but you can still sell your holdings at any time.<0>Reactivate Market</0>"
 
 #. placeholder {0}: baseLpDetail?.mBaseQuoteSymbol
 #. placeholder {0}: quoteLpDetail?.mQuoteBaseSymbol
@@ -3451,7 +3450,7 @@ msgstr ""
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Order Canceled"
-msgstr "Order Canceled"
+msgstr ""
 
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
@@ -3953,12 +3952,12 @@ msgstr ""
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Redeem Order Canceled"
-msgstr "Redeem Order Canceled"
+msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Redeem Order Submitted"
-msgstr "Redeem Order Submitted"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4239,7 +4238,7 @@ msgstr ""
 
 #: src/components/GlobalSearch/GlobalSearchHeader.tsx
 msgid "Search"
-msgstr "Search"
+msgstr ""
 
 #: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 msgid "Search for token name/address"
@@ -4574,11 +4573,11 @@ msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Subscribe Order Canceled"
-msgstr "Subscribe Order Canceled"
+msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Subscribe Order Submitted"
-msgstr "Subscribe Order Submitted"
+msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Subscription Amount"
@@ -5354,11 +5353,11 @@ msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Withdraw Base"
-msgstr "Withdraw Base"
+msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "Withdraw Quote"
-msgstr "Withdraw Quote"
+msgstr ""
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -5683,17 +5682,17 @@ msgstr "Hash"
 
 #: src/components/Dialog/TPSLDialog.tsx
 msgid "回撤保护"
-msgstr "Drawdown Protection"
+msgstr "TP"
 
 #: src/components/Dialog/TPSLDialog.tsx
 #: src/pages/Earn/components/Trade/TPSL.tsx
 msgid "回撤保护({quoteSymbol})"
-msgstr "Drawdown Protection({quoteSymbol})"
+msgstr "TP({quoteSymbol})"
 
 #: src/components/Dialog/TPSLDialog.tsx
 #: src/pages/Earn/components/Trade/TPSL.tsx
 msgid "回撤保护/自动赎回"
-msgstr "Drawdown Protection / Auto-Redeem"
+msgstr "TP/SL"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5883,7 +5882,7 @@ msgstr "Authorize"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "提前启动市场。"
-msgstr "Launch market early."
+msgstr "Boost market launch"
 
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
@@ -5900,7 +5899,7 @@ msgstr "Search Results"
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "操作"
-msgstr "操作"
+msgstr "Action"
 
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
@@ -6030,7 +6029,7 @@ msgstr "Slippage Exceeded"
 #: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "激活"
-msgstr "Activate"
+msgstr "Boost"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -6063,7 +6062,7 @@ msgstr "Confirm Deposit"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认激活"
-msgstr "Confirm Activation"
+msgstr "Confirm"
 
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "确认赎回"
@@ -6087,12 +6086,12 @@ msgstr "Add More"
 
 #: src/components/Dialog/TPSLDialog.tsx
 msgid "自动赎回"
-msgstr "Auto-Redeem"
+msgstr "SL"
 
 #: src/components/Dialog/TPSLDialog.tsx
 #: src/pages/Earn/components/Trade/TPSL.tsx
 msgid "自动赎回({quoteSymbol})"
-msgstr "Auto-Redeem({quoteSymbol})"
+msgstr "SL({quoteSymbol})"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -6148,7 +6147,7 @@ msgstr "Redeem"
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "达到启动阈值，可快速达成募集并开盘。"
-msgstr "Launch threshold reached. Ready to finalize bootstrapping and open market."
+msgstr "Launch threshold reached. Ready to finalize bootstrapping and start trading."
 
 #: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
 msgid "还差"
@@ -6245,3 +6244,4 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
+
