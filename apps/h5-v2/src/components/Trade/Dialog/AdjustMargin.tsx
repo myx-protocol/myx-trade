@@ -40,6 +40,7 @@ import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
 import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
 import { buildAdjustMarginToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
+import { PoolTxType, usePoolTxRecordsStore } from '@/store/poolTxRecords'
 
 function AdjustMarginSelect({
   adjustType,
@@ -303,6 +304,8 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
     adjustMargin,
     accountAssets.freeMargin,
   ])
+
+  const { addRecord } = usePoolTxRecordsStore()
 
   return (
     <>
@@ -679,6 +682,15 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
                   const rs = await client?.position.adjustCollateral(data)
                   if (rs?.code === 0) {
+                    const { txId, hash } = rs.data as { txId: string; hash: string }
+
+                    addRecord({
+                      poolId: position.poolId,
+                      chainId: position.chainId,
+                      type: PoolTxType.Adjust_Margin,
+                      txId,
+                      txHash: hash,
+                    })
                     const _parts = buildAdjustMarginToastParts({
                       adjustType,
                       amount: adjustMargin,

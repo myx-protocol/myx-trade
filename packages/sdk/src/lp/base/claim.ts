@@ -1,14 +1,10 @@
-import { getAccount, getExecutionPoolSingerContract } from "@/web3/providers";
+import { getAccount } from "@/web3/providers";
 import { ClaimParams, ClaimRebatesParams } from "@/lp/type.js";
 import { sdkError } from "@/logger";
 import { checkParams } from "@/common/checkParams";
 import { getErrorTextFormError } from "@/config/error";
-import { getWalletClient } from "@/web3";
-import { encodeFunctionData } from "viem";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
-import { execution, forwarder, transactions } from "@/common";
-import { getContractAddressByChainId } from "@/config/address";
-import { FORWARD_GAS_LIMIT } from "@/config/fee";
+import { signAndSubmit } from "@/common/signAndSubmit";
 
 export const claimBasePoolRebate = async (params: ClaimParams) => {
   try {
@@ -20,57 +16,15 @@ export const claimBasePoolRebate = async (params: ClaimParams) => {
       account,
       chainId,
     });
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "claimBasePoolRebate",
-      args: [poolId, account],
-    });
-    const walletClient = await getWalletClient(chainId);
-    const chainAddress = getContractAddressByChainId(chainId);
-    const liquidityRouterAddress = chainAddress.LIQUIDITY_ROUTER;
-    
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        chainId,
-        data: hexData,
-        from: account,
-        to: liquidityRouterAddress,
-      });
 
-    const signature = await walletClient.signTypedData({
-      account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
-    });
-    const executionPoolContract = await getExecutionPoolSingerContract(
+    return await signAndSubmit({
       chainId,
-      chainAddress.EXECUTION_POOL,
-    );
-    const hash = await executionPoolContract.write!.submit(
-      [
-        txId,
-        {
-          ...signData,
-          createdAt: BigInt(createAt),
-          signature,
-        },
-        [poolId],
-      ],
-      {
-        value: 0n,
-        gas: signData.gas,
-      },
-    );
-
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-
-    return {
-      hash,
-      txId,
-      receipt,
-    };
+      account,
+      abi: LiquidityRouter_abi,
+      method: "claimBasePoolRebate",
+      args: [poolId, account],
+      poolIds: [poolId],
+    });
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"
@@ -91,46 +45,14 @@ export const claimBasePoolRebates = async (params: ClaimRebatesParams) => {
       chainId,
     });
 
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "claimBasePoolRebates",
-      args: [poolIds, account],
-    });
-    const chainAddress = getContractAddressByChainId(chainId);
-    const walletClient = await getWalletClient(chainId);
-
-    const liquidityRouterAddress = chainAddress.LIQUIDITY_ROUTER;
-    const executionPoolAddress = chainAddress.EXECUTION_POOL;
-
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        chainId,
-        data: hexData,
-        from: account,
-        to: liquidityRouterAddress,
-      });
-
-    const signature = await walletClient.signTypedData({
-      account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
-    });
-    const executionPoolContract = await getExecutionPoolSingerContract(
+    return await signAndSubmit({
       chainId,
-      executionPoolAddress,
-    );
-    const hash = await executionPoolContract.write!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, poolIds],
-      { value: 0n, gas: signData.gas },
-    );
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-    return {
-      hash,
-      txId,
-      receipt,
-    };
+      account,
+      abi: LiquidityRouter_abi,
+      method: "claimBasePoolRebates",
+      args: [poolIds, account],
+      poolIds,
+    });
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"

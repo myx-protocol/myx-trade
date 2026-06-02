@@ -1,65 +1,40 @@
 import { Trans } from '@lingui/react/macro'
 import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
 import { Close as CloseIcon } from '@mui/icons-material'
-import { SuccessIcon, PendingIcon, WrongIcon, NoData } from '@/components/UI/Icon/index'
+import {
+  NoData,
+  ChainPriceErrorIcon,
+  ChainPriceSuccessIcon,
+  PendingIcon,
+} from '@/components/UI/Icon/index'
+import { t } from '@lingui/core/macro'
+import { PoolTxType, PoolTxState, usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { ChainId } from '@myx-trade/sdk'
+import { useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import ArrowRight from '@/components/Icon/set/ArrowRight'
+import { toast } from '@/components/UI/Toast'
+import { DialogBase } from '@/components/UI/DialogBase'
 
-// 模拟交易状态枚举
-enum TransactionState {
-  WRONG = 'WRONG',
-  Finalized = 'Finalized',
-  PENDING = 'PENDING',
-  TIMEOUT = 'TIMEOUT',
+const STATE_ICONS: Record<PoolTxState, React.ReactNode> = {
+  [PoolTxState.Pending]: <PendingIcon color="#F29D39" w={16} h={16} />,
+  [PoolTxState.Finalized]: <ChainPriceSuccessIcon w={16} h={16} />,
+  [PoolTxState.Cancelled]: <ChainPriceErrorIcon w={16} h={16} />,
 }
 
-// 模拟交易类型
-enum TransactionType {
-  SWAP = 'SWAP',
-  ADD_LIQUIDITY = 'ADD_LIQUIDITY',
-  REMOVE_LIQUIDITY = 'REMOVE_LIQUIDITY',
-}
+const getTransactionTypes = () => ({
+  [PoolTxType.Adjust_Margin]: t`Adjust Margin`,
+  [PoolTxType.DepositBase]: t`Deposit Base`,
+  [PoolTxType.DepositQuote]: t`Deposit Quote`,
+  [PoolTxType.WithdrawBase]: t`Withdraw Base`,
+  [PoolTxType.WithdrawQuote]: t`Withdraw Quote`,
+  [PoolTxType.ClaimBaseRewards]: t`Claim Base Rewards`,
+  [PoolTxType.ClaimQuoteRewards]: t`Claim Quote Rewards`,
+})
 
-// 模拟交易数据接口
-interface MockTransaction {
-  hash: string
-  state: TransactionState
-  info: {
-    type: TransactionType
-  }
-}
-
-const TRANSACTION_STATE_ICONS: Record<TransactionState, React.ReactNode> = {
-  [TransactionState.WRONG]: <WrongIcon w={16} h={16} />,
-  [TransactionState.Finalized]: <SuccessIcon w={16} h={16} />,
-  [TransactionState.PENDING]: <PendingIcon w={16} h={16} />,
-  [TransactionState.TIMEOUT]: <WrongIcon w={16} h={16} />,
-}
-
-const TRANSACTION_TYPES = {
-  [TransactionType.SWAP]: { label: 'Swap' },
-  [TransactionType.ADD_LIQUIDITY]: { label: 'Add Liquidity' },
-  [TransactionType.REMOVE_LIQUIDITY]: { label: 'Remove Liquidity' },
-}
-
-const MAX_RENDER_LENGTH = 5
-
-// 模拟静态交易数据
-const mockTransactions: MockTransaction[] = [
-  {
-    hash: '0x1234567890abcdef1234567890abcdef12345678',
-    state: TransactionState.PENDING,
-    info: { type: TransactionType.SWAP },
-  },
-  {
-    hash: '0xabcdef1234567890abcdef1234567890abcdef12',
-    state: TransactionState.Finalized,
-    info: { type: TransactionType.ADD_LIQUIDITY },
-  },
-  {
-    hash: '0x567890abcdef1234567890abcdef1234567890ab',
-    state: TransactionState.WRONG,
-    info: { type: TransactionType.REMOVE_LIQUIDITY },
-  },
-]
+const PAGE_SIZE = 5
 
 type TransactionsDialogProps = {
   open: boolean
@@ -68,91 +43,208 @@ type TransactionsDialogProps = {
 
 export const TransactionsDialog = ({ open, onOpenChange }: TransactionsDialogProps) => {
   return (
-    <Dialog
+    <DialogBase
       open={open}
-      onClose={onOpenChange}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          maxWidth: '390px',
-          backgroundColor: '#18191F',
-          border: '1px solid #31333D',
-          borderRadius: '8px',
-        },
-      }}
+      title={t`On-Chain Transaction History`}
+      onClose={() => onOpenChange(false)}
     >
-      <DialogTitle className="flex items-center justify-between border-b border-gray-600 p-4">
+      {/* <DialogTitle className="flex items-center justify-between p-4">
         <span className="text-lg font-medium text-white">
           <Trans>On-Chain Transaction History</Trans>
         </span>
-        <IconButton
-          onClick={() => onOpenChange(false)}
-          className="text-gray-400 hover:text-white"
-          size="small"
-        >
+        <IconButton onClick={() => onOpenChange(false)} size="small" sx={{ color: '#fff' }}>
           <CloseIcon />
         </IconButton>
-      </DialogTitle>
+      </DialogTitle> */}
 
       <TransactionsDialogContent />
-    </Dialog>
+    </DialogBase>
   )
 }
 
 export function TransactionsDialogContent() {
-  const renderTransactionsList = mockTransactions.slice(0, MAX_RENDER_LENGTH)
+  const { client, clientIsAuthenticated } = useMyxSdkClient()
+  const { address } = useWalletConnection()
+  const localRecords = usePoolTxRecordsStore((s) => s.records)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [after, setAfter] = useState(0)
+  const [before, setBefore] = useState(0)
+  // txId -> timestamp when we first got a result (online or local createdAt)
+  const firstSeenAtRef = useRef<Map<string, number>>(new Map())
+  const [now, setNow] = useState(() => Date.now())
+
+  const { data: onlineData, mutate } = useSWR(
+    client && clientIsAuthenticated && address
+      ? ['getTransactionOnline', address, after, before]
+      : null,
+    async () => {
+      const accessToken = await client!.getAccessToken()
+      const res = await client!.api.getTransactionOnline({
+        accessToken: accessToken ?? '',
+        address: address!,
+        poolId: '',
+        ...(after > 0 ? { after } : {}),
+        ...(before > 0 ? { before } : {}),
+        txId: '',
+        limit: PAGE_SIZE,
+      })
+      return (res?.data ?? []) as any[]
+    },
+    { refreshInterval: 3000 },
+  )
+
+  const sortedLocal = [...localRecords].sort((a, b) => b.createdAt - a.createdAt)
+  const pageRecords = sortedLocal
+    .filter((r) => {
+      if (after > 0 && r.createdAt >= after) return false
+      if (before > 0 && r.createdAt <= before) return false
+      return true
+    })
+    .slice(0, PAGE_SIZE)
+
+  const onlineMap = new Map<string, any>((onlineData ?? []).map((item: any) => [item.txId, item]))
+  const renderList = pageRecords.map((record) => {
+    // 本地已是终态，不用接口数据覆盖
+    const localFinalized = record.state !== PoolTxState.Pending
+    const online = onlineMap.get(record.txId)
+    return {
+      ...record,
+      state: localFinalized ? record.state : online ? online.state : record.state,
+    }
+  })
+
+  // 记录每条记录首次出现的时间
+  useEffect(() => {
+    const t = Date.now()
+    pageRecords.forEach((r) => {
+      if (!firstSeenAtRef.current.has(r.txId)) {
+        firstSeenAtRef.current.set(r.txId, t)
+      }
+    })
+  })
+
+  // 每秒更新 now，驱动 10s 倒计时
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const hasPrev = after > 0 || before > 0
+  const lastCreatedAt = pageRecords[pageRecords.length - 1]?.createdAt ?? 0
+  const hasNext = lastCreatedAt > 0 && sortedLocal.some((r) => r.createdAt < lastCreatedAt)
+
+  const handleNext = () => {
+    const last = pageRecords[pageRecords.length - 1]
+    if (!last) return
+    setAfter(last.createdAt)
+    setBefore(0)
+  }
+
+  const handlePrev = () => {
+    const first = pageRecords[0]
+    if (!first) return
+    setBefore(first.createdAt)
+    setAfter(0)
+  }
+
+  const handleCancel = async (record: (typeof renderList)[number]) => {
+    if (!client || cancellingId) return
+    setCancellingId(record.txId)
+    try {
+      await client.order.cancelPriceOrder({
+        chainId: record.chainId as ChainId,
+        txtId: record.txId as `0x${string}`,
+      })
+      mutate()
+    } catch (e) {
+      toast.error({ title: t`Cancel failed` })
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   return (
-    <DialogContent className="p-0">
-      {/* 表头 */}
-      <div className="flex w-full border-b border-gray-600 px-4 py-2 text-sm text-gray-400">
-        <div className="w-6 text-center">
-          <Trans>状态</Trans>
-        </div>
-        <div className="ml-20 w-20">
-          <Trans>类型</Trans>
-        </div>
-        <div className="ml-10 flex-1">
-          <Trans>哈希</Trans>
-        </div>
-      </div>
-
-      {/* 交易列表 */}
-      <div className="max-h-96 overflow-y-auto">
-        {renderTransactionsList.length > 0 ? (
-          <>
-            {renderTransactionsList.map((transaction, _index) => (
-              <div
-                key={transaction.hash}
-                className="relative flex h-12 items-center border-b border-gray-700 px-4 last:border-b-0"
-              >
-                {/* 状态图标 */}
-                <div className="w-6 text-center">{TRANSACTION_STATE_ICONS[transaction.state]}</div>
-
-                {/* 交易类型 */}
-                <div className="ml-20 w-20 text-sm text-white">
-                  {TRANSACTION_TYPES[transaction.info.type].label}
-                </div>
-
-                {/* 交易哈希 */}
-                <div className="ml-10 flex-1 cursor-pointer text-sm text-blue-400 underline hover:text-blue-300">
-                  {transaction.hash.slice(0, 8)}...{transaction.hash.slice(-8)}
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className="flex min-h-[150px] items-center justify-center">
-            <div className="flex flex-col items-center">
-              <NoData width={80} height={80} />
-              <p className="mt-3 text-sm text-gray-400">
-                <Trans>No data</Trans>
-              </p>
+    <div className="mt-[16px]">
+      {renderList.length > 0 ? (
+        <div>
+          <div className="flex px-4 py-2 text-sm text-[#6D7180]">
+            <div className="w-[50px]">
+              <Trans>状态</Trans>
+            </div>
+            <div className="w-[100px]">
+              <Trans>类型</Trans>
+            </div>
+            <div className="w-[150px]">
+              <Trans>哈希</Trans>
+            </div>
+            <div className="flex-1 text-right">
+              <Trans>操作</Trans>
             </div>
           </div>
-        )}
-      </div>
-    </DialogContent>
+          {renderList.map((record, index) => (
+            <div
+              key={record.txId}
+              className={`flex items-center px-4 py-3 text-sm ${index !== 0 ? 'border-t border-[#31333D]' : ''}`}
+            >
+              <div className="w-[50px]">
+                {STATE_ICONS[record.state as PoolTxState] ?? STATE_ICONS[PoolTxState.Pending]}
+              </div>
+              <div className="w-[100px] text-white">
+                {getTransactionTypes()[record.type] ?? record.type}
+              </div>
+              <div className="w-[150px] cursor-pointer text-white">
+                {record.txHash ? `${record.txHash.slice(0, 8)}...${record.txHash.slice(-8)}` : '--'}
+              </div>
+              <div className="flex-1 text-right">
+                {record.state === PoolTxState.Pending ? (
+                  (() => {
+                    const firstSeen = firstSeenAtRef.current.get(record.txId) ?? now
+                    const showCancel = now - firstSeen >= 10_000
+                    return showCancel ? (
+                      <div
+                        className={`cursor-pointer text-[#00E3A5] ${cancellingId === record.txId ? 'pointer-events-none opacity-50' : ''}`}
+                        onClick={() => handleCancel(record)}
+                      >
+                        <Trans>Cancel</Trans>
+                      </div>
+                    ) : (
+                      <div className="text-[#6D7180]">--</div>
+                    )
+                  })()
+                ) : (
+                  <div className="text-[#6D7180]">--</div>
+                )}
+              </div>
+            </div>
+          ))}
+          <div className="flex items-center justify-end gap-[16px] border-t border-[#31333D] px-4 py-3">
+            <button
+              disabled={!hasPrev}
+              onClick={handlePrev}
+              className="flex items-center justify-center text-[#6D7180] enabled:cursor-pointer enabled:hover:text-white disabled:opacity-30"
+            >
+              <span style={{ transform: 'rotate(180deg)', display: 'inline-flex' }}>
+                <ArrowRight size={16} color="currentColor" />
+              </span>
+            </button>
+            <button
+              disabled={!hasNext}
+              onClick={handleNext}
+              className="flex items-center justify-center text-[#6D7180] enabled:cursor-pointer enabled:hover:text-white disabled:opacity-30"
+            >
+              <ArrowRight size={16} color="currentColor" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex min-h-[150px] items-center justify-center">
+          <div className="flex flex-col items-center">
+            <p className="mt-3 text-sm text-[#6D7180]">
+              <Trans>No data</Trans>
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

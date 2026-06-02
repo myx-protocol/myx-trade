@@ -3,7 +3,7 @@ import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
 import { Utils } from "../utils/index.js";
-import { encodeFunctionData, maxUint256 } from "viem";
+import { Address, maxUint256 } from "viem";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import {
   getExecutionPoolSingerContract,
@@ -11,11 +11,13 @@ import {
 } from "@/web3/providers";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
-import { ChainId } from "@/config/chain";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import TradingRouter_abi from "@/abi/TradingRouter.json";
-import dayjs from "dayjs";
-import { forwarder } from "@/common/index.js";
+import {
+  execution,
+  getGasByRatio,
+  transactions,
+} from "@/common/index.js";
 export class Position {
   private configManager: ConfigManager;
   private logger: Logger;
@@ -155,73 +157,68 @@ export class Position {
       const tradingRouterAddress =
         getContractAddressByChainId(chainId).TRADING_ROUTER;
 
-      const data = encodeFunctionData({
-        abi: TradingRouter_abi as any,
-        functionName: "adjustCollateral",
-        args: [depositData, positionId, adjustAmount],
-      });
+      const { hexData, executionGasFee } =
+        await execution.buildHexDataAndExecutionGasFee({
+          abi: TradingRouter_abi as any,
+          method: "adjustCollateral",
+          args: [depositData, positionId, adjustAmount],
+          chainId,
+        });
 
-      const domain = await forwarder.getForwardEip712Domain(chainId);
-      const deadline = dayjs().add(10, "second").unix();
-      const txId = await this.utils.generateTxId();
-      const walletClient =
-        await this.configManager.getViemWalletClient(chainId);
-      const [account] = await walletClient.getAddresses();
-
-      const signature = await walletClient.signTypedData({
-        account,
-        domain,
-        types: {
-          ForwardRequest: [
-            { name: "from", type: "address" },
-            { name: "to", type: "address" },
-            { name: "value", type: "uint256" },
-            { name: "gas", type: "uint256" },
-            { name: "deadline", type: "uint48" },
-            { name: "data", type: "bytes" },
-          ],
-        },
-        primaryType: "ForwardRequest",
-        message: {
+      const { domain, createAt, txId, types, primaryType, signData } =
+        await execution.buildSignData({
           from: address as `0x${string}`,
           to: tradingRouterAddress as `0x${string}`,
-          value: 0n,
-          gas: 1500000n,
-          deadline,
-          data,
-        },
+          data: hexData,
+          chainId,
+        });
+
+      const walletClient =
+        await this.configManager.getViemWalletClient(chainId);
+
+      const signature = await walletClient.signTypedData({
+        account: address as Address,
+        domain,
+        types,
+        primaryType,
+        message: signData,
       });
 
-      const executionPoolContract = await getExecutionPoolSingerContract(
-        chainId,
-        getContractAddressByChainId(chainId).EXECUTION_POOL,
+      const executionPoolContract =
+        await getExecutionPoolSingerContract(chainId);
+
+      const _gasLimit = await executionPoolContract.estimateGas!.submit(
+        [
+          txId,
+          { ...signData, createdAt: BigInt(createAt), signature },
+          [poolId],
+        ],
+        { value: executionGasFee },
       );
-
-      const createdAt = BigInt(dayjs().unix());
-
+      const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
       const hash = await executionPoolContract.write!.submit(
         [
           txId,
           {
-            from: address as `0x${string}`,
-            to: tradingRouterAddress as `0x${string}`,
-            value: 0n,
-            gas: 1500000n,
-            createdAt,
-            deadline: BigInt(deadline),
-            data,
+            ...signData,
+            createdAt: BigInt(createAt),
             signature,
           },
           [poolId],
         ],
         {
-          value: 0n,
-          gas: 1500000n,
+          value: executionGasFee,
+          gasLimit,
+          gasPrice,
         },
+      );
+      const receipt = await transactions.waitForTransactionReceipt(
+        chainId,
+        hash,
       );
       return {
         code: 0,
-        data: { hash, txId },
+        data: { hash, txId, receipt },
       };
     } catch (error) {
       return {

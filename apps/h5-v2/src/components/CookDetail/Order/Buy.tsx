@@ -34,6 +34,10 @@ import { PoolSecurityState } from '@/request/lp/type.ts'
 import { CookDetailTPSL } from '@/components/CookDetail/Order/TPSL.tsx'
 import { parseTriggerPrice } from '@/utils/TpSl.ts'
 import { TpSlTypeEnum } from '@/components/Trade/type.ts'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 const inputStyle = {
   htmlInput: {
@@ -91,6 +95,9 @@ export const Buy = () => {
     [],
   )
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleBuy = useCallback(async () => {
     try {
       if (!chainId || !poolId || !amount) return
@@ -145,15 +152,34 @@ export const Buy = () => {
           : undefined,
       }
       console.log('Base Deposit params:', params)
-      await Base.deposit(params)
-
-      toast.success({ title: t`Successfully buy` })
-
+      const res = await Base.deposit(params)
+      if (res) {
+        addRecord({
+          chainId: +chainId,
+          txId: res.txId,
+          poolId,
+          type: PoolTxType.DepositBase,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: +chainId,
+          poolId: poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully buy` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Order Canceled` })
+            }
+          },
+        })
+      }
+      toast.success({ title: t`Order Submitted` })
       setAmount('')
       setSlValue('')
       setTpValue('')
-      await refetch()
-      poolInfoRefetch()
     } catch (e) {
       console.error(e)
       showErrorToast(e)
@@ -175,6 +201,10 @@ export const Buy = () => {
     slValue,
     tpValue,
     slType,
+    addRecord,
+    waitExecutionResult,
+    setSlValue,
+    setTpValue,
   ])
   return (
     <>

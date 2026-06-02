@@ -13,6 +13,10 @@ import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { showErrorToast } from '@/config/error'
 import Big from 'big.js'
 import { FlexRowLayout } from '@/components/FlexRowLayout'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 type Rewards = { rebates: string; genesisRebates: string }
 interface ClaimRewardsDialogProps {
@@ -34,6 +38,9 @@ export const ClaimRewardsDialog = ({
   const { address: account } = useWalletConnection()
   const onAction = useWalletActions()
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleClaim = useCallback(async () => {
     if (
       !lpAsset?.poolId ||
@@ -47,16 +54,49 @@ export const ClaimRewardsDialog = ({
       setLoading(true)
       const checked = onAction(lpAsset.chainId)
       if (!checked) return
-      await Base.claimBasePoolRebate({ chainId: lpAsset.chainId, poolId: lpAsset.poolId })
-      toast.success({ title: t`Claim successfully claimed` })
-      refetch?.()
+      const res = await Base.claimBasePoolRebate({
+        chainId: lpAsset.chainId,
+        poolId: lpAsset.poolId,
+      })
+      if (res) {
+        addRecord({
+          chainId: lpAsset.chainId,
+          txId: res.txId,
+          poolId: lpAsset.poolId,
+          type: PoolTxType.ClaimBaseRewards,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: lpAsset.chainId,
+          poolId: lpAsset.poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Claim successfully claimed` })
+              refetch?.()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Order Canceled` })
+            }
+          },
+        })
+      }
+      toast.success({ title: t`Claim Order Submitted` })
       onClose()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [lpAsset?.chainId, lpAsset?.poolId, reward, account, refetch, onAction])
+  }, [
+    lpAsset?.chainId,
+    lpAsset?.poolId,
+    reward,
+    account,
+    refetch,
+    onAction,
+    addRecord,
+    waitExecutionResult,
+  ])
   return (
     <DialogBase title={t`领取收益`} open={open} onClose={onClose}>
       <div className="mt-[16px] leading-[1]">

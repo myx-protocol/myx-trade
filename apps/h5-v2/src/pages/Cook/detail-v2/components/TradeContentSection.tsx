@@ -2,9 +2,6 @@ import { PairLogo } from '@/components/UI/PairLogo'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
 import { TipsOutLine } from '@/components/Icon'
 import { Tooltips } from '@/components/UI/Tooltips'
-import { FormControlLabel } from '@/components/UI/FormControlLabel'
-import { CheckBox } from '@/components/UI/CheckBox'
-import { useCookOrderStore } from '@/components/CookDetail/Order/store'
 import { Box } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
@@ -82,7 +79,7 @@ export const TradeContentSection = ({
             <Box className="flex flex-shrink-0 items-center gap-[8px]">
               <PairLogo
                 baseLogoSize={36}
-                quoteLogoSize={10}
+                quoteLogoSize={14}
                 baseLogo={baseTokenIcon}
                 baseSymbol={displayTokenSymbol}
                 quoteSymbol={chainLabel}
@@ -126,7 +123,7 @@ export const TradeContentSection = ({
             <Box className="flex items-center gap-[8px] px-[4px] py-[4px]">
               <PairLogo
                 baseLogoSize={36}
-                quoteLogoSize={10}
+                quoteLogoSize={14}
                 baseLogo={baseTokenIcon}
                 baseSymbol={displayTokenSymbol}
                 quoteSymbol={chainLabel}

@@ -6,6 +6,8 @@ import { openUrl } from '@/utils'
 import { MYX_GIT_BOOK_LINK } from '@/config'
 import useGlobalStore from '@/store/globalStore'
 import { TradeMode } from '@/pages/Trade/types'
+import { TransactionsDialog } from '../Transactions/TransactionsDialog'
+import { useState } from 'react'
 
 interface SettingDrawerProps {
   open: boolean
@@ -14,6 +16,8 @@ interface SettingDrawerProps {
 
 export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   const { tradeMode, setChangeModeDialogOpen } = useGlobalStore()
+  const [txDialogOpen, setTxDialogOpen] = useState(false)
+
   return (
     <Drawer
       anchor="right"
@@ -149,6 +153,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
           <IconArrowRight className="h-[16px] w-[16px]" />
         </div>
       </div>
+      <TransactionsDialog open={txDialogOpen} onOpenChange={setTxDialogOpen} />
     </Drawer>
   )
 }

@@ -39,6 +39,7 @@ export const WarningTipsSection = ({
     securityState !== PoolSecurityState.UNKNOWN &&
     securityState !== PoolSecurityState.NOT_SECURITY &&
     baseLpDetail?.state !== MarketPoolState.Primed &&
+    baseLpDetail?.state !== MarketPoolState.Bench &&
     !isBoostActivationRequested &&
     progressTotal > 0 &&
     progressCurrent < progressTotal &&

@@ -1,6 +1,6 @@
 import fs from "fs";
 
-const text = fs.readFileSync("./errors", "utf8");
+const text = fs.readFileSync("./MYX v2合约地址.md", "utf8");
 
 const regex =
   /│\s*\d+\s*│\s*'([0-9a-f]{8})'\s*│\s*'([^']+)'\s*│/gi;

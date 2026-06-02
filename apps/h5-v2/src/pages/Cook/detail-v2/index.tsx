@@ -47,6 +47,10 @@ import { CookDetailOrderTips } from './components/CookDetailOrderTips'
 import { CookRedeemGenesisBurnTip } from './components/CookRedeemGenesisBurnTip'
 import type { CookTokenItem, FindCookPoolFn } from './hook/useCookTokenSelect'
 import { getQuoteTokenInfo } from '@/config/token'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 type ActionType = 'deposit' | 'redeem' | 'activate'
 type VaultType = 'base' | 'stable'
@@ -302,8 +306,33 @@ export const CookDetail = () => {
     return getActionButtonLabel(activeAction)
   }, [activeAction, isActivate, isQuickActivateFeePaid, baseLpState])
 
-  const numericAmount = Number(amount || 0)
-  const isAmountInvalid = !numericAmount || numericAmount > displayBalance
+  const isAmountInvalid = useMemo(() => {
+    if (!amount || !isSafeNumber(amount)) return true
+    if (!isSafeNumber(balance)) return true
+    if (basePoolDetail.lpDetail?.state === MarketPoolState.Bench && !isRedeem) return true
+    if (isRedeem) {
+      try {
+        return (
+          parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) >
+          parseUnits(balance, COMMON_LP_AMOUNT_DECIMALS)
+        )
+      } catch {
+        return true
+      }
+    }
+
+    const numericAmount = Number(amount)
+    return !numericAmount || numericAmount > Number(balance)
+  }, [amount, balance, isRedeem, basePoolDetail.lpDetail?.state])
+
+  /**
+   * 赎回提交金额：Max 时始终用链上 balance（输入框默认 2 位会截断 amount 并触发 onChange）
+   */
+  const redeemSubmitAmount = useMemo(() => {
+    if (!isRedeem) return amount
+    if (selectedRatio === 'Max' && isSafeNumber(balance)) return balance
+    return amount
+  }, [isRedeem, selectedRatio, balance, amount])
 
   const displayTokenSymbol = useMemo(() => {
     if (isActivate) return currentPool?.quoteSymbol || '--'
@@ -439,6 +468,9 @@ export const CookDetail = () => {
     poolInfo?.baseTokenIcon,
   ])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onConfirm = async () => {
     try {
       if (!chainId || !poolId) return
@@ -456,28 +488,72 @@ export const CookDetail = () => {
         if (currentRiskConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
         if (isQuoteSideVault) {
-          await Quote.deposit({
+          const res = await Quote.deposit({
             chainId: +chainId,
             poolId,
             amount: Number(amount),
             slippage: Number(slippage),
           })
+          if (res) {
+            addRecord({
+              chainId: +chainId,
+              txId: res.txId,
+              poolId,
+              type: PoolTxType.DepositQuote,
+              txHash: res.hash,
+            })
+            waitExecutionResult({
+              chainId: +chainId,
+              poolId,
+              txId: res.txId,
+              onExecutionResult: (data) => {
+                if (data.state === ExecutionProgressState.Finalized) {
+                  refreshAllData()
+                  toast.success({ title: t`Successfully deposit` })
+                } else if (data.state === ExecutionProgressState.Cancel) {
+                  toast.error({ title: t`Deposit Order Canceled` })
+                }
+              },
+            })
+          }
         } else {
-          await Base.deposit({
+          const res = await Base.deposit({
             chainId: +chainId,
             poolId,
             amount: Number(amount),
             slippage: Number(slippage),
           })
+          if (res) {
+            addRecord({
+              chainId: +chainId,
+              txId: res.txId,
+              poolId,
+              type: PoolTxType.DepositBase,
+              txHash: res.hash,
+            })
+            waitExecutionResult({
+              chainId: +chainId,
+              poolId,
+              txId: res.txId,
+              onExecutionResult: (data) => {
+                if (data.state === ExecutionProgressState.Finalized) {
+                  toast.success({ title: t`Successfully deposit` })
+                  refreshAllData()
+                } else if (data.state === ExecutionProgressState.Cancel) {
+                  toast.error({ title: t`Deposit Order Canceled` })
+                }
+              },
+            })
+          }
         }
 
-        toast.success({ title: t`Successfully deposit` })
+        toast.success({ title: t`Deposit Order Submitted` })
       }
 
       if (activeAction === 'redeem') {
         if (
           withdrawableLpAmount !== undefined &&
-          parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
+          parseUnits(redeemSubmitAmount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
         ) {
           toast.error({
             title: t`Some funds are locked in active trades. Max available to sell: [${formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })}] LP.`,
@@ -486,33 +562,70 @@ export const CookDetail = () => {
         }
 
         if (isQuoteSideVault) {
-          await Quote.withdraw({
+          const res = await Quote.withdraw({
             chainId: +chainId,
             poolId,
-            amount: Number(amount),
+            amount: redeemSubmitAmount,
             slippage: Number(slippage),
           })
+          if (res) {
+            addRecord({
+              chainId: +chainId,
+              txId: res.txId,
+              poolId,
+              type: PoolTxType.WithdrawQuote,
+              txHash: res.hash,
+            })
+            waitExecutionResult({
+              chainId: +chainId,
+              poolId,
+              txId: res.txId,
+              onExecutionResult: (data) => {
+                if (data.state === ExecutionProgressState.Finalized) {
+                  toast.success({ title: t`Successfully redeem` })
+                  refreshAllData()
+                } else if (data.state === ExecutionProgressState.Cancel) {
+                  toast.error({ title: t`Redeem Order Canceled` })
+                }
+              },
+            })
+          }
         } else {
-          await Base.withdraw({
+          const res = await Base.withdraw({
             chainId: +chainId,
             poolId,
-            amount: Number(amount),
+            amount: Number(redeemSubmitAmount),
             slippage: Number(slippage),
           })
+          if (res) {
+            addRecord({
+              chainId: +chainId,
+              txId: res.txId,
+              poolId,
+              type: PoolTxType.WithdrawBase,
+              txHash: res.hash,
+            })
+            waitExecutionResult({
+              chainId: +chainId,
+              poolId,
+              txId: res.txId,
+              onExecutionResult: (data) => {
+                if (data.state === ExecutionProgressState.Finalized) {
+                  toast.success({ title: t`Successfully redeem` })
+                  refreshAllData()
+                } else if (data.state === ExecutionProgressState.Cancel) {
+                  toast.error({ title: t`Redeem Order Canceled` })
+                }
+              },
+            })
+          }
         }
 
-        toast.success({ title: t`Successfully redeem` })
+        toast.success({ title: t`Redeem Order Submitted` })
       }
 
       setAmount('')
       setSelectedRatio('25%')
-
-      // 提交后先立刻刷新一轮，尽快回填本地 UI
-      await refreshAllData()
-
-      // 链上状态异步落库有延迟，再补一轮刷新提升稳定性
-      await sleep(2000)
-      await refreshAllData()
     } catch (error) {
       showErrorToast(error)
     } finally {

@@ -1,28 +1,17 @@
-import {
-  getAccount,
-  getExecutionPoolSingerContract,
-} from "@/web3/providers.js";
-import { encodeFunctionData, parseUnits } from "viem";
+import { getAccount } from "@/web3/providers.js";
+import { parseUnits } from "viem";
 import { sdkError } from "@/logger";
-import { bigintAmountSlipperCalculator } from "@/common/tradingGas.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 
 import { Deposit } from "@/lp/type.js";
 import { checkParams } from "@/common/checkParams.js";
 import { previewLpAmountOut } from "@/lp/base/preview.js";
 import { getPoolInfo } from "@/lp/getPoolInfo.js";
-import {
-  COMMON_LP_AMOUNT_DECIMALS,
-  COMMON_PRICE_DECIMALS,
-} from "@/config/decimals.js";
-import { getPriceData } from "@/common/price.js";
-import { getTpSlParams } from "@/common/getTpSlParams.js";
-import type { TpSl } from "@/lp/pool/type.js";
+import { getDepositData } from "@/common/depositData.js";
 import { ErrorCode, Errors, getErrorTextFormError } from "@/config/error.js";
-import { getWalletClient } from "@/web3";
-import { isNeedPrice } from "@/utils/isNeedPrice.ts";
+import { MarketPoolState } from "@/api/index.js";
 import LiquidityRouter_abi from "@/abi/LiquidityRouter.json";
-import { execution, transactions } from "@/common";
+import { signAndSubmit } from "@/common/signAndSubmit";
 
 export const deposit = async (params: Deposit) => {
   try {
@@ -51,94 +40,29 @@ export const deposit = async (params: Deposit) => {
       amount,
     });
 
-    const _isNeedPrice = isNeedPrice(pool?.state);
     const amountIn = parseUnits(amount.toString(), decimals);
-    let amountOut;
-    if (_isNeedPrice) {
-      const priceData = await getPriceData(chainId, poolId);
-      if (!priceData) return;
-      const referencePrice = parseUnits(priceData.price, COMMON_PRICE_DECIMALS);
-
-      amountOut = await previewLpAmountOut({
-        chainId,
-        poolId,
-        amountIn,
-        price: referencePrice,
-      });
-    } else {
-      amountOut = await previewLpAmountOut({ chainId, poolId, amountIn });
-    }
-
-    const _tpsl = tpsl.map((item) => {
-      return {
-        amount,
-        triggerPrice: item.triggerPrice,
-        triggerType: item.triggerType,
-      } as TpSl;
-    });
-    const tpslParams = getTpSlParams(
-      slippage,
-      _tpsl,
-      COMMON_LP_AMOUNT_DECIMALS,
-      quoteDecimals,
-    );
-    const minAmountOut = bigintAmountSlipperCalculator(amountOut, slippage);
-
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_abi,
-      functionName: "depositBase",
-      args: [
-        {
-          poolId,
-          amountIn,
-          minAmountOut,
-          recipient: account,
-          tpslParams,
-        },
-      ],
-    });
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        from: account,
-        chainId,
-        to: addresses.LIQUIDITY_ROUTER,
-        data: hexData,
-      });
-    const walletClient = await getWalletClient(chainId);
-    const signature = await walletClient.signTypedData({
-      account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
-    });
-
-    const executionPoolContract = await getExecutionPoolSingerContract(
+    const result = await getDepositData({
+      poolId,
       chainId,
-      addresses.EXECUTION_POOL,
-    );
-    const hash = await executionPoolContract.write!.submit(
-      [
-        txId,
-        {
-          ...signData,
-          createdAt: BigInt(createAt),
-          signature,
-        },
-        [poolId],
-      ],
-      {
-        value: 0n,
-        gas: signData.gas,
-      },
-    );
+      account,
+      amountIn,
+      amount,
+      slippage,
+      state: pool.state as MarketPoolState,
+      quoteDecimals,
+      tpsl,
+      previewLpAmountOut,
+    });
+    if (!result) return;
 
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-    return {
-      hash,
-      txId,
-      receipt,
-    };
+    return await signAndSubmit({
+      chainId,
+      account,
+      abi: LiquidityRouter_abi,
+      method: "depositBase",
+      args: [result.data],
+      poolIds: [poolId],
+    });
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"

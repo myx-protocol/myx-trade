@@ -3,6 +3,7 @@ import { Logger } from "@/logger";
 import { GetHistoryOrdersParams } from "@/api";
 import {
   getTradingRouterContract,
+  getExecutionPoolSingerContract,
 } from "@/web3/providers";
 import { getPublicClient } from "@/web3/viemClients.js";
 import { TIME_IN_FORCE } from "@/config/con";
@@ -15,7 +16,7 @@ import {
 import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
-import { maxUint256 } from "viem";
+import { maxUint256, padHex, isHex, toHex } from "viem";
 import { Account } from "../account/index.js";
 import { ChainId } from "@/config/chain";
 import { Api } from "../api/index.js";
@@ -702,6 +703,35 @@ export class Order {
     return {
       code: 0,
       data: res.data,
+    };
+  }
+
+  async cancelPriceOrder({
+    chainId,
+    txtId
+  }: {
+    chainId: ChainId;
+    txtId: `0x${string}`;
+  }) {
+    const toBytes32 = (value: string): `0x${string}` => {
+      if (isHex(value)) return padHex(value as `0x${string}`, { size: 32 })
+      return padHex(toHex(value), { size: 32 })
+    }
+
+    const executionPoolContract = await getExecutionPoolSingerContract(chainId)
+
+    const hash = await executionPoolContract.write?.cancel([toBytes32(txtId)])
+
+    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash })
+
+    return {
+      code: 0,
+      data: receipt,
+    };
+  } catch() {
+    return {
+      code: -1,
+      message: "Failed to cancel order",
     };
   }
 }

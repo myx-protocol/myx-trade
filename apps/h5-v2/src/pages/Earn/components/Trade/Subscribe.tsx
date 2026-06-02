@@ -38,6 +38,10 @@ import { useEarnOrderStore } from '@/pages/Earn/store'
 import { parseTriggerPrice } from '@/utils/TpSl.ts'
 import { TpSlTypeEnum } from '@/components/Trade/type.ts'
 import Big from 'big.js'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 const inputStyle = {
   htmlInput: {
@@ -102,6 +106,9 @@ export const Subscribe = () => {
     setAmount(value || '')
   }, [])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleSubscribe = useCallback(async () => {
     try {
       setLoading(true)
@@ -155,13 +162,34 @@ export const Subscribe = () => {
       }
 
       console.log('Quote lp Deposit params:', params)
-      await Quote.deposit(params)
-      toast.success({ title: t`Successfully subscribe` })
+      const res = await Quote.deposit(params)
+      if (res) {
+        addRecord({
+          chainId: +chainId,
+          txId: res.txId,
+          poolId,
+          type: PoolTxType.DepositQuote,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: +chainId,
+          poolId: poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully subscribe` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Subscribe Order Canceled` })
+            }
+          },
+        })
+      }
+      toast.success({ title: t`Subscribe Order Submitted` })
       setAmount('')
       setSlValue('')
       setTpValue('')
-      await refetch()
-      poolInfoRefetch()
     } catch (error) {
       showErrorToast(error)
     } finally {
@@ -184,6 +212,8 @@ export const Subscribe = () => {
     slValue,
     setTpValue,
     setSlValue,
+    addRecord,
+    waitExecutionResult,
   ])
   return (
     <>

@@ -1,5 +1,5 @@
 import { getAccount, getQuotePoolContract } from "@/web3/providers.js";
-import { encodeFunctionData, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { WithdrawParams } from "@/lp/type.js";
 
 import { checkParams } from "@/common/checkParams.js";
@@ -15,11 +15,8 @@ import { ChainId } from "@/config/chain.js";
 import { sdkError } from "@/logger";
 import { getWithdrawData } from "@/common/withdrawData.ts";
 import { PoolType } from "@/lp/pool";
-import { getContractAddressByChainId } from "@/config/address";
 import LiquidityRouter_ABI from "@/abi/LiquidityRouter.json";
-import { getExecutionPoolSingerContract } from "@/web3/providers";
-import { execution, transactions } from "@/common";
-import { getWalletClient } from "@/web3";
+import { signAndSubmit } from "@/common/signAndSubmit";
 
 export const withdrawableLpAmount = async (params: {
   chainId: ChainId;
@@ -84,42 +81,14 @@ export const withdraw = async (params: WithdrawParams) => {
       poolType: PoolType.Quote,
       state: pool?.state as MarketPoolState,
     });
-    const chainAddress = getContractAddressByChainId(chainId);
-    const hexData = encodeFunctionData({
-      abi: LiquidityRouter_ABI,
-      functionName: "withdrawQuote",
-      args: [data],
-    });
-
-    const { domain, createAt, txId, types, primaryType, signData } =
-      await execution.buildSignData({
-        from: account,
-        chainId,
-        to: chainAddress.LIQUIDITY_ROUTER,
-        data: hexData,
-      });
-    const walletClient = await getWalletClient(chainId);
-    const signature = await walletClient.signTypedData({
-      account,
-      domain,
-      types,
-      primaryType,
-      message: signData,
-    });
-    const executionPoolContract = await getExecutionPoolSingerContract(
+    return await signAndSubmit({
       chainId,
-      chainAddress.EXECUTION_POOL,
-    );
-    const hash = await executionPoolContract.write!.submit(
-      [txId, { ...signData, createdAt: BigInt(createAt), signature }, [poolId]],
-      { value: 0n, gas: signData.gas },
-    );
-    const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
-    return {
-      hash,
-      txId,
-      receipt,
-    };
+      account,
+      abi: LiquidityRouter_ABI,
+      method: "withdrawQuote",
+      args: [data],
+      poolIds: [poolId],
+    });
   } catch (error) {
     sdkError(error);
     throw typeof error === "string"
