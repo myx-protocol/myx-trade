@@ -45,7 +45,8 @@ msgid " Price "
 msgstr ""
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr ""
 
@@ -317,6 +318,7 @@ msgstr "Address cannot be empty"
 msgid "Adjust Leverage"
 msgstr ""
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust Margin"
@@ -710,6 +712,7 @@ msgstr ""
 msgid "By importing this key on another device, you can access MYX from any browser without needing a wallet extension or using a wallet app browser. This key is for trading authorization only and will never hold any of your assets. For your security, do not share it with anyone."
 msgstr ""
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
@@ -730,6 +733,10 @@ msgstr ""
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 msgid "Cancel all orders success"
 msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Cancel failed"
+msgstr "Cancel failed"
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
@@ -857,6 +864,10 @@ msgstr ""
 msgid "Claim airdrop"
 msgstr "Claim Airdrop"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Claim Base Rewards"
+msgstr "Claim Base Rewards"
+
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Claim History"
 msgstr ""
@@ -865,6 +876,15 @@ msgstr ""
 #: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
 msgid "Claim Now"
 msgstr ""
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Earn/components/Trade/Claim.tsx
+msgid "Claim Order Submitted"
+msgstr "Claim Order Submitted"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Claim Quote Rewards"
+msgstr "Claim Quote Rewards"
 
 #: src/store/transactions/options.ts
 msgid "Claim referral fee"
@@ -879,6 +899,10 @@ msgstr ""
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Claim Refund Now"
 msgstr ""
+
+#: src/pages/Earn/components/Trade/Claim.tsx
+msgid "Claim Rewards Canceled"
+msgstr "Claim Rewards Canceled"
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
@@ -1292,6 +1316,26 @@ msgstr ""
 #: src/pages/Home/components/AccountInfo/index.tsx
 msgid "Deposit"
 msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Deposit Base"
+msgstr "Deposit Base"
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Deposit Order Canceled"
+msgstr "Deposit Order Canceled"
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Deposit Order Submitted"
+msgstr "Deposit Order Submitted"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Deposit Quote"
+msgstr "Deposit Quote"
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
@@ -3225,6 +3269,7 @@ msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+#: src/components/SettingDrawer.tsx
 msgid "On-Chain Transaction History"
 msgstr ""
 
@@ -3395,6 +3440,12 @@ msgstr ""
 msgid "Order canceled"
 msgstr ""
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Order Canceled"
+msgstr "Order Canceled"
+
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
 msgid "Order Cancelled"
@@ -3430,6 +3481,8 @@ msgstr ""
 msgid "Order size must be greater than the minimum required"
 msgstr ""
 
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 msgid "Order Submitted"
@@ -3888,6 +3941,17 @@ msgstr ""
 #: src/components/VipRedeemDialog/index.tsx
 msgid "Redeem Code"
 msgstr ""
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Redeem Order Canceled"
+msgstr "Redeem Order Canceled"
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Redeem Order Submitted"
+msgstr "Redeem Order Submitted"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -4497,6 +4561,14 @@ msgid "Subscribe"
 msgstr ""
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Subscribe Order Canceled"
+msgstr "Subscribe Order Canceled"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Subscribe Order Submitted"
+msgstr "Subscribe Order Submitted"
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Subscription Amount"
 msgstr ""
 
@@ -4518,13 +4590,16 @@ msgid "Successfully canceled the order."
 msgstr ""
 
 #: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
 msgid "Successfully deposit"
 msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr ""
 
+#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Successfully redeem"
@@ -5265,6 +5340,14 @@ msgstr ""
 msgid "Whitelist"
 msgstr ""
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Withdraw Base"
+msgstr "Withdraw Base"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Withdraw Quote"
+msgstr "Withdraw Quote"
+
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -5801,6 +5884,10 @@ msgstr "Withdraw Margin"
 msgid "搜索结果"
 msgstr "Search Results"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "操作"
+msgstr "操作"
+
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
 msgstr "Pay"
@@ -6143,4 +6230,3 @@ msgstr "Claim Referral Rebate"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "Risk Management Deduction"
-

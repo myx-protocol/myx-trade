@@ -45,7 +45,8 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid ""
+" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -317,6 +318,7 @@ msgstr "地址不可为空"
 msgid "Adjust Leverage"
 msgstr "调整杠杆"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjust Margin"
@@ -710,6 +712,7 @@ msgstr "买入税"
 msgid "By importing this key on another device, you can access MYX from any browser without needing a wallet extension or using a wallet app browser. This key is for trading authorization only and will never hold any of your assets. For your security, do not share it with anyone."
 msgstr "通过在另一台设备上导入此密钥，您可以从任何浏览器访问 MYX，而无需安装钱包扩展程序或使用钱包应用程序浏览器。此密钥仅用于交易授权，绝不会持有您的任何资产。为了您的安全，请勿与任何人共享。"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 #: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Cook/detail/components/OpenOrders.tsx
 #: src/pages/Earn/detail/components/OpenOrders.tsx
@@ -730,6 +733,10 @@ msgstr "取消所有当前委托？"
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 msgid "Cancel all orders success"
 msgstr "取消所有订单成功"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Cancel failed"
+msgstr ""
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
@@ -857,6 +864,10 @@ msgstr "领取"
 msgid "Claim airdrop"
 msgstr "领取空投"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Claim Base Rewards"
+msgstr ""
+
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Claim History"
 msgstr "领取历史"
@@ -865,6 +876,15 @@ msgstr "领取历史"
 #: src/components/CookDetail/Dialog/ClaimTotalRewards.tsx
 msgid "Claim Now"
 msgstr "立即领取"
+
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/pages/Earn/components/Trade/Claim.tsx
+msgid "Claim Order Submitted"
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Claim Quote Rewards"
+msgstr ""
 
 #: src/store/transactions/options.ts
 msgid "Claim referral fee"
@@ -879,6 +899,10 @@ msgstr "领取退款"
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Claim Refund Now"
 msgstr "领取退款"
+
+#: src/pages/Earn/components/Trade/Claim.tsx
+msgid "Claim Rewards Canceled"
+msgstr ""
 
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
@@ -1292,6 +1316,26 @@ msgstr "市场即将下架，仅允许平仓操作"
 #: src/pages/Home/components/AccountInfo/index.tsx
 msgid "Deposit"
 msgstr "充值"
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Deposit Base"
+msgstr ""
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Deposit Order Canceled"
+msgstr ""
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Market/components/VaultSelect.tsx
+msgid "Deposit Order Submitted"
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Deposit Quote"
+msgstr ""
 
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
@@ -3225,6 +3269,7 @@ msgstr "链上交易已确认"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+#: src/components/SettingDrawer.tsx
 msgid "On-Chain Transaction History"
 msgstr "链上交易记录"
 
@@ -3395,6 +3440,12 @@ msgstr "订单"
 msgid "Order canceled"
 msgstr "订单已取消"
 
+#: src/components/CookDetail/Dialog/ClaimRewards.tsx
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
+msgid "Order Canceled"
+msgstr ""
+
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/get-order-toast-parts.ts
 msgid "Order Cancelled"
@@ -3430,6 +3481,8 @@ msgstr "订单被拒绝"
 msgid "Order size must be greater than the minimum required"
 msgstr "未达到最小下单数量"
 
+#: src/components/CookDetail/Order/Buy.tsx
+#: src/components/CookDetail/Order/Sell.tsx
 #: src/utils/order/action-toast.tsx
 #: src/utils/order/action-toast.tsx
 msgid "Order Submitted"
@@ -3889,6 +3942,17 @@ msgstr "赎回"
 msgid "Redeem Code"
 msgstr "兑换码"
 
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Redeem Order Canceled"
+msgstr ""
+
+#: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Earn/components/Trade/Redeem.tsx
+msgid "Redeem Order Submitted"
+msgstr ""
+
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReentrancyGuardReentrantCall()"
@@ -4198,7 +4262,9 @@ msgstr "安全注意："
 
 #: src/components/Dialog/HighRiskWarningDialog.tsx
 msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr "安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+msgstr ""
+"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
+""
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
 #: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
@@ -4497,6 +4563,14 @@ msgid "Subscribe"
 msgstr "申购"
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Subscribe Order Canceled"
+msgstr ""
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
+msgid "Subscribe Order Submitted"
+msgstr ""
+
+#: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Subscription Amount"
 msgstr "申购金额"
 
@@ -4518,13 +4592,16 @@ msgid "Successfully canceled the order."
 msgstr "订单取消成功"
 
 #: src/pages/Cook/detail-v2/index.tsx
+#: src/pages/Cook/detail-v2/index.tsx
 msgid "Successfully deposit"
 msgstr "充值成功"
 
 #: src/pages/Market/components/VaultSelect.tsx
+#: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr "充值成功"
 
+#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Successfully redeem"
@@ -5265,6 +5342,14 @@ msgstr "选中时，系统将仅赎回您的常规 LP 份额。"
 msgid "Whitelist"
 msgstr "白名单"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Withdraw Base"
+msgstr ""
+
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "Withdraw Quote"
+msgstr ""
+
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -5801,6 +5886,10 @@ msgstr "提取保证金"
 msgid "搜索结果"
 msgstr "搜索结果"
 
+#: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
+msgid "操作"
+msgstr ""
+
 #: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
 msgid "支付"
 msgstr "支付"
@@ -6143,4 +6232,3 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
-
