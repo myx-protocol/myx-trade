@@ -184,7 +184,7 @@ export const NoTradeable = (props: NoTradeableProps) => {
       {/* description */}
       <p className="text-secondary mt-[8px] text-center text-[12px] leading-[1.3]">
         {isBench
-          ? t`Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online.`
+          ? t`Trading is currently suspended for this market. Please redeem your assets promptly. If you wish to resume trading, you can reactivate the liquidity pool to bring the market back online.`
           : t`The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:`}
       </p>
       <div className="mt-[20px] flex items-center justify-center gap-[12px]">{renderButtons()}</div>
