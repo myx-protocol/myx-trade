@@ -7,7 +7,7 @@ import { MYX_GIT_BOOK_LINK } from '@/config'
 import useGlobalStore from '@/store/globalStore'
 import { TradeMode } from '@/pages/Trade/types'
 import { useSeamlessStore } from '@/store/seamless/createStore'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import LangSwitch from './UI/LangSwitch'
 import { LOCALE_OPTIONS, type AVAILABLE_LOCALES } from '@/locales/locale'
@@ -22,6 +22,7 @@ import { toast } from './UI/Toast'
 import { getAsSupportedChainIdFn } from '@/config/chain'
 import { useLocation } from 'react-router-dom'
 import { RenderAuthorizedTokens } from '@/components/RenderAuthorizedTokens'
+import { TransactionsDialog } from './Header/Operation/Transactions/TransactionsDialog'
 
 const StyledSwitch = styled(Switch)({
   '& .MuiSwitch-switchBase': {
@@ -255,6 +256,8 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
     setShareCollateral,
   } = useGlobalStore()
 
+  const [txDialogOpen, setTxDialogOpen] = useState(false)
+
   const switchActiveLocale = useSwitchActiveLocale()
 
   const handleSwitchLang = useCallback(
@@ -380,6 +383,15 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
               />
             </div>
             <div
+              className="flex cursor-pointer items-center justify-between py-[16px]"
+              onClick={() => setTxDialogOpen(true)}
+            >
+              <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                <Trans>On-Chain Transaction History</Trans>
+              </p>
+              <IconArrowRight className="h-[16px] w-[16px]" />
+            </div>
+            <div
               className="flex cursor-pointer items-center justify-between py-[14px]"
               onClick={() => openUrl(MYX_GIT_BOOK_LINK)}
             >
@@ -398,6 +410,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
           </div>
         </div>
       </div>
+      <TransactionsDialog open={txDialogOpen} onOpenChange={setTxDialogOpen} />
     </Drawer>
   )
 }

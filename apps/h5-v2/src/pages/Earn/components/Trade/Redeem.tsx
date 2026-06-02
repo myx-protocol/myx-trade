@@ -39,6 +39,10 @@ import { showErrorToast } from '@/config/error'
 import { formatNumber } from '@/utils/number.ts'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import { Error } from './Error.tsx'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 const inputStyle = {
   htmlInput: {
@@ -163,6 +167,9 @@ export const Redeem = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleRedeem = useCallback(async () => {
     try {
       setLoading(true)
@@ -180,23 +187,56 @@ export const Redeem = () => {
         return
       }
 
-      await Quote.withdraw({
+      const res = await Quote.withdraw({
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
       })
 
-      toast.success({ title: t`Successfully redeem` })
+      if (res) {
+        addRecord({
+          chainId: +chainId,
+          txId: res.txId,
+          poolId,
+          type: PoolTxType.WithdrawQuote,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: +chainId,
+          poolId: poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully redeem` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Redeem Order Canceled` })
+            }
+          },
+        })
+      }
+
+      toast.success({ title: t`Redeem Order Submitted` })
       setAmount('')
-      await refetch()
-      poolInfoRefetch()
     } catch (error) {
       showErrorToast(error)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, withdrawableLpAmount])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    poolInfoRefetch,
+    withdrawableLpAmount,
+    addRecord,
+    waitExecutionResult,
+    refetch,
+  ])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''

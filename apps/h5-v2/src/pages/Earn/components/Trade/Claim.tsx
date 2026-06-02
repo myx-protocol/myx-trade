@@ -13,6 +13,10 @@ import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/deci
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { showErrorToast } from '@/config/error'
 import { t } from '@lingui/core/macro'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 export const Claim = () => {
   const { quoteLpDetail, poolId, chainId } = useContext(PoolContext)
@@ -46,6 +50,9 @@ export const Claim = () => {
     refetchInterval: 5000,
   })
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleClaim = useCallback(async () => {
     if (!poolId || !account || !reward || Number(reward) < MIN_CLAIM_AMOUNT) return
     try {
@@ -54,15 +61,36 @@ export const Claim = () => {
       if (!checked) {
         return
       }
-      await Quote.claimQuotePoolRebate({ chainId: chainId, poolId: poolId })
-      toast.success({ title: t`Claim successfully claimed` })
-      refetch?.()
+      const res = await Quote.claimQuotePoolRebate({ chainId: chainId, poolId: poolId })
+      if (res) {
+        addRecord({
+          chainId: chainId,
+          txId: res.txId,
+          poolId: poolId,
+          txHash: res.hash,
+          type: PoolTxType.ClaimQuoteRewards,
+        })
+        waitExecutionResult({
+          chainId: chainId,
+          poolId: poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Claim successfully claimed` })
+              refetch?.()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Claim Rewards Canceled` })
+            }
+          },
+        })
+      }
+      toast.success({ title: t`Claim Order Submitted` })
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, poolId, account, refetch, onAction, reward])
+  }, [chainId, poolId, account, refetch, onAction, reward, addRecord, waitExecutionResult])
 
   return (
     <Box className={'mt-[8px] flex flex-col gap-[6px]'}>

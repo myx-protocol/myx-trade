@@ -1,14 +1,18 @@
+type StorageProvider = typeof localStorage | typeof sessionStorage
+
 export class Storage<T = string> {
   private storageKey: string
-  constructor(storageKey: string) {
+  private provider: StorageProvider
+  constructor(storageKey: string, provider = localStorage) {
     this.storageKey = storageKey
+    this.provider = provider
   }
 
   get() {
-    const value = localStorage.getItem(this.storageKey)
+    const value = this.provider.getItem(this.storageKey)
     if (value) {
       try {
-        return JSON.parse(value) as T
+        return JSON.parse(value) as T | null
       } catch (_) {
         // todo
       }
@@ -16,9 +20,9 @@ export class Storage<T = string> {
     return value as T
   }
   set(value: T) {
-    localStorage.setItem(this.storageKey, JSON.stringify(value))
+    this.provider.setItem(this.storageKey, JSON.stringify(value))
   }
   remove() {
-    localStorage.removeItem(this.storageKey)
+    this.provider.removeItem(this.storageKey)
   }
 }

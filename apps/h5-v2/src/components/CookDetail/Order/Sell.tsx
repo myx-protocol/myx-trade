@@ -36,6 +36,10 @@ import { showErrorToast } from '@/config/error'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import Big from 'big.js'
 import { formatNumber } from '@/utils/number.ts'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 const inputStyle = {
   htmlInput: {
     style: {
@@ -159,6 +163,9 @@ export const Sell = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleSell = useCallback(async () => {
     try {
       setLoading(true)
@@ -175,22 +182,53 @@ export const Sell = () => {
         })
         return
       }
-      await Base.withdraw({
+      const res = await Base.withdraw({
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
       })
-      toast.success({ title: t`Successfully sell` })
+      if (res) {
+        addRecord({
+          chainId: +chainId,
+          txId: res.txId,
+          poolId,
+          type: PoolTxType.WithdrawBase,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: +chainId,
+          poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully sell` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Order Canceled` })
+            }
+          },
+        })
+        toast.success({ title: t`Order Submitted` })
+      }
       setAmount('')
-      await refetch()
-      poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, withdrawableLpAmount])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    poolInfoRefetch,
+    withdrawableLpAmount,
+    addRecord,
+    waitExecutionResult,
+  ])
 
   return (
     <div className="mt-[12px]">

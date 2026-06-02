@@ -35,6 +35,9 @@ import { PoolSecurityState } from '@/request/lp/type.ts'
 import { usePoolRiskConfig } from '@/hooks/lp/usePoolDetail.ts'
 import { MYX_CONTACT_SUPPORT } from '@/config'
 import { isNil } from 'lodash-es'
+import { usePoolTxRecordsStore, PoolTxType } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
 
 enum VaultType {
   Base,
@@ -244,6 +247,8 @@ export const VaultSelect = ({
     return type === VaultType.Base ? baseAmount : quoteAmount
   }, [type, baseAmount, quoteAmount])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
   const onConfirm = useCallback(async () => {
     try {
       setIsLoading(true)
@@ -252,29 +257,83 @@ export const VaultSelect = ({
       if (!checked) return
       if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
       if (type === VaultType.Base) {
-        await Base.deposit({
+        const res = await Base.deposit({
           chainId: +chainId,
           poolId,
           amount: Number(amount),
           slippage: Number(slippage),
         })
+        if (res) {
+          addRecord({
+            chainId: +chainId,
+            txId: res.txId,
+            poolId,
+            type: PoolTxType.DepositBase,
+            txHash: res.hash,
+          })
+          waitExecutionResult({
+            chainId: +chainId,
+            poolId: poolId,
+            txId: res.txId,
+            onExecutionResult: (data) => {
+              if (data.state === ExecutionProgressState.Finalized) {
+                toast.success({ title: t`Successfully deposited` })
+                onNext()
+              } else if (data.state === ExecutionProgressState.Cancel) {
+                toast.error({ title: t`Deposit Order Canceled` })
+              }
+            },
+          })
+        }
       } else {
-        await Quote.deposit({
+        const res = await Quote.deposit({
           chainId: +chainId,
           poolId,
           amount: Number(amount),
           slippage: Number(slippage),
         })
+        if (res) {
+          addRecord({
+            chainId: +chainId,
+            txId: res.txId,
+            poolId,
+            type: PoolTxType.DepositQuote,
+            txHash: res.hash,
+          })
+          waitExecutionResult({
+            chainId: +chainId,
+            poolId: poolId,
+            txId: res.txId,
+            onExecutionResult: (data) => {
+              if (data.state === ExecutionProgressState.Finalized) {
+                toast.success({ title: t`Successfully deposited` })
+                onNext()
+              } else if (data.state === ExecutionProgressState.Cancel) {
+                toast.error({ title: t`Deposit Order Canceled` })
+              }
+            },
+          })
+        }
       }
-      toast.success({ title: t`Successfully deposited` })
-      onNext()
+      toast.success({ title: t`Deposit Order Submitted` })
     } catch (e) {
       // todo error
       showErrorToast(e)
     } finally {
       setIsLoading(false)
     }
-  }, [type, poolId, amount, slippage, chainId, curChainId, onAction])
+  }, [
+    type,
+    poolId,
+    amount,
+    slippage,
+    chainId,
+    curChainId,
+    onAction,
+    addRecord,
+    waitExecutionResult,
+    onNext,
+  ])
 
   const isInsufficient = useMemo(() => {
     // console.log(111111)

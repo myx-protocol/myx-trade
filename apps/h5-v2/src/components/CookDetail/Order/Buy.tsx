@@ -29,6 +29,10 @@ import Big from 'big.js'
 import { Error } from '@/pages/Earn/components/Trade/Error'
 import { HighRiskWarningDialog } from '@/components/Dialog/HighRiskWarningDialog.tsx'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 const inputStyle = {
   htmlInput: {
@@ -81,6 +85,9 @@ export const Buy = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleBuy = useCallback(async () => {
     try {
       if (!chainId || !poolId || !amount) return
@@ -92,24 +99,55 @@ export const Buy = () => {
 
       if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
-      await Base.deposit({
+      const res = await Base.deposit({
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
       })
-
-      toast.success({ title: t`Successfully buy` })
+      if (res) {
+        addRecord({
+          chainId,
+          txId: res.txId,
+          poolId,
+          txHash: res.hash,
+          type: PoolTxType.DepositBase,
+        })
+        waitExecutionResult({
+          chainId,
+          poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully buy` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Order Canceled` })
+            }
+          },
+        })
+        toast.success({ title: t`Order Submitted` })
+      }
 
       setAmount('')
-      await refetch()
-      poolInfoRefetch()
     } catch (e) {
       showErrorToast(e)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, refetch, poolInfoRefetch, riskLevelConfig])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    refetch,
+    poolInfoRefetch,
+    riskLevelConfig,
+    addRecord,
+    waitExecutionResult,
+  ])
   return (
     <>
       <Box className="mt-[12px]">

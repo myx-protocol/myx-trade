@@ -30,6 +30,10 @@ import { Change } from '@/components/Change'
 import { ConnectButton } from '@/components/ConnectButton.tsx'
 import { Error } from './Error.tsx'
 import { PoolSecurityState } from '@/request/lp/type.ts'
+import { usePoolTxRecordsStore } from '@/store/poolTxRecords'
+import { useWaitExecutionResult } from '@/hooks/execution/useWaitExecutionResult'
+import { ExecutionProgressState } from '@/hooks/execution/Progress'
+import { PoolTxType } from '@/store/poolTxRecords'
 
 const inputStyle = {
   htmlInput: {
@@ -84,6 +88,9 @@ export const Subscribe = () => {
     setAmount(floatValue?.toString() || '')
   }, [])
 
+  const { addRecord } = usePoolTxRecordsStore()
+  const { waitExecutionResult } = useWaitExecutionResult()
+
   const onHandleSubscribe = useCallback(async () => {
     try {
       setLoading(true)
@@ -93,23 +100,55 @@ export const Subscribe = () => {
 
       if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
 
-      await Quote.deposit({
+      const res = await Quote.deposit({
         chainId: +chainId,
         poolId,
         amount: Number(amount),
         slippage: Number(slippage),
       })
-      toast.success({ title: t`Successfully subscribe` })
+      if (res) {
+        addRecord({
+          chainId: +chainId,
+          txId: res.txId,
+          poolId,
+          type: PoolTxType.DepositQuote,
+          txHash: res.hash,
+        })
+        waitExecutionResult({
+          chainId: +chainId,
+          poolId: poolId,
+          txId: res.txId,
+          onExecutionResult: (data) => {
+            if (data.state === ExecutionProgressState.Finalized) {
+              toast.success({ title: t`Successfully subscribe` })
+              refetch?.()
+              poolInfoRefetch()
+            } else if (data.state === ExecutionProgressState.Cancel) {
+              toast.error({ title: t`Subscribe Order Canceled` })
+            }
+          },
+        })
+      }
+      toast.success({ title: t`Subscribe Order Submitted` })
       setAmount('')
-      await refetch()
-      poolInfoRefetch()
     } catch (error) {
       console.log(error, 'error')
       showErrorToast(error)
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, riskLevelConfig])
+  }, [
+    chainId,
+    amount,
+    slippage,
+    poolId,
+    onAction,
+    poolInfoRefetch,
+    riskLevelConfig,
+    addRecord,
+    waitExecutionResult,
+    refetch,
+  ])
   return (
     <>
       <Box className={'mt-[8px] flex flex-col gap-[6px]'}>
