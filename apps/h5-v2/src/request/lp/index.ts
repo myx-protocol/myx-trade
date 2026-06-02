@@ -18,6 +18,12 @@ import type {
   LpAssetsResponse,
   MarketPoolStateDataResponse,
   MarketPoolRiskLevelConfigResponse,
+  MarketPoolPriceResponse,
+  LineChartsRequestParams,
+  TvlHistoryResponse,
+  ExchangeRateHistoryResponse,
+  RiskGlobalConfigResponse,
+  PoolBoostResponse,
 } from '@/request/lp/type.ts'
 import { baseUrl, DEFAULT_LIMIT, http } from '@/request'
 import type { ChainId } from '@/config/chain.ts'
@@ -205,6 +211,8 @@ type SymbolParams = { symbol: string; chainId?: number }
 
 export type MarketDataSearchParams = AssetParams | SymbolParams
 
+export type MarketDataFastSearchParams = { input: string; chains: number[] }
+
 export const getMarketData = async (params: MarketDataSearchParams) => {
   const query = {
     asset: 'asset' in params ? params.asset : undefined,
@@ -225,11 +233,72 @@ export const getMarketPoolStateData = async (
   return await http.post(`${baseUrl}/openapi/gateway/scan/market/base_token_state`, params)
 }
 
+export const getRiskGlobalConfig = async (): Promise<RiskGlobalConfigResponse> => {
+  return await http.get(`${baseUrl}/openapi/gateway/risk/global_configs`)
+}
 export const getPoolRiskLevelConfig = async (
   poolId: string,
   chainId: number,
 ): Promise<MarketPoolRiskLevelConfigResponse> => {
   return await http.get(
     `${baseUrl}/openapi/gateway/risk/market_pool/level_config?poolId=${poolId}&chainId=${chainId}`,
+  )
+}
+
+export const getMarketPoolPrice = async (
+  chainId: number,
+  poolId: string,
+): Promise<MarketPoolPriceResponse> => {
+  const query = {
+    chainId,
+    poolId,
+  }
+  return await http.get(`${baseUrl}/openapi/gateway/scan/mobula/base-price${addQueryParams(query)}`)
+}
+
+export const getMarketDataSearch = async ({ input, chains = [] }: MarketDataFastSearchParams) => {
+  const query = {
+    input: input,
+    filters: chains.length
+      ? JSON.stringify({
+          blockchains: chains.join(','),
+        })
+      : undefined,
+    limit: 10,
+  }
+  return await http
+    .get(`${baseUrl}/openapi/gateway/scan/mobula/fastSearch${addQueryParams(query)}`)
+    .then((result) => {
+      console.log('result', JSON.parse(result.data))
+      return JSON.parse(result.data)
+    })
+}
+
+/**
+ * tvl 折线图
+ */
+export const getTvlLineCharts = async (params: LineChartsRequestParams) => {
+  return await http.get<TvlHistoryResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/tvl-history`,
+    params,
+  )
+}
+
+/**
+ * exchange rate 兑换率折线图
+ */
+export const getExchangeRateLineCharts = async (params: LineChartsRequestParams) => {
+  return await http.get<ExchangeRateHistoryResponse>(
+    `${baseUrl}/openapi/gateway/scan/market/exchange-rate-history`,
+    params,
+  )
+}
+
+export const getPoolBoostInfo = async (
+  chainId: number,
+  poolId: string,
+): Promise<PoolBoostResponse> => {
+  return await http.get(
+    `${baseUrl}/openapi/gateway/scan/market_pool/boost?poolId=${poolId}&chainId=${chainId}`,
   )
 }

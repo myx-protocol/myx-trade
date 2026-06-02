@@ -21,6 +21,7 @@ import { t } from '@lingui/core/macro'
 import { toast } from './UI/Toast'
 import { getAsSupportedChainIdFn } from '@/config/chain'
 import { useLocation } from 'react-router-dom'
+import { RenderAuthorizedTokens } from '@/components/RenderAuthorizedTokens'
 
 const StyledSwitch = styled(Switch)({
   '& .MuiSwitch-switchBase': {
@@ -37,9 +38,11 @@ interface SettingDrawerProps {
   onOpenChange: (open: boolean) => void
 }
 
-const RenderAuthButton = () => {
+export const RenderAuthButton = () => {
   const { activeSeamlessAddress, seamlessAccountList, setSeamlessAccountList } = useSeamlessStore()
   const { chainId: currChainId } = useWalletConnection()
+  const { symbolInfo } = useGlobalStore()
+
   const chainId = getAsSupportedChainIdFn(currChainId)
   const { client } = useMyxSdkClient(chainId)
   const isAuthorized = useMemo(() => {
@@ -50,15 +53,14 @@ const RenderAuthButton = () => {
       return false
     }
 
-    return activeSeamlessAccount.authorized[chainId as number]?.authorized || false
+    return activeSeamlessAccount.authorized[symbolInfo?.poolId as string]?.authorized || false
   }, [seamlessAccountList, activeSeamlessAddress, chainId])
 
   if (isAuthorized) {
     return (
       <span
-        className="text-[14px] leading-[14px] font-medium text-[#848E9C]"
+        className="cursor-pointer text-[14px] leading-[14px] font-medium text-[#848E9C]"
         onClick={async () => {
-          console.log('onClick revoke', activeSeamlessAddress)
           const seamlessAccount = seamlessAccountList.find(
             (item) => item.masterAddress === activeSeamlessAddress,
           )
@@ -66,11 +68,11 @@ const RenderAuthButton = () => {
           if (!seamlessAccount) {
             return
           }
-
           const authRs = await client?.seamless.authorizeSeamlessAccount({
             approve: false,
             seamlessAddress: seamlessAccount.seamlessAddress,
             chainId: chainId as number,
+            forwardFeeToken: symbolInfo?.quoteToken as string,
           })
 
           if (authRs?.code === 0) {
@@ -80,7 +82,7 @@ const RenderAuthButton = () => {
             const newSeamlessAccount = {
               ...seamlessAccountList[idx],
               authorized: {
-                [chainId as number]: {
+                [symbolInfo?.poolId as string]: {
                   authorized: false,
                 },
               },
@@ -90,7 +92,7 @@ const RenderAuthButton = () => {
             toast.success({
               title: t`Revoke seamless account success`,
             })
-          } else {
+          } else if (authRs?.message !== 'User Rejected') {
             toast.error({
               title: t`Revoke seamless account failed`,
             })
@@ -103,7 +105,7 @@ const RenderAuthButton = () => {
   }
   return (
     <span
-      className="text-[14px] leading-[14px] font-medium text-[#00E3A5]"
+      className="cursor-pointer text-[14px] leading-[14px] font-medium text-[#00E3A5]"
       onClick={async () => {
         const seamlessAccount = seamlessAccountList.find(
           (item) => item.masterAddress === activeSeamlessAddress,
@@ -116,6 +118,7 @@ const RenderAuthButton = () => {
           approve: true,
           seamlessAddress: seamlessAccount.seamlessAddress,
           chainId: chainId as number,
+          forwardFeeToken: symbolInfo?.quoteToken as string,
         })
 
         if (authRs?.code === 0) {
@@ -126,21 +129,14 @@ const RenderAuthButton = () => {
           const newSeamlessAccount = {
             ...seamlessAccountList[idx],
             authorized: {
-              [chainId as number]: {
+              [symbolInfo?.poolId as string]: {
                 authorized: true,
               },
             },
           }
-          seamlessAccountList[idx] = newSeamlessAccount
 
+          seamlessAccountList[idx] = newSeamlessAccount
           setSeamlessAccountList([...seamlessAccountList])
-          toast.success({
-            title: t`Authorize seamless account success`,
-          })
-        } else {
-          toast.error({
-            title: t`Authorize seamless account failed`,
-          })
         }
       }}
     >
@@ -149,21 +145,114 @@ const RenderAuthButton = () => {
   )
 }
 
-export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
+const TradeSetting = ({ onClose }: { onClose: () => void }) => {
+  const { pathname } = useLocation()
+  const { isConnected } = useWalletConnection()
+  const { seamlessAccountList } = useSeamlessStore()
+  const isTradePage = pathname.includes('/trade')
+  const hasSeamlessAccount = seamlessAccountList.length > 0
+
   const {
     tradeMode,
-    setResetSeamlessPasswordDialogOpen,
+    setImportSeamlessKeyDialogOpen,
+    setResetPasswordDialogOpen,
     setExportSeamlessInfoDialogOpen,
+    setAccountDialogOpen,
+  } = useGlobalStore()
+
+  return (
+    <>
+      {isTradePage && (
+        <div className="px-[16px]">
+          <div className="mt-[24px] mb-[40px] h-[1px] w-full bg-[#31333D]"></div>
+          <div className="mb-[8px] text-[14px] font-medium text-[#848E9C]">
+            <Trans>Trading Setting</Trans>
+          </div>
+          {(isConnected || hasSeamlessAccount) && (
+            <div
+              className="flex cursor-pointer items-center justify-between py-[16px]"
+              onClick={() => {
+                setAccountDialogOpen(true)
+              }}
+            >
+              <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                <Trans>Account Mode</Trans>
+              </p>
+              <p className="flex items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                <span>
+                  {tradeMode === TradeMode.Classic ? (
+                    <Trans>Classic</Trans>
+                  ) : (
+                    <Trans>Seamless</Trans>
+                  )}
+                </span>
+                <IconArrowRight className="h-[16px] w-[16px]" />
+              </p>
+            </div>
+          )}
+          {!isConnected && !hasSeamlessAccount && (
+            <div
+              className="flex cursor-pointer items-center justify-between py-[16px]"
+              onClick={() => setImportSeamlessKeyDialogOpen(true)}
+            >
+              <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                <Trans>Import Seamless Key</Trans>
+              </p>
+              <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                <IconArrowRight className="h-[16px] w-[16px]" />
+              </p>
+            </div>
+          )}
+          {tradeMode === TradeMode.Seamless && (
+            <>
+              <div className="flex cursor-pointer items-center justify-between py-[16px]">
+                <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                  <Trans>Authorized Tokens</Trans>
+                </p>
+                <RenderAuthorizedTokens onClose={() => onClose()} />
+              </div>
+              {isConnected && (
+                <div
+                  className="flex cursor-pointer items-center justify-between py-[16px]"
+                  onClick={() => setResetPasswordDialogOpen(true)}
+                >
+                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                    <Trans>Reset Password</Trans>
+                  </p>
+                  <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                    <IconArrowRight className="h-[16px] w-[16px]" />
+                  </p>
+                </div>
+              )}
+              <div
+                className="flex cursor-pointer items-center justify-between py-[16px]"
+                onClick={() => setExportSeamlessInfoDialogOpen(true)}
+              >
+                <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+                  <Trans>Export Seamless Key</Trans>
+                </p>
+                <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
+                  <IconArrowRight className="h-[16px] w-[16px]" />
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  )
+}
+
+export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
+  const {
     setVipRedeemDialogOpen,
     activeLocale,
-    setAccountDialogOpen,
-    setImportSeamlessKeyDialogOpen,
-  } = useGlobalStore()
-  const {
     showPlaceOrderConfirmDialog,
     setShowPlaceOrderConfirmDialog,
     showCloseOrderConfirmDialog,
     setShowCloseOrderConfirmDialog,
+    shareCollateral,
+    setShareCollateral,
   } = useGlobalStore()
 
   const switchActiveLocale = useSwitchActiveLocale()
@@ -183,9 +272,7 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
   })
 
   const { amountUnit, setAmountUnit } = useTradePanelStore()
-  const { pathname } = useLocation()
-  const isTradePage = pathname.includes('/trade')
-  const isPricePage = pathname.includes('/price')
+
   return (
     <Drawer
       anchor="right"
@@ -245,106 +332,20 @@ export const SettingDrawer = ({ open, onOpenChange }: SettingDrawerProps) => {
               }}
             />
           </div>
+          <div className="flex items-center justify-between py-[16px]">
+            <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
+              <Trans>仓位保证金共享</Trans>
+            </p>
+            <Switch
+              checked={shareCollateral}
+              onChange={(_, checked) => {
+                setShareCollateral(checked)
+              }}
+            />
+          </div>
         </div>
-
         {/* split line */}
-        <>
-          {(isTradePage || isPricePage) && (
-            <>
-              <div className="my-[8px] h-[1px] w-full bg-[#3E3F47]"></div>
-
-              <div className="px-[16px] pt-[16px]">
-                {/* trade settings */}
-                <div className="mb-[10px] text-[14px] font-medium text-[#848E9C]">
-                  <Trans>Trading Setting</Trans>
-                </div>
-                {/* account mode setting*/}
-                <div
-                  className="flex cursor-pointer items-center justify-between py-[14px]"
-                  onClick={() => {
-                    onOpenChange(false)
-                    setAccountDialogOpen(true)
-                  }}
-                >
-                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                    <Trans>Account Mode</Trans>
-                  </p>
-                  <p className="flex items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                    <LangSwitch<TradeMode>
-                      value={tradeMode}
-                      onChange={() => {}}
-                      options={[
-                        {
-                          label: t`Classic`,
-                          value: TradeMode.Classic,
-                        },
-                        {
-                          label: t`Seamless`,
-                          value: TradeMode.Seamless,
-                        },
-                      ]}
-                    />
-                    {/* <IconArrowRight className="h-[16px] w-[16px]" /> */}
-                  </p>
-                </div>
-                <div
-                  className="flex cursor-pointer items-center justify-between py-[16px]"
-                  onClick={() => setImportSeamlessKeyDialogOpen(true)}
-                >
-                  <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                    <Trans>Import Seamless Key</Trans>
-                  </p>
-                  <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                    <IconArrowRight className="h-[16px] w-[16px]" />
-                  </p>
-                </div>
-                {tradeMode === TradeMode.Seamless && (
-                  <>
-                    <div className="flex items-center justify-between py-[14px]">
-                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                        <Trans>Seamless Trading</Trans>
-                      </p>
-                      <div className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                        <div className="flex items-center">
-                          <RenderAuthButton />
-                          <IconArrowRight className="h-[16px] w-[16px]" />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="flex cursor-pointer items-center justify-between py-[14px]"
-                      onClick={() => {
-                        onOpenChange(false)
-                        setResetSeamlessPasswordDialogOpen(true)
-                      }}
-                    >
-                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                        <Trans>Reset Password</Trans>
-                      </p>
-                      <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                        <IconArrowRight className="h-[16px] w-[16px]" />
-                      </p>
-                    </div>
-                    <div
-                      className="flex cursor-pointer items-center justify-between py-[14px]"
-                      onClick={() => {
-                        onOpenChange(false)
-                        setExportSeamlessInfoDialogOpen(true)
-                      }}
-                    >
-                      <p className="text-[14px] leading-[14px] font-medium text-[#FFFFFF]">
-                        <Trans>Export Seamless Key</Trans>
-                      </p>
-                      <p className="flex cursor-pointer items-center text-[14px] leading-[14px] font-medium text-[#848E9C]">
-                        <IconArrowRight className="h-[16px] w-[16px]" />
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </>
-          )}
-        </>
+        <TradeSetting onClose={() => onOpenChange(false)} />
 
         {/* split line */}
         <div className="my-[8px] h-[1px] w-full bg-[#3E3F47]">

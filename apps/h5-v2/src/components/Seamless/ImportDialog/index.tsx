@@ -13,25 +13,51 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import CompleteIcon from '@/components/UI/Icon/CompleteIcon'
 import deleteIcon from '@/assets/icon/commons/delete.svg'
+import { useImportSeamlessKey } from '@/hooks/seamless/use-import-seamless-key'
+import { TradeMode } from '@/pages/Trade/types'
+import { showErrorToast } from '@/config/error'
+import type { SignerLike } from '@myx-trade/sdk'
 
 export const ImportDialog = () => {
-  const { importSeamlessKeyDialogOpen, setImportSeamlessKeyDialogOpen, symbolInfo } =
-    useGlobalStore()
+  const {
+    importSeamlessKeyDialogOpen,
+    setImportSeamlessKeyDialogOpen,
+    symbolInfo,
+    setTradeMode,
+    poolList,
+  } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
   const [seamlessKey, setSeamlessKey] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
-  const { seamlessAccountList, setSeamlessAccountList, setActiveSeamlessAddress } =
-    useSeamlessStore()
+  const {
+    seamlessAccountList,
+    setSeamlessAccountList,
+    setActiveSeamlessAddress,
+    setActiveSeamlessWallet,
+  } = useSeamlessStore()
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { importSeamlessKey } = useImportSeamlessKey()
 
   const handleImportSeamlessKey = useCallback(async () => {
+    if (
+      password.length < 8 ||
+      password.length > 128 ||
+      !/\d/.test(password) ||
+      !/[A-Z]/.test(password)
+    ) {
+      toast.error({
+        title: t`Invalid password`,
+      })
+      return
+    }
     try {
       setLoading(true)
-      const rs = await client?.seamless.importSeamlessPrivateKey({
-        privateKey: seamlessKey,
+      const rs = await importSeamlessKey({
+        seamlessKey: seamlessKey as `0x${string}`,
         password: password,
-        chainId: symbolInfo?.chainId as number,
+        chainId: effectivePool?.chainId as number,
       })
 
       if (rs?.code === 0) {
@@ -39,42 +65,43 @@ export const ImportDialog = () => {
           masterAddress: rs.data?.masterAddress || '',
           seamlessAddress: rs.data?.seamlessAccount || '',
           apiKey: rs.data?.apiKey || '',
-          authorized: {
-            [symbolInfo?.chainId as number]: {
-              authorized: rs?.data?.authorized || false,
-            },
-          },
+          authorized: {},
         }
 
-        if (seamlessAccountList.length === 0) {
-          setSeamlessAccountList([seamlessAccount])
-        } else {
-          const idx = seamlessAccountList.findIndex(
-            (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
-          )
+        setActiveSeamlessWallet(rs.data?.seamlessWallet)
+        const nextSeamlessAccountList =
+          seamlessAccountList.length === 0
+            ? [seamlessAccount]
+            : (() => {
+                const nextList = [...seamlessAccountList]
+                const idx = nextList.findIndex(
+                  (item) => item.masterAddress === seamlessAccount.masterAddress,
+                )
 
-          if (idx !== -1) {
-            seamlessAccountList[idx] = { ...seamlessAccount }
-          } else {
-            seamlessAccountList.push(seamlessAccount)
-          }
-        }
+                if (idx !== -1) {
+                  nextList[idx] = { ...seamlessAccount }
+                } else {
+                  nextList.push(seamlessAccount)
+                }
 
-        setSeamlessAccountList([...seamlessAccountList])
+                return nextList
+              })()
 
+        setSeamlessAccountList(nextSeamlessAccountList)
+        setActiveSeamlessAddress(seamlessAccount.masterAddress)
+        client?.auth({
+          signer: rs.data?.seamlessWallet as unknown as SignerLike,
+        })
+        setTradeMode(TradeMode.Seamless)
         toast.success({
           title: t`Import seamless key success`,
         })
         setImportSeamlessKeyDialogOpen(false)
       } else {
-        toast.error({
-          title: client?.utils.formatErrorMessage(rs),
-        })
+        showErrorToast(client?.utils.formatErrorMessage(rs))
       }
     } catch (error) {
-      toast.error({
-        title: t`${client?.utils.formatErrorMessage(error)}`,
-      })
+      showErrorToast(error)
     } finally {
       setLoading(false)
     }
@@ -87,6 +114,8 @@ export const ImportDialog = () => {
     seamlessAccountList,
     setSeamlessAccountList,
     setActiveSeamlessAddress,
+    setActiveSeamlessWallet,
+    setTradeMode,
   ])
 
   return (

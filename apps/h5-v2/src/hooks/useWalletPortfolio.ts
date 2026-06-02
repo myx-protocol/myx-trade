@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getAccountHoldings } from '@/request'
 import { type ChainId, getSupportedChainIdsByEnv } from '@/config/chain.ts'
 import { useState } from 'react'
+import { NATIVE_TOKEN } from '@/constant/token.ts'
 
 export interface Asset {
   chainId: number
@@ -20,7 +21,12 @@ export interface Asset {
 export const useWalletPortfolio = () => {
   const { address: account } = useWalletConnection()
   const [chainId, setChainId] = useState<ChainId | undefined>(undefined)
-  const { data: walletAssets, isLoading } = useQuery({
+  const {
+    data: walletAssets,
+    isLoading,
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: [{ key: 'getWalletAssets' }, chainId, account],
     enabled: !!account,
     queryFn: async () => {
@@ -36,7 +42,7 @@ export const useWalletPortfolio = () => {
           .map((item: any) => {
             console.log(item)
             const address = item.asset.contracts?.[0]
-            if (!address) {
+            if (!address || address === NATIVE_TOKEN) {
               return undefined
             }
             const asset = item.contracts_balances.find(
@@ -53,11 +59,10 @@ export const useWalletPortfolio = () => {
               change: item.price_change_24h * 100,
               balance: asset.balance.toString(),
             } as Asset
-            console.log(token)
             return token
           })
           .filter((asset?: Asset) => !!asset)
-      } catch (error) {
+      } catch {
         return [] as Asset[]
       }
     },
@@ -66,6 +71,8 @@ export const useWalletPortfolio = () => {
   return {
     walletAssets,
     isLoading,
+    isPending,
+    isError,
     chainId,
     setChainId,
   }

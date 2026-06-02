@@ -20,6 +20,11 @@ interface PoolConfig {
     minOrderSizeInUsd: number
     name: string
     slip: number
+    maxPriceDeviation: number
+    profitWindowSize: number
+    fundingGrowthG1: number
+    fundingGrowthG2: number
+    genesisFeeRate: number
   }
   levelName: string
 }
@@ -29,7 +34,7 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
   const { chainId: currChainId } = useWalletConnection()
   const chainId = getAsSupportedChainIdFn(currChainId)
 
-  const { data: poolConfig } = useSWR(
+  const { data: poolConfig, isLoading } = useSWR(
     (targetPoolId || symbolInfo?.poolId) && (targetChainId || symbolInfo?.chainId)
       ? [
           'getPoolLevelConfig',
@@ -70,5 +75,6 @@ export const useGetPoolConfig = (targetPoolId?: string, targetChainId?: number) 
 
   return {
     poolConfig: poolConfig as PoolConfig | null,
+    isLoading: isLoading,
   }
 }

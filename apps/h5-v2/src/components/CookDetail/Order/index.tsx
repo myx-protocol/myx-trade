@@ -9,7 +9,7 @@ export const Order = () => {
   const { orderSide } = useCookOrderStore()
   if (orderSide === CookOrderSideEnum.Buy) {
     return (
-      <div className="p-[20px] leading-[1]">
+      <div className="mt-[12px] px-[16px] leading-[1]">
         <OrderSide />
         <Buy />
         <OrderTips />
@@ -19,7 +19,7 @@ export const Order = () => {
 
   if (orderSide === CookOrderSideEnum.Sell) {
     return (
-      <div className="p-[20px] leading-[1]">
+      <div className="mt-[12px] px-[16px] leading-[1]">
         <OrderSide />
         <Sell />
         <OrderTips />

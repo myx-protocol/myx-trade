@@ -17,8 +17,8 @@ export const MAINNET_CHAIN_IDS = [
 
 export const PROD_ENV_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
-  ChainId.LINEA_MAINNET,
-  ChainId.ARB_MAINNET,
+  // ChainId.LINEA_MAINNET,
+  // ChainId.ARB_MAINNET,
 ] as const
 export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 
@@ -33,7 +33,7 @@ export const OKX_BRIDGE_CHAIN_IDS = [ChainId.LINEA_MAINNET, ChainId.ARB_MAINNET]
 export const DEV_ENV_CHAIN_IDS = [
   ChainId.LINEA_SEPOLIA,
   ChainId.ARB_TESTNET,
-  // ChainId.BSC_TESTNET,
+  ChainId.BSC_TESTNET,
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 

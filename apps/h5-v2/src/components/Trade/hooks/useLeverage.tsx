@@ -21,6 +21,10 @@ export const useLeverage = (poolId?: string) => {
     defaultLeverage = 1
   }
 
-  const leverage = leverageMap[chainId as ChainId]?.[poolId ?? '']?.leverage ?? defaultLeverage
+  const savedLeverage = leverageMap[chainId as ChainId]?.[poolId ?? '']?.leverage ?? defaultLeverage
+
+  // 确保 leverage 不超过当前 maxLeverage
+  const leverage = Math.min(savedLeverage, maxLeverage)
+
   return leverage
 }

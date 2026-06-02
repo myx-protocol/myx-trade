@@ -1,5 +1,4 @@
-import { Box } from '@mui/material'
-import { SubTabBar } from '@/components/SubTabBar.tsx'
+import { styled, Tabs, Tab } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { VaultType } from '@/pages/Earn/type.ts'
 
@@ -14,23 +13,43 @@ const Items = [
   },
 ]
 
+const StyledTabs = styled(Tabs)({
+  minHeight: 'auto',
+  borderBottom: '1px solid #202129',
+  padding: '0 16px',
+  '& .MuiTabs-list': {
+    gap: '20px',
+  },
+  '& .MuiTabs-indicator': {
+    display: 'none',
+  },
+})
+
+const StyledTab = styled(Tab)({
+  padding: '14px 0',
+  fontSize: '14px',
+  fontWeight: '500',
+  lineHeight: '1',
+  minWidth: 0,
+  color: '#848E9C',
+  '&.Mui-selected': {
+    color: '#fff',
+    fontWeight: '700',
+  },
+})
+
 export const TabBar = ({
   value,
-  className = '',
   setValueType,
 }: {
   value: VaultType
-  className?: string
   setValueType: (value: VaultType) => void
 }) => {
   return (
-    <Box className={'flex w-full justify-center'}>
-      <SubTabBar
-        items={Items}
-        value={value}
-        className={`flex-1 ${className}`}
-        handleChange={(_value) => setValueType(_value as VaultType)}
-      />
-    </Box>
+    <StyledTabs value={value} onChange={(_, value) => setValueType(value as VaultType)}>
+      {Items.map((item) => (
+        <StyledTab key={item.value} label={item.label} value={item.value} disableRipple />
+      ))}
+    </StyledTabs>
   )
 }

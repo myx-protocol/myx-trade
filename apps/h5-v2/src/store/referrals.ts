@@ -155,10 +155,10 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRefBonus: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingBonus: true })
       try {
-        const res = await api.getUserReferralStatistics({ accessToken, account })
+        const res = await api.getUserReferralStatistics({ accessToken: accessToken || '', account })
         const data = res.data
         // Map new API response to RefBonusInfo
         // Note: availableAmount is not directly in UserReferralStatisticsType,
@@ -185,7 +185,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRefBonusInfoByChain: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingChainBonus: true })
       try {
         const res = await api.getReferralClaimCountByChain({ accessToken, account })
@@ -218,7 +218,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRecentClaims: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingClaims: true })
       try {
         const res = await api.getClaimNoticeList({ limit: 20 }, { accessToken, account })
@@ -239,7 +239,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRefConfig: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingConfig: true })
       try {
         const res: any = await api.getReferralConfig({ accessToken, account })
@@ -253,7 +253,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchInvitationCodes: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingCodes: true })
       try {
         const res = await api.listInvitationCodes({ accessToken, account })
@@ -273,7 +273,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRatioInfo: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingRatio: true })
       try {
         const res = await api.getReferralRatio({ accessToken, account })
@@ -301,7 +301,7 @@ export const useReferralStore = create<ReferralState>()(
 
     fetchRefReferrerInfo: async () => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       set({ isLoadingReferrer: true })
       try {
         const res = await api.getReferrerInfo({ accessToken, account })
@@ -315,7 +315,7 @@ export const useReferralStore = create<ReferralState>()(
 
     createInvitationCode: async (payload) => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       try {
         await api.createInvitationCode(payload, { accessToken, account })
         await get().fetchInvitationCodes()
@@ -327,7 +327,7 @@ export const useReferralStore = create<ReferralState>()(
 
     setDefaultInvitationCode: async (code) => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       try {
         await api.setDefaultInvitationCode({ code }, { accessToken, account })
         await get().fetchInvitationCodes()
@@ -339,7 +339,7 @@ export const useReferralStore = create<ReferralState>()(
 
     updateInvitationNote: async (code, note) => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       try {
         await api.updateInvitationNote(code, note, { accessToken, account })
         await get().fetchInvitationCodes()
@@ -351,7 +351,7 @@ export const useReferralStore = create<ReferralState>()(
 
     bindRelationshipByCode: async (code) => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return
+      if (!account) return
       try {
         const res = await api.bindRelationshipByCode({ code }, { accessToken, account })
         if (res.code === 9200) {
@@ -366,7 +366,7 @@ export const useReferralStore = create<ReferralState>()(
 
     getInvitationRelationships: async (params) => {
       const { accessToken, account } = get()
-      if (!accessToken || !account) return []
+      if (!account) return []
       try {
         const res = await api.getUserReferralData(params, { accessToken, account })
         return res.data || []

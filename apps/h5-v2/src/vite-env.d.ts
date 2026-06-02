@@ -51,4 +51,19 @@ declare global {
   }
 }
 
+declare module 'react' {
+  interface HTMLAttributes<T> {
+    /**
+     * Custom analytics identifier for tracking user interactions.
+     * Used for event tracking and analytics purposes.
+     */
+    'data-analytics'?: string
+  }
+}
+
+export interface AnalyticsProps {
+  id?: string
+  dataAnalytics?: string
+}
+
 export {}

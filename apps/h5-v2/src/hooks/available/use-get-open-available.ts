@@ -11,20 +11,59 @@ import { useMemo, useRef } from 'react'
 import { displayAmount } from '@/utils/number'
 import { useGetUserTradingFeeRate } from '../calculate/use-get-trading-fee'
 import useGlobalStore from '@/store/globalStore'
+import { TradeMode } from '@/pages/Trade/types'
 import { WINDOW_CAPS_DECIMALS } from '@/constant/decimals'
+import useSWR from 'swr'
+import { useGetNetworkFee } from '../calculate/use-get-liq-price'
+import { Direction, OrderType } from '@myx-trade/sdk'
+import { useGetPositionList } from '../position/use-get-position-list'
+import { useGetPositionAvailableMargin } from './use-get-position-available-margin'
+import {
+  getOpenOrderNetworkFeeReserveQuote,
+  subtractReserveFromAvailable,
+} from '@/utils/trade/open-order-network-fee-reserve'
 
 export const useGetOpenAvailable = () => {
-  const { symbolInfo, poolConfig } = useGlobalStore()
+  const { symbolInfo, poolConfig, shareCollateral, tradeMode } = useGlobalStore()
   const { data: poolLiquidityInfo } = usePoolLiquidityInfo()
+  const { getNetworkFee } = useGetNetworkFee({
+    poolId: symbolInfo?.poolId as string,
+    chainId: symbolInfo?.chainId ?? 0,
+  })
+
   const leverage = useLeverage(symbolInfo?.poolId)
-  const { autoMarginMode, collateralAmount, price } = useTradePanelStore()
-  const fundingFeeRate = useGetUserTradingFeeRate(
+  const { autoMarginMode, collateralAmount, price, orderType, tpSlOpen, tpValue, slValue } =
+    useTradePanelStore()
+  const tradingFeeRate = useGetUserTradingFeeRate(
     symbolInfo?.chainId ?? 0,
     poolConfig?.levelConfig?.assetClass ?? 0,
     poolConfig as PoolConfig,
   )
+
+  const { data: networkFee } = useSWR(
+    {
+      key: 'getNetworkFee',
+      poolId: symbolInfo?.poolId as string,
+      chainId: symbolInfo?.chainId ?? 0,
+    },
+    async () => await getNetworkFee(),
+  )
+
   const { liquidityInfo } = useGetLiquidityInfo()
   const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
+  const positionList = useGetPositionList()
+
+  const longPosition = positionList?.find(
+    (position: any) =>
+      position.direction === Direction.LONG && position.poolId === symbolInfo?.poolId,
+  )
+  const shortPosition = positionList?.find(
+    (position: any) =>
+      position.direction === Direction.SHORT && position.poolId === symbolInfo?.poolId,
+  )
+
+  const { longPositionAvailableMargin, shortPositionAvailableMargin } =
+    useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
 
   // 缓存所有异步数据源，避免 refetch 期间的闪烁
   // 只有当新数据有效且非零时才更新缓存
@@ -58,7 +97,7 @@ export const useGetOpenAvailable = () => {
   // 合并所有计算逻辑到一个 useMemo 中，减少中间状态
   return useMemo(() => {
     // 1. 计算基础参数
-    const safePrice = !price || parseBigNumber(price ?? '1').eq(0) ? '1' : price
+    const safePrice = !price || parseBigNumber(price).eq(0) ? '1' : price
     const slipValue = Number(poolConfig?.levelConfig?.slip ?? 1)
     const openSlippage =
       getSlippage({
@@ -67,16 +106,27 @@ export const useGetOpenAvailable = () => {
         type: SlippageTypeEnum.OPEN,
       }) ?? 1
 
-    // 2. 计算可用保证金总值（使用缓存的稳定值）
-    const availableMarginOriginal = stableAccountAssets?.availableMargin?.toString() ?? '0'
-    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(fundingFeeRate))
+    const feeRatio = parseBigNumber(leverage).mul(parseBigNumber(tradingFeeRate))
     const adjustedRatio = parseBigNumber(1).minus(feeRatio)
-    const availableMargin = parseBigNumber(availableMarginOriginal).mul(adjustedRatio).toString()
 
-    const collateralAmountValue = autoMarginMode
-      ? parseBigNumber(availableMargin).mul(parseBigNumber(leverage)).toString()
-      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
-
+    // 2. 计算可用保证金总值（使用缓存的稳定值）
+    const availableMarginRaw = stableAccountAssets?.availableMargin?.toString() ?? '0'
+    const networkFeeReserve = getOpenOrderNetworkFeeReserveQuote(
+      parseBigNumber(networkFee ?? 0).toString(),
+      tpSlOpen,
+      tpValue,
+      slValue,
+    )
+    // 自动保证金：先扣 network fee 预留（与 submit 中 totalNetworkFee 一致）；手动在 MarginAmount 里限制
+    const forwardFeeReserve = tradeMode === TradeMode.Seamless ? '2' : '0'
+    const accountAvailableForAutoOpen = subtractReserveFromAvailable(
+      subtractReserveFromAvailable(availableMarginRaw, networkFeeReserve),
+      forwardFeeReserve,
+    )
+    const originCollateralAmountValue = autoMarginMode
+      ? parseBigNumber(accountAvailableForAutoOpen).mul(parseBigNumber(leverage))
+      : parseBigNumber(collateralAmount).mul(parseBigNumber(leverage))
+    const collateralAmountValue = originCollateralAmountValue.mul(adjustedRatio).toString()
     // 3. 计算滑点配置限额（maxOpenByConfigRatio）（使用缓存的稳定值）
     const ratio = openSlippage / (slipValue ?? 1)
     const maxOpenByConfigRatio = ratio > 0 ? Math.log(ratio) : 0
@@ -106,34 +156,57 @@ export const useGetOpenAvailable = () => {
     const collateralValue = parseBigNumber(collateralAmountValue)
 
     // 计算三者最小值
-    const longLimit1 = collateralValue // 用户可用保证金
+    const longLimit1 = collateralValue.plus(
+      shareCollateral
+        ? parseBigNumber(longPositionAvailableMargin).mul(parseBigNumber(leverage))
+        : 0,
+    ) // 用户可用保证金
     const longLimit2 = parseBigNumber(maxOpenLongByConfigRatio) // 滑点配置限额
     const longLimit3 = parseBigNumber(maxOpenLongQuoteAmountByLiquidity) // 池子流动性限额
 
     // 取最小值
     let longQuoteAmount = longLimit1.toString()
-    if (longLimit2.lt(longLimit1)) {
+    if (longLimit2.lt(longLimit1) && orderType === OrderType.MARKET) {
       longQuoteAmount = longLimit2.toString()
     }
     if (longLimit3.lt(parseBigNumber(longQuoteAmount))) {
       longQuoteAmount = longLimit3.toString()
     }
 
+    if (longPosition) {
+      longQuoteAmount = parseBigNumber(longQuoteAmount)
+        .minus(parseBigNumber(networkFee ?? 0).mul(3))
+        .toString()
+    }
+
+    longQuoteAmount = parseBigNumber(longQuoteAmount).mul(adjustedRatio).toString()
+
     const longBaseAmount = parseBigNumber(longQuoteAmount).div(parseBigNumber(safePrice)).toString()
 
     // 6. 计算 Short 的最大可开仓量
     // 需要取三个值的最小值：用户保证金、滑点配置限额、池子流动性限额
-    const shortLimit1 = collateralValue // 用户可用保证金
+    const shortLimit1 = collateralValue.plus(
+      shareCollateral
+        ? parseBigNumber(shortPositionAvailableMargin).mul(parseBigNumber(leverage))
+        : 0,
+    ) // 用户可用保证金
     const shortLimit2 = parseBigNumber(maxOpenShortByConfigRatio) // 滑点配置限额
     const shortLimit3 = parseBigNumber(maxOpenShortQuoteAmountByLiquidity) // 池子流动性限额
 
     // 取最小值
     let shortQuoteAmount = shortLimit1.toString()
-    if (shortLimit2.lt(shortLimit1)) {
+    if (shortLimit2.lt(shortLimit1) && orderType === OrderType.MARKET) {
       shortQuoteAmount = shortLimit2.toString()
     }
     if (shortLimit3.lt(parseBigNumber(shortQuoteAmount))) {
       shortQuoteAmount = shortLimit3.toString()
+    }
+
+    shortQuoteAmount = parseBigNumber(shortQuoteAmount).mul(adjustedRatio).toString()
+    if (shortPosition) {
+      shortQuoteAmount = parseBigNumber(shortQuoteAmount)
+        .minus(parseBigNumber(networkFee ?? 0).mul(3))
+        .toString()
     }
 
     const shortBaseAmount = parseBigNumber(shortQuoteAmount)
@@ -162,7 +235,7 @@ export const useGetOpenAvailable = () => {
     symbolInfo?.poolId,
     symbolInfo?.quoteDecimals,
     symbolInfo?.baseDecimals,
-    poolConfig?.levelConfig?.slip,
+    // poolConfig?.levelConfig?.slip,
     // 流动性数据（使用缓存的稳定值）
     stableLiquidityInfo?.windowCaps,
     stableLiquidityInfo?.openInterest,
@@ -172,7 +245,16 @@ export const useGetOpenAvailable = () => {
     autoMarginMode,
     collateralAmount,
     leverage,
-    fundingFeeRate,
+    tradingFeeRate,
     stableAccountAssets?.availableMargin,
+    longPositionAvailableMargin,
+    shortPositionAvailableMargin,
+    shareCollateral,
+    tradeMode,
+    networkFee,
+    tpSlOpen,
+    tpValue,
+    slValue,
+    poolConfig?.levelConfig?.slip,
   ])
 }

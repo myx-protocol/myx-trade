@@ -88,14 +88,39 @@ export const NumericInputWithAdornment = memo(
     height = '22px',
     className = '',
     size = 'medium',
+    slotProps: externalSlotProps,
     ...rest
   }: Props) => {
+    const mergedSlotProps = {
+      htmlInput: {
+        inputMode: 'decimal' as const,
+        pattern: '[0-9]*',
+        sx: {
+          textAlign,
+        },
+        size: size,
+        ...externalSlotProps?.htmlInput,
+      },
+      input: {
+        startAdornment: startAdornment ? (
+          <InputAdornment className={'text-white'} position="start">
+            {startAdornment}
+          </InputAdornment>
+        ) : undefined,
+        endAdornment: endAdornment ? (
+          <InputAdornment className={'text-basic-white'} position="end">
+            {endAdornment}
+          </InputAdornment>
+        ) : undefined,
+        ...externalSlotProps?.input,
+      },
+    }
     return (
       <StyledNumericFormat
-        inputMode="numeric"
         customInput={ForwardedTextField as unknown as ComponentType<TextFieldProps>}
         autoCapitalize={'off'}
         autoComplete={'off'}
+        allowNegative={false}
         className={`w-full ${size === 'small' ? 'pl-[12px]' : ''} ${className}`}
         isAllowed={(values) => {
           const { value } = values
@@ -137,26 +162,7 @@ export const NumericInputWithAdornment = memo(
           }
           onBlur?.(e)
         }}
-        slotProps={{
-          htmlInput: {
-            sx: {
-              textAlign,
-            },
-            size: size,
-          },
-          input: {
-            startAdornment: startAdornment ? (
-              <InputAdornment className={'text-white'} position="start">
-                {startAdornment}
-              </InputAdornment>
-            ) : undefined,
-            endAdornment: endAdornment ? (
-              <InputAdornment className={'text-basic-white'} position="end">
-                {endAdornment}
-              </InputAdornment>
-            ) : undefined,
-          },
-        }}
+        slotProps={mergedSlotProps}
         {...rest}
       />
     )

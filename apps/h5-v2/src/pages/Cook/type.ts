@@ -1,4 +1,5 @@
 import { TrenchSortField } from '@/request/type.ts'
+import { MarketPoolState } from '@myx-trade/sdk'
 
 export enum CookType {
   Cook = 'cook',
@@ -18,6 +19,7 @@ export type Token = {
   time?: number
   rating?: string
   progress?: string
+  state?: MarketPoolState
 }
 
 export type TokenData = {
@@ -51,10 +53,15 @@ export enum Mode {
 export interface PoolInfo {
   price?: string
   exchangeRate?: string
-  tvl?: string
+  tvl?: {
+    totalTvl: string
+    baseTvl: string
+    quoteTvl: string
+  }
   fundingInfo?: {
     nextFundingRate: bigint
     lastFundingFeeTracker: bigint
     nextEpochTime: bigint
   }
+  oraclePrice?: string
 }

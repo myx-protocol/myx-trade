@@ -9,7 +9,7 @@ import {
   PoolType,
   type Rating,
 } from '@/request/type.ts'
-import { type MarketPoolState, pool } from '@myx-trade/sdk'
+import { type MarketPoolState, type TriggerType } from '@myx-trade/sdk'
 
 export interface PoolOpenOrder {
   amount: string
@@ -17,9 +17,9 @@ export interface PoolOpenOrder {
   minQuoteOut: string
   orderId: number
   poolId: string
-  poolType: pool.PoolType
+  poolType: PoolType
   triggerPrice: string
-  triggerType: pool.TriggerType
+  triggerType: TriggerType
   txTime: number
   user: string
 }
@@ -61,6 +61,7 @@ export interface NewCook {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 
 export interface CookNewsResponse extends BaseResponse {
@@ -81,6 +82,7 @@ export interface CookSoon {
   tokenCreateTime: number
   baseToken: string
   marketId: string
+  state?: MarketPoolState
 }
 export interface CookSoonResponse extends BaseResponse {
   data: CookSoon[]
@@ -127,6 +129,7 @@ export interface Trench {
   marketId: string
   apr: string
   symbol: string
+  oiAmount?: string
 }
 
 export interface TrenchResponse extends BaseResponse {
@@ -138,6 +141,8 @@ export interface QuotePoolListRequest extends PageRequest {
   chainId?: number
   sortField?: QuoteLPSortField
   sortOrder?: SortOrder
+  state?: 0 | 1 // 0=all status market, 1=active market
+  quoteSymbol?: 'USDT' | 'USDC'
 }
 
 export interface QuotePool {
@@ -205,6 +210,7 @@ export interface BaseLpDetail {
   apr: string
   globalId: number
   mBaseQuoteSymbol: string
+  mQuoteBaseSymbol: string
   state: MarketPoolState
   poolPreTime: number
   totalTvl: string
@@ -261,7 +267,13 @@ export interface LpPriceHistoryRequest {
   token: string
   interval: PriceInterval
   limit: number
+  poolType: PoolType
 }
+
+export type LineChartsRequestParams = Pick<
+  LpPriceHistoryRequest,
+  'chainId' | 'poolId' | 'token' | 'interval' | 'limit'
+>
 
 export interface LpPriceHistory {
   time: number
@@ -270,6 +282,20 @@ export interface LpPriceHistory {
 
 export interface LpPriceHistoryResponse extends BaseResponse {
   data: LpPriceHistory[]
+}
+
+export interface TvlHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    tvl: string
+  }>
+}
+
+export interface ExchangeRateHistoryResponse extends BaseResponse {
+  data: Array<{
+    time: number
+    exchangeRate: string
+  }>
 }
 
 export interface QuoteAprTop {
@@ -362,6 +388,18 @@ export interface MarketPoolStateDataResponse extends BaseResponse {
   data: MarketPoolStateData[]
 }
 
+export enum PoolSecurityState {
+  UNKNOWN = 0,
+  SECURITY = 1,
+  NOT_SECURITY = 2,
+  ALLOW_PRIME = 9,
+}
+
+export enum PoolBaseState {
+  OK = 0,
+  PRIME_FAIL,
+}
+
 export interface LevelConfig {
   levelId: number
   name: Rating
@@ -384,8 +422,44 @@ export interface MarketPoolRiskLevelConfig {
   level: number
   levelConfig: LevelConfig
   levelName: Rating
+  securityState: PoolSecurityState
+  baseState: PoolBaseState
 }
 
 export interface MarketPoolRiskLevelConfigResponse extends BaseResponse {
   data: MarketPoolRiskLevelConfig
+}
+
+export interface MarketPoolPriceResponse extends BaseResponse {
+  data: string
+}
+
+export interface RiskGlobalConfigResponse extends BaseResponse {
+  data: {
+    boostedPrimeTvl: string
+  }
+}
+
+export enum BoostType {
+  Requested = 0,
+  Withdrawn = 1,
+}
+
+export interface PoolBoostInfo {
+  id: number
+  chainId: number
+  poolId: string
+  proposer: string
+  token: string
+  type: BoostType
+  amount: string
+  refundFee: null | string
+  txHash: string
+  txTime: number
+  blockNumber: number
+  eventKey: string
+  createTime: number
+}
+export interface PoolBoostResponse extends BaseResponse {
+  data: null | PoolBoostInfo
 }

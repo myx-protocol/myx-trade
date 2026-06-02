@@ -118,6 +118,7 @@ export class ConfigManager {
       throw new MyxSDKError(MyxErrorCode.InvalidSigner, "WalletClient not available after chain switch")
     }
     if (this.config.walletClient) return this.config.walletClient as WalletClient;
+    console.log('getViemWalletClient-->', this._normalizedSigner)
     if (this._normalizedSigner) return await createWalletClientFromSigner(this._normalizedSigner, chainId);
     throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer: call auth({ signer }) or auth({ walletClient })");
   }

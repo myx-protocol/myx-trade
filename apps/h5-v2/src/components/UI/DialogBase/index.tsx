@@ -21,7 +21,7 @@ export const DialogBase = ({
   onClose: () => void
   children: React.ReactNode
   sx?: SxProps<Theme>
-  title?: string
+  title?: string | null
 }) => {
   return (
     <Drawer
@@ -34,7 +34,7 @@ export const DialogBase = ({
             backgroundColor: '#18191F',
             borderTopLeftRadius: '16px',
             borderTopRightRadius: '16px',
-            padding: '16px',
+            padding: '24px 16px 4px',
             border: '1px solid #31333D',
           },
         },
@@ -43,49 +43,54 @@ export const DialogBase = ({
       open={open}
       onClose={onClose}
     >
-      <DialogTitle
-        className="flex"
-        sx={{
-          padding: '0',
-          position: 'relative',
-          minHeight: '16px',
-        }}
-      >
-        {title && <p className="w-full text-[20px] leading-[1] font-bold text-[white]">{title}</p>}
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation()
-            onClose()
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation()
-            e.preventDefault()
-            onClose()
-          }}
+      {title !== null && (
+        <DialogTitle
+          className="flex"
           sx={{
-            position: 'absolute',
-            right: '-8px',
-            top: '-8px',
-            padding: '8px',
-            minWidth: '40px',
-            minHeight: '40px',
-            color: '#848E9C',
-            cursor: 'pointer',
-            zIndex: 1000,
-            WebkitTapHighlightColor: 'transparent',
-            touchAction: 'manipulation',
-            '&:hover': {
-              backgroundColor: 'transparent',
-            },
-            '&:active': {
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-            },
+            padding: '0',
+            position: 'relative',
+            minHeight: '16px',
           }}
-          disableRipple
         >
-          <CloseIcon size={24} />
-        </IconButton>
-      </DialogTitle>
+          {title && (
+            <p className="w-full text-[20px] leading-[1] font-bold text-[white]">{title}</p>
+          )}
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation()
+              onClose()
+            }}
+            onTouchEnd={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              onClose()
+            }}
+            sx={{
+              position: 'absolute',
+              right: '-8px',
+              top: '-8px',
+              padding: '8px',
+              minWidth: '40px',
+              minHeight: '40px',
+              color: '#848E9C',
+              cursor: 'pointer',
+              zIndex: 1000,
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+              '&:hover': {
+                backgroundColor: 'transparent',
+              },
+              '&:active': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              },
+            }}
+            disableRipple
+          >
+            <CloseIcon size={24} />
+          </IconButton>
+        </DialogTitle>
+      )}
+
       <DialogContent
         sx={{
           padding: '0',

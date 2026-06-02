@@ -18,14 +18,13 @@ export const useGetPositionList = (filter: boolean = false) => {
   const { subscribeToTicker } = useSubscription()
 
   const { data, mutate } = useSWR(
-    address && client && symbolInfo?.poolId && clientIsAuthenticated && !isWrongNetwork
+    address && client && symbolInfo?.poolId && !isWrongNetwork
       ? {
           key: 'get_position_list',
           address,
           poolId: symbolInfo?.poolId,
           hideOthersSymbols,
           selectChainId,
-          clientIsAuthenticated,
           isWrongNetwork,
           filter,
         }
@@ -53,7 +52,6 @@ export const useGetPositionList = (filter: boolean = false) => {
       const filteredPositions = positions.filter((item: any) =>
         hideOthersSymbols ? item.poolId === symbolInfo?.poolId : true,
       )
-
       const positionsWithChainId = filteredPositions.filter(
         (item: any) => selectChainId === '0' || `${item.chainId}` === selectChainId,
       )

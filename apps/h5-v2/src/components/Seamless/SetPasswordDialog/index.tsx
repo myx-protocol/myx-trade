@@ -11,22 +11,34 @@ import { PrimaryButton } from '@/components/UI/Button'
 import CompleteIcon from '@/components/UI/Icon/CompleteIcon'
 import InfoIcon from '@/components/UI/Icon/InfoIcon'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import { toast } from 'react-hot-toast'
+
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
+import { toast } from '@/components/UI/Toast'
+import { TradeMode } from '@/pages/Trade/types'
+import { useCreateSeamlessAccount } from '@/hooks/seamless/use-create-seamless-account'
 
 export const SetPasswordDialog = () => {
-  const { seamlessPasswordDialogOpen, setSeamlessPasswordDialogOpen, setTradeMode } =
-    useGlobalStore()
+  const {
+    seamlessPasswordDialogOpen,
+    setSeamlessPasswordDialogOpen,
+    setTradeMode,
+    symbolInfo,
+    poolList,
+  } = useGlobalStore()
+  const effectivePool = symbolInfo ?? poolList[0]
   const [show, setShow] = useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const { seamlessAccountList, setSeamlessAccountList, setActiveSeamlessAddress } =
-    useSeamlessStore()
-  const { symbolInfo } = useGlobalStore()
-  const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const {
+    seamlessAccountList,
+    setSeamlessAccountList,
+    setActiveSeamlessAddress,
+    setActiveSeamlessWallet,
+  } = useSeamlessStore()
+
+  const { client } = useMyxSdkClient(effectivePool?.chainId)
+  const { createSeamlessAccount, loading: createSeamlessLoading } = useCreateSeamlessAccount()
 
   return (
     <DialogBase
@@ -34,7 +46,6 @@ export const SetPasswordDialog = () => {
       open={seamlessPasswordDialogOpen}
       onClose={() => {
         setSeamlessPasswordDialogOpen(false)
-        changeSdkTradeMode(false)
       }}
       sx={{
         '& .MuiDialog-paper': {
@@ -131,11 +142,20 @@ export const SetPasswordDialog = () => {
             }}
             disabled={loading}
             onClick={async () => {
+              if (
+                password.length < 8 ||
+                password.length > 128 ||
+                !/\d/.test(password) ||
+                !/[A-Z]/.test(password)
+              ) {
+                toast.error({
+                  title: t`Invalid password`,
+                })
+                return
+              }
               try {
-                setLoading(true)
-                const rs = await client?.seamless.createSeamless({
+                const rs = await createSeamlessAccount({
                   password,
-                  chainId: symbolInfo?.chainId as number,
                 })
 
                 if (rs?.code === 0) {
@@ -143,11 +163,7 @@ export const SetPasswordDialog = () => {
                     masterAddress: rs.data?.masterAddress || '',
                     seamlessAddress: rs.data?.seamlessAccount || '',
                     apiKey: rs.data?.apiKey || '',
-                    authorized: {
-                      [symbolInfo?.chainId as number]: {
-                        authorized: rs?.data?.authorized || false,
-                      },
-                    },
+                    authorized: {},
                   }
 
                   if (seamlessAccountList.length === 0) {
@@ -157,9 +173,6 @@ export const SetPasswordDialog = () => {
                       (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
                     )
 
-                    console.log('seamlessAccountList-->', seamlessAccountList)
-                    console.log('idx-->', idx)
-
                     if (idx !== -1) {
                       seamlessAccountList[idx] = { ...seamlessAccount }
                     } else {
@@ -167,42 +180,20 @@ export const SetPasswordDialog = () => {
                     }
                   }
 
-                  console.log('seamlessAccount.authorized-->', seamlessAccount)
-                  if (!seamlessAccount.authorized[symbolInfo?.chainId as number]?.authorized) {
-                    const authRes = await client?.seamless.authorizeSeamlessAccount({
-                      approve: true,
-                      seamlessAddress: seamlessAccount.seamlessAddress,
-                      chainId: symbolInfo?.chainId as number,
-                    })
-
-                    if (authRes?.code === 0) {
-                      const idx = seamlessAccountList.findIndex(
-                        (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
-                      )
-                      const newSeamlessAccount = {
-                        ...seamlessAccountList[idx],
-                        authorized: {
-                          [symbolInfo?.chainId as number]: {
-                            authorized: true,
-                          },
-                        },
-                      }
-                      seamlessAccountList[idx] = newSeamlessAccount
-                      setSeamlessAccountList([...seamlessAccountList])
-                    }
-                  }
-
                   setActiveSeamlessAddress(seamlessAccount.masterAddress)
-                  // setTradeMode(TradeMode.Seamless)
-                  changeSdkTradeMode(true)
+                  setActiveSeamlessWallet(rs.data?.seamlessWallet)
+                  setTradeMode(TradeMode.Seamless)
                   setSeamlessPasswordDialogOpen(false)
-                } else {
-                  toast.error('Create seamless failed')
+                } else if (rs !== undefined) {
+                  toast.error({
+                    title: client?.utils.formatErrorMessage(rs),
+                  })
                 }
               } catch (error) {
-                console.error('error-->', error)
-              } finally {
-                setLoading(false)
+                console.log('error-->', error)
+                toast.error({
+                  title: client?.utils.formatErrorMessage(error),
+                })
               }
             }}
           >

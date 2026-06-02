@@ -8,6 +8,7 @@ import { useSeamlessStore } from '@/store/seamless/createStore'
 import { useState } from 'react'
 import { InputBase } from '@mui/material'
 import { t } from '@lingui/core/macro'
+import { useExportSeamlessKey } from '@/hooks/seamless/use-export-seamless-key'
 
 export const ExportInfoDialog = () => {
   const {
@@ -16,10 +17,8 @@ export const ExportInfoDialog = () => {
     setExportSeamlessKeyDialogOpen,
   } = useGlobalStore()
   const { activeSeamlessAddress, seamlessAccountList } = useSeamlessStore()
-  const [loading, setLoading] = useState(false)
-  const { symbolInfo } = useGlobalStore()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [password, setPassword] = useState('')
+  const { exportSeamlessKey, exportSeamlessKeyLoading } = useExportSeamlessKey()
 
   return (
     <DialogBase
@@ -76,34 +75,24 @@ export const ExportInfoDialog = () => {
               height: '44px',
               fontWeight: 500,
             }}
-            loading={loading}
+            loading={exportSeamlessKeyLoading}
             onClick={async () => {
-              try {
-                console.log('password-->', password)
-                setLoading(true)
-                const activeSeamlessAccount = seamlessAccountList.find(
-                  (item) => item.masterAddress === activeSeamlessAddress,
-                )
-                console.log('activeSeamlessAccount-->', activeSeamlessAccount)
+              const activeSeamlessAccount = seamlessAccountList.find(
+                (item) => item.masterAddress === activeSeamlessAddress,
+              )
 
-                if (!activeSeamlessAccount) {
-                  return
-                }
-                console.log('activeSeamlessAccount-->', activeSeamlessAccount)
+              if (!activeSeamlessAccount) {
+                return
+              }
 
-                const rs = await client?.seamless.exportSeamlessPrivateKey({
-                  password,
-                  apiKey: activeSeamlessAccount.apiKey,
-                })
+              const rs = await exportSeamlessKey({
+                password,
+                apiKey: activeSeamlessAccount.apiKey,
+              })
 
-                if (rs?.code === 0) {
-                  setExportSeamlessKeyDialogOpen(rs.data?.privateKey as string)
-                  setExportSeamlessInfoDialogOpen(false)
-                }
-              } catch (error) {
-                console.error('error-->', error)
-              } finally {
-                setLoading(false)
+              if (rs?.code === 0) {
+                setExportSeamlessKeyDialogOpen(rs.data?.seamlessKey as string)
+                setExportSeamlessInfoDialogOpen(false)
               }
             }}
           >

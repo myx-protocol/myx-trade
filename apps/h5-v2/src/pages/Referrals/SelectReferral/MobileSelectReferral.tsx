@@ -28,6 +28,22 @@ const FORMAT_VALUE_FALLBACK = '--'
 export function MobileSelectReferral() {
   const { isConnected, setLoginModalOpen } = useWalletConnection()
   const [openRebateSetting, setOpenRebateSetting] = useState(false)
+  const {
+    configData,
+    invitationCodes,
+    fetchInvitationCodes,
+    accessToken,
+    account,
+    fetchRefConfig,
+  } = useReferralStore()
+  const remainingCodeCount = (configData?.codeCount || 0) - (invitationCodes.length || 0)
+
+  useEffect(() => {
+    if (accessToken || account) {
+      fetchInvitationCodes()
+      fetchRefConfig()
+    }
+  }, [accessToken, fetchInvitationCodes, account])
 
   if (!isConnected) {
     return <Navigate to="/referrals" replace />
@@ -35,6 +51,7 @@ export function MobileSelectReferral() {
 
   return (
     <div>
+      <title>{t`Referral - Invite & Earn Lifetime Commissions | MYX`}</title>
       <SecondHeader title={<Trans>Select Referral</Trans>} />
       <Stack direction="column" px="20px" flex={1} height="100%">
         <Box flex={1} minHeight={0} maxHeight="100%" overflow="auto">
@@ -43,6 +60,7 @@ export function MobileSelectReferral() {
 
         <Box py="20px">
           <PrimaryButton
+            disabled={remainingCodeCount <= 0}
             style={{
               height: '44px',
             }}
@@ -204,7 +222,7 @@ function SelectReferralItem({ info }: { info: InvitationCodeInfo }) {
         </Box>
 
         <Stack direction="row" gap="4px" alignItems="center">
-          <Typography color="text.primary" fontSize="12px" fontWeight="400" lineHeight={1}>
+          <Typography color="white" fontSize="12px" fontWeight="400" lineHeight={1}>
             {info.note || FORMAT_VALUE_FALLBACK}
           </Typography>
 
@@ -228,13 +246,13 @@ function SelectReferralItem({ info }: { info: InvitationCodeInfo }) {
 }
 
 function SelectReferralList() {
-  const { invitationCodes, fetchInvitationCodes, accessToken } = useReferralStore()
+  const { invitationCodes, fetchInvitationCodes, accessToken, account } = useReferralStore()
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || account) {
       fetchInvitationCodes()
     }
-  }, [accessToken, fetchInvitationCodes])
+  }, [accessToken, fetchInvitationCodes, account])
 
   return (
     <Stack direction="column">

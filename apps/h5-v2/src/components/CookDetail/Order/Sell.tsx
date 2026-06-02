@@ -19,6 +19,7 @@ import {
   formatUnits,
   pool as Pool,
   COMMON_LP_AMOUNT_DECIMALS,
+  parseUnits,
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -64,7 +65,7 @@ export const Sell = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.basePoolToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
-        return formatNumberPrecision(_balance, COMMON_BASE_DISPLAY_DECIMALS, false, false)
+        return _balance
       }
     },
   })
@@ -134,6 +135,20 @@ export const Sell = () => {
     return value
   }, [retainGenesisLPShares, balance, userShareBase, amount, isInsufficient])
 
+  const { data: withdrawableLpAmount } = useQuery({
+    queryKey: [{ key: 'withdrawableLpAmount' }, amount, poolId, account, isInsufficient],
+    enabled: !!amount && !!account && !isInsufficient && !!poolId && Number(amount) > 0,
+    queryFn: async () => {
+      if (!account || !poolId || !amount || isInsufficient || Number(amount) <= 0) return
+      const res = await Base.withdrawableLpAmount({
+        chainId,
+        poolId,
+      })
+      console.log(`withdrawableLpAmount: ${res}, ${formatUnits(res, COMMON_LP_AMOUNT_DECIMALS)}`)
+      return res
+    },
+  })
+
   const onHandleMax = useCallback(() => {
     if (trueBalance) {
       setAmount(trueBalance)
@@ -150,6 +165,16 @@ export const Sell = () => {
       if (!chainId || !poolId || !amount) return
       const checked = await onAction()
       if (!checked) return
+      console.log(amount, formatUnits(withdrawableLpAmount || 0n, COMMON_LP_AMOUNT_DECIMALS))
+      if (
+        withdrawableLpAmount !== undefined &&
+        parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
+      ) {
+        toast.error({
+          title: t`Some funds are locked in active trades. Max available to sell: [${formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })}] LP.`,
+        })
+        return
+      }
       await Base.withdraw({
         chainId: +chainId,
         poolId,
@@ -165,7 +190,7 @@ export const Sell = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, withdrawableLpAmount])
 
   return (
     <div className="mt-[12px]">
@@ -323,9 +348,7 @@ export const Sell = () => {
           <p className={'text-regular text-[12px] leading-[1.5]'}>
             <Trans>
               This will burn{' '}
-              <span className={'text-warning'}>
-                {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
-              </span>{' '}
+              <span className={'text-warning'}>{formatNumber(burned, { showUnit: false })}</span>{' '}
               {baseLpDetail?.mBaseQuoteSymbol} and you will permanently forfeit the right to your{' '}
               <span className={'text-warning'}>
                 {formatNumberPercent(genesisFeeRate, 0, false)}
@@ -338,6 +361,8 @@ export const Sell = () => {
       <Box className="mt-[12px] w-full">
         <ConnectButton>
           <SellButton
+            id="cook_detail_submit_sell_btn_h5"
+            data-analytics="cook_detail_submit_sell_btn_h5"
             variant="contained"
             className={'w-full'}
             disabled={!amount || isInsufficient || Number(amount) <= 0}
