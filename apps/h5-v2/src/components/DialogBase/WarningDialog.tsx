@@ -4,7 +4,7 @@ import { ConfirmDialogFooter, DialogBase } from '.'
 import type { DialogBaseProps } from '.'
 
 import { Box } from '@mui/material'
-import { BigWaningLine } from '@/components/Icon'
+import WarningLine from '@/components/Icon/set/WarningLine.tsx'
 
 type WarningDialogContentProps = {
   tipText?: React.ReactNode | undefined
@@ -15,15 +15,13 @@ type WarningDialogContentProps = {
 const WarningDialogContent = ({
   tipText,
   tipTextTitle = <Trans>Are you sure to</Trans>,
-  icon = <BigWaningLine size={56} />,
+  icon = <WarningLine size={56} />,
 }: WarningDialogContentProps) => {
   return (
     <Box className={'flex flex-col items-center'}>
       <Box className={'text-secondary pt-[20px] pb-[20px]'}>{icon}</Box>
-      {tipTextTitle && (
-        <p className={'text-[20px] leading-[1.5] font-[700] text-white'}>{tipTextTitle}</p>
-      )}
-      {tipText && <div className={'mt-[12px]'}>{tipText}</div>}
+      {tipTextTitle && <p className={'text-basic-white leading-[1.5]'}>{tipTextTitle}</p>}
+      {tipText && <p className={'text-warning mt-[8px] leading-[1]'}>{tipText}</p>}
     </Box>
   )
 }

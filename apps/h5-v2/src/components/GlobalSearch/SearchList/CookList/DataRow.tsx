@@ -41,6 +41,7 @@ export const CookListDataRow = ({ item, onItemClick }: CookListDataRowProps) => 
           <RiseFallTextPrecent
             value={item.lpPriceChange}
             renderOptions={{
+              decimals: 2,
               showSign: false,
             }}
           />

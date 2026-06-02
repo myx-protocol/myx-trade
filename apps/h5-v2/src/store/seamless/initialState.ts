@@ -1,5 +1,5 @@
-export type PoolIdAutAuthorized = {
-  [poolId: string]: {
+export type ChainIdAutAuthorized = {
+  [chainId: number]: {
     authorized: boolean
   }
 }
@@ -8,19 +8,17 @@ export interface SeamlessAccount {
   masterAddress: string
   seamlessAddress: string
   apiKey: string
-  authorized: PoolIdAutAuthorized
+  authorized: ChainIdAutAuthorized
 }
 
 export interface SeamlessState {
   seamlessAccountList: SeamlessAccount[]
   activeSeamlessAddress: string
   selectedSeamlessAddress: string
-  activeSeamlessWallet: any
 }
 
 export const seamlessState: SeamlessState = {
   seamlessAccountList: [],
   activeSeamlessAddress: '',
   selectedSeamlessAddress: '',
-  activeSeamlessWallet: null,
 }

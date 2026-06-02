@@ -8,10 +8,8 @@ import type {
   ChartingLibraryWidgetOptions,
   ResolutionString,
 } from '@public/charting_library/charting_library'
-import { type KlineTypeEnum } from './type'
+import type { KlineTypeEnum } from './type'
 import { ToolBar } from './Toolbar/index'
-import { usePoolNoTradable } from '@/hooks/pool/usePoolNoTradable'
-import { NoTradeable } from './NoTradeable'
 export const Charts = () => {
   const chartsRoot = useRef<HTMLDivElement>(null)
   const { resolutionActive, symbolInfo } = useGlobalStore()
@@ -82,29 +80,22 @@ export const Charts = () => {
     }),
     [],
   )
-  const { isNoTradable } = usePoolNoTradable({
-    poolId: symbolInfo?.poolId,
-    chainId: symbolInfo?.chainId,
-  })
   return (
     <div
       className="mt-[4px] flex h-[320px] w-full flex-col gap-[6px] bg-[#101114]"
       ref={chartsRoot}
     >
-      <ToolBar showChartTypeSelector={false} />
+      <ToolBar />
       <div className="flex flex-[1_1_0%] flex-col">
-        {!isNoTradable && (
-          <TradingView
-            poolId={symbolInfo?.poolId}
-            chainId={symbolInfo?.chainId}
-            globalId={symbolInfo?.globalId}
-            symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
-            defaultInterval={resolutionActive as ResolutionString}
-            ref={tradingViewRef}
-            overridesChartOptions={overridesChartOptions}
-          />
-        )}
-        {isNoTradable && <NoTradeable />}
+        <TradingView
+          poolId={symbolInfo?.poolId}
+          chainId={symbolInfo?.chainId}
+          globalId={symbolInfo?.globalId}
+          symbol={`${symbolInfo?.baseSymbol}${symbolInfo?.quoteSymbol}`}
+          defaultInterval={resolutionActive as ResolutionString}
+          ref={tradingViewRef}
+          overridesChartOptions={overridesChartOptions}
+        />
       </div>
     </div>
   )

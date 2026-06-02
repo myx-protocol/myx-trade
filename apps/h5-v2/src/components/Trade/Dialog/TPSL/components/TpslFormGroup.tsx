@@ -10,13 +10,7 @@ import { parseBigNumber } from '@/utils/bn'
 import { usePositionTPSLStore } from '../store'
 import { NumberInputSourceType } from '@/components/UI/NumberInput/types'
 import { t } from '@lingui/core/macro'
-import {
-  autoPriceDecimals,
-  displayAmount,
-  formatNumber,
-  getSuperDecimalScale,
-  isSuperDecimal,
-} from '@/utils/number'
+import { displayAmount, formatNumber } from '@/utils/number'
 import { Direction } from '@myx-trade/sdk'
 
 const AmountSliderMarks = [
@@ -44,11 +38,9 @@ const renderTargetUnit = (type: TpSlTypeEnum, symbol: string) => {
 export const TpslFormGroup = ({
   position,
   type,
-  currentPrice,
 }: {
   position: any
   type: 'tp' | 'sl'
-  currentPrice?: string | number
   autoFocus?: boolean
 }) => {
   const [tpslType, setTpslType] = useState<TpSlTypeEnum>(TpSlTypeEnum.Pnl)
@@ -143,23 +135,12 @@ export const TpslFormGroup = ({
   const displayTargetPrice = useMemo(() => {
     if (!targetPrice || parseBigNumber(type === 'tp' ? tpSize : slSize).eq(0)) return '--'
 
-    const comparePrice =
-      currentPrice && parseBigNumber(currentPrice).gt(0) ? currentPrice : position.entryPrice
-
-    if (parseBigNumber(targetPrice).gt(parseBigNumber(comparePrice))) {
-      return `≥${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
+    if (parseBigNumber(targetPrice).gt(parseBigNumber(position.entryPrice))) {
+      return `>=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
     }
 
-    return `≤${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
-  }, [currentPrice, targetPrice, position?.quoteSymbol, position.entryPrice, tpSize, slSize, type])
-
-  const decimalScale = useMemo(() => {
-    if (isSuperDecimal(currentPrice as string)) {
-      return getSuperDecimalScale(Number(currentPrice))
-    } else {
-      return autoPriceDecimals(Number(currentPrice))
-    }
-  }, [currentPrice])
+    return `<=${displayAmount(parseBigNumber(targetPrice).toString())} ${position?.quoteSymbol ?? ''}`
+  }, [targetPrice, position?.quoteSymbol, targetPrice, position.entryPrice, tpSize, slSize, type])
 
   const totalPnl = useMemo(() => {
     const size = type === 'tp' ? tpSize : slSize
@@ -200,7 +181,6 @@ export const TpslFormGroup = ({
               if (source === NumberInputSourceType.EVENT) {
                 // 将中文小数点转换为英文小数点
                 const normalizedValue = value.replace(/。/g, '.')
-
                 setTargetPrice(normalizedValue)
 
                 // 如果输入为空或0，清空关联的计算值
@@ -230,22 +210,11 @@ export const TpslFormGroup = ({
             allowNegative={true}
             inputMode="text"
             value={targetRate}
-            decimalScale={decimalScale}
-            isAllowed={(values) => {
-              const { floatValue } = values
-              const isRateType = tpslType === TpSlTypeEnum.ROI || tpslType === TpSlTypeEnum.Change
-
-              // 对于 Change 和 ROI 类型，不允许输入小于 -100 的值
-              if (isRateType && floatValue !== undefined && floatValue < -100) {
-                return false
-              }
-
-              return true
-            }}
             onValueChange={({ floatValue }, { source }) => {
               if (source === NumberInputSourceType.EVENT) {
                 const inputValue = floatValue?.toString() ?? ''
 
+                // 标记这是用户输入，避免 useEffect 反向计算覆盖用户输入的值
                 isUserInputRef.current = true
                 setTargetRate(inputValue)
 
@@ -259,11 +228,9 @@ export const TpslFormGroup = ({
                   return
                 }
 
-                const effectiveValue = floatValue ?? 0
-
                 let calculatedTargetPrice = ''
                 if (tpslType === TpSlTypeEnum.ROI) {
-                  const radio = parseBigNumber(effectiveValue).div(100)
+                  const radio = parseBigNumber(floatValue ?? 0).div(100)
                   const totalPnl = parseBigNumber(position.collateralAmount).mul(radio)
                   const averagePnl = totalPnl
                     .div(parseBigNumber(position.size))
@@ -272,11 +239,7 @@ export const TpslFormGroup = ({
                     .plus(averagePnl)
                     .toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Change) {
-                  const rateRatio = parseBigNumber(effectiveValue).div(100)
-                  const radio =
-                    position.direction === Direction.LONG
-                      ? parseBigNumber(1).plus(rateRatio)
-                      : parseBigNumber(1).minus(rateRatio)
+                  const radio = parseBigNumber(1).plus(parseBigNumber(floatValue ?? 0).div(100))
                   calculatedTargetPrice = parseBigNumber(position.entryPrice).mul(radio).toFixed(6)
                 } else if (tpslType === TpSlTypeEnum.Pnl) {
                   const totalPnl = parseBigNumber(floatValue ?? 0)
@@ -312,7 +275,7 @@ export const TpslFormGroup = ({
           className="flex-1 text-left"
           placeholder={t`数量`}
           allowLeadingZeros
-          decimalScale={decimalScale}
+          decimalScale={6}
           onValueChange={({ value, floatValue }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
               // 将中文小数点转换为英文小数点
@@ -359,7 +322,6 @@ export const TpslFormGroup = ({
             step={parseBigNumber(position.size).div(100).toNumber()}
             max={position.size}
             valueLabelDisplay="auto"
-            valueLabelFormat={(v) => v.toFixed(6)}
             sx={{
               width: '100%',
               boxSizing: 'border-box',

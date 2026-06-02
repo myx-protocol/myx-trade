@@ -29,9 +29,9 @@ export function addQueryParams(rawQuery?: QueryParamsType): string {
   return queryString ? `?${queryString}` : ''
 }
 
-export const buildAccessHeaders = (accessToken: string | undefined | null, account: string) => {
+export const buildAccessHeaders = (accessToken: string, account: string) => {
   return {
     myx_openapi_account: account,
-    myx_openapi_access_token: accessToken || '',
+    myx_openapi_access_token: accessToken,
   }
 }

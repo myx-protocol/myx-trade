@@ -3,80 +3,30 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { usePoolContext } from '@/pages/Cook/hook'
 import type { LpPriceHistory } from '@/request/lp/type.ts'
-import { getLpPriceHistory, getTvlLineCharts, getExchangeRateLineCharts } from '@/request'
-import { ChartInterval, ChartIntervalValue, ChartType } from '@/pages/Earn/type.ts'
+import { getLpPriceHistory } from '@/request'
+import { ChartInterval, ChartIntervalValue } from '@/pages/Earn/type.ts'
 import { Box } from '@mui/material'
 import { SuspenseLoading } from '@/components/Loading'
 import { ChartBar } from '@/components/Icon'
 import { Trans } from '@lingui/react/macro'
 import { getAreaChartOptions } from '@/utils/chart.ts'
-import { PoolType } from '@/request/type.ts'
-import { t } from '@lingui/core/macro'
-import { formatNumber } from '@/utils/number'
 
-export const AreaCharts = ({
-  interval,
-  chartType,
-}: {
-  interval: ChartInterval
-  chartType: ChartType
-}) => {
+export const AreaCharts = ({ interval }: { interval: ChartInterval }) => {
   const { chainId, poolId, pool } = usePoolContext()
   const {
     data = [],
     isLoading,
     isPending,
   } = useQuery({
-    queryKey: [
-      { key: 'BasePoolPriceHistory' },
-      chainId,
-      poolId,
-      pool?.basePoolToken,
-      interval,
-      chartType,
-    ],
+    queryKey: [{ key: 'BasePoolPriceHistory' }, chainId, poolId, pool?.basePoolToken, interval],
     queryFn: async () => {
       if (!chainId || !poolId || !pool?.basePoolToken) return [] as LpPriceHistory[]
-
-      if (chartType === ChartType.TVL) {
-        const result = await getTvlLineCharts({
-          chainId: Number(chainId as unknown as number),
-          poolId,
-          token: pool.basePoolToken,
-          interval: ChartIntervalValue[interval].value,
-          limit: ChartIntervalValue[interval].limit,
-        })
-        return (result?.data || []).map((item) => {
-          return {
-            time: item.time,
-            value: item.tvl,
-          }
-        })
-      }
-
-      if (chartType === ChartType.ExchangeRate) {
-        const result = await getExchangeRateLineCharts({
-          chainId: Number(chainId as unknown as number),
-          poolId,
-          token: pool.basePoolToken,
-          interval: ChartIntervalValue[interval].value,
-          limit: ChartIntervalValue[interval].limit,
-        })
-        return (result?.data || []).map((item) => {
-          return {
-            time: item.time,
-            value: item.exchangeRate,
-          }
-        })
-      }
-
       const result = await getLpPriceHistory({
         chainId: Number(chainId as unknown as number),
         poolId,
         token: pool.basePoolToken,
         interval: ChartIntervalValue[interval].value,
         limit: ChartIntervalValue[interval].limit,
-        poolType: PoolType.base,
       })
       return result?.data || []
     },
@@ -84,38 +34,20 @@ export const AreaCharts = ({
 
   const option = useMemo(
     () =>
-      getAreaChartOptions(
-        interval,
-        data,
-        {
-          grid: {
-            bottom: '16px',
-            left: '0',
-            right: '0',
-            show: false,
-          },
+      getAreaChartOptions(interval, data, {
+        grid: {
+          bottom: '16px',
+          left: '0',
+          right: '0',
+          show: false,
         },
-        {
-          label:
-            chartType === ChartType.TVL
-              ? t`TVL`
-              : chartType === ChartType.ExchangeRate
-                ? t`Exchange Rate`
-                : undefined,
-          value: (data) => {
-            if (chartType === ChartType.Price) {
-              return formatNumber(data, { showUnit: false })
-            }
-            return formatNumber(data)
-          },
-        },
-      ),
-    [data, interval, chartType],
+      }),
+    [data, interval],
   )
 
   return (
-    <div className="relative !h-[125px]">
-      <EChartsReact option={option} className="!h-[125px]" />
+    <div className="relative !h-[140px]">
+      <EChartsReact option={option} className="!h-[140px]" />
 
       {isLoading && (
         <Box
@@ -127,7 +59,7 @@ export const AreaCharts = ({
         </Box>
       )}
 
-      {data.length === 0 && !isPending && (
+      {data.length === 0 && isPending && (
         <Box
           className={
             'bg-deep absolute top-[0] left-[0] z-[10] flex h-full w-full flex-col items-center justify-center'

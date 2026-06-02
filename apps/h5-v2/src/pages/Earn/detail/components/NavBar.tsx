@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Rating } from '@mui/material'
 import type { ReactNode } from 'react'
 import { BackIcon } from '@/components/Icon'
 import { useNavigate } from 'react-router-dom'
@@ -12,29 +12,12 @@ import { Mode } from '@/pages/Earn/type.ts'
 import { usePoolContext } from '../../hook'
 import { RatingLevel } from '@/components/Rating.tsx'
 import { formatNumber } from '@/utils/number.ts'
-import { SearchTypeEnum } from '@myx-trade/sdk'
 
-export const NavBar = ({
-  className,
-  children,
-  onBack,
-}: {
-  className?: string
-  children?: ReactNode
-  onBack?: () => void
-}) => {
+export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
   const { quoteLpDetail, price, mode } = usePoolContext()
   const { open: openGlobalSearch } = useGlobalSearchStore()
   const onSymbolClick = () => {}
-
-  const onBackHandle = () => {
-    if (onBack) {
-      onBack()
-    } else {
-      navigate(-1)
-    }
-  }
   return (
     <Box
       display={'flex'}
@@ -44,7 +27,7 @@ export const NavBar = ({
     >
       <Box className="flex w-full items-center justify-between">
         <Box className={'flex items-center gap-[8px]'}>
-          <Box width={'24px'} height={'24px'} onClick={onBackHandle}>
+          <Box width={'24px'} height={'24px'} onClick={() => navigate(-1)}>
             <BackIcon size={24} />
           </Box>
           <Box className={'relative aspect-square'}>
@@ -71,14 +54,7 @@ export const NavBar = ({
                 {quoteLpDetail?.mBaseQuoteSymbol}
               </span>
 
-              <Box
-                className={'text-secondary'}
-                onClick={() =>
-                  openGlobalSearch({
-                    defaultTab: SearchTypeEnum.Earn,
-                  })
-                }
-              >
+              <Box className={'text-secondary'} onClick={() => openGlobalSearch()}>
                 <Dropdown size={10} />
               </Box>
             </Box>

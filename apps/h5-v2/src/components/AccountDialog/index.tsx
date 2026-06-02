@@ -8,10 +8,11 @@ import { formatNumber } from '@/utils/number'
 import { TradeMode } from '@/pages/Trade/types'
 import { InfoButton, PrimaryButton } from '../UI/Button'
 import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
+import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import avatarIcon from '@/assets/home/wallet-icon.png'
 import { Copy } from '@/components/Copy'
 import { useTradePanelStore } from '../Trade/TradePanel/store'
-import { useGetTotalAccountAssets } from '@/hooks/balance/use-get-total-account-assets'
 
 export const AccountDialog = () => {
   const {
@@ -22,14 +23,13 @@ export const AccountDialog = () => {
     setSeamlessPasswordDialogOpen,
     setUnlockAccountDialogOpen,
   } = useGlobalStore()
-  const { address, disconnect, isConnected } = useWalletConnection()
+  const { address } = useWalletConnection()
+  const { symbolInfo } = useGlobalStore()
   const { setReceiveDialogOpen } = useTradePanelStore()
-  const { seamlessAccountList, setActiveSeamlessAddress, setActiveSeamlessWallet } =
-    useSeamlessStore()
-
-  const isImportedSeamless = tradeMode === TradeMode.Seamless && !isConnected
-
-  const totalBalance = useGetTotalAccountAssets()
+  const { seamlessAccountList } = useSeamlessStore()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { disconnect } = useWalletConnection()
+  const accountAssets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId as string)
 
   return (
     <DialogBase
@@ -58,48 +58,56 @@ export const AccountDialog = () => {
             </div>
             <div className="flex items-center gap-[4px]">
               <span className="mt-[2px] text-[14px] font-[500] text-[#848E9C]">
-                $
-                {formatNumber(totalBalance, {
+                {formatNumber(accountAssets?.availableMargin?.toString() ?? '--', {
                   decimals: 2,
                   showUnit: false,
                 })}{' '}
+                {symbolInfo?.quoteSymbol ?? 'USDC'}
               </span>
             </div>
           </div>
         </div>
-        {!isImportedSeamless && (
-          <div>
-            <div className="flex items-center bg-[#202129]">
-              <p
-                className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
-                style={{
-                  color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
-                  backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
-                }}
-                onClick={() => {
-                  setTradeMode(TradeMode.Classic)
-                }}
-              >{t`Classic`}</p>
-              <p
-                className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
-                style={{
-                  color: tradeMode === TradeMode.Seamless ? 'white' : '#848E9C',
-                  backgroundColor: tradeMode === TradeMode.Seamless ? '#00996F' : '',
-                }}
-                onClick={async () => {
-                  setAccountDialogOpen(false)
+        <div>
+          <div className="flex items-center bg-[#202129]">
+            <p
+              className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
+              style={{
+                color: tradeMode === TradeMode.Classic ? 'white' : '#848E9C',
+                backgroundColor: tradeMode === TradeMode.Classic ? '#00996F' : '',
+              }}
+              onClick={async () => {
+                await client?.seamless.startSeamlessMode({ open: false })
+                setTradeMode(TradeMode.Classic)
+              }}
+            >{t`Classic`}</p>
+            <p
+              className="rounded-[4px] px-[6px] py-[4px] text-[10px] leading-[12px] font-[500]"
+              style={{
+                color: tradeMode === TradeMode.Seamless ? 'white' : '#848E9C',
+                backgroundColor: tradeMode === TradeMode.Seamless ? '#00996F' : '',
+              }}
+              onClick={async () => {
+                setAccountDialogOpen(false)
 
-                  if (seamlessAccountList.length === 0) {
-                    setSeamlessPasswordDialogOpen(true)
-                    return
-                  }
+                if (seamlessAccountList.length === 0) {
+                  setSeamlessPasswordDialogOpen(true)
+                  return
+                }
 
-                  setUnlockAccountDialogOpen(true)
-                }}
-              >{t`Seamless`}</p>
-            </div>
+                const seamlessAccount = seamlessAccountList.findIndex(
+                  (account) => account.masterAddress === address,
+                )
+
+                if (seamlessAccount === -1) {
+                  setSeamlessPasswordDialogOpen(true)
+                  return
+                }
+
+                setUnlockAccountDialogOpen(true)
+              }}
+            >{t`Seamless`}</p>
           </div>
-        )}
+        </div>
       </div>
       <div className="mt-[74px] flex flex-col items-center gap-[10px]">
         <PrimaryButton
@@ -116,13 +124,7 @@ export const AccountDialog = () => {
           className="w-full"
           style={{ height: '44px', borderRadius: '44px', color: '#EC605A' }}
           onClick={async () => {
-            if (tradeMode === TradeMode.Seamless) {
-              setTradeMode(TradeMode.Classic)
-              setActiveSeamlessAddress('')
-              setActiveSeamlessWallet(null)
-            } else {
-              await disconnect()
-            }
+            await disconnect()
             setAccountDialogOpen(false)
           }}
         >

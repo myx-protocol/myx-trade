@@ -23,10 +23,9 @@ import { SortField, type Vault } from '../type'
 import { Token } from './Token'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { encodeSortValue } from '@/utils/sort.ts'
-import { formatNumber } from '@/utils/number.ts'
+import { decimalToPercent, formatNumber } from '@/utils/number.ts'
+import { isSafeInteger } from 'lodash-es'
 import { isSafeNumber } from '@/utils'
-import Big from 'big.js'
-import { VaultTabsEnum } from './type'
 const sortField = SortField.tvl
 const sortOrder = 'desc'
 const limit = 20
@@ -35,7 +34,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
   const { accessToken } = useAccessToken()
   const { address: account } = useWalletConnection()
-  const { chainId, interval, tabValue } = useContext(SearchContext)
+  const { chainId, interval } = useContext(SearchContext)
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -44,7 +43,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
   const paginatedLimit = limit + 1
 
   const infiniteQuery = useInfiniteQuery<{ list: Vault[]; nextCursor?: string }>({
-    queryKey: ['quotePositionList', account, accessToken, chainId, interval, tabValue],
+    queryKey: ['quotePositionList', account, accessToken, chainId, interval],
     enabled: !!account,
     initialPageParam: undefined,
     queryFn: async ({ pageParam }) => {
@@ -58,13 +57,6 @@ export const Positions = ({ className = '' }: { className?: string }) => {
         limit: paginatedLimit,
         direction: cursor ? PageDirection.Next : undefined,
         cursor,
-        state: 1,
-        quoteSymbol:
-          tabValue === VaultTabsEnum.AllMarket
-            ? undefined
-            : tabValue === VaultTabsEnum.UsdtMarket
-              ? 'USDT'
-              : 'USDC',
       })
       setIsLoading(false)
 
@@ -246,17 +238,7 @@ export const Positions = ({ className = '' }: { className?: string }) => {
                 {!item ? (
                   <Skeleton width={95} />
                 ) : (
-                  <>
-                    $
-                    {priceMap?.[item?.poolId] && depositMap?.[item?.poolId]
-                      ? formatNumber(
-                          new Big(depositMap?.[item?.poolId])
-                            .mul(new Big(priceMap?.[item?.poolId]))
-                            .toNumber(),
-                          { showUnit: false },
-                        )
-                      : '--'}
-                  </>
+                  <>${formatNumber(depositMap?.[item?.poolId], { showUnit: false })}</>
                 )}
               </Box>
 

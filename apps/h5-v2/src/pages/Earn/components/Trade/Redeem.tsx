@@ -10,6 +10,7 @@ import { CustomCheckBox } from '@/components/CheckBox.tsx'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { t } from '@lingui/core/macro'
 import { EstRate } from '@/pages/Earn/components/Trade/EstRate.tsx'
+import { PriceImpact } from '@/pages/Earn/components/Trade/PriceImpact.tsx'
 import { TradeContext } from '@/pages/Earn/components/Trade/Context.ts'
 import { PoolContext } from '@/pages/Earn/context.ts'
 import { useQuery } from '@tanstack/react-query'
@@ -19,7 +20,6 @@ import {
   quote as Quote,
   pool as Pool,
   COMMON_LP_AMOUNT_DECIMALS,
-  parseUnits,
 } from '@myx-trade/sdk'
 import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
@@ -71,7 +71,7 @@ export const Redeem = () => {
         const bigintBalance = await getBalanceOf(+chainId, account, pool?.quotePoolToken)
         // todo api 未返回 quoteDecimals
         const _balance = formatUnits(bigintBalance, COMMON_LP_AMOUNT_DECIMALS)
-        return _balance
+        return formatNumberPrecision(_balance, COMMON_PRICE_DISPLAY_DECIMALS, false, false)
       }
     },
   })
@@ -89,7 +89,7 @@ export const Redeem = () => {
 
       if (result) {
         const _balance = formatUnits(result, COMMON_LP_AMOUNT_DECIMALS)
-        return _balance
+        return formatNumberPrecision(_balance, COMMON_PRICE_DISPLAY_DECIMALS, false, false)
       }
       return ''
     },
@@ -145,20 +145,6 @@ export const Redeem = () => {
     }
   }, [trueBalance])
 
-  const { data: withdrawableLpAmount } = useQuery({
-    queryKey: [{ key: 'withdrawableLpAmount' }, amount, poolId, account, isInsufficient],
-    enabled: !!amount && !!account && !isInsufficient && !!poolId && Number(amount) > 0,
-    queryFn: async () => {
-      if (!account || !poolId || !amount || isInsufficient || Number(amount) <= 0) return
-      const res = await Quote.withdrawableLpAmount({
-        chainId,
-        poolId,
-      })
-      console.log(`withdrawableLpAmount: ${res}, ${formatUnits(res, COMMON_LP_AMOUNT_DECIMALS)}`)
-      return res
-    },
-  })
-
   const onAmountChange = useCallback(({ floatValue }: { value: string; floatValue?: number }) => {
     setAmount(floatValue?.toString() || '')
   }, [])
@@ -169,17 +155,6 @@ export const Redeem = () => {
       if (!chainId || !poolId || !amount) return
       const checked = await onAction()
       if (!checked) return
-
-      if (
-        withdrawableLpAmount !== undefined &&
-        parseUnits(amount, COMMON_LP_AMOUNT_DECIMALS) > withdrawableLpAmount
-      ) {
-        toast.error({
-          title: t`Some funds are locked in active trades. Max available to sell: [${formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })}] LP.`,
-        })
-        return
-      }
-
       await Quote.withdraw({
         chainId: +chainId,
         poolId,
@@ -196,7 +171,7 @@ export const Redeem = () => {
     } finally {
       setLoading(false)
     }
-  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch, withdrawableLpAmount])
+  }, [chainId, amount, slippage, poolId, onAction, poolInfoRefetch])
 
   const burned = useMemo(() => {
     if (retainLPShare) return ''
@@ -328,7 +303,7 @@ export const Redeem = () => {
                   <Trans>
                     This will burn{' '}
                     <span className={'text-warning'}>
-                      {formatNumber(burned, { showUnit: false })}
+                      {formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)}
                     </span>{' '}
                     {quoteLpDetail?.mQuoteBaseSymbol} and you will permanently forfeit the right to
                     your{' '}
@@ -347,8 +322,6 @@ export const Redeem = () => {
         <Box className={'mt-[8px] mb-[4px] w-full'}>
           <ConnectButton>
             <TradeButton
-              id="earn_detail_submit_redeem_btn_h5"
-              data-analytics="earn_detail_submit_redeem_btn_h5"
               variant="contained"
               className={'w-full'}
               disabled={!amount || isInsufficient || Number(amount) <= 0}
@@ -372,6 +345,9 @@ export const Redeem = () => {
         </DescribeItem>
 
         <EstRate />
+
+        <PriceImpact slippage={slippage} setSlippage={setSlippage} />
+
         <Fee />
       </Describe>
     </Box>

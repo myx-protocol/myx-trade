@@ -61,7 +61,7 @@ export const redeemVipCode = async (params: RedeemRequest, accessParams: AccessP
     params,
     {
       headers: {
-        myx_openapi_access_token: accessParams.accessToken || '',
+        myx_openapi_access_token: accessParams.accessToken,
         myx_openapi_account: accessParams.account,
       },
     },

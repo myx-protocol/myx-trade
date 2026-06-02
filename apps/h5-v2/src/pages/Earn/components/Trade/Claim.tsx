@@ -9,7 +9,7 @@ import { quote as Quote, formatUnits } from '@myx-trade/sdk'
 import { toast } from '@/components/UI/Toast'
 import { useQuery } from '@tanstack/react-query'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
+import { COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { useWalletActions } from '@/hooks/useWalletActions.ts'
 import { showErrorToast } from '@/config/error'
 import { t } from '@lingui/core/macro'
@@ -21,10 +21,10 @@ export const Claim = () => {
   const onAction = useWalletActions()
 
   const { data: reward, refetch } = useQuery({
-    queryKey: [{ key: 'getQuoteLpAssetRewards' }, poolId, chainId, account, quoteLpDetail],
-    enabled: !!chainId && !!poolId && !!account && !!quoteLpDetail,
+    queryKey: [{ key: 'getBaseLpAssetRewards' }, poolId, chainId, account],
+    enabled: !!chainId && !!poolId && !!account,
     queryFn: async () => {
-      if (!chainId || !account || !poolId || !quoteLpDetail) return ''
+      if (!chainId || !account || !poolId) return ''
       let rewards = ''
       try {
         const rs = await Quote.getRewards({
@@ -32,12 +32,12 @@ export const Claim = () => {
           chainId: chainId,
           account: account as `0x${string}`,
         })
+        console.log('Reward', rs)
         if (rs === 0n) {
           rewards = '0'
         } else if (rs) {
           rewards = formatUnits(rs, quoteLpDetail?.quoteDecimals)
         }
-        console.log('Reward', rs, rewards)
       } catch (_e) {
         console.error(_e)
       }
@@ -47,7 +47,7 @@ export const Claim = () => {
   })
 
   const onHandleClaim = useCallback(async () => {
-    if (!poolId || !account || !reward || Number(reward) < MIN_CLAIM_AMOUNT) return
+    if (!poolId || !account || !reward || Number(reward) < 0) return
     try {
       setLoading(true)
       const checked = await onAction()
@@ -86,11 +86,9 @@ export const Claim = () => {
 
       <Box className={'mb-[4px] w-full'}>
         <TradeButton
-          id="earn_detail_submit_claim_btn_h5"
-          data-analytics="earn_detail_submit_claim_btn_h5"
           variant="contained"
           className={'w-full'}
-          disabled={!reward || Number(reward) < MIN_CLAIM_AMOUNT}
+          disabled={!reward || Number(reward) <= 0}
           loading={loading}
           onClick={onHandleClaim}
           loadingPosition="start"

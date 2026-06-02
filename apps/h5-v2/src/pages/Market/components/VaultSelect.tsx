@@ -30,11 +30,6 @@ import { COMMON_BASE_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/c
 import { getAssetIcon } from '@/utils/coin.tsx'
 import { Tooltips } from '@/components/UI/Tooltips'
 import { showErrorToast } from '@/config/error'
-import { scientificToString } from '@/utils/math.ts'
-import { PoolSecurityState } from '@/request/lp/type.ts'
-import { usePoolRiskConfig } from '@/hooks/lp/usePoolDetail.ts'
-import { MYX_CONTACT_SUPPORT } from '@/config'
-import { isNil } from 'lodash-es'
 
 enum VaultType {
   Base,
@@ -187,7 +182,6 @@ export const VaultSelect = ({
   const [baseAmount, setBaseAmount] = useState<string>('')
   const [quoteAmount, setQuoteAmount] = useState<string>('')
   const [slippage] = useState<string>('0.01')
-  const { riskLevelConfig } = usePoolRiskConfig({ chainId, poolId })
 
   const { data: balance } = useQuery({
     queryKey: [{ key: 'balance' }, type, account, chainId],
@@ -195,7 +189,7 @@ export const VaultSelect = ({
       const address = type === VaultType.Base ? token?.address : quote?.address
       const decimals = type === VaultType.Base ? token?.decimals : quote?.decimals
 
-      if (!address || !account || !chainId || isNil(decimals)) return
+      if (!address || !account || !chainId) return
       try {
         const bigintBalance = await getBalanceOf(+chainId, account, address)
         const _balance = formatUnits(bigintBalance, decimals)
@@ -213,7 +207,7 @@ export const VaultSelect = ({
       if (!token?.address || !chainId) return
       const result = await getMarketData({ asset: token.address, chainId: +chainId })
       if (result) {
-        return scientificToString(result?.data?.price)
+        return result?.data?.price
       }
       return
     },
@@ -224,19 +218,14 @@ export const VaultSelect = ({
     if (type === VaultType.Quote) {
       return quoteAmount
     } else if (type === VaultType.Base) {
-      try {
-        if (token && price && baseAmount && Number(baseAmount) > 0) {
-          return formatUnits(
-            parseUnits(price?.toString(), COMMON_PRICE_DECIMALS) *
-              parseUnits(baseAmount, token?.decimals),
-            COMMON_PRICE_DECIMALS + token?.decimals,
-          )
-        }
-        return ''
-      } catch (e) {
-        console.error(e)
-        return ''
+      if (token && price && baseAmount && Number(baseAmount) > 0) {
+        return formatUnits(
+          parseUnits(price.toString(), COMMON_PRICE_DECIMALS) *
+            parseUnits(baseAmount, token?.decimals),
+          COMMON_PRICE_DECIMALS + token?.decimals,
+        )
       }
+      return ''
     }
   }, [price, type, quoteAmount, baseAmount])
 
@@ -250,7 +239,6 @@ export const VaultSelect = ({
       if (!poolId || !amount || !slippage || !chainId) return
       const checked = await onAction()
       if (!checked) return
-      if (riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY) return
       if (type === VaultType.Base) {
         await Base.deposit({
           chainId: +chainId,
@@ -279,7 +267,7 @@ export const VaultSelect = ({
   const isInsufficient = useMemo(() => {
     // console.log(111111)
     if (!amount) return false
-    if (Number(amount) > Number(balance)) return true
+    if (Number(amount) >= Number(balance)) return true
     // if () return true
     return false
   }, [amount, balance])
@@ -376,49 +364,19 @@ export const VaultSelect = ({
         </Box>
       )}
 
-      {riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY ? (
-        <Tips className={'mt-[12px]'} showIcon={false}>
-          ⚠️ <Trans>Security Warning:</Trans>{' '}
-          <Trans>
-            This token carries extreme risks. For asset safety, contract trading and liquidity
-            provision are not supported.{' '}
-            <a href={MYX_CONTACT_SUPPORT} target="_blank" className={'text-green'}>
-              Contact support
-            </a>{' '}
-            for assistance.
-          </Trans>
-        </Tips>
-      ) : riskLevelConfig?.securityState === PoolSecurityState.UNKNOWN ? (
-        <Tips className={'mt-[12px]'} showIcon={false}>
-          ⚠️ <Trans>Security Notice:</Trans>{' '}
-          <Trans>
-            The security assessment for this token is incomplete. Providing liquidity or trading may
-            carry unknown risks. Proceed with caution at your own risk.
-          </Trans>
-        </Tips>
-      ) : (
-        <Tips className={'mt-[12px]'}>
-          <Trans>
-            The market will activate immediately once total liquidity reaches $
-            {market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'}.
-          </Trans>
-        </Tips>
-      )}
+      <Tips className={'mt-[12px]'}>
+        <Trans>
+          The market will activate immediately once total liquidity reaches $
+          {market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'}.
+        </Trans>
+      </Tips>
 
       <Box className={'mt-[32px] w-full'}>
         <Button
-          id="market_submit_create_btn_h5"
-          data-analytics="market_submit_create_btn_h5"
           className={'gradient primary long mx-auto w-full rounded'}
           loading={isLoading || !poolInfo}
           onClick={onConfirm}
-          disabled={
-            isLoading ||
-            isInsufficient ||
-            !market ||
-            isInvalidAmount ||
-            riskLevelConfig?.securityState === PoolSecurityState.NOT_SECURITY
-          }
+          disabled={isLoading || isInsufficient || !market || isInvalidAmount}
           loadingPosition={'start'}
         >
           <Trans>Create Market</Trans>

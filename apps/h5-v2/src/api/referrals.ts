@@ -7,7 +7,7 @@ import type { Address } from 'viem'
  * 所有 referrral 接口的公共参数
  */
 export interface AccessParams {
-  accessToken?: string | null
+  accessToken: string
   account: string
 }
 
@@ -271,13 +271,9 @@ export interface ReferralConfigType {
   remindLine: number
 }
 export const getReferralConfig = async (access: AccessParams) => {
-  return http.get<ApiResponse<ReferralConfigType>>(
-    `${baseUrl}/openapi/gateway/referral/config`,
-    undefined,
-    {
-      headers: withAccessHeaders(access),
-    },
-  )
+  return http.get<ApiResponse<ReferralConfigType>>(`${baseUrl}/v2/ref/config`, undefined, {
+    headers: withAccessHeaders(access),
+  })
 }
 
 export interface StatisticsType {

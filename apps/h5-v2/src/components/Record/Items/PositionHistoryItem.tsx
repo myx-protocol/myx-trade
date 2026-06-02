@@ -20,14 +20,10 @@ import { twMerge } from 'tailwind-merge'
 
 const OrderCloseType: Partial<Record<CloseTypeEnum, () => string>> = {
   [CloseTypeEnum.PartialClose]: () => t`部分平仓`,
-  [CloseTypeEnum.FullClose]: () => t`完全平仓`,
   [CloseTypeEnum.Liquidation]: () => t`强制平仓`,
+  [CloseTypeEnum.FullClose]: () => t`全部平仓`,
   [CloseTypeEnum.EarlyClose]: () => t`提前平仓`,
   [CloseTypeEnum.MarketClose]: () => t`市场平仓`,
-  [CloseTypeEnum.ADL]: () => t`ADL`,
-  [CloseTypeEnum.TP]: () => t`止盈平仓`,
-  [CloseTypeEnum.SL]: () => t`止损平仓`,
-  [CloseTypeEnum.Increase]: () => t`加仓`,
 }
 
 export const PositionHistoryItem = ({ item }: { item: PositionHistoryItemType }) => {

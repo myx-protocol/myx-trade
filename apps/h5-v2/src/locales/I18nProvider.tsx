@@ -13,41 +13,27 @@ function useInitI18n() {
   const { activeLocale: locale } = useGlobalStore()
 
   useEffect(() => {
-    let cancelled = false
-
-    setSuccess(false)
-    setFailed(false)
     ;(async () => {
       try {
         setLoading(true)
+        console.log(locale)
         const messages = await loadTranslationMessagesOnServerSide(locale)
-        if (cancelled) {
-          return
-        }
         i18n.loadAndActivate({ locale, messages })
         setSuccess(true)
       } catch (error) {
         console.error(error)
-        if (!cancelled) {
-          setFailed(true)
-        }
+        setFailed(true)
       } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
+        setLoading(false)
       }
     })()
-
-    return () => {
-      cancelled = true
-    }
   }, [locale])
 
   return { isSuccess, isFailed, i18n, isLoading }
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const { i18n, isFailed, isSuccess } = useInitI18n()
+  const { i18n, isFailed } = useInitI18n()
 
   useEffect(() => {
     if (i18n.locale) {
@@ -59,14 +45,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   // failed
   if (isFailed) {
     return (
-      <div className="flex h-[100vh] items-center justify-center text-[24px]">
+      <div className="h-[100vh] flex items-center justify-center text-[24px]">
         Language activation failed, please refresh and try again
       </div>
     )
-  }
-
-  if (!isSuccess) {
-    return null
   }
 
   return <I18nProviderRaw i18n={i18n}>{children}</I18nProviderRaw>

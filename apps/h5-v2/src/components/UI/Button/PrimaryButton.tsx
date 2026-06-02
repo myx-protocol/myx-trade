@@ -1,10 +1,7 @@
-import { Button } from '@mui/material'
+import { Button, CircularProgress } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
-import loadingIcon from '@/assets/icon/loading.svg'
-import React from 'react'
-import type { AnalyticsProps } from '@/vite-env'
 
-interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface PrimaryButtonProps {
   children?: React.ReactNode
   onClick?: () => void
   className?: string
@@ -22,9 +19,7 @@ const PrimaryButton = ({
   loading,
   disabled,
   simple = false,
-  id,
-  dataAnalytics,
-}: PrimaryButtonProps & AnalyticsProps) => {
+}: PrimaryButtonProps) => {
   const defaultSx: SxProps<Theme> = {
     background: simple ? '#008C66' : 'linear-gradient(135deg, #3D996B 0%, #00996F 100%)',
     border: '1px solid transparent',
@@ -44,16 +39,13 @@ const PrimaryButton = ({
     textTransform: 'none',
     whiteSpace: 'nowrap',
     position: 'relative',
+    lineHeight: 1,
 
     '&:hover': {
       backgroundImage: simple
         ? 'none'
         : 'linear-gradient(135deg, #359960 0%, #00856B 100%), linear-gradient(135deg, #80FF9580 0%, #00E5A780 100%)', // 悬停时稍微变暗
     },
-    '&:disabled': {
-      color: 'white',
-    },
-    opacity: loading ? 0.6 : 1,
     ...style,
   }
 
@@ -63,13 +55,21 @@ const PrimaryButton = ({
       onClick={onClick}
       sx={defaultSx}
       disabled={disabled || loading}
-      id={id}
-      data-analytics={dataAnalytics}
     >
-      <div className="flex items-center justify-center gap-[10px]">
-        {loading && <img src={loadingIcon} className="animate-spin" />}
-        <div>{children}</div>
-      </div>
+      <span style={{ visibility: loading ? 'hidden' : 'visible' }}>{children}</span>
+      {loading && (
+        <CircularProgress
+          size={20}
+          sx={{
+            color: 'white',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-10px',
+            marginLeft: '-10px',
+          }}
+        />
+      )}
     </Button>
   )
 }

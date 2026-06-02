@@ -3,8 +3,3 @@ export interface ApiResponse<T = Record<string, any> | null> {
   msg: string
   data: T
 }
-
-export interface AccessParams {
-  accessToken?: string | null
-  account: string
-}

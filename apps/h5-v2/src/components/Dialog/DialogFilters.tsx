@@ -8,7 +8,6 @@ import { t } from '@lingui/core/macro'
 import { TradeButton } from '@/components/Button/TradeButton.tsx'
 import { Drawer } from '@/components/Drawer.tsx'
 
-type DecimalSeparators = '.' | ','
 type FilterField = [string, string]
 interface FilterItemProps {
   // disabled?: boolean,
@@ -18,8 +17,6 @@ interface FilterItemProps {
   endAdornment?: React.ReactNode
   max?: number
   min?: number
-  allowNegative?: boolean
-  allowedDecimalSeparators?: DecimalSeparators[]
 }
 export interface FilterFields {
   age: FilterField
@@ -52,8 +49,6 @@ const FilterItem = ({
   onChange,
   max: maxValue,
   min: minValue,
-  allowNegative = false,
-  allowedDecimalSeparators = [],
 }: FilterItemProps) => {
   const [min = '', max = ''] = value
   return (
@@ -64,9 +59,7 @@ const FilterItem = ({
           placeholder={t`Min`}
           value={min}
           max={maxValue}
-          min={minValue}
-          allowNegative={allowNegative}
-          allowedDecimalSeparators={allowedDecimalSeparators}
+          min={minValue || 0}
           onValueChange={({ formattedValue }) => onChange([formattedValue, max])}
           endAdornment={endAdornment}
         />
@@ -76,9 +69,7 @@ const FilterItem = ({
           placeholder={t`Max`}
           value={max}
           max={maxValue}
-          min={minValue}
-          allowNegative={allowNegative}
-          allowedDecimalSeparators={allowedDecimalSeparators}
+          min={minValue || 0}
           onValueChange={({ formattedValue }) => onChange([min, formattedValue])}
           endAdornment={endAdornment}
         />
@@ -137,16 +128,12 @@ const FiltersDialogContent = ({
     <Box className={'px-[20px] pb-[24px]'}>
       <Box className={'flex w-full flex-col gap-[12px]'}>
         <FilterItem
-          label={<Trans>Token age(min)</Trans>}
+          label={<Trans>Age(min)</Trans>}
           value={age}
           onChange={(value) => setAge(value)}
         />
 
-        <FilterItem
-          label={<Trans>Market cap($)</Trans>}
-          value={mc}
-          onChange={(value) => setMC(value)}
-        />
+        <FilterItem label={<Trans>MC</Trans>} value={mc} onChange={(value) => setMC(value)} />
 
         {isShowProgress && (
           <FilterItem
@@ -154,22 +141,22 @@ const FiltersDialogContent = ({
             value={progress}
             max={100}
             onChange={(value) => setProgress(value)}
-            endAdornment={'%'}
           />
         )}
 
         <FilterItem
           label={<Trans>Change</Trans>}
           value={change}
-          allowNegative={true}
           onChange={(value) => setChange(value)}
           endAdornment={'%'}
         />
 
+        <FilterItem label={<Trans>Liq</Trans>} value={liq} onChange={(value) => setLiq(value)} />
+
         <FilterItem
-          label={<Trans>Liquidity($)</Trans>}
-          value={liq}
-          onChange={(value) => setLiq(value)}
+          label={<Trans>Holders</Trans>}
+          value={holders}
+          onChange={(value) => setHolders(value)}
         />
       </Box>
       <Box className={'mt-[16px] flex items-center gap-[12px]'}>

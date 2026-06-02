@@ -12,7 +12,7 @@ interface UseMarketDetailParams {
 
 export const useMarketDetail = (params: UseMarketDetailParams) => {
   const { poolId, chainId } = params
-  const { client } = useMyxSdkClient(chainId)
+  const { client } = useMyxSdkClient()
   const queryClient = useQueryClient()
 
   const queryKey = useMemo(() => ['marketDetail', chainId, poolId], [chainId, poolId])
@@ -55,6 +55,5 @@ export const useMarketDetail = (params: UseMarketDetailParams) => {
   return {
     getDetail,
     refresh,
-    client,
   }
 }

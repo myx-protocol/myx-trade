@@ -1,10 +1,16 @@
 import { ChartInterval } from './type.ts'
 import { createContext } from 'react'
-import type { MarketPoolRiskLevelConfig, PoolBoostInfo, QuoteLpDetail } from '@/request/lp/type.ts'
-import { type MarketInfo, type MarketPool } from '@myx-trade/sdk'
+import type { QuoteLpDetail } from '@/request/lp/type.ts'
+import { type MarketPool } from '@myx-trade/sdk'
 import { Interval } from '@/request/type.ts'
 import { Mode } from '@/pages/Cook/type.ts'
-import type { VaultTabsEnum } from './components/type.ts'
+
+export interface ChartContextValue {
+  period: ChartInterval
+  setPeriod: (period: ChartInterval) => void
+}
+
+export const ChartContext = createContext<ChartContextValue>({} as ChartContextValue)
 
 export interface PoolContextValue {
   pool?: MarketPool
@@ -16,18 +22,9 @@ export interface PoolContextValue {
   refetch: () => void
   genesisFeeRate?: string
   mode: Mode
-  tvl?: {
-    totalTvl: string
-    baseTvl: string
-    quoteTvl: string
-  }
+  tvl?: string
   poolInfoRefetch: () => void
   fundingRate?: string
-  markets?: MarketInfo[]
-  riskLevelConfig?: MarketPoolRiskLevelConfig | null
-  boostedPrimeTvl?: string
-  boostInfo?: PoolBoostInfo | null
-  refetchBoostInfo?: () => void
 }
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)
 
@@ -36,7 +33,5 @@ export interface SearchContextValue {
   setChainId: (chainId: number | undefined) => void
   interval?: Interval
   setInterval: (interval: Interval) => void
-  tabValue: VaultTabsEnum
-  setTabValue: (tabValue: VaultTabsEnum) => void
 }
 export const SearchContext = createContext<SearchContextValue>({} as SearchContextValue)

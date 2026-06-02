@@ -46,7 +46,7 @@ export const ReferralFriendsListDialog = ({
   const fetchData = async () => {
     setLoading(true)
     try {
-      if (accessParams?.accessToken || accessParams?.account) {
+      if (accessParams?.accessToken && accessParams.account) {
         const params: GetUserReferralDataParams = {
           code: info.invitationCode,
           limit: PAGE_SIZE,

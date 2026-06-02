@@ -18,7 +18,7 @@ export const PositionList = () => {
   }
 
   return (
-    <div>
+    <>
       {positionList.map((position: any, index: number) => (
         <PositionItem
           key={index}
@@ -27,6 +27,6 @@ export const PositionList = () => {
           pool={poolList.find((pool: any) => pool.poolId === position.poolId)}
         />
       ))}
-    </div>
+    </>
   )
 }

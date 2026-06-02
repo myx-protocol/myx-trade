@@ -10,8 +10,7 @@ import { formatNumber } from '@/utils/number'
 import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 import useGlobalStore from '@/store/globalStore'
 import { useGetPositionList } from '@/hooks/position/use-get-position-list'
-import { getSlippage, getSlippageConfig, SlippageTypeEnum } from '@/utils/slippage'
-import { useGetPoolConfig } from '@/hooks/use-get-pool-config'
+import { getSlippage, SlippageTypeEnum } from '@/utils/slippage'
 import { AmountUnitEnum } from '@/components/Trade/type'
 import { setSlippage as setSlippageAction } from '@/utils/slippage'
 import { EditText } from '@/components/EditText'
@@ -19,7 +18,7 @@ import { useSubmitOrder } from '@/components/Trade/TradePanel/PlaceOrder/hooks/u
 
 export const CloseConfirmDialog = () => {
   const { longSize, shortSize, price, amountUnit } = useTradePanelStore()
-  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading } = useSubmitOrder()
   const { symbolInfo } = useGlobalStore()
 
   const {
@@ -27,13 +26,11 @@ export const CloseConfirmDialog = () => {
     closeOrderConfirmDialogOpen,
     showCloseOrderConfirmDialog,
   } = useGlobalStore()
-  const { poolConfig } = useGetPoolConfig(symbolInfo?.poolId, symbolInfo?.chainId)
-  const closePositionSlippage =
-    getSlippage({
-      chainId: symbolInfo?.chainId ?? 0,
-      poolId: symbolInfo?.poolId ?? '',
-      type: SlippageTypeEnum.CLOSE,
-    }) ?? getSlippageConfig(poolConfig?.level ?? 1)
+  const closePositionSlippage = getSlippage({
+    chainId: symbolInfo?.chainId ?? 0,
+    poolId: symbolInfo?.poolId ?? '',
+    type: SlippageTypeEnum.CLOSE,
+  })
 
   const direction = closeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
   const formatOriginSize = direction === Direction.LONG ? longSize : shortSize
@@ -100,9 +97,8 @@ export const CloseConfirmDialog = () => {
         </p>
         <div className="flex items-center gap-[4px]">
           <EditText
-            value={`${(closePositionSlippage * 100).toFixed(2)}`}
+            value={`${((closePositionSlippage ?? 0) * 100).toFixed(2)}`}
             unit="%"
-            max={99.99}
             onChange={(newSlippage) => {
               setSlippageAction({
                 chainId: symbolInfo?.chainId ?? 0,
@@ -128,7 +124,7 @@ export const CloseConfirmDialog = () => {
 
       <div className="left-0 mt-[40px] flex w-full justify-center px-[20px]">
         <PrimaryButton
-          loading={submitLoading || longAsyncVipLoading || shortAsyncVipLoading}
+          loading={submitLoading}
           onClick={async () => {
             // try {
             // setLoading(true)
@@ -152,7 +148,7 @@ export const CloseConfirmDialog = () => {
             //   timeInForce: TimeInForce.IOC,
             //   postOnly: false,
             //   slippagePct: ethers
-            //     .parseUnits(closePositionSlippage.toString(), 4)
+            //     .parseUnits((closePositionSlippage ?? 0).toString(), 4)
             //     .toString(), // 转换为精度4位
             //   executionFeeToken: symbolInfo?.quoteToken as string,
             //   leverage: position.userLeverage,

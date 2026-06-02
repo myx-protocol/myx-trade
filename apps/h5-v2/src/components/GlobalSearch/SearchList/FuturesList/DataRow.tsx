@@ -93,7 +93,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
       </div>
       <div className="flex w-[103px] flex-col items-end text-right text-[14px] font-medium text-white">
         <p>
-          <Price value={tickerData?.price || item.basePrice} showUnit={false} />
+          <Price value={tickerData?.price || item.basePrice} showUnit={false} decimals={2} />
         </p>
         <p className="mt-[6px] text-[12px]">
           <RiseFallTextPrecent value={tickerData?.change || item.priceChange} />

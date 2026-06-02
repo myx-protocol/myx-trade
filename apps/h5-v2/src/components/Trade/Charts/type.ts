@@ -13,7 +13,3 @@ export enum KlineTypeEnum {
   HiLo = 12,
 }
 
-export enum ChartTypeEnum {
-  TradingView = 'TradingView',
-  DepthChart = 'DepthChart',
-}

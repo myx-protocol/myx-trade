@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import clsx from 'clsx'
 import { Slider, Tooltip } from '@mui/material'
-import { useTradePanelStore } from '@/components/Trade/TradePanel/store'
 
 const ValueLabelComponent = (props: any) => {
   const { children, value } = props
@@ -63,8 +63,7 @@ const AmountSliderMarks = [
 ]
 
 export const AmountInput = ({ onchange }: { onchange: (value: number) => void }) => {
-  const { amountSliderValue: sliderValue, setAmountSliderValue: setSliderValue } =
-    useTradePanelStore()
+  const [sliderValue, setSliderValue] = useState(0)
 
   return (
     <div className="mt-[12px] px-[16px]">

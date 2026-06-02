@@ -57,9 +57,12 @@ export const Info = () => {
           <DescribeItem title={<Trans>FDV</Trans>}>
             ${baseLpDetail?.fdv ? formatNumber(baseLpDetail.fdv) : '--'}
           </DescribeItem>
-
           <DescribeItem title={<Trans>Holders</Trans>}>
             {formatNumber(baseLpDetail?.holders)}
+          </DescribeItem>
+
+          <DescribeItem title={<Trans>Traders</Trans>}>
+            {formatNumber(baseLpDetail?.traders)}
           </DescribeItem>
 
           <DescribeItem title={<Trans>Total Spot liq</Trans>}>

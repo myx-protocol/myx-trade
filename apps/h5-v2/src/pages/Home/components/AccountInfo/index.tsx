@@ -6,20 +6,36 @@ import { formatNumber } from '@/utils/number'
 import { truncateAddress } from '@/utils/string'
 import { Trans } from '@lingui/react/macro'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useHomeStore } from '../../store'
 import { Tooltips } from '@/components/UI/Tooltips'
 import useGlobalStore from '@/store/globalStore'
 import { ReceiveDialog } from '@/components/ReceiveDialog'
 import { useState } from 'react'
-import { useGetTotalAccountAssets } from '@/hooks/balance/use-get-total-account-assets'
+import useSWR from 'swr'
+import { parseBigNumber } from '@/utils/bn'
 
 export const AccountInfo = () => {
   const { address } = useWalletConnection()
   const homeStore = useHomeStore()
+  const { client, clientIsAuthenticated } = useMyxSdkClient(homeStore.chainId)
   const { setAccountDialogOpen } = useGlobalStore()
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
+  const { poolList } = useGlobalStore()
 
-  const accountBalance = useGetTotalAccountAssets()
+  const { data: accountBalance, isLoading } = useSWR(
+    address && client && clientIsAuthenticated && poolList.length > 0
+      ? ['home-getAccountBalance', homeStore.chainId, address, poolList]
+      : null,
+    async () => {
+      const res = await client?.account.getWalletQuoteTokenBalance(homeStore.chainId, address)
+      const pool = poolList.find((item: any) => item.chainId === homeStore.chainId)
+
+      return parseBigNumber(res?.data?.toString() || '0')
+        .div(parseBigNumber(10).pow(pool?.quoteDecimals ?? 6))
+        .toString()
+    },
+  )
 
   return (
     <div className="mt-[9px] w-full px-[16px]">
@@ -53,12 +69,14 @@ export const AccountInfo = () => {
             })}
           >
             <p className="truncate text-[28px] font-bold">
-              $
-              {formatNumber(accountBalance ?? '0', {
-                showUnit: false,
-              })}
+              {isLoading
+                ? '--'
+                : `$${formatNumber(accountBalance ?? '0', {
+                    showUnit: false,
+                  })}`}
             </p>
           </Tooltips>
+          {/* <p className="ml-[4px] shrink-0 text-[14px] leading-none font-bold">USDC</p> */}
         </div>
 
         <PrimaryButton
@@ -79,7 +97,7 @@ export const AccountInfo = () => {
           chainId={homeStore.chainId}
           open={receiveDialogOpen}
           onClose={() => setReceiveDialogOpen(false)}
-          symbol="USDT"
+          symbol="USDC"
         />
       </div>
     </div>

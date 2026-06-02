@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { isAddress, zeroAddress } from 'viem'
 import { TokenContext } from './context'
 import { useQuery } from '@tanstack/react-query'
-import { getTokenInfo, MarketPoolState, pool, type Address } from '@myx-trade/sdk'
+import { getTokenInfo, MarketPoolState, pool } from '@myx-trade/sdk'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { toast } from '@/components/UI/Toast'
@@ -22,7 +22,6 @@ import type { Asset } from '@/hooks/useWalletPortfolio.ts'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { showErrorToast } from '@/config/error'
 import { TitleBar } from '@/components/TitleBar.tsx'
-import { isCookState } from '@/utils/cook.ts'
 
 const Market = () => {
   const navigate = useNavigate()
@@ -61,7 +60,7 @@ const Market = () => {
 
   useEffect(() => {
     if (chainId && address && Markets?.length && !marketInfo) {
-      showErrorToast(t`Invalid Market`)
+      toast.error({ title: t`Invalid Market` })
     }
   }, [marketInfo, chainId, address, Markets?.length])
 
@@ -155,7 +154,7 @@ const Market = () => {
 
         const poolId = await pool.getMarketPoolId({
           chainId: +chainId,
-          baseToken: token.address as Address,
+          baseToken: token.address,
           marketId: marketInfo?.marketId,
         })
 
@@ -163,18 +162,19 @@ const Market = () => {
           setPoolId(poolId)
           // check pool status
           const _pool = await pool.getPoolDetail(+chainId, poolId)
-          if (_pool?.state === MarketPoolState.Bench || isCookState(_pool?.state as number)) {
+          if (_pool?.state === MarketPoolState.Bench || _pool?.state === MarketPoolState.Cook) {
             setStep(2)
             return
           }
           if (_pool) {
-            toast.error({ title: t`market is created` })
-            return
+            toast.success({ title: t`market is created` })
+            navigate(`/cook/${_pool.chainId}/${_pool.poolId}`)
+            // todo error pool yi created
           }
         } else {
           const poolId = await pool.createPool({
             chainId: +chainId,
-            baseToken: token.address as Address,
+            baseToken: token.address,
             marketId: marketInfo?.marketId,
           })
           if (poolId && poolId.startsWith('0x')) {
@@ -219,10 +219,6 @@ const Market = () => {
     setStep(0)
   }, [chainId, address, curChainId])
 
-  useEffect(() => {
-    document.title = t`Create Market - Permissionless Listing for Any Asset | MYX`
-  }, [])
-
   return (
     <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pb-[50px]">
       <Box className={'bg-deep sticky top-[0] z-[3]'}>
@@ -234,8 +230,6 @@ const Market = () => {
         <Create>
           <Box className={'flex w-full items-center'}>
             <Button
-              id="create_now_btn_h5"
-              data-analytics="create_now_btn_h5"
               className={'gradient primary long !mx-auto mx-auto w-[488px] rounded'}
               onClick={() => setStep(step + 1)}
             >

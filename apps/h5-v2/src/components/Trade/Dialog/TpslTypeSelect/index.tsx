@@ -5,7 +5,6 @@ import { useMemo, type ReactNode } from 'react'
 import clsx from 'clsx'
 import useGlobalStore from '@/store/globalStore'
 import { DialogBase } from '@/components/UI/DialogBase'
-import { t } from '@lingui/core/macro'
 
 interface TPSLTypeSelectDialogProps {
   open: boolean
@@ -81,12 +80,15 @@ export const TPSLTypeSelectDialog = ({
     onClose()
   }
   return (
-    <DialogBase title={t`TP/SL Settings`} open={open} onClose={onClose}>
-      <div className="mt-[4px] flex flex-col gap-[10px] pt-[16px]">
+    <DialogBase open={open} onClose={onClose}>
+      <DialogTitleTheme className="pb-[20px]! text-[20px]! font-bold">
+        <Trans>TP/SL Settings</Trans>
+      </DialogTitleTheme>
+      <div className="mt-[4px] flex flex-col gap-[10px] px-[16px] pb-[32px]">
         {tpslTypeList.map((item) => (
           <div
             key={item.value}
-            className={clsx('rounded-[8px] border-[1px] p-[16px] px-[12px]', {
+            className={clsx('rounded-[8px] border-[1px] px-[12px] py-[16px]', {
               'border-[#31333D]': value !== item.value,
               'border-[#ffffff]': value === item.value,
             })}

@@ -44,7 +44,7 @@ export const PlaceOrderConfirmDialog = () => {
     tpSlOpen,
   } = useTradePanelStore()
   const direction = placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT
-  const { submitOrder, submitLoading, longAsyncVipLoading, shortAsyncVipLoading } = useSubmitOrder()
+  const { submitOrder, submitLoading } = useSubmitOrder()
   const { showPlaceOrderConfirmDialog, poolList } = useGlobalStore()
   const { getTradingFee } = useGetTradingFee(symbolInfo?.chainId)
   const assets = useGetAccountAssets(symbolInfo?.chainId, symbolInfo?.poolId)
@@ -520,7 +520,6 @@ export const PlaceOrderConfirmDialog = () => {
               <EditText
                 value={`${((openPositionSlippage ?? 0) * 100).toFixed(2)}`}
                 unit="%"
-                max={99.99}
                 onChange={(newSlippage, closeEdit) => {
                   setSlippage({
                     chainId: symbolInfo?.chainId ?? 0,
@@ -540,10 +539,7 @@ export const PlaceOrderConfirmDialog = () => {
         </div>
         <div className="mt-[20px]">
           <DialogConfirmFooter
-            loading={
-              submitLoading ||
-              (direction === Direction.LONG ? longAsyncVipLoading : shortAsyncVipLoading)
-            }
+            loading={submitLoading}
             onConfirm={() => {
               submitOrder(placeOrderConfirmDialogOpen === 'LONG' ? Direction.LONG : Direction.SHORT)
             }}

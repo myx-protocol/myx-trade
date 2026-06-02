@@ -15,9 +15,7 @@ export const approve = async (chainId: ChainId, _account: string, tokenAddress: 
     const gasLimit = bigintTradingGasToRatioCalculator (_gasLimit, chainInfo.gasLimitRatio)
     const { gasPrice } = await bigintTradingGasPriceWithRatio (chainId)
     
-    console.log('before approve-->', {gasLimit, gasPrice})
     const hash = await contract.write.approve([approveAddress as Address, amount],{gasLimit, gasPrice}) as Address;
-
     const client = getPublicClient(chainId);
     await client.waitForTransactionReceipt({ hash });
   } catch (e) {

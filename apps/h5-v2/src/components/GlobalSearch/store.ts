@@ -42,7 +42,7 @@ export const useGlobalSearchStore = create<GlobalSearchStore>()(
         isOpen: false,
         open: (params) => {
           const defaultTab = params?.defaultTab ?? SearchTypeEnum.Contract
-          const secondTab = params?.secondTab ?? SearchSecondTypeEnum.BlueChips
+          const secondTab = params?.secondTab ?? SearchSecondTypeEnum.Favorite
 
           set((state) => {
             state.isOpen = true

@@ -14,10 +14,6 @@ import { InfoContent } from './components/InfoContent'
 
 import useGlobalStore, { type PoolConfig } from '@/store/globalStore'
 import { getPoolLevelConfig } from '@/api'
-import { t } from '@lingui/core/macro'
-import { decimalToPercent, formatNumber } from '@/utils/number'
-import { useMarketStore } from '@/components/Trade/store/MarketStore'
-import { TradeConfig } from './components/TradeConfig'
 
 const Price = () => {
   const { tab } = usePriceStore()
@@ -75,33 +71,17 @@ const Price = () => {
     }
   }, [symbolInfo?.poolId, symbolInfo?.chainId, subscribeOraclePrice, unsubscribeOraclePrice])
 
-  const tickerData = useMarketStore((state) => state.tickerData[symbolInfo?.poolId || ''])
-
-  const latestPrice = tickerData?.price || 0
-  const change = tickerData?.change || 0
-  const symbol =
-    symbolInfo?.baseSymbol && symbolInfo.quoteSymbol
-      ? `${symbolInfo.baseSymbol}${symbolInfo.quoteSymbol}`
-      : '--'
-
   if (!chainId || !poolId) {
     return <Navigate to={DEFAULT_PRICE_PATH} />
   }
   return (
     <div>
-      <title>{t`${formatNumber(latestPrice, {
-        showUnit: false,
-      })} | ${symbol} | ${decimalToPercent(change, {
-        showSign: false,
-        removeTrailingZeros: true,
-      })} | MYX`}</title>
       <Header />
       <Tabs />
       <PriceInfo />
       {tab === PriceTabEnum.Price ? <PriceContent /> : <></>}
       {tab === PriceTabEnum.Pool ? <PoolContent /> : <></>}
       {tab === PriceTabEnum.Info ? <InfoContent /> : <></>}
-      {tab === PriceTabEnum.TradeConfig ? <TradeConfig /> : <></>}
     </div>
   )
 }

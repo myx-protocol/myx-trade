@@ -15,7 +15,6 @@ import { t } from '@lingui/core/macro'
 import { Direction } from '@myx-trade/sdk'
 import { parseBigNumber } from '@/utils/bn'
 import { displayAmount } from '@/utils/number'
-import { DialogBase } from '../UI/DialogBase'
 
 type ALinkProps = {
   href: string
@@ -56,7 +55,8 @@ export const SharePositionDialog = ({
   return (
     <>
       <Share size={14} onClick={() => setOpen(true)} />
-      <DialogBase
+      <Dialog
+        ref={containerRef}
         open={open}
         onClose={() => setOpen(false)}
         sx={{
@@ -65,107 +65,124 @@ export const SharePositionDialog = ({
             alignItems: 'center',
           },
         }}
+        slotProps={{
+          paper: {
+            sx: {
+              padding: '16px',
+              backgroundColor: '#18191F',
+              borderTopRightRadius: '16px',
+              borderTopLeftRadius: '16px',
+              borderBottomRightRadius: '0px',
+              borderBottomLeftRadius: '0px',
+              border: '1px solid #2C2D33',
+              minHeight: 451,
+              boxShadow: '0px 8px 32px 0px #00000052',
+              paddingBottom: '24px',
+              width: '100%',
+              mx: 'auto',
+              margin: '0px 12px',
+            },
+          },
+        }}
       >
-        <div ref={containerRef}>
-          <div className="flex w-full items-center">
-            <img src={myx_logo} alt="" />
-            <div className="mx-[12px] h-[24px] w-[1px] bg-[#848e9c]" />
-            <p className="text-[12px] text-[#ced1d9]">
-              <Trans>The Most Scalable Derivatives Protocol</Trans>
-            </p>
-          </div>
-          <div className="mt-[20px] flex w-full items-center">
-            <span className="text-[16px] font-[700] text-[white]">
-              {position?.baseSymbol}/{position?.quoteSymbol}
-            </span>
-            <span
-              className="ml-[12px] text-[12px]"
-              style={{ color: position?.direction === Direction.LONG ? '#00E3A5' : '#ec605a' }}
-            >
-              {position?.direction === Direction.LONG ? (
-                <Trans>Open Long</Trans>
-              ) : (
-                <Trans>Open Short</Trans>
-              )}
-            </span>
-            <div className="mx-[12px] h-[24px] w-[1px] bg-[#464852]" />
-            <span className="text-[12px] text-[#848e9c]">{position?.userLeverage}x</span>
-          </div>
-          <div className="mt-[20px] flex w-full items-center">
-            <span className="text-[12px] text-[white]">
-              <Trans>ROE</Trans>
-            </span>
-          </div>
-          <div
-            className="mt-[4px] w-full text-[20px] font-[700]"
-            style={{ color: parseBigNumber(roe ?? '0').gt(0) ? '#00E3A5' : '#ec605a' }}
-          >
-            {parseBigNumber(roe ?? '0').toFixed(2)}%
-          </div>
-          <div className="mt-[20px] flex w-full items-center">
-            <p className="w-[100px] text-[12px] text-[#848e9c]">
-              <Trans>Entry Price</Trans>
-            </p>
-            <span className="ml-[12px] text-[14px] text-[white]">
-              {displayAmount(position?.entryPrice ?? '0')}
-            </span>
-          </div>
-          <div className="mt-[6px] flex w-full items-center">
-            <p className="w-[100px] text-[12px] text-[#848e9c]">
-              <Trans>Latest Price</Trans>
-            </p>
-            <span className="ml-[14px] text-[12px] text-[white]">
-              {displayAmount(price ?? '0')}
-            </span>
-          </div>
-          <div className="mt-[20px] flex flex-col gap-[10px] rounded-[12px]">
-            <img src={share_qrcode} alt="" className="h-[104px] w-[104px]" />
-            <span className="text-[12px] text-[#848e9c]">
-              <Trans>Scan to Visit MYX</Trans>
-            </span>
-          </div>
-          <div className="mt-[100px] flex items-center gap-[12px]">
-            <PrimaryButton
-              className="w-full rounded-[8px]"
-              style={{ height: '44px' }}
-              onClick={() => {
-                const url = `https://app.myx.finance/trade`
-                const shareText = t`Join MYX Trading now to enjoy ultra-low fees and earn generous airdrop rewards! `
-                window.open(
-                  `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(url)}`,
-                )
-              }}
-            >
-              <Trans>Share Twitter</Trans>
-            </PrimaryButton>
-            <PrimaryButton
-              loading={saveLoading}
-              className="w-full rounded-[8px]"
-              style={{ background: '#4d515c', color: '#fff', height: '44px' }}
-              onClick={() => {
-                setSaveLoading(true)
-                exportImage(containerRef.current as HTMLElement, 'share')
-                  .catch((err) => {
-                    toast.error({
-                      title: t`save failed`,
-                    })
-                    console.error(err)
-                  })
-                  .finally(() => {
-                    setSaveLoading(false)
-                  })
-              }}
-            >
-              <Trans>Save as Picture</Trans>
-            </PrimaryButton>
-          </div>
-          <img
-            src={parseBigNumber(roe ?? '0').gt(0) ? share_position_profit : share_position_loss}
-            alt=""
-            className="absolute right-[20px] bottom-[100px] h-[202px] w-[auto]"
-          />
+        <div className="flex w-full items-center justify-end">
+          <CloseIcon size={16} onClick={() => setOpen(false)} color="#464852" />
         </div>
-      </DialogBase>
+        <div className="flex w-full items-center">
+          <img src={myx_logo} alt="" />
+          <div className="mx-[12px] h-[24px] w-[1px] bg-[#848e9c]" />
+          <p className="text-[12px] text-[#ced1d9]">
+            <Trans>The Most Scalable Derivatives Protocol</Trans>
+          </p>
+        </div>
+        <div className="mt-[20px] flex w-full items-center">
+          <span className="text-[16px] font-[700] text-[white]">
+            {position?.baseSymbol}/{position?.quoteSymbol}
+          </span>
+          <span
+            className="ml-[12px] text-[12px]"
+            style={{ color: position?.direction === Direction.LONG ? '#00E3A5' : '#ec605a' }}
+          >
+            {position?.direction === Direction.LONG ? (
+              <Trans>Open Long</Trans>
+            ) : (
+              <Trans>Open Short</Trans>
+            )}
+          </span>
+          <div className="mx-[12px] h-[24px] w-[1px] bg-[#464852]" />
+          <span className="text-[12px] text-[#848e9c]">{position?.userLeverage}x</span>
+        </div>
+        <div className="mt-[20px] flex w-full items-center">
+          <span className="text-[12px] text-[white]">
+            <Trans>ROE</Trans>
+          </span>
+        </div>
+        <div
+          className="w-full text-[20px] font-[700]"
+          style={{ color: parseBigNumber(roe ?? '0').gt(0) ? '#00E3A5' : '#ec605a' }}
+        >
+          {parseBigNumber(roe ?? '0').toFixed(2)}%
+        </div>
+        <div className="mt-[20px] flex w-full items-center">
+          <p className="w-[100px] text-[12px] text-[#848e9c]">
+            <Trans>Entry Price</Trans>
+          </p>
+          <span className="ml-[12px] text-[14px] text-[white]">
+            {displayAmount(position?.entryPrice ?? '0')}
+          </span>
+        </div>
+        <div className="mt-[6px] flex w-full items-center">
+          <p className="w-[100px] text-[12px] text-[#848e9c]">
+            <Trans>Latest Price</Trans>
+          </p>
+          <span className="ml-[14px] text-[12px] text-[white]">{displayAmount(price ?? '0')}</span>
+        </div>
+        <div className="mt-[20px] rounded-[12px]">
+          <img src={share_qrcode} alt="" className="h-[104px] w-[104px]" />
+          <span className="text-[12px] text-[#848e9c]">
+            <Trans>Scan to Visit MYX</Trans>
+          </span>
+        </div>
+        <div className="mt-[100px] flex items-center gap-[12px]">
+          <PrimaryButton
+            className="w-full rounded-[8px]"
+            onClick={() => {
+              const url = `https://app.myx.finance/trade`
+              const shareText = t`Join MYX Trading now to enjoy ultra-low fees and earn generous airdrop rewards! `
+              window.open(
+                `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(url)}`,
+              )
+            }}
+          >
+            <Trans>Share Twitter</Trans>
+          </PrimaryButton>
+          <PrimaryButton
+            loading={saveLoading}
+            className="w-full rounded-[8px]"
+            style={{ background: '#4d515c', color: '#fff' }}
+            onClick={() => {
+              setSaveLoading(true)
+              exportImage(containerRef.current as HTMLElement, 'share')
+                .catch((err) => {
+                  toast.error({
+                    title: t`save failed`,
+                  })
+                  console.error(err)
+                })
+                .finally(() => {
+                  setSaveLoading(false)
+                })
+            }}
+          >
+            <Trans>Save as Picture</Trans>
+          </PrimaryButton>
+        </div>
+        <img
+          src={parseBigNumber(roe ?? '0').gt(0) ? share_position_profit : share_position_loss}
+          alt=""
+          className="absolute right-[20px] bottom-[100px] h-[202px] w-[auto]"
+        />
+      </Dialog>
     </>
   )
 }

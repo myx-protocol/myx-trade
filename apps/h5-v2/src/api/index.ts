@@ -3,7 +3,6 @@ import { http } from '@/request/http'
 import type { ApiResponse } from './type'
 import { useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
-import { t } from '@lingui/core/macro'
 
 export const getAccessToken = async (
   appId: string,
@@ -71,23 +70,6 @@ export const getPools = async () => {
     }
   } catch (error) {
     console.error('getPools error-->', error)
-    return {
-      code: -1,
-      msg: 'getPools error',
-      data: null,
-    }
-  }
-}
-
-export const getActivePools = async () => {
-  try {
-    const res = await http.get(`${baseUrl}/openapi/gateway/scan/market/pool-trade-list`)
-    return {
-      code: 0,
-      msg: null,
-      data: res.data,
-    }
-  } catch (error) {
     return {
       code: -1,
       msg: 'getPools error',
@@ -215,23 +197,4 @@ export const getLeaderboard = async (params: GetLeaderboardParams) => {
     `${baseUrl}/openapi/gateway/scan/market/leaderboard`,
     params,
   )
-}
-
-export const getPoolIsAppealing = async (poolId: string, chainId: number) => {
-  try {
-    const res = await http.get(
-      `${baseUrl}/openapi/gateway/scan/pool-id-dispute-state?poolId=${poolId}&chainId=${chainId}`,
-    )
-    return {
-      code: 0,
-      msg: null,
-      data: res.data,
-    }
-  } catch (error) {
-    return {
-      code: -1,
-      msg: t`getPoolIsAppealing error`,
-      data: null,
-    }
-  }
 }

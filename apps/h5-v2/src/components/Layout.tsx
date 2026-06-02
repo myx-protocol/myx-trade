@@ -1,11 +1,10 @@
-import { Outlet, useLocation } from 'react-router-dom'
-import { useAccount } from 'wagmi'
+import { Outlet } from 'react-router-dom'
 import { MyxSdkProvider } from '@/providers/MyxSdkProvider'
 import { GlobalSearch } from './GlobalSearch/GlobalSearch'
 import { useGlobalSearchStore } from './GlobalSearch/store'
 import { Tabbar } from '@/components/Tabbar/index'
 import { useLayout } from '@/hooks/layout/useLayout'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { AccountDialog } from './AccountDialog'
 import useGlobalStore from '@/store/globalStore'
 import { VipRedeemDialog } from './VipRedeemDialog'
@@ -17,18 +16,18 @@ import { ImportDialog } from '@/components/Seamless/ImportDialog'
 import { ExportInfoDialog } from '@/components/Seamless/ExportInfoDialog'
 import { ExportDialog } from '@/components/Seamless/ExportDialog'
 import { TradeMode } from '@/pages/Trade/types'
+import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { SelectAccountDialog } from './Seamless/SelectAccountDialog'
 import { ResetSetPasswordDialog } from './Seamless/ResetSetPasswordDialog'
 
 function Layout() {
-  const { pathname } = useLocation()
   const { isOpen } = useGlobalSearchStore()
   const { tabbarActiveItem } = useLayout()
   const { accountDialogOpen, vipRedeemDialogOpen, vipRedeemResultDialogOpen } = useGlobalStore()
-  const { activeSeamlessAddress, activeSeamlessWallet, seamlessAccountList } = useSeamlessStore()
-  const isTradePage = pathname.includes('/trade')
-  const isPricePage = pathname.includes('/price')
+  const { address } = useWalletConnection()
+  const { activeSeamlessAddress } = useSeamlessStore()
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
     if (tabbarActiveItem) {
@@ -46,35 +45,23 @@ function Layout() {
     exportSeamlessKeyDialogOpen,
     tradeMode,
     setUnlockAccountDialogOpen,
-    setImportSeamlessKeyDialogOpen,
     selectedSeamlessAccountDialogOpen,
     resetSeamlessPasswordDialogOpen,
   } = useGlobalStore()
 
   useEffect(() => {
-    const isTradeScene = isTradePage || isPricePage
-    const hasSeamlessAccount = Boolean(activeSeamlessAddress) || seamlessAccountList.length > 0
-    const needsUnlock =
-      tradeMode === TradeMode.Seamless && hasSeamlessAccount && !activeSeamlessWallet
-
-    if (isTradeScene && needsUnlock) {
+    // 只在 Seamless 模式下处理
+    if (tradeMode === TradeMode.Seamless && address !== activeSeamlessAddress) {
       setUnlockAccountDialogOpen(true)
-      return
     }
+  }, [tradeMode, activeSeamlessAddress, address, setUnlockAccountDialogOpen])
 
-    if (isTradeScene && tradeMode === TradeMode.Seamless && !hasSeamlessAccount) {
-      setImportSeamlessKeyDialogOpen(true)
+  useEffect(() => {
+    if (tradeMode === TradeMode.Seamless) {
+      setUnlockAccountDialogOpen(true)
+      isFirstRender.current = false
     }
-  }, [
-    tradeMode,
-    activeSeamlessAddress,
-    activeSeamlessWallet,
-    seamlessAccountList.length,
-    setUnlockAccountDialogOpen,
-    setImportSeamlessKeyDialogOpen,
-    isTradePage,
-    isPricePage,
-  ])
+  }, [tradeMode, setUnlockAccountDialogOpen])
 
   return (
     <div>

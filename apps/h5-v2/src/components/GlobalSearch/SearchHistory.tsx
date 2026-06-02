@@ -1,7 +1,6 @@
 import { useGlobalSearchStore } from './store'
 import { t } from '@lingui/core/macro'
 import DeleteIcon from '@/assets/svg/delete.svg?react'
-import { truncateString } from '@/utils/string'
 
 export const SearchHistory = () => {
   const { searchHistory, setSearchValue, clearSearchHistory } = useGlobalSearchStore()
@@ -20,16 +19,6 @@ export const SearchHistory = () => {
     setSearchValue(item)
   }
 
-  const renderHistoryItem = (item: string) => {
-    if (item.startsWith('0x')) {
-      return truncateString(item, 6, 4)
-    }
-    if (item.length > 10) {
-      return truncateString(item, 10, 0) + '...'
-    }
-    return item
-  }
-
   return (
     <div className="mb-[24px] px-[16px]">
       {/* 标题 */}
@@ -46,7 +35,7 @@ export const SearchHistory = () => {
             className="cursor-pointer rounded-[5px] bg-[#202129] px-[12px] py-[10px] text-[12px] font-medium text-white"
             onClick={() => handleItemClick(item)}
           >
-            {renderHistoryItem(item)}
+            {item}
           </div>
         ))}
 

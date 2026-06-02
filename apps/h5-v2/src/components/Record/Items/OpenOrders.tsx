@@ -1,9 +1,9 @@
 import { Tag } from '@/components/Tag/index'
 import { OrderTpSlButton } from '@/components/Trade/Dialog/OrderTpSl'
 import { CancelOrderButton } from '@/pages/Trade/components/CancelOrderButton'
-import { displayAmount, formatNumber } from '@/utils/number'
+import { formatNumber } from '@/utils/number'
 import { Trans } from '@lingui/react/macro'
-import { Direction, DirectionEnum, OperationEnum, OrderTypeEnum, TriggerType } from '@myx-trade/sdk'
+import { Direction, DirectionEnum, OrderTypeEnum, TriggerType } from '@myx-trade/sdk'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { getChainInfo } from '@/config/chainInfo'
@@ -11,7 +11,7 @@ import { usePoolSymbol } from '@/hooks/pool/usePoolSymbol'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { parseBigNumber } from '@/utils/bn'
 
-const RenderTpSl = ({ order }: { order: any }) => {
+const RenderTpSl = (order: any) => {
   if (order.orderType === OrderTypeEnum.Stop) {
     if (order.triggerType === TriggerType.GTE && order.direction === Direction.LONG) {
       return (
@@ -39,11 +39,6 @@ const RenderTpSl = ({ order }: { order: any }) => {
       )
     }
   }
-}
-
-const renderTriggerPrice = (order: any): string => {
-  const symbol = order.triggerType === TriggerType.GTE ? '≥' : '≤'
-  return `${symbol} ${displayAmount(order.price)}`
 }
 
 export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
@@ -94,7 +89,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
                   </Tag>
                 )}
                 {/* tpsl */}
-                {order.orderType === OrderTypeEnum.Stop && <RenderTpSl order={order} />}
+                {order.orderType === OrderTypeEnum.Stop && <>{<RenderTpSl order={order} />}</>}
                 <Tag type="info">
                   <Trans>Isolated {order.userLeverage}x</Trans>
                 </Tag>
@@ -137,9 +132,7 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
               <Trans>Price</Trans>
             </p>
             <p className="mt-[4px] text-[14px] font-medium text-white">
-              {order.orderType === OrderTypeEnum.Stop
-                ? renderTriggerPrice(order)
-                : formatNumber(order.price, { showUnit: false })}
+              {formatNumber(order.price, { showUnit: false })}
             </p>
           </div>
         </div>
@@ -147,29 +140,8 @@ export const OpenOrderItem = ({ order, pool }: { order: any; pool: any }) => {
 
       {/* buttons */}
       <div className="mt-[20px] flex justify-center gap-[8px]">
-        {order.orderType === OrderTypeEnum.Stop ? null : order.operation ===
-          OperationEnum.Decrease ? (
-          <div className="flex w-full items-center rounded-[6px] bg-[#2D3138] px-[16px] py-[10px] text-[12px] leading-[1] font-[500] text-white opacity-60">
-            --
-          </div>
-        ) : (
-          <OrderTpSlButton order={order} poolInfo={pool} />
-        )}
-        <CancelOrderButton
-          orderId={order.orderId}
-          chainId={order.chainId}
-          poolId={order.poolId}
-          className={order.orderType === OrderTypeEnum.Stop ? 'w-full' : undefined}
-          orderInfo={{
-            direction: order.direction,
-            size: order.size ?? '0',
-            price: order.price ?? '0',
-            orderType: order.orderType,
-            isIncrease: order.operation !== OperationEnum.Decrease,
-            baseSymbol: order.baseSymbol ?? '',
-            quoteSymbol: order.quoteSymbol ?? '',
-          }}
-        />
+        <OrderTpSlButton order={order} poolInfo={pool} />
+        <CancelOrderButton orderId={order.orderId} chainId={order.chainId} />
       </div>
     </div>
   )

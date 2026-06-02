@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, type ReactNode, useCallback, useMemo, useRef, useState } from 'react'
 import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
 import { Trans } from '@lingui/react/macro'
 import { DialogSuspense } from '@/components/Loading'
@@ -8,12 +8,8 @@ import { t } from '@lingui/core/macro'
 import { Tag } from '../Tag'
 import { useQuery } from '@tanstack/react-query'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection.ts'
-import { ChainId, getSupportedChainIdsByEnv, PROD_ENV_CHAIN_IDS } from '@/config/chain.ts'
-import {
-  getMarketDataSearch,
-  getMarketPoolStateData,
-  type MarketDataFastSearchParams,
-} from '@/request'
+import { ChainId } from '@/config/chain.ts'
+import { getMarketData, getMarketPoolStateData, type MarketDataSearchParams } from '@/request'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { CHAIN_INFO } from '@/config/chainInfo.ts'
 import { encryptionAddress, isSafeNumber } from '@/utils'
@@ -28,9 +24,6 @@ import type { MarketPoolStateData } from '@/request/lp/type.ts'
 import { MarketPoolState } from '@myx-trade/sdk'
 import Big from 'big.js'
 import ChainSelector from '@/components/ChainSelector.tsx'
-import { NATIVE_TOKEN } from '@/constant/token.ts'
-import { isProdMode } from '@/utils/env.ts'
-import { isCookState } from '@/utils/cook.ts'
 
 interface TokenItemProps {
   // disabled?: boolean
@@ -49,11 +42,11 @@ const style = {
     overflow: 'hidden',
   },
 }
-const disabled = false
+
 const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
-  const active = useMemo(() => {
+  const disabled = useMemo(() => {
     return (
-      isCookState(state as number) ||
+      state === MarketPoolState.Cook ||
       state === MarketPoolState.Trench ||
       state === MarketPoolState.Primed ||
       state === MarketPoolState.PreBench
@@ -104,7 +97,7 @@ const TokenItem = ({ state, asset, onSelected }: TokenItemProps) => {
 
                 <Tag type={disabled ? 'disabled' : 'primary'}>
                   {inactive && <Trans>Inactive</Trans>}
-                  {active && <Trans>Active</Trans>}
+                  {disabled && <Trans>Active</Trans>}
                   {uncreate && <Trans>Not Created</Trans>}
                 </Tag>
               </>
@@ -149,7 +142,9 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
   const [input, setInput] = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
 
-  const [keyword] = useDebounceValue(input, 2000)
+  const [keyword] = useDebounceValue(input, 500)
+
+  // 用户停止输入 400ms 后才更新
 
   const { data: searchList = [], isLoading: isSearching } = useQuery({
     queryKey: [{ key: 'getAssetsSearch' }, chainId, keyword],
@@ -161,48 +156,77 @@ const TokenSelectDialogContent = ({ onSelected }: { onSelected: (asset: Asset) =
 
         if (type === 'unknown') return [] as Asset[]
 
-        const params: MarketDataFastSearchParams = {
-          chains:
-            chainId === undefined
-              ? ((isProdMode()
-                  ? getSupportedChainIdsByEnv()
-                  : PROD_ENV_CHAIN_IDS) as unknown as number[])
-              : [chainId],
-          input: keyword,
+        let params: MarketDataSearchParams
+        if (type === 'symbol') {
+          params = { chainId: chainId, symbol: keyword }
+        } else {
+          params = { chainId: chainId, asset: keyword }
         }
-        const result = await getMarketDataSearch(params)
+        const result = await getMarketData(params)
         if (result.data) {
           console.log(result.data)
-          const apiResults = result.data || []
-          const uniqueResults = Array.from(
-            new Map(
-              apiResults.map((item: any) => [`${item.address.toLowerCase()}${item.chainId}`, item]),
-            ).values(),
-          )
-          return uniqueResults
-            .filter((item: any) => item.address !== NATIVE_TOKEN)
+          return (result.data?.contracts || [])
+            .filter((item: any) => isSupportedChainId(item?.blockchainId))
             ?.map((item: any) => {
+              /*   {
+             "id": 59313,
+             "name": "MYX Finance",
+             "symbol": "MYX",
+             "decimals": 18,
+             "logo": "https://metadata.mobula.io/assets/logos/27381cfaedc7961f07aa99f3d27af167278263841e303637b6e23d516d9d3505.png",
+             "rank": 190,
+             "price": 2.500862957159864,
+             "market_cap": 477101305.367397,
+             "market_cap_diluted": 2500862957.15986,
+             "volume": 1457570.310834008,
+             "volume_change_24h": 0,
+             "volume_7d": 0,
+             "liquidity": 614460.2365173926,
+             "liquidityMax": 614460.2365173926,
+             "ath": 2.536288278998393,
+             "atl": 2.500862957159864,
+             "off_chain_volume": 31914988,
+             "is_listed": true,
+             "price_change_1h": -0.2777187708955553,
+             "price_change_24h": -4.439836272199036,
+             "price_change_7d": 0.1185800264169198,
+             "price_change_1m": -4.087638311756054,
+             "price_change_1y": 0,
+             "total_supply": 1000000000,
+             "circulating_supply": 190774670,
+             "contracts": [
+             {
+               "address": "0xd82544bf0dfe8385ef8fa34d67e6e4940cc63e16",
+               "blockchainId": "56",
+               "blockchain": "BNB Smart Chain (BEP20)",
+               "decimals": 18
+             }
+           ],
+             "native": {
+             "name": "BNB",
+               "symbol": "BNB",
+               "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+               "type": "native",
+               "decimals": 18,
+               "logo": "https://coin-images.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1696501970"
+           }
+           }*/
               const token = {
-                chainId: Number(item.chainId.replace('evm:', '')),
+                chainId: +item.blockchainId,
                 address: item.address,
                 decimals: item.decimals,
-                logo: item.logo,
-                name: item.name,
-                symbol: item.symbol,
-                price: item.priceTokenString,
-                change: item.priceChange24hPercentage,
+                logo: result.data.logo,
+                name: result.data.name,
+                symbol: result.data.symbol,
+                price: result.data.price,
+                change: result.data.price_change_24h,
                 balance: '',
-                mca: item.marketCapUSD,
-                liq: item.liquidityUSD,
+                mca: result.data.market_cap,
+                liq: result.data.liquidity,
               } as Asset
 
               return token
             })
-            .filter(
-              (item: Asset) =>
-                (isProdMode() ? isSupportedChainId(item.chainId) : true) &&
-                (!chainId ? true : item.chainId === chainId),
-            )
         }
 
         return [] as Asset[]

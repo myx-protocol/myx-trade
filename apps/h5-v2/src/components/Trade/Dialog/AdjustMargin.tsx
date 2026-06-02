@@ -11,13 +11,7 @@ import { DirectionEnum, OracleType } from '@myx-trade/sdk'
 import clsx from 'clsx'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
-import {
-  autoPriceDecimals,
-  displayAmount,
-  formatNumber,
-  getSuperDecimalScale,
-  isSuperDecimal,
-} from '@/utils/number'
+import { displayAmount, formatNumber } from '@/utils/number'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { toast } from '@/components/UI/Toast'
 import { useGetFundingFee } from '@/hooks/calculate/use-get-fundingfee'
@@ -30,16 +24,6 @@ import { useWalletStore } from '@/store/wallet/createStore'
 import { useGetAccountAssets } from '@/hooks/balance/use-get-account-assets'
 import useGlobalStore from '@/store/globalStore'
 import { getQuoteTokenInfo } from '@/config/token'
-import { showErrorToast } from '@/config/error'
-import { useGetSeamlessAuthStatus } from '@/hooks/seamless/use-get-seamless-auth-status'
-import { useCheckSeamlessAllowance } from '@/hooks/seamless/use-check-seamless-allowance'
-import { useWalletChainCheck } from '@/hooks/wallet/useWalletChainCheck'
-import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
-import { useSeamlessStore } from '@/store/seamless/createStore'
-import { TradeMode } from '@/pages/Trade/types'
-import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
-import { buildAdjustMarginToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 
 function AdjustMarginSelect({
   adjustType,
@@ -118,7 +102,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const { poolList } = useGlobalStore()
   const [loading, setLoading] = useState(false)
   const accountAssets = useGetAccountAssets(position.chainId, position.poolId)
-  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId as number)
+  const { getFundingFee } = useGetFundingFee(position.poolId, position.chainId)
   const marketPrice = tickerData[position.poolId]?.price.toString() ?? '0'
   const { poolConfig } = useGetPoolConfig(position.poolId, position.chainId)
   const assetClass = poolConfig?.levelConfig?.assetClass ?? 0
@@ -132,23 +116,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
     assetClass,
     chainId: position.chainId,
   })
-
-  const { checkWalletChainId } = useWalletChainCheck()
-  const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
-  const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
-  const { checkSeamlessAllowance } = useCheckSeamlessAllowance()
-  const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
-  const { tradeMode } = useGlobalStore()
   const { activeAddress } = useWalletStore()
-  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(position?.chainId)
-
-  const decimalScale = useMemo(() => {
-    if (isSuperDecimal(marketPrice)) {
-      return getSuperDecimalScale(Number(marketPrice))
-    } else {
-      return autoPriceDecimals(Number(marketPrice))
-    }
-  }, [marketPrice])
 
   const targetCollateralAmount = useMemo(() => {
     return adjustType === 'increase'
@@ -212,15 +180,9 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
           .mul(parseBigNumber(position.size)) ?? '0'
     }
 
-    const positionLeverage = parseBigNumber(position.userLeverage ?? '1').gt(0)
+    const safeLeverage = parseBigNumber(position.userLeverage ?? '1').gt(0)
       ? position.userLeverage
       : 1
-
-    const safeLeverage = parseBigNumber(positionLeverage).gt(
-      parseBigNumber(poolConfig?.levelConfig?.leverage ?? '1'),
-    )
-      ? parseBigNumber(poolConfig?.levelConfig?.leverage ?? '1')
-      : parseBigNumber(positionLeverage)
 
     //可减少金额 = 仓位保证金 - 持仓数量 * 入场价 / 杠杆 + 资金费 - 交易手续费 + 盈亏
     const originMargin = parseBigNumber(position.entryPrice)
@@ -273,6 +235,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
       return {}
     }
 
+    const walletBalance = parseBigNumber(accountAssets?.walletBalance?.toString() ?? '0')
     const quoteProfit = parseBigNumber(accountAssets?.quoteProfit?.toString() ?? '0')
     const freeMargin = parseBigNumber(accountAssets.freeMargin ?? '0')
     if (parseBigNumber(adjustMargin).lte(quoteProfit)) {
@@ -391,7 +354,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 <NumberInputPrimitive
                   placeholder={t`Please enter the amount.`}
                   value={adjustMargin}
-                  decimalScale={decimalScale}
+                  decimalScale={6}
                   onValueChange={(e) => setAdjustMargin(e.value)}
                 />
                 <div
@@ -418,7 +381,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                   </p>
                   <div className="flex gap-[4px]">
                     <img
-                      src={getQuoteTokenInfo(position.chainId, pool.quoteToken)?.logoUrl}
+                      src={getQuoteTokenInfo(position.chainId, position.quoteToken)?.logoUrl}
                       alt=""
                       className="h-[16px] w-[16px]"
                     />
@@ -498,7 +461,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 fontSize: '14px',
                 fontWeight: 500,
               }}
-              loading={loading || asyncVipLevelLoading}
+              loading={loading}
               onClick={async () => {
                 if (parseBigNumber(adjustMargin).eq(0)) {
                   toast.error({ title: t`Adjust margin amount cannot be 0` })
@@ -531,140 +494,9 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 const adjustAmountFormat = parseBigNumber(adjustMargin)
                   .mul(adjustType === 'increase' ? 1 : -1)
                   .toString()
-                setLoading(true)
-
-                await checkWalletChainId(position?.chainId as number)
-
-                if (!isMatch) {
-                  const rs = await asyncVipInfo(
-                    pool?.quoteToken as string,
-                    position?.chainId as string,
-                  )
-
-                  if (!rs) {
-                    setLoading(false)
-                    return
-                  }
-                }
 
                 try {
-                  if (tradeMode === TradeMode.Seamless) {
-                    const seamlessAccount = seamlessAccountList.find(
-                      (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
-                    )
-
-                    if (!seamlessAccount) {
-                      toast.error({ title: t`Seamless account not found` })
-                      return
-                    }
-
-                    const isAuthorizedRes = await getSeamlessAuthStatus({
-                      masterAddress: activeSeamlessAddress,
-                      seamlessAddress: seamlessAccount?.seamlessAddress as string,
-                      chainId: position.chainId,
-                      tokenAddress: pool?.quoteToken as string,
-                    })
-
-                    const isAuthorized = isAuthorizedRes?.data?.auth
-
-                    if (!isAuthorized) {
-                      toast.error({ title: t`Seamless account not authorized` })
-                      return
-                    }
-
-                    const isAllowed = await checkSeamlessAllowance({
-                      chainId: position.chainId,
-                      masterAddress: activeSeamlessAddress,
-                      seamlessAddress: seamlessAccount?.seamlessAddress as string,
-                      quoteToken: pool?.quoteToken as string,
-                      amount: parseBigNumber(adjustAmountFormat).gt(0)
-                        ? ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString()
-                        : '0',
-                    })
-                    if (!isAllowed) return
-
-                    const priceData = await client?.utils.getOraclePrice(
-                      position.poolId,
-                      position.chainId,
-                    )
-
-                    const updateParams = {
-                      poolId: position.poolId,
-                      oracleType: priceData?.oracleType ?? OracleType.Chainlink,
-                      publishTime: priceData?.publishTime ?? 0,
-                      oracleUpdateData: priceData?.vaa ?? '0',
-                    }
-
-                    let depositAmount = parseBigNumber(0)
-
-                    const assetsRes = await client?.account.getAvailableMarginBalance({
-                      poolId: position.poolId,
-                      chainId: position.chainId,
-                      address: seamlessAccount.masterAddress,
-                    })
-                    // 0xb239c4fc5b32d40b128d3c64ad3ce249cc9333d16bc7d891d125b5c52e2eaa6e
-
-                    const availableMargin = parseBigNumber(
-                      assetsRes?.code === 0 ? (assetsRes?.data?.toString() ?? '0') : '0',
-                    ).div(10 ** (pool?.quoteDecimals ?? 6))
-
-                    let diff = parseBigNumber(0)
-                    const used = parseBigNumber(adjustAmountFormat)
-
-                    if (
-                      availableMargin.lt(parseBigNumber(adjustAmountFormat)) &&
-                      adjustType === 'increase'
-                    ) {
-                      diff = used.minus(availableMargin).lt(0)
-                        ? parseBigNumber(0)
-                        : used.minus(availableMargin)
-                      depositAmount = diff
-                    }
-
-                    const rs = await forwardSeamlessTransaction({
-                      chainId: pool.chainId as number,
-                      masterAddress: activeSeamlessAddress,
-                      seamlessAddress: seamlessAccount.seamlessAddress,
-                      forwardFeeToken: pool?.quoteToken as string,
-                      functionName: 'updatePriceAndAdjustCollateral',
-                      orderParams: [
-                        [updateParams],
-                        {
-                          token: pool?.quoteToken ?? '',
-                          amount: depositAmount.mul(10 ** (pool?.quoteDecimals ?? 6)).toString(),
-                        },
-                        position.positionId,
-                        ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString(),
-                      ],
-                      value: priceData?.value.toString() ?? '1',
-                      gas: '1500000',
-                    })
-
-                    console.log('rs-->', rs)
-
-                    if (rs?.code === 0) {
-                      const _parts = buildAdjustMarginToastParts({
-                        adjustType,
-                        amount: adjustMargin,
-                        baseSymbol: position.baseSymbol,
-                        quoteSymbol: pool?.quoteSymbol ?? position.quoteSymbol,
-                      })
-                      toast.success({
-                        title: _parts.title,
-                        content: renderOrderToastContent(_parts),
-                      })
-                      setAdjustMargin('')
-                      setAdjustType('increase')
-                      setOpen(false)
-                    } else {
-                      console.log('error-->', rs)
-
-                      showErrorToast(client?.utils.formatErrorMessage(rs))
-                    }
-
-                    setLoading(false)
-                    return
-                  }
+                  setLoading(true)
 
                   const data = {
                     poolId: position.poolId,
@@ -673,28 +505,22 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       .parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6)
                       .toString(),
                     quoteToken: pool?.quoteToken ?? '',
+                    poolOracleType: OracleType.Chainlink,
                     chainId: position.chainId,
                     address: activeAddress,
                   }
 
                   const rs = await client?.position.adjustCollateral(data)
                   if (rs?.code === 0) {
-                    const _parts = buildAdjustMarginToastParts({
-                      adjustType,
-                      amount: adjustMargin,
-                      baseSymbol: position.baseSymbol,
-                      quoteSymbol: pool?.quoteSymbol ?? position.quoteSymbol,
-                    })
-                    toast.success({ title: _parts.title, content: renderOrderToastContent(_parts) })
+                    toast.success({ title: t`Adjust margin success` })
                     setAdjustMargin('')
                     setAdjustType('increase')
                     setOpen(false)
                   } else {
-                    console.log('rs->', rs?.message)
-                    showErrorToast(client?.utils.formatErrorMessage(rs))
+                    toast.error({ title: t`Adjust margin failed` })
                   }
                 } catch (error) {
-                  showErrorToast(error)
+                  console.log(error)
                 } finally {
                   setLoading(false)
                 }

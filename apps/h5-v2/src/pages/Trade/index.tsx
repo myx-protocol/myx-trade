@@ -17,14 +17,10 @@ import { CancelAllOrdersDialog } from './components/CancelAllOrdersDialog'
 import { CloseAllPositionDialog } from './components/CloseAllPositionDialog'
 
 import useGlobalStore from '@/store/globalStore'
-import { decimalToPercent, formatNumber } from '@/utils/number'
-import { t } from '@lingui/core/macro'
-import { ManageAuthorizedTokensDialog } from '@/components/ManageAuthorizedTokensDialog'
 
 export const Trade = () => {
   const { chainId, poolId } = useParams()
-  const { setSymbolInfo, symbolInfo, setPoolConfig, manageAuthorizedTokensDialogOpen } =
-    useGlobalStore()
+  const { setSymbolInfo, symbolInfo, setPoolConfig } = useGlobalStore()
   const { client } = useMyxSdkClient(chainId ? parseInt(chainId) : undefined)
   const { setTickerData } = useMarketStore()
   const { subscribeToTicker } = useSubscription()
@@ -32,7 +28,7 @@ export const Trade = () => {
   const { closeAllPositionDialogOpen, cancelAllOrdersDialogOpen } = usePositionStore()
 
   const currentSymbolGlobalIdRef = useRef<number | undefined>(undefined)
-  const { getDetail, client: getDetailClient } = useMarketDetail({
+  const { getDetail } = useMarketDetail({
     poolId: poolId || '',
     chainId: chainId ? parseInt(chainId) : undefined,
   })
@@ -40,7 +36,7 @@ export const Trade = () => {
   const navigate = useNavigate()
 
   const getMarketDetail = useCallback(() => {
-    if (!chainId || !poolId || !getDetailClient) return Promise.resolve(null)
+    if (!chainId || !poolId) return Promise.resolve(null)
     const _chainId = parseInt(chainId)
 
     getDetail().then((marketDetail) => {
@@ -56,7 +52,7 @@ export const Trade = () => {
         setPoolConfig(res.data as unknown as PoolConfig)
       }
     })
-  }, [chainId, poolId, getDetail, setSymbolInfo, navigate, getDetailClient])
+  }, [chainId, poolId, getDetail, setSymbolInfo, navigate])
 
   useMount(() => {
     if (chainId && poolId) {
@@ -108,32 +104,16 @@ export const Trade = () => {
     }
   }, [symbolInfo, client, chainId])
 
-  const tickerData = useMarketStore((state) => state.tickerData[symbolInfo?.poolId || ''])
-
-  const latestPrice = tickerData?.price || 0
-  const change = tickerData?.change || 0
-  const symbol =
-    symbolInfo?.baseSymbol && symbolInfo.quoteSymbol
-      ? `${symbolInfo.baseSymbol}${symbolInfo.quoteSymbol}`
-      : '--'
-
   if (!chainId || !poolId) {
     return <Navigate to={DEFAULT_PAIR_PATH} />
   }
 
   return (
     <>
-      <title>{t`${formatNumber(latestPrice, {
-        showUnit: false,
-      })} | ${symbol} | ${decimalToPercent(change, {
-        showSign: false,
-        removeTrailingZeros: true,
-      })} | MYX`}</title>
       <TradePanel />
       <LeverageDialog />
       {!!closeAllPositionDialogOpen && <CloseAllPositionDialog />}
       {!!cancelAllOrdersDialogOpen && <CancelAllOrdersDialog />}
-      {manageAuthorizedTokensDialogOpen && <ManageAuthorizedTokensDialog />}
     </>
   )
 }

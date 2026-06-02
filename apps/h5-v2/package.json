@@ -5,9 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": " tsc -b && pnpm run i18n:extract && vite build",
+    "build": " tsc -b && vite build",
     "build:prod": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode production",
-    "build:stg": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode stg",
     "build:test": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode test",
     "build:beta": "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build --mode beta",
     "lint": "eslint .",
@@ -42,7 +41,6 @@
     "buffer": "^6.0.3",
     "bufferutil": "^4.0.9",
     "clsx": "^2.1.1",
-    "crypto-es": "^3.1.3",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.18",
     "echarts": "^6.0.0",

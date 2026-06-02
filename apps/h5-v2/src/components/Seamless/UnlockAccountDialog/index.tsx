@@ -13,13 +13,11 @@ import { PrimaryButton } from '@/components/UI/Button'
 import WalletIcon from '@/components/UI/Icon/WalletIcon'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { TradeMode } from '@/pages/Trade/types'
+import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useSeamlessStore } from '@/store/seamless/createStore'
+import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
 import useGlobalStore from '@/store/globalStore'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
-import { useUnlockSeamlessAccount } from '@/hooks/seamless/use-unlock-seamless-account'
-import { useParams } from 'react-router-dom'
-import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-import type { SignerLike } from '@myx-trade/sdk'
 
 export const UnlockAccountDialog = () => {
   const {
@@ -28,11 +26,11 @@ export const UnlockAccountDialog = () => {
     setSelectedSeamlessAccountDialogOpen,
     setTradeMode,
     setSeamlessPasswordDialogOpen,
+    symbolInfo,
   } = useGlobalStore()
-  const { symbolInfo } = useGlobalStore()
-  const { chainId: routeChainId } = useParams()
+  const { client } = useMyxSdkClient(symbolInfo?.chainId)
   const [show, setShow] = useState(false)
-  const { address, isConnected } = useWalletConnection()
+  const { address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const [password, setPassword] = useState('')
   const {
@@ -42,12 +40,9 @@ export const UnlockAccountDialog = () => {
     setSeamlessAccountList,
     selectedSeamlessAddress,
     setSelectedSeamlessAddress,
-    setActiveSeamlessWallet,
   } = useSeamlessStore()
-  const { unlockSeamlessAccount, unlockSeamlessAccountLoading } = useUnlockSeamlessAccount()
-  const { client } = useMyxSdkClient(symbolInfo?.chainId)
+  const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
 
-  // 当对话框打开时，初始化要解锁的账号地址
   useEffect(() => {
     if (!unlockAccountDialogOpen) return
 
@@ -84,12 +79,9 @@ export const UnlockAccountDialog = () => {
       open={unlockAccountDialogOpen}
       onClose={() => {
         setUnlockAccountDialogOpen(false)
+        setTradeMode(TradeMode.Classic)
+        setActiveSeamlessAddress('')
         setSelectedSeamlessAddress('')
-        if (!isConnected) {
-          setTradeMode(TradeMode.Classic)
-          setActiveSeamlessAddress('')
-          setActiveSeamlessWallet(null)
-        }
       }}
       sx={{
         '& .MuiDialog-paper': {
@@ -169,7 +161,6 @@ export const UnlockAccountDialog = () => {
               height: '44px',
               fontWeight: 500,
             }}
-            loading={unlockSeamlessAccountLoading}
             onClick={async () => {
               // 优先使用用户选择的地址，否则使用当前激活的地址
               const targetAddress = selectedSeamlessAddress || activeSeamlessAddress
@@ -181,17 +172,18 @@ export const UnlockAccountDialog = () => {
                 return
               }
 
-              const rs = await unlockSeamlessAccount({
+              const rs = await client?.seamless.unLockSeamlessWallet({
                 password,
                 masterAddress: targetSeamlessAccount.masterAddress as string,
                 apiKey: targetSeamlessAccount.apiKey as string,
-                chainId: (symbolInfo?.chainId as number) || Number(routeChainId),
+                chainId: symbolInfo?.chainId as number,
               })
 
               if (rs?.code === 0) {
                 // 先设置 activeSeamlessAddress，然后再切换模式
                 setActiveSeamlessAddress(targetSeamlessAccount.masterAddress)
 
+                await changeSdkTradeMode(true)
                 setUnlockAccountDialogOpen(false)
 
                 // 清空选中的地址
@@ -202,15 +194,11 @@ export const UnlockAccountDialog = () => {
                 )
                 seamlessAccountList[idx] = {
                   ...seamlessAccountList[idx],
-                  authorized: {},
+                  authorized: {
+                    [symbolInfo?.chainId as number]: { authorized: true },
+                  },
                 }
-
                 setSeamlessAccountList([...seamlessAccountList])
-                setActiveSeamlessWallet(rs.data?.seamlessWallet)
-                client?.auth({
-                  signer: rs.data?.seamlessWallet as unknown as SignerLike,
-                })
-                setTradeMode(TradeMode.Seamless)
               }
             }}
           >

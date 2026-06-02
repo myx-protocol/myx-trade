@@ -2,7 +2,7 @@ import { getLeaderboard, type LeaderboardSortField } from '@/api'
 import { useSubscription } from '@/components/Trade/hooks/useMarketSubscription'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { MarketListLoading } from './Loading'
 import { Empty } from '@/components/Empty'
 import { MarketListRow } from '@/components/MarketList/MarketListRow'
@@ -11,7 +11,6 @@ import { formatNumber } from '@/utils/number'
 import { PriceChangeBlock } from '@/components/MarketList/PriceChangeBlock'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { useNavigate } from 'react-router-dom'
-import { usePoolSymbolsAll } from '@/hooks/pool/usePoolSymbolsAll'
 
 interface MarketListProps {
   activeMarket: 'Favorites' | 'Hot' | 'Gainers' | 'New'
@@ -66,15 +65,7 @@ export const MarketList = ({ activeMarket }: MarketListProps) => {
       }
     }
   }, [client, data])
-  const { symbolDataAllMap } = usePoolSymbolsAll()
-  const getSymbol = useCallback(
-    (chainId: number, poolId: string) => {
-      return symbolDataAllMap[chainId]?.[poolId]
-        ? `${symbolDataAllMap[chainId]?.[poolId]?.baseSymbol}${symbolDataAllMap[chainId]?.[poolId]?.quoteSymbol}`
-        : '--'
-    },
-    [symbolDataAllMap],
-  )
+
   if (isLoading) {
     return <MarketListLoading />
   }
@@ -93,7 +84,7 @@ export const MarketList = ({ activeMarket }: MarketListProps) => {
           }}
           values={[
             <SymbolInfo
-              symbol={getSymbol(item.chainId, item.poolId)}
+              symbol={item.baseQuoteSymbol}
               baseTokenLogo={item.tokenIcon}
               chainId={item.chainId}
             />,

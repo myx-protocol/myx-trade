@@ -35,8 +35,7 @@ enum RecordTypeEnum {
 const PAGE_SIZE = 10
 
 export const RecordCard = () => {
-  const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig, account, accessToken } =
-    useReferralStore()
+  const { fetchRefBonus, fetchRefBonusInfoByChain, fetchRefConfig } = useReferralStore()
   const accessParams = useAccessParams()
   const [recordType, setRecordType] = useState<RecordTypeEnum>(RecordTypeEnum.Invite)
   const [list, setList] = useState<
@@ -51,7 +50,7 @@ export const RecordCard = () => {
   const [hasAfter, setHasAfter] = useState(false)
 
   const fetchData = async () => {
-    if (!accessParams?.account) return // Only check accessToken, 'account' is not used here
+    if (!accessParams?.accessToken || !accessParams.account) return // Only check accessToken, 'account' is not used here
     if (!before && !after) {
       setLoading(true)
     }
@@ -126,22 +125,18 @@ export const RecordCard = () => {
   }
 
   const fetchInitialData = async () => {
-    if (account || accessToken) {
+    if (accessParams?.accessToken && accessParams.account) {
       await Promise.all([fetchRefBonus(), fetchRefBonusInfoByChain(), fetchRefConfig()])
     }
   }
 
   useEffect(() => {
-    if (account || accessToken) {
-      fetchInitialData()
-    }
-  }, [account, accessToken])
+    fetchInitialData()
+  }, [accessParams?.accessToken, accessParams?.account])
 
   useEffect(() => {
-    if (account || accessToken) {
-      fetchData()
-    }
-  }, [recordType, before, after, account, accessToken]) // Added accessToken to dependencies
+    fetchData()
+  }, [accessParams, recordType, before, after, accessParams?.accessToken, accessParams?.account]) // Added accessToken to dependencies
 
   const handlePrev = () => {
     if (list.length > 0) {

@@ -120,7 +120,7 @@ export function useFetchUserVipInfo() {
       const rs = await fetchVipInfo(account, accessToken || '')
       return rs.data ?? ({} as VipInfoType)
     },
-    enabled: !!account,
+    enabled: !!accessToken && !!account,
     refetchInterval: 10000,
   })
 
@@ -130,27 +130,6 @@ export function useFetchUserVipInfo() {
   }
 }
 
-export function nextMYXLevel(levelList: LevelConfig[], currentLevel: number, myxAmount: string) {
-  if (levelList?.length) {
-    const index = levelList.findIndex((_level) => _level.vipTier === (currentLevel ?? 0))
-    if (index < 0) {
-      return undefined
-    }
-    let nextLevel
-    for (let i = index; i < levelList.length; i++) {
-      nextLevel = levelList[i]
-      if (
-        !levelList[i]?.rule?.myxDaily ||
-        new Big(myxAmount || 0).gte(new Big(levelList[i]?.rule?.myxDaily || '0'))
-      ) {
-        continue
-      }
-      break
-    }
-    return nextLevel
-  }
-  return undefined
-}
 export function useGetLevelUpdateInfo() {
   const { levelList, userVipInfo } = useVipContext()
 
@@ -190,7 +169,7 @@ export function useGetLevelUpdateInfo() {
       return levelInfo
     }
     return undefined
-  }, [userVipInfo?.level, levelList, maxLevel])
+  }, [userVipInfo?.level, levelList, levels])
 
   const currentLevelInfo = useMemo(() => {
     if (levelList?.length) {
@@ -204,9 +183,7 @@ export function useGetLevelUpdateInfo() {
   const nextTradeAmount = nextTradeRule?.trade30Vol
 
   const nextVipRelation = nextTradeRule?.relation
-  const nextMyxLevel = useMemo(() => {
-    return nextMYXLevel(levelList, userVipInfo?.level ?? 0, myxAmount || '0')
-  }, [levelList, userVipInfo?.level, myxAmount])
+  const nextMyxAmount = nextTradeRule?.myxDaily
 
   const safeNextTradeAmount =
     isUndefined(nextTradeAmount) || Number(nextTradeAmount) <= 0 ? 1 : Number(nextTradeAmount)
@@ -227,24 +204,18 @@ export function useGetLevelUpdateInfo() {
 
   useEffect(() => {
     const amount =
-      isSafeNumber(nextMyxLevel?.rule?.myxDaily) && isSafeNumber(myxAmount)
-        ? new Big(nextMyxLevel?.rule?.myxDaily as string)
-            .minus(new Big(myxAmount as string))
-            .toNumber()
+      isSafeNumber(nextMyxAmount) && isSafeNumber(myxAmount)
+        ? new Big(nextMyxAmount as string).minus(new Big(myxAmount as string)).toNumber()
         : 0
     setRequiredMyxAmount(amount > 0 ? amount : 0)
-  }, [nextMyxLevel?.rule?.myxDaily, myxAmount])
+  }, [nextMyxAmount, myxAmount])
 
   useEffect(() => {
-    if (!nextMyxLevel?.rule?.myxDaily) {
+    if (!nextMyxAmount) {
       setProcess(safeTradeProcess)
-      if (Number(myxAmount) > 0) {
-        setMyxProcess(100)
-      } else {
-        setMyxProcess(0)
-      }
+      setMyxProcess(0)
     } else {
-      const _nextMyxAmount = new Big(nextMyxLevel?.rule?.myxDaily)
+      const _nextMyxAmount = new Big(nextMyxAmount)
       const myxProcess =
         myxAmount && new Big(myxAmount).gte(_nextMyxAmount)
           ? 100
@@ -258,7 +229,7 @@ export function useGetLevelUpdateInfo() {
         setProcess(Math.max(safeMyxProcess, safeTradeProcess))
       }
     }
-  }, [nextMyxLevel?.rule?.myxDaily, nextVipRelation, myxAmount, safeTradeProcess])
+  }, [nextMyxAmount, nextVipRelation, myxAmount, safeTradeProcess])
 
   return {
     nextLevelInfo,
@@ -266,7 +237,7 @@ export function useGetLevelUpdateInfo() {
     requiredTradeAmount,
     tradeAmount: userTradeAmount,
     nextVipRelation,
-    nextMyxLevel,
+    nextMyxAmount,
     requiredMyxAmount,
     process,
     safeMyxProcess,

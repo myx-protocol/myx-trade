@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: myx-web-v2-H5\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-04-27 11:26\n"
+"PO-Revision-Date: 2026-02-02 10:48\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -45,8 +45,7 @@ msgid " Price "
 msgstr " 价格 "
 
 #: src/components/VipRedeemDialog/index.tsx
-msgid ""
-" The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
+msgid " The redemption code is an exclusive benefit from MYX. Once activated, it unlocks special rights. Get\n"
 "                  your code by participating in MYX’s special events."
 msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益。通过参加 MYX 的特别活动获取您的兑换码。"
 
@@ -54,42 +53,31 @@ msgstr "兑换码是 MYX 的专属福利。激活后，它将解锁特殊权益�
 msgid " Trade "
 msgstr " 交易 "
 
-#. placeholder {0}: marketDetail?.baseSymbol
-#. placeholder {0}: marketDetail?.quoteSymbol
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "(Provide {0})"
-msgstr "(提供 {0})"
-
-#. placeholder {0}: direction === Direction.LONG ? 'Open Long' : 'Open Short'
-#. placeholder {0}: direction === Direction.LONG ? t`Open Long` : t`Open Short`
-#. placeholder {0}: item.direction === DirectionEnum.Long ? t`Long` : t`Short`
+#. placeholder {0}: client.utils.formatErrorMessage(rs)
+#. placeholder {0}: client?.utils.formatErrorMessage(e)
+#. placeholder {0}: client?.utils.formatErrorMessage(error)
 #: src/components/Header/Menu.tsx
 #: src/components/PlaceOrderConfirm/index.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
+#: src/components/Seamless/ImportDialog/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/Dialog/TPSL/index.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+#: src/hooks/use-check-user-vip-info.ts
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "{0}"
 msgstr "{0}"
-
-#. placeholder {0}: formatNumber(latestPrice, { showUnit: false, })
-#. placeholder {1}: decimalToPercent(change, { showSign: false, removeTrailingZeros: true, })
-#: src/pages/Price/index.tsx
-#: src/pages/Trade/index.tsx
-msgid "{0} | {symbol} | {1} | MYX"
-msgstr "{0} | {symbol} | {1} | MYX"
-
-#. placeholder {0}: lpDetail?.mBaseQuoteSymbol || ''
-#: src/pages/Cook/provider/PoolProvider.tsx
-msgid "{0} | High Yield Trench | MYX"
-msgstr "{0} | 高收益 | MYX"
-
-#. placeholder {0}: lpDetail?.mQuoteBaseSymbol || ''
-#: src/pages/Earn/provider/PoolProvider.tsx
-msgid "{0} | Stable Earn | MYX"
-msgstr "{0} | 稳定收益 | MYX"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -124,41 +112,9 @@ msgstr "{leverage}x"
 msgid "{pendingTransactionsLength} 笔交易正在确认"
 msgstr "{pendingTransactionsLength} 笔交易正在确认"
 
-#. placeholder {0}: formatNumber(minTVL, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "• The {0} {tokenSymbol} minimum TVL threshold is met."
-msgstr "• 资金池已达到 {0} {tokenSymbol} 最低门槛。"
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "• The token passes the Prime Check security scan."
-msgstr "• 代币通过安全检测。"
-
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "`AccountInsufficientTradableAmount(uint256,uint256)"
 msgstr "账户可用余额不足"
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-msgid "`Paid. Syncing status"
-msgstr "支付状态同步中"
-
-#. placeholder {0}: formatNumber(penaltyAmount, { showUnit: false, decimals: 0 })
-#. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "> Aborting now will incur a strict {0} {tokenSymbol} deduction for network overhead. You will receive a partial refund of {1} {tokenSymbol}."
-msgstr "> 立即终止将硬性扣除 {0} {tokenSymbol} 网络耗损。您将收到 {1} {tokenSymbol} 的部分退款。"
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "⏳ Pending Validations:"
-msgstr "⏳ 等待校验："
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "⚠️ Cancellation Penalty:"
-msgstr "⚠️ 撤销惩罚："
-
-#. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "⚠️ Fund Deduction Risk (Irreversible): After payment authorization, if the activation fails or is aborted due to any of the following reasons, the system will strictly <0>deduct {0} {tokenSymbol}</0> for review costs:"
-msgstr "⚠️ 资金扣除风险（不可逆）：授权支付后，若因以下任何原因导致激活失败或中止，系统将会<0>扣除{0}{tokenSymbol}</0>网络审查费用："
 
 #: src/pages/Referrals/components/StatisticsDialog/index.tsx
 msgid "1-day rebate"
@@ -199,11 +155,6 @@ msgstr "7日返佣"
 msgid "8 to 128 characters"
 msgstr "8 到 128 个字符"
 
-#. placeholder {0}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "abort & refund {0} {tokenSymbol}"
-msgstr "撤销并退款 {0} {tokenSymbol}"
-
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Accept"
 msgstr "接受"
@@ -218,12 +169,10 @@ msgstr "接受邀请"
 msgid "Accept now and receive rebates"
 msgstr "立即接受并获得返佣"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlBadConfirmation()"
 msgstr "访问控制确认失败()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccessControlUnauthorizedAccount(address,bytes32)"
 msgstr "未授权账户"
@@ -234,18 +183,9 @@ msgstr "未授权账户"
 msgid "Account Mode"
 msgstr "账户模式"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AccountInsufficientFreeAmount()"
 msgstr "账户可用余额不足"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "AccountInsufficientReservedAmount()"
-msgstr "账户保留金额不足"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "AccountInsufficientTradableAmount(uint256,uint256)"
-msgstr "账户可交易金额不足"
 
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/Record/index.tsx
@@ -260,10 +200,6 @@ msgstr "激活市场"
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Activate Your Trading Contract"
 msgstr "激活合约交易"
-
-#: src/hooks/lp/useOnBoostPool.ts
-msgid "Activation fee already paid."
-msgstr "激活费已支付"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Activation Successful"
@@ -286,10 +222,6 @@ msgstr "添加新邀请人"
 msgid "Add to Favorites"
 msgstr "添加到收藏"
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Add TP/SL"
-msgstr "添加止盈/止损"
-
 #: src/components/ReceiveDialog.tsx
 #: src/components/WalletConnect/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
@@ -300,7 +232,6 @@ msgstr "添加止盈/止损"
 msgid "Address"
 msgstr "地址"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AddressEmptyCode(address)"
 msgstr "地址不可为空"
@@ -328,11 +259,18 @@ msgid "Adjust margin amount is greater than the total balance"
 msgstr "调整保证金金额大于总余额"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin failed"
+msgstr "调整保证金失败"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
+msgid "Adjust margin success"
+msgstr "调整保证金成功"
+
+#: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Adjusted Margin"
 msgstr "调整后的保证金"
 
 #: src/components/Record/Items/Finance.tsx
-#: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "ADL"
 msgstr "自动减仓"
 
@@ -340,6 +278,10 @@ msgstr "自动减仓"
 #: src/pages/Referrals/components/SelectReferral/SetDefaultConfirmDialog.tsx
 msgid "After setting {0} as the Default Referral ID, the corresponding commission ratio and referral link will be displayed on the homepage. Are you sure you want to set this as your Default Referral ID?"
 msgstr "将 {0} 设置为默认邀请 ID 后，首页将显示相应的分佣比例和邀请链接。您确定要将其设置为默认邀请 ID 吗？"
+
+#: src/components/Dialog/DialogFilters.tsx
+msgid "Age(min)"
+msgstr "时长(分钟)"
 
 #: src/components/Footer/index.tsx
 msgid "Airdrop"
@@ -359,20 +301,14 @@ msgstr "全部"
 #: src/components/ChainSelector.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/Cook/components/ChainDropDownMenu.tsx
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 #: src/pages/rank/components/ChainSelector/index.tsx
 msgid "All Chain"
 msgstr "所有链"
 
 #: src/components/ChainSelector.tsx
 #: src/components/Record/HideOuterSymbols.tsx
-#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 msgid "All Chains"
 msgstr "所有链"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Allowed price movement range under no-slippage protection."
-msgstr "可容忍的最大滑点"
 
 #: src/components/GlobalContractSearch/SearchList/SearchTabs.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
@@ -381,34 +317,24 @@ msgstr "可容忍的最大滑点"
 msgid "Alpha"
 msgstr "Alpha"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyClaimed(CaseId,address)"
 msgstr "已领取"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyInitialized()"
 msgstr "已初始化"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "AlreadyMigrated(PositionId,PositionId)"
-msgstr "已迁移"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyMinted()"
 msgstr "已铸造"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "AlreadyVoted()"
 msgstr "已投票"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/components/DepthChart/DepthChartCanvas.tsx
-#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
@@ -426,10 +352,6 @@ msgstr "已投票"
 msgid "Amount"
 msgstr "数量"
 
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
-msgid "Amount / Value"
-msgstr ""
-
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Amount must be greater than 0"
 msgstr "数量必须大于 0"
@@ -438,14 +360,14 @@ msgstr "数量必须大于 0"
 msgid "Amount to Redeem"
 msgstr "赎回数量"
 
+#. placeholder {0}: item.baseSymbol
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Amount({0})"
+msgstr "数量({0})"
+
 #: src/pages/VIP/components/VipList.tsx
 msgid "and"
 msgstr "及"
-
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-msgid "Approve failed"
-msgstr "授权失败"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
@@ -462,7 +384,6 @@ msgstr "APR"
 msgid "Are you sure to"
 msgstr "您确定要"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ArrayEmpty()"
 msgstr "不可为空"
@@ -474,14 +395,6 @@ msgstr "资产"
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Assets"
 msgstr "资产"
-
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
-#: src/utils/order/get-order-toast-parts.ts
-msgid "at"
-msgstr "在"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
@@ -504,17 +417,13 @@ msgstr "审计报告"
 msgid "Authorize"
 msgstr "授权"
 
-#: src/components/ManageAuthorizedTokensDialog/index.tsx
-msgid "Authorize failed"
-msgstr "授权失败"
-
-#: src/components/ManageAuthorizedTokensDialog/index.tsx
-msgid "Authorize success"
-msgstr "授权成功"
+#: src/components/SettingDrawer.tsx
+msgid "Authorize seamless account failed"
+msgstr "无感账户授权失败"
 
 #: src/components/SettingDrawer.tsx
-msgid "Authorized Tokens"
-msgstr "已授权币种"
+msgid "Authorize seamless account success"
+msgstr "无感账户授权成功"
 
 #: src/components/Seamless/ExportInfoDialog/index.tsx
 msgid "Authorizing"
@@ -524,7 +433,6 @@ msgstr "立即授权"
 msgid "Auto Margin"
 msgstr "自动保证金"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/Record/Items/Position.tsx
 msgid "Auto TP Price"
 msgstr "自动止盈价格"
@@ -576,29 +484,10 @@ msgstr "平均平仓价格"
 msgid "Avg. Entry Price"
 msgstr "平均开仓价格"
 
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "Avg.Price/Order Price"
-msgstr "成交均价/委托价格"
-
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 msgid "Balance"
 msgstr "余额"
 
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
-msgid "Balance:"
-msgstr ""
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Base Parameter S"
-msgstr "流动性锁滑点"
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "Base Valut"
-msgstr ""
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BaseFeeNotSoldOut()"
 msgstr "基础费用未售罄()"
@@ -641,14 +530,9 @@ msgstr "蓝筹"
 msgid "BlueChip"
 msgstr "蓝筹"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BondNotReleased()"
 msgstr "保证金未解锁"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "BondZeroAmount()"
-msgstr "保证金金额为零"
 
 #: src/pages/Market/components/Introduction.tsx
 msgid "Boost Your Token's Exposure"
@@ -663,21 +547,16 @@ msgstr "绑定成功"
 msgid "Bridge/Swap"
 msgstr "跨链/兑换"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerAlreadyExists()"
 msgstr "经纪商已存在"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "BrokerNotFound()"
 msgstr "未找到经纪商()"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/OrderSide/index.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
 msgid "Buy"
 msgstr "买入"
 
@@ -693,7 +572,6 @@ msgstr "买入税"
 msgid "By importing this key on another device, you can access MYX from any browser without needing a wallet extension or using a wallet app browser. This key is for trading authorization only and will never hold any of your assets. For your security, do not share it with anyone."
 msgstr "通过在另一台设备上导入此密钥，您可以从任何浏览器访问 MYX，而无需安装钱包扩展程序或使用钱包应用程序浏览器。此密钥仅用于交易授权，绝不会持有您的任何资产。为了您的安全，请勿与任何人共享。"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel"
 msgstr "取消"
@@ -709,10 +587,18 @@ msgid "cancel all open orders?"
 msgstr "取消所有当前委托？"
 
 #: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
+msgid "Cancel all orders failed"
+msgstr "取消所有订单失败"
+
+#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 msgid "Cancel all orders success"
 msgstr "取消所有订单成功"
 
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
+msgid "Cancel order failed"
+msgstr "取消订单失败"
+
 #: src/pages/Trade/components/CancelOrderButton/index.tsx
 msgid "Cancel order success"
 msgstr "取消订单成功"
@@ -725,7 +611,6 @@ msgstr "要取消此订单吗？"
 msgid "Canceled"
 msgstr "已取消"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseAppealNotFinished()"
 msgstr "申诉未结束"
@@ -734,22 +619,18 @@ msgstr "申诉未结束"
 msgid "CaseCanNotAppeal()"
 msgstr "无法申诉()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineNotReached()"
 msgstr "未到截止日期"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseDeadlineReached()"
 msgstr "已到截止日期"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotAccepted()"
 msgstr "案件未被接受"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseNotExist(CaseId)"
 msgstr "案件不存在"
@@ -758,7 +639,6 @@ msgstr "案件不存在"
 msgid "CaseNotInVoting()"
 msgstr "案件未处于投票中"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "CaseRespondentAppealed(CaseId,address)"
 msgstr "反诉中"
@@ -769,10 +649,6 @@ msgstr "反诉中"
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Chain"
 msgstr "链"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ChainIdMismatch()"
-msgstr "链 Id 不匹配"
 
 #: src/components/ReceiveDialog.tsx
 msgid "Chains"
@@ -844,16 +720,6 @@ msgstr "立即领取"
 msgid "Claim referral fee"
 msgstr "领取返佣奖励"
 
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Claim Refund"
-msgstr "领取退款"
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Claim Refund Now"
-msgstr "领取退款"
-
 #: src/components/CookDetail/Dialog/ClaimRewards.tsx
 #: src/pages/Earn/components/Trade/Claim.tsx
 msgid "Claim successfully claimed"
@@ -894,14 +760,15 @@ msgstr "清除"
 msgid "Close"
 msgstr "平仓"
 
-#. placeholder {0}: displayAmount(maxCloseShort.baseAmount)
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
+msgid "close  amount must be greater than 0"
+msgstr "平仓数量必须大于 0"
+
 #. placeholder {0}: displayAmount(maxCloseShort.quoteAmount)
-#. placeholder {1}: symbolInfo?.baseSymbol
-#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close  amount must be less than {0} {1}"
-msgstr "平仓数量必须小于 {0}{1}"
+msgid "close  amount must be less than {0}"
+msgstr "平仓数量必须小于 {0}"
 
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/record/index.tsx
@@ -913,8 +780,11 @@ msgstr "全部平仓"
 msgid "close all positions at market price?"
 msgstr "按市价平掉所有仓位？"
 
-#: src/pages/Trade/components/CancelAllOrdersDialog/index.tsx
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+#: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
+msgid "Close all positions failed"
+msgstr "平掉所有仓位失败"
+
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Close all positions success"
 msgstr "平掉所有仓位成功"
@@ -923,20 +793,10 @@ msgstr "平掉所有仓位成功"
 msgid "Close Amount"
 msgstr "平仓数量"
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close amount must be greater than 0 {0}"
-msgstr "平仓数量必须大于 {0}"
-
-#. placeholder {0}: displayAmount(maxCloseLong.baseAmount)
 #. placeholder {0}: displayAmount(maxCloseLong.quoteAmount)
-#. placeholder {1}: symbolInfo?.baseSymbol
-#. placeholder {1}: symbolInfo?.quoteSymbol
 #: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Close.tsx
-msgid "close amount must be less than {0} {1}"
-msgstr "平仓数量必须小于 {0}{1}"
+msgid "close amount must be less than {0}"
+msgstr "平仓数量必须小于 {0}"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
@@ -978,10 +838,8 @@ msgid "Community"
 msgstr "社区"
 
 #: src/components/CloseConfirmDialog/index.tsx
-#: src/components/Dialog/HighRiskWarningDialog.tsx
 #: src/components/DialogBase/index.tsx
 #: src/components/Login/CodeConfirm.tsx
-#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
@@ -989,7 +847,6 @@ msgstr "社区"
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
 #: src/components/Trade/Dialog/Leverage/Leverage.tsx
 #: src/components/VipRedeemDialog/index.tsx
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Referrals/components/MyRebate/LinkReferralDialog.tsx
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -1004,10 +861,6 @@ msgstr "社区"
 msgid "Confirm"
 msgstr "确认"
 
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "Confirm Enable Trading"
-msgstr "确认提前开启交易"
-
 #: src/pages/Market/components/steps.tsx
 msgid "Confirm token info"
 msgstr "确认代币信息"
@@ -1015,12 +868,6 @@ msgstr "确认代币信息"
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Confirm Token Info"
 msgstr "确认代币信息"
-
-#: src/components/PlaceOrderConfirm/index.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "Confirming"
-msgstr "确认中"
 
 #: src/pages/Referrals/components/ReceiveConfirmDialog/index.tsx
 msgid "Congratulations!"
@@ -1060,7 +907,6 @@ msgstr "合约"
 msgid "contract runner does not support gas estimation"
 msgstr "无法估算 Gas 费，请稍后再试"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ConvertAmountMismatch(uint256,uint256)"
 msgstr "兑换金额不匹配，请重试"
@@ -1073,10 +919,6 @@ msgstr "兑换金额不匹配，请重试"
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Cook"
 msgstr "Cook"
-
-#: src/pages/Cook/index.tsx
-msgid "Cook - Build High-Yield Pools | MYX"
-msgstr "Cook - 创建高收益池 | MYX"
 
 #: src/pages/Cook/components/CookSubBar.tsx
 msgid "Cook_Sub_Bar_New"
@@ -1108,7 +950,6 @@ msgid "Copy Link"
 msgstr "复制链接"
 
 #: src/components/Copy.tsx
-#: src/components/ManageAuthorizedTokensDialog/index.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -1117,10 +958,6 @@ msgstr "复制链接"
 #: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
 msgid "Copy success"
 msgstr "复制成功"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Core parameter in the funding model used to adjust funding level."
-msgstr "资金费率计算的基准参数或基础溢价。"
 
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Cost Basis"
@@ -1153,14 +990,9 @@ msgstr "创建市场"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 #: src/components/Header/const.tsx
-#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Create Market"
 msgstr "创建市场"
-
-#: src/pages/Market/index.tsx
-msgid "Create Market - Permissionless Listing for Any Asset | MYX"
-msgstr "创建市场 - 创建任意资产的合约市场 | MYX"
 
 #: src/components/GlobalSearch/SearchList/NotFound.tsx
 msgid "Create this market now, become a Genesis LP, and enjoy a permanent 2% commission dividend!"
@@ -1171,7 +1003,6 @@ msgid "Create Time"
 msgstr "创建时间"
 
 #: src/pages/Cook/components/Banner.tsx
-#: src/pages/Home/components/ActivitySwiper/index.tsx
 #: src/pages/Market/components/create.tsx
 msgid "Create your own derivatives market to enjoy LP rewards and fee sharing."
 msgstr "创建您自己的衍生品市场，享受 LP 奖励和手续费分成。"
@@ -1186,7 +1017,6 @@ msgstr "当前等级"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Current Price"
 msgstr "当前价格"
@@ -1213,10 +1043,6 @@ msgstr "自定义过滤器"
 msgid "D"
 msgstr "天"
 
-#: src/pages/Cook/components/Dashboard/index.tsx
-msgid "Dashboard"
-msgstr "仪表盘"
-
 #: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Earn/components/Chart.tsx
 msgid "Day"
@@ -1224,10 +1050,6 @@ msgstr "天"
 
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 msgid "Decrease"
-msgstr "减少"
-
-#: src/utils/order/action-toast.tsx
-msgid "Decreased"
 msgstr "减少"
 
 #: src/pages/Referrals/components/Hero/SelectReferralDialog.tsx
@@ -1248,10 +1070,6 @@ msgstr "审计"
 msgid "Delisted : Market is closed. Only asset redemption is available."
 msgstr "已下架：市场已关闭。仅支持资产赎回。"
 
-#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
-msgid "Delisting soon. Only closing positions is allowed"
-msgstr "市场即将下架，仅允许平仓操作"
-
 #: src/components/AccountDialog/index.tsx
 #: src/pages/Home/components/AccountInfo/index.tsx
 msgid "Deposit"
@@ -1261,10 +1079,6 @@ msgstr "充值"
 msgid "Deposit underlying assets, gain price exposure, and earn fees."
 msgstr "存入基础资产，获得价格敞口并赚取手续费。"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "DesignatedTokenMismatch(address,address)"
-msgstr "指定的代币不匹配，请检查您选择的资产"
-
 #: src/components/SafeList/index.tsx
 msgid "Determined by factors such as asset liquidity. Higher risk assets typically entail higher manipulation costs, greater price slippage risk, and stricter risk control requirements."
 msgstr "取决于资产流动性等因素。高风险资产通常意味着更高的操纵成本、更大的价格滑点风险和更严格的风控要求。"
@@ -1273,7 +1087,6 @@ msgstr "取决于资产流动性等因素。高风险资产通常意味着更高
 msgid "Developers"
 msgstr "开发者"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DifferentMarket(PoolId,PoolId)"
 msgstr "市场不一致"
@@ -1286,7 +1099,6 @@ msgstr "Discord"
 msgid "Display Currency"
 msgstr "显示币种"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "DisputeNotAllowed()"
 msgstr "不允许发起申诉()"
@@ -1300,7 +1112,6 @@ msgid "Dont show again"
 msgstr "不再显示"
 
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to [Reason for Delisting], new buys for this market have been paused. You can still sell your holdings at any time.<0>Reactivate Market</0>"
 msgstr "该市场的买入已暂停。您可以随时卖出持有的资产。<0>重新激活市场</0>"
@@ -1312,12 +1123,6 @@ msgstr "该市场的买入已暂停。您可以随时卖出持有的资产。<0>
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0> View Delisting Rules</0>"
 msgstr "由于月成交量不符合要求，{0} 市场将于 {1} 后下架。下架后将暂停买入，卖出不受影响。<0>查看下架规则</0>"
-
-#. placeholder {0}: baseLpDetail.mBaseQuoteSymbol
-#. placeholder {1}: cutDownFormat(dayjs.duration(countdown))
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-msgid "Due to the monthly trading volume not meeting the requirement, the {0} market will be delisted in {1}. After delisting, buys will be suspended. Your ability to sell will not be affected. <0>View Delisting Rules</0>"
-msgstr ""
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "During the validity period, if your level is below <0>VIP{level}</0>, you can enjoy the benefits of <1>VIP{level}</1>."
@@ -1336,25 +1141,18 @@ msgstr "在有效期内，您可以享受 <0>VIP{level}</0> 体验"
 msgid "Earn"
 msgstr "赚取"
 
-#: src/pages/Earn/List.tsx
-msgid "Earn - Stable Yields & Low Risk | MYX"
-msgstr "赚取-稳定收益 & 低风险 | MYX"
-
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Earn up to 20% rebates"
 msgstr "赚取高达 20% 的返佣"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignature()"
 msgstr "无效的签名()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureLength(uint256)"
 msgstr "无效的签名长度 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ECDSAInvalidSignatureS(bytes32)"
 msgstr "无效的签名 (bytes32)"
@@ -1363,17 +1161,13 @@ msgstr "无效的签名 (bytes32)"
 msgid "Ecosystem"
 msgstr "系统"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
+#: src/components/Trade/Dialog/OrderTpSl/index.tsx
 msgid "Edit"
 msgstr "编辑"
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Edit Note"
 msgstr "编辑备注"
-
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Edit TP/SL"
-msgstr "编辑止盈/止损"
 
 #: src/components/Footer/index.tsx
 msgid "Email"
@@ -1387,16 +1181,11 @@ msgstr "邮件已发送"
 msgid "Email login"
 msgstr "邮箱登录"
 
-#: src/components/ManageAuthorizedTokensDialog/index.tsx
-msgid "Enable or disable seamless authorization for your assets."
-msgstr "启用或禁用对您的无感账户授权"
-
 #: src/components/Seamless/ResetSetPasswordDialog/index.tsx
 #: src/components/Seamless/SetPasswordDialog/index.tsx
 msgid "Enable Seamless Trading"
 msgstr "开启无感交易"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "EnforcedPause()"
 msgstr "强制暂停()"
@@ -1439,7 +1228,6 @@ msgstr "当前委托 ({0})"
 msgid "Entry price"
 msgstr "成交价"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/SharePositionDialog/index.tsx
 msgid "Entry Price"
 msgstr "开仓价格"
@@ -1449,112 +1237,90 @@ msgstr "开仓价格"
 msgid "EOA Wallet"
 msgstr "EOA 钱包"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967InvalidImplementation(address)"
 msgstr "无效的 ERC1967 实现 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC1967NonPayable()"
 msgstr "ERC1967 不可支付()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientAllowance(address,uint256,uint256)"
 msgstr "授权额度不足"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InsufficientBalance(address,uint256,uint256)"
 msgstr "余额不足"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidApprover(address)"
 msgstr "无效的授权者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidReceiver(address)"
 msgstr "无效的接收者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSender(address)"
 msgstr "无效的发送者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC20InvalidSpender(address)"
 msgstr "无效的spender (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612ExpiredSignature(uint256)"
 msgstr "签名已过期 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2612InvalidSigner(address,address)"
 msgstr "无效的签名者 (address,address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderExpiredRequest(uint48)"
 msgstr "ERC2771 请求已过期 (uint48)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderInvalidSigner(address,address)"
 msgstr "无效的签名者"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771ForwarderMismatchedValue(uint256,uint256)"
 msgstr "ERC2771 值不匹配 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC2771UntrustfulTarget(address,address)"
 msgstr "ERC2771 不可信目标 (address,address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721IncorrectOwner(address,uint256,address)"
 msgstr "ERC721 所有者不正确 (address,uint256,address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InsufficientApproval(address,uint256)"
 msgstr "授权额度不足"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidApprover(address)"
 msgstr "无效的授权者"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidOperator(address)"
 msgstr "ERC721 无效的操作员 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidOwner(address)"
 msgstr "ERC721 无效的所有者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidReceiver(address)"
 msgstr "ERC721 无效的接收者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721InvalidSender(address)"
 msgstr "ERC721 无效的发送者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ERC721NonexistentToken(uint256)"
 msgstr "ERC721 代币不存在 (uint256)"
@@ -1572,6 +1338,7 @@ msgstr "预估兑换比例"
 
 #: src/components/CloseConfirmDialog/index.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Est. Slippage"
 msgstr "预估滑点"
 
@@ -1587,127 +1354,82 @@ msgstr "基于您创世份额所累积的交易手续费分红（2% 终身权益
 msgid "Estimated redemption amount. Actual receipt is subject to slippage and price fluctuations."
 msgstr "预期赎回金额。实际收到的金额受滑点和价格波动影响。"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed()"
 msgstr "转账失败()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ETHTransferFailed(address,uint256)"
 msgstr "转账失败 (address,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseCollateral(uint256,uint256)"
 msgstr "超过基础抵押品 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedBaseReserved(uint256,uint256)"
 msgstr "超过基础保留金 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedDebt(uint256,uint256)"
 msgstr "超过债务限制 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedExchangeable()"
 msgstr "超过可兑换额度()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxBaseProfit()"
 msgstr "超过最大基础收益()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxExchangeableAmount()"
 msgstr "超过最大可兑换金额()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxLeverage(PositionId)"
 msgstr "超过最大杠杆 (PositionId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxPriceDeviation()"
 msgstr "价格偏差过大()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMaxProfit()"
 msgstr "超过最大收益()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMinOutput(uint256,uint256)"
 msgstr "低于最小限制 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedMinOutputAmount()"
 msgstr "低于最小限制()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedOrderSize(uint256)"
 msgstr "超过最大订单规模限制 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedPositionSize()"
 msgstr "超过最大仓位限制()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedQuoteReserved(uint256,uint256)"
 msgstr "保证金不足 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ExceedReservable(uint256,uint256,uint256)"
-msgstr "超出可用流动性上限，请减少金额后重试"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExceedsMaximumRelayFee()"
 msgstr "超过最大费用()"
-
-#: src/config/error/CommonErrorMapping.tsx
-#: src/config/error/MYX_SDK_ERRORS.tsx
-msgid "ExcessiveSlippage()"
-msgstr "交易滑点过高"
-
-#: src/components/CookDetail/Charts/AreaCharts.tsx
-#: src/pages/Earn/components/Chart.tsx
-#: src/pages/Earn/components/Chart.tsx
-msgid "Exchange Rate"
-msgstr "兑换比例"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ExchangeRateAlreadyApplied()"
-msgstr "汇率转换已应用，请勿重复操作"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ExchangeRateAlreadyDisabled()"
-msgstr "汇率转换功能当前已被禁用"
 
 #: src/components/Record/Items/Finance.tsx
 msgid "Execution Fee"
 msgstr "执行费"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ExecutionFeeNotCollected()"
-msgstr "交易执行费扣除失败"
-
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExecutionFeeNotSupport(address)"
 msgstr "不支持该执行费 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExpectedPause()"
 msgstr "预期暂停()"
@@ -1716,7 +1438,6 @@ msgstr "预期暂停()"
 msgid "Expired"
 msgstr "已过期"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ExpiredFeeData()"
 msgstr "费用数据已过期()"
@@ -1743,7 +1464,6 @@ msgstr "失败"
 msgid "Failed to copy"
 msgstr "复制失败"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "FailedCall()"
 msgstr "合约调用失败()"
@@ -1773,7 +1493,7 @@ msgstr "完全稀释估值"
 msgid "Fee"
 msgstr "费用"
 
-#. placeholder {0}: symbolInfo?.quoteSymbol?.toString() || '--'
+#. placeholder {0}: item.executionFeeToken?.toString() || '--'
 #: src/components/Record/Items/OrderHistory.tsx
 msgid "Fee({0})"
 msgstr "手续费({0})"
@@ -1791,10 +1511,6 @@ msgstr "永久免除手续费。"
 #: src/pages/Cook/components/Card.tsx
 msgid "Filter"
 msgstr "过滤器"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "First-stage growth parameter in the funding model."
-msgstr "多空轻度失衡时，资金费率增长的第一阶段斜率。"
 
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Forgot Password?"
@@ -1845,12 +1561,6 @@ msgstr "好友获得"
 msgid "From"
 msgstr "从"
 
-#. placeholder {0}: formatNumber(deductedAmount, { showUnit: false, decimals: 0 })
-#. placeholder {1}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Fund Resolution: Per platform rules, {0} {tokenSymbol} has been deducted for oracle and security review costs. The remaining {1} {tokenSymbol} has been unlocked and is available for immediate withdrawal."
-msgstr "资金处理结果：根据平台规则，已扣除 {0} {tokenSymbol} 作为预言机及安全审查耗损。剩余的 {1}{tokenSymbol}可立即提取。"
-
 #: src/components/Record/Items/Position.tsx
 msgid "Funding fee"
 msgstr "资金费"
@@ -1858,18 +1568,6 @@ msgstr "资金费"
 #: src/components/Record/Items/Finance.tsx
 msgid "Funding Fee"
 msgstr "资金费"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Funding Growth G1"
-msgstr "资金费率增长率 G1"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Funding Growth G2"
-msgstr "资金费率增长率 G2"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Funding Parameter R2"
-msgstr "资金费率参数 R2"
 
 #: src/pages/Price/components/PriceInfo.tsx
 #: src/pages/Price/components/PriceInfo.tsx
@@ -1881,10 +1579,6 @@ msgstr "资金费率"
 msgid "Funding Rate"
 msgstr "资金费率"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Funding Settlement Interval"
-msgstr "资金费率结算周期"
-
 #: src/pages/Home/components/MarketList/index.tsx
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Gainers"
@@ -1895,22 +1589,14 @@ msgstr "涨幅榜"
 msgid "Gasless trading"
 msgstr "免 Gas 交易"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "GasLimitExceeded(address,uint256,uint256)"
 msgstr "超过Gas 限制 (address,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "GasLimitNotSet(address)"
 msgstr "未设置 Gas (address)"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Genesis LP Share"
-msgstr "创世LP分成"
-
-#: src/components/CookDetail/Dialog/ClaimRewards.tsx
-#: src/pages/Cook/detail/components/Assets.tsx
 #: src/pages/Market/components/Introduction.tsx
 msgid "Genesis Rewards"
 msgstr "创世奖励"
@@ -1922,10 +1608,6 @@ msgstr "立即开始"
 #: src/pages/Earn/components/ConnectWallet.tsx
 msgid "Get Started to view"
 msgstr "连接钱包"
-
-#: src/api/index.ts
-msgid "getPoolIsAppealing error"
-msgstr "获取申诉状态失败"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Got it"
@@ -1951,23 +1633,15 @@ msgstr "帮助"
 msgid "Helper Center"
 msgstr "帮助中心"
 
-#: src/components/Record/HideOuterSymbols.tsx
-msgid "Hide other"
-msgstr "隐藏其他"
-
-#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Hide other symbols"
 msgstr "隐藏其他交易对"
-
-#: src/components/Dialog/HighRiskWarningDialog.tsx
-msgid "High-Risk Asset Warning"
-msgstr "高风险资产警告"
 
 #: src/pages/VIP/components/VipList.tsx
 msgid "Hold"
 msgstr "持有"
 
+#: src/components/Dialog/DialogFilters.tsx
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Earn/detail/components/TokenInfo.tsx
@@ -1983,10 +1657,6 @@ msgstr "持有 MYX"
 msgid "Home"
 msgstr "首页"
 
-#: src/pages/Home/index.tsx
-msgid "Home - Permissionless Listing for Any Asset | MYX"
-msgstr "主页 - 创建任意资产的合约市场 | MYX"
-
 #: src/404.tsx
 msgid "Homepage"
 msgstr "首页"
@@ -1996,10 +1666,6 @@ msgstr "首页"
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Hot"
 msgstr "热门榜"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Hours"
-msgstr "小时"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "How are your rights protected?"
@@ -2026,11 +1692,6 @@ msgstr "Hypervault 购买"
 msgid "Hypervault Sale"
 msgstr "Hypervault 出售"
 
-#. placeholder {0}: formatNumber(refundAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "If the activation is aborted, <0>the remaining {0} {tokenSymbol} will be refunded and must be claimed manually.</0>"
-msgstr "如果激活中止，<0>剩余的 {0} {tokenSymbol} 将退还，需您手动领取。</0>"
-
 #: src/ErrorPage.tsx
 msgid "If the issue persists, Join the <0>MYX Discord</0> community for support"
 msgstr "如果问题仍然存在，请加入 <0>MYX Discord</0> 社区寻求支持"
@@ -2048,12 +1709,10 @@ msgstr "导入无感密钥成功"
 msgid "Inactive"
 msgstr "未激活"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InconsistentParamsLength()"
 msgstr "参数长度不一致()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "IncorrectFee(uint256)"
 msgstr "费用不正确 (uint256)"
@@ -2062,15 +1721,10 @@ msgstr "费用不正确 (uint256)"
 msgid "Increase"
 msgstr "增加"
 
-#: src/utils/order/action-toast.tsx
-msgid "Increased"
-msgstr "增加"
-
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Indicators"
 msgstr "指标"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InDisputeMode()"
 msgstr "处于申诉模式()"
@@ -2083,16 +1737,10 @@ msgstr "信息"
 msgid "Info"
 msgstr "信息"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Initial Margin Rate"
-msgstr "初始保证金率"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InitializationFunctionReverted(address,bytes)"
 msgstr "初始化函数回滚 (address,bytes)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InRewindMode()"
 msgstr "处于回溯模式()"
@@ -2105,103 +1753,72 @@ msgstr "余额不足"
 
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Insufficient Balance"
 msgstr "余额不足"
 
-#: src/hooks/use-check-user-vip-info.ts
-msgid "Insufficient balance to pay execution fee"
-msgstr "余额不足以支付执行费用"
-
-#: src/config/error/CommonErrorMapping.tsx
-#: src/config/error/CommonErrorMapping.tsx
-msgid "Insufficient wallet balance"
-msgstr "钱包余额不足"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance()"
 msgstr "余额不足()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(address,uint256,uint256)"
 msgstr "余额不足 (address,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientBalance(uint256,uint256)"
 msgstr "余额不足 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(PositionId,uint256)"
 msgstr "保证金不足 (PositionId,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientCollateral(uint256,uint256)"
 msgstr "保证金不足 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeAllowance(address,uint256,uint256)"
 msgstr "费用授权不足 (address,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFeeBalance(address,uint256,uint256)"
 msgstr "费用余额不足 (address,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientFreeCollateral(PositionId,uint256)"
 msgstr "可用保证金不足 (PositionId,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLiquidity(uint256,uint256,uint256)"
 msgstr "流动性不足 (uint256,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientLockedCollateral(PositionId,uint256)"
 msgstr "锁定保证金不足 (PositionId,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientOutputAmount()"
 msgstr "金额不足()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientPoolProfit()"
 msgstr "资金池收益不足()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientQuoteIn(uint256,uint256,uint256)"
 msgstr "报价输入错误 (uint256,uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientReturnAmount(uint256,uint256)"
 msgstr "返回金额错误 (uint256,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientRiskReserves()"
 msgstr "风险准备金不足()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InsufficientSize()"
 msgstr "交易规模不足()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InternalOnly()"
-msgstr "仅限内部使用"
 
 #: src/pages/Earn/detail/components/TabBar.tsx
 msgid "Introduction"
@@ -2211,174 +1828,94 @@ msgstr "简介"
 msgid "Invalid Market"
 msgstr "无效市场"
 
-#: src/components/Seamless/ImportDialog/index.tsx
-#: src/components/Seamless/ResetSetPasswordDialog/index.tsx
-#: src/components/Seamless/SetPasswordDialog/index.tsx
-msgid "Invalid password"
-msgstr "密码错误"
-
-#: src/hooks/seamless/use-import-seamless-key.ts
-msgid "Invalid private key"
-msgstr "无效的私钥"
-
-#: src/hooks/seamless/utils.ts
-msgid "Invalid private key generated"
-msgstr "无效的无感私钥"
-
-#: src/hooks/seamless/use-import-seamless-key.ts
-msgid "Invalid seamless key"
-msgstr "无效的无感私钥"
-
 #: src/pages/Market/index.tsx
 msgid "Invalid token address"
 msgstr "无效代币地址"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAccountNonce(address,uint256)"
 msgstr "无效的账户 Nonce (address,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidADLPosition(OrderId,PositionId)"
 msgstr "无效的 ADL 仓位 (OrderId,PositionId)"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidAmount()"
-msgstr "无效金额"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAmount(CaseId,address)"
 msgstr "金额无效 (CaseId,address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidAmount(uint256)"
 msgstr "金额无效 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidBaseToken()"
 msgstr "无效的基础代币()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidContractAddress()"
-msgstr "无效合约地址"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidDeviationRatio()"
-msgstr "价格偏差率设置无效"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidDistributionAmount()"
 msgstr "无效的分发金额()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidFeeRate()"
 msgstr "无效的费率()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidFeeTier()"
 msgstr "无效的费用等级()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidFunctionSignature()"
-msgstr "无效函数签名"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidInitialization()"
 msgstr "初始化无效()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidLiquidityAmount()"
 msgstr "无效的流动性金额()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidOrder(OrderId)"
 msgstr "订单无效 (OrderId)"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidOrderPair(OrderId,OrderId)"
-msgstr "无效订单"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidParameter()"
 msgstr "参数无效()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidPayloadLength(uint256,uint256)"
-msgstr "无效长度"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPoolToken()"
 msgstr "无效的资金池代币()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPosition(PositionId)"
 msgstr "仓位无效 (PositionId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidPrice()"
 msgstr "价格无效()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidProfitAmount()"
-msgstr "无效利润金额"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidQuoteToken()"
-msgstr "不支持该计价代币"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidQuoteTokenAddress()"
 msgstr "无效的计价代币地址()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidRatioParams()"
 msgstr "无效的比率参数()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidResponseVersion()"
-msgstr "无效响应版本"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidRewindPrice()"
 msgstr "无效的回溯价格()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidShortString()"
 msgstr "无效的短字符串()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "InvalidSourceChain()"
-msgstr "无效链"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidSplitConfig()"
 msgstr "无效的配置()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidTpsl(uint256)"
 msgstr "无效的止盈止损设置 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "InvalidUpdateFee()"
 msgstr "无效的更新费用()"
@@ -2445,14 +1982,6 @@ msgstr "逐仓"
 msgid "Isolated {0}x"
 msgstr "逐仓 {0}x"
 
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "Join Cook Pool"
-msgstr "Trench理财"
-
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "Join Earn Pool"
-msgstr "稳定币理财"
-
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "Join MYX And Enjoy <0>20%</0> Commission"
 msgstr "加入 MYX，享受 <0>20%</0> 佣金"
@@ -2484,7 +2013,6 @@ msgstr "最新价"
 msgid "Last Price/TVL"
 msgstr "最新价/TVL"
 
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
 #: src/pages/Referrals/components/ReceiveInviteDialog/index.tsx
 msgid "Later"
 msgstr "稍后"
@@ -2507,15 +2035,18 @@ msgstr "杠杆调整将影响您新开仓的订单。开新仓时，系统将根
 #: src/components/Record/Items/OrderHistory.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/OrderType/index.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
 msgid "Limit"
 msgstr "限价"
+
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+msgid "Limit close success"
+msgstr "限价平仓成功"
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "Link Referral Relationship"
 msgstr "绑定邀请关系"
 
+#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "Liq"
 msgstr "Liq"
@@ -2525,19 +2056,9 @@ msgstr "Liq"
 msgid "Liq. Price"
 msgstr "强平价格"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/Record/Items/Position.tsx
 msgid "Liq.Price"
 msgstr "强平价格"
-
-#: src/components/CookDetail/Dialog/ClaimRewards.tsx
-#: src/pages/Cook/detail/components/Assets.tsx
-msgid "Liquidity Yield"
-msgstr "流动性收益"
-
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Liquidity($)"
-msgstr "流动性($)"
 
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
@@ -2592,7 +2113,6 @@ msgstr "低波动，稳健收益"
 msgid "LP Yield Generation"
 msgstr "LP 收益产生"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "LPNotFullyMinted()"
 msgstr "LP 未完全铸造()"
@@ -2609,17 +2129,9 @@ msgstr "月"
 msgid "Main-chart Indicators"
 msgstr "主图指标"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Maintenance Margin Rate"
-msgstr "维持保证金率"
-
 #: src/pages/VIP/components/VipList.tsx
 msgid "Maker"
 msgstr "挂单者"
-
-#: src/components/ManageAuthorizedTokensDialog/index.tsx
-msgid "Manage Authorized Tokens"
-msgstr "管理授权币种"
 
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
@@ -2633,9 +2145,10 @@ msgstr "手动保证金"
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/Dialog/AdjustMargin.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
+#: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
-#: src/utils/order/action-toast.tsx
 msgid "Margin"
 msgstr "保证金"
 
@@ -2664,17 +2177,8 @@ msgstr "保证金({0})"
 #: src/pages/Price/components/PriceContent/index.tsx
 #: src/pages/Price/components/Trade/TradeForm.tsx
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
 msgid "Market"
 msgstr "市价"
-
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Market Activation Failed"
-msgstr "市场开启失败"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 #: src/pages/Cook/detail/components/Info.tsx
@@ -2687,58 +2191,18 @@ msgstr "市值"
 msgid "Market Cap"
 msgstr "市值"
 
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Market cap($)"
-msgstr "市值($)"
-
 #: src/pages/Trade/components/MarketClosePositionButton/index.tsx
 msgid "Market Close"
 msgstr "市价平仓"
 
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "Market Delisted"
-msgstr "市场已下架"
-
-#: src/hooks/seamless/use-unlock-seamless-account.ts
-msgid "Market info not ready, please try again"
-msgstr "市场信息未准备好，请重试"
+#: src/components/Record/Items/components/ClosePositionButton.tsx
+#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
+msgid "Market close success"
+msgstr "市价平仓成功"
 
 #: src/pages/Market/index.tsx
 msgid "market is created"
 msgstr "市场已创建"
-
-#. placeholder {0}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenViewLaunchStatus() }} > [ <Trans>View Status</Trans> → ] </button> )
-#. placeholder {0}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market launch fee paid and TVL threshold met! Waiting for smart contract execution to force start trading. {0}"
-msgstr "市场开启费已支付且 TVL 已达标！等待智能合约执行以强制开启交易。{0}"
-
-#. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(poolInfoTvl?.totalTvl || '0') .toString(), { showUnit: false }, )
-#. placeholder {0}: formatNumber( Big(boostedPrimeTvl) .minus(tvl?.totalTvl || '0') .toString(), { showUnit: false }, )
-#. placeholder {1}: formatNumberPercent(genesisFeeRate, 0, false)
-#. placeholder {2}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenViewLaunchStatus() }} > [ <Trans>View Status</Trans> → ] </button> )
-#. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setUnBoostConfirmBoostOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>View Status</Trans> → ] </button> )
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market launch fee paid! Only <0>${0} more TVL</0> needed to force start trading. Join now to lock in a LIFETIME {1} fee share! {2}"
-msgstr "市场开启费已支付！仅差 <0>${0} TVL</0> 即可提前开启交易。立即加入，锁定终身 {1} 手续费分成！{2}"
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "Market Launch Status"
-msgstr "市场开启状态"
-
-#. placeholder {0}: formatNumber(market?.boostRefundFeeUsd, { showUnit: false })
-#. placeholder {1}: pool?.quoteSymbol
-#. placeholder {2}: account && boostInfo?.proposer && isAddressEqual(boostInfo.proposer as Address, account as Address) && ( <button type="button" className={'text-green cursor-pointer'} onClick={() => { onOpenClaimRefund() }} > [ <Trans>Claim Refund Now</Trans> ↗ ] </button> )
-#. placeholder {2}: address && boostInfo?.proposer && isAddressEqual(boostInfo?.proposer as Address, address) && ( <button className={'text-green cursor-pointer'} onClick={() => { setClaimRefundOpen(true) setIsOnBoostSuccess(false) }} > [ <Trans>Claim Refund Now</Trans> ↗ ] </button> )
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Market Opening Failed! You have {0} {1} funds pending.👉 {2}"
-msgstr "市场激活失败！您有{0}{1}退款待领取。👉{2}"
 
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 msgid "Market price"
@@ -2749,21 +2213,14 @@ msgstr "市价"
 msgid "Market Price"
 msgstr "市价"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketAlreadyExisted()"
 msgstr "市场已存在()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketNotExist(MarketId)"
 msgstr "市场不存在 (MarketId)"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "MarketNotExisted()"
-msgstr "当前交易市场不存在"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MarketNotInitialized()"
 msgstr "市场未初始化()"
@@ -2771,14 +2228,6 @@ msgstr "市场未初始化()"
 #: src/components/Tabbar/const.tsx
 msgid "Markets"
 msgstr "市场"
-
-#: src/pages/MarketList/index.tsx
-msgid "Markets -  Permissionless Listing for Any Asset | MYX"
-msgstr "市场 - 创建任意资产的合约市场 | MYX"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "MatchNotSupported()"
-msgstr "不支持匹配"
 
 #: src/components/CookDetail/Order/Buy.tsx
 #: src/components/CookDetail/Order/Sell.tsx
@@ -2788,7 +2237,6 @@ msgstr "不支持匹配"
 #: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
 #: src/components/Trade/TradePanel/MaxTradeAmount/index.tsx
 #: src/components/Trade/TradePanel/OrderForm/MarginAmount/index.tsx
-#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Max"
@@ -2800,23 +2248,7 @@ msgstr "最大"
 msgid "Max capital for opening new positions. Aggregates Free Margin, Wallet Balance, and Locked Realized PnL ({0} Locked Realized PnL)"
 msgstr "用于开新仓的最大资金。由可用保证金、钱包余额和{0} 锁定已实现盈亏汇总而成"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Max Leverage"
-msgstr "最大杠杆"
-
-#: src/components/PlaceOrderConfirm/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Max Slippage"
-msgstr "最大滑点"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Maximum allowed deviation between execution price and oracle price."
-msgstr "预期执行价偏离预言机价格超过此范围将拒单，防范异常波动。"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Maximum leverage allowed in this market."
-msgstr "当前市场支持的最高杠杆倍数。"
-
+#: src/components/Dialog/DialogFilters.tsx
 #: src/pages/Cook/components/Token.tsx
 msgid "MC"
 msgstr "MC"
@@ -2825,7 +2257,6 @@ msgstr "MC"
 msgid "Medium"
 msgstr "Medium"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MerkleTreeVerificationFailed(CaseId,address)"
 msgstr "Merkle 树验证失败 (CaseId,address)"
@@ -2834,42 +2265,13 @@ msgstr "Merkle 树验证失败 (CaseId,address)"
 msgid "Min"
 msgstr "最小"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Min Open Size"
-msgstr "最小开仓数量"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Minimum margin ratio required to keep a position open; falling below it may trigger liquidation."
-msgstr "维持仓位的最低保证金比例，跌破将触发强平。"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Minimum margin ratio required to open a position."
-msgstr "开仓所需的最低保证金比例。"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Minimum size allowed per opening order, displayed in quote currency for U-margined markets."
-msgstr "平台允许的单笔最低开仓金额。"
-
 #: src/components/SafeList/index.tsx
 msgid "Mintable"
 msgstr "可铸造"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Minutes"
-msgstr "分钟"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "MismatchedSender(address)"
 msgstr "不匹配 (address)"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "MismatchExecuteFee(uint256,uint256,uint256)"
-msgstr "执行费用不匹配"
-
-#: src/hooks/seamless/use-create-seamless-account.ts
-msgid "Missing chain"
-msgstr "缺少链"
 
 #: src/components/Trade/Charts/Toolbar/index.tsx
 msgid "more"
@@ -2920,10 +2322,6 @@ msgstr "我的代币"
 #: src/pages/record/index.tsx
 msgid "My trades"
 msgstr "我的交易"
-
-#: src/pages/record/index.tsx
-msgid "My trades - Permissionless Listing for Any Asset | MYX"
-msgstr "我的交易 - 创建任意资产的合约市场 | MYX"
 
 #: src/pages/Cook/detail/components/Info.tsx
 #: src/pages/Home/components/MarketList/index.tsx
@@ -2992,24 +2390,10 @@ msgstr "未找到记录"
 msgid "No results found"
 msgstr "未找到结果"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "No-Slippage Capacity"
-msgstr "无滑点容量"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "No-Slippage Time Window"
-msgstr "无滑点时间窗口"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NoADLNeeded(OrderId)"
 msgstr "无需 ADL (OrderId)"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "NoChainResponse()"
-msgstr "无链上响应"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NoRebateToClaim()"
 msgstr "无可领取的返佣()"
@@ -3018,50 +2402,38 @@ msgstr "无可领取的返佣()"
 msgid "Not Created"
 msgstr "未创建"
 
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "Not Now"
-msgstr "暂不"
-
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Not Required"
 msgstr "不需要"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotActiveBroker(address)"
 msgstr "非活跃经纪商 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAddressManager()"
 msgstr "非地址管理器()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAllowedCaller(address)"
 msgstr "不允许的调用者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotAllowedTarget(address)"
 msgstr "不允许的目标 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotBrokerAdmin()"
 msgstr "非经纪商管理员()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotBrokerSigner(address)"
 msgstr "非经纪商签名者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotCaseRespondent(CaseId,address)"
 msgstr "非案件被申请人 (CaseId,address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotDependencyManager()"
 msgstr "非依赖管理器()"
@@ -3076,7 +2448,6 @@ msgstr "备注"
 msgid "Note(optional)"
 msgstr "备注(选填)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotEmptyAddress()"
 msgstr "地址非空()"
@@ -3085,58 +2456,41 @@ msgstr "地址非空()"
 msgid "Notes can only enter letters or numbers"
 msgstr "备注仅能输入字母或数字"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "NotForwardAllowedTarget(address)"
-msgstr "目标地址未获得授权"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInDisputeMode()"
 msgstr "非争议模式()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInitializing()"
 msgstr "未处于初始化状态()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotInRewindMode()"
 msgstr "非回溯模式()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotMeetEarlyCloseCriteria(PositionId)"
 msgstr "不符合提前平仓条件 (PositionId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotOrderOwner()"
 msgstr "非订单所有者()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotPositionOwner()"
 msgstr "非仓位所有者()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotProxyAdmin()"
 msgstr "非代理管理员()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotReachedPrice(OrderId,uint256,uint256,TriggerType)"
 msgstr "未达到触发价格 (OrderId,uint256,uint256,TriggerType)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "NotSupportVersion()"
 msgstr "不支持的版本()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "NumberOfResponsesMismatch()"
-msgstr "响应数量不匹配"
 
 #: src/components/VipRedeemDialog/VipRedeemResultDialog.tsx
 msgid "Obtain <0>VIP{level}</0> Experience:"
@@ -3179,33 +2533,22 @@ msgstr "一次邀请，多重奖励"
 #. placeholder {0}: formatNumber(genesis, { showUnit: true, })
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
-#. placeholder {4}: pool?.quoteSymbol || '--'
-#. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => { setBoostConfirmBoostOpen(true) }} > [ {<Trans>Unlock Market Early</Trans>} ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ {<Trans>`Paid. Syncing status</Trans>}... ] </button> )
+#. placeholder {3}: pool?.quoteSymbol || '--'
+#. placeholder {4}: pool?.quoteSymbol
+#. placeholder {5}: pool?.baseSymbol
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME <1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
-msgstr "仅剩 <0>${0}</0> {1} 创世份额即可激活市场！立即加入，锁定终身 <1>{2}</1> 手续费分成！您也可以支付 {3} {4} 立即激活！👉{5}"
+msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime <1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+msgstr "仅剩 <0>${0}</0> {1} 创世份额可锁定终身 <1>{2}</1> 交易手续费分成！或者使用 {3} 加入 <2>[m{4}.{5}↗]</2> 池以获得相同利益。"
 
-#. placeholder {0}: formatNumber(genesis, { showUnit: true, })
+#. placeholder {0}: formatNumber(genesis)
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol || '--'
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
-#. placeholder {3}: formatNumber(market?.boostFeeUsd, { showUnit: false })
-#. placeholder {4}: pool?.quoteSymbol || '--'
-#. placeholder {5}: !isOnBoostSuccess ? ( <> <button className={'text-green cursor-pointer'} onClick={() => setBoostConfirmBoostOpen(true)} > [ <Trans>Unlock Market Early</Trans> ↗ ] </button> </> ) : ( <button disabled className={'text-green cursor-not-allowed opacity-50'}> [ <Trans>Paid. Syncing status</Trans>... ] </button> )
+#. placeholder {3}: pool?.baseSymbol || '--'
+#. placeholder {4}: pool?.baseSymbol
+#. placeholder {5}: pool?.quoteSymbol
 #: src/pages/Earn/components/BenchWarning.tsx
-msgid "Only <0>${0}</0> {1} Genesis Shares left to activate the market!Join now to lock in a LIFETIME<1>{2}</1>fee share! You can also pay {3} {4} to activate instantly! 👉 {5}"
-msgstr "仅剩 <0>${0}</0> {1} 创世份额即可激活市场！立即加入，锁定终身<1>{2}</1>手续费分成！您也可以支付 {3} {4} 立即激活！👉{5}"
-
-#. placeholder {0}: pool?.baseSymbol || '--'
-#. placeholder {0}: pool?.quoteSymbol || '--'
-#. placeholder {1}: pool?.baseSymbol
-#. placeholder {1}: pool?.quoteSymbol
-#. placeholder {2}: pool?.baseSymbol
-#. placeholder {2}: pool?.quoteSymbol
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Only holding {0}? <0>[m{1}.{2}↗]</0> "
-msgstr "仅持有 {0}？ <0>[m{1}.{2}↗]</0> "
+msgid "Only <0>${0}</0> {1} Genesis Shares left to lock in lifetime<1>{2}</1>trading fees! Or use {3} to join the <2>[m{4}.{5}↗]</2> pool for the same benefit."
+msgstr "仅剩 <0>${0}</0> {1} 创世份额可锁定终身 <1>{2}</1> 交易手续费分成！或者使用 {3} 加入 <2>[m{4}.{5}↗]</2> 池以获得相同利益。"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Only Seamless Trading private key import supported."
@@ -3215,12 +2558,10 @@ msgstr "仅支持导入无感交易私钥。"
 msgid "OnlyActiveValidator()"
 msgstr "仅限活跃验证者()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OnlyKeeper()"
 msgstr "仅限 Keeper()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OnlyRelayer()"
 msgstr "仅限 Relayer()"
@@ -3229,11 +2570,13 @@ msgstr "仅限 Relayer()"
 msgid "Open"
 msgstr "开仓"
 
-#. placeholder {0}: amountUnit === AmountUnitEnum.BASE ? (symbolInfo?.baseSymbol ?? '') : (symbolInfo?.quoteSymbol ?? '')
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
+msgid "open  amount must be greater than 0"
+msgstr "开仓数量必须大于 0"
+
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "open amount must be greater than 0 {0}"
-msgstr "开仓数量必须大于0"
+msgid "open amount must be greater than 0"
+msgstr "开仓数量必须大于 0"
 
 #: src/components/Trade/TradePanel/PoolsInfo/index.tsx
 #: src/pages/Price/components/PoolContent/index.tsx
@@ -3245,7 +2588,6 @@ msgstr "多头持仓量"
 msgid "Open Interest (Short)"
 msgstr "空头持仓量"
 
-#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenLong.tsx
@@ -3266,7 +2608,6 @@ msgstr "当前委托({0})"
 msgid "Open Orders{0}"
 msgstr "当前委托{0}"
 
-#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/SharePositionDialog/index.tsx
 #: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
 #: src/pages/Price/components/Trade/OpenShort.tsx
@@ -3305,21 +2646,8 @@ msgstr "或"
 msgid "Or Continue With "
 msgstr "或通过以下方式继续："
 
-#: src/pages/Cook/detail/components/TradingInfo.tsx
-msgid "Oracle Price"
-msgstr "预言机价格"
-
-#: src/utils/order/get-order-toast-parts.ts
-msgid "Order"
-msgstr "订单"
-
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "Order canceled"
-msgstr "订单已取消"
-
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
-msgid "Order Cancelled"
 msgstr "订单已取消"
 
 #: src/store/transactions/options.ts
@@ -3328,17 +2656,9 @@ msgstr "订单已取消"
 msgid "Order confirmed"
 msgstr "订单已确认"
 
-#: src/utils/order/get-order-toast-parts.ts
-msgid "Order Filled"
-msgstr "订单已成交"
-
 #: src/pages/record/components/RecordTab.tsx
 msgid "Order History"
 msgstr "历史委托"
-
-#: src/utils/order/get-order-toast-parts.ts
-msgid "Order Partially Filled"
-msgstr "订单部分成交"
 
 #: src/store/transactions/options.ts
 #: src/store/transactions/options.ts
@@ -3346,22 +2666,10 @@ msgstr "订单部分成交"
 msgid "Order Rejected"
 msgstr "订单被拒绝"
 
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "Order size must be greater than the minimum required"
-msgstr "未达到最小下单数量"
-
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-msgid "Order Submitted"
-msgstr "订单已提交"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderExpired(OrderId)"
 msgstr "订单已过期 (OrderId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OrderNotExist(OrderId)"
 msgstr "订单不存在 (OrderId)"
@@ -3370,12 +2678,10 @@ msgstr "订单不存在 (OrderId)"
 msgid "Others"
 msgstr "其他"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OwnableInvalidOwner(address)"
 msgstr "无效的所有者 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "OwnableUnauthorizedAccount(address)"
 msgstr "未授权账户 (address)"
@@ -3398,18 +2704,9 @@ msgstr "从锁定已实现盈亏中支付：{0} {1}"
 msgid "Paid from Wallet: {0} {1}"
 msgstr "从钱包中支付：{0} {1}"
 
-#: src/pages/Cook/detail-v2/components/BoostPaidSyncingStatus.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Paid. Syncing status"
-msgstr "支付状态同步中"
-
 #: src/components/GlobalContractSearch/SearchList/FuturesList/index.tsx
 msgid "Pair/Vol"
 msgstr "交易对/Vol"
-
-#: src/pages/Trade/components/OrderStatus/index.tsx
-msgid "Partially filled"
-msgstr "部分成交"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Password"
@@ -3427,19 +2724,10 @@ msgstr "粘贴"
 msgid "Pay"
 msgstr "支付"
 
-#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "Pay {0} {tokenSymbol}"
-msgstr "支付{0}{tokenSymbol}"
-
 #. placeholder {0}: quoteLpDetail?.quoteSymbol
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pay with {0}"
 msgstr "使用 {0} 支付"
-
-#: src/hooks/lp/useOnBoostPool.ts
-msgid "Payment successful. Waiting for market launch."
-msgstr "支付成功，等待市场开启。"
 
 #: src/components/GlobalContractSearch/SymbolInfo/index.tsx
 #: src/components/GlobalSearch/SymbolInfo/index.tsx
@@ -3455,7 +2743,6 @@ msgstr "等待下架：计划近期下架。交易将停止。"
 msgid "Per trade"
 msgstr "每笔交易"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PermissionDenied(address,address)"
 msgstr "权限被拒绝 (address,address)"
@@ -3464,10 +2751,6 @@ msgstr "权限被拒绝 (address,address)"
 #: src/pages/Earn/detail/components/TradingInfo.tsx
 msgid "Perp Trading Info"
 msgstr "永续合约交易信息"
-
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-msgid "Please approve a new limit via your wallet."
-msgstr "交易授权额度不足，请通过钱包批准新的额度。"
 
 #: src/pages/Trade/components/CloseAllPositionDialog/index.tsx
 msgid "Please confirm whether to"
@@ -3494,31 +2777,6 @@ msgstr "请输入兑换码"
 msgid "Please enter the Referral ID"
 msgstr "请输入邀请码"
 
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Please enter the SL price"
-msgstr "请输入止损价格"
-
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Please enter the SL size"
-msgstr "请输入止损数量"
-
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Please enter the TP price"
-msgstr "请输入止盈价格"
-
-#: src/components/Trade/Dialog/OrderTpSl/index.tsx
-msgid "Please enter the TP size"
-msgstr "请输入止盈数量"
-
-#: src/components/Dialog/HighRiskWarningDialog.tsx
-msgid "Please note: "
-msgstr "请注意："
-
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-msgid "Please try again."
-msgstr "请重试。"
-
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
@@ -3531,67 +2789,49 @@ msgstr "盈亏"
 msgid "Pool"
 msgstr "资金池"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "Pool not found"
-msgstr ""
-
 #: src/pages/Market/components/activeMarket.tsx
 msgid "Pool reprime"
 msgstr "池子注资"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolExists(PoolId)"
 msgstr "资金池已存在 (PoolId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolFundingFeeNotPositive(int256,uint256,Direction)"
 msgstr "资金池资金费率必须为正 (int256,uint256,Direction)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotActive(PoolId)"
 msgstr "资金池未激活 (PoolId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotCompoundable(PoolId)"
 msgstr "资金池不可复利 (PoolId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotExist(PoolId)"
 msgstr "资金池不存在 (PoolId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotInitialized()"
 msgstr "资金池未初始化()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolNotInPreBenchState(PoolId)"
 msgstr "资金池非预基准状态 (PoolId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeCharged()"
 msgstr "资金池预言机费用已收取()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeNotCharged()"
 msgstr "资金池预言机费用未收取()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PoolOracleFeeNotExisted()"
 msgstr "资金池预言机费用不存在()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "PoolOracleFeeNotSoldOut()"
-msgstr "资金池预言机费用未售罄"
 
 #: src/pages/Price/components/PoolContent/index.tsx
 msgid "Pools info"
@@ -3610,22 +2850,18 @@ msgstr "持仓数量"
 msgid "Position({0})"
 msgstr "仓位({0})"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotEmpty()"
 msgstr "仓位非空()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotHealthy(PositionId,uint256)"
 msgstr "仓位风险过高 (PositionId,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionNotInitialized(PositionId)"
 msgstr "仓位未初始化 (PositionId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "PositionRemainsHealthy(PositionId)"
 msgstr "仓位保持健康 (PositionId)"
@@ -3652,20 +2888,12 @@ msgstr "仓位({0})"
 msgid "Positions{0}"
 msgstr "仓位{0}"
 
-#: src/pages/Cook/components/Dashboard/TradeVolume.tsx
-msgid "Prep Volume"
-msgstr "合约成交额"
-
-#: src/components/DepthChart/DepthChartCanvas.tsx
 #: src/components/Record/Items/components/ClosePositionButton.tsx
 #: src/components/Record/Items/OpenOrders.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslTypeSelect.tsx
 #: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
 #: src/components/Trade/TradePanel/OrderForm/PriceInput/index.tsx
 #: src/components/Trade/TradePanel/TPSL/TPSLInput.tsx
-#: src/pages/Cook/detail/components/PriceTab.tsx
-#: src/pages/Earn/components/Chart.tsx
-#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/detail/components/TabBar.tsx
 #: src/pages/Price/components/Tabs.tsx
@@ -3678,17 +2906,9 @@ msgstr "价格"
 msgid "Price Impact"
 msgstr "价格影响"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Price Protection Range"
-msgstr "价格保护区间"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "PriceDeviationBelowMinimum()"
-msgstr "价格偏差低于系统允许的最低限制"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "PriceDeviationThresholdReached()"
-msgstr "价格波动已触及系统安全阈值"
+#: src/components/Record/Items/OrderHistory.tsx
+msgid "Price/Price"
+msgstr "价格/价格"
 
 #: src/components/Seamless/ExportDialog/index.tsx
 msgid "Private Key Security: Keep your private key safe. If shared, it may be misused for trading permissions. If compromised, revoke access immediately. This key cannot transfer assets."
@@ -3697,10 +2917,6 @@ msgstr "私钥安全：请妥善保管您的私钥。如果外泄，可能会被
 #: src/components/CookDetail/Order/Sell.tsx
 msgid "Profit"
 msgstr "创世收益"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Profit Risk Control"
-msgstr "利润锁时间"
 
 #: src/components/Dialog/DialogFilters.tsx
 msgid "Progress"
@@ -3722,18 +2938,6 @@ msgstr "代理合约"
 #: src/pages/Cook/detail/components/Assets.tsx
 msgid "Quantity"
 msgstr "数量"
-
-#: src/components/DepthChart/DepthChartCanvas.tsx
-msgid "Range"
-msgstr "范围"
-
-#: src/pages/rank/index.tsx
-msgid "Rankings - Permissionless Listing for Any Asset | MYX"
-msgstr "排行榜 - 创建任意资产的合约市场 | MYX"
-
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "Reactivate Pool "
-msgstr "重新激活市场"
 
 #. placeholder {0}: symbolInfo?.baseSymbol ?? ''
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
@@ -3804,7 +3008,6 @@ msgstr "赎回"
 msgid "Redeem Code"
 msgstr "兑换码"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReentrancyGuardReentrantCall()"
 msgstr "禁止重入调用()"
@@ -3824,11 +3027,6 @@ msgstr "被邀请人"
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "RefereeRatio"
 msgstr "被邀请人比例"
-
-#: src/pages/Referrals/index.tsx
-#: src/pages/Referrals/SelectReferral/MobileSelectReferral.tsx
-msgid "Referral - Invite & Earn Lifetime Commissions | MYX"
-msgstr "邀请返佣 - 邀请和赚取终身佣金 | MYX"
 
 #: src/pages/Referrals/components/Record/index.tsx
 msgid "Referral History"
@@ -3877,21 +3075,10 @@ msgstr "立即刷新"
 msgid "Refund"
 msgstr "返还"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "Refund already claimed."
-msgstr "退款已被领取。"
-
-#: src/hooks/lp/useClaimRefund.ts
-#: src/hooks/lp/useOnUnBoostPool.ts
-msgid "Refund claim successful"
-msgstr "退款领取成功"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReimbursementValidity(CaseId)"
 msgstr "赔偿有效性问题 (CaseId)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "RelayerRegistered(address)"
 msgstr "Relayer 已注册 (address)"
@@ -3901,14 +3088,9 @@ msgstr "Relayer 已注册 (address)"
 msgid "Remaining number of promotional links to be created: {0}"
 msgstr "剩余待创建的推广链接数量：{0}"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "RemoveRelayerFailed()"
 msgstr "移除 Relayer 失败()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "RequestTypeMismatch()"
-msgstr "请求类型不匹配"
 
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Required"
@@ -3922,7 +3104,6 @@ msgstr "重新发送"
 msgid "Resend in {countdown}s"
 msgstr "{countdown} 秒后重新发送"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "ReservableNotEnough(uint256,uint256)"
 msgstr "可保留金额不足 (uint256,uint256)"
@@ -3968,21 +3149,9 @@ msgstr "奖励领取"
 msgid "Reward Vesting"
 msgstr "奖励释放"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Risk control parameter used to limit exposure under abnormal profit or extreme market conditions."
-msgstr "限制极端行情风险暴露的风控参数，用于保护流动性池。"
-
 #: src/components/SafeList/index.tsx
 msgid "Risk Rating"
 msgstr "风险等级"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "RiskCloseNotAllowed()"
-msgstr "不允许风险平仓"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "RiskCloseNotCompleted()"
-msgstr "风险平仓未完成"
 
 #: src/components/Record/Items/Position.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
@@ -4004,27 +3173,22 @@ msgstr "投资回报率"
 msgid "S"
 msgstr "秒"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedIntToUint(int256)"
 msgstr "数值转换溢出 (int256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedUintDowncast(uint8,uint256)"
 msgstr "数值转换溢出 (uint8,uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeCastOverflowedUintToInt(uint256)"
 msgstr "数值转换溢出 (uint256)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SafeERC20FailedOperation(address)"
 msgstr "SafeERC20 操作失败 (address)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SamePoolMigration(PoolId)"
 msgstr "相同资金池迁移 (PoolId)"
@@ -4056,24 +3220,12 @@ msgstr "无感"
 msgid "Seamless Account"
 msgstr "无感账户"
 
-#: src/components/Record/Items/components/ClosePositionButton.tsx
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
-#: src/hooks/use-check-user-vip-info.ts
-#: src/pages/Trade/components/CancelOrderButton/index.tsx
-#: src/pages/Trade/components/MarketClosePositionButton/index.tsx
-msgid "Seamless account not authorized"
-msgstr "无感账户未授权"
-
-#: src/components/Trade/Dialog/AdjustMargin.tsx
-msgid "Seamless account not found"
-msgstr "无感账户未找到"
-
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Seamless Key"
 msgstr "无感密钥"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
+#: src/components/SettingDrawer.tsx
 msgid "Seamless Trading"
 msgstr "无感交易"
 
@@ -4092,36 +3244,8 @@ msgid "Search History"
 msgstr "搜索历史"
 
 #: src/components/Dialog/DialogTokenSelect.tsx
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
 msgid "Search name or paste address"
 msgstr "搜索名称或粘贴地址"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Second-stage growth parameter in the funding model."
-msgstr "多空严重失衡时触发的第二阶段斜率。"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-#: src/pages/Price/components/TradeConfig/index.tsx
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Seconds"
-msgstr "秒"
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Market/components/VaultSelect.tsx
-msgid "Security Notice:"
-msgstr "安全注意："
-
-#: src/components/Dialog/HighRiskWarningDialog.tsx
-msgid "Security scans indicate that this token has critical security risks (e.g., malicious code, honeypot, or high transaction taxes). If you continue to provide liquidity, you may face permanent loss of your assets or be unable to withdraw them."
-msgstr ""
-"安全扫描显示该代币存在安全风险（如：恶意代码、可暂停交易、高额交易税或貔貅盘风险）。若您继续为其提供流动性，您的资产可能面临永久性损失或无法撤回。请确保您已充分了解该项目并自行承担操作风险。\n"
-""
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Market/components/VaultSelect.tsx
-msgid "Security Warning:"
-msgstr "安全警告："
 
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "Select a token"
@@ -4173,9 +3297,6 @@ msgstr "选择代币"
 #: src/components/CookDetail/Order/OrderSide/index.tsx
 #: src/components/CookDetail/Order/Sell.tsx
 #: src/components/CookDetail/Order/Sell.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
 msgid "Sell"
 msgstr "卖出"
 
@@ -4237,10 +3358,6 @@ msgstr "设置"
 msgid "Settled available balance in your margin account, withdrawable to on-chain wallet anytime."
 msgstr "保证金账户中已解锁的可用余额，可随时提取至链上钱包。"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Share of rewards allocated to genesis LPs."
-msgstr "分配给早期创世流动性提供者的协议收益分成比例。"
-
 #: src/pages/Referrals/components/Hero/Overview.tsx
 msgid "Share rebate with your friends"
 msgstr "与您的好友分享返佣"
@@ -4262,14 +3379,6 @@ msgstr "空"
 msgid "Short Positions"
 msgstr "空头仓位"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "SignatureExpired()"
-msgstr "签名已过期"
-
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-msgid "Size"
-msgstr "数量"
-
 #. placeholder {0}: position.baseSymbol
 #: src/components/Record/Items/Position.tsx
 msgid "Size({0})"
@@ -4286,45 +3395,26 @@ msgid "SL Est. PNL"
 msgstr "止损预估盈亏"
 
 #: src/utils/verify.ts
-msgid "SL price must be greater than current price"
-msgstr "止损价格必须大于当前价格"
-
-#: src/utils/verify.ts
 msgid "SL price must be greater than entry price"
 msgstr "止损价格必须大于委托价格"
-
-#: src/utils/verify.ts
-msgid "SL price must be less than current price"
-msgstr "止损价格必须小于当前价格"
 
 #: src/utils/verify.ts
 msgid "SL price must be less than entry price"
 msgstr "止损价格必须小于委托价格"
 
 #. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "SL({0})"
 msgstr "止损({0})"
 
-#: src/components/PlaceOrderConfirm/index.tsx
-msgid "SL(Market)"
-msgstr "止损（市价）"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Slippage Protection Threshold"
-msgstr "滑点保护阈值"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "SlippageExceeded(uint256,uint256)"
 msgstr "滑点过高 (uint256,uint256)"
 
-#. placeholder {0}: formatNumber(formatUnits(withdrawableLpAmount, COMMON_LP_AMOUNT_DECIMALS), { showUnit: false })
-#: src/components/CookDetail/Order/Sell.tsx
-#: src/pages/Cook/detail-v2/index.tsx
-#: src/pages/Earn/components/Trade/Redeem.tsx
-msgid "Some funds are locked in active trades. Max available to sell: [{0}] LP."
-msgstr "资金正作为交易对手方被仓位占用，当前最多可赎回{0}LP"
+#: src/components/Login/MorePage.tsx
+msgid "Social Login"
+msgstr "社媒登录"
 
 #: src/ErrorPage.tsx
 msgid "Something went wrong"
@@ -4338,11 +3428,6 @@ msgstr "即将推出"
 msgid "Sorry, the page you are trying to access does not exist"
 msgstr "抱歉，您尝试访问的页面不存在"
 
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "Stable Vault"
-msgstr ""
-
 #: src/store/transactions/options.ts
 msgid "Staking"
 msgstr "质押"
@@ -4355,7 +3440,6 @@ msgstr "质押领取"
 msgid "Staking Unlock"
 msgstr "质押解锁"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "StalePrice()"
 msgstr "价格已过期()"
@@ -4374,20 +3458,6 @@ msgstr "第 1 步"
 msgid "Step 2"
 msgstr "第 2 步"
 
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
-msgid "Step1"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-msgid "Step2"
-msgstr ""
-
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
-msgid "Stop"
-msgstr "止盈止损"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "StringTooLong(string)"
 msgstr "字符串过长 (string)"
@@ -4395,6 +3465,18 @@ msgstr "字符串过长 (string)"
 #: src/components/Trade/Charts/StudyList/StudyListDrawer.tsx
 msgid "Sub-chart Indicators"
 msgstr "副图指标"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Submit close order success"
+msgstr "提交平仓订单成功"
+
+#: src/components/Trade/TradePanel/PlaceOrder/hooks/use-submit-order.ts
+msgid "Submit open order success"
+msgstr "提交开仓订单成功"
+
+#: src/components/Trade/Dialog/TPSL/index.tsx
+msgid "Submit tp/sl order success"
+msgstr "提交止盈/止损订单成功"
 
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 #: src/pages/Earn/components/Trade/Tab.tsx
@@ -4417,15 +3499,10 @@ msgstr "已成交"
 msgid "Successfully buy"
 msgstr "成功买入"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "Successfully deposit"
-msgstr ""
-
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "Successfully deposited"
 msgstr "充值成功"
 
-#: src/pages/Cook/detail-v2/index.tsx
 #: src/pages/Earn/components/Trade/Redeem.tsx
 msgid "Successfully redeem"
 msgstr "成功赎回"
@@ -4437,10 +3514,6 @@ msgstr "成功卖出"
 #: src/pages/Earn/components/Trade/Subscribe.tsx
 msgid "Successfully subscribe"
 msgstr "申购成功"
-
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Sudden on-chain liquidity drop below the minimum threshold"
-msgstr "流动性骤降至最低门槛以下"
 
 #: src/components/CanSwitchWalletNetwork/index.tsx
 msgid "Switch Network"
@@ -4463,7 +3536,6 @@ msgstr "使用条款"
 #. placeholder {1}: baseLpDetail.mBaseQuoteSymbol
 #. placeholder {1}: quoteLpDetail.mQuoteBaseSymbol
 #: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
 #: src/pages/Earn/components/BenchWarning.tsx
 msgid "The {0} perpetual market is currently preparing to go live. Buy {1} now to lock in your share and start earning immediately once trading opens."
 msgstr "{0} 永续合约市场目前正在准备上线。现在买入 {1} 即可锁定您的份额，并在交易开始后立即开始赚取收益。"
@@ -4498,10 +3570,6 @@ msgstr "添加流动性后您预计将收到的 LP 代币份额。"
 msgid "The experience will become effective within 10 minutes"
 msgstr "体验将在 10 分钟内生效"
 
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "The market is gathering initial liquidity. Be a pioneer—provide liquidity to trigger the launch and lock in a LIFETIME 2% Genesis fee share! Choose your preferred pool to get started:"
-msgstr "当流动性达到门槛后将自动开放交易。向下方任一流动性池添加资金，即可在未来合约交易中赚取 2% 创世手续费分成。"
-
 #. placeholder {0}: market ? formatNumberPrecision(market?.poolPrimeThreshold, 0) : '--'
 #: src/pages/Market/components/VaultSelect.tsx
 msgid "The market will activate immediately once total liquidity reaches ${0}."
@@ -4529,30 +3597,11 @@ msgstr "您正在尝试查看的页面暂时无法访问。请稍后再试"
 msgid "The refund rate you can earn after your friend trades."
 msgstr "好友交易后您可以赚取的返利佣比例。"
 
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Market/components/VaultSelect.tsx
-msgid "The security assessment for this token is incomplete. Providing liquidity or trading may carry unknown risks. Proceed with caution at your own risk."
-msgstr "该代币的安全评估尚未完成。提供流动性或参与交易可能存在未知风险，请谨慎操作并自行承担风险。"
-
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "The underlying token poses security risks (Failed Prime Check)"
-msgstr "标的代币存在安全风险（未通过 Prime 安全校验）"
-
 #: src/pages/Market/components/activeMarket.tsx
 msgid "This fee is for the oracle service. Activation will be completed within 24 hours after payment."
 msgstr "此项费用用于预言机服务。激活将在付款后 24 小时内完成。"
 
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "This is typically due to:"
-msgstr "失败原因通常包含："
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Market/components/VaultSelect.tsx
-msgid "This token carries extreme risks. For asset safety, contract trading and liquidity provision are not supported. <0>Contact support</0> for assistance."
-msgstr "该代币存在极高风险。为保障资产安全，平台不支持其上线合约市场及提供流动性。如您认为评估不合理，请<0>联系客服</0>处理。"
-
-#. placeholder {0}: formatNumber(burned, { showUnit: false })
+#. placeholder {0}: formatNumberPrecision(burned, COMMON_PRICE_DISPLAY_DECIMALS)
 #. placeholder {1}: baseLpDetail?.mBaseQuoteSymbol
 #. placeholder {1}: quoteLpDetail?.mQuoteBaseSymbol
 #. placeholder {2}: formatNumberPercent(genesisFeeRate, 0, false)
@@ -4561,12 +3610,6 @@ msgstr "该代币存在极高风险。为保障资产安全，平台不支持其
 msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{2}</1> share of trading fees."
 msgstr "这将销毁 <0>{0}</0> {1}，并且您将永久丧失获得 <1>{2}</1> 交易手续费分成的权利。"
 
-#. placeholder {0}: formatNumber(burned, { showUnit: false })
-#. placeholder {1}: lpSymbol || '--'
-#: src/pages/Cook/detail-v2/components/CookRedeemGenesisBurnTip.tsx
-msgid "This will burn <0>{0}</0> {1} and you will permanently forfeit the right to your <1>{genesisFeeRateDisplay}</1> share of trading fees."
-msgstr ""
-
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/Record/index.tsx
 #: src/pages/Referrals/components/SelectReferral/ReferralFriendsListDialog.tsx
@@ -4574,21 +3617,9 @@ msgstr ""
 msgid "Time"
 msgstr "时间"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Time interval for funding rate settlement and updates, displayed in seconds."
-msgstr "多空双方结算资金费率的频率"
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Time window during which no-slippage protection is applied, displayed in hours."
-msgstr "零滑点额度计算和刷新的滚动时间窗口。"
-
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "To"
 msgstr "至"
-
-#: src/components/Dialog/HighRiskWarningDialog.tsx
-msgid "To ensure a secure trading environment, the platform strictly prohibits and rejects the listing of such high-risk tokens on the contract market."
-msgstr "为了确保一个安全的交易环境，平台严格禁止和拒绝将这类高风险代币列入合约交易市场。"
 
 #: src/pages/Earn/detail/components/Introduction.tsx
 msgid "To protect your LP assets from potential price manipulation or malicious trading, we have established an LP Appeal Mechanism. If you suspect a specific trade has caused you an unfair loss, you can initiate an appeal during that profit's \"settlement period\" to trigger the platform's dispute arbitration process."
@@ -4599,14 +3630,6 @@ msgstr "为保护您的 LP 资产免受价格操纵或恶意交易的影响，�
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "To upgrade to VIP{0}, you need an additional ${1} USD"
 msgstr "要升级到 VIP{0}，您还需要额外的 ${1} USD"
-
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
-msgid "Token"
-msgstr ""
-
-#: src/components/Dialog/DialogFilters.tsx
-msgid "Token age(min)"
-msgstr "创建时长(分钟)"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
 msgid "Token Info"
@@ -4669,41 +3692,24 @@ msgid "TP Est. PNL"
 msgstr "预估盈亏"
 
 #: src/utils/verify.ts
-msgid "TP price must be greater than current price"
-msgstr "止盈价格必须大于当前价格"
-
-#: src/utils/verify.ts
 msgid "TP price must be greater than entry price"
 msgstr "止盈价格必须大于委托价格"
-
-#: src/utils/verify.ts
-msgid "TP price must be less than current price"
-msgstr "止盈价格必须小于当前价格"
 
 #: src/utils/verify.ts
 msgid "TP price must be less than entry price"
 msgstr "止盈价格必须小于委托价格"
 
 #. placeholder {0}: orderType === OrderTypeEnum.Market ? `Market` : `Limit`
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "TP({0})"
 msgstr "止盈({0})"
 
-#: src/components/PlaceOrderConfirm/index.tsx
-msgid "TP(Market)"
-msgstr "止盈（市价）"
-
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/Dialog/TPSL/index.tsx
 #: src/components/Trade/TradePanel/TPSL/index.tsx
 msgid "TP/SL"
 msgstr "止盈/止损"
-
-#: src/utils/order/action-toast.tsx
-msgid "TP/SL Order Submitted"
-msgstr "止盈止损订单已提交"
 
 #: src/components/Trade/Dialog/TpslTypeSelect/index.tsx
 msgid "TP/SL Settings"
@@ -4729,8 +3735,8 @@ msgid "Trade Now"
 msgstr "立即交易"
 
 #: src/components/Trade/TradePanel/TokenInfo/index.tsx
-#: src/pages/Cook/detail/components/TradingInfo.tsx
-#: src/pages/Earn/detail/components/TradingInfo.tsx
+#: src/pages/Cook/detail/components/Info.tsx
+#: src/pages/Earn/detail/components/TokenInfo.tsx
 #: src/pages/Price/components/InfoContent/TokenInfo.tsx
 msgid "Traders"
 msgstr "交易者"
@@ -4740,43 +3746,18 @@ msgstr "交易者"
 msgid "Trading : Market is live. Trading is open and generating earnings."
 msgstr "交易中：合约交易已开启并正在产生收益。"
 
-#: src/hooks/seamless/use-check-seamless-allowance.ts
-msgid "Trading allowance reached"
-msgstr "交易授权额度不足"
-
 #: src/components/Record/Items/Finance.tsx
 msgid "Trading Fee"
 msgstr "交易手续费"
-
-#: src/components/Trade/Charts/NoTradeable/index.tsx
-msgid "Trading is currently suspended as this market has been delisted. You can step up to reactivate the pool and bring this market back online."
-msgstr "该市场已下架，当前暂停交易。您可以激活流动性池，让该合约市场重新恢复上线。"
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "Trading Setting"
 msgstr "交易设置"
 
-#: src/components/Trade/Charts/Toolbar/index.tsx
-#: src/components/Trade/Charts/Toolbar/index.tsx
-msgid "Trading View"
-msgstr "图表"
-
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "Trading Volume"
 msgstr "交易量"
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "Trading will force start instantly once the system confirms:"
-msgstr "一旦系统确认以下条件，将立即强制开启交易："
-
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Trading within this capacity has limited or negligible price impact."
-msgstr "可享受完全“零滑点”成交的最大名义价值额度"
-
-#: src/hooks/order/use-get-order-list.ts
-msgid "Transaction failed"
-msgstr "交易失败"
 
 #: src/pages/record/components/RecordTab.tsx
 msgid "Transaction History"
@@ -4791,46 +3772,29 @@ msgstr "划转"
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
+msgid "Transfer Failed"
+msgstr "划转失败"
+
+#: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 #: src/components/Trade/TradePanel/MarginAccount/TransferDialog.tsx
 msgid "Transfer Success"
 msgstr "划转成功"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "TransferFailed()"
 msgstr "转账失败()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "TreeAlreadySet()"
-msgstr "默克尔树 (Merkle Tree) 数据已配置"
 
 #: src/pages/Cook/components/ToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
 msgid "Trench"
 msgstr "Trench"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-msgid "Trigger Price"
-msgstr "触发价格"
-
-#: src/utils/verify.ts
-msgid "Trigger price must be between Liquidation and Auto-TP prices."
-msgstr "触发价格必须在强平价和自动止盈价格之间"
-
 #: src/ErrorPage.tsx
 msgid "Try refreshing your browser"
 msgstr "尝试刷新浏览器"
 
-#: src/pages/Cook/components/Dashboard/TVL.tsx
-msgid "Tvl"
-msgstr "TVL"
-
-#: src/components/CookDetail/Charts/AreaCharts.tsx
-#: src/pages/Cook/detail/components/PriceTab.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
 #: src/pages/Cook/detail/components/TradingInfo.tsx
-#: src/pages/Earn/components/Chart.tsx
-#: src/pages/Earn/components/Chart.tsx
 #: src/pages/Earn/List.tsx
 msgid "TVL"
 msgstr "TVL"
@@ -4849,45 +3813,26 @@ msgstr "类型"
 msgid "Unclaimed"
 msgstr "未领取"
 
-#: src/config/error/CommonErrorMapping.tsx
+#: src/pages/Cook/detail/components/Assets.tsx
+msgid "Unclaimed Fees"
+msgstr "待领取费用"
+
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnderflowOI()"
 msgstr "持仓量下溢()"
 
 #: src/pages/Cook/detail/components/TradingInfo.tsx
+#: src/pages/Cook/detail/components/TradingInfo.tsx
 msgid "Underlying Price"
 msgstr "标的价格"
 
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Underlying token security risks (Failed Prime Check)"
-msgstr "标的代币存在安全风险（未通过 Prime 安全校验）"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnexpectedCaseState()"
 msgstr "意外的案件状态()"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UnexpectedCaseType()"
-msgstr "不支持的案件类型"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UnexpectedNumberOfResults()"
-msgstr "意外的结果数量"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnexpectedPoolState()"
 msgstr "意外的资金池状态()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UnhealthyAfterRiskTierApplied(PositionId)"
-msgstr "应用风险等级后状态不健康"
-
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "Unlock Market Early"
-msgstr "提前激活市场"
 
 #: src/components/Record/Items/Position.tsx
 msgid "unPnl"
@@ -4899,29 +3844,13 @@ msgstr "未实现盈亏"
 msgid "Unrealized PnL"
 msgstr "未实现盈亏"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnsupportedAssetClass(AssetClass)"
 msgstr "不支持的资产类别 (AssetClass)"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UnsupportedFeeTier(uint8)"
 msgstr "不支持的费用等级 (uint8)"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UnsupportedQueryType(uint8)"
-msgstr "不支持的查询类型"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UntrustfulVoting()"
-msgstr "不可信投票"
-
-#: src/components/PlaceOrderConfirm/index.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-#: src/components/Trade/TradePanel/PlaceOrder/Open.tsx
-msgid "Update VIP"
-msgstr "更新 VIP"
 
 #: src/pages/Referrals/components/SelectReferral/EditNoteDialog.tsx
 msgid "Updated successfully"
@@ -4948,31 +3877,14 @@ msgstr "升级进度"
 msgid "Upgrade to VIP{0} by trading"
 msgstr "通过交易升级到 VIP{0}"
 
-#: src/pages/Earn/components/VaultTabs.tsx
-msgid "USDC理财"
-msgstr "USDC理财"
-
-#: src/pages/Earn/components/VaultTabs.tsx
-msgid "USDT理财"
-msgstr "USDT理财"
-
 #: src/components/Trade/TradePanel/BalanceAndMarginMode/index.tsx
 #: src/components/Trade/TradePanel/MarginAccount/index.tsx
 msgid "Used Margin"
 msgstr "占用保证金"
 
-#: src/pages/Price/components/TradeConfig/index.tsx
-msgid "Used to calculate slippage impact within the liquidity lock range."
-msgstr "交易锁定池内流动性时产生的基础滑点摩擦"
-
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/CommonErrorMapping.tsx
-#: src/config/error/index.ts
-#: src/config/error/index.ts
-#: src/config/error/index.ts
-#: src/config/error/index.ts
-#: src/config/error/MYX_SDK_ERRORS.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "User Rejected"
 msgstr "用户已拒绝"
@@ -4981,16 +3893,10 @@ msgstr "用户已拒绝"
 msgid "User who prefer classic DeFi UX"
 msgstr "偏好经典 DeFi 用户体验的用户"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "UserProfitFrozen()"
-msgstr "收益目前处于冻结状态，暂不可提取"
-
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UUPSUnauthorizedCallContext()"
 msgstr "UUPS 未授权调用上下文()"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "UUPSUnsupportedProxiableUUID(bytes32)"
 msgstr "UUPS 不支持的 Proxiable UUID (bytes32)"
@@ -5007,25 +3913,17 @@ msgid "Vault"
 msgstr "金库"
 
 #: src/pages/Earn/components/TabBar.tsx
+#: src/pages/Earn/List.tsx
 msgid "Vaults"
 msgstr "金库"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "VerificationFailed()"
-msgstr "验证失败"
 
 #: src/components/Seamless/ImportDialog/index.tsx
 msgid "Verify"
 msgstr "验证"
 
-#: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
 msgid "VerifyPriceFailed()"
 msgstr "价格验证失败()"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "VersionMismatch()"
-msgstr "版本不匹配"
 
 #: src/pages/Referrals/components/MyRebate/index.tsx
 msgid "View my referrer"
@@ -5035,23 +3933,10 @@ msgstr "查看我的邀请人"
 msgid "View referral rules"
 msgstr "查看邀请规则"
 
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/components/CookDetail/Order/OrderTips/index.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Cook/detail-v2/components/CookDetailOrderTips.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-#: src/pages/Earn/components/BenchWarning.tsx
-msgid "View Status"
-msgstr "查看状态"
-
 #: src/pages/Home/components/ExpressMenu/const.tsx
 #: src/pages/VIP/provider/index.tsx
 msgid "VIP"
 msgstr "VIP"
-
-#: src/pages/VIP/index.tsx
-msgid "VIP - Exclusive Privileges & Fee Discounts | MYX"
-msgstr "VIP - 专属特权和费用折扣 | MYX"
 
 #. placeholder {0}: configData?.maxVipLevel
 #: src/pages/Referrals/components/MyRebate/RefererDialog.tsx
@@ -5079,10 +3964,6 @@ msgstr "风险等级"
 #: src/pages/rank/components/Tabs/index.tsx
 msgid "Volume"
 msgstr "成交量"
-
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "Wait for Launch"
-msgstr "等待开盘"
 
 #: src/components/AccountDialog/index.tsx
 #: src/components/Login/MorePage.tsx
@@ -5139,10 +4020,6 @@ msgstr "白名单"
 msgid "Withdrawable {0}"
 msgstr "可提取 {0}"
 
-#: src/config/error/CommonErrorMapping.tsx
-msgid "WrongQueryType(uint8,uint8)"
-msgstr "请求参数错误"
-
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "X"
@@ -5163,18 +4040,8 @@ msgstr "Y"
 msgid "Yes"
 msgstr "是"
 
-#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
-#. placeholder {1}: formatNumber(tvlThreshold, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "You are about to <0>pay a {0} {tokenSymbol}</0> oracle and network fee. Once the market's TVL reaches {1} {tokenSymbol}, the system will automatically connect to the oracle and enable trading."
-msgstr "您即将<0>支付 {0} {tokenSymbol} </0>的预言机及网络费。当该市场 TVL 达到 {1} {tokenSymbol} 时，系统将自动对接预言机开启交易。"
-
-#: src/components/Dialog/ConfirmEnableTradingDialog.tsx
-msgid "You manually cancel the payment before trading is successfully enabled"
-msgstr "在成功开启交易前，您主动撤销了付款"
-
 #. placeholder {0}: formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)
-#. placeholder {1}: nextMyxLevel?.vipTier
+#. placeholder {1}: nextLevelInfo?.vipTier
 #: src/pages/VIP/components/Upgrade.tsx
 msgid "You need to hold {0} MYX to upgrade to VIP{1}"
 msgstr "您需要持有 {0} MYX 才能升级到 VIP{1}"
@@ -5200,11 +4067,6 @@ msgstr "您已获得 {0}% 的交易手续费返利"
 msgid "You’ve unlocked the highest VIP level."
 msgstr "您已解锁最高 VIP 级别。"
 
-#. placeholder {0}: formatNumber(feeAmount, { showUnit: false, decimals: 0 })
-#: src/components/Dialog/MarketLaunchStatusDialog.tsx
-msgid "Your {0} {tokenSymbol} fee is secured. The smart contract is automatically processing your launch request."
-msgstr "您的 {0} {tokenSymbol} 费用已锁定。智能合约正自动处理您的开盘请求。"
-
 #: src/components/ChangeModeDialog/index.tsx
 #: src/components/ChangeModeDialog/index.tsx
 msgid "Your Current Mode"
@@ -5223,22 +4085,6 @@ msgstr "您的最高分佣比例"
 #: src/components/Seamless/UnlockAccountDialog/index.tsx
 msgid "Your Password"
 msgstr "您的密码"
-
-#: src/components/Dialog/MarketActivationFailedDialog.tsx
-msgid "Your request to early launch the market could not be executed."
-msgstr "您提前开启市场的请求未能执行。"
-
-#: src/config/error/CommonErrorMapping.tsx
-msgid "ZeroQueries()"
-msgstr "请求参数不可为空"
-
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "也可以支付"
-msgstr ""
-
-#: src/pages/Price/components/Tabs.tsx
-msgid "交易参数"
-msgstr "交易参数"
 
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
@@ -5268,22 +4114,9 @@ msgstr "从保证金账户"
 msgid "从钱包"
 msgstr "从钱包"
 
-#: src/components/SettingDrawer.tsx
-msgid "仓位保证金共享"
-msgstr "仓位保证金共享"
-
-#: src/components/PlaceOrderConfirm/index.tsx
-msgid "仓位共享保证金"
-msgstr "仓位共享保证金"
-
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "仓位已平仓"
 msgstr "仓位已平仓"
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-msgid "余额"
-msgstr ""
 
 #: src/pages/Referrals/components/Hero/ReferFriendsDialog.tsx
 msgid "保存失败"
@@ -5310,10 +4143,10 @@ msgstr "保证金账户可划转到钱包的余额"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 msgid "修改"
 msgstr "修改"
 
+#: src/components/Record/Items/PositionHistoryItem.tsx
 #: src/store/transactions/options.ts
 msgid "全部平仓"
 msgstr "全部平仓"
@@ -5327,22 +4160,12 @@ msgstr "全部撤单"
 msgid "全部撤销"
 msgstr "全部撤销"
 
-#: src/pages/Earn/components/VaultTabs.tsx
-msgid "全部理财"
-msgstr "全部理财"
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
-msgid "关闭"
-msgstr ""
-
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
 msgid "其他"
 msgstr "其他"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslSlippage.tsx
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslSlippage.tsx
 msgid "最大滑点"
 msgstr "最大滑点"
@@ -5353,10 +4176,6 @@ msgstr "最大滑点"
 #: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
 msgid "最新价/24h涨跌幅"
 msgstr "最新价/24h涨跌幅"
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "准备上线中"
-msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "减少保证金"
@@ -5374,34 +4193,14 @@ msgstr "划转至保证金"
 msgid "划转至钱包"
 msgstr "划转至钱包"
 
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
-msgid "创世 LP 可额外获得平台手续费分成。"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
-msgid "创世收益"
-msgstr ""
-
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
 #: src/components/Trade/Dialog/TPSL/components/TpslOrderItem.tsx
 msgid "删除"
 msgstr "删除"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
-msgid "加仓"
-msgstr "加仓"
-
 #: src/components/InfiniteScrollView.tsx
 msgid "加载中..."
 msgstr "加载中..."
-
-#: src/pages/Cook/detail-v2/components/ProgressSection.tsx
-msgid "募集进度"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "去激活"
-msgstr ""
 
 #: src/components/DialogBase/index.tsx
 #: src/components/Trade/Dialog/OrderTpSl/index.tsx
@@ -5468,30 +4267,9 @@ msgstr "委托价格"
 msgid "委托数量"
 msgstr "委托数量"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "存入"
-msgstr ""
-
-#: src/components/Record/Items/PositionHistoryItem.tsx
-msgid "完全平仓"
-msgstr "完全平仓"
-
 #: src/components/InfiniteScrollView.tsx
 msgid "已全部加载完毕"
 msgstr "已全部加载完毕"
-
-#. placeholder {0}: item.baseSymbol
-#: src/components/Record/Items/OrderHistory.tsx
-msgid "已成交数量/委托数量({0})"
-msgstr "已成交数量/委托数量({0})"
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-msgid "已选择token"
-msgstr ""
-
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-msgid "市价"
-msgstr "市价"
 
 #: src/components/Trade/Dialog/MarketCloseConfirm/index.tsx
 msgid "市价买入/开多"
@@ -5537,7 +4315,6 @@ msgstr "平仓"
 msgid "平仓二次确认"
 msgstr "平仓二次确认"
 
-#: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "平仓滑点设置"
 msgstr "平仓滑点设置"
@@ -5606,10 +4383,6 @@ msgstr "当前市场最大可开做空仓位"
 msgid "待上架"
 msgstr "待上架"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-msgid "执行价格"
-msgstr "执行价格"
-
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 msgid "按价格排序"
@@ -5629,10 +4402,6 @@ msgstr "按盈亏排序"
 msgid "授权"
 msgstr "授权"
 
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "提前启动市场。"
-msgstr ""
-
 #: src/components/Record/Items/Finance.tsx
 #: src/components/Record/Items/PositionHistoryItem.tsx
 msgid "提前平仓"
@@ -5645,10 +4414,6 @@ msgstr "提取保证金"
 #: src/components/Dialog/DialogTokenSelect.tsx
 msgid "搜索结果"
 msgstr "搜索结果"
-
-#: src/pages/Cook/detail-v2/components/TradeContentSection.tsx
-msgid "支付"
-msgstr ""
 
 #: src/components/Header/Operation/Setting/SettingDrawer.tsx
 #: src/components/SettingDrawer.tsx
@@ -5665,7 +4430,6 @@ msgstr "数量"
 msgid "文档"
 msgstr "文档"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无可执行数量"
 msgstr "无可执行数量"
@@ -5674,12 +4438,10 @@ msgstr "无可执行数量"
 msgid "无感Gas费"
 msgstr "无感Gas费"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无效订单"
 msgstr "无效订单"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "无效订单，被Keeper清理"
 msgstr "无效订单，被Keeper清理"
@@ -5717,14 +4479,6 @@ msgstr "榜单"
 msgid "止损-最新"
 msgstr "止损-最新"
 
-#: src/components/Record/Items/PositionHistoryItem.tsx
-msgid "止损平仓"
-msgstr "止损平仓"
-
-#: src/components/Record/Items/PositionHistoryItem.tsx
-msgid "止盈平仓"
-msgstr "止盈平仓"
-
 #: src/components/Trade/Dialog/OrderTpSl/TpslPreview.tsx
 #: src/components/Trade/Dialog/TPSL/TpslPreview.tsx
 #: src/pages/Trade/components/OrderType/index.tsx
@@ -5733,11 +4487,6 @@ msgstr "止盈平仓"
 msgid "止盈止损"
 msgstr "止盈止损"
 
-#: src/utils/order/action-toast.tsx
-msgid "止盈止损更新成功"
-msgstr "止盈止损更新成功"
-
-#: src/components/Trade/Dialog/Slippage/index.tsx
 #: src/components/Trade/Dialog/Slippage/index.tsx
 msgid "止盈止损滑点"
 msgstr "止盈止损滑点"
@@ -5747,11 +4496,6 @@ msgstr "止盈止损滑点"
 msgid "流入/流出"
 msgstr "流入/流出"
 
-#: src/components/Trade/Charts/Toolbar/index.tsx
-#: src/components/Trade/Charts/Toolbar/index.tsx
-msgid "深度图"
-msgstr "深度图"
-
 #: src/components/Record/Items/Finance.tsx
 msgid "添加保证金"
 msgstr "添加保证金"
@@ -5760,19 +4504,14 @@ msgstr "添加保证金"
 msgid "添加止盈止损"
 msgstr "添加止盈止损"
 
+#: src/components/PlaceOrderConfirm/index.tsx
 #: src/components/Trade/Dialog/PlaceOrderConfirm/index.tsx
 msgid "滑点"
 msgstr "滑点"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "滑点超限"
 msgstr "滑点超限"
-
-#: src/pages/Cook/detail-v2/components/QuickActivateEntry.tsx
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "激活"
-msgstr ""
 
 #: src/components/Record/Items/Finance.tsx
 msgid "爆仓"
@@ -5782,7 +4521,6 @@ msgstr "爆仓"
 msgid "状态"
 msgstr "状态"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "用户已取消"
 msgstr "用户已取消"
@@ -5799,33 +4537,17 @@ msgstr "确定"
 msgid "确认"
 msgstr "确认"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "确认存入"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "确认激活"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "确认赎回"
-msgstr ""
-
 #: src/pages/Market/index.tsx
 msgid "立即创建我的合约交易市场"
 msgstr "立即创建我的合约交易市场"
-
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "等待市场开启"
-msgstr ""
 
 #: src/components/Header/Operation/Transactions/TransactionsDialog.tsx
 msgid "类型"
 msgstr "类型"
 
-#: src/components/Record/Items/components/PositionTpSlButton.tsx
-msgid "继续添加"
-msgstr "继续添加"
+#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
+msgid "自动{defaultValue}%"
+msgstr "自动{defaultValue}%"
 
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslFormGroup.tsx
 #: src/components/Trade/Dialog/OrderTpSl/components/TpslOrderItem.tsx
@@ -5838,60 +4560,18 @@ msgstr "继续添加"
 msgid "触发价格"
 msgstr "触发价格"
 
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/get-order-toast-parts.ts
-msgid "订单取消"
-msgstr "订单已取消"
-
-#: src/utils/order/get-order-toast-parts.ts
-#: src/utils/order/get-order-toast-parts.ts
-msgid "订单成交"
-msgstr "订单成交"
-
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单执行超时失效"
 msgstr "订单执行超时失效"
 
-#: src/utils/order/action-toast.tsx
-#: src/utils/order/action-toast.tsx
-msgid "订单提交成功"
-msgstr "订单提交成功"
-
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "订单数量超限"
 msgstr "订单数量超限"
-
-#: src/pages/Cook/detail-v2/components/CookOrderRecordsSection.tsx
-msgid "订单记录"
-msgstr ""
-
-#: src/utils/order/action-toast.tsx
-msgid "调整保证金成功"
-msgstr "调整保证金成功"
 
 #: src/store/transactions/options.ts
 msgid "购买MLP"
 msgstr "购买MLP"
 
-#: src/pages/Cook/detail-v2/index.tsx
-msgid "赎回"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "达到启动阈值，可快速达成募集并开盘。"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/WarningTipsSection.tsx
-msgid "还差"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/CookTokenSelectDialog.tsx
-msgid "选择Token"
-msgstr ""
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择合约计价资产"
 msgstr "选择合约计价资产"
@@ -5903,10 +4583,6 @@ msgstr "选择币种"
 #: src/pages/Market/components/TokenSelect.tsx
 msgid "选择您的资产"
 msgstr "选择您的资产"
-
-#: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
-msgid "选择计价单位"
-msgstr ""
 
 #: src/pages/Referrals/components/MyRebate/RebateClaim.tsx
 msgid "选择链接"
@@ -5942,14 +4618,9 @@ msgstr "限价平仓"
 msgid "限价开仓"
 msgstr "限价开仓"
 
-#: src/hooks/order/use-get-order-list.ts
 #: src/pages/Trade/components/OrderStatus/index.tsx
 msgid "非仓位持有者"
 msgstr "非仓位持有者"
-
-#: src/components/Trade/Dialog/Slippage/SlippageInput.tsx
-msgid "预估 <0>{defaultValue}%</0>"
-msgstr "预估 <0>{defaultValue}%</0>"
 
 #: src/components/Trade/Dialog/TPSL/components/PriceInfo.tsx
 msgid "预估强平价"
@@ -5978,3 +4649,4 @@ msgstr "领取返佣"
 #: src/components/Record/Items/Finance.tsx
 msgid "风控扣除"
 msgstr "风控扣除"
+

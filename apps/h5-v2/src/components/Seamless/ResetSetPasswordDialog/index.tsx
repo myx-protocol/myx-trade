@@ -11,33 +11,21 @@ import { PrimaryButton } from '@/components/UI/Button'
 import CompleteIcon from '@/components/UI/Icon/CompleteIcon'
 import InfoIcon from '@/components/UI/Icon/InfoIcon'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
-
+import { toast } from 'react-hot-toast'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { toast } from '@/components/UI/Toast'
 import { TradeMode } from '@/pages/Trade/types'
-import { useCreateSeamlessAccount } from '@/hooks/seamless/use-create-seamless-account'
-import { showErrorToast } from '@/config/error'
+import { useChangeSdkTradeMode } from '@/hooks/seamless/use-change-sdk-trade-mode'
 
 export const ResetSetPasswordDialog = () => {
-  const {
-    resetSeamlessPasswordDialogOpen,
-    setResetSeamlessPasswordDialogOpen,
-    setResetPasswordDialogOpen,
-    setTradeMode,
-  } = useGlobalStore()
+  const { resetSeamlessPasswordDialogOpen, setResetSeamlessPasswordDialogOpen } = useGlobalStore()
   const [show, setShow] = useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const {
-    seamlessAccountList,
-    setSeamlessAccountList,
-    setActiveSeamlessAddress,
-    setActiveSeamlessWallet,
-  } = useSeamlessStore()
+  const { seamlessAccountList, setSeamlessAccountList, setActiveSeamlessAddress } =
+    useSeamlessStore()
   const { symbolInfo } = useGlobalStore()
-  const { createSeamlessAccount } = useCreateSeamlessAccount()
-
+  const { changeSdkTradeMode } = useChangeSdkTradeMode(symbolInfo?.chainId)
   const { client } = useMyxSdkClient(symbolInfo?.chainId)
 
   return (
@@ -143,36 +131,29 @@ export const ResetSetPasswordDialog = () => {
             disabled={loading}
             onClick={async () => {
               try {
-                if (
-                  password.length < 8 ||
-                  password.length > 128 ||
-                  !/\d/.test(password) ||
-                  !/[A-Z]/.test(password)
-                ) {
-                  toast.error({
-                    title: t`Invalid password`,
-                  })
-                  return
-                }
                 setLoading(true)
-                const rs = await createSeamlessAccount({
+                const rs = await client?.seamless.createSeamless({
                   password,
+                  chainId: symbolInfo?.chainId as number,
                 })
 
-                console.log('rs-->', rs)
                 if (rs?.code === 0) {
                   const seamlessAccount: SeamlessAccount = {
                     masterAddress: rs.data?.masterAddress || '',
                     seamlessAddress: rs.data?.seamlessAccount || '',
                     apiKey: rs.data?.apiKey || '',
-                    authorized: {},
+                    authorized: {
+                      [symbolInfo?.chainId as number]: {
+                        authorized: rs?.data?.authorized || false,
+                      },
+                    },
                   }
 
                   if (seamlessAccountList.length === 0) {
                     setSeamlessAccountList([seamlessAccount])
                   } else {
                     const idx = seamlessAccountList.findIndex(
-                      (item) => item.masterAddress === seamlessAccount.masterAddress,
+                      (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
                     )
 
                     if (idx !== -1) {
@@ -182,15 +163,39 @@ export const ResetSetPasswordDialog = () => {
                     }
                   }
 
+                  if (!seamlessAccount.authorized[symbolInfo?.chainId as number]?.authorized) {
+                    const authRes = await client?.seamless.authorizeSeamlessAccount({
+                      approve: true,
+                      seamlessAddress: seamlessAccount.seamlessAddress,
+                      chainId: symbolInfo?.chainId as number,
+                    })
+
+                    if (authRes?.code === 0) {
+                      const idx = seamlessAccountList.findIndex(
+                        (item) => item.seamlessAddress === seamlessAccount.seamlessAddress,
+                      )
+                      const newSeamlessAccount = {
+                        ...seamlessAccountList[idx],
+                        authorized: {
+                          [symbolInfo?.chainId as number]: {
+                            authorized: true,
+                          },
+                        },
+                      }
+                      seamlessAccountList[idx] = newSeamlessAccount
+                      setSeamlessAccountList([...seamlessAccountList])
+                    }
+                  }
+
                   setActiveSeamlessAddress(seamlessAccount.masterAddress)
-                  setActiveSeamlessWallet(rs.data?.seamlessWallet)
-                  setTradeMode(TradeMode.Seamless)
-                  setResetPasswordDialogOpen(false)
-                } else if (rs !== undefined) {
-                  showErrorToast(client?.utils.formatErrorMessage(rs))
+                  // setTradeMode(TradeMode.Seamless)
+                  changeSdkTradeMode(true)
+                  setResetSeamlessPasswordDialogOpen(false)
+                } else {
+                  toast.error('Create seamless failed')
                 }
               } catch (error) {
-                showErrorToast(error)
+                console.error('error-->', error)
               } finally {
                 setLoading(false)
               }

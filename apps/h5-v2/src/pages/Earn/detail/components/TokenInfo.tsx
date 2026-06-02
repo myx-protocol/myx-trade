@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { Box } from '@mui/material'
 import { useContext } from 'react'
 import { PoolContext } from '@/pages/Earn/context.ts'
+import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { Describe, DescribeItem } from '@/components/Describe.tsx'
 import { Address } from '@/components/Address.tsx'
 import dayjs from 'dayjs'
@@ -36,9 +37,12 @@ export const TokenInfo = ({ className = '' }: { className?: string }) => {
           ${formatNumber(quoteLpDetail?.marketCap)}
         </DescribeItem>
         <DescribeItem title={<Trans>FDV</Trans>}>${formatNumber(quoteLpDetail?.fdv)}</DescribeItem>
-
         <DescribeItem title={<Trans>Holders</Trans>}>
           {formatNumber(quoteLpDetail?.holders)}
+        </DescribeItem>
+
+        <DescribeItem title={<Trans>Traders</Trans>}>
+          {formatNumber(quoteLpDetail?.traders)}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Total Spot liq</Trans>}>

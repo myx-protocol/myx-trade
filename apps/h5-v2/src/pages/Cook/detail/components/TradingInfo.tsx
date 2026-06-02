@@ -10,18 +10,18 @@ import { isSafeNumber } from '@/utils'
 import Big from 'big.js'
 
 export const TradingInfo = () => {
-  const { baseLpDetail, poolId, fundingRate, tvl, oraclePrice } = usePoolContext()
+  const { baseLpDetail, poolId, fundingRate } = usePoolContext()
   const tickerData = useMarketStore((state) => state.tickerData[poolId || ''])
 
   return (
-    <Box className={'px-[16px] py-[12px]'}>
+    <Box className={'mt-[16px] px-[16px] py-[12px]'}>
       <Box className={'mb-[16px] text-[14px] leading-[1] font-[500] text-white'}>
         <Trans>Perp Trading Info</Trans>
       </Box>
 
       <Describe>
         <DescribeItem title={<Trans>24h Volume</Trans>}>
-          ${baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
+          {baseLpDetail?.volume ? formatNumber(Number(baseLpDetail?.volume)) : '--'}
         </DescribeItem>
 
         <DescribeItem title={<Trans>Long Positions</Trans>}>
@@ -38,22 +38,23 @@ export const TradingInfo = () => {
                 showSign: false,
               })
             : '--'}
-          /h
         </DescribeItem>
 
         <DescribeItem
           title={
             <Tooltips title={t`Underlying Price`}>
               <span className={'border-secondary border-b-[1px] border-dashed select-none'}>
-                <Trans>Oracle Price</Trans>
+                <Trans>Underlying Price</Trans>
               </span>
             </Tooltips>
           }
         >
           $
-          {formatNumber(tickerData?.price || oraclePrice, {
-            showUnit: false,
-          })}
+          {tickerData?.price
+            ? formatNumber(tickerData?.price, {
+                showUnit: false,
+              })
+            : '--'}
         </DescribeItem>
 
         <DescribeItem
@@ -66,15 +67,11 @@ export const TradingInfo = () => {
           }
         >
           $
-          {tvl?.baseTvl
-            ? formatNumber(tvl.baseTvl, {
+          {baseLpDetail?.tvl
+            ? formatNumber(baseLpDetail?.tvl, {
                 showUnit: false,
               })
             : '--'}
-        </DescribeItem>
-
-        <DescribeItem title={<Trans>Traders</Trans>}>
-          {formatNumber(baseLpDetail?.traders)}
         </DescribeItem>
       </Describe>
     </Box>

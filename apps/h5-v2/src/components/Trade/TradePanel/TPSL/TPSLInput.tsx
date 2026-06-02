@@ -73,15 +73,7 @@ export const TPSLInput = ({
         }
         decimalScale={6}
         onValueChange={(values) => {
-          // Change 和 ROI 最小不能小于 -100%
-          const isRateType = type === TpSlTypeEnum.ROI || type === TpSlTypeEnum.Change
-          const floatValue = values.floatValue ?? 0
-
-          if (isRateType && floatValue < -100) {
-            onChange('-100')
-          } else {
-            onChange(values.value ?? '')
-          }
+          onChange(values.value ?? '')
         }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

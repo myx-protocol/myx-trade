@@ -22,13 +22,10 @@ import { useMyxSdkClient } from '@/providers/MyxSdkProvider.tsx'
 import { calculationPnl } from '@/utils/pnl.ts'
 import { RiseFallText } from '@/components/RiseFallText'
 import { formatNumber } from '@/utils/number.ts'
-import { COMMON_PRICE_DISPLAY_DECIMALS, MIN_CLAIM_AMOUNT } from '@/constant/decimals.ts'
-import Big from 'big.js'
 
-type Rewards = { rebates: string; genesisRebates: string }
-// type SortOrder = 'asc' | 'desc' | false
+type SortOrder = 'asc' | 'desc' | false
 type PriceMapType = { [poolId: string]: string }
-type RewardsMapType = { [poolId: string]: Rewards }
+type RewardsMapType = { [poolId: string]: string }
 
 const AssetHeader = ({
   checked,
@@ -94,18 +91,8 @@ const Value = ({
 }) => {
   return (
     <Box className={`flex flex-col gap-[6px] ${className}`}>
-      <span className="text-[13px] font-[500] text-white">{children}</span>
-      <span className="text-secondary text-[12px]">{label}</span>
-    </Box>
-  )
-}
-
-const DetailRow = ({ label, value }: { label: ReactNode; value: ReactNode }) => {
-  return (
-    <Box className="flex items-center justify-between">
-      <span className="text-secondary text-[12px]">{label}</span>
-
-      <span className="text-[13px] font-[500] text-white">{value}</span>
+      <span className={'text-[13px] font-[500] text-white'}>{children}</span>
+      <span className={'text-secondary text-[12px]'}>{label}</span>
     </Box>
   )
 }
@@ -113,26 +100,24 @@ const DetailRow = ({ label, value }: { label: ReactNode; value: ReactNode }) => 
 const AssetItem = ({
   asset,
   onClaim,
-  summary,
-  details,
+  children,
   canClaim = false,
 }: {
   asset?: LpAsset
-  summary: ReactNode
-  details: ReactNode
+  children: ReactNode
   onClaim: (asset: LpAsset) => void
   canClaim: boolean
 }) => {
   return (
-    <Box className="border-base flex flex-col gap-[20px] border-b py-[16px]">
-      {/* header */}
-      <Box className="flex items-center justify-between">
+    <Box className={'border-base flex flex-col gap-[20px] border-b-1 py-[16px]'}>
+      <Box className={'flex items-center justify-between'}>
         <Token asset={asset} />
-
         {asset ? (
           <Button
-            variant="contained"
-            className="!text-deep !rounded-[24px] !bg-white !text-[10px] [&.Mui-disabled]:opacity-[0.3]"
+            variant={'contained'}
+            className={
+              '!text-deep !rounded-[24px] !bg-white !text-[10px] [&.Mui-disabled]:opacity-[0.3]'
+            }
             onClick={() => onClaim(asset)}
             disabled={!canClaim}
           >
@@ -143,11 +128,7 @@ const AssetItem = ({
         )}
       </Box>
 
-      <Box className={'flex flex-col gap-[16px]'}>
-        <Box className="flex justify-between gap-[20px]">{summary}</Box>
-
-        <Box className="flex flex-col gap-[10px]">{details}</Box>
-      </Box>
+      <Box className={'grid grid-cols-2 justify-between gap-[20px]'}>{children}</Box>
     </Box>
   )
 }
@@ -178,16 +159,14 @@ export const Assets = () => {
     queryFn: async () => {
       // console.log('getMineBaseLpAssets:', poolId, pool?.basePoolToken, accessToken)
       if (!account) return [] as LpAsset[]
-
       if (!showAllAssets && (!poolId || !pool?.basePoolToken)) return [] as LpAsset[]
       const request = await getLpAssets(account, accessToken || '', {
         poolType: PoolType.base,
         poolId: showAllAssets ? undefined : poolId,
         poolToken: showAllAssets ? undefined : pool?.basePoolToken,
       })
-      return (request?.data || []).filter((asset) => new Big(asset?.lastTotal || '0').gt(0))
+      return request?.data || []
     },
-    refetchInterval: 5000,
   })
 
   const rewardsQueryParams = useMemo(() => {
@@ -246,7 +225,7 @@ export const Assets = () => {
 
   const PriceMap = useMemo(() => {
     return {
-      [poolId]: price && Number(price) > 0 ? price : '',
+      [poolId]: price || '',
       ...(priceMap || {}),
     }
   }, [poolId, price, priceMap])
@@ -257,29 +236,25 @@ export const Assets = () => {
       if (!rewardsQueryParams?.length) return {} as RewardsMapType
       const result = await Promise.all(
         rewardsQueryParams.map(async (item) => {
-          let rewards: Rewards = {
-            rebates: '',
-            genesisRebates: '',
-          }
+          let rewards = ''
           try {
             const rs = await Base.getRewards({
               poolId: item.poolId,
               chainId: item.chainId,
               account: account as `0x${string}`,
             })
-
+            // base.getRewards({
+            //   poolId,
+            //   chainId,
+            //   account
+            // })
             // console.log('Base.getRewards', item.poolId, item.chainId, account, rs)
-            if (rs) {
+            if (rs === 0n) {
+              rewards = '0'
+            } else if (rs) {
               const marketInfo = markets?.find((market) => market.marketId === item?.marketId)
               if (marketInfo?.quoteDecimals) {
-                rewards = {
-                  rebates:
-                    rs?.rebates === 0n ? '0' : formatUnits(rs?.rebates, marketInfo?.quoteDecimals),
-                  genesisRebates:
-                    rs?.genesisRebates === 0n
-                      ? '0'
-                      : formatUnits(rs?.genesisRebates, marketInfo?.quoteDecimals),
-                }
+                rewards = formatUnits(rs, marketInfo?.quoteDecimals)
               }
             }
           } catch (_e) {
@@ -300,7 +275,6 @@ export const Assets = () => {
         }
       }, {} as RewardsMapType)
     },
-    refetchInterval: 5000,
   })
 
   const getPnl = (lpAsset: LpAsset, price: string) => {
@@ -346,73 +320,41 @@ export const Assets = () => {
               <AssetItem
                 key={index}
                 asset={item as LpAsset}
-                canClaim={
-                  new Big(rewardsMap?.[item?.poolId]?.rebates || '0')
-                    ?.plus(rewardsMap?.[item?.poolId]?.genesisRebates || '0')
-                    ?.toNumber() >= MIN_CLAIM_AMOUNT
-                }
+                canClaim={Number(rewardsMap?.[item?.poolId as string]) > 0}
                 onClaim={(asset) => {
                   setLpAsset(asset)
                   onHandleClaim(asset)
                 }}
-                summary={
-                  <>
-                    <Value label={<Trans>Quantity</Trans>}>
-                      {formatNumber(+item?.lastTotal)}
-                      {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
-                    </Value>
-                    <Value label={<Trans>Cost Basis</Trans>}>
-                      ${formatNumber(item?.avgPrice, { showUnit: false })}
-                    </Value>
-                    <Value
-                      className={'items-end justify-self-end'}
-                      label={<Trans>Unrealized PnL</Trans>}
-                    >
-                      {pnlMap?.[item?.poolId as string] !== '' ? (
-                        <RiseFallText
-                          value={pnlMap?.[item?.poolId as string]}
-                          renderOptions={{
-                            showUnit: false,
-                            showSign: true,
-                          }}
-                        />
-                      ) : (
-                        <span>{'--'}</span>
-                      )}
-                    </Value>
-                  </>
-                }
-                details={
-                  <>
-                    <DetailRow
-                      label={<Trans>Genesis Rewards</Trans>}
-                      value={
-                        <>
-                          {' '}
-                          {formatNumber(rewardsMap?.[item?.poolId]?.genesisRebates, {
-                            showUnit: false,
-                            decimals: COMMON_PRICE_DISPLAY_DECIMALS,
-                          })}{' '}
-                          {item?.quoteSymbol}
-                        </>
-                      }
+              >
+                <Value label={<Trans>Quantity</Trans>}>
+                  {formatNumber(+item?.lastTotal)}
+                  {item ? `m${item?.baseSymbol}.${item?.quoteSymbol}` : ''}
+                </Value>
+                <Value className={'items-end justify-self-end'} label={<Trans>Cost Basis</Trans>}>
+                  ${formatNumber(item?.avgPrice, { showUnit: false })}
+                </Value>
+                <Value label={<Trans>Unrealized PnL</Trans>}>
+                  {pnlMap?.[item?.poolId as string] !== '' ? (
+                    <RiseFallText
+                      value={pnlMap?.[item?.poolId as string]}
+                      renderOptions={{
+                        showUnit: false,
+                        showSign: true,
+                      }}
                     />
-                    <DetailRow
-                      label={<Trans>Liquidity Yield</Trans>}
-                      value={
-                        <>
-                          {' '}
-                          {formatNumber(rewardsMap?.[item?.poolId]?.rebates, {
-                            showUnit: false,
-                            decimals: COMMON_PRICE_DISPLAY_DECIMALS,
-                          })}{' '}
-                          {item?.quoteSymbol}
-                        </>
-                      }
-                    />
-                  </>
-                }
-              />
+                  ) : (
+                    <span>{'--'}</span>
+                  )}
+                </Value>
+
+                <Value
+                  className={'items-end justify-self-end'}
+                  label={<Trans>Unclaimed Fees</Trans>}
+                >
+                  {formatNumber(rewardsMap?.[item?.poolId], { showUnit: false })}{' '}
+                  {item?.quoteSymbol}
+                </Value>
+              </AssetItem>
             )
           })}
           {!isLoading && data?.length === 0 && <Empty />}
@@ -420,7 +362,7 @@ export const Assets = () => {
       </Box>
       <ClaimRewardsDialog
         refetch={refetch}
-        reward={rewardsMap?.[lpAsset?.poolId as string]}
+        reward={rewardsMap?.[lpAsset?.poolId as string] || ''}
         lpAsset={lpAsset}
         open={openClaimRewardsDialog}
         onClose={() => {

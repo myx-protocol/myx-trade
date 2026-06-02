@@ -1,6 +1,6 @@
 import { Order } from '@/components/CookDetail/Order'
 import { isSupportedChainFn } from '@/config/chain'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { PoolProvider } from '@/pages/Cook/provider/PoolProvider.tsx'
 import { NavBar } from '@/pages/Cook/detail/components/NavBar.tsx'
 import { DetailTabType } from '@/pages/Cook/type.ts'
@@ -12,8 +12,6 @@ import { Assets } from '@/pages/Cook/detail/components/Assets.tsx'
 
 export const CookDetail = () => {
   const { chainId, poolId } = useParams()
-  const navigate = useNavigate()
-
   const [type, setType] = useState<DetailTabType>(DetailTabType.Trade)
 
   //   params validation
@@ -25,7 +23,7 @@ export const CookDetail = () => {
     <PoolProvider>
       <div className="bg-deep fixed top-[0] z-30 flex h-[100vh] min-h-[100vh] w-full flex-col overflow-y-auto pt-[4px] pb-[50px]">
         <div className={'bg-deep sticky top-[0] z-[1]'}>
-          <NavBar onBack={() => navigate('/cook', { replace: true })} />
+          <NavBar />
           <TabBar value={type} onChange={(value) => setType(value as DetailTabType)} />
         </div>
 

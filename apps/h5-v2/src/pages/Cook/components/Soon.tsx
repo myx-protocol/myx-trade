@@ -1,7 +1,7 @@
 import { Card } from '@/pages/Cook/components/Card.tsx'
 import { Box } from '@mui/material'
 import { Token } from '@/pages/Cook/components/Token.tsx'
-import { useContext, useRef } from 'react'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { DEFAULT_LIMIT, getCookSoonList } from '@/request'
 import { useNavigate } from 'react-router-dom'
@@ -10,15 +10,25 @@ import { CookListType, CookType } from '@/pages/Cook/type.ts'
 import dayjs from 'dayjs'
 import { useCookFilter } from '@/pages/Cook/hook/useCookFilter.ts'
 import { Empty } from '@/components/Empty.tsx'
-import { useCardScrolled } from '@/hooks/useHasScrolled.ts'
 
-const INTERVAL_TIME = 10000
 export const Soon = ({ chainId }: { chainId?: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const hasOverflow = useCardScrolled(cardRef, 'scrollView')
   const navigate = useNavigate()
   const { type, cookType } = useContext(CookContext)
-  const { age, mc, progress, change, liq, holders } = useCookFilter()
+  const {
+    age,
+    setAge,
+    mc,
+    setMC,
+    progress,
+    setProgress,
+    change,
+    setChange,
+    liq,
+    setLiq,
+    holders,
+    setHolders,
+    count,
+  } = useCookFilter()
 
   const { data = [], isLoading } = useQuery({
     queryKey: [
@@ -47,17 +57,14 @@ export const Soon = ({ chainId }: { chainId?: number }) => {
         tokenCreateTimeMax: age?.[0] ? dayjs().subtract(Number(age[0]), 'm').unix() : undefined,
         holdersMin: holders[0] || undefined,
         holdersMax: holders[1] || undefined,
-        progressMin: progress[0] || undefined,
-        progressMax: progress[1] || undefined,
       })
       console.log(result)
       return result?.data || []
     },
-    refetchInterval: hasOverflow ? false : INTERVAL_TIME,
   })
   return (
     <>
-      <Card className={'position flex flex-col'} ref={cardRef}>
+      <Card className={'position flex flex-col'}>
         <Box className={'flex-1 overflow-y-auto'}>
           {isLoading ? (
             Array.from({ length: 5 }).map((item, i) => <Token key={i} isLoading />)
@@ -77,7 +84,6 @@ export const Soon = ({ chainId }: { chainId?: number }) => {
                   change={item.basePriceChange}
                   time={item.tokenCreateTime}
                   progress={item.progress}
-                  state={item?.state}
                   onClick={() => navigate(`/cook/${item.chainId}/${item.poolId}`)}
                 />
               )

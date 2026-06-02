@@ -4,7 +4,7 @@ import useGlobalStore from '@/store/globalStore'
 import { Empty } from '@/components/Empty'
 
 export const OpenOrderList = () => {
-  const orderList = useGetOrderList(true)
+  const orderList = useGetOrderList()
   const { poolList } = useGlobalStore()
   if (!orderList.length) {
     return (

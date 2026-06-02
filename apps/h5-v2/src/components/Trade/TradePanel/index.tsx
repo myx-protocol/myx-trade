@@ -43,7 +43,7 @@ import KlineIcon from '@/components/Icon/set/KlineIcon'
 import ChartsIcon from '@/components/Icon/set/ChartsIcon'
 import { PairLogo } from '@/components/UI/PairLogo'
 import { useBaseTokenInfo } from '../hooks/useBaseTokenInfo'
-import { useScroll, useThrottle } from 'ahooks'
+import { useScroll, useThrottle, useThrottleFn } from 'ahooks'
 import clsx from 'clsx'
 
 export const TradePanel = () => {
@@ -310,7 +310,6 @@ export const TradePanel = () => {
           {positionAction === PositionActionEnum.OPEN && <BalanceAndMarginMode />}
           <OrderForm />
           {positionAction === PositionActionEnum.OPEN && <TPSL />}
-          <MaxTradeAmount />
           <CanSwitchWalletNetwork
             targetChainId={symbolInfo?.chainId}
             style={{
@@ -319,6 +318,7 @@ export const TradePanel = () => {
           >
             <PlaceOrder />
           </CanSwitchWalletNetwork>
+          <MaxTradeAmount />
         </div>
         <div className="mt-[12px]">
           <Tables />

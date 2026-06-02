@@ -1,10 +1,11 @@
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '../wallet/useWalletConnection'
 import useSWR from 'swr'
-import { MarketPoolState, type ChainId } from '@myx-trade/sdk'
+import { type ChainId } from '@myx-trade/sdk'
 import { useMemo } from 'react'
 import { ethers } from 'ethers'
 import { parseBigNumber } from '@/utils/bn'
+import { useGetOrderList } from '../order/use-get-order-list'
 import useGlobalStore from '@/store/globalStore'
 
 type AccountAssets = {
@@ -19,34 +20,24 @@ type AccountAssets = {
   reservedAmount: string
 }
 
-const DEFAULT_ACCOUNT_ASSETS = {
-  availableMargin: '0',
-  freeMargin: '0',
-  walletBalance: '0',
-  freeBaseAmount: '0',
-  baseProfit: '0',
-  quoteProfit: '0',
-  releaseTime: 0,
-  usedMargin: '0',
-}
-
 export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
-  const { client } = useMyxSdkClient(chainId)
+  const { client, clientIsAuthenticated } = useMyxSdkClient(chainId)
 
   const { address } = useWalletConnection()
   const { poolList } = useGlobalStore()
   const pool = useMemo(() => {
     return poolList.find((item: any) => item.poolId === poolId)
   }, [poolList, poolId])
-  const isPreBench = pool?.state === MarketPoolState.PreBench
 
   const { data } = useSWR(
-    address && poolId && client && chainId && !isPreBench
+    address && poolId && client && clientIsAuthenticated && chainId
       ? {
           key: 'getAccountAssets',
           chainId: chainId,
           address,
           poolId: poolId as string,
+          clientIsAuthenticated,
+          client,
         }
       : null,
     async () => {
@@ -71,7 +62,7 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
           ethers.formatUnits(assets.reservedAmount, pool?.quoteDecimals ?? 6).toString(),
         )
 
-        const availableMargin = walletBalance.plus(freeMargin).plus(quoteProfit).toString()
+        const availableMargin = walletBalance.plus(freeMargin).toString()
 
         return {
           availableMargin: availableMargin.toString(),
@@ -88,13 +79,32 @@ export const useGetAccountAssets = (chainId?: number, poolId?: string) => {
           usedMargin: reservedAmount,
         }
       } else {
-        return DEFAULT_ACCOUNT_ASSETS
+        return {
+          availableMargin: '0',
+          freeMargin: '0',
+          walletBalance: '0',
+          freeBaseAmount: '0',
+          baseProfit: '0',
+          quoteProfit: '0',
+          releaseTime: 0,
+          usedMargin: '0',
+        }
       }
     },
     {
       refreshInterval: 1000,
     },
   )
-
-  return data ?? DEFAULT_ACCOUNT_ASSETS
+  return (
+    data ?? {
+      availableMargin: '0',
+      freeMargin: '0',
+      walletBalance: '0',
+      freeBaseAmount: '0',
+      baseProfit: '0',
+      quoteProfit: '0',
+      releaseTime: 0,
+      usedMargin: '0',
+    }
+  )
 }

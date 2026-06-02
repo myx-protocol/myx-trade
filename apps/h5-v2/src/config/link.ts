@@ -76,5 +76,4 @@ export const MYX_SWAP_LINK =
 
 export const MYX_OFFICIAL_SITE_LINK = import.meta.env.VITE_MYX_OFFICIAL_SITE || '/'
 export const MYX_VIP_RULES_LINK = 'https://myxfinance.gitbook.io/myx/protocol/trading-costs'
-export const MYX_DELISTING_RULES_LINK = 'https://myx-finance.notion.site/myx-v2-whitepaper'
-export const MYX_CONTACT_SUPPORT = 'https://discord.com/invite/myx'
+export const MYX_DELISTING_RULES_LINK = ''

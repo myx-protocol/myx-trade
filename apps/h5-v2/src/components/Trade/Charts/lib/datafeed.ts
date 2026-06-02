@@ -6,13 +6,9 @@ import type {
 } from '@public/charting_library/charting_library'
 import { resolution } from '../const'
 import { parseTradingViewSymbol } from '../TradingView/utils'
-import { useMarketStore } from '../../store/MarketStore'
-import { autoPriceDecimals, getSuperDecimalScale, isSuperDecimal } from '@/utils/number'
 type SymbolInfo = Omit<LibrarySymbolInfo, 'ticker'> & {
   ticker: string
 }
-
-const TV_MIN_PRICE_DECIMALS = 12
 
 export const formatResolutionToDisplayText = (resolution: string | number) => {
   if (Number.isNaN(Number(resolution))) {
@@ -68,43 +64,8 @@ export const generateDataFeed = (client: MyxClient) => {
     },
 
     resolveSymbol: async (templateSymbol: string, onSymbolResolvedCallback: any) => {
-      const { symbol, chainId, poolId } = parseTradingViewSymbol(templateSymbol)
-
-      const symbolInfo = await client.markets.getMarketDetail({
-        chainId: chainId,
-        poolId: poolId,
-      })
-
-      if (!symbolInfo) return
-
-      // get min base token decimals
-      const baseTokenDecimals = Math.min(4, symbolInfo.baseDecimals)
-      // price decimals default 4
-      let priceDecimals = 4
-      // market price from store
-      let marketPrice = useMarketStore.getState().tickerData[symbolInfo.poolId]?.price ?? null
-      // if market price is not found, fetch from server
-      if (marketPrice === null && client) {
-        const tickerData = await client.markets.getTickerList({
-          poolIds: [symbolInfo.poolId],
-          chainId: Number(symbolInfo.chainId),
-        })
-        if (tickerData && tickerData.length > 0 && tickerData[0].price) {
-          marketPrice = tickerData[0].price
-        }
-      }
-      // if market price is found, set price decimals
-      if (marketPrice !== null) {
-        // if market price is super decimal, set price decimals to super decimal scale
-        if (isSuperDecimal(marketPrice)) {
-          priceDecimals = getSuperDecimalScale(parseFloat(marketPrice))
-        } else {
-          // if market price is not super decimal, set price decimals to auto price decimals
-          priceDecimals = autoPriceDecimals(parseFloat(marketPrice))
-        }
-      }
-      // get min price decimals
-      priceDecimals = Math.min(priceDecimals, TV_MIN_PRICE_DECIMALS)
+      const { priceScale = 2, baseVolScale = 2 } = {}
+      const { symbol } = parseTradingViewSymbol(templateSymbol)
 
       // SymbolInfo validation: timezone must be non-empty string
       const data = {
@@ -114,8 +75,8 @@ export const generateDataFeed = (client: MyxClient) => {
         has_intraday: true,
         has_weekly_and_monthly: true,
         session: '24x7',
-        pricescale: 10 ** priceDecimals,
-        volume_precision: 10 ** baseTokenDecimals,
+        pricescale: 10 ** priceScale,
+        volume_precision: baseVolScale,
         minmov: 1,
         timezone: 'Etc/UTC',
       }

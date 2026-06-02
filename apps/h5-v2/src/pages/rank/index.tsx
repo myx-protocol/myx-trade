@@ -4,13 +4,10 @@ import { TypeSelector } from './components/Tabs/TypeSelector'
 import { List } from './components/List'
 import { ChainSelector } from './components/ChainSelector'
 import { Trans } from '@lingui/react/macro'
-import { t } from '@lingui/core/macro'
 
 export const Rank = () => {
   return (
     <div className="flex h-screen flex-col">
-      <title>{t`Rankings - Permissionless Listing for Any Asset | MYX`}</title>
-
       <SecondHeader title={<Trans>榜单</Trans>} />
       <Tabs />
       <TypeSelector />

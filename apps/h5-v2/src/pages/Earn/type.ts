@@ -5,11 +5,6 @@ export enum ChartInterval {
   week,
   all,
 }
-export enum ChartType {
-  Price = 'price',
-  TVL = 'tvl',
-  ExchangeRate = 'exchange-rate',
-}
 export const ChartIntervalValue: Record<ChartInterval, { value: PriceInterval; limit: number }> = {
   [ChartInterval.day]: {
     value: PriceInterval['10min'],

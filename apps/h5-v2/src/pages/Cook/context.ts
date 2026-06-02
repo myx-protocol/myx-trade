@@ -1,7 +1,7 @@
 import { CookListType, CookType, type FilterInputType, Mode } from './type.ts'
-import { createContext } from 'react'
-import type { MarketInfo, MarketPool } from '@myx-trade/sdk'
-import type { BaseLpDetail, MarketPoolRiskLevelConfig, PoolBoostInfo } from '@/request/lp/type.ts'
+import { createContext, useMemo } from 'react'
+import type { MarketPool } from '@myx-trade/sdk'
+import type { BaseLpDetail } from '@/request/lp/type.ts'
 
 export interface CookContextValue {
   type: CookType
@@ -38,19 +38,9 @@ export interface PoolContextValue {
   genesisFeeRate?: string
   refreshAssetKey: number
   refreshAsset: () => void
-  tvl?: {
-    totalTvl: string
-    baseTvl: string
-    quoteTvl: string
-  }
+  tvl?: string
   poolInfoRefetch: () => void
   fundingRate?: string
-  markets?: MarketInfo[]
-  oraclePrice?: string
-  riskLevelConfig?: MarketPoolRiskLevelConfig | null
-  boostedPrimeTvl?: string
-  boostInfo?: PoolBoostInfo | null
-  refetchBoostInfo?: () => void
 }
 
 export const PoolContext = createContext<PoolContextValue>({} as PoolContextValue)

@@ -13,7 +13,6 @@ import { isNull } from '@/utils'
 import { Trans } from '@lingui/react/macro'
 import { useDialogHandle } from '@/hooks/useDialogHandle.ts'
 import { DialogSuspense } from '@/components/Loading'
-import { twMerge } from 'tailwind-merge'
 
 type DialogTitleBaseProps = {
   title?: React.ReactNode | string | null
@@ -150,32 +149,26 @@ export const DialogTitleTheme = memo(
     )
   },
 )
-export const DialogNoTitleTheme = memo(
-  ({ onClose, className }: { onClose?: any; className?: string }) => {
-    return (
-      <Box>
-        <Box
-          className={twMerge('flex items-center justify-end px-[20px] text-[#FFFFFF]', className)}
-          padding={'16px 16px 0'}
-        >
-          {onClose ? <CloseIcon size={16} onClick={onClose} /> : null}
-        </Box>
+export const DialogNoTitleTheme = memo(({ onClose }: { onClose?: any }) => {
+  return (
+    <Box>
+      <Box
+        className={'items-centerpx-[20px] flex justify-end text-[#FFFFFF]'}
+        padding={'16px 16px 0'}
+      >
+        {onClose ? <CloseIcon size={16} onClick={onClose} /> : null}
       </Box>
-    )
-  },
-)
+    </Box>
+  )
+})
 
 DialogTitleTheme.displayName = 'DialogTitleTheme'
 
 DialogNoTitleTheme.displayName = 'DialogNoTitleTheme'
 
 const DialogTitleBase = ({ title, showCloseIcon = true, onClose }: DialogTitleBaseProps) => {
-  if (isNull(title) && !showCloseIcon) {
+  if (isNull(title)) {
     return <></>
-  }
-
-  if (isNull(title) && showCloseIcon) {
-    return <DialogNoTitleTheme onClose={onClose} />
   }
   // Need to deal with the problem when the incoming title is a <Trans> component
   // Further improve applicability
@@ -266,7 +259,7 @@ export const DialogFullLoadingButton = memo(
 
     return (
       <Button
-        className={`gradient !min-h-[44px] rounded`}
+        className={`gradient`}
         disabled={confirmDisabled}
         loading={loading}
         loadingPosition={'start'}
@@ -288,7 +281,7 @@ export const ConfirmDialogFooter = memo(
     className?: string
   }) => {
     return (
-      <Box className={'flex-1 p-[24px]'}>
+      <Box className={'flex-1 p-[16px]'}>
         <DialogFullLoadingButton {...fullButtonProps}>{confirmText}</DialogFullLoadingButton>
       </Box>
     )

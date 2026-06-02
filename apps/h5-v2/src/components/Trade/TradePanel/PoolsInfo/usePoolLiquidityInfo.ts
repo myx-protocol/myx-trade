@@ -16,7 +16,7 @@ export const usePoolLiquidityInfo = () => {
   })
 
   const { data, isLoading } = useSWR(
-    symbolInfo?.poolId && symbolInfo?.chainId
+    symbolInfo?.poolId && symbolInfo?.chainId && poolInfo
       ? ['availableLiquiditySizeWad', symbolInfo?.poolId, symbolInfo?.chainId]
       : null,
     async () => {

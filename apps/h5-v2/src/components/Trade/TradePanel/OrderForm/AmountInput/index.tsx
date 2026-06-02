@@ -12,7 +12,6 @@ import { useLeverage } from '@/components/Trade/hooks/useLeverage'
 import useGlobalStore from '@/store/globalStore'
 import { useGetCloseAvailable } from '@/hooks/available/use-get-close-available'
 import { useGetOpenAvailable } from '@/hooks/available/use-get-open-available'
-import { useGetPositionAvailableMargin } from '@/hooks/available/use-get-position-available-margin'
 
 const ValueLabelComponent = (props: any) => {
   const { children, value } = props
@@ -75,7 +74,7 @@ const AmountSliderMarks = [
 ]
 
 export const AmountInput = () => {
-  const { symbolInfo, shareCollateral } = useGlobalStore()
+  const { symbolInfo } = useGlobalStore()
   const [useSlider, setUseSlider] = useState(false)
   const {
     collateralAmount,
@@ -94,8 +93,6 @@ export const AmountInput = () => {
   const leverage = useLeverage(symbolInfo?.poolId)
   const { maxCloseLong, maxCloseShort } = useGetCloseAvailable()
   const { maxOpenLong, maxOpenShort } = useGetOpenAvailable()
-  const { longPositionAvailableMargin, shortPositionAvailableMargin } =
-    useGetPositionAvailableMargin(symbolInfo?.poolId as string, symbolInfo?.chainId ?? 0)
 
   useEffect(() => {
     if (!useSlider) return
@@ -127,59 +124,34 @@ export const AmountInput = () => {
           setShortSize(shortSize)
         }
       } else {
-        const longBalance = parseBigNumber(collateralAmount)
-          .plus(shareCollateral ? parseBigNumber(longPositionAvailableMargin) : 0)
-          .mul(parseBigNumber(leverage))
-          .toString()
-        const shortBalance = parseBigNumber(collateralAmount)
-          .plus(shareCollateral ? parseBigNumber(shortPositionAvailableMargin) : 0)
-          .mul(parseBigNumber(leverage))
-          .toString()
-
-        const longAmount = parseBigNumber(maxOpenLong.quoteAmount).gte(longBalance)
-          ? longBalance
-          : maxOpenLong.quoteAmount
-        const shortAmount = parseBigNumber(maxOpenShort.quoteAmount).gte(shortBalance)
-          ? shortBalance
-          : maxOpenShort.quoteAmount
+        const balance = parseBigNumber(collateralAmount).mul(parseBigNumber(leverage)).toString()
 
         if (amountUnit === AmountUnitEnum.QUOTE) {
-          const openSizeForLong = parseBigNumber(sliderValue)
+          const openSize = parseBigNumber(sliderValue)
             .div(100)
-            .mul(parseBigNumber(longAmount))
+            .mul(parseBigNumber(balance))
             .toString()
-          const openSizeForShort = parseBigNumber(sliderValue)
-            .div(100)
-            .mul(parseBigNumber(shortAmount))
-            .toString()
-          setLongSize(openSizeForLong)
-          setShortSize(openSizeForShort)
+
+          setLongSize(openSize)
+          setShortSize(openSize)
         } else {
           if (parseBigNumber(price).eq(0)) {
             setLongSize('0')
             setShortSize('0')
           } else {
-            const maxSizeForLong = parseBigNumber(longAmount).div(parseBigNumber(price)).toString()
-            const maxSizeForShort = parseBigNumber(shortAmount)
-              .div(parseBigNumber(price))
-              .toString()
-            const openSizeForLong = parseBigNumber(sliderValue)
+            const maxSize = parseBigNumber(balance).div(parseBigNumber(price)).toString()
+            const openSize = parseBigNumber(sliderValue)
               .div(100)
-              .mul(parseBigNumber(maxSizeForLong))
-              .toString()
-            const openSizeForShort = parseBigNumber(sliderValue)
-              .div(100)
-              .mul(parseBigNumber(maxSizeForShort))
+              .mul(parseBigNumber(maxSize))
               .toString()
 
-            setLongSize(openSizeForLong)
-            setShortSize(openSizeForShort)
+            setLongSize(openSize)
+            setShortSize(openSize)
           }
         }
       }
       return
     }
-
     if (amountUnit === AmountUnitEnum.QUOTE) {
       const longSize = parseBigNumber(sliderValue)
         .div(100)
@@ -216,9 +188,6 @@ export const AmountInput = () => {
     collateralAmount,
     leverage,
     price,
-    shareCollateral,
-    longPositionAvailableMargin,
-    shortPositionAvailableMargin,
   ])
 
   return (

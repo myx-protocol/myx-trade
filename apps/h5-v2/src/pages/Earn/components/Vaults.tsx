@@ -1,8 +1,10 @@
 import { Box } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getQuoteLpList } from '@/request'
+import { DEFAULT_LIMIT, getQuoteLpList } from '@/request'
 import { useNavigate } from 'react-router-dom'
+import { formatNumberPercent, formatNumberPrecision } from '@/utils/formatNumber.ts'
+import { COMMON_BASE_DISPLAY_DECIMALS } from '@/constant/decimals.ts'
 import { Skeleton } from '@/components/UI/Skeleton'
 import { SearchContext } from '@/pages/Earn/context.ts'
 import { PageDirection } from '@/request/type.ts'
@@ -15,7 +17,6 @@ import type { QuotePool } from '@/request/lp/type.ts'
 import { InfiniteScrollView } from '@/components/InfiniteScrollView.tsx'
 import { isSafeNumber } from '@/utils'
 import { decimalToPercent, formatNumber } from '@/utils/number.ts'
-import { VaultTabsEnum } from './type'
 
 const sortField = SortField.tvl
 const sortOrder = 'desc'
@@ -23,7 +24,7 @@ const limit = 20
 
 export const Vaults = ({ className = '' }: { className?: string }) => {
   const navigate = useNavigate()
-  const { chainId, interval, tabValue } = useContext(SearchContext)
+  const { chainId, interval } = useContext(SearchContext)
   const [after, setAfter] = useState<string | undefined>(undefined)
   const [hasMore, setHasMore] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState(true)
@@ -42,7 +43,7 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
   }
 
   useQuery({
-    queryKey: [{ key: 'quotePoolList' }, chainId, interval, after, tabValue],
+    queryKey: [{ key: 'quotePoolList' }, chainId, interval, after],
     queryFn: async () => {
       const paginatedLimit = limit + 1
       const result = await getQuoteLpList({
@@ -53,13 +54,6 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
         limit: paginatedLimit,
         direction: after ? PageDirection.Next : undefined,
         cursor: after,
-        state: 1,
-        quoteSymbol:
-          tabValue === VaultTabsEnum.AllMarket
-            ? undefined
-            : tabValue === VaultTabsEnum.UsdtMarket
-              ? 'USDT'
-              : 'USDC',
       })
       setIsLoading(false)
 
@@ -129,7 +123,6 @@ export const Vaults = ({ className = '' }: { className?: string }) => {
         (item, index) => {
           return (
             <Box
-              data-analytics="earn_detail_btn_h5"
               key={index}
               className={
                 'border-base flex items-center justify-between border-b-1 px-[16px] py-[20px]'

@@ -3,11 +3,8 @@ import { Trans } from '@lingui/react/macro'
 import { Skeleton } from '@/components/UI/Skeleton'
 import ArrowRight from '@/components/Icon/set/ArrowRight'
 import { PrimaryButton as Button } from '@/components/UI/Button'
-import { useCopyToClipboard } from 'usehooks-ts'
 import TipsFill from '@/components/Icon/set/TipsFill'
-import { toast } from '@/components/UI/Toast'
 import { useReferralStore } from '@/store/referrals'
-import { useAccessParams } from '@/hooks/useAccessParams'
 import { isUndefined } from 'lodash-es'
 import { useNavigate } from 'react-router-dom'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
@@ -21,20 +18,20 @@ import { Copy } from '@/components/Copy'
 const FORMAT_VALUE_FALLBACK = '--'
 
 export function RebateSetting() {
-  const { ratioInfo, fetchRatioInfo, isLoadingRatio, accessToken, account } = useReferralStore()
+  const { ratioInfo, fetchRatioInfo, isLoadingRatio, accessToken } = useReferralStore()
 
   useEffect(() => {
-    if (accessToken || account) {
+    if (accessToken) {
       fetchRatioInfo()
     }
-  }, [accessToken, fetchRatioInfo, account])
+  }, [accessToken, fetchRatioInfo])
 
   const refRatio = ratioInfo
 
   return (
     <div className="flex justify-center px-4 pt-10 lg:px-0 lg:pt-0">
       <div className="w-full min-w-full rounded-2xl border border-[#31333D] bg-[rgba(32,33,41,0.80)] p-5 backdrop-blur-[20px] lg:min-w-[420px]">
-        <div className="flex justify-between gap-5 text-[12px] leading-[14px] text-[#CED1D9]">
+        <div className="flex justify-between gap-5 text-xs leading-[14px] text-[#CED1D9]">
           <div>
             <Trans>Default Referral</Trans>
           </div>
@@ -43,13 +40,13 @@ export function RebateSetting() {
 
         <div className="mt-3 flex justify-between gap-5 rounded-lg bg-[rgba(0,227,165,0.05)] p-4">
           <div>
-            <div className="flex items-center gap-0.5 text-[12px] text-[rgba(255,255,255,0.60)]">
+            <div className="flex items-center gap-0.5 text-xs text-[rgba(255,255,255,0.60)]">
               <Trans>You Receive</Trans>
               <Tooltips title={t`The commission rate you can earn after your friend trades.`}>
-                <TipsFill size={12} className="text-[16px]" />
+                <TipsFill size={16} className="text-[16px]" />
               </Tooltips>
             </div>
-            <div className="mt-1 text-[20px] leading-none font-bold text-[#CED1D9]">
+            <div className="mt-1 text-xl leading-none font-bold text-[#CED1D9]">
               {isLoadingRatio ? (
                 <Skeleton className="h-5 w-12" />
               ) : !isUndefined(refRatio?.referrerRatio) ? (
@@ -61,13 +58,13 @@ export function RebateSetting() {
           </div>
 
           <div>
-            <div className="flex items-center gap-0.5 text-[12px] text-[rgba(255,255,255,0.60)]">
+            <div className="flex items-center gap-0.5 text-xs text-[rgba(255,255,255,0.60)]">
               <Trans>Friends Receive</Trans>
               <Tooltips title={t`The refund rate you can earn after your friend trades.`}>
-                <TipsFill size={12} className="text-[16px]" />
+                <TipsFill size={16} className="text-[16px]" />
               </Tooltips>
             </div>
-            <div className="mt-1 text-right text-[20px] leading-none font-bold text-[#CED1D9]">
+            <div className="mt-1 text-right text-xl leading-none font-bold text-[#CED1D9]">
               {isLoadingRatio ? (
                 <Skeleton className="ml-auto h-5 w-12" />
               ) : !isUndefined(refRatio?.refereeRatio) ? (
@@ -79,7 +76,7 @@ export function RebateSetting() {
           </div>
         </div>
 
-        <div className="mt-3 rounded-lg bg-[rgba(24,25,31,0.80)] text-[12px] leading-[14px] text-white">
+        <div className="mt-3 rounded-lg bg-[rgba(24,25,31,0.80)] text-xs leading-[14px] text-white">
           <div className="flex items-center justify-between gap-5 p-4">
             <div>
               <Trans>Referral ID</Trans>

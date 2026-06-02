@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGetLevelUpdateInfo } from '@/hooks/vip/useVipLevel.ts'
-import { Box, LinearProgress } from '@mui/material'
+import { Box, Button, LinearProgress } from '@mui/material'
 import { Trans } from '@lingui/react/macro'
 import { formatNumberPrecision } from '@/utils/formatNumber.ts'
 import { COMMON_PERCENT_DISPLAY_DECIMALS, COMMON_PRICE_DISPLAY_DECIMALS } from '@/constant/decimals'
@@ -15,12 +15,12 @@ export const Upgrade = memo(() => {
     tradeAmount,
     safeTradeProcess,
     nextLevelInfo,
-    nextMyxLevel,
     requiredMyxAmount,
     myxBalance,
     safeMyxProcess,
     maxLevel,
     process,
+    nextMyxAmount,
   } = useGetLevelUpdateInfo()
   return (
     <Box className={'mt-[24px] flex flex-col gap-[16px]'}>
@@ -108,64 +108,66 @@ export const Upgrade = memo(() => {
         </Box>
       </Box>
 
-      <Box
-        className={
-          'border-dark-border flex flex-col gap-[24px] rounded-[12px] border-1 px-[12px] py-[20px]'
-        }
-      >
-        <Box className={'flex justify-between'}>
+      {nextMyxAmount && (
+        <Box
+          className={
+            'border-dark-border flex flex-col gap-[24px] rounded-[12px] border-1 px-[12px] py-[20px]'
+          }
+        >
+          <Box className={'flex justify-between'}>
+            <Box className={'flex flex-col gap-[6px]'}>
+              <span className={'text-secondary text-[12px] leading-[14px] font-[500]'}>
+                <Trans>Holding MYX</Trans>
+              </span>
+              <span className={'text-basic-white leading-[1] font-[700]'}>
+                {nextLevelInfo
+                  ? formatNumberPrecision(myxBalance, COMMON_PERCENT_DISPLAY_DECIMALS)
+                  : '--'}
+              </span>
+            </Box>
+
+            <Box className={'flex flex-col items-end gap-[6px]'}>
+              <span className={'text-secondary text-[12px] leading-[14px] font-[500]'}>
+                <Trans>Current Status</Trans>
+              </span>
+              <span className={'text-basic-white leading-[1] font-[700]'}>{safeMyxProcess}%</span>
+            </Box>
+          </Box>
+
           <Box className={'flex flex-col gap-[6px]'}>
-            <span className={'text-secondary text-[12px] leading-[14px] font-[500]'}>
-              <Trans>Holding MYX</Trans>
+            <span className={'text-secondary text-[12px] leading-[1.5] font-[500]'}>
+              {nextLevelInfo && nextLevelInfo.vipTier >= maxLevel ? (
+                <Trans>You’ve unlocked the highest VIP level.</Trans>
+              ) : (
+                <Trans>
+                  You need to hold{' '}
+                  {formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)} MYX to
+                  upgrade to VIP{nextLevelInfo?.vipTier}
+                </Trans>
+              )}
             </span>
-            <span className={'text-basic-white leading-[1] font-[700]'}>
-              {nextMyxLevel
-                ? formatNumberPrecision(myxBalance, COMMON_PERCENT_DISPLAY_DECIMALS)
-                : '--'}
-            </span>
-          </Box>
 
-          <Box className={'flex flex-col items-end gap-[6px]'}>
-            <span className={'text-secondary text-[12px] leading-[14px] font-[500]'}>
-              <Trans>Current Status</Trans>
-            </span>
-            <span className={'text-basic-white leading-[1] font-[700]'}>{safeMyxProcess}%</span>
+            <Box>
+              <LinearProgress
+                className={'progress progress-primary'}
+                variant="determinate"
+                value={safeMyxProcess ?? 0}
+              />
+            </Box>
           </Box>
-        </Box>
-
-        <Box className={'flex flex-col gap-[6px]'}>
-          <span className={'text-secondary text-[12px] leading-[1.5] font-[500]'}>
-            {nextMyxLevel && nextMyxLevel.vipTier >= maxLevel ? (
-              <Trans>You’ve unlocked the highest VIP level.</Trans>
-            ) : (
-              <Trans>
-                You need to hold{' '}
-                {formatNumberPrecision(requiredMyxAmount, COMMON_PRICE_DISPLAY_DECIMALS)} MYX to
-                upgrade to VIP{nextMyxLevel?.vipTier}
-              </Trans>
-            )}
-          </span>
 
           <Box>
-            <LinearProgress
-              className={'progress progress-primary'}
-              variant="determinate"
-              value={safeMyxProcess ?? 0}
-            />
+            <TradeButton
+              className={'!rounded-full'}
+              fullWidth
+              variant="contained"
+              onClick={() => window.open(MYX_SWAP_LINK)}
+            >
+              <Trans>Buy MYX</Trans>
+            </TradeButton>
           </Box>
         </Box>
-
-        <Box>
-          <TradeButton
-            className={'!rounded-full'}
-            fullWidth
-            variant="contained"
-            onClick={() => window.open(MYX_SWAP_LINK)}
-          >
-            <Trans>Buy MYX</Trans>
-          </TradeButton>
-        </Box>
-      </Box>
+      )}
     </Box>
   )
 })

@@ -70,19 +70,17 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
       {/* info */}
       <div className="mt-[16px] flex flex-col gap-[8px] text-[12px] text-[#848E9C]">
         <FlexRowLayout
-          left={<Trans>已成交数量/委托数量({item.baseSymbol})</Trans>}
+          left={<Trans>Amount({item.baseSymbol})</Trans>}
           right={
             <div className="text-[13px] font-medium">
-              <span className="text-white">
-                {formatNumber(item.filledSize, { showUnit: false })}
-              </span>
+              <span className="text-white">{formatNumber(item.size, { showUnit: false })}</span>
               <span className="px-[2px]">/</span>
               <span>{formatNumber(item.size, { showUnit: false })}</span>
             </div>
           }
         />
         <FlexRowLayout
-          left={<Trans>Avg.Price/Order Price</Trans>}
+          left={<Trans>Price/Price</Trans>}
           right={
             <div className="text-[13px] font-medium">
               <span className="text-white">
@@ -94,15 +92,13 @@ export const OrderHistoryItem = ({ item }: { item: HistoryOrderItemType }) => {
           }
         />
         <FlexRowLayout
-          left={<Trans>Fee({symbolInfo?.quoteSymbol?.toString() || '--'})</Trans>}
+          left={<Trans>Fee({item.executionFeeToken?.toString() || '--'})</Trans>}
           right={
             <div className="text-[13px] font-medium">
               <span className="text-white">
-                {item.tradingFee
-                  ? formatNumber(item.tradingFee, {
-                      showUnit: false,
-                    })
-                  : '--'}
+                {formatNumber(item.executionFeeAmount, {
+                  showUnit: false,
+                })}
               </span>
             </div>
           }

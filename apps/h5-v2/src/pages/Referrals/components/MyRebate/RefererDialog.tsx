@@ -1,16 +1,12 @@
-import { DialogContent } from '@mui/material'
+import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { useReferralStore } from '@/store/referrals'
-import { PrimaryButton } from '@/components/UI/Button'
-import { Trans } from '@lingui/react/macro'
-import { t } from '@lingui/core/macro'
+import { PrimaryButton as Button } from '@/components/UI/Button'
+import { Trans, t } from '@lingui/macro'
 import { toast } from '@/components/UI/Toast'
 import Copy from '@/components/Icon/set/Copy'
 import { useCopyToClipboard } from 'usehooks-ts'
 import { encryptionAddress } from '@/utils'
 import { isNil, isUndefined } from 'lodash-es'
-import { DialogTheme, DialogTitleTheme } from '@/components/DialogBase'
-import { DialogBase } from '@/components/UI/DialogBase'
-import { Drawer } from '@/components/Drawer'
 
 const FORMAT_VALUE_FALLBACK = '--'
 
@@ -19,20 +15,17 @@ export const RefererDialog = ({ open, onClose }: { open: boolean; onClose: () =>
   const [, copy] = useCopyToClipboard()
 
   return (
-    <DialogBase
+    <Dialog
       open={open}
       onClose={onClose}
-      title={null}
-      sx={{
-        '.MuiDrawer-paper': {
-          padding: '0px',
-        },
-      }}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{ style: { background: '#202129', color: 'white' } }}
     >
-      <DialogTitleTheme divider onClose={onClose} className="px-[24px]!">
+      <DialogTitle className="border-b border-[#31333D]">
         <Trans>My Referrer</Trans>
-      </DialogTitleTheme>
-      <div className="px-[24px]">
+      </DialogTitle>
+      <DialogContent>
         <div className="flex justify-between py-4 text-sm text-[#CED1D9]">
           <div>
             <Trans>My referrer</Trans>
@@ -73,19 +66,11 @@ export const RefererDialog = ({ open, onClose }: { open: boolean; onClose: () =>
         )}
 
         <div className="mt-5">
-          <PrimaryButton
-            style={{
-              width: '100%',
-              height: '44px',
-              borderRadius: '9999px',
-            }}
-            className="w-full"
-            onClick={onClose}
-          >
+          <Button className="w-full" onClick={onClose}>
             <Trans>Confirm</Trans>
-          </PrimaryButton>
+          </Button>
         </div>
-      </div>
-    </DialogBase>
+      </DialogContent>
+    </Dialog>
   )
 }

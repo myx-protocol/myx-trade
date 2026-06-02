@@ -12,7 +12,7 @@ export function useClaimReferralRebate() {
   const [claimChainId, setClaimChainId] = useState<ChainId>()
   const [targetDate, setTargetDate] = useState<number>()
 
-  const { fetchRefBonus, fetchRefBonusInfoByChain, accessToken, account } = useReferralStore()
+  const { fetchRefBonus, fetchRefBonusInfoByChain, accessToken } = useReferralStore()
   const { chainId: currChainId } = useWalletConnection()
   const chainId = getAsSupportedChainIdFn(currChainId)
   const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
@@ -24,7 +24,7 @@ export function useClaimReferralRebate() {
     : false
 
   const handleFresh = async () => {
-    if (accessToken || account) {
+    if (accessToken) {
       await fetchRefBonus()
       await fetchRefBonusInfoByChain()
     }

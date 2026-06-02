@@ -10,29 +10,12 @@ import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrece
 import { useGlobalSearchStore } from '@/components/GlobalSearch/store.ts'
 import { Mode } from '@/pages/Cook/type.ts'
 import { formatNumber } from '@/utils/number.ts'
-import { SearchTypeEnum } from '@myx-trade/sdk'
 
-export const NavBar = ({
-  className,
-  children,
-  onBack,
-}: {
-  className?: string
-  children?: ReactNode
-  onBack?: () => void
-}) => {
+export const NavBar = ({ className, children }: { className?: string; children?: ReactNode }) => {
   const navigate = useNavigate()
   const { baseLpDetail, price, mode } = usePoolContext()
   const { open: openGlobalSearch } = useGlobalSearchStore()
   const onSymbolClick = () => {}
-
-  const onBackHandle = () => {
-    if (onBack) {
-      onBack()
-    } else {
-      navigate(-1)
-    }
-  }
   return (
     <Box
       display={'flex'}
@@ -42,7 +25,7 @@ export const NavBar = ({
     >
       <Box className="flex w-full items-center justify-between">
         <Box className={'flex items-center gap-[8px]'}>
-          <Box width={'24px'} height={'24px'} onClick={onBackHandle}>
+          <Box width={'24px'} height={'24px'} onClick={() => navigate(-1)}>
             <BackIcon size={24} />
           </Box>
           <Box className={'relative aspect-square'}>
@@ -70,20 +53,13 @@ export const NavBar = ({
                 {baseLpDetail?.mBaseQuoteSymbol}
               </span>
 
-              <Box
-                className={'text-secondary'}
-                onClick={() =>
-                  openGlobalSearch({
-                    defaultTab: SearchTypeEnum.Cook,
-                  })
-                }
-              >
+              <Box className={'text-secondary'} onClick={() => openGlobalSearch()}>
                 <Dropdown size={10} />
               </Box>
             </Box>
             <Box className={'flex items-center gap-[6px] text-[12px] leading-[1] font-[500]'}>
               <span className={mode === Mode.Rise ? 'text-rise' : 'text-fall'}>
-                ${price && Number(price) > 0 ? formatNumber(price, { showUnit: false }) : '--'}
+                ${formatNumber(price, { showUnit: false })}
               </span>
 
               <RiseFallTextPrecent value={Number(baseLpDetail?.lpPriceChange)} />

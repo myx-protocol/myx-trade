@@ -7,7 +7,6 @@ export enum PriceTabEnum {
   Price = 'price',
   Info = 'info',
   Pool = 'pool',
-  TradeConfig = 'tradeConfig',
 }
 
 interface PriceStore {

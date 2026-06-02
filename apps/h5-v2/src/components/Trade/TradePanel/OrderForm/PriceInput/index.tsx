@@ -5,9 +5,8 @@ import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPri
 import { Trans } from '@lingui/react/macro'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import useGlobalStore from '@/store/globalStore'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { OrderType } from '@myx-trade/sdk'
-import { autoPriceDecimals, getSuperDecimalScale, isSuperDecimal } from '@/utils/number'
 
 export const PriceInput = () => {
   const { orderType, setOrderType, price, setPrice } = useTradePanelStore()
@@ -16,26 +15,11 @@ export const PriceInput = () => {
 
   const marketPrice = tickerData[symbolInfo?.poolId as string]?.price ?? 0
 
-  const decimalScale = useMemo(() => {
-    if (isSuperDecimal(marketPrice)) {
-      return getSuperDecimalScale(Number(marketPrice))
-    } else {
-      return autoPriceDecimals(Number(marketPrice))
-    }
-  }, [marketPrice])
-
   useEffect(() => {
     if (orderType === OrderType.MARKET) {
       setPrice(marketPrice?.toString() ?? '0')
     }
   }, [orderType, marketPrice, setPrice])
-
-  useEffect(() => {
-    if (!symbolInfo?.poolId && !tickerData && orderType !== OrderType.MARKET) return
-    const marketPrice = tickerData?.[symbolInfo?.poolId as string]?.price ?? 0
-
-    setPrice(marketPrice?.toString() ?? '0')
-  }, [symbolInfo?.poolId, tickerData, setPrice, orderType])
 
   return (
     <InputWrapper
@@ -58,7 +42,6 @@ export const PriceInput = () => {
             <NumberInputPrimitive
               disabled={true}
               value={price}
-              decimalScale={decimalScale}
               className="hidden w-full flex-grow-[1] text-[20px] font-bold text-[#CED1D9]"
             />
           </>
