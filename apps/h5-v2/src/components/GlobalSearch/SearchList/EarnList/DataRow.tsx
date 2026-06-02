@@ -1,20 +1,43 @@
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
-import { formatNumber } from '@/utils/number'
 import { SymbolInfo } from '../../SymbolInfo'
 import type { SearchResultEarnItem } from '@myx-trade/sdk'
 import { getChainInfo } from '@/config/chainInfo'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
+import { useUpdateEffect } from 'ahooks'
 
 interface EarnListDataRowProps {
   item: SearchResultEarnItem
   onItemClick: (item: SearchResultEarnItem) => void
+  isLightMode?: boolean
 }
 
-export const EarnListDataRow = ({ item, onItemClick }: EarnListDataRowProps) => {
+export const EarnListDataRow = ({
+  isLightMode = false,
+  item,
+  onItemClick,
+}: EarnListDataRowProps) => {
   const chainInfo = useMemo(() => getChainInfo(item.chainId), [item.chainId])
+
+  const rootRef = useRef<HTMLDivElement>(null)
+  useUpdateEffect(() => {
+    if (isLightMode) {
+      rootRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [isLightMode])
+
   return (
     <div
-      className="flex justify-between rounded-[6px] py-[12px] text-[#6D7180] hover:bg-[#202129]"
+      ref={rootRef}
+      className={twMerge(
+        clsx(
+          'flex justify-between rounded-[6px] border border-transparent py-[12px] text-[#6D7180] hover:bg-[#202129]',
+          {
+            'border-green/30': isLightMode,
+          },
+        ),
+      )}
       role="button"
       onClick={() => onItemClick(item)}
     >

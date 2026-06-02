@@ -78,11 +78,11 @@ export const SearchTabs = () => {
   }, [searchChainId])
   return (
     <div>
-      <div className="flex items-center justify-between gap-[20px]">
-        <div className="flex flex-[1_1_0%] gap-[24px] pl-[16px]">
+      <div className="flex items-center gap-[8px]">
+        <div className="scrollbar-none flex flex-1 gap-[16px] overflow-x-auto pl-[16px]">
           {debouncedSearchValue.trim() && !searchLoadingDebounced && (
             <div
-              className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+              className="flex-shrink-0 cursor-pointer text-[13px] leading-[1] font-medium select-none"
               onClick={() => setSearchTab(SearchTypeEnum.All)}
             >
               <span
@@ -96,7 +96,7 @@ export const SearchTabs = () => {
             </div>
           )}
           <div
-            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            className="flex-shrink-0 cursor-pointer text-[13px] leading-[1] font-medium select-none"
             onClick={() => setSearchTab(SearchTypeEnum.Contract)}
           >
             <span
@@ -109,7 +109,20 @@ export const SearchTabs = () => {
             </span>
           </div>
           <div
-            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            className="flex-shrink-0 cursor-pointer text-[13px] leading-[1] font-medium select-none"
+            onClick={() => setSearchTab(SearchTypeEnum.Cooking)}
+          >
+            <span
+              className={clsx({
+                'text-[#6D7180]': searchTab !== SearchTypeEnum.Cooking,
+                'text-white': searchTab === SearchTypeEnum.Cooking,
+              })}
+            >
+              {t`Cook`}
+            </span>
+          </div>
+          <div
+            className="flex-shrink-0 cursor-pointer text-[13px] leading-[1] font-medium select-none"
             onClick={() => setSearchTab(SearchTypeEnum.Cook)}
           >
             <span
@@ -118,11 +131,11 @@ export const SearchTabs = () => {
                 'text-white': searchTab === SearchTypeEnum.Cook,
               })}
             >
-              {t`Cook`}
+              {t`Base Vault`}
             </span>
           </div>
           <div
-            className="cursor-pointer text-[16px] leading-[1] font-medium select-none"
+            className="flex-shrink-0 cursor-pointer text-[13px] leading-[1] font-medium select-none"
             onClick={() => setSearchTab(SearchTypeEnum.Earn)}
           >
             <span
@@ -131,12 +144,12 @@ export const SearchTabs = () => {
                 'text-white': searchTab === SearchTypeEnum.Earn,
               })}
             >
-              {t`Earn`}
+              {t`Stable Vault`}
             </span>
           </div>
         </div>
         <div
-          className="flex items-center justify-end gap-[2] pr-[16px] text-[#CED1D9]"
+          className="flex flex-shrink-0 items-center justify-end gap-[2px] pr-[16px] text-[#CED1D9]"
           role="button"
           onClick={() => setChainSelectOpen(true)}
         >
@@ -173,7 +186,16 @@ export const SearchTabs = () => {
               value={SearchSecondTypeEnum.Favorite}
               label={t`Favorite`}
             />
-
+            <SearchSecondTab
+              sx={{
+                fontSize: '12px',
+                fontWeight: '700',
+                lineHeight: '1',
+                color: '#848E9C',
+              }}
+              value={'all'}
+              label={t`All`}
+            />
             <SearchSecondTab
               sx={{
                 fontSize: '12px',

@@ -67,15 +67,19 @@ export function TransactionsDialogContent() {
   const { address } = useWalletConnection()
   const localRecords = usePoolTxRecordsStore((s) => s.records)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
-  const [after, setAfter] = useState(0)
-  const [before, setBefore] = useState(0)
+  // 本地过滤游标（createdAt 时间戳）
+  const [localAfter, setLocalAfter] = useState(0)
+  const [localBefore, setLocalBefore] = useState(0)
+  // API 分页游标（接口返回的 id 字段）
+  const [apiAfter, setApiAfter] = useState(0)
+  const [apiBefore, setApiBefore] = useState(0)
   // txId -> timestamp when we first got a result (online or local createdAt)
   const firstSeenAtRef = useRef<Map<string, number>>(new Map())
   const [now, setNow] = useState(() => Date.now())
 
   const { data: onlineData, mutate } = useSWR(
     client && clientIsAuthenticated && address
-      ? ['getTransactionOnline', address, after, before]
+      ? ['getTransactionOnline', address, apiAfter, apiBefore]
       : null,
     async () => {
       const accessToken = await client!.getAccessToken()
@@ -83,8 +87,8 @@ export function TransactionsDialogContent() {
         accessToken: accessToken ?? '',
         address: address!,
         poolId: '',
-        ...(after > 0 ? { after } : {}),
-        ...(before > 0 ? { before } : {}),
+        ...(apiAfter > 0 ? { after: apiAfter } : {}),
+        ...(apiBefore > 0 ? { before: apiBefore } : {}),
         txId: '',
         limit: PAGE_SIZE,
       })
@@ -96,8 +100,8 @@ export function TransactionsDialogContent() {
   const sortedLocal = [...localRecords].sort((a, b) => b.createdAt - a.createdAt)
   const pageRecords = sortedLocal
     .filter((r) => {
-      if (after > 0 && r.createdAt >= after) return false
-      if (before > 0 && r.createdAt <= before) return false
+      if (localAfter > 0 && r.createdAt >= localAfter) return false
+      if (localBefore > 0 && r.createdAt <= localBefore) return false
       return true
     })
     .slice(0, PAGE_SIZE)
@@ -129,22 +133,28 @@ export function TransactionsDialogContent() {
     return () => clearInterval(timer)
   }, [])
 
-  const hasPrev = after > 0 || before > 0
+  const hasPrev = localAfter > 0 || localBefore > 0
   const lastCreatedAt = pageRecords[pageRecords.length - 1]?.createdAt ?? 0
   const hasNext = lastCreatedAt > 0 && sortedLocal.some((r) => r.createdAt < lastCreatedAt)
 
   const handleNext = () => {
     const last = pageRecords[pageRecords.length - 1]
     if (!last) return
-    setAfter(last.createdAt)
-    setBefore(0)
+    setLocalAfter(last.createdAt)
+    setLocalBefore(0)
+    const lastOnline = onlineMap.get(last.txId)
+    setApiAfter(lastOnline?.id ?? 0)
+    setApiBefore(0)
   }
 
   const handlePrev = () => {
     const first = pageRecords[0]
     if (!first) return
-    setBefore(first.createdAt)
-    setAfter(0)
+    setLocalBefore(first.createdAt)
+    setLocalAfter(0)
+    const firstOnline = onlineMap.get(first.txId)
+    setApiBefore(firstOnline?.id ?? 0)
+    setApiAfter(0)
   }
 
   const handleCancel = async (record: (typeof renderList)[number]) => {

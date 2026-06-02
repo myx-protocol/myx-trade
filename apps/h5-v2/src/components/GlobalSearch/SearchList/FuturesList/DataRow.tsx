@@ -1,33 +1,34 @@
 import { MarketType, type SearchResultContractItem } from '@myx-trade/sdk'
 import { SymbolInfo } from '../../SymbolInfo'
-import { MarketCapType } from '@myx-trade/sdk'
 import { RiseFallTextPrecent } from '@/components/RiseFallText/RiseFallTextPrecent'
-import { formatNumber } from '@/utils/number'
 import { getChainInfo } from '@/config/chainInfo'
 import { useMemo, useRef } from 'react'
 import { useMyxSdkClient } from '@/providers/MyxSdkProvider'
 import { useWalletConnection } from '@/hooks/wallet/useWalletConnection'
 import { useWalletStore } from '@/store/wallet/createStore'
 import { tradePubSub } from '@/utils/pubsub'
-import { useMount } from 'ahooks'
 import { useMarketStore } from '@/components/Trade/store/MarketStore'
 import { Price } from '@/components/Price'
+import { useUpdateEffect } from 'ahooks'
+import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 interface FuturesListDataRowProps {
   item: SearchResultContractItem
   onItemClick: (item: SearchResultContractItem) => void
+  isLightMode?: boolean
 }
 
-export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProps) => {
+export const FuturesListDataRow = ({
+  isLightMode = false,
+  item,
+  onItemClick,
+}: FuturesListDataRowProps) => {
   const chainInfo = useMemo(() => getChainInfo(item.chainId), [item.chainId])
   const { client } = useMyxSdkClient()
-  const { isWalletConnected } = useWalletConnection()
+  const { isWalletConnected, address } = useWalletConnection()
   const { setLoginModalOpen } = useWalletStore()
   const tickerData = useMarketStore((state) => state.tickerData[item.poolId])
-  const { address } = useWalletConnection()
-  useMount(() => {
-    console.log('mounted-item', item.poolId)
-  })
 
   const isLoadingRef = useRef<boolean>(false)
 
@@ -42,13 +43,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
     const isFavorite = item.favorites === 1
     if (isFavorite) {
       client?.markets
-        .removeFavorite(
-          {
-            chainId: item.chainId,
-            poolId: item.poolId,
-          },
-          address ?? '',
-        )
+        .removeFavorite({ chainId: item.chainId, poolId: item.poolId }, address ?? '')
         .then(() => {
           tradePubSub.emit('global:search:update')
         })
@@ -57,13 +52,7 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
         })
     } else {
       client?.markets
-        .addFavorite(
-          {
-            chainId: item.chainId,
-            poolId: item.poolId,
-          },
-          address ?? '',
-        )
+        .addFavorite({ chainId: item.chainId, poolId: item.poolId }, address ?? '')
         .then(() => {
           tradePubSub.emit('global:search:update')
         })
@@ -72,9 +61,25 @@ export const FuturesListDataRow = ({ item, onItemClick }: FuturesListDataRowProp
         })
     }
   }
+
+  const rootRef = useRef<HTMLDivElement>(null)
+  useUpdateEffect(() => {
+    if (isLightMode) {
+      rootRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [isLightMode])
+
   return (
     <div
-      className="flex justify-between rounded-[6px] py-[12px] text-[#6D7180] hover:bg-[#202129]"
+      ref={rootRef}
+      className={twMerge(
+        clsx(
+          'flex justify-between rounded-[6px] border border-transparent py-[12px] text-[#6D7180] hover:bg-[#202129]',
+          {
+            'border-green/30': isLightMode,
+          },
+        ),
+      )}
       role="button"
       onClick={() => onItemClick(item)}
     >

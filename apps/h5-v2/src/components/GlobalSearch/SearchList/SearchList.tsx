@@ -7,7 +7,6 @@ import { EarnList } from './EarnList'
 import { AllList } from './AllList'
 
 export const SearchList = () => {
-  //   return <NotFound />
   const { searchTab } = useGlobalSearchStore()
 
   // contract list
@@ -19,7 +18,16 @@ export const SearchList = () => {
     )
   }
 
-  // cook list
+  // cooking list
+  if (SearchTypeEnum.Cooking === searchTab) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col px-[16px] pt-[12px]">
+        <CookList variant="cook" />
+      </div>
+    )
+  }
+
+  // base vault list
   if (SearchTypeEnum.Cook === searchTab) {
     return (
       <div className="flex min-h-0 flex-1 flex-col px-[16px] pt-[12px]">

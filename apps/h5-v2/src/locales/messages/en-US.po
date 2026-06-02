@@ -357,6 +357,7 @@ msgstr ""
 
 #: src/components/ChainsSelectRow/index.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
 #: src/pages/Cook/components/ChainsBar.tsx
 #: src/pages/Cook/components/TrenchTabBar.tsx
@@ -461,13 +462,16 @@ msgstr ""
 msgid "Approve failed"
 msgstr ""
 
-#: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/pages/Cook/components/TrenchList.tsx
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/List.tsx
 msgid "APR"
 msgstr ""
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
+msgid "APY"
+msgstr "APY"
 
 #: src/components/DialogBase/WarningDialog.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
@@ -615,6 +619,11 @@ msgstr ""
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Base Valut"
 msgstr ""
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+msgid "Base Vault"
+msgstr "Base Vault"
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1412,8 +1421,6 @@ msgid "During the validity period, you can enjoy a <0>VIP{level}</0> experience"
 msgstr ""
 
 #: src/components/Footer/index.tsx
-#: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
 #: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
@@ -4230,8 +4237,11 @@ msgstr ""
 msgid "Seamless Trading Key"
 msgstr ""
 
-#: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 #: src/components/GlobalSearch/GlobalSearchHeader.tsx
+msgid "Search"
+msgstr "Search"
+
+#: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 msgid "Search for token name/address"
 msgstr ""
 
@@ -4496,6 +4506,8 @@ msgstr ""
 msgid "Sorry, the page you are trying to access does not exist"
 msgstr ""
 
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Stable Vault"
@@ -5462,6 +5474,7 @@ msgstr "Trading Parameters"
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/CookList/index.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
@@ -5566,6 +5579,7 @@ msgstr "Other"
 msgid "最大滑点"
 msgstr "Max Slippage"
 
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/CookList/index.tsx
@@ -5942,9 +5956,10 @@ msgstr "The sum of all long positions in this contract market, reflecting invest
 msgid "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
 msgstr "The sum of all short positions in this contract market, reflecting investors' bearish sentiment."
 
-#. placeholder {0}: searchResult.contractInfo?.total || '0'
-#. placeholder {0}: searchResult.cookInfo?.total || '0'
-#. placeholder {0}: searchResult.earnInfo?.total || '0'
+#. placeholder {0}: (searchResult as any)?.cookV2Info?.total || '0'
+#. placeholder {0}: searchResult?.contractInfo?.total || '0'
+#. placeholder {0}: searchResult?.cookInfo?.total || '0'
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx

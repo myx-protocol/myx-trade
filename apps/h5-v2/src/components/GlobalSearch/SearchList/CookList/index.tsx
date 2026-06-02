@@ -3,36 +3,41 @@ import { useGlobalSearchStore } from '../../store'
 import { NotFound } from '../NotFound'
 import type { SearchResultCookItem } from '@myx-trade/sdk'
 import { useNavigate } from 'react-router-dom'
-import { useCallback, useRef } from 'react'
+import { useCallback } from 'react'
 import { SearchListLoading } from '../Loading'
-import { useVirtualList } from 'ahooks'
 import { CookListDataRow } from './DataRow'
+import { useKeyPressSelect } from '../../hooks/useLightItem'
 
-export const CookList = () => {
+interface CookListProps {
+  variant?: 'cook' | 'base_vault'
+}
+
+export const CookList = ({ variant = 'base_vault' }: CookListProps) => {
   const { searchResult, searchLoading, close } = useGlobalSearchStore()
 
   const navigate = useNavigate()
   const onItemClick = useCallback(
     (item: SearchResultCookItem) => {
       close()
-      navigate(`/cook/${item.chainId}/${item.poolId}`)
+      if (variant === 'cook') {
+        navigate(`/cook/${item.chainId}/${item.poolId}`)
+      } else {
+        navigate(`/cook/${item.chainId}/${item.poolId}`)
+      }
     },
-    [navigate, close],
+    [navigate, close, variant],
   )
 
-  const cookInfoData = searchResult?.cookInfo
+  const cookInfoData =
+    variant === 'cook' ? (searchResult as any)?.cookV2Info : searchResult?.cookInfo
+  const listData = (cookInfoData?.list || []) as (SearchResultCookItem & { progress?: string })[]
 
-  const listContainerRef = useRef<HTMLDivElement>(null)
-  const listWrapperRef = useRef<HTMLDivElement>(null)
-
-  const [list] = useVirtualList(cookInfoData?.list || [], {
-    itemHeight: 56,
-    overscan: 7,
-    containerTarget: listContainerRef,
-    wrapperTarget: listWrapperRef,
+  const { lightItem } = useKeyPressSelect({
+    dataList: listData,
+    onSelect: onItemClick,
   })
 
-  if (!cookInfoData?.list.length && !searchLoading) return <NotFound />
+  if (!listData.length && !searchLoading) return <NotFound />
 
   return (
     <div className="flex flex-[1_1_0%] flex-col">
@@ -50,16 +55,16 @@ export const CookList = () => {
       {searchLoading ? (
         <SearchListLoading line={9} />
       ) : (
-        <div className="min-h-0 flex-[1_1_0%] overflow-y-auto" ref={listContainerRef}>
-          <div className="min-h-0" ref={listWrapperRef}>
-            {list?.map((item) => (
-              <CookListDataRow
-                key={`search-cook-${item.index}`}
-                item={item.data}
-                onItemClick={onItemClick}
-              />
-            ))}
-          </div>
+        <div className="min-h-0 flex-[1_1_0%] overflow-y-auto">
+          {listData.map((item, index) => (
+            <CookListDataRow
+              key={`cook-${index}`}
+              item={item}
+              onItemClick={onItemClick}
+              isLightMode={lightItem.chainId === item.chainId && lightItem.poolId === item.poolId}
+              variant={variant}
+            />
+          ))}
         </div>
       )}
     </div>

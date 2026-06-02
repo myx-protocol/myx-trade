@@ -357,6 +357,7 @@ msgstr "空投"
 
 #: src/components/ChainsSelectRow/index.tsx
 #: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/SelectPanel/index.tsx
 #: src/pages/Cook/components/ChainsBar.tsx
 #: src/pages/Cook/components/TrenchTabBar.tsx
@@ -461,13 +462,16 @@ msgstr "及"
 msgid "Approve failed"
 msgstr "授权失败"
 
-#: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/pages/Cook/components/TrenchList.tsx
 #: src/pages/Earn/components/Dashboard.tsx
 #: src/pages/Earn/List.tsx
 msgid "APR"
 msgstr "APR"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/EarnList/index.tsx
+msgid "APY"
+msgstr ""
 
 #: src/components/DialogBase/WarningDialog.tsx
 #: src/components/Trade/Dialog/ConfirmDialog/index.tsx
@@ -615,6 +619,11 @@ msgstr "流动性锁滑点"
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Base Valut"
 msgstr "基础币金库"
+
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
+msgid "Base Vault"
+msgstr ""
 
 #: src/config/error/CommonErrorMapping.tsx
 #: src/config/error/MYX_SDK_ERRORS.tsx
@@ -1412,8 +1421,6 @@ msgid "During the validity period, you can enjoy a <0>VIP{level}</0> experience"
 msgstr "在有效期内，您可以享受 <0>VIP{level}</0> 体验"
 
 #: src/components/Footer/index.tsx
-#: src/components/GlobalSearch/SearchList/AllList.tsx
-#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/components/Header/const.tsx
 #: src/pages/Earn/components/EarnToolBar.tsx
 #: src/pages/Home/components/ExpressMenu/const.tsx
@@ -4230,8 +4237,11 @@ msgstr "无感交易"
 msgid "Seamless Trading Key"
 msgstr "无感交易密钥"
 
-#: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 #: src/components/GlobalSearch/GlobalSearchHeader.tsx
+msgid "Search"
+msgstr ""
+
+#: src/components/GlobalContractSearch/GlobalSearchHeader.tsx
 msgid "Search for token name/address"
 msgstr "搜索代币名称/地址"
 
@@ -4498,6 +4508,8 @@ msgstr "即将推出"
 msgid "Sorry, the page you are trying to access does not exist"
 msgstr "抱歉，您尝试访问的页面不存在"
 
+#: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/SearchTabs.tsx
 #: src/pages/Cook/detail-v2/components/CookQuoteUnitSelectDialog.tsx
 #: src/pages/Cook/detail-v2/index.tsx
 msgid "Stable Vault"
@@ -5464,6 +5476,7 @@ msgstr "交易参数"
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/CookList/index.tsx
 #: src/components/GlobalSearch/SearchList/EarnList/index.tsx
 #: src/components/GlobalSearch/SearchList/FuturesList/index.tsx
@@ -5568,6 +5581,7 @@ msgstr "其他"
 msgid "最大滑点"
 msgstr "最大滑点"
 
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/CookList/index.tsx
@@ -5944,9 +5958,10 @@ msgstr "本合约市场上所有多头头寸的总和，反映了市场上投资
 msgid "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
 msgstr "本合约市场上所有空头头寸的总和，反映了市场上投资者的看跌信心。"
 
-#. placeholder {0}: searchResult.contractInfo?.total || '0'
-#. placeholder {0}: searchResult.cookInfo?.total || '0'
-#. placeholder {0}: searchResult.earnInfo?.total || '0'
+#. placeholder {0}: (searchResult as any)?.cookV2Info?.total || '0'
+#. placeholder {0}: searchResult?.contractInfo?.total || '0'
+#. placeholder {0}: searchResult?.cookInfo?.total || '0'
+#: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
 #: src/components/GlobalSearch/SearchList/AllList.tsx
