@@ -5,6 +5,8 @@ import { Trans } from '@lingui/react/macro'
 import { MarketPoolState } from '@myx-trade/sdk'
 import { useNavigate } from 'react-router-dom'
 import MarketStatusPng from '@/assets/trade/market-status.png'
+import { TradeSide } from '@/pages/Earn/components/Trade/Context'
+import { CookOrderSideEnum } from '@/components/CookDetail/Order/type'
 
 interface NoTradeableProps {
   poolId?: string
@@ -20,8 +22,13 @@ export const NoTradeable = (props: NoTradeableProps) => {
   const toCook = () => {
     navigate(`/cook/${chainId}/${poolId}`)
   }
-  const toEarn = () => {
-    navigate(`/earn/${chainId}/${poolId}`)
+  const toTrench = (isRedeem = false) => {
+    navigate(
+      `/trench/${chainId}/${poolId}?side=${isRedeem ? CookOrderSideEnum.Sell : CookOrderSideEnum.Buy}`,
+    )
+  }
+  const toEarn = (isRedeem = false) => {
+    navigate(`/earn/${chainId}/${poolId}?side=${isRedeem ? TradeSide.Redeem : TradeSide.Subscribe}`)
   }
   const toReactivate = () => {
     if (!marketDetail?.baseToken) return
@@ -30,20 +37,96 @@ export const NoTradeable = (props: NoTradeableProps) => {
   const renderButtons = () => {
     if (isBench) {
       return (
-        <PrimaryButton
-          style={{
-            width: '133px',
-            height: '38px',
-            borderRadius: '100px',
-            padding: '0 24px',
-            fontSize: '12px',
-            fontWeight: 500,
-            lineHeight: 1.2,
-          }}
-          onClick={toReactivate}
-        >
-          <Trans>Reactivate Pool </Trans>
-        </PrimaryButton>
+        <>
+          <PrimaryButton
+            style={{
+              width: '133px',
+              height: '38px',
+              borderRadius: '100px',
+              padding: '0 24px',
+              fontSize: '12px',
+              fontWeight: 500,
+              lineHeight: 1.2,
+            }}
+            onClick={toReactivate}
+          >
+            <Trans>Reactivate Pool </Trans>
+          </PrimaryButton>
+          <PrimaryButton
+            style={{
+              width: '133px',
+              height: '38px',
+              borderRadius: '100px',
+              padding: '0 24px',
+              fontSize: '12px',
+              fontWeight: 500,
+              lineHeight: 1.2,
+              borderColor: 'rgba(128, 255, 149, 0.2)',
+              color: '#00E3A5',
+              whiteSpace: 'break-spaces',
+              backgroundImage:
+                'linear-gradient(95deg, rgba(61, 153, 107, 0.10) 0%, rgba(0, 153, 111, 0.10) 18.58%)',
+              '&:hover': {
+                backgroundImage:
+                  'linear-gradient(95deg, rgba(61, 153, 107, 0.20) 0%, rgba(0, 153, 111, 0.20) 18.58%)',
+              },
+              '& > div > div:last-child': {
+                width: '100%',
+                textAlign: 'center',
+                wordBreak: 'break-word',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              },
+            }}
+            onClick={() => {
+              toTrench(true)
+            }}
+          >
+            <Trans>
+              Redeem m{marketDetail?.baseSymbol}.{marketDetail?.quoteSymbol}
+            </Trans>
+          </PrimaryButton>
+          <PrimaryButton
+            style={{
+              width: '133px',
+              height: '38px',
+              borderRadius: '100px',
+              padding: '0 24px',
+              fontSize: '12px',
+              whiteSpace: 'break-spaces',
+              fontWeight: 500,
+              lineHeight: 1.2,
+              borderColor: 'rgba(128, 255, 149, 0.2)',
+              color: '#00E3A5',
+              backgroundImage:
+                'linear-gradient(95deg, rgba(61, 153, 107, 0.10) 0%, rgba(0, 153, 111, 0.10) 18.58%)',
+              '&:hover': {
+                backgroundImage:
+                  'linear-gradient(95deg, rgba(61, 153, 107, 0.20) 0%, rgba(0, 153, 111, 0.20) 18.58%)',
+              },
+              '& > div > div:last-child': {
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                width: '100%',
+                textAlign: 'center',
+                wordBreak: 'break-word',
+              },
+            }}
+            onClick={() => {
+              toEarn(true)
+            }}
+          >
+            <Trans>
+              Redeem m{marketDetail?.quoteSymbol}.{marketDetail?.baseSymbol}
+            </Trans>
+          </PrimaryButton>
+        </>
       )
     }
     return (

@@ -2,16 +2,23 @@ import { Trans } from '@lingui/react/macro'
 import clsx from 'clsx'
 import { useCookOrderStore } from '../store'
 import { CookOrderSideEnum } from '../type'
+import { useSearchParams } from 'react-router-dom'
+import { useEffect } from 'react'
 
 export const OrderSide = () => {
   const { orderSide, setOrderSide } = useCookOrderStore()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    const tab = searchParams.get('side') || CookOrderSideEnum.Buy
+    setOrderSide(tab as CookOrderSideEnum)
+  }, [searchParams])
 
   const onChangeOrderSide = (side: CookOrderSideEnum) => {
     /**
      * before check
      */
-
-    setOrderSide(side)
+    setSearchParams({ side: side })
   }
   return (
     <div className="flex rounded-[8px] bg-[#18191F]">
