@@ -41,11 +41,11 @@ export const useCookTokenSelect = ({ chainId = 0, keyword = '' }: UseCookTokenSe
       const res = await client.markets.searchMarket({
         searchKey: keyword,
         chainId,
-        searchType: SearchTypeEnum.Cook,
+        searchType: SearchTypeEnum.Cooking,
       })
       return res
     },
-    select: (data) => data?.cookInfo.list || [],
+    select: (data) => data?.cookV2Info?.list || [],
   })
 
   const { tokenInfoMap, baseTokenMapQuoteToken, baseTokenList } = useMemo(() => {

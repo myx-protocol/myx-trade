@@ -357,6 +357,10 @@ export interface SearchResultResponse {
     total: number;
     favorites: FavoritesDefaultItem[];
   };
+  cookV2Info: {
+    list: SearchResultCookItem[];
+    total: number;
+  }
 }
 
 // favorites list
