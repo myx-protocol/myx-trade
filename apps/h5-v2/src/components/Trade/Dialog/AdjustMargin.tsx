@@ -3,11 +3,12 @@ import { Trans } from '@lingui/react/macro'
 import { useMemo, useState } from 'react'
 import { MenuItem, Select as MuiSelect } from '@mui/material'
 import { NumberInputPrimitive } from '@/components/UI/NumberInput/NumberInputPrimitive'
+import { isHex, padHex, toHex } from 'viem'
 import { Tooltips } from '@/components/UI/Tooltips'
 import Up from '@/components/Icon/set/Up'
 import { InfoButton, PrimaryButton } from '@/components/UI/Button'
 import { t } from '@lingui/core/macro'
-import { DirectionEnum, OracleType } from '@myx-trade/sdk'
+import { DirectionEnum } from '@myx-trade/sdk'
 import clsx from 'clsx'
 import { parseBigNumber } from '@/utils/bn'
 import { ethers } from 'ethers'
@@ -38,7 +39,7 @@ import { useCheckUserVipInfo } from '@/hooks/use-check-user-vip-info'
 import { useSeamlessStore } from '@/store/seamless/createStore'
 import { TradeMode } from '@/pages/Trade/types'
 import type { SeamlessAccount } from '@/store/seamless/initialState'
-import { useForwardSeamlessTransaction } from '@/hooks/seamless/use-forward-seamless-transaction'
+
 import { buildAdjustMarginToastParts, renderOrderToastContent } from '@/utils/order/action-toast'
 import { PoolTxType, usePoolTxRecordsStore } from '@/store/poolTxRecords'
 
@@ -138,10 +139,9 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
   const { isMatch, asyncVipInfo, asyncVipLevelLoading } = useCheckUserVipInfo()
   const { getSeamlessAuthStatus } = useGetSeamlessAuthStatus()
   const { checkSeamlessAllowance } = useCheckSeamlessAllowance()
-  const { seamlessAccountList, activeSeamlessAddress } = useSeamlessStore()
+  const { seamlessAccountList, activeSeamlessAddress, activeSeamlessWallet } = useSeamlessStore()
   const { tradeMode } = useGlobalStore()
   const { activeAddress } = useWalletStore()
-  const { forwardSeamlessTransaction } = useForwardSeamlessTransaction(position?.chainId)
 
   const decimalScale = useMemo(() => {
     if (isSuperDecimal(marketPrice)) {
@@ -551,6 +551,11 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                 }
 
                 try {
+                  const toBytes32 = (value: string): `0x${string}` => {
+                    if (isHex(value)) return padHex(value as `0x${string}`, { size: 32 })
+                    return padHex(toHex(value), { size: 32 })
+                  }
+
                   if (tradeMode === TradeMode.Seamless) {
                     const seamlessAccount = seamlessAccountList.find(
                       (item: SeamlessAccount) => item.masterAddress === activeSeamlessAddress,
@@ -586,18 +591,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     })
                     if (!isAllowed) return
 
-                    const priceData = await client?.utils.getOraclePrice(
-                      position.poolId,
-                      position.chainId,
-                    )
-
-                    const updateParams = {
-                      poolId: position.poolId,
-                      oracleType: priceData?.oracleType ?? OracleType.Chainlink,
-                      publishTime: priceData?.publishTime ?? 0,
-                      oracleUpdateData: priceData?.vaa ?? '0',
-                    }
-
                     let depositAmount = parseBigNumber(0)
 
                     const assetsRes = await client?.account.getAvailableMarginBalance({
@@ -605,7 +598,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       chainId: position.chainId,
                       address: seamlessAccount.masterAddress,
                     })
-                    // 0xb239c4fc5b32d40b128d3c64ad3ce249cc9333d16bc7d891d125b5c52e2eaa6e
 
                     const availableMargin = parseBigNumber(
                       assetsRes?.code === 0 ? (assetsRes?.data?.toString() ?? '0') : '0',
@@ -624,26 +616,26 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                       depositAmount = diff
                     }
 
-                    const rs = await forwardSeamlessTransaction({
-                      chainId: pool.chainId as number,
-                      masterAddress: activeSeamlessAddress,
+                    const rs = await client?.seamless.adjustCollateral({
+                      chainId: position.chainId,
                       seamlessAddress: seamlessAccount.seamlessAddress,
                       forwardFeeToken: pool?.quoteToken as string,
-                      functionName: 'updatePriceAndAdjustCollateral',
-                      orderParams: [
-                        [updateParams],
-                        {
-                          token: pool?.quoteToken ?? '',
-                          amount: depositAmount.mul(10 ** (pool?.quoteDecimals ?? 6)).toString(),
-                        },
-                        position.positionId,
-                        ethers.parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6).toString(),
-                      ],
-                      value: priceData?.value.toString() ?? '1',
-                      gas: '1500000',
+                      poolId: position.poolId,
+                      positionId: toBytes32(position.positionId),
+                      adjustAmount: ethers
+                        .parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6)
+                        .toString(),
+                      depositData: {
+                        token: pool?.quoteToken ?? '',
+                        amount: depositAmount.mul(10 ** (pool?.quoteDecimals ?? 6)).toString(),
+                      },
+                      signFunction: ({ domain, types, primaryType, message }) =>
+                        activeSeamlessWallet.signTypedData(
+                          { ...domain, chainId: parseInt(domain.chainId as string) },
+                          types,
+                          message,
+                        ),
                     })
-
-                    console.log('rs-->', rs)
 
                     if (rs?.code === 0) {
                       const _parts = buildAdjustMarginToastParts({
@@ -656,12 +648,20 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                         title: _parts.title,
                         content: renderOrderToastContent(_parts),
                       })
+
+                      const { txId, hash } = rs.data as { txId: string; hash: string }
+                      addRecord({
+                        poolId: position.poolId,
+                        chainId: position.chainId,
+                        type: PoolTxType.Adjust_Margin,
+                        txId,
+                        txHash: hash,
+                      })
+
                       setAdjustMargin('')
                       setAdjustType('increase')
                       setOpen(false)
                     } else {
-                      console.log('error-->', rs)
-
                       showErrorToast(client?.utils.formatErrorMessage(rs))
                     }
 
@@ -671,7 +671,7 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
 
                   const data = {
                     poolId: position.poolId,
-                    positionId: position.positionId,
+                    positionId: toBytes32(position.positionId),
                     adjustAmount: ethers
                       .parseUnits(adjustAmountFormat, pool?.quoteDecimals ?? 6)
                       .toString(),
@@ -702,7 +702,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                     setAdjustType('increase')
                     setOpen(false)
                   } else {
-                    console.log('rs->', rs?.message)
                     showErrorToast(client?.utils.formatErrorMessage(rs))
                   }
                 } catch (error) {
