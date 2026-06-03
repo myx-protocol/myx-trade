@@ -18,6 +18,8 @@ import type { SignerLike } from "@/signer/types.js";
 import Account_ABI from '@/abi/Account.json'
 import { ChainId } from "@/config/chain.js";
 import TradingRouter_ABI from "@/abi/TradingRouter.json";
+import { execution, forwarder } from "@/common/index.js";
+import { FORWARD_GAS_LIMIT } from "@/config/fee.js";
 
 const contractTypes = {
   ForwardRequest: [
@@ -610,5 +612,100 @@ export class Seamless {
       nonce: nonce.toString(),
       forwardFeeToken,
     };
+  }
+
+  async adjustCollateral({
+    chainId,
+    seamlessAddress,
+    forwardFeeToken,
+    poolId,
+    positionId,
+    adjustAmount,
+    depositData,
+    signFunction,
+  }: {
+    chainId: ChainId;
+    seamlessAddress: string;
+    forwardFeeToken: string;
+    poolId: string;
+    positionId: string;
+    adjustAmount: string;
+    depositData: { token: string; amount: string };
+    signFunction: (params: {
+      domain: any;
+      types: any;
+      primaryType: string;
+      message: any;
+    }) => Promise<string>;
+  }) {
+    try {
+      const tradingRouterAddress = getContractAddressByChainId(chainId).TRADING_ROUTER;
+
+      const { hexData, executionGasFee } = await execution.buildHexDataAndExecutionGasFee({
+        abi: TradingRouter_ABI as any,
+        method: 'adjustCollateral',
+        args: [depositData, positionId, adjustAmount],
+        chainId,
+      });
+
+      const { domain, createAt, txId, types, primaryType, signData } = await execution.buildSignData({
+        from: seamlessAddress as `0x${string}`,
+        to: tradingRouterAddress as `0x${string}`,
+        data: hexData,
+        chainId,
+      });
+
+      const signature = await signFunction({ domain, types, primaryType, message: signData });
+
+      const txRs = await this.api.adjustCollateralForwarderTxApi(
+        {
+          from: seamlessAddress,
+          to: tradingRouterAddress,
+          value: executionGasFee.toString(),
+          gas: FORWARD_GAS_LIMIT.toString(),
+          txId,
+          createdAt: createAt.toString(),
+          deadline: signData.deadline,
+          data: hexData,
+          signature,
+          poolIds: [poolId],
+          forwardFeeToken,
+        },
+        chainId,
+      );
+
+      if (txRs.data?.txHash) {
+        const maxAttempts = 5;
+        const pollInterval = 1000;
+
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          try {
+            const rs = await this.api.fetchForwarderGetApi({ requestId: txRs.data.requestId });
+
+            if (rs.data?.status === 9) {
+              return {
+                code: 0,
+                data: { txId, hash: txRs.data.txHash },
+              };
+            }
+
+            if (attempt < maxAttempts - 1) {
+              await new Promise((resolve) => setTimeout(resolve, pollInterval));
+            }
+          } catch (error) {
+            this.logger.error('Poll adjustCollateral transaction error:', error);
+            if (attempt < maxAttempts - 1) {
+              await new Promise((resolve) => setTimeout(resolve, pollInterval));
+            }
+          }
+        }
+
+        return { code: -1, data: null, message: 'Transaction confirmation timeout, please check later' };
+      }
+
+      return { code: -1, data: null, message: 'Your request timed out, please try again' };
+    } catch (error) {
+      return { code: -1, data: null, message: (error as Error).message };
+    }
   }
 }

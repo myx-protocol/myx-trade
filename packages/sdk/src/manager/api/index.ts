@@ -53,6 +53,7 @@ import {
   FetchForwarderGetParams,
   FetchForwarderGetResponse,
   ForwarderTxParams,
+  AdjustCollateralForwarderParams,
   GetBaseDetailParams,
   GetKlineDataParams,
   GetMarketDetailParams,
@@ -113,6 +114,18 @@ export class Api extends Request {
   }
 
   async forwarderTxApi(params: ForwarderTxParams, chainId: number) {
+    return http.post<ApiResponse<any>>(
+      `${this.getHost()}/v2/agent/forwarder/tx-v2`,
+      params,
+      {
+        headers: {
+          "myx-chain-id": chainId.toString(),
+        },
+      }
+    );
+  }
+
+  async adjustCollateralForwarderTxApi(params: AdjustCollateralForwarderParams, chainId: number) {
     return http.post<ApiResponse<any>>(
       `${this.getHost()}/v2/agent/forwarder/tx-v2`,
       params,

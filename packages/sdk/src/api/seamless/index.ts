@@ -12,6 +12,20 @@ export type ForwarderTxParams = {
   forwardFeeToken: string
 }
 
+export type AdjustCollateralForwarderParams = {
+  from: string;
+  to: string;
+  value: string;
+  gas: string;
+  txId: string;
+  createdAt: string;
+  deadline: number;
+  data: string;
+  signature: string;
+  poolIds: string[];
+  forwardFeeToken: string;
+}
+
 export type FetchForwarderGetParams = {
   requestId: string
 }
