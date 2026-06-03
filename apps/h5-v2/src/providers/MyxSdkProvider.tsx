@@ -167,7 +167,7 @@ const brokerAddressMap: Record<number, string> = {
   [ChainId.BSC_TESTNET]: isBetaMode()
     ? '0x144E5067E690635b2cbeE10D96f431D143739f48'
     : '0xcbDf914B074eC712F2b9A7f5d0Ded3b8B6324458',
-  [ChainId.BSC_MAINNET]: '0x83C6F0BEDebF759fDB4Be8096dF558c1EE544999',
+  [ChainId.BSC_MAINNET]: '0xE73eccbA9de36eb5cc420254b5509C379F22F2BB',
 }
 
 export const MyxSdkProvider = ({ children }: { children: ReactNode }) => {
