@@ -12,6 +12,7 @@ interface SignAndSubmitParams {
   method: string;
   args: any[];
   poolIds: string[];
+  to?: Address
 }
 
 export const signAndSubmit = async ({
@@ -21,9 +22,11 @@ export const signAndSubmit = async ({
   method,
   args,
   poolIds,
+ to: _to
 }: SignAndSubmitParams) => {
   const chainAddress = getContractAddressByChainId(chainId);
 
+  const to = _to || chainAddress.LIQUIDITY_ROUTER;
   const { hexData, executionGasFee } =
     await execution.buildHexDataAndExecutionGasFee({
       abi,
@@ -36,7 +39,7 @@ export const signAndSubmit = async ({
     await execution.buildSignData({
       from: account,
       chainId,
-      to: chainAddress.LIQUIDITY_ROUTER,
+      to,
       data: hexData,
     });
 

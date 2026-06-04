@@ -1,5 +1,6 @@
 import {
   getDisputeCourtContract,
+  getExecutionPoolSingerContract,
   getReimbursementContract,
   ProviderType,
 } from "@/web3/providers";
@@ -27,6 +28,7 @@ import {
 import { ConfigManager } from "../config/index.js";
 import { signAndSubmit } from "@/common/signAndSubmit.js";
 import { TransactionHash } from "@/types/common";
+import { execution } from "@/common";
 
 export class Appeal extends BaseMyxClient {
   private configManager: ConfigManager;
@@ -103,6 +105,7 @@ export class Appeal extends BaseMyxClient {
         spenderAddress: this.getAddressConfig().DISPUTE_COURT,
       });
     }
+
     const { txId, hash, receipt } = await signAndSubmit({
       chainId: this.config.chainId,
       account: account as `0x${string}`,
@@ -110,6 +113,7 @@ export class Appeal extends BaseMyxClient {
       method: "fileDispute",
       args: [poolId, lpToken],
       poolIds: [poolId],
+      to: this.getAddressConfig().DISPUTE_COURT
     });
 
     return {
