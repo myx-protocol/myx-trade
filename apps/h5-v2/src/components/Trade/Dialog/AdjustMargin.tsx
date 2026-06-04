@@ -629,12 +629,6 @@ export const AdjustMarginDialog = ({ position }: { position: any }) => {
                         token: pool?.quoteToken ?? '',
                         amount: depositAmount.mul(10 ** (pool?.quoteDecimals ?? 6)).toString(),
                       },
-                      signFunction: ({ domain, types, primaryType, message }) =>
-                        activeSeamlessWallet.signTypedData(
-                          { ...domain, chainId: parseInt(domain.chainId as string) },
-                          types,
-                          message,
-                        ),
                     })
 
                     if (rs?.code === 0) {
