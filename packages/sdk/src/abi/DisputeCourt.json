@@ -888,31 +888,8 @@
     "type": "function",
     "name": "fileDispute",
     "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
+    "payable": false,
     "inputs": [
-      {
-        "type": "tuple[]",
-        "name": "prices",
-        "components": [
-          {
-            "type": "bytes32",
-            "name": "poolId"
-          },
-          {
-            "type": "uint8",
-            "name": "oracleType"
-          },
-          {
-            "type": "uint64",
-            "name": "publishTime"
-          },
-          {
-            "type": "bytes",
-            "name": "oracleUpdateData"
-          }
-        ]
-      },
       {
         "type": "bytes32",
         "name": "poolId"

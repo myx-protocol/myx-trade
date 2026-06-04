@@ -22,10 +22,10 @@ import {
   GetAppealVoteNodeDetailParams,
   GetIsVoteNodeParams,
   GetWarmholeSignParams,
-  GuardianSignatureItem,
   PostVoteSignatureParams,
 } from "../api/appeal-type.js";
 import { ConfigManager } from "../config/index.js";
+import { signAndSubmit } from "@/common/signAndSubmit.js";
 
 export class Appeal extends BaseMyxClient {
   private configManager: ConfigManager;
@@ -102,31 +102,15 @@ export class Appeal extends BaseMyxClient {
         spenderAddress: this.getAddressConfig().DISPUTE_COURT,
       });
     }
-    const contract = await this.getDisputeCourtContract();
-    const prices = await this.client.utils.buildUpdatePriceParams(
-      poolId,
-      this.config.chainId,
-    );
+    const { txId, hash, receipt } = await signAndSubmit({
+      chainId: this.config.chainId,
+      account: account as `0x${string}`,
+      abi: DisputeCourt_ABI as any,
+      method: "fileDispute",
+      args: [poolId, lpToken],
+      poolIds: [poolId],
+    });
 
-    const value = BigInt(prices[0].value.toString() || "1");
-
-    const _gasLimit = await contract.estimateGas!.fileDispute(
-      [prices, poolId as `0x${string}`, lpToken],
-      { value },
-    );
-    const gasLimit = await this.client.utils.getGasLimitByRatio(_gasLimit);
-    const gasPrice = await this.client.utils.getGasPriceByRatio();
-    const hash = await contract.write!.fileDispute(
-      [prices, poolId as `0x${string}`, lpToken],
-      {
-        value,
-        gasLimit,
-        gasPrice,
-      },
-    );
-    const receipt = await getPublicClient(
-      this.config.chainId,
-    ).waitForTransactionReceipt({ hash });
     const caseId = this.getCaseIdFromReceiptLogs(receipt, "DisputeFiled");
     if (caseId == null) {
       throw new MyxSDKError(
@@ -134,7 +118,12 @@ export class Appeal extends BaseMyxClient {
         "DisputeFiledLog not found",
       );
     }
-    return { transaction: receipt, caseId };
+    return {
+      transaction: receipt,
+      txId,
+      hash,
+      caseId,
+    };
   }
 
   /**

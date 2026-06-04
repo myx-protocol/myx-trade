@@ -41,10 +41,8 @@ export const buildSignData = async ({
   from,
   to,
 }: BuildSignDataParams) => {
-  const domain = await forwarder.getForwardEip712Domain(chainId);
   const { createAt, deadline } = getExecutionTimestamp();
   const txId = generateTxId();
-  const { types, primaryType } = forwarder.getForwardRequestTypes();
   const signData = {
     from,
     to,
@@ -54,12 +52,9 @@ export const buildSignData = async ({
     gas: FORWARD_GAS_LIMIT,
   };
   return {
-    domain,
     createAt,
     deadline,
     txId,
-    types,
-    primaryType,
     signData,
   };
 };

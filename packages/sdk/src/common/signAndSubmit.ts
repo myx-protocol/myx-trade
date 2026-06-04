@@ -32,7 +32,7 @@ export const signAndSubmit = async ({
       chainId,
     });
 
-  const { domain, createAt, txId, types, primaryType, signData } =
+  const {  createAt, txId, signData } =
     await execution.buildSignData({
       from: account,
       chainId,
@@ -40,19 +40,10 @@ export const signAndSubmit = async ({
       data: hexData,
     });
 
-  const walletClient = await getWalletClient(chainId);
-  const signature = await walletClient.signTypedData({
-    account,
-    domain,
-    types,
-    primaryType,
-    message: signData,
-  });
-
   const executionPoolContract = await getExecutionPoolSingerContract(chainId);
   const submitArgs = [
     txId,
-    { ...signData, createdAt: BigInt(createAt), signature },
+    { ...signData, createdAt: BigInt(createAt) },
     poolIds,
   ] as const;
 
