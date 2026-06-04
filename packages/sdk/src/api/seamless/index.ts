@@ -21,7 +21,6 @@ export type AdjustCollateralForwarderParams = {
   createdAt: string;
   deadline: number;
   data: string;
-  signature: string;
   poolIds: string[];
   forwardFeeToken: string;
 }

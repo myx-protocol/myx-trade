@@ -747,10 +747,6 @@
           {
             "type": "bytes",
             "name": "data"
-          },
-          {
-            "type": "bytes",
-            "name": "signature"
           }
         ]
       },

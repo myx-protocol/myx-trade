@@ -622,7 +622,6 @@ export class Seamless {
     positionId,
     adjustAmount,
     depositData,
-    signFunction,
   }: {
     chainId: ChainId;
     seamlessAddress: string;
@@ -631,12 +630,6 @@ export class Seamless {
     positionId: string;
     adjustAmount: string;
     depositData: { token: string; amount: string };
-    signFunction: (params: {
-      domain: any;
-      types: any;
-      primaryType: string;
-      message: any;
-    }) => Promise<string>;
   }) {
     try {
       const tradingRouterAddress = getContractAddressByChainId(chainId).TRADING_ROUTER;
@@ -648,14 +641,12 @@ export class Seamless {
         chainId,
       });
 
-      const { domain, createAt, txId, types, primaryType, signData } = await execution.buildSignData({
+      const { createAt, txId, signData } = await execution.buildSignData({
         from: seamlessAddress as `0x${string}`,
         to: tradingRouterAddress as `0x${string}`,
         data: hexData,
         chainId,
       });
-
-      const signature = await signFunction({ domain, types, primaryType, message: signData });
 
       const txRs = await this.api.adjustCollateralForwarderTxApi(
         {
@@ -667,7 +658,6 @@ export class Seamless {
           createdAt: createAt.toString(),
           deadline: signData.deadline,
           data: hexData,
-          signature,
           poolIds: [poolId],
           forwardFeeToken,
         },

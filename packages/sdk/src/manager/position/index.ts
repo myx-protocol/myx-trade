@@ -165,7 +165,7 @@ export class Position {
           chainId,
         });
 
-      const { domain, createAt, txId, types, primaryType, signData } =
+      const { createAt, txId, signData } =
         await execution.buildSignData({
           from: address as `0x${string}`,
           to: tradingRouterAddress as `0x${string}`,
@@ -173,24 +173,13 @@ export class Position {
           chainId,
         });
 
-      const walletClient =
-        await this.configManager.getViemWalletClient(chainId);
-
-      const signature = await walletClient.signTypedData({
-        account: address as Address,
-        domain,
-        types,
-        primaryType,
-        message: signData,
-      });
-
       const executionPoolContract =
         await getExecutionPoolSingerContract(chainId);
 
       const _gasLimit = await executionPoolContract.estimateGas!.submit(
         [
           txId,
-          { ...signData, createdAt: BigInt(createAt), signature },
+          { ...signData, createdAt: BigInt(createAt) },
           [poolId],
         ],
         { value: executionGasFee },
@@ -202,7 +191,6 @@ export class Position {
           {
             ...signData,
             createdAt: BigInt(createAt),
-            signature,
           },
           [poolId],
         ],
