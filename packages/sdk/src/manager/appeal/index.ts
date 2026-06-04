@@ -26,6 +26,7 @@ import {
 } from "../api/appeal-type.js";
 import { ConfigManager } from "../config/index.js";
 import { signAndSubmit } from "@/common/signAndSubmit.js";
+import { TransactionHash } from "@/types/common";
 
 export class Appeal extends BaseMyxClient {
   private configManager: ConfigManager;
@@ -111,19 +112,18 @@ export class Appeal extends BaseMyxClient {
       poolIds: [poolId],
     });
 
-    const caseId = this.getCaseIdFromReceiptLogs(receipt, "DisputeFiled");
-    if (caseId == null) {
-      throw new MyxSDKError(
-        MyxErrorCode.TransactionFailed,
-        "DisputeFiledLog not found",
-      );
-    }
     return {
       transaction: receipt,
       txId,
       hash,
-      caseId,
     };
+  }
+
+  public async getCaseIdFromTransaction(txHash: TransactionHash) {
+    const publicClient = getPublicClient(this.config.chainId);
+    const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
+    const caseId = this.getCaseIdFromReceiptLogs(receipt, "DisputeFiled");
+    return caseId;
   }
 
   /**
