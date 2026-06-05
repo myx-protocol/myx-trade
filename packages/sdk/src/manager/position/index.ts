@@ -165,7 +165,7 @@ export class Position {
           chainId,
         });
 
-      const { createAt, txId, signData } =
+      const { createAt, txId, signData, gasEscrow } =
         await execution.buildSignData({
           from: address as `0x${string}`,
           to: tradingRouterAddress as `0x${string}`,
@@ -179,7 +179,7 @@ export class Position {
       const _gasLimit = await executionPoolContract.estimateGas!.submit(
         [
           txId,
-          { ...signData, createdAt: BigInt(createAt) },
+          { ...signData, createdAt: BigInt(createAt), gasEscrow },
           [poolId],
         ],
         { value: executionGasFee },
@@ -191,6 +191,7 @@ export class Position {
           {
             ...signData,
             createdAt: BigInt(createAt),
+            gasEscrow,
           },
           [poolId],
         ],

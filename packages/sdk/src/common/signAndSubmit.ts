@@ -22,7 +22,7 @@ export const signAndSubmit = async ({
   method,
   args,
   poolIds,
- to: _to
+  to: _to
 }: SignAndSubmitParams) => {
   const chainAddress = getContractAddressByChainId(chainId);
 
@@ -35,7 +35,7 @@ export const signAndSubmit = async ({
       chainId,
     });
 
-  const {  createAt, txId, signData } =
+  const { createAt, txId, signData, gasEscrow } =
     await execution.buildSignData({
       from: account,
       chainId,
@@ -46,7 +46,7 @@ export const signAndSubmit = async ({
   const executionPoolContract = await getExecutionPoolSingerContract(chainId);
   const submitArgs = [
     txId,
-    { ...signData, createdAt: BigInt(createAt) },
+    { ...signData, createdAt: BigInt(createAt), gasEscrow },
     poolIds,
   ] as const;
 

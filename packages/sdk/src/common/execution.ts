@@ -43,6 +43,7 @@ export const buildSignData = async ({
 }: BuildSignDataParams) => {
   const { createAt, deadline } = getExecutionTimestamp();
   const txId = generateTxId();
+  const gasEscrow = 0n
   const signData = {
     from,
     to,
@@ -56,6 +57,7 @@ export const buildSignData = async ({
     deadline,
     txId,
     signData,
+    gasEscrow
   };
 };
 

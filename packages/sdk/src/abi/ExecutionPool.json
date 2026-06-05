@@ -600,6 +600,10 @@
       {
         "type": "address",
         "name": "addressManager"
+      },
+      {
+        "type": "uint64",
+        "name": "_gracePeriod"
       }
     ],
     "outputs": []
@@ -735,6 +739,10 @@
           {
             "type": "uint256",
             "name": "gas"
+          },
+          {
+            "type": "uint256",
+            "name": "gasEscrow"
           },
           {
             "type": "uint48",
