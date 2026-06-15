@@ -105,6 +105,28 @@ function tryDecodeCustomErrorFromError(err: any): DecodedCustomError | null {
   return null
 }
 
+/**
+ * Detect the "missing revert data" pattern from ethers.js wrapped inside viem.
+ * When estimateGas fails with CALL_EXCEPTION and data=null, the original RPC
+ * error is lost by the ethers adapter layer.
+ */
+function isMissingRevertData(err: any): boolean {
+  let current = err
+  while (current) {
+    for (const field of ['message', 'details', 'shortMessage'] as const) {
+      const str = current[field]
+      if (
+        typeof str === 'string' &&
+        str.includes('missing revert data')
+      ) {
+        return true
+      }
+    }
+    current = current.cause
+  }
+  return false
+}
+
 function extractMessage(err: any): string {
   if (!err) return 'Unknown error'
   
@@ -127,6 +149,11 @@ function extractMessage(err: any): string {
   const customError = tryDecodeCustomErrorFromError(err)
   if (customError) {
     return customError.message
+  }
+  
+  // 🔥 2.5️⃣ missing revert data（ethers adapter 吞掉了原始 RPC 错误）
+  if (isMissingRevertData(err)) {
+    return 'Transaction estimation failed. Please verify your balance and transaction details.'
   }
   
   // 3️⃣ 递归 cause
