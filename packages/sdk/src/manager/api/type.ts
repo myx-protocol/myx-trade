@@ -8,8 +8,6 @@ export interface PaginationParams {
 export interface GetProfitLockParams extends PaginationParams {
     chainId?: number
     poolId?: string
-    accessToken: string
-    address: string
 }
 
 export interface ProfitLockItem {
