@@ -609,12 +609,15 @@ export class Api extends Request {
     );
   }
 
-  async getProfitLock(params?: GetProfitLockParams) {
-    return this.get<ApiResponse<ProfitLockItem[]>>(
-      "/openapi/gateway/scan/market/profit-lock",
+  async getProfitLock({ accessToken, address, ...params }: GetProfitLockParams) {
+    return http.get<ApiResponse<ProfitLockItem[]>>(
+      `${this.getHost()}/openapi/gateway/scan/market/profit-lock`,
       params,
       {
-        auth: true,
+        headers: {
+          myx_openapi_access_token: accessToken,
+          myx_openapi_account: address,
+        },
       }
     );
   }
