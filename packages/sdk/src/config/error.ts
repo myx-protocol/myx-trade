@@ -32,13 +32,13 @@ export function isUserRejected(error: any): boolean {
   let err = error
   
   while (err) {
-    // 1️⃣ viem 标准
+    // 1️⃣ viem standard
     if (err.name === 'UserRejectedRequestError') return true
     
-    // 2️⃣ EIP-1193 标准
+    // 2️⃣ EIP-1193 standard
     if (err.code === ErrorCode.USER_REJECTED_REQUEST) return true
     
-    // 3️⃣ message 兜底（兼容各种钱包）
+    // 3️⃣ message fallback (compatible with various wallets)
     const msg = (err.message || '').toLowerCase()
     if (
       msg.includes('user rejected') ||
@@ -130,12 +130,12 @@ function isMissingRevertData(err: any): boolean {
 function extractMessage(err: any): string {
   if (!err) return 'Unknown error'
   
-  // 🔥 1️⃣ viem custom error（最关键）
+  // 🔥 1️⃣ viem custom error (highest priority)
   if (err?.data?.errorName) {
     return `${err.data.errorName}()`
   }
   
-  // 有些版本在 metaMessages
+  // Some versions put the error in metaMessages
   if (Array.isArray(err?.metaMessages)) {
     const match = err.metaMessages.find((m: string) =>
       m.includes('Error:')
@@ -145,33 +145,33 @@ function extractMessage(err: any): string {
     }
   }
   
-  // 🔥 2️⃣ 从 details / data / message 中提取 hex selector 并查 customErrorMapping
+  // 🔥 2️⃣ Extract hex selector from details / data / message and look up in customErrorMapping
   const customError = tryDecodeCustomErrorFromError(err)
   if (customError) {
     return customError.message
   }
   
-  // 🔥 2.5️⃣ missing revert data（ethers adapter 吞掉了原始 RPC 错误）
+  // 🔥 2.5️⃣ missing revert data (ethers adapter swallowed the original RPC error)
   if (isMissingRevertData(err)) {
     return 'Transaction estimation failed. Please verify your balance and transaction details.'
   }
   
-  // 3️⃣ 递归 cause
+  // 3️⃣ Recurse into cause
   if (err?.cause) {
     return extractMessage(err.cause)
   }
   
-  // 4️⃣ reason（部分 RPC）
+  // 4️⃣ reason (some RPCs)
   if (err?.reason) {
     return err.reason
   }
   
-  // 5️⃣ shortMessage（兜底）
+  // 5️⃣ shortMessage (fallback)
   if (err?.shortMessage) {
     return err.shortMessage
   }
   
-  // 6️⃣ message（最后兜底）
+  // 6️⃣ message (last resort)
   if (err?.message) {
     return err.message
   }
@@ -188,7 +188,7 @@ export async function getErrorTextFormError(error: any) {
     return { error: Errors[ErrorCode.USER_REJECTED_REQUEST] }
   }
   
-  // 优先尝试从 hex data 解码自定义合约错误，拿到 selector 作为 code
+  // First try to decode custom contract error from hex data, using selector as code
   const customError = tryDecodeCustomErrorFromError(error)
   if (customError) {
     return {
