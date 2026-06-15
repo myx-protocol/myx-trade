@@ -4,3 +4,16 @@ export interface PaginationParams {
     after?: number
     before?: number
 }
+
+export interface GetProfitLockParams extends PaginationParams {
+    chainId?: number
+}
+
+export interface ProfitLockItem {
+    poolId: string
+    chainId: number
+    market: string
+    marginProfit: string
+    unlockProfit: string
+    nextUnlockTime: number
+}
