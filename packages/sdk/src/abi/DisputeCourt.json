@@ -90,6 +90,20 @@
   },
   {
     "type": "error",
+    "name": "ForwardedRecipientMustBeMasterAccount",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "recipient"
+      },
+      {
+        "type": "address",
+        "name": "master"
+      }
+    ]
+  },
+  {
+    "type": "error",
     "name": "InvalidInitialization",
     "inputs": []
   },
@@ -160,6 +174,11 @@
         "name": "target"
       }
     ]
+  },
+  {
+    "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
   },
   {
     "type": "error",
@@ -723,7 +742,7 @@
           },
           {
             "type": "address",
-            "name": "validatorView"
+            "name": "voterRegistry"
           },
           {
             "type": "uint32",
@@ -749,6 +768,19 @@
         "type": "string"
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "__ERC2771ContextUpgradeable_init",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "trustedForwarder_"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -903,7 +935,7 @@
   },
   {
     "type": "function",
-    "name": "fileDisputeFromStaker",
+    "name": "fileDisputeFromVoter",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -1034,6 +1066,24 @@
       {
         "type": "address",
         "name": "account"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "isTrustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "forwarder"
       }
     ],
     "outputs": [
@@ -1201,6 +1251,19 @@
   },
   {
     "type": "function",
+    "name": "trustedForwarder",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "updateDisputeConfiguration",
     "constant": false,
     "payable": false,
@@ -1266,7 +1329,7 @@
           },
           {
             "type": "address",
-            "name": "validatorView"
+            "name": "voterRegistry"
           },
           {
             "type": "uint32",
@@ -1353,6 +1416,10 @@
       {
         "type": "uint8",
         "name": "voteOption"
+      },
+      {
+        "type": "bytes32",
+        "name": "marketRoot"
       },
       {
         "type": "uint256",

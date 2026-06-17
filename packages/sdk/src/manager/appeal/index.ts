@@ -234,11 +234,11 @@ export class Appeal extends BaseMyxClient {
     const contract = await this.getDisputeCourtContract();
     const gasPrice = await this.client.utils.getGasPriceByRatio();
     const gasLimit = await this.client.utils.getGasLimitByRatio(
-      await contract.estimateGas!.fileDisputeFromStaker([
+      await contract.estimateGas!.fileDisputeFromVoter([
         poolId as `0x${string}`,
       ]),
     );
-    const hash = await contract.write!.fileDisputeFromStaker(
+    const hash = await contract.write!.fileDisputeFromVoter(
       [poolId as `0x${string}`],
       { gasLimit, gasPrice },
     );
