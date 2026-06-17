@@ -67,7 +67,7 @@ import {
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
 import { Request } from "./request.js";
-import { PaginationParams } from "./type.js";
+import { GetProfitLockParams, PaginationParams, ProfitLockItem } from "./type.js";
 
 export class Api extends Request {
   private logger: Logger;
@@ -606,6 +606,14 @@ export class Api extends Request {
           myx_openapi_access_token: accessToken,
         },
       }
+    );
+  }
+
+  async getProfitLock(params?: GetProfitLockParams) {
+    return this.get<ApiResponse<ProfitLockItem[]>>(
+      "/openapi/gateway/scan/market/profit-lock",
+      params,
+      { auth: true }
     );
   }
 
