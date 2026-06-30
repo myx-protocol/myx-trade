@@ -1,20 +1,6 @@
 [
   {
     "type": "error",
-    "name": "PositionNotHealthy",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "positionId"
-      },
-      {
-        "type": "uint256",
-        "name": "marginRatio"
-      }
-    ]
-  },
-  {
-    "type": "error",
     "name": "SafeCastOverflowedUintToInt",
     "inputs": [
       {
@@ -436,6 +422,18 @@
               {
                 "type": "int256",
                 "name": "openInterest"
+              },
+              {
+                "type": "uint64",
+                "name": "windowAnchor"
+              },
+              {
+                "type": "uint256",
+                "name": "priceFloor"
+              },
+              {
+                "type": "uint256",
+                "name": "priceCeiling"
               }
             ]
           }
@@ -596,6 +594,18 @@
               {
                 "type": "int256",
                 "name": "openInterest"
+              },
+              {
+                "type": "uint64",
+                "name": "windowAnchor"
+              },
+              {
+                "type": "uint256",
+                "name": "priceFloor"
+              },
+              {
+                "type": "uint256",
+                "name": "priceCeiling"
               }
             ]
           }
@@ -736,6 +746,10 @@
               {
                 "type": "uint32",
                 "name": "baseSlippage"
+              },
+              {
+                "type": "uint16",
+                "name": "maxCloseSlippage"
               }
             ]
           },
