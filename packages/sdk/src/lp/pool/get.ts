@@ -111,6 +111,9 @@ export const getPoolInfo = async (
       liquidityInfo: {
         windowCaps: request.liquidityInfo.windowCaps,
         openInterest: request.liquidityInfo.openInterest,
+        priceCeiling: request.liquidityInfo.priceCeiling,
+        priceFloor: request.liquidityInfo.priceFloor,
+        windowAnchor: request.liquidityInfo.windowAnchor,
       }
     };
     // console.log(info);
