@@ -269,6 +269,18 @@ export const getReimbursementContract = (chainId: ChainId, type: ProviderType = 
   );
 };
 
+import PositionManager_ABI from "@/abi/PositionManager.json";
+
+export const getPositionManagerSignerContract = async (chainId: ChainId) => {
+  const addresses = getContractAddressByChainId(chainId);
+  const client = await getWalletClient(chainId);
+  return asContract(getViemContract({
+    address: addresses.POSITION_MANAGER as Address,
+    abi: PositionManager_ABI as Abi,
+    client,
+  }));
+};
+
 export const getDisputeCourtContract = (chainId: ChainId, type: ProviderType = ProviderType.JSON) => {
   const addresses = getContractAddressByChainId(chainId);
   const client = type === ProviderType.JSON ? getPublicClient(chainId) : null;

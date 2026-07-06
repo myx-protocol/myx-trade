@@ -9,6 +9,7 @@ import { MyxErrorCode, MyxSDKError } from "../error/const.js";
 import {
   getExecutionPoolSingerContract,
   getForwarderContract,
+  getPositionManagerSignerContract,
 } from "@/web3/providers";
 import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
@@ -260,17 +261,18 @@ export class Position {
         getContractAddressByChainId(chainId).POSITION_MANAGER;
 
       if (tokenId) {
-        // Position is already an NFT — transfer via safeTransferFrom (EIP-712 / ERC2771)
-        const { hash, txId, receipt } = await signAndSubmit({
-          chainId,
-          account: address as Address,
-          abi: PositionManager_abi,
-          method: "safeTransferFrom",
-          args: [address, to, BigInt(tokenId)],
-          poolIds: [poolId],
-          to: positionManagerAddress as Address,
-        });
-        return { code: 0, data: { hash, txId, receipt } };
+        // Position is already an NFT — call safeTransferFrom directly via wallet client
+        const positionManagerContract = await getPositionManagerSignerContract(chainId);
+        const _gasLimit = await positionManagerContract.estimateGas!.safeTransferFrom(
+          [address, to, BigInt(tokenId)]
+        );
+        const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
+        const hash = await positionManagerContract.write!.safeTransferFrom(
+          [address, to, BigInt(tokenId)],
+          { gasLimit, gasPrice }
+        );
+        const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
+        return { code: 0, data: { hash, receipt } };
       } else {
         // Position is not yet an NFT — mint and transfer to recipient in one step
         const { hash, txId, receipt } = await signAndSubmit({
