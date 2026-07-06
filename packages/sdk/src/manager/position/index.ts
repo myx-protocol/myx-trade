@@ -15,12 +15,10 @@ import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import TradingRouter_abi from "@/abi/TradingRouter.json";
-import PositionManager_abi from "@/abi/PositionManager.json";
 import {
   execution,
   getGasByRatio,
   transactions,
-  signAndSubmit,
 } from "@/common/index.js";
 export class Position {
   private configManager: ConfigManager;
@@ -274,17 +272,18 @@ export class Position {
         const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
         return { code: 0, data: { hash, receipt } };
       } else {
-        // Position is not yet an NFT — mint and transfer to recipient in one step
-        const { hash, txId, receipt } = await signAndSubmit({
-          chainId,
-          account: address as Address,
-          abi: PositionManager_abi,
-          method: "mintPositionNFT",
-          args: [positionId, to],
-          poolIds: [poolId],
-          to: positionManagerAddress as Address,
-        });
-        return { code: 0, data: { hash, txId, receipt } };
+        // Position is not yet an NFT — mint and transfer to recipient in one step, direct call
+        const positionManagerContract = await getPositionManagerSignerContract(chainId);
+        const _gasLimit = await positionManagerContract.estimateGas!.mintPositionNFT(
+          [positionId, to]
+        );
+        const { gasLimit, gasPrice } = await getGasByRatio(chainId, _gasLimit);
+        const hash = await positionManagerContract.write!.mintPositionNFT(
+          [positionId, to],
+          { gasLimit, gasPrice }
+        );
+        const receipt = await transactions.waitForTransactionReceipt(chainId, hash);
+        return { code: 0, data: { hash, receipt } };
       }
     } catch (error) {
       return {
