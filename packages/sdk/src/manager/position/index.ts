@@ -2,6 +2,7 @@ import { ConfigManager } from "../config/index.js";
 import { Logger } from "@/logger";
 
 import { GetHistoryOrdersParams } from "@/api";
+import { GetPositionTransferParams } from "../api/type.js";
 import { Utils } from "../utils/index.js";
 import { Address, maxUint256 } from "viem";
 import { MyxErrorCode, MyxSDKError } from "../error/const.js";
@@ -13,10 +14,12 @@ import { Account } from "../account/index.js";
 import { Api } from "../api/index.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import TradingRouter_abi from "@/abi/TradingRouter.json";
+import PositionManager_abi from "@/abi/PositionManager.json";
 import {
   execution,
   getGasByRatio,
   transactions,
+  signAndSubmit,
 } from "@/common/index.js";
 export class Position {
   private configManager: ConfigManager;
@@ -209,6 +212,78 @@ export class Position {
         code: 0,
         data: { hash, txId, receipt },
       };
+    } catch (error) {
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async getPositionTransferHistory(params: GetPositionTransferParams) {
+    try {
+      const res = await this.api.getPositionTransfer(params);
+      return {
+        code: 0,
+        data: res.data,
+      };
+    } catch (error) {
+      this.logger.error("Error fetching position transfer history:", error);
+      return {
+        code: -1,
+        message: (error as Error).message,
+      };
+    }
+  }
+
+  async transferPosition({
+    positionId,
+    tokenId,
+    to,
+    poolId,
+    chainId,
+    address,
+  }: {
+    positionId: string;
+    tokenId: string | null;
+    to: string;
+    poolId: string;
+    chainId: number;
+    address: string;
+  }) {
+    try {
+      if (!this.configManager.hasSigner()) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+
+      const positionManagerAddress =
+        getContractAddressByChainId(chainId).POSITION_MANAGER;
+
+      if (tokenId) {
+        // Position is already an NFT — transfer via safeTransferFrom (EIP-712 / ERC2771)
+        const { hash, txId, receipt } = await signAndSubmit({
+          chainId,
+          account: address as Address,
+          abi: PositionManager_abi,
+          method: "safeTransferFrom",
+          args: [address, to, BigInt(tokenId)],
+          poolIds: [poolId],
+          to: positionManagerAddress as Address,
+        });
+        return { code: 0, data: { hash, txId, receipt } };
+      } else {
+        // Position is not yet an NFT — mint and transfer to recipient in one step
+        const { hash, txId, receipt } = await signAndSubmit({
+          chainId,
+          account: address as Address,
+          abi: PositionManager_abi,
+          method: "mintPositionNFT",
+          args: [positionId, to],
+          poolIds: [poolId],
+          to: positionManagerAddress as Address,
+        });
+        return { code: 0, data: { hash, txId, receipt } };
+      }
     } catch (error) {
       return {
         code: -1,

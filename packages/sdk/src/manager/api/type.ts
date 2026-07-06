@@ -5,6 +5,32 @@ export interface PaginationParams {
     before?: number
 }
 
+export interface GetPositionTransferParams extends PaginationParams {
+    chainId?: number
+    poolId?: string
+    type?: 0 | 1 | 2
+}
+
+export interface PositionTransferItem {
+    id: number
+    chainId: number
+    poolId: string
+    marketId: string
+    positionId: number
+    fromAddress: string
+    toAddress: string
+    baseSymbol: string
+    quoteSymbol: string
+    direction: number
+    userLeverage: number
+    size: string
+    collateralAmount: string
+    entryPrice: string
+    status: number
+    txHash: string
+    txTime: number
+}
+
 export interface GetProfitLockParams extends PaginationParams {
     chainId?: number
     poolId?: string
