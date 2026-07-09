@@ -67,7 +67,7 @@ import {
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
 import { Request } from "./request.js";
-import { GetPositionTransferParams, GetProfitLockParams, PaginationParams, PositionTransferItem, ProfitLockItem } from "./type.js";
+import { GetPositionTransferParams, GetProfitLockParams, PaginationParams, PositionTransferItem, ProfitLockItem, GetDelistRiskParams, DelistRiskInfo } from "./type.js";
 
 export class Api extends Request {
   private logger: Logger;
@@ -622,6 +622,13 @@ export class Api extends Request {
       "/openapi/gateway/scan/position/transfer",
       params,
       { auth: true }
+    );
+  }
+
+  async getDelistRisk(params: GetDelistRiskParams) {
+    return this.get<ApiResponse<DelistRiskInfo | null>>(
+      "/openapi/gateway/scan/market/delist-risk",
+      params
     );
   }
 

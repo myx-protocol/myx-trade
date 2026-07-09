@@ -31,6 +31,22 @@ export interface PositionTransferItem {
     txTime: number
 }
 
+export interface GetDelistRiskParams {
+    chainId: number
+    poolId: string
+}
+
+export interface DelistRiskInfo {
+    volumePeriodStart: number
+    volumePeriodEnd: number
+    targetVolume: string
+    currentVolume: string
+    tvlPeriodStart: number
+    tvlPeriodEnd: number
+    targetTvl: string
+    currentTvl: string
+}
+
 export interface GetProfitLockParams extends PaginationParams {
     chainId?: number
     poolId?: string
