@@ -16,6 +16,8 @@ export const TRADE_GAS_LIMIT_RATIO: Record<ChainId, bigint> = {
   [ChainId.LINEA_SEPOLIA]: 130n,
   [ChainId.BSC_MAINNET]: 150n,
   [ChainId.BSC_TESTNET]: 150n,
+  [ChainId.RBH_TESTNET]: 130n,
+  [ChainId.RBH_MAINNET]: 130n,
 }
 
 export const FORWARD_GAS_LIMIT = 1500000n

@@ -4,6 +4,7 @@ import BSC_TESTNET from "@/config/chains/BSC_TESTNET.js";
 import LINEA_MAINNET from "@/config/chains/LINEA_MAINNET.js";
 import ARB_MAINNET from "@/config/chains/ARB_MAINNET.js";
 import BSC_MAINNET from "@/config/chains/BSC_MAINNET.js";
+import RBH_MAINNET from "@/config/chains/RBH_MAINNET.js";
 import { BaseChainInfo, ChainId } from "@/config/chain.js";
 
 
@@ -15,6 +16,7 @@ export const CHAIN_INFO: ChainInfoMap = {
   [ChainId.LINEA_MAINNET]: LINEA_MAINNET.chainInfo,
   [ChainId.ARB_MAINNET]: ARB_MAINNET.chainInfo,
   [ChainId.BSC_MAINNET]: BSC_MAINNET.chainInfo,
+  [ChainId.RBH_MAINNET]: RBH_MAINNET.chainInfo,
 }
 
 export function getChainInfo(chainId: ChainId) {

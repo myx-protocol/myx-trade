@@ -7,6 +7,7 @@ import { BSC_TEST_NET } from "@/config/address/BSC_TEST_NET.js";
 import { BSC_BETA_NET } from "@/config/address/BSC_BETA_NET.js";
 import sdk from "@/web3/index.js";
 import { BSC_MAINNET } from "./BSC_MAINET_NET.js";
+import { RBH_MAINNET } from "./RBH_MAINNET.js";
 
 export const getContractAddressByChainId = (chainId: ChainId): ContractAddress => {
   const { isBetaMode } = sdk?.getConfigManager()?.getConfig() || {};
@@ -19,6 +20,8 @@ export const getContractAddressByChainId = (chainId: ChainId): ContractAddress =
       return isBetaMode ? BSC_BETA_NET : BSC_TEST_NET
     case ChainId.BSC_MAINNET:
       return BSC_MAINNET
+    case ChainId.RBH_MAINNET:
+      return RBH_MAINNET
 
     default:
       return {} as ContractAddress

@@ -8,18 +8,22 @@ export enum ChainId {
   ARB_MAINNET = 42161,
   BSC_TESTNET = 97,
   BSC_MAINNET = 56,
+  RBH_TESTNET = 46646,
+  RBH_MAINNET = 4663,
 }
 
 export const MAINNET_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
   ChainId.LINEA_MAINNET,
   ChainId.ARB_MAINNET,
+  ChainId.RBH_MAINNET,
 ] as const
 
 export const PROD_ENV_CHAIN_IDS = [
   ChainId.BSC_MAINNET,
   ChainId.LINEA_MAINNET,
   ChainId.ARB_MAINNET,
+  ChainId.RBH_MAINNET,
 ] as const
 export type SupportedProdEnvChainId = [typeof PROD_ENV_CHAIN_IDS][number]
 
@@ -44,7 +48,7 @@ export const DEV_ENV_CHAIN_IDS = [
 ] as const
 export type SupportedDevEnvChainId = [typeof DEV_ENV_CHAIN_IDS][number]
 
-export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_SEPOLIA, ChainId.BSC_TESTNET, ChainId.ARB_MAINNET,ChainId.LINEA_MAINNET, ChainId.BSC_MAINNET] as const
+export const SupportedChainIds = [ChainId.ARB_TESTNET, ChainId.LINEA_SEPOLIA, ChainId.BSC_TESTNET, ChainId.ARB_MAINNET, ChainId.LINEA_MAINNET, ChainId.BSC_MAINNET, ChainId.RBH_MAINNET] as const
 // export function getSupportedChainIdsByEnv(): readonly [ChainId, ...ChainId[]] {
 //   if (isTestMode()) {
 //     return TEST_ENV_CHAIN_IDS
@@ -83,6 +87,7 @@ export function isSupportedSeamlessAccountChain(chainId?: number | null | ChainI
       ChainId.LINEA_MAINNET,
       ChainId.BSC_TESTNET,
       ChainId.BSC_MAINNET,
+      ChainId.RBH_MAINNET,
     ].includes(chainId)
   )
 }
