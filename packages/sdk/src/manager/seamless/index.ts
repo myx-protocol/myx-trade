@@ -35,6 +35,10 @@ const contractTypes = {
 const FORWARD_PLEDGE_FEE_RADIO = 2
 
 const USDT_TOKEN = '0x55d398326f99059ff775485246999027b3197955'
+const USDG_TOKEN = '0x5fc5360d0400a0fd4f2af552add042d716f1d168'
+
+// tokens that don't support EIP-2612 permit, must use approve instead
+const NON_PERMIT_TOKENS = [USDT_TOKEN, USDG_TOKEN]
 
 function splitSignatureToVrs(signatureHex: `0x${string}`): { v: number; r: `0x${string}`; s: `0x${string}` } {
   const bytes = hexToBytes(signatureHex);
@@ -411,7 +415,7 @@ export class Seamless {
     let permitParams: any[] = []
     if (approve) {
       try {
-        if(forwardFeeToken === USDT_TOKEN) {
+        if (NON_PERMIT_TOKENS.includes(forwardFeeToken.toLowerCase())) {
           const approvalResult = await  this.approveBalance(chainId, forwardFeeToken, maxUint256.toString())
 
           if (approvalResult?.hash) {
