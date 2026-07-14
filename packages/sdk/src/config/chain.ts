@@ -8,7 +8,6 @@ export enum ChainId {
   ARB_MAINNET = 42161,
   BSC_TESTNET = 97,
   BSC_MAINNET = 56,
-  RBH_TESTNET = 46646,
   RBH_MAINNET = 4663,
 }
 
