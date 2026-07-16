@@ -5,6 +5,7 @@ export enum ChainIdEnum {
   ARB_MAINNET = 42161,
   BSC_TESTNET = 97,
   BSC_MAINNET = 56,
+  RBH_MAINNET = 4663,
 }
 
 /**
@@ -15,6 +16,7 @@ export const MAINNET_CHAIN_IDS = [
   ChainIdEnum.BSC_MAINNET,
   ChainIdEnum.LINEA_MAINNET,
   ChainIdEnum.ARB_MAINNET,
+  ChainIdEnum.RBH_MAINNET,
 ] as const;
 
 /**

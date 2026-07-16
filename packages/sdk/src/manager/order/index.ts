@@ -12,6 +12,7 @@ import {
   OperationType,
   OrderType,
   PositionTpSlOrderParams,
+  SwapPlaceOrderParams,
 } from "@/types/trading";
 import { Utils } from "../utils/index.js";
 import { UpdateOrderParams } from "@/types/order";
@@ -40,7 +41,6 @@ export class Order {
   async createIncreaseOrder(params: PlaceOrderParams, networkFee: string) {
     try {
       // const networkFee = await this.utils.getNetworkFee(
-      //   marketId,
       //   params.chainId
       // );
 
@@ -171,6 +171,115 @@ export class Order {
       };
     } catch (error) {
       this.logger.error("Error placing order:", error);
+      return {
+        code: -1,
+        // @ts-ignore
+        message: error?.message,
+      };
+    }
+  }
+
+  async createSwapIncreaseOrder(params: SwapPlaceOrderParams, networkFee: string) {
+    try {
+      const { swapParams } = params;
+
+      const data = {
+        user: params.address,
+        poolId: params.poolId,
+        orderType: params.orderType,
+        triggerType: params.triggerType,
+        operation: OperationType.INCREASE,
+        direction: params.direction,
+        collateralAmount: params.collateralAmount.toString(),
+        size: params.size,
+        price: params.price,
+        timeInForce: TIME_IN_FORCE,
+        postOnly: params.postOnly ?? false,
+        slippagePct: params.slippagePct ?? "0",
+        leverage: params.leverage ?? 0,
+        tpSize: params.tpSize ?? "0",
+        tpPrice: params.tpPrice ?? "0",
+        slSize: params.slSize ?? "0",
+        slPrice: params.slPrice ?? "0",
+        broker: this.configManager.getConfig().brokerAddress,
+      };
+
+      const needsApproval = await this.utils.needsApproval(
+        params.address,
+        params.chainId,
+        swapParams.paymentToken,
+        swapParams.paymentAmount,
+        getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+      );
+
+      if (!this.configManager.hasSigner()) {
+        throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+      }
+
+      if (needsApproval) {
+        const approvalResult = await this.utils.approveAuthorization({
+          chainId: params.chainId,
+          quoteAddress: swapParams.paymentToken,
+          amount: maxUint256.toString(),
+          spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+        });
+
+        if (approvalResult.code !== 0) {
+          throw new Error(approvalResult.message);
+        }
+      }
+
+      const tradingRouterContract = await getTradingRouterContract(params.chainId);
+
+      let hash: `0x${string}`;
+
+      if (!params.positionId) {
+        const positionSalt = '1';
+        this.logger.info("createSwapIncreaseOrder salt position params--->", { positionSalt, swapParams, data });
+
+        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithSalt([positionSalt, { ...swapParams }, data]);
+        hash = await tradingRouterContract.write!.swapAndPlaceOrderWithSalt(
+          [positionSalt, { ...swapParams }, data],
+          {
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+          }
+        );
+      } else {
+        this.logger.info("createSwapIncreaseOrder nft position params--->", { positionId: params.positionId, swapParams, data });
+
+        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithPosition([
+          params.positionId.toString(),
+          { ...swapParams },
+          data,
+        ]);
+        hash = await tradingRouterContract.write!.swapAndPlaceOrderWithPosition(
+          [params.positionId.toString(), { ...swapParams }, data],
+          {
+            gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+          }
+        );
+      }
+
+      const receipt = await getPublicClient(params.chainId).waitForTransactionReceipt({ hash });
+
+      const result = {
+        success: true,
+        transactionHash: hash,
+        blockNumber: receipt?.blockNumber,
+        gasUsed: receipt?.gasUsed?.toString(),
+        status: receipt?.status === "success" ? "success" : "failed",
+        confirmations: 1,
+        timestamp: Date.now(),
+        receipt,
+      };
+
+      return {
+        code: 0,
+        message: "create swap increase order success",
+        data: result,
+      };
+    } catch (error) {
+      this.logger.error("Error placing swap order:", error);
       return {
         code: -1,
         // @ts-ignore
@@ -713,25 +822,27 @@ export class Order {
     chainId: ChainId;
     txtId: `0x${string}`;
   }) {
-    const toBytes32 = (value: string): `0x${string}` => {
-      if (isHex(value)) return padHex(value as `0x${string}`, { size: 32 })
-      return padHex(toHex(value), { size: 32 })
+    try {
+      const toBytes32 = (value: string): `0x${string}` => {
+        if (isHex(value)) return padHex(value as `0x${string}`, { size: 32 })
+        return padHex(toHex(value), { size: 32 })
+      }
+
+      const executionPoolContract = await getExecutionPoolSingerContract(chainId)
+
+      const hash = await executionPoolContract.write?.cancel([toBytes32(txtId)])
+
+      const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash })
+
+      return {
+        code: 0,
+        data: receipt,
+      };
+    } catch {
+      return {
+        code: -1,
+        message: "Failed to cancel order",
+      };
     }
-
-    const executionPoolContract = await getExecutionPoolSingerContract(chainId)
-
-    const hash = await executionPoolContract.write?.cancel([toBytes32(txtId)])
-
-    const receipt = await getPublicClient(chainId).waitForTransactionReceipt({ hash })
-
-    return {
-      code: 0,
-      data: receipt,
-    };
-  } catch() {
-    return {
-      code: -1,
-      message: "Failed to cancel order",
-    };
   }
 }
