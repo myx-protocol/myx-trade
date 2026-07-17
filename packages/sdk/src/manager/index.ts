@@ -13,11 +13,13 @@ import { MxSDK, setConfigManagerForViem, getConfigManagerForViem } from "@/web3"
 import { Seamless } from "./seamless/index.js";
 import { Appeal } from "./appeal/index.js";
 import { Referrals } from "./referrals/index.js";
+import { Swap } from "./swap/index.js";
 
 // types
 export type { MyxClientConfig } from "./config/index.js";
 export * from "./subscription/types/index.js";
 export * from "./api/type.js";
+export type { SwapQuoteParams, SwapQuoteResult } from "./swap/index.js";
 
 export class MyxClient {
   /**
@@ -39,6 +41,7 @@ export class MyxClient {
   public api: Api;
   public appeal: Appeal;
   public referrals: Referrals;
+  public swap: Swap;
   /**
    * Get config manager (for accessToken-related methods)
    */
@@ -127,6 +130,7 @@ export class MyxClient {
      * initialize referrals
      */
     this.referrals = new Referrals(this);
+    this.swap = new Swap();
   }
 
   /**

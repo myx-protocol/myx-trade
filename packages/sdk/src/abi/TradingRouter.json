@@ -167,8 +167,27 @@
   },
   {
     "type": "error",
+    "name": "Permit2NotConfigured",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "ReentrancyGuardReentrantCall",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SafeCastOverflowedUintDowncast",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "bits"
+      },
+      {
+        "type": "uint256",
+        "name": "value"
+      }
+    ]
   },
   {
     "type": "error",
@@ -184,6 +203,16 @@
     "type": "error",
     "name": "SwapCallFailed",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "SwapTargetNotWhitelisted",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
   },
   {
     "type": "error",
@@ -301,6 +330,18 @@
   {
     "type": "event",
     "anonymous": false,
+    "name": "Permit2Updated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "permit2",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "SwapAndDeposit",
     "inputs": [
       {
@@ -326,6 +367,23 @@
       {
         "type": "uint256",
         "name": "quoteReceived",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "SwapTargetUpdated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target",
+        "indexed": true
+      },
+      {
+        "type": "bool",
+        "name": "allowed",
         "indexed": false
       }
     ]
@@ -563,6 +621,19 @@
       {
         "type": "bool",
         "name": "allowed"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "permit2",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address"
       }
     ]
   },
@@ -1022,6 +1093,36 @@
   },
   {
     "type": "function",
+    "name": "setPermit2",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "permit2_"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setSwapTarget",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      },
+      {
+        "type": "bool",
+        "name": "allowed"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "swapAndPlaceOrderWithPosition",
     "constant": false,
     "stateMutability": "payable",
@@ -1054,6 +1155,10 @@
           {
             "type": "uint256",
             "name": "minQuoteOut"
+          },
+          {
+            "type": "bool",
+            "name": "usePermit2"
           }
         ]
       },
@@ -1172,6 +1277,10 @@
           {
             "type": "uint256",
             "name": "minQuoteOut"
+          },
+          {
+            "type": "bool",
+            "name": "usePermit2"
           }
         ]
       },
@@ -1286,6 +1395,10 @@
           {
             "type": "uint256",
             "name": "minQuoteOut"
+          },
+          {
+            "type": "bool",
+            "name": "usePermit2"
           }
         ]
       },
@@ -1404,6 +1517,10 @@
           {
             "type": "uint256",
             "name": "minQuoteOut"
+          },
+          {
+            "type": "bool",
+            "name": "usePermit2"
           }
         ]
       },
@@ -1491,6 +1608,25 @@
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "swapTargetWhitelist",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "allowed"
+      }
+    ]
   },
   {
     "type": "function",
