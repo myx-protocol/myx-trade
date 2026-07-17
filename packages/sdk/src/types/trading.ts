@@ -146,3 +146,33 @@ export interface UpdateOrderTpSlParams {
   address: string;
   executionFeeToken: string;
 }
+
+export interface SwapParams {
+  paymentToken: string;
+  paymentAmount: string;
+  swapTarget: string;
+  swapData: `0x${string}`;
+  minQuoteOut: string;
+}
+
+export interface SwapPlaceOrderParams {
+  chainId: number;
+  address: string;
+  poolId: string;
+  positionId: string;
+  orderType: OrderType;
+  triggerType: TriggerType;
+  direction: Direction;
+  collateralAmount: string;
+  size: string;
+  price: string;
+  timeInForce: TimeInForce;
+  postOnly: boolean;
+  slippagePct: string;
+  leverage: number;
+  swapParams: SwapParams;
+  tpSize?: string;
+  tpPrice?: string;
+  slSize?: string;
+  slPrice?: string;
+}
