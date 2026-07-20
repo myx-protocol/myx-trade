@@ -39,3 +39,12 @@ export interface SwapQuoteResult {
   /** Minimum output amount in raw token units (wei) */
   minQuoteOut: string;
 }
+
+export interface NativeTokenPriceResult {
+  /** Native token price in USD (e.g. "3500.12") */
+  price: string;
+  /** WETH/WBNB address used for quoting */
+  wethAddress: `0x${string}`;
+  /** USDC address used for quoting */
+  usdcAddress: `0x${string}`;
+}

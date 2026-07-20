@@ -19,7 +19,7 @@ import { Swap } from "./swap/index.js";
 export type { MyxClientConfig } from "./config/index.js";
 export * from "./subscription/types/index.js";
 export * from "./api/type.js";
-export type { SwapQuoteParams, SwapQuoteResult } from "./swap/index.js";
+export type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./swap/index.js";
 
 export class MyxClient {
   /**
