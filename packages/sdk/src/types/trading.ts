@@ -153,6 +153,7 @@ export interface SwapParams {
   swapTarget: string;
   swapData: `0x${string}`;
   minQuoteOut: string;
+  usePermit2: boolean;
 }
 
 export interface SwapPlaceOrderParams {
