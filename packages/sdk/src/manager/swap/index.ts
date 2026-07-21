@@ -1,61 +1,56 @@
 import { Token, CurrencyAmount, TradeType, Percent } from "@uniswap/sdk-core";
-import { Pool, Route as V3Route, FeeAmount } from "@uniswap/v3-sdk";
+import { Route as V2Route } from "@uniswap/v2-sdk";
+import { Pair } from "@uniswap/v2-sdk";
 import { Trade as RouterTrade } from "@uniswap/router-sdk";
 import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS, UniversalRouterVersion } from "@uniswap/universal-router-sdk";
 import { getPublicClient } from "@/web3/viemClients.js";
 import type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./types.js";
 import { parseUnits, formatUnits } from "viem";
 
-const POOL_ABI = [
+const V2_PAIR_ABI = [
   {
     inputs: [],
-    name: "slot0",
+    name: "getReserves",
     outputs: [
-      { name: "sqrtPriceX96", type: "uint160" },
-      { name: "tick", type: "int24" },
-      { name: "observationIndex", type: "uint16" },
-      { name: "observationCardinality", type: "uint16" },
-      { name: "observationCardinalityNext", type: "uint16" },
-      { name: "feeProtocol", type: "uint8" },
-      { name: "unlocked", type: "bool" },
+      { name: "reserve0", type: "uint112" },
+      { name: "reserve1", type: "uint112" },
+      { name: "blockTimestampLast", type: "uint32" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "liquidity",
-    outputs: [{ name: "", type: "uint128" }],
+    name: "token0",
+    outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
 ] as const;
 
-const FACTORY_ABI = [
+const V2_FACTORY_ABI = [
   {
     inputs: [
       { name: "tokenA", type: "address" },
       { name: "tokenB", type: "address" },
-      { name: "fee", type: "uint24" },
     ],
-    name: "getPool",
-    outputs: [{ name: "pool", type: "address" }],
+    name: "getPair",
+    outputs: [{ name: "pair", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
 ] as const;
 
-const UNISWAP_V3_FACTORY: Record<number, `0x${string}`> = {
-  1: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
-  42161: "0x1F98431c8aD98523631AE4a59f267346ea31F984",
-  59144: "0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9",
-  56: "0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7",
-  97: "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
-  421614: "0x248AB79Bbb9bC29bB72f7Cd42F17e054Fc40188e",
-  4663: "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
+const UNISWAP_V2_FACTORY: Record<number, `0x${string}`> = {
+  1:      "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+  42161:  "0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9",
+  56:     "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+  97:     "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+  59144:  "0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865",
+  421614: "0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9",
+  4663:   "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
 };
 
-// WETH/WBNB address per chain (used for price quoting)
 const WETH_ADDRESS: Record<number, `0x${string}`> = {
   1:      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   42161:  "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
@@ -67,7 +62,6 @@ const WETH_ADDRESS: Record<number, `0x${string}`> = {
   4663:   "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73",
 };
 
-// Chains that only have UniversalRouter V2_1_1 deployed (not V2_0)
 const CHAIN_ROUTER_VERSION: Record<number, UniversalRouterVersion> = {
   4663: UniversalRouterVersion.V2_1_1,
 };
@@ -76,51 +70,35 @@ function getRouterVersion(chainId: number): UniversalRouterVersion {
   return CHAIN_ROUTER_VERSION[chainId] ?? UniversalRouterVersion.V2_0;
 }
 
-const FEE_TIERS = [FeeAmount.LOWEST, FeeAmount.LOW, FeeAmount.MEDIUM, FeeAmount.HIGH];
-
-async function findBestPool(
+async function findV2Pair(
   publicClient: ReturnType<typeof getPublicClient>,
   factoryAddress: `0x${string}`,
   tokenA: Token,
   tokenB: Token,
-): Promise<Pool> {
-  const poolResults = await Promise.all(
-    FEE_TIERS.map(async (fee) => {
-      try {
-        const poolAddress = await publicClient.readContract({
-          address: factoryAddress,
-          abi: FACTORY_ABI,
-          functionName: "getPool",
-          args: [tokenA.address as `0x${string}`, tokenB.address as `0x${string}`, fee],
-        });
+): Promise<Pair> {
+  const pairAddress = await publicClient.readContract({
+    address: factoryAddress,
+    abi: V2_FACTORY_ABI,
+    functionName: "getPair",
+    args: [tokenA.address as `0x${string}`, tokenB.address as `0x${string}`],
+  });
 
-        if (!poolAddress || poolAddress === "0x0000000000000000000000000000000000000000") {
-          return null;
-        }
-
-        const [slot0, liquidity] = await Promise.all([
-          publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "slot0" }),
-          publicClient.readContract({ address: poolAddress, abi: POOL_ABI, functionName: "liquidity" }),
-        ]);
-
-        if (slot0[0] === 0n) return null;
-
-        return new Pool(tokenA, tokenB, fee, slot0[0].toString(), liquidity.toString(), slot0[1]);
-      } catch {
-        return null;
-      }
-    }),
-  );
-
-  const valid = poolResults.filter((p): p is Pool => p !== null);
-  if (valid.length === 0) {
-    throw new Error(
-      `No Uniswap V3 pool found for ${tokenA.symbol}/${tokenB.symbol} on chainId ${tokenA.chainId}`,
-    );
+  if (!pairAddress || pairAddress === "0x0000000000000000000000000000000000000000") {
+    throw new Error(`No V2 pair found for ${tokenA.symbol}/${tokenB.symbol} on chainId ${tokenA.chainId}`);
   }
 
-  return valid.reduce((best, pool) =>
-    BigInt(pool.liquidity.toString()) > BigInt(best.liquidity.toString()) ? pool : best,
+  const [reserves, token0] = await Promise.all([
+    publicClient.readContract({ address: pairAddress, abi: V2_PAIR_ABI, functionName: "getReserves" }),
+    publicClient.readContract({ address: pairAddress, abi: V2_PAIR_ABI, functionName: "token0" }),
+  ]);
+
+  const [token0Sdk, token1Sdk] = token0.toLowerCase() === tokenA.address.toLowerCase()
+    ? [tokenA, tokenB]
+    : [tokenB, tokenA];
+
+  return new Pair(
+    CurrencyAmount.fromRawAmount(token0Sdk, reserves[0].toString()),
+    CurrencyAmount.fromRawAmount(token1Sdk, reserves[1].toString()),
   );
 }
 
@@ -140,24 +118,23 @@ export class Swap {
       paymentToken,
     } = params;
 
-    const factoryAddress = UNISWAP_V3_FACTORY[chainId];
-    if (!factoryAddress) {
-      throw new Error(`Uniswap V3 factory not configured for chainId ${chainId}`);
+    const v2FactoryAddress = UNISWAP_V2_FACTORY[chainId];
+    if (!v2FactoryAddress) {
+      throw new Error(`No V2 factory configured for chainId ${chainId}`);
     }
 
     const sdkTokenIn = new Token(chainId, tokenIn, tokenInDecimals, tokenInSymbol);
     const sdkTokenOut = new Token(chainId, tokenOut, tokenOutDecimals, tokenOutSymbol);
-
     const publicClient = getPublicClient(chainId);
-    const bestPool = await findBestPool(publicClient, factoryAddress, sdkTokenIn, sdkTokenOut);
-
     const amountInRaw = parseUnits(amountIn, tokenInDecimals);
     const currencyAmountIn = CurrencyAmount.fromRawAmount(sdkTokenIn, amountInRaw.toString());
-
-    const v3Route = new V3Route([bestPool], sdkTokenIn, sdkTokenOut);
-    const [outputAmount] = await bestPool.getOutputAmount(currencyAmountIn);
-
     const slippagePercent = new Percent(Math.floor(slippageTolerance * 10000), 10000);
+    const universalRouterAddress = UNIVERSAL_ROUTER_ADDRESS(getRouterVersion(chainId), chainId) as `0x${string}`;
+    const deadline = Math.floor(Date.now() / 1000) + 1800;
+
+    const pair = await findV2Pair(publicClient, v2FactoryAddress, sdkTokenIn, sdkTokenOut);
+    const v2Route = new V2Route([pair], sdkTokenIn, sdkTokenOut);
+    const [outputAmount] = pair.getOutputAmount(currencyAmountIn);
     const amountOutMinFraction = outputAmount.asFraction.multiply(
       new Percent(10000 - Math.floor(slippageTolerance * 10000), 10000),
     );
@@ -166,35 +143,22 @@ export class Swap {
       amountOutMinFraction.numerator,
       amountOutMinFraction.denominator,
     );
-
     const routerTrade = new RouterTrade({
-      v3Routes: [
-        {
-          routev3: v3Route,
-          inputAmount: currencyAmountIn,
-          outputAmount,
-        },
-      ],
+      v2Routes: [{ routev2: v2Route, inputAmount: currencyAmountIn, outputAmount }],
       tradeType: TradeType.EXACT_INPUT,
     });
-
-    const universalRouterAddress = UNIVERSAL_ROUTER_ADDRESS(getRouterVersion(chainId), chainId) as `0x${string}`;
-    const deadline = Math.floor(Date.now() / 1000) + 1800;
-
     const { calldata } = SwapRouter.swapCallParameters(routerTrade, {
       slippageTolerance: slippagePercent,
       recipient,
       deadlineOrPreviousBlockhash: deadline.toString(),
     });
-
     const exchangeRate = outputAmount.divide(currencyAmountIn).toSignificant(6);
     const amountOutMinFixed = amountOutMin.toFixed(tokenOutDecimals);
-
     return {
       amountOut: outputAmount.toSignificant(tokenOutDecimals),
       amountOutMin: amountOutMin.toSignificant(tokenOutDecimals),
       exchangeRate,
-      feeTier: bestPool.fee,
+      feeTier: 0,
       swapData: calldata as `0x${string}`,
       swapTarget: universalRouterAddress,
       paymentAmount: amountInRaw.toString(),
@@ -205,35 +169,31 @@ export class Swap {
 
   async getNativeTokenPrice(chainId: number, quoteToken: `0x${string}`, quoteDecimals: number): Promise<NativeTokenPriceResult> {
     const wethAddress = WETH_ADDRESS[chainId];
-    const factoryAddress = UNISWAP_V3_FACTORY[chainId];
+    const v2FactoryAddress = UNISWAP_V2_FACTORY[chainId];
 
     if (!wethAddress) throw new Error(`WETH address not configured for chainId ${chainId}`);
-    if (!factoryAddress) throw new Error(`Uniswap V3 factory not configured for chainId ${chainId}`);
+    if (!v2FactoryAddress) throw new Error(`No V2 factory configured for chainId ${chainId}`);
 
     const wethToken = new Token(chainId, wethAddress, 18, "WETH");
     const quoteTokenSdk = new Token(chainId, quoteToken, quoteDecimals, "QUOTE");
-
     const publicClient = getPublicClient(chainId);
-    const pool = await findBestPool(publicClient, factoryAddress, wethToken, quoteTokenSdk);
 
-    const sqrtPriceX96 = BigInt(pool.sqrtRatioX96.toString());
-    const Q96 = BigInt(2) ** BigInt(96);
-    const priceRaw = (sqrtPriceX96 * sqrtPriceX96 * BigInt(10 ** 18)) / (Q96 * Q96);
+    const pair = await findV2Pair(publicClient, v2FactoryAddress, wethToken, quoteTokenSdk);
+    const wethReserve = pair.token0.address.toLowerCase() === wethAddress.toLowerCase()
+      ? pair.reserve0
+      : pair.reserve1;
+    const quoteReserve = pair.token0.address.toLowerCase() === wethAddress.toLowerCase()
+      ? pair.reserve1
+      : pair.reserve0;
 
-    let priceUsd: string;
-    if (wethToken.sortsBefore(quoteTokenSdk)) {
-      priceUsd = formatUnits(priceRaw, quoteDecimals);
-    } else {
-      const inverted = priceRaw > 0n ? (BigInt(10 ** (18 + quoteDecimals))) / priceRaw : 0n;
-      priceUsd = formatUnits(inverted, quoteDecimals);
-    }
+    const priceUsd = formatUnits(
+      (BigInt(quoteReserve.quotient.toString()) * BigInt(10 ** 18)) / BigInt(wethReserve.quotient.toString()),
+      18,
+    );
 
-    return {
-      price: priceUsd,
-      wethAddress,
-      usdcAddress: quoteToken,
-    };
+    return { price: priceUsd, wethAddress, usdcAddress: quoteToken };
   }
 }
 
 export type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./types.js";
+
