@@ -204,29 +204,38 @@ export class Order {
         broker: this.configManager.getConfig().brokerAddress,
       };
 
-      const needsApproval = await this.utils.needsApproval(
-        params.address,
-        params.chainId,
-        swapParams.paymentToken,
-        swapParams.paymentAmount,
-        getContractAddressByChainId(params.chainId).TRADING_ROUTER,
-      );
+      const isNativePayment = swapParams.paymentToken === "0x0000000000000000000000000000000000000000";
+      const nativeValue = isNativePayment ? BigInt(swapParams.paymentAmount) : 0n;
+
+      if (!isNativePayment) {
+        const needsApproval = await this.utils.needsApproval(
+          params.address,
+          params.chainId,
+          swapParams.paymentToken,
+          swapParams.paymentAmount,
+          getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+        );
+
+        if (!this.configManager.hasSigner()) {
+          throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
+        }
+
+        if (needsApproval) {
+          const approvalResult = await this.utils.approveAuthorization({
+            chainId: params.chainId,
+            quoteAddress: swapParams.paymentToken,
+            amount: maxUint256.toString(),
+            spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
+          });
+
+          if (approvalResult.code !== 0) {
+            throw new Error(approvalResult.message);
+          }
+        }
+      }
 
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-      }
-
-      if (needsApproval) {
-        const approvalResult = await this.utils.approveAuthorization({
-          chainId: params.chainId,
-          quoteAddress: swapParams.paymentToken,
-          amount: maxUint256.toString(),
-          spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
-        });
-
-        if (approvalResult.code !== 0) {
-          throw new Error(approvalResult.message);
-        }
       }
 
       const tradingRouterContract = await getTradingRouterContract(params.chainId);
@@ -237,11 +246,12 @@ export class Order {
         const positionSalt = '1';
         this.logger.info("createSwapIncreaseOrder salt position params--->", { positionSalt, swapParams, data });
 
-        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithSalt([positionSalt, { ...swapParams }, data]);
+        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithSalt([positionSalt, { ...swapParams }, data], { value: nativeValue });
         hash = await tradingRouterContract.write!.swapAndPlaceOrderWithSalt(
           [positionSalt, { ...swapParams }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+            value: nativeValue,
           }
         );
       } else {
@@ -251,11 +261,12 @@ export class Order {
           params.positionId.toString(),
           { ...swapParams },
           data,
-        ]);
+        ], { value: nativeValue });
         hash = await tradingRouterContract.write!.swapAndPlaceOrderWithPosition(
           [params.positionId.toString(), { ...swapParams }, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
+            value: nativeValue,
           }
         );
       }
