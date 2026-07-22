@@ -5,6 +5,8 @@ import { Trade as RouterTrade } from "@uniswap/router-sdk";
 import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS, UniversalRouterVersion } from "@uniswap/universal-router-sdk";
 import { getPublicClient } from "@/web3/viemClients.js";
 import type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./types.js";
+import { getContractAddressByChainId } from "@/config/address/index.js";
+import { ChainId } from "@/config/chain.js";
 import { parseUnits, formatUnits } from "viem";
 
 const V2_PAIR_ABI = [
@@ -123,6 +125,8 @@ export class Swap {
       throw new Error(`No V2 factory configured for chainId ${chainId}`);
     }
 
+    const effectiveRecipient = recipient ?? (getContractAddressByChainId(chainId as ChainId).TRADING_ROUTER as `0x${string}`);
+
     const sdkTokenIn = new Token(chainId, tokenIn, tokenInDecimals, tokenInSymbol);
     const sdkTokenOut = new Token(chainId, tokenOut, tokenOutDecimals, tokenOutSymbol);
     const publicClient = getPublicClient(chainId);
@@ -149,7 +153,7 @@ export class Swap {
     });
     const { calldata } = SwapRouter.swapCallParameters(routerTrade, {
       slippageTolerance: slippagePercent,
-      recipient,
+      recipient: effectiveRecipient,
       deadlineOrPreviousBlockhash: deadline.toString(),
     });
     const exchangeRate = outputAmount.divide(currencyAmountIn).toSignificant(6);

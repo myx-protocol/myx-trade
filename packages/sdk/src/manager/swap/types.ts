@@ -16,7 +16,7 @@ export interface SwapQuoteParams {
   paymentToken?: `0x${string}`;
   /** Slippage tolerance as a fraction 0–1, e.g. 0.005 for 0.5% */
   slippageTolerance?: number;
-  recipient: `0x${string}`;
+  recipient?: `0x${string}`;
 }
 
 export interface SwapQuoteResult {
