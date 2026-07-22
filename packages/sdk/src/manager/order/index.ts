@@ -218,9 +218,9 @@ export class Order {
         const positionSalt = '1';
         this.logger.info("createSwapIncreaseOrder salt position params--->", { positionSalt, swapParams, data });
 
-        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithSalt([positionSalt, { ...swapParams, usePermit2: true }, data], { value: nativeValue });
+        const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithSalt([positionSalt, swapParams, data], { value: nativeValue });
         hash = await tradingRouterContract.write!.swapAndPlaceOrderWithSalt(
-          [positionSalt, { ...swapParams, usePermit2: true }, data],
+          [positionSalt, swapParams, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             value: nativeValue,
@@ -231,11 +231,11 @@ export class Order {
 
         const gasLimit = await tradingRouterContract.estimateGas!.swapAndPlaceOrderWithPosition([
           params.positionId.toString(),
-          { ...swapParams, usePermit2: true },
+          swapParams,
           data,
         ], { value: nativeValue });
         hash = await tradingRouterContract.write!.swapAndPlaceOrderWithPosition(
-          [params.positionId.toString(), { ...swapParams, usePermit2: true }, data],
+          [params.positionId.toString(), swapParams, data],
           {
             gasLimit: (gasLimit * TRADE_GAS_LIMIT_RATIO[params.chainId as ChainId]) / 100n,
             value: nativeValue,
