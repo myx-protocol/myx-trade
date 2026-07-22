@@ -204,35 +204,7 @@ export class Order {
         broker: this.configManager.getConfig().brokerAddress,
       };
 
-      const isNativePayment = swapParams.paymentToken === "0x0000000000000000000000000000000000000000";
-      const nativeValue = isNativePayment ? BigInt(swapParams.paymentAmount) : 0n;
-
-      if (!isNativePayment) {
-        const needsApproval = await this.utils.needsApproval(
-          params.address,
-          params.chainId,
-          swapParams.paymentToken,
-          swapParams.paymentAmount,
-          getContractAddressByChainId(params.chainId).TRADING_ROUTER,
-        );
-
-        if (!this.configManager.hasSigner()) {
-          throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
-        }
-
-        if (needsApproval) {
-          const approvalResult = await this.utils.approveAuthorization({
-            chainId: params.chainId,
-            quoteAddress: swapParams.paymentToken,
-            amount: maxUint256.toString(),
-            spenderAddress: getContractAddressByChainId(params.chainId).TRADING_ROUTER,
-          });
-
-          if (approvalResult.code !== 0) {
-            throw new Error(approvalResult.message);
-          }
-        }
-      }
+      const nativeValue = BigInt(swapParams.paymentAmount);
 
       if (!this.configManager.hasSigner()) {
         throw new MyxSDKError(MyxErrorCode.InvalidSigner, "Invalid signer");
