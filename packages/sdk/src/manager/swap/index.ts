@@ -129,7 +129,13 @@ export class Swap {
 
     const effectiveRecipient = recipient ?? (getContractAddressByChainId(chainId as ChainId).TRADING_ROUTER as `0x${string}`);
 
-    const sdkTokenIn = new Token(chainId, tokenIn, tokenInDecimals, tokenInSymbol);
+    // Support native token (zero address) as tokenIn: resolve to WBNB/WETH for pair lookup
+    const isNative = tokenIn === "0x0000000000000000000000000000000000000000";
+    const wethForChain = WETH_ADDRESS[chainId];
+    if (isNative && !wethForChain) throw new Error(`WETH address not configured for chainId ${chainId}`);
+    const pairTokenIn = isNative ? wethForChain : tokenIn;
+
+    const sdkTokenIn = new Token(chainId, pairTokenIn, tokenInDecimals, tokenInSymbol);
     const sdkTokenOut = new Token(chainId, tokenOut, tokenOutDecimals, tokenOutSymbol);
     const publicClient = getPublicClient(chainId);
     const amountInRaw = parseUnits(amountIn, tokenInDecimals);
@@ -167,7 +173,7 @@ export class Swap {
         { name: "path", type: "address[]" },
         { name: "payerIsUser", type: "bool" },
       ],
-      [effectiveRecipient, amountInRaw, amountOutMinRaw, [tokenIn, tokenOut], false],
+      [effectiveRecipient, amountInRaw, amountOutMinRaw, [pairTokenIn, tokenOut], false],
     );
 
     // encode execute(bytes commands, bytes[] inputs, uint256 deadline)
@@ -190,7 +196,7 @@ export class Swap {
       swapData: calldata,
       swapTarget: universalRouterAddress,
       paymentAmount: amountInRaw.toString(),
-      paymentToken: paymentToken ?? tokenIn,
+      paymentToken: paymentToken ?? (isNative ? "0x0000000000000000000000000000000000000000" : tokenIn),
       minQuoteOut: amountOutMinRaw.toString(),
     };
   }
