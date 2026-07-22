@@ -1,13 +1,11 @@
-import { Token, CurrencyAmount, TradeType, Percent } from "@uniswap/sdk-core";
-import { Route as V2Route } from "@uniswap/v2-sdk";
+import { Token, CurrencyAmount, Percent } from "@uniswap/sdk-core";
 import { Pair } from "@uniswap/v2-sdk";
-import { Trade as RouterTrade } from "@uniswap/router-sdk";
-import { SwapRouter, UNIVERSAL_ROUTER_ADDRESS, UniversalRouterVersion } from "@uniswap/universal-router-sdk";
+import { UNIVERSAL_ROUTER_ADDRESS, UniversalRouterVersion } from "@uniswap/universal-router-sdk";
 import { getPublicClient } from "@/web3/viemClients.js";
 import type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./types.js";
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import { ChainId } from "@/config/chain.js";
-import { parseUnits, formatUnits } from "viem";
+import { parseUnits, formatUnits, encodeAbiParameters } from "viem";
 
 const V2_PAIR_ABI = [
   {
@@ -71,6 +69,10 @@ const CHAIN_ROUTER_VERSION: Record<number, UniversalRouterVersion> = {
 function getRouterVersion(chainId: number): UniversalRouterVersion {
   return CHAIN_ROUTER_VERSION[chainId] ?? UniversalRouterVersion.V2_0;
 }
+
+// Universal Router address that holds wrapped tokens between WRAP_ETH and swap commands
+const ADDRESS_THIS = "0x0000000000000000000000000000000000000002" as `0x${string}`;
+const EXECUTE_SELECTOR = "0x3593564c";
 
 async function findV2Pair(
   publicClient: ReturnType<typeof getPublicClient>,
@@ -137,7 +139,6 @@ export class Swap {
     const deadline = Math.floor(Date.now() / 1000) + 1800;
 
     const pair = await findV2Pair(publicClient, v2FactoryAddress, sdkTokenIn, sdkTokenOut);
-    const v2Route = new V2Route([pair], sdkTokenIn, sdkTokenOut);
     const [outputAmount] = pair.getOutputAmount(currencyAmountIn);
     const amountOutMinFraction = outputAmount.asFraction.multiply(
       new Percent(10000 - Math.floor(slippageTolerance * 10000), 10000),
@@ -147,27 +148,50 @@ export class Swap {
       amountOutMinFraction.numerator,
       amountOutMinFraction.denominator,
     );
-    const routerTrade = new RouterTrade({
-      v2Routes: [{ routev2: v2Route, inputAmount: currencyAmountIn, outputAmount }],
-      tradeType: TradeType.EXACT_INPUT,
-    });
-    const { calldata } = SwapRouter.swapCallParameters(routerTrade, {
-      slippageTolerance: slippagePercent,
-      recipient: effectiveRecipient,
-      deadlineOrPreviousBlockhash: deadline.toString(),
-    });
     const exchangeRate = outputAmount.divide(currencyAmountIn).toSignificant(6);
     const amountOutMinFixed = amountOutMin.toFixed(tokenOutDecimals);
+    const amountOutMinRaw = parseUnits(amountOutMinFixed, tokenOutDecimals);
+
+    // WRAP_ETH (0x0b): wrap native token forwarded by TradingRouter; recipient = ADDRESS_THIS keeps WBNB in Universal Router
+    const wrapEthInput = encodeAbiParameters(
+      [{ name: "recipient", type: "address" }, { name: "amountMin", type: "uint256" }],
+      [ADDRESS_THIS, amountInRaw],
+    );
+
+    // V2_SWAP_EXACT_IN (0x08): payerIsUser=false because WBNB is already inside Universal Router after WRAP_ETH
+    const v2SwapInput = encodeAbiParameters(
+      [
+        { name: "recipient", type: "address" },
+        { name: "amountIn", type: "uint256" },
+        { name: "amountOutMin", type: "uint256" },
+        { name: "path", type: "address[]" },
+        { name: "payerIsUser", type: "bool" },
+      ],
+      [effectiveRecipient, amountInRaw, amountOutMinRaw, [tokenIn, tokenOut], false],
+    );
+
+    // encode execute(bytes commands, bytes[] inputs, uint256 deadline)
+    const executeArgs = encodeAbiParameters(
+      [
+        { name: "commands", type: "bytes" },
+        { name: "inputs", type: "bytes[]" },
+        { name: "deadline", type: "uint256" },
+      ],
+      ["0x0b08" as `0x${string}`, [wrapEthInput, v2SwapInput], BigInt(deadline)],
+    );
+
+    const calldata = `${EXECUTE_SELECTOR}${executeArgs.slice(2)}` as `0x${string}`;
+
     return {
       amountOut: outputAmount.toSignificant(tokenOutDecimals),
       amountOutMin: amountOutMin.toSignificant(tokenOutDecimals),
       exchangeRate,
       feeTier: 0,
-      swapData: calldata as `0x${string}`,
+      swapData: calldata,
       swapTarget: universalRouterAddress,
       paymentAmount: amountInRaw.toString(),
       paymentToken: paymentToken ?? tokenIn,
-      minQuoteOut: parseUnits(amountOutMinFixed, tokenOutDecimals).toString(),
+      minQuoteOut: amountOutMinRaw.toString(),
     };
   }
 
