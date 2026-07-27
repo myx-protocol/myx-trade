@@ -3,7 +3,7 @@ import { KlineDataResponse, TickersDataResponse } from "../websocket/types.js";
 export interface MyxSubscriptionOptions {}
 
 // Re-export the response types
-export type { TickersDataResponse, KlineDataResponse, KlineResolution } from "../websocket/types.js";
+export type { TickersDataResponse, KlineDataResponse, KlineResolution, WsSignalLevel, WsSignalStrengthEvent } from "../websocket/types.js";
 
 export type OnTickersCallback = (data: TickersDataResponse) => void;
 export type OnKlineCallback = (data: KlineDataResponse) => void;

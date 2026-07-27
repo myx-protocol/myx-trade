@@ -4,6 +4,8 @@ import {
   WebSocketMethodEnum,
   WebSocketTopicEnum,
   WebSocketEvents,
+  WsSignalLevel,
+  WsSignalStrengthEvent,
 } from "./websocket/types.js";
 import {
   OnKlineCallback,
@@ -51,6 +53,18 @@ export class SubScription {
 
   public get isConnected() {
     return this.wsClient.isConnected();
+  }
+
+  public get signalLevel(): WsSignalLevel {
+    return this.wsClient.getSignalLevel();
+  }
+
+  public onSignalStrength(handler: (event: WsSignalStrengthEvent) => void): void {
+    this.wsClient.on("signalStrength", handler);
+  }
+
+  public offSignalStrength(handler: (event: WsSignalStrengthEvent) => void): void {
+    this.wsClient.off("signalStrength", handler);
   }
 
   /**

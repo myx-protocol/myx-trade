@@ -11,6 +11,7 @@ import {
   WebSocketTopicEnum,
   NativeTickerData,
   WebSocketAckMessageResponse,
+  WsSignalLevel,
 } from "./types.js";
 import {
   generateListenerId,
@@ -73,6 +74,9 @@ export class MyxWebSocketClient {
    *
    */
   private lastMessageTime = 0;
+
+  private lastPingTime = 0;
+  private currentSignalLevel: WsSignalLevel = 0;
 
   /**
    * logger
@@ -158,6 +162,9 @@ export class MyxWebSocketClient {
     this.ws.onopen = async (event) => {
       this.eventBus.emit("open", event);
       this.lastMessageTime = Date.now();
+      this.lastPingTime = 0;
+      this.currentSignalLevel = 4;
+      this.eventBus.emit("signalStrength", { level: 4, latency: -1 });
       this.timeoutHeartbeat();
 
       // Only resubscribe on reconnection, not on first connection
@@ -175,6 +182,8 @@ export class MyxWebSocketClient {
     this.ws.onclose = (event) => {
       this.eventBus.emit("close", event as CloseEvent);
       this.stopHeartbeatTimer();
+      this.currentSignalLevel = 0;
+      this.eventBus.emit("signalStrength", { level: 0, latency: -1 });
     };
 
     this.ws.onerror = (event) => {
@@ -185,14 +194,28 @@ export class MyxWebSocketClient {
     // listen reconnect event
     (this.ws as any).addEventListener("reconnecting", (event: any) => {
       this.eventBus.emit("reconnecting", { detail: event.detail || 0 });
-      // Mark that this is a reconnection, not first connection
       this.isFirstConnection = false;
+      this.currentSignalLevel = 1;
+      this.eventBus.emit("signalStrength", { level: 1, latency: -1 });
     });
 
     // listen max reconnect attempts event
     (this.ws as any).addEventListener("maxreconnectattempts", () => {
       this.eventBus.emit("maxreconnectattempts", undefined);
+      this.currentSignalLevel = 0;
+      this.eventBus.emit("signalStrength", { level: 0, latency: -1 });
     });
+  }
+
+  private latencyToSignalLevel(latency: number): WsSignalLevel {
+    if (latency <= 300) return 4;
+    if (latency <= 1000) return 3;
+    if (latency <= 3000) return 2;
+    return 1;
+  }
+
+  public getSignalLevel(): WsSignalLevel {
+    return this.currentSignalLevel;
   }
 
   /**
@@ -422,8 +445,15 @@ export class MyxWebSocketClient {
       // update last message time
       this.lastMessageTime = Date.now();
       if (data.type === "ping") {
-        // this.logger.debug("Ping Message received");
-        // reply pong message by microtask
+        const now = Date.now();
+        if (this.lastPingTime > 0) {
+          const interval = now - this.lastPingTime;
+          const heartbeat = this.config.heartbeatInterval ?? DEFAULT_CONFIG.heartbeatInterval!;
+          const latency = Math.max(0, interval - heartbeat);
+          this.currentSignalLevel = this.latencyToSignalLevel(latency);
+          this.eventBus.emit("signalStrength", { level: this.currentSignalLevel, latency });
+        }
+        this.lastPingTime = now;
         queueMicrotask(() => {
           this.pong(data.data as string);
         });

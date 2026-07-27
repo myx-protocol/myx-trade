@@ -23,6 +23,15 @@ export interface WebSocketConfig
   onBeforeReSubscribe?: (() => void) | (() => Promise<void>);
 }
 
+// signal strength level: 0=disconnected, 1=poor, 2=fair, 3=good, 4=excellent
+export type WsSignalLevel = 0 | 1 | 2 | 3 | 4;
+
+export interface WsSignalStrengthEvent {
+  level: WsSignalLevel;
+  // deviation from expected ping interval (ms); -1 when not measured (connect/disconnect events)
+  latency: number;
+}
+
 // event types
 export interface WebSocketEvents extends Record<string | symbol, any> {
   open: RWSEvent;
@@ -31,6 +40,7 @@ export interface WebSocketEvents extends Record<string | symbol, any> {
   error: unknown;
   reconnecting: { detail: number };
   maxreconnectattempts: void;
+  signalStrength: WsSignalStrengthEvent;
 }
 
 /**
