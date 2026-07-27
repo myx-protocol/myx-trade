@@ -75,7 +75,9 @@ export class MyxWebSocketClient {
    */
   private lastMessageTime = 0;
 
-  private lastPingTime = 0;
+  private clientPingTimestamp = 0;
+  private clientPingIntervalId: NodeJS.Timeout | null = null;
+  private clientPingTimeoutId: NodeJS.Timeout | null = null;
   private currentSignalLevel: WsSignalLevel = 0;
 
   /**
@@ -162,10 +164,10 @@ export class MyxWebSocketClient {
     this.ws.onopen = async (event) => {
       this.eventBus.emit("open", event);
       this.lastMessageTime = Date.now();
-      this.lastPingTime = 0;
       this.currentSignalLevel = 4;
       this.eventBus.emit("signalStrength", { level: 4, latency: -1 });
       this.timeoutHeartbeat();
+      this.startClientPingInterval();
 
       // Only resubscribe on reconnection, not on first connection
       if (!this.isFirstConnection) {
@@ -182,6 +184,7 @@ export class MyxWebSocketClient {
     this.ws.onclose = (event) => {
       this.eventBus.emit("close", event as CloseEvent);
       this.stopHeartbeatTimer();
+      this.stopClientPingInterval();
       this.currentSignalLevel = 0;
       this.eventBus.emit("signalStrength", { level: 0, latency: -1 });
     };
@@ -195,6 +198,7 @@ export class MyxWebSocketClient {
     (this.ws as any).addEventListener("reconnecting", (event: any) => {
       this.eventBus.emit("reconnecting", { detail: event.detail || 0 });
       this.isFirstConnection = false;
+      this.stopClientPingInterval();
       this.currentSignalLevel = 1;
       this.eventBus.emit("signalStrength", { level: 1, latency: -1 });
     });
@@ -216,6 +220,45 @@ export class MyxWebSocketClient {
 
   public getSignalLevel(): WsSignalLevel {
     return this.currentSignalLevel;
+  }
+
+  private sendClientPing(): void {
+    if (!this.isConnected()) return;
+    this.clientPingTimestamp = Date.now();
+    try {
+      this.ws!.send(JSON.stringify({ request: WebSocketMethodEnum.Ping }));
+    } catch {
+      this.clientPingTimestamp = 0;
+      return;
+    }
+    // treat no pong within 3s as poor signal
+    this.clientPingTimeoutId = setTimeout(() => {
+      if (this.clientPingTimestamp > 0) {
+        this.clientPingTimestamp = 0;
+        this.currentSignalLevel = 1;
+        this.eventBus.emit("signalStrength", { level: 1, latency: -1 });
+      }
+    }, 3000);
+  }
+
+  private startClientPingInterval(): void {
+    this.stopClientPingInterval();
+    const interval = this.config.heartbeatInterval ?? DEFAULT_CONFIG.heartbeatInterval!;
+    // send first probe after 1s to get an early reading
+    setTimeout(() => this.sendClientPing(), 1000);
+    this.clientPingIntervalId = setInterval(() => this.sendClientPing(), interval);
+  }
+
+  private stopClientPingInterval(): void {
+    if (this.clientPingIntervalId) {
+      clearInterval(this.clientPingIntervalId);
+      this.clientPingIntervalId = null;
+    }
+    if (this.clientPingTimeoutId) {
+      clearTimeout(this.clientPingTimeoutId);
+      this.clientPingTimeoutId = null;
+    }
+    this.clientPingTimestamp = 0;
   }
 
   /**
@@ -445,18 +488,21 @@ export class MyxWebSocketClient {
       // update last message time
       this.lastMessageTime = Date.now();
       if (data.type === "ping") {
-        const now = Date.now();
-        if (this.lastPingTime > 0) {
-          const interval = now - this.lastPingTime;
-          const heartbeat = this.config.heartbeatInterval ?? DEFAULT_CONFIG.heartbeatInterval!;
-          const latency = Math.max(0, interval - heartbeat);
-          this.currentSignalLevel = this.latencyToSignalLevel(latency);
-          this.eventBus.emit("signalStrength", { level: this.currentSignalLevel, latency });
-        }
-        this.lastPingTime = now;
         queueMicrotask(() => {
           this.pong(data.data as string);
         });
+        return;
+      }
+
+      if (data.type === "pong") {
+        if (this.clientPingTimestamp > 0) {
+          const latency = Date.now() - this.clientPingTimestamp;
+          this.clientPingTimestamp = 0;
+          clearTimeout(this.clientPingTimeoutId!);
+          this.clientPingTimeoutId = null;
+          this.currentSignalLevel = this.latencyToSignalLevel(latency);
+          this.eventBus.emit("signalStrength", { level: this.currentSignalLevel, latency });
+        }
         return;
       }
       if (isAckMessageResponse(data)) {

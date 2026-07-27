@@ -59,6 +59,7 @@ export enum WebSocketTopicEnum {
  */
 export enum WebSocketMethodEnum {
   SignIn = "signin",
+  Ping = "ping",
   Pong = "pong",
   SubscribeV2 = "subv2",
   UnsubscribeV2 = "unsubv2",
