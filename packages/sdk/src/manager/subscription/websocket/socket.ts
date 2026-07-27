@@ -167,7 +167,6 @@ export class MyxWebSocketClient {
       this.currentSignalLevel = 4;
       this.eventBus.emit("signalStrength", { level: 4, latency: -1 });
       this.timeoutHeartbeat();
-      this.startClientPingInterval();
 
       // Only resubscribe on reconnection, not on first connection
       if (!this.isFirstConnection) {
@@ -184,7 +183,7 @@ export class MyxWebSocketClient {
     this.ws.onclose = (event) => {
       this.eventBus.emit("close", event as CloseEvent);
       this.stopHeartbeatTimer();
-      this.stopClientPingInterval();
+      this.stopClientPing();
       this.currentSignalLevel = 0;
       this.eventBus.emit("signalStrength", { level: 0, latency: -1 });
     };
@@ -198,7 +197,7 @@ export class MyxWebSocketClient {
     (this.ws as any).addEventListener("reconnecting", (event: any) => {
       this.eventBus.emit("reconnecting", { detail: event.detail || 0 });
       this.isFirstConnection = false;
-      this.stopClientPingInterval();
+      this.stopClientPing();
       this.currentSignalLevel = 1;
       this.eventBus.emit("signalStrength", { level: 1, latency: -1 });
     });
@@ -241,15 +240,14 @@ export class MyxWebSocketClient {
     }, 3000);
   }
 
-  private startClientPingInterval(): void {
-    this.stopClientPingInterval();
+  public startClientPing(): void {
+    this.stopClientPing();
     const interval = this.config.heartbeatInterval ?? DEFAULT_CONFIG.heartbeatInterval!;
-    // send first probe after 1s to get an early reading
-    setTimeout(() => this.sendClientPing(), 1000);
+    this.sendClientPing();
     this.clientPingIntervalId = setInterval(() => this.sendClientPing(), interval);
   }
 
-  private stopClientPingInterval(): void {
+  public stopClientPing(): void {
     if (this.clientPingIntervalId) {
       clearInterval(this.clientPingIntervalId);
       this.clientPingIntervalId = null;

@@ -67,6 +67,14 @@ export class SubScription {
     this.wsClient.off("signalStrength", handler);
   }
 
+  public startClientPing(): void {
+    this.wsClient.startClientPing();
+  }
+
+  public stopClientPing(): void {
+    this.wsClient.stopClientPing();
+  }
+
   /**
    * public methods
    */
