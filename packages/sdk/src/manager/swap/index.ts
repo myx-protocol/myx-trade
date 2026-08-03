@@ -6,6 +6,7 @@ import type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from ".
 import { getContractAddressByChainId } from "@/config/address/index.js";
 import { ChainId } from "@/config/chain.js";
 import { parseUnits, formatUnits, encodeAbiParameters } from "viem";
+import { getBalanceOf } from "@/common/balanceOf.js";
 
 const V2_PAIR_ABI = [
   {
@@ -199,6 +200,27 @@ export class Swap {
       paymentToken: paymentToken ?? (isNative ? "0x0000000000000000000000000000000000000000" : tokenIn),
       minQuoteOut: amountOutMinRaw.toString(),
     };
+  }
+
+  /**
+   * Get the balance of a token for an account.
+   * Supports native token (zero address) and any ERC-20.
+   * Returns a human-readable string (already divided by decimals).
+   */
+  async getSwapTokenBalance(
+    chainId: number,
+    account: string,
+    tokenAddress: string,
+    decimals: number,
+  ): Promise<string> {
+    const NATIVE_ADDRESS = "0x0000000000000000000000000000000000000000";
+    const publicClient = getPublicClient(chainId);
+    if (tokenAddress === NATIVE_ADDRESS) {
+      const balance = await publicClient.getBalance({ address: account as `0x${string}` });
+      return formatUnits(balance, 18);
+    }
+    const balance = await getBalanceOf(chainId as ChainId, account, tokenAddress);
+    return formatUnits(balance, decimals);
   }
 
   async getNativeTokenPrice(chainId: number, quoteToken: `0x${string}`, quoteDecimals: number): Promise<NativeTokenPriceResult> {
