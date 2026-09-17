@@ -6,5 +6,6 @@ export * from "./tokenInfo.js";
 export * as execution from "./execution.js";
 export * as forwarder from "./forwarder.js";
 export * as transactions from "./transaction.js";
+export * from './getAddressType.js'
 export { signAndSubmit } from "./signAndSubmit.js";
 export { formatUnits, parseUnits } from "viem";
