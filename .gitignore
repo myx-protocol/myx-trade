@@ -150,3 +150,5 @@ packages/*/.npmrc
 
 **/*/.turbo/
 /apps/h5-v2/cert/
+/.figma_cache/h5-finance-earn-16004-59712.json
+/.figma_cache/h5-finance-trench-16004-59984.json
