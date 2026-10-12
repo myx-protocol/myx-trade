@@ -1510,6 +1510,12 @@ enum PoolType {
   Base = 0,
   Quote = 1,
 }
+
+// LP-module-specific TriggerType — distinct from the trading module's TriggerType
+enum LpTriggerType {
+  TP = 1, // Take profit (price >=)
+  SL = 2, // Stop loss  (price <=)
+}
 ```
 
 ---
@@ -1530,9 +1536,9 @@ interface CreatePoolRequest {
 
 ```typescript
 interface TpSl {
-  amount: number;
-  triggerPrice: number;
-  triggerType: TriggerType; // TriggerType.GTE (TP) | TriggerType.LTE (SL)
+  amount: number | string;         // human-readable; string also accepted
+  triggerPrice: number | string;   // human-readable; string also accepted
+  triggerType: LpTriggerType;      // LpTriggerType.TP (1) | LpTriggerType.SL (2)
 }
 
 interface AddTpSLParams {
@@ -1541,6 +1547,20 @@ interface AddTpSLParams {
   poolType: PoolType;
   slippage: number;   // decimal, e.g. 0.01 = 1%
   tpsl: TpSl[];
+}
+
+// Named type exported by the SDK — use when typing params directly
+interface CancelTpSLParams {
+  chainId: number;
+  orderId: string;  // TP/SL order ID to cancel
+}
+
+// Internal on-chain struct — for reference only, not required by callers
+interface TpSLParams {
+  amount: bigint;
+  triggerPrice: bigint;
+  triggerType: bigint;
+  minQuoteOut: bigint;
 }
 ```
 
@@ -1671,7 +1691,7 @@ Set take-profit/stop-loss on an LP position; liquidity is auto-withdrawn on trig
 
 Cancel an existing TP/SL order on an LP position.
 
-**Parameters:**
+**Parameters (`CancelTpSLParams`):**
 
 | Name | Type | Description |
 |------|------|-------------|
@@ -1706,6 +1726,46 @@ Fetch open TP/SL orders for an LP pool.
 | Field | Type | Description |
 |-------|------|-------------|
 | (return value) | `Order[]` | List of open TP/SL orders for the LP pool |
+
+#### pool.boostPool `[On-chain]`
+
+Boost a pool to help it reach the TVL threshold for the Trench state.
+
+**Parameters (`BoostPoolParams`):**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address to boost |
+
+#### pool.unBoostPool `[On-chain]`
+
+Cancel a previous boost on a pool.
+
+**Parameters (`BoostPoolParams`):**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address to unboost |
+
+#### pool.claimBoostFee `[On-chain]`
+
+Claim the fee reward earned for boosting a pool.
+
+**Parameters (`BoostPoolParams`):**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address to claim the boost fee from |
+
+```typescript
+interface BoostPoolParams {
+  chainId: number;
+  poolId: string;
+}
+```
 
 ---
 
@@ -2390,4 +2450,4 @@ When a transaction reverts on-chain, the contract throws one of the standardized
 | `src/types/order.ts` | Order update types |
 | `src/api/type.ts` | HTTP response envelopes and DTOs |
 | `src/manager/error/const.ts` | SDK error codes |
-| `lp/pool/type.ts` | LP pool types |
+| `lp/pool/type.ts` | LP pool types: `CreatePoolRequest`, `PoolType`, `LpTriggerType`, `TpSl`, `TpSLParams`, `AddTpSLParams`, `CancelTpSLParams`, `BoostPoolParams` |

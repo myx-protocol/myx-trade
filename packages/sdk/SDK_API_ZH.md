@@ -1729,6 +1729,12 @@ enum PoolType {
   Base = 0,
   Quote = 1,
 }
+
+// LP 模块独立的 TriggerType，与交易模块的 TriggerType 不同
+enum LpTriggerType {
+  TP = 1, // 止盈（价格 >=）
+  SL = 2, // 止损（价格 <=）
+}
 ```
 
 ---
@@ -1749,9 +1755,9 @@ interface CreatePoolRequest {
 
 ```typescript
 interface TpSl {
-  amount: number;
-  triggerPrice: number;
-  triggerType: TriggerType; // TriggerType.GTE（止盈）| TriggerType.LTE（止损）
+  amount: number | string;         // 人类可读数量；也支持 string
+  triggerPrice: number | string;   // 人类可读价格；也支持 string
+  triggerType: LpTriggerType;      // LpTriggerType.TP (1) | LpTriggerType.SL (2)
 }
 
 interface AddTpSLParams {
@@ -1760,6 +1766,20 @@ interface AddTpSLParams {
   poolType: PoolType;
   slippage: number;   // 小数，如 0.01 = 1%
   tpsl: TpSl[];
+}
+
+// SDK 导出的命名类型，可直接用于参数类型标注
+interface CancelTpSLParams {
+  chainId: number;
+  orderId: string;  // 要取消的 TpSl 订单 ID
+}
+
+// 内部链上结构体，仅供参考，调用方无需手动构造
+interface TpSLParams {
+  amount: bigint;
+  triggerPrice: bigint;
+  triggerType: bigint;
+  minQuoteOut: bigint;
 }
 ```
 
@@ -1916,7 +1936,7 @@ interface AddTpSLParams {
 
 取消 LP 仓位上已设置的止盈止损订单。
 
-**入参：**
+**入参（`CancelTpSLParams`）：**
 
 
 | 参数名     | 类型       | 说明              |
@@ -1959,6 +1979,52 @@ interface AddTpSLParams {
 | --- | --------- | --------------- |
 | —   | `Order[]` | 未成交的 TP/SL 订单列表 |
 
+
+#### pool.boostPool `[链上]`
+
+Boost 指定池子，帮助其 TVL 达到 Trench 状态所需门槛。
+
+**入参（`BoostPoolParams`）：**
+
+
+| 参数名     | 类型       | 说明        |
+| ------- | -------- | --------- |
+| chainId | `number` | 链 ID      |
+| poolId  | `string` | 要 Boost 的池子地址 |
+
+
+#### pool.unBoostPool `[链上]`
+
+取消对池子的 Boost。
+
+**入参（`BoostPoolParams`）：**
+
+
+| 参数名     | 类型       | 说明             |
+| ------- | -------- | -------------- |
+| chainId | `number` | 链 ID           |
+| poolId  | `string` | 要取消 Boost 的池子地址 |
+
+
+#### pool.claimBoostFee `[链上]`
+
+领取因 Boost 池子而获得的手续费奖励。
+
+**入参（`BoostPoolParams`）：**
+
+
+| 参数名     | 类型       | 说明              |
+| ------- | -------- | --------------- |
+| chainId | `number` | 链 ID            |
+| poolId  | `string` | 要领取 Boost 手续费的池子地址 |
+
+
+```typescript
+interface BoostPoolParams {
+  chainId: number;
+  poolId: string;
+}
+```
 
 ---
 
@@ -2756,6 +2822,6 @@ const amount = ethers.parseUnits("100", 6).toString(); // 100 USDC
 | `src/types/order.ts`         | 订单更新类型                  |
 | `src/api/type.ts`            | HTTP 响应包裹与 DTO          |
 | `src/manager/error/const.ts` | SDK 错误码                 |
-| `lp/pool/type.ts`            | LP 池相关类型                |
+| `lp/pool/type.ts`            | LP 池相关类型：`CreatePoolRequest`、`PoolType`、`LpTriggerType`、`TpSl`、`TpSLParams`、`AddTpSLParams`、`CancelTpSLParams`、`BoostPoolParams` |
 
 
