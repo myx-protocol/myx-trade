@@ -67,7 +67,7 @@ import {
 import { addQueryParams } from "@/api/utils";
 import { ChainId } from "@/config/chain";
 import { Request } from "./request.js";
-import { GetPositionTransferParams, GetProfitLockParams, PaginationParams, PositionTransferItem, ProfitLockItem, GetDelistRiskParams, DelistRiskInfo } from "./type.js";
+import { GetPositionTransferParams, GetProfitLockParams, GetReleasedProfitLocksParams, PaginationParams, PositionTransferItem, ProfitLockItem, GetDelistRiskParams, DelistRiskInfo } from "./type.js";
 
 export class Api extends Request {
   private logger: Logger;
@@ -612,6 +612,14 @@ export class Api extends Request {
   async getProfitLock(params?: GetProfitLockParams) {
     return this.get<ApiResponse<ProfitLockItem[]>>(
       "/openapi/gateway/scan/market/profit-lock",
+      params,
+      { auth: true }
+    );
+  }
+
+  async getReleasedProfitLocks(params?: GetReleasedProfitLocksParams) {
+    return this.get<ApiResponse<ProfitLockItem[]>>(
+      "/openapi/gateway/scan/market/profit-lock/released",
       params,
       { auth: true }
     );

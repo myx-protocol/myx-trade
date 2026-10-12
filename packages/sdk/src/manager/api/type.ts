@@ -64,3 +64,8 @@ export interface ProfitLockItem {
     txHash: string
     txTime: number
 }
+
+export interface GetReleasedProfitLocksParams extends PaginationParams {
+    chainId?: number
+    poolId?: string
+}
