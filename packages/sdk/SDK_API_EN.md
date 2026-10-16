@@ -10,6 +10,18 @@
 
 ### Latest update
 
+New methods added across **Position**, **Account**, and **Markets** modules:
+
+| # | Change | Detail |
+|---|--------|--------|
+| 1 | **Added** `position.getPositionTransferHistory` | Backend query: fetch historical position transfer records with pagination |
+| 2 | **Added** `position.transferPosition` | On-chain: transfer a position NFT to another address (mint-and-transfer if not yet minted) |
+| 3 | **Added** `api.getProfitLock` | Backend query: fetch pending (locked) profit records for the account |
+| 4 | **Added** `api.getReleasedProfitLocks` | Backend query: fetch already-released profit records (assets page "Released Profit" list) |
+| 5 | **Added** `markets.getDelistRisk` | Backend query: fetch delist risk metrics (volume / TVL targets vs. current) for a pool |
+
+### Previous update
+
 Changes to the **Account module** (`account.*`):
 
 | # | Change | Detail |
@@ -670,6 +682,74 @@ Add or remove collateral from an existing position.
 | data.hash | `string` (optional) | On-chain transaction hash |
 | message | `string` (optional) | Error message if code != 0 |
 
+### position.getPositionTransferHistory `[Backend]`
+
+Query the historical position transfer records for the account.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` (optional) | Filter by chain ID |
+| poolId | `string` (optional) | Filter by pool address |
+| type | `0 \| 1 \| 2` (optional) | Transfer type: 0 = all, 1 = sent, 2 = received |
+| limit | `number` (optional) | Page size |
+| after | `number` (optional) | Cursor: records after this ID |
+| before | `number` (optional) | Cursor: records before this ID |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data | `PositionTransferItem[]` | Transfer records |
+
+**`PositionTransferItem` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | `number` | Record ID |
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address |
+| marketId | `string` | Market ID |
+| positionId | `number` | Position ID |
+| fromAddress | `string` | Sender address |
+| toAddress | `string` | Recipient address |
+| baseSymbol | `string` | Base token symbol |
+| quoteSymbol | `string` | Quote token symbol |
+| direction | `number` | Position direction (1 = long, 2 = short) |
+| userLeverage | `number` | Leverage at transfer time |
+| size | `string` | Position size |
+| collateralAmount | `string` | Collateral amount |
+| entryPrice | `string` | Entry price |
+| status | `number` | Transfer status |
+| txHash | `string` | Transaction hash |
+| txTime | `number` | Transaction timestamp (Unix seconds) |
+
+### position.transferPosition `[On-chain]`
+
+Transfer a position to another address. If the position is already minted as an NFT, it calls `safeTransferFrom`; otherwise it mints the NFT and transfers in one step.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| positionId | `string` | Position ID to transfer |
+| tokenId | `string \| null` | NFT token ID if already minted; `null` triggers mint-and-transfer |
+| to | `string` | Recipient address |
+| poolId | `string` | Pool address |
+| chainId | `number` | Chain ID |
+| address | `string` | Caller wallet address |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data.hash | `string` | Transaction hash |
+| data.receipt | `object` | Transaction receipt |
+| message | `string` (optional) | Error message if code != 0 |
+
 ---
 
 ## 4. Account Module
@@ -879,6 +959,81 @@ Fetch the account's fund-flow history (deposits, withdrawals, fee deductions).
 |-------|------|-------------|
 | code | `number` | Status code; 0 = success |
 | data | `TradeFlow[]` | List of trade flow records |
+
+### api.getProfitLock `[Backend]`
+
+Query pending profit-lock records for the account. Returns profits that are locked and awaiting release.
+
+> Requires authentication. Call `myxClient.auth()` before using.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` (optional) | Filter by chain ID |
+| poolId | `string` (optional) | Filter by pool address |
+| limit | `number` (optional) | Page size |
+| after | `number` (optional) | Cursor: records after this ID |
+| before | `number` (optional) | Cursor: records before this ID |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data | `ProfitLockItem[]` | List of pending profit-lock records |
+
+**`ProfitLockItem` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| id | `number` | Record ID |
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address |
+| account | `string` | Account address |
+| profitBaseAmount | `string` | Locked profit in base token |
+| profitQuoteAmount | `string` | Locked profit in quote token |
+| usedQuoteAmount | `string` | Quote amount already withdrawn |
+| releaseTime | `number` | Scheduled release time (Unix seconds) |
+| txHash | `string` | Transaction hash |
+| txTime | `number` | Transaction timestamp (Unix seconds) |
+
+**Example:**
+
+```typescript
+const res = await myxClient.api.getProfitLock({ chainId: 42161 })
+// res.data: ProfitLockItem[]
+```
+
+### api.getReleasedProfitLocks `[Backend]`
+
+Query profit-lock records that have already been released (unlocked). Used to display the "Released Profit" list in the assets page.
+
+> Requires authentication. Call `myxClient.auth()` before using.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` (optional) | Filter by chain ID |
+| poolId | `string` (optional) | Filter by pool address |
+| limit | `number` (optional) | Page size |
+| after | `number` (optional) | Cursor: records after this ID |
+| before | `number` (optional) | Cursor: records before this ID |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data | `ProfitLockItem[]` | List of released profit-lock records (same shape as `getProfitLock`) |
+
+**Example:**
+
+```typescript
+const res = await myxClient.api.getReleasedProfitLocks({ chainId: 42161 })
+// res.data: ProfitLockItem[]
+```
 
 ---
 
@@ -1105,6 +1260,37 @@ Query the funding rate info for a pool.
 |-------|------|-------------|
 | code | `number` | Status code; 0 = success |
 | data / message | `any` | On-chain pool info shape including funding rate, or error message |
+
+### markets.getDelistRisk `[Backend]`
+
+Query the delist risk metrics for a pool. Returns the volume and TVL period targets vs. current values used to evaluate whether the pool is at risk of delisting.
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| chainId | `number` | Chain ID |
+| poolId | `string` | Pool address |
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| code | `number` | Status code; 0 = success |
+| data | `DelistRiskInfo \| null` | Delist risk info, or `null` if no risk data available |
+
+**`DelistRiskInfo` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| volumePeriodStart | `number` | Volume assessment period start (Unix seconds) |
+| volumePeriodEnd | `number` | Volume assessment period end (Unix seconds) |
+| targetVolume | `string` | Target trading volume threshold |
+| currentVolume | `string` | Current trading volume within the period |
+| tvlPeriodStart | `number` | TVL assessment period start (Unix seconds) |
+| tvlPeriodEnd | `number` | TVL assessment period end (Unix seconds) |
+| targetTvl | `string` | Target TVL threshold |
+| currentTvl | `string` | Current TVL within the period |
 
 ---
 

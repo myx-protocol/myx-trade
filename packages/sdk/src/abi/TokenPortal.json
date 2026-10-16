@@ -1,0 +1,143 @@
+[
+  {
+    "type": "function",
+    "name": "newTokenV6",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          { "name": "name", "type": "string" },
+          { "name": "symbol", "type": "string" },
+          { "name": "meta", "type": "string" },
+          { "name": "dexThresh", "type": "uint8" },
+          { "name": "salt", "type": "bytes32" },
+          { "name": "migratorType", "type": "uint8" },
+          { "name": "quoteToken", "type": "address" },
+          { "name": "quoteAmt", "type": "uint256" },
+          { "name": "beneficiary", "type": "address" },
+          { "name": "permitData", "type": "bytes" },
+          { "name": "extensionID", "type": "bytes32" },
+          { "name": "extensionData", "type": "bytes" },
+          { "name": "dexId", "type": "uint8" },
+          { "name": "lpFeeProfile", "type": "uint8" },
+          { "name": "buyTaxRate", "type": "uint16" },
+          { "name": "sellTaxRate", "type": "uint16" },
+          { "name": "taxDuration", "type": "uint64" },
+          { "name": "antiFarmerDuration", "type": "uint64" },
+          { "name": "mktBps", "type": "uint16" },
+          { "name": "deflationBps", "type": "uint16" },
+          { "name": "dividendBps", "type": "uint16" },
+          { "name": "lpBps", "type": "uint16" },
+          { "name": "minimumShareBalance", "type": "uint256" },
+          { "name": "dividendToken", "type": "address" },
+          { "name": "commissionReceiver", "type": "address" },
+          { "name": "tokenVersion", "type": "uint8" }
+        ]
+      }
+    ],
+    "outputs": [{ "name": "token", "type": "address" }],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "newTokenV7",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          { "name": "name", "type": "string" },
+          { "name": "symbol", "type": "string" },
+          { "name": "meta", "type": "string" },
+          { "name": "dexThresh", "type": "uint8" },
+          { "name": "salt", "type": "bytes32" },
+          { "name": "migratorType", "type": "uint8" },
+          { "name": "quoteToken", "type": "address" },
+          { "name": "quoteAmt", "type": "uint256" },
+          { "name": "permitData", "type": "bytes" },
+          { "name": "extensionID", "type": "bytes32" },
+          { "name": "extensionData", "type": "bytes" },
+          { "name": "dexId", "type": "uint8" },
+          { "name": "buyTaxRate", "type": "uint16" },
+          { "name": "sellTaxRate", "type": "uint16" },
+          { "name": "taxDuration", "type": "uint64" },
+          { "name": "antiFarmerDuration", "type": "uint64" },
+          { "name": "commissionReceiver", "type": "address" },
+          { "name": "tokenVersion", "type": "uint8" },
+          {
+            "name": "feeConfigs",
+            "type": "tuple[4]",
+            "components": [
+              { "name": "feeType", "type": "uint8" },
+              { "name": "bps", "type": "uint16" },
+              { "name": "marketingAddress", "type": "address" },
+              { "name": "dividendToken", "type": "address" },
+              { "name": "minimumShareBalance", "type": "uint256" }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [{ "name": "token", "type": "address" }],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "swapExactInput",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          { "name": "inputToken", "type": "address" },
+          { "name": "outputToken", "type": "address" },
+          { "name": "inputAmount", "type": "uint256" },
+          { "name": "minOutputAmount", "type": "uint256" },
+          { "name": "permitData", "type": "bytes" }
+        ]
+      }
+    ],
+    "outputs": [{ "name": "outputAmount", "type": "uint256" }],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "quoteExactInput",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "components": [
+          { "name": "inputToken", "type": "address" },
+          { "name": "outputToken", "type": "address" },
+          { "name": "inputAmount", "type": "uint256" }
+        ]
+      }
+    ],
+    "outputs": [{ "name": "outputAmount", "type": "uint256" }],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "TokenCreated",
+    "inputs": [
+      { "name": "ts", "type": "uint256", "indexed": false },
+      { "name": "creator", "type": "address", "indexed": false },
+      { "name": "nonce", "type": "uint256", "indexed": false },
+      { "name": "token", "type": "address", "indexed": false },
+      { "name": "name", "type": "string", "indexed": false },
+      { "name": "symbol", "type": "string", "indexed": false },
+      { "name": "meta", "type": "string", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "VanityTokenCreated",
+    "inputs": [
+      { "name": "token", "type": "address", "indexed": false },
+      { "name": "creator", "type": "address", "indexed": false },
+      { "name": "beneficiary", "type": "address", "indexed": false }
+    ]
+  }
+]

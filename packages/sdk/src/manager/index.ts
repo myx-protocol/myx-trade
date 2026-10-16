@@ -14,12 +14,14 @@ import { Seamless } from "./seamless/index.js";
 import { Appeal } from "./appeal/index.js";
 import { Referrals } from "./referrals/index.js";
 import { Swap } from "./swap/index.js";
+import { Token } from "./token/index.js";
 
 // types
 export type { MyxClientConfig } from "./config/index.js";
 export * from "./subscription/types/index.js";
 export * from "./api/type.js";
 export type { SwapQuoteParams, SwapQuoteResult, NativeTokenPriceResult } from "./swap/index.js";
+export * from "./token/types.js";
 
 export class MyxClient {
   /**
@@ -42,6 +44,7 @@ export class MyxClient {
   public appeal: Appeal;
   public referrals: Referrals;
   public swap: Swap;
+  public token: Token;
   /**
    * Get config manager (for accessToken-related methods)
    */
@@ -131,6 +134,7 @@ export class MyxClient {
      */
     this.referrals = new Referrals(this);
     this.swap = new Swap();
+    this.token = new Token();
   }
 
   /**

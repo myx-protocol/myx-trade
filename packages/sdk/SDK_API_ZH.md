@@ -10,6 +10,18 @@
 
 ### 最近一次更新
 
+**持仓模块、账户模块、市场模块**新增接口：
+
+| # | 变更类型 | 详情 |
+|---|---------|------|
+| 1 | **新增** `position.getPositionTransferHistory` | 后端查询：分页获取历史仓位转移记录 |
+| 2 | **新增** `position.transferPosition` | 链上操作：将持仓 NFT 转移至另一地址（未铸造时一步完成铸造+转移） |
+| 3 | **新增** `api.getProfitLock` | 后端查询：获取账户待解锁利润记录 |
+| 4 | **新增** `api.getReleasedProfitLocks` | 后端查询：获取已解锁利润记录（资产页「已解锁利润」列表） |
+| 5 | **新增** `markets.getDelistRisk` | 后端查询：获取池子摘牌风险指标（交易量/TVL 目标值与当前值） |
+
+### 上次更新
+
 **账户模块**（`account.*`）变更：
 
 | # | 变更类型 | 详情 |
@@ -727,6 +739,75 @@ enum OracleType {
 | message   | `string`（可选） | 错误信息      |
 
 
+### position.getPositionTransferHistory `[后端]`
+
+查询当前账户的历史仓位转移记录。
+
+**入参：**
+
+| 参数名      | 类型              | 说明                          |
+| --------- | --------------- | --------------------------- |
+| chainId   | `number`（可选）   | 按链 ID 过滤                    |
+| poolId    | `string`（可选）   | 按池地址过滤                      |
+| type      | `0 \| 1 \| 2`（可选） | 转移类型：0 = 全部，1 = 已发出，2 = 已收到 |
+| limit     | `number`（可选）   | 每页条数                        |
+| after     | `number`（可选）   | 游标：返回该 ID 之后的记录              |
+| before    | `number`（可选）   | 游标：返回该 ID 之前的记录              |
+
+**返回值：**
+
+| 字段   | 类型                       | 说明           |
+| ---- | ------------------------ | ------------ |
+| code | `number`                 | 状态码，0 为成功    |
+| data | `PositionTransferItem[]` | 仓位转移记录列表     |
+
+**`PositionTransferItem` 字段：**
+
+| 字段               | 类型       | 说明                      |
+| ---------------- | -------- | ----------------------- |
+| id               | `number` | 记录 ID                   |
+| chainId          | `number` | 链 ID                    |
+| poolId           | `string` | 池地址                     |
+| marketId         | `string` | 市场 ID                   |
+| positionId       | `number` | 持仓 ID                   |
+| fromAddress      | `string` | 发送方地址                   |
+| toAddress        | `string` | 接收方地址                   |
+| baseSymbol       | `string` | 基础代币符号                  |
+| quoteSymbol      | `string` | 报价代币符号                  |
+| direction        | `number` | 持仓方向（1 = 多，2 = 空）       |
+| userLeverage     | `number` | 转移时的杠杆倍数                |
+| size             | `string` | 持仓大小                    |
+| collateralAmount | `string` | 保证金数量                   |
+| entryPrice       | `string` | 开仓价格                    |
+| status           | `number` | 转移状态                    |
+| txHash           | `string` | 交易哈希                    |
+| txTime           | `number` | 交易时间戳（Unix 秒）           |
+
+### position.transferPosition `[链上]`
+
+将持仓转移至另一个地址。若持仓已铸造为 NFT，则调用 `safeTransferFrom`；否则一步完成铸造并转移。
+
+**入参：**
+
+| 参数名        | 类型              | 说明                              |
+| ---------- | --------------- | ------------------------------- |
+| positionId | `string`        | 待转移的持仓 ID                       |
+| tokenId    | `string \| null` | NFT token ID（已铸造则传入；未铸造传 `null`） |
+| to         | `string`        | 接收方地址                           |
+| poolId     | `string`        | 池地址                             |
+| chainId    | `number`        | 链 ID                            |
+| address    | `string`        | 调用方钱包地址                         |
+
+**返回值：**
+
+| 字段          | 类型       | 说明           |
+| ----------- | -------- | ------------ |
+| code        | `number` | 状态码，0 为成功    |
+| data.hash   | `string` | 交易哈希         |
+| data.receipt | `object` | 交易回执         |
+| message     | `string`（可选） | 错误信息    |
+
+
 ---
 
 ## 4. 账户模块 account
@@ -973,6 +1054,82 @@ interface AccountInfo {
 | ---- | ------------- | --------- |
 | code | `number`      | 状态码，0 为成功 |
 | data | `TradeFlow[]` | 交易流水列表    |
+
+
+### api.getProfitLock `[后端]`
+
+查询当前账户的待解锁利润记录，返回尚处于锁定期、等待释放的利润条目。
+
+> 需要鉴权，调用前请先执行 `myxClient.auth()`。
+
+**入参：**
+
+| 参数名     | 类型            | 说明             |
+| ------- | ------------- | -------------- |
+| chainId | `number`（可选） | 按链 ID 过滤       |
+| poolId  | `string`（可选） | 按池地址过滤         |
+| limit   | `number`（可选） | 每页条数           |
+| after   | `number`（可选） | 游标：返回该 ID 之后的记录 |
+| before  | `number`（可选） | 游标：返回该 ID 之前的记录 |
+
+**返回值：**
+
+| 字段   | 类型                | 说明           |
+| ---- | ----------------- | ------------ |
+| code | `number`          | 状态码，0 为成功    |
+| data | `ProfitLockItem[]` | 待解锁利润记录列表    |
+
+**`ProfitLockItem` 字段：**
+
+| 字段                | 类型       | 说明               |
+| ----------------- | -------- | ---------------- |
+| id                | `number` | 记录 ID            |
+| chainId           | `number` | 链 ID             |
+| poolId            | `string` | 池地址              |
+| account           | `string` | 账户地址             |
+| profitBaseAmount  | `string` | 基础代币锁定利润         |
+| profitQuoteAmount | `string` | 报价代币锁定利润         |
+| usedQuoteAmount   | `string` | 已提取的报价代币数量       |
+| releaseTime       | `number` | 预计释放时间（Unix 秒）   |
+| txHash            | `string` | 交易哈希             |
+| txTime            | `number` | 交易时间戳（Unix 秒）    |
+
+**示例：**
+
+```typescript
+const res = await myxClient.api.getProfitLock({ chainId: 42161 })
+// res.data: ProfitLockItem[]
+```
+
+### api.getReleasedProfitLocks `[后端]`
+
+查询已释放（已解锁）的利润记录，用于资产页「已解锁利润」列表展示。
+
+> 需要鉴权，调用前请先执行 `myxClient.auth()`。
+
+**入参：**
+
+| 参数名     | 类型            | 说明              |
+| ------- | ------------- | --------------- |
+| chainId | `number`（可选） | 按链 ID 过滤        |
+| poolId  | `string`（可选） | 按池地址过滤          |
+| limit   | `number`（可选） | 每页条数            |
+| after   | `number`（可选） | 游标：返回该 ID 之后的记录  |
+| before  | `number`（可选） | 游标：返回该 ID 之前的记录  |
+
+**返回值：**
+
+| 字段   | 类型                | 说明                                    |
+| ---- | ----------------- | ------------------------------------- |
+| code | `number`          | 状态码，0 为成功                             |
+| data | `ProfitLockItem[]` | 已解锁利润记录列表（字段结构同 `getProfitLock`）      |
+
+**示例：**
+
+```typescript
+const res = await myxClient.api.getReleasedProfitLocks({ chainId: 42161 })
+// res.data: ProfitLockItem[]
+```
 
 
 ---
@@ -1245,6 +1402,38 @@ type KlineResolution = '1m' | '5m' | '15m' | '30m' | '1h' | '4h' | '1d' | '1w' |
 | -------------- | -------- | ------------------------ |
 | code           | `number` | 状态码，0 为成功                |
 | data / message | `any`    | 合约 getPoolInfo 结构（含资金费率） |
+
+
+### markets.getDelistRisk `[后端]`
+
+查询指定池的摘牌风险指标，返回用于评估该池是否面临摘牌风险的交易量与 TVL 周期目标值与当前值。
+
+**入参：**
+
+| 参数名     | 类型       | 说明    |
+| ------- | -------- | ----- |
+| chainId | `number` | 链 ID  |
+| poolId  | `string` | 池子地址  |
+
+**返回值：**
+
+| 字段   | 类型                      | 说明                      |
+| ---- | ----------------------- | ----------------------- |
+| code | `number`                | 状态码，0 为成功               |
+| data | `DelistRiskInfo \| null` | 摘牌风险信息，无风险数据时为 `null`   |
+
+**`DelistRiskInfo` 字段：**
+
+| 字段                | 类型       | 说明                  |
+| ----------------- | -------- | ------------------- |
+| volumePeriodStart | `number` | 交易量考核周期开始时间（Unix 秒） |
+| volumePeriodEnd   | `number` | 交易量考核周期结束时间（Unix 秒） |
+| targetVolume      | `string` | 目标交易量阈值             |
+| currentVolume     | `string` | 周期内当前交易量            |
+| tvlPeriodStart    | `number` | TVL 考核周期开始时间（Unix 秒）|
+| tvlPeriodEnd      | `number` | TVL 考核周期结束时间（Unix 秒）|
+| targetTvl         | `string` | 目标 TVL 阈值           |
+| currentTvl        | `string` | 周期内当前 TVL           |
 
 
 ---
